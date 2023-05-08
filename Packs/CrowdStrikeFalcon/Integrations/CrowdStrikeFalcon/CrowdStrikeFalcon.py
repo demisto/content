@@ -4713,8 +4713,8 @@ def map_scan_resource_to_UI(resource: dict) -> dict:
         'ID': resource.get('id'),
         'Status': resource.get('status'),
         'Severity': resource.get('severity'),
-        'File Count': '\n-\n'.join(f' {filecount}'.translate(str.maketrans(',', '\n', "{}'"))
-                                    for host in resource.get('metadata', []) if (filecount := host.get('filecount'))),
+        'File Count': '\n-\n'.join('\n'.join(f'{k}: {v}' for k, v in filecount.items())
+                                   for host in resource.get('metadata', []) if (filecount := host.get('filecount', {}))),
         'Description': resource.get('description'),
         'Hosts/Host groups': resource.get('hosts') or resource.get('host_groups'),
         'Start time': resource.get('scan_started_on'),
@@ -4725,7 +4725,6 @@ def map_scan_resource_to_UI(resource: dict) -> dict:
 
 
 def ODS_get_scan_resources_to_human_readable(resources: list[dict]) -> str:
-    # TODO ask if to use default headers for UI
 
     human_readable = tableToMarkdown(
         'CrowdStrike Falcon ODS Scans',
@@ -4745,7 +4744,7 @@ def get_ODS_scan_ids(args: dict) -> list[str] | None:
         custom_filter=args.get('filter'),
         initiated_from=args.get('initiated_from'),
         status=args.get('status'),
-        severity=args.get('severity'),  # TODO
+        severity=args.get('severity'),
         scan_started_on=args.get('scan_started_on'),
         scan_completed_on=args.get('scan_completed_on'),
     )
@@ -4875,7 +4874,7 @@ def ODS_get_scan_hosts_by_id_request(ids: list[str]) -> dict:
     return http_request('GET', f'/ods/entities/scan-hosts/v1?{url_params}')
 
 
-def get_ODS_scan_host_ids(args: dict) -> list[str] | None:
+def get_ODS_scan_host_ids(args: dict) -> list[str]:
 
     query_filter = build_cs_falcon_filter(
         custom_filter=args.get('filter'),
@@ -4892,7 +4891,7 @@ def get_ODS_scan_host_ids(args: dict) -> list[str] | None:
         limit=args.get('limit'),
     )
 
-    return raw_response.get('resources')
+    return raw_response.get('resources', [])
 
 
 def map_scan_host_resource_to_UI(resource: dict) -> dict:
@@ -4962,7 +4961,7 @@ def map_malicious_file_resource_to_UI(resource: dict) -> dict:
         'Scan id': resource.get('scan_id'),
         'Filename': resource.get('filename'),
         'Hash': resource.get('hash'),
-        'Severity': resource.get('severity'), 
+        'Severity': resource.get('severity'),
         'Last updated': resource.get('last_updated'),
     }
     return output
@@ -5038,11 +5037,12 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         'host_groups': argToList(args.get('host_groups')),
         'file_paths': argToList(args.get('file_paths')),
         'scan_exclusions': argToList(args.get('scan_exclusions')),
+        'scan_inclusions': argToList(args.get('scan_inclusions')),
         'initiated_from': args.get('initiated_from'),
         'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
         'description': args.get('description'),
         'quarantine': argToBoolean(quarantine) if (quarantine := args.get('quarantine')) is not None else None,
-        'endpoint_notification': True,  # TODO check if to make default
+        'endpoint_notification': True,
         'pause_duration': arg_to_number(args.get('pause_duration')),
         'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
         'sensor_ml_level_prevention': arg_to_number(args.get('sensor_ml_level_prevention')),
@@ -5070,17 +5070,13 @@ def create_ODS_scan_request(args: dict, is_scheduled: bool) -> dict:
     return http_request('POST', f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
 
 
-def ODS_create_ODS_scan_resources_to_human_readable(a: Any) -> str:
-    pass  # TODO
-
-
 def ODS_verify_create_scan_command(args: dict) -> None:
 
     if not (args.get('hosts') or args.get('host_groups')):
         raise DemistoException('MUST set hosts OR host_groups.')
 
-    if not (args.get('file_paths') or args.get('scan_exclusions')):
-        raise DemistoException('MUST set file_paths OR scan_exclusions.')
+    if not (args.get('file_paths') or args.get('scan_inclusions')):
+        raise DemistoException('MUST set file_paths OR scan_inclusions.')
 
     if argToBoolean(args.get('is_scheduled')) and not (
             args.get('schedule_start_timestamp')
@@ -5098,7 +5094,11 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     response = create_ODS_scan_request(args, is_scheduled)
 
     resources = response.get('resources', [])
-    human_readable = ODS_create_ODS_scan_resources_to_human_readable(resources)
+    
+    if not resources:
+        raise DemistoException('Unexpected response from CrowdStrike Falcon')
+    
+    human_readable = f'{"Scheduled "*is_scheduled}Scan Created\nID: {resources[0].get("id")}'
 
     command_results = CommandResults(
         raw_response=response,
@@ -5122,7 +5122,7 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
 
     ids, scan_filter = argToList(args.get('ids')), args.get('filter')
     response = ODS_delete_scheduled_scans_request(ids, scan_filter)
-    human_readable = tableToMarkdown('Deleted Scans:', response.get('resources'), headers=['ID'])
+    human_readable = tableToMarkdown('Deleted Scans:', response.get('resources'), headers=['Scan ID'])
 
     command_results = CommandResults(
         raw_response=response,
@@ -5140,7 +5140,7 @@ def cs_falcon_ods_cancel_scan_command(args: dict) -> CommandResults:
 
     ids = argToList(args.get('ids'))
     response = ODS_cancel_scans_request(ids)
-    human_readable = tableToMarkdown('Canceled Scans:', response.get('resources'), headers=['ID'])
+    human_readable = tableToMarkdown('Canceled Scans:', response.get('resources', []), headers=['Scan ID'])
 
     command_results = CommandResults(
         raw_response=response,

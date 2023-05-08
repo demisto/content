@@ -124,7 +124,7 @@ Searches for devices that match the query.
 
 #### Command Example
 
-`!cs-falcon-search-device ids=336474ea6a524e7c68575f6508d84781,459146dbe524472e73751a43c63324f3`
+`!cs-falcon-search-device ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
 
 #### Context Example
 ```
@@ -137,7 +137,7 @@ Searches for devices that match the query.
                 "LocalIP": "192.168.1.76", 
                 "LastSeen": "2019-03-28T02:36:41Z", 
                 "OS": "Mojave (10.14)", 
-                "ID": "336474ea6a524e7c68575f6508d84781", 
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                 "FirstSeen": "2017-12-28T22:38:11Z",
                 "Status": "contained"
             }, 
@@ -148,7 +148,7 @@ Searches for devices that match the query.
                 "LocalIP": "172.22.14.237", 
                 "LastSeen": "2019-03-17T10:03:17Z", 
                 "OS": "Mojave (10.14)", 
-                "ID": "459146dbe524472e73751a43c63324f3", 
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                 "FirstSeen": "2017-12-10T11:01:20Z",
                 "Status": "contained"
             }
@@ -156,7 +156,7 @@ Searches for devices that match the query.
       "Endpoint(val.ID === obj.ID)": [
             {
               "Hostname": "154.132.82-test-co.in-addr.arpa",
-              "ID": "336474ea6a524e7c68575f6508d84781",
+              "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
               "IPAddress": "192.168.1.76", 
               "OS": "Mojave (10.14)",
               "Status": "Online",
@@ -165,7 +165,7 @@ Searches for devices that match the query.
             },
             {
               "Hostname": "154.132.82-test-co.in-addr.arpa", 
-              "ID": "459146dbe524472e73751a43c63324f3",
+              "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
               "IPAddress": "172.22.14.237", 
               "OS": "Mojave (10.14)", 
               "Status": "Online",
@@ -180,8 +180,8 @@ Searches for devices that match the query.
 >### Devices
 >| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- |
->| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
->| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
  
 
 ### 2. Get a behavior
@@ -234,10 +234,10 @@ Searches for and fetches the behavior that matches the query.
                 "CommandLine": "/Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn", 
                 "UserName": "user@u-MacBook-Pro-2.local", 
                 "FileName": "spokeshave.jn", 
-                "SHA256": "df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266", 
+                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                 "ID": "3206", 
-                "IOCValue": "df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266", 
-                "MD5": "b41d753a4b61c9fe4486190c3b78e124"
+                "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
             }, 
             {
                 "IOCType": "sha256", 
@@ -247,11 +247,11 @@ Searches for and fetches the behavior that matches the query.
                 "CommandLine": "./xSf", 
                 "UserName": "root@u-MacBook-Pro-2.local", 
                 "FileName": "xSf", 
-                "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
-                "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                 "ID": "3206", 
-                "IOCValue": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
-                "MD5": "06dc9ff1857dcd4cdcd125b277955134"
+                "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
             }
         ]
     }
@@ -261,8 +261,8 @@ Searches for and fetches the behavior that matches the query.
 >### Behavior ID: 3206
 >| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
 >| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
->| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | user@u-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
->|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@u-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
+>| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | user@u-MacBook-Pro-2.local |   a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   197949010450449117|
+>|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   root@u-MacBook-Pro-2.local|          a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |197949016741905142|
 
  
 
@@ -310,7 +310,7 @@ or by providing the IDs of the detections.
 
 #### Command Example
 
-`!cs-falcon-search-detection ids=ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347,ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902`
+`!cs-falcon-search-detection ids=ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347,ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902`
 
 #### Context Example
 ```
@@ -328,11 +328,11 @@ or by providing the IDs of the detections.
                         "CommandLine": "C:\\Python27\\pythonw.exe -c __import__('idlelib.run').run.main(True) 1250", 
                         "UserName": "josh", 
                         "FileName": "pythonw.exe", 
-                        "SensorID": "07893fedd2604bc66c3f7de8d1f537e3", 
-                        "SHA256": "d1e9361680c4b2112e2ed647d5b87b96e4e9e557e75353657b9ce1b1babc0805", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                         "ID": "4900", 
                         "IOCValue": "systemlowcheck.com", 
-                        "MD5": "8b162b81d4efc177a2719bb8d7dbe46a"
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
                     }, 
                     {
                         "IOCType": "domain", 
@@ -342,19 +342,19 @@ or by providing the IDs of the detections.
                         "CommandLine": "ping.exe systemlowcheck.com", 
                         "UserName": "josh", 
                         "FileName": "PING.EXE", 
-                        "SensorID": "07893fedd2604bc66c3f7de8d1f537e3", 
-                        "SHA256": "7bf496d5b9f227cce033f204e21743008c3f4b081d44b02500eda4efbccf3281", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                         "ID": "4900", 
                         "IOCValue": "systemlowcheck.com", 
-                        "MD5": "70c24a306f768936563abdadb9ca9108"
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
                     }
                 ], 
                 "MaxSeverity": 70, 
                 "System": "DESKTOP-S49VMIL", 
-                "ID": "ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347", 
+                "ID": "ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347", 
                 "MachineDomain": "", 
                 "ShowInUi": true, 
-                "CustomerID": "ed33ec93d2444d38abd3925803938a75"
+                "CustomerID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
             }, 
             {
                 "Status": "new", 
@@ -368,11 +368,11 @@ or by providing the IDs of the detections.
                         "CommandLine": "./xSf", 
                         "UserName": "user@u-MacBook-Pro-2.local", 
                         "FileName": "xSf", 
-                        "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
-                        "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                         "ID": "3206", 
-                        "IOCValue": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
-                        "MD5": "06dc9ff1857dcd4cdcd125b277955134"
+                        "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
                     }, 
                     {
                         "IOCType": "sha256", 
@@ -382,19 +382,19 @@ or by providing the IDs of the detections.
                         "CommandLine": "./xSf", 
                         "UserName": "user@u-MacBook-Pro-2.local", 
                         "FileName": "xSf", 
-                        "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
-                        "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
                         "ID": "3206", 
-                        "IOCValue": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
-                        "MD5": "06dc9ff1857dcd4cdcd125b277955134"
+                        "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
                     }
                 ], 
                 "MaxSeverity": 30, 
                 "System": "u-MacBook-Pro-2.local", 
-                "ID": "ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902", 
+                "ID": "ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902", 
                 "MachineDomain": "", 
                 "ShowInUi": true, 
-                "CustomerID": "ed33ec93d2444d38abd3925803938a75"
+                "CustomerID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
             }
         ]
     }
@@ -404,8 +404,8 @@ or by providing the IDs of the detections.
 >### Detections Found:
 >|ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
 >|----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
->|ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | ed33ec93d2444d38abd3925803938a75  | 70|
->|ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
+>|ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1  | 70|
+>|ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1  | 30|
 
  
 
@@ -518,14 +518,14 @@ Sends commands to hosts.
 
 
 #### Command Example
-`cs-falcon-run-command host_ids=284771ee197e422d5176d6634a62b934 command_type=ls full_command="ls C:\\"`
+`cs-falcon-run-command host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 command_type=ls full_command="ls C:\\"`
 
 #### Context Example
 ```
 {
     'CrowdStrike': {
         'Command': [{
-            'HostID': '284771ee197e422d5176d6634a62b934',
+            'HostID': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'Stdout': 'Directory listing for C:\\ -\n\n'
             'Name                                     Type         Size (bytes)    Size (MB)       '
             'Last Modified (UTC-5)     Created (UTC-5)          \n----                             '
@@ -546,7 +546,7 @@ Sends commands to hosts.
 >### Command ls C:\\ results
 >|BaseCommand|Command|HostID|Stderr|Stdout|
 >|---|---|---|---|---|
->| ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+>| ls | ls C:\ | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 ### 8. cs-falcon-upload-script
 ---
@@ -604,10 +604,10 @@ Deletes a file based on the provided ID. Can delete only one file at a time.
 
 
 #### Command Example
-`!cs-falcon-delete-file file_id=le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a`
+`!cs-falcon-delete-file file_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
 
 #### Human Readable Output
-File le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a was deleted successfully.
+File le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was deleted successfully.
 
 ### 11. cs-falcon-get-file
 ---
@@ -644,7 +644,7 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 | File.Size | Number | The size of the file in bytes. | 
 
 #### Command Example
-`!cs-falcon-get-file file_id=le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a`
+`!cs-falcon-get-file file_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
 
 #### Context Example
 ```
@@ -654,12 +654,12 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
             'CreatedBy': 'spongobob@demisto.com',
             'CreatedTime': '2019-10-17T13:41:48.487520845Z',
             'Description': 'Demisto',
-            'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+            'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'ModifiedBy': 'spongobob@demisto.com',
             'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
             'Name': 'Demisto',
             'Permission': 'private',
-            'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+            'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'Type': 'script'
         }
     ]
@@ -668,10 +668,10 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
+>### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
 >|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
 >|---|---|---|---|---|---|---|---|---|---|
->| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
 
 ### 12. cs-falcon-list-files
 ---
@@ -710,12 +710,12 @@ Returns Returns a list of put-file ID's that are available for the user in the `
             'CreatedBy': 'spongobob@demisto.com',
             'CreatedTime': '2019-10-17T13:41:48.487520845Z',
             'Description': 'Demisto',
-            'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+            'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'ModifiedBy': 'spongobob@demisto.com',
             'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
             'Name': 'Demisto',
             'Permission': 'private',
-            'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+            'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'Type': 'script'
         }
     ]
@@ -727,7 +727,7 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 >### CrowdStrike Falcon files
 >|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
 >|---|---|---|---|---|---|---|---|---|---|
->| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
 
 ### 13. cs-falcon-get-script
 ---
@@ -762,7 +762,7 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 | CrowdStrike.Script.WriteAccess | Boolean | Whether the user has write access to the script. | 
 
 #### Command Example
-`!cs-falcon-get-script file_id=le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a`
+`!cs-falcon-get-script file_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
 
 #### Context Example
 ```
@@ -772,12 +772,12 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
            'CreatedBy': 'spongobob@demisto.com',
            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
            'Description': 'Demisto',
-           'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+           'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
            'ModifiedBy': 'spongobob@demisto.com',
            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
            'Name': 'Demisto',
            'Permission': 'private',
-           'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+           'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
            'RunAttemptCount': 0,
            'RunSuccessCount': 0,
            'WriteAccess': True
@@ -788,10 +788,10 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 
 #### Human Readable Output
 
->### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
+>### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
 >|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
 >|---|---|---|---|---|---|---|---|---|
->| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+>| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
 ### 14. cs-falcon-delete-script
@@ -808,10 +808,10 @@ Deletes a script based on the ID given. Can delete only one script at a time.
 | script_id | Script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.) | Required | 
 
 #### Command Example
-`!cs-falcon-delete-script script_id=le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a`
+`!cs-falcon-delete-script script_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
 
 #### Human Readable Output
-Script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a was deleted successfully.
+Script le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was deleted successfully.
 
 ### 15. cs-falcon-list-scripts
 ---
@@ -849,12 +849,12 @@ Returns a list of custom script IDs that are available for the user in the `runs
             'CreatedBy': 'spongobob@demisto.com',
             'CreatedTime': '2019-10-17T13:41:48.487520845Z',
             'Description': 'Demisto',
-            'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
+            'ID': 'le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'ModifiedBy': 'spongobob@demisto.com',
             'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
             'Name': 'Demisto',
             'Permission': 'private',
-            'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
+            'SHA256': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'RunAttemptCount': 0,
             'RunSuccessCount': 0,
             'WriteAccess': True
@@ -868,7 +868,7 @@ Returns a list of custom script IDs that are available for the user in the `runs
 >### CrowdStrike Falcon scripts
 >| CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- |
->| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+>| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
 ### 16. cs-falcon-run-script
@@ -901,14 +901,14 @@ Runs a script on the agent host.
 
 
 #### Command Example
-`cs-falcon-run-script host_ids=284771ee197e422d5176d6634a62b934 raw="Write-Output 'Hello, World!"`
+`cs-falcon-run-script host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 raw="Write-Output 'Hello, World!"`
 
 #### Context Example
 ```
 {
     'CrowdStrike': {
         'Command': [{
-            'HostID': '284771ee197e422d5176d6634a62b934',
+            'HostID': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
                 'Stdout': 'Hello, World!',
                 'Stderr': '',
                 'BaseCommand': 'runscript',
@@ -922,7 +922,7 @@ Runs a script on the agent host.
 >### Command runscript -Raw=Write-Output 'Hello, World! results
 >|BaseCommand|Command|HostID|Stderr|Stdout|
 >|---|---|---|---|---|
->| runscript | runscript -Raw=Write-Output 'Hello, World! | 284771ee197e422d5176d6634a62b934 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+>| runscript | runscript -Raw=Write-Output 'Hello, World! | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 
 ### 17. cs-falcon-run-get-command
@@ -959,7 +959,7 @@ The running status you requested the `get` command can be checked with `cs-falco
 
 
 #### Command Example
-`cs-falcon-run-get-command host_ids=edfd6a04ad134c4344f8fb119a3ad88e file_path="""c:\Windows\notepad.exe"""`
+`cs-falcon-run-get-command host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 file_path="""c:\Windows\notepad.exe"""`
 
 #### Context Example
 ```
@@ -970,7 +970,7 @@ The running status you requested the `get` command can be checked with `cs-falco
       "Complete": True,
       "FilePath": "c:\\Windows\\notepad.exe",
       "GetRequestID": "84ee4d50-f499-482e-bac6-b0e296149bbf",
-      "HostID": "edfd6a04ad134c4344f8fb119a3ad88e",
+      "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "Stderr": "",
       "Stdout": "C:\\Windows\\notepad.exe",
       "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b"
@@ -984,7 +984,7 @@ The running status you requested the `get` command can be checked with `cs-falco
 >### Get command has requested for a file c:\Windows\notepad.exe
 >|BaseCommand|Complete|FilePath|GetRequestID|HostID|Stderr|Stdout|TaskID|
 >|---|---|---|---|---|---|---|---|
->| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | edfd6a04ad134c4344f8fb119a3ad88e |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
+>| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
 
 
 
@@ -1032,7 +1032,7 @@ Retrieves the status of the batch get command which you requested at `cs-falcon-
       "DeletedAt": None,
       "ID": 185596,
       "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
-      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "Size": 0,
       "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b",
       "UpdatedAt": "2020-05-01T16:09:00Z"
@@ -1041,7 +1041,7 @@ Retrieves the status of the batch get command which you requested at `cs-falcon-
   "File(val.MD5 \u0026\u0026 val.MD5 == obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 == obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 == obj.SHA256 || val.SHA512 \u0026\u0026 val.SHA512 == obj.SHA512 || val.CRC32 \u0026\u0026 val.CRC32 == obj.CRC32 || val.CTPH \u0026\u0026 val.CTPH == obj.CTPH || val.SSDeep \u0026\u0026 val.SSDeep == obj.SSDeep)": [
     {
       "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
-      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "Size": 0
     }
   ]
@@ -1053,7 +1053,7 @@ Retrieves the status of the batch get command which you requested at `cs-falcon-
 >### CrowdStrike Falcon files
 >|CreatedAt|DeletedAt|ID|Name|SHA256|Size|TaskID|UpdatedAt|
 >|---|---|---|---|---|---|---|---|
->| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
+>| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
 
 
 ### 19. cs-falcon-status-command
@@ -1137,7 +1137,7 @@ There is no context output for this command.
 
 
 #### Command Example
-`!cs-falcon-get-extracted-file host_id="edfd6a04ad134c4344f8fb119a3ad88e" sha256="f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3"`
+`!cs-falcon-get-extracted-file host_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" sha256="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"`
 
 #### Context Example
 There is no context output for this command.
@@ -1181,14 +1181,14 @@ Get a list of files for the specified RTR session on a host.
 
 
 #### Command Example
-`!cs-falcon-list-host-files host_id="edfd6a04ad134c4344f8fb119a3ad88e"`
+`!cs-falcon-list-host-files host_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"`
 
 #### Context Example
 ```
 {
   "CrowdStrike.Command(val.TaskID === obj.TaskID)": [
     {
-      "HostID": "edfd6a04ad134c4344f8fb119a3ad88e",
+      "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "SessionID": "fdd6408f-6688-441b-8659-41bcad25441c",
       "TaskID": "1269ad9e-c11f-4e38-8aba-1a0275304f9c"
     }
@@ -1199,7 +1199,7 @@ Get a list of files for the specified RTR session on a host.
       "DeletedAt": None,
       "ID": 186811,
       "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
-      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "Size": 0,
       "Stderr": None,
       "Stdout": None,
@@ -1209,7 +1209,7 @@ Get a list of files for the specified RTR session on a host.
   "File(val.MD5 \u0026\u0026 val.MD5 == obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 == obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 == obj.SHA256 || val.SHA512 \u0026\u0026 val.SHA512 == obj.SHA512 || val.CRC32 \u0026\u0026 val.CRC32 == obj.CRC32 || val.CTPH \u0026\u0026 val.CTPH == obj.CTPH || val.SSDeep \u0026\u0026 val.SSDeep == obj.SSDeep)": [
     {
       "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
-      "SHA256": "f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "Size": 0
     }
   ]
@@ -1221,7 +1221,7 @@ Get a list of files for the specified RTR session on a host.
 >### CrowdStrike Falcon files
 >|CreatedAt|DeletedAt|ID|Name|SHA256|Size|Stderr|Stdout|UpdatedAt|
 >|---|---|---|---|---|---|---|---|---|
->| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | f1d62648ef915d85cb4fc140359e925395d315c70f3566b63bb3e21151cb2ce3 | 0 |  |  | 2020-05-01T17:57:42Z |
+>| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 0 |  |  | 2020-05-01T17:57:42Z |
 
 
 ### 22. cs-falcon-refresh-session
@@ -1259,7 +1259,7 @@ Refresh a session timeout on a single host.
 
 
 #### Command Example
-`!cs-falcon-refresh-session host_id=edfd6a04ad134c4344f8fb119a3ad88e`
+`!cs-falcon-refresh-session host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
 
 #### Context Example
 There is no context output for this command.
@@ -1649,7 +1649,7 @@ Get processes associated with a given IOC.
 
 
 #### Command Example
-```!cs-falcon-processes-ran-on device_id=15dbb9d8f06b45fe9f61eb46e829d986 type=domain value=value```
+```!cs-falcon-processes-ran-on device_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 type=domain value=value```
 
 #### Context Example
 ```json
@@ -1771,7 +1771,7 @@ Returns a list of device IDs on which an indicator ran.
 {
     "CrowdStrike": {
         "DeviceID": [
-            "15dbb9d8f06b45fe9f61eb46e829d986"
+            "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
         ]
     }
 }
@@ -1782,7 +1782,7 @@ Returns a list of device IDs on which an indicator ran.
 >### Devices that encountered the IOC domain:value
 >|Device ID|
 >|---|
->| 15dbb9d8f06b45fe9f61eb46e829d986 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
 ### 32. cs-falcon-list-detection-summaries
@@ -2133,7 +2133,7 @@ Returns information about an endpoint, does not support regex.
 >### Endpoints
 >|ID|IPAddress|OS|OSVersion|Hostname|Status|MACAddress|Vendor
 >|---|---|---|---|---|---|---|---|
->| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
 
 ### 35. cs-falcon-create-host-group
 ***
@@ -2175,12 +2175,12 @@ Create a host group
 {
     "CrowdStrike": {
         "HostGroup": {
-            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "created_timestamp": "2021-08-25T08:02:02.060242909Z",
             "description": "test_description",
             "group_type": "static",
-            "id": "f82edc8a565d432a8114ebdbf255f5b2",
-            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "modified_timestamp": "2021-08-25T08:02:02.060242909Z",
             "name": "test_name_1"
         }
@@ -2193,7 +2193,7 @@ Create a host group
 >### Results
 >|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
 >|---|---|---|---|---|---|---|---|
->| api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_description | static | f82edc8a565d432a8114ebdbf255f5b2 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
+>| api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_description | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
 
 ### 36. cs-falcon-update-host-group
 ***
@@ -2230,7 +2230,7 @@ Update a host group.
 
 
 #### Command Example
-```!cs-falcon-update-host-group host_group_id=4902d5686bed41ba88a37439f38913ba name="test_name_update_1" description="test_description_update"```
+```!cs-falcon-update-host-group host_group_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 name="test_name_update_1" description="test_description_update"```
 
 #### Context Example
 ```json
@@ -2238,12 +2238,12 @@ Update a host group.
     "CrowdStrike": {
         "HostGroup": {
             "assignment_rule": "device_id:[''],hostname:['']",
-            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "created_timestamp": "2021-08-22T07:48:35.111070562Z",
             "description": "test_description_update",
             "group_type": "static",
-            "id": "4902d5686bed41ba88a37439f38913ba",
-            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
             "name": "test_name_update_1"
         }
@@ -2256,7 +2256,7 @@ Update a host group.
 >### Results
 >|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
 >|---|---|---|---|---|---|---|---|---|
->| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
 ### 37. cs-falcon-list-host-group-members
 ***
@@ -2303,7 +2303,7 @@ Get the list of host group members.
                 "ExternalIP": "35.224.136.145",
                 "FirstSeen": "2021-08-12T16:13:26Z",
                 "Hostname": "FALCON-CROWDSTR",
-                "ID": "75b2dba7ba8d450da481ed6830cc9d9d",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "LastSeen": "2021-08-23T04:59:48Z",
                 "LocalIP": "10.128.0.21",
                 "MacAddress": "42-01-0a-80-00-15",
@@ -2314,7 +2314,7 @@ Get the list of host group members.
                 "ExternalIP": "35.224.136.145",
                 "FirstSeen": "2020-02-10T12:40:18Z",
                 "Hostname": "FALCON-CROWDSTR",
-                "ID": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "LastSeen": "2021-08-25T07:42:47Z",
                 "LocalIP": "10.128.0.7",
                 "MacAddress": "42-01-0a-80-00-07",
@@ -2325,7 +2325,7 @@ Get the list of host group members.
                 "ExternalIP": "35.224.136.145",
                 "FirstSeen": "2021-08-23T05:04:41Z",
                 "Hostname": "INSTANCE-1",
-                "ID": "046761c46ec84f40b27b6f79ce7cd32c",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "LastSeen": "2021-08-25T07:49:06Z",
                 "LocalIP": "10.128.0.20",
                 "MacAddress": "42-01-0a-80-00-14",
@@ -2336,7 +2336,7 @@ Get the list of host group members.
                 "ExternalIP": "35.224.136.145",
                 "FirstSeen": "2021-08-11T13:57:29Z",
                 "Hostname": "INSTANCE-1",
-                "ID": "07007dd3f95c4d628fb097072bf7f7f3",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "LastSeen": "2021-08-23T04:45:37Z",
                 "LocalIP": "10.128.0.20",
                 "MacAddress": "42-01-0a-80-00-14",
@@ -2347,7 +2347,7 @@ Get the list of host group members.
                 "ExternalIP": "35.224.136.145",
                 "FirstSeen": "2021-08-08T11:33:21Z",
                 "Hostname": "falcon-crowdstrike-sensor-centos7",
-                "ID": "0bde2c4645294245aca522971ccc44c4",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "LastSeen": "2021-08-25T07:50:47Z",
                 "LocalIP": "10.128.0.19",
                 "MacAddress": "42-01-0a-80-00-13",
@@ -2364,7 +2364,7 @@ Get the list of host group members.
 >### Devices
 >|ID|External IP|Local IP|Hostname|OS|Mac Address|First Seen|Last Seen|Status|
 >|---|---|---|---|---|---|---|---|---|
->| 0bde2c4645294245aca522971ccc44c4 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
 
 ### 38. cs-falcon-add-host-group-members
 ***
@@ -2399,7 +2399,7 @@ Add host group members.
 
 
 #### Command Example
-```!cs-falcon-add-host-group-members host_group_id="4902d5686bed41ba88a37439f38913ba" host_ids="0bde2c4645294245aca522971ccc44c4"```
+```!cs-falcon-add-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
 
 #### Context Example
 ```json
@@ -2407,12 +2407,12 @@ Add host group members.
     "CrowdStrike": {
         "HostGroup": {
             "assignment_rule": "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7','']",
-            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "created_timestamp": "2021-08-22T07:48:35.111070562Z",
             "description": "test_description_update",
             "group_type": "static",
-            "id": "4902d5686bed41ba88a37439f38913ba",
-            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
             "name": "test_name_update_1"
         }
@@ -2425,7 +2425,7 @@ Add host group members.
 >### Results
 >|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
 >|---|---|---|---|---|---|---|---|---|
->| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+>| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
 ### 39. cs-falcon-remove-host-group-members
 ***
@@ -2460,7 +2460,7 @@ Remove host group members.
 
 
 #### Command Example
-```!cs-falcon-remove-host-group-members host_group_id="4902d5686bed41ba88a37439f38913ba" host_ids="0bde2c4645294245aca522971ccc44c4"```
+```!cs-falcon-remove-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
 
 #### Context Example
 ```json
@@ -2468,12 +2468,12 @@ Remove host group members.
     "CrowdStrike": {
         "HostGroup": {
             "assignment_rule": "device_id:[''],hostname:['']",
-            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "created_timestamp": "2021-08-22T07:48:35.111070562Z",
             "description": "test_description_update",
             "group_type": "static",
-            "id": "4902d5686bed41ba88a37439f38913ba",
-            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
             "name": "test_name_update_1"
         }
@@ -2486,7 +2486,7 @@ Remove host group members.
 >### Results
 >|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
 >|---|---|---|---|---|---|---|---|---|
->| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
 ### 40. cs-falcon-resolve-incident
 ***
@@ -2509,12 +2509,12 @@ Resolve incidents
 There is no context output for this command.
 
 #### Command Example
-```!cs-falcon-resolve-incident ids="inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef,inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258" status="Closed"```
+```!cs-falcon-resolve-incident ids="inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" status="Closed"```
 
 #### Human Readable Output
 
->inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef changed successfully to Closed
->inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258 changed successfully to Closed
+>inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
+>inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
 ### 41. cs-falcon-list-host-groups
 ***
 List the available host groups.
@@ -2555,74 +2555,74 @@ List the available host groups.
     "CrowdStrike": {
         "HostGroup": [
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T14:35:23.765624811Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "d70fa742d28a4e6cb0d33b7af599783d",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T14:35:23.765624811Z",
                 "name": "InnerServicesModuleMon Aug 23 2021"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T14:35:25.506030441Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "d0ff99dfd3884fba87424c03686e45b6",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T14:35:25.506030441Z",
                 "name": "Rasterize_default_instanceMon Aug 23 2021"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['','FALCON-CROWDSTR']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-07-27T12:34:59.13917402Z",
                 "description": "",
                 "group_type": "static",
-                "id": "1fc2e6e1e9c24c5d8d9ce52a9fa8e507",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-07-27T12:34:59.13917402Z",
                 "name": "Static by id group test"
             },
             {
                 "assignment_rule": "device_id:[],hostname:[]",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-07-27T12:24:18.364057533Z",
                 "description": "Group test",
                 "group_type": "static",
-                "id": "11dbab2a65054041b4e949768aaed0df",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-07-27T12:24:18.364057533Z",
                 "name": "Static group test"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T14:35:26.069515348Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "09c88625e1ab49e4bbd525f836f610a7",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T14:35:26.069515348Z",
                 "name": "ad-loginMon Aug 23 2021"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T14:35:25.556897468Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "af0e040d7bb04af7bb00da83e4c0e8f2",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T14:35:25.556897468Z",
                 "name": "ad-queryMon Aug 23 2021"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T14:35:23.737307612Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "09d2a0d3db384021906db6d3c3a2afcb",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T14:35:23.737307612Z",
                 "name": "d2Mon Aug 23 2021"
             },
@@ -2631,454 +2631,454 @@ List the available host groups.
                 "created_timestamp": "2021-07-27T12:27:43.503021999Z",
                 "description": "dhfh",
                 "group_type": "staticByID",
-                "id": "79843d26a16c4530becc218a791f642c",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_by": "akrupnik@paloaltonetworks.com",
                 "modified_timestamp": "2021-07-27T12:27:43.503021999Z",
                 "name": "ddfxgh"
             },
             {
                 "assignment_rule": "device.hostname:'FALCON-CROWDSTR'",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-07-27T12:46:39.058352326Z",
                 "description": "",
                 "group_type": "dynamic",
-                "id": "5d88a39652d24de2be42b14b427cc9e3",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-07-27T12:46:39.058352326Z",
                 "name": "dynamic 1 group test"
             },
             {
                 "assignment_rule": "lkjlk:'FalconGroupingTags/example_tag'",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T13:12:56.338590022Z",
                 "description": "",
                 "group_type": "dynamic",
-                "id": "2f2d825c1bdb42338531c1679557aa1e",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T13:12:56.338590022Z",
                 "name": "dynamic 13523 group test"
             },
             {
                 "assignment_rule": "lkjlk:'FalconGroupingTags/example_tag'",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-07-27T14:02:05.538065349Z",
                 "description": "",
                 "group_type": "dynamic",
-                "id": "cefe41dfa96a4e60bb1f08b98e1ba232",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-07-27T14:02:05.538065349Z",
                 "name": "dynamic 1353 group test"
             },
             {
                 "assignment_rule": "tags:'FalconGroupingTags/example_tag'",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-07-27T12:41:33.127997409Z",
                 "description": "",
                 "group_type": "dynamic",
-                "id": "9e9c3cf9a9664d0c8c5c7d8b38546635",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-07-27T12:41:33.127997409Z",
                 "name": "dynamic 2 group test"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T14:35:23.7402217Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "f43a275267d74157bbb33bf69d640c4d",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T14:35:23.7402217Z",
                 "name": "fcm_default_instanceMon Aug 23 2021"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-11T09:55:23.801049103Z",
                 "description": "ilan test",
                 "group_type": "dynamic",
-                "id": "370322c647374bb298a6a14374bbdfd5",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-11T09:55:23.801049103Z",
                 "name": "ilan"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-12T11:24:51.434863056Z",
                 "description": "ilan test",
                 "group_type": "dynamic",
-                "id": "545f5d385b494f3ebf355adefed8ed4a",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-12T11:24:51.434863056Z",
                 "name": "ilan 2"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['FALCON-CROWDSTR']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-12T11:55:57.943490809Z",
                 "description": "ilan test",
                 "group_type": "dynamic",
-                "id": "d99b77530ef34a6a8718a60817d72a8f",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-12T11:55:57.943490809Z",
                 "name": "ilan 23"
             },
             {
                 "assignment_rule": "",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-17T11:28:39.855075106Z",
                 "description": "after change",
                 "group_type": "dynamic",
-                "id": "8a3c2cdeb7524a109bbb44f64b3da814",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T09:26:15.351650252Z",
                 "name": "ilan 2345"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-17T11:58:42.453661998Z",
                 "description": "ilan test",
                 "group_type": "static",
-                "id": "b1a0cd73ecab411581cbe467fc3319f5",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-17T11:58:42.453661998Z",
                 "name": "ilan 23e"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-11T13:54:59.695821727Z",
                 "description": "",
                 "group_type": "static",
-                "id": "d3fd5d87d317419db20f17dcf6f0d81e",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-11T13:54:59.695821727Z",
                 "name": "ilan test 2"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-12T10:56:49.2127345Z",
                 "description": "ilan test",
                 "group_type": "dynamic",
-                "id": "c2c49a308ed446589222b4e30131bee0",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-12T11:35:35.76509212Z",
                 "name": "ilan2"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T14:35:23.766284685Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "39def881ea5846f2a2f763bad8ee3468",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T14:35:23.766284685Z",
                 "name": "splunkMon Aug 23 2021"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:09:15.36414377Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "7fb5e2b9f1af477f985d4760a92affe4",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:09:15.36414377Z",
                 "name": "test_1629731353498"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:12:20.69203954Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "5a47bfc13dc34576a9ba7134744855a7",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:12:20.69203954Z",
                 "name": "test_1629731538458"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:14:20.650781714Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "be91aa4837614069a7452023f19164af",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:14:23.026511269Z",
                 "name": "test_16297316587261629731658726"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:18:53.896505566Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "f2f7132beb0743b4889921149a97ca6b",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:18:56.2598933Z",
                 "name": "test_16297319320381629731932038"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:19:51.91067257Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "055de83f2f704b5f85d7ddbc2a163697",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:19:54.269898808Z",
                 "name": "test_16297319902371629731990237"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:25:42.99601887Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "9b22f3c6b5864d17b54740a067a0ed17",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:25:42.99601887Z",
                 "name": "test_1629732339973"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:26:12.280379354Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "c929e5f5b5fd4b8ab71ceb4af853cbc0",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:26:14.973676462Z",
                 "name": "test_16297323698941629732369894"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:26:58.717706381Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "d9539d6a273b4f3dbfb1746e7e0c2ec6",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:27:01.648623079Z",
                 "name": "test_16297324168771629732416877"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:28:18.674512647Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "bc4572145fe148059d4a709206232dbc",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:28:21.781563212Z",
                 "name": "test_16297324965761629732496576"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['FALCON-CROWDSTR','INSTANCE-1','falcon-crowdstrike-sensor-centos7']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:31:41.142748214Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "af60190df8d4437c96ae8d1ef946f3cf",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:31:43.800147323Z",
                 "name": "test_16297326990981629732699098"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:34:20.195778795Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "b0fe6af9bad34688844daf3cec6acef0",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:34:23.212828317Z",
                 "name": "test_16297328579781629732857978"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:34:55.837119719Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "9dd1ecf3cdb540a48a82660be22f1039",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:34:58.490114093Z",
                 "name": "test_16297328938791629732893879"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-23T15:37:42.911344704Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "1bcd536b2b4545b9b9373aa29e8ee676",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-23T15:37:45.620464598Z",
                 "name": "test_16297330605301629733060530"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-24T07:05:55.813475476Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "9333f3df1b2b4905ae4abc532a438cdb",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-24T07:05:58.805702883Z",
                 "name": "test_16297887501421629788750142"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-24T07:07:30.422517324Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "d193ffdeac4f45afbdeb2f0b3ebcb78c",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-24T07:07:34.291988227Z",
                 "name": "test_16297888481381629788848138"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-24T08:03:15.522772079Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "ee2bbca82b44413dab8ddb112e34454a",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-24T08:03:18.622015517Z",
                 "name": "test_16297921932741629792193274"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:09:52.379925975Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "ba4f6fd641784dc787f4a19f0488e400",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:09:52.379925975Z",
                 "name": "test_1629967211800"
             },
             {
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T12:34:36.934507422Z",
                 "description": "description",
                 "group_type": "static",
-                "id": "beabe1b9a09d4591bff9d080a96e46e3",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T12:34:36.934507422Z",
                 "name": "test_162996721180000"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T08:46:09.996065663Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "a853d878f8e94093b42cd49e04e7f7f6",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T08:46:11.572092204Z",
                 "name": "test_16299675695531629967569553"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T08:53:15.35181954Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "95dd4fd340054a108e8363d2bf5d6e5e",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T08:53:17.041535905Z",
                 "name": "test_16299679949831629967994983"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T08:59:52.639696743Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "e512275c2dc1450ea6133d7c6e77cae5",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T08:59:54.538170036Z",
                 "name": "test_16299683923121629968392312"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:06:21.891707157Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "724cf2a7106241b4a3d4139d2a264f11",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:06:23.846219163Z",
                 "name": "test_16299687814871629968781487"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:12:53.982989Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "e8f2ec25841e4d93bb07dbe6aa326742",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:12:55.571265187Z",
                 "name": "test_16299691732871629969173287"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:17:58.206157753Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "25141ce104e445849d05a4149ea019ea",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:17:59.659515838Z",
                 "name": "test_16299694779051629969477905"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:19:23.276267291Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "09bfcc12e3b046ddaea45a5d216f9581",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:19:25.318976241Z",
                 "name": "test_16299695623981629969562398"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:26:22.538367707Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "62e4b5a4764e4313b540664b5be3fea2",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:26:25.085214782Z",
                 "name": "test_16299699813871629969981387"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:33:46.303790983Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "b214e5c58229462b96e580c5934c20db",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:33:48.288311235Z",
                 "name": "test_16299704254441629970425444"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T09:55:09.157561612Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "9a7291431c3046ccb7b750240f924854",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T09:55:10.741852436Z",
                 "name": "test_16299717065381629971706538"
             },
             {
                 "assignment_rule": "device_id:[''],hostname:['']",
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "created_timestamp": "2021-08-26T10:02:50.175530821Z",
                 "description": "description2",
                 "group_type": "static",
-                "id": "29ae859b9a01409d83bf7fb7f7a04c69",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "modified_timestamp": "2021-08-26T10:02:52.026307768Z",
                 "name": "test_16299721694081629972169408"
             }
@@ -3092,7 +3092,7 @@ List the available host groups.
 >### Results
 >|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
 >|---|---|---|---|---|---|---|---|---|
->| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:50.175530821Z | description2 | static | 29ae859b9a01409d83bf7fb7f7a04c69 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:52.026307768Z | test_16299721694081629972169408 |
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-26T10:02:50.175530821Z | description2 | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-26T10:02:52.026307768Z | test_16299721694081629972169408 |
 
 ### 42. cs-falcon-delete-host-groups
 ***
@@ -3114,12 +3114,12 @@ Delete the requested host groups.
 There is no context output for this command.
 
 #### Command Example
-```!cs-falcon-delete-host-groups host_group_id=29ae859b9a01409d83bf7fb7f7a04c69,9a7291431c3046ccb7b750240f924854```
+```!cs-falcon-delete-host-groups host_group_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
 #### Human Readable Output
 
->host group id 29ae859b9a01409d83bf7fb7f7a04c69 deleted successfully
->host group id 9a7291431c3046ccb7b750240f924854 deleted successfully
+>host group id a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 deleted successfully
+>host group id a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 deleted successfully
 
 
 ### 43. cs-falcon-search-custom-iocs
@@ -3170,12 +3170,12 @@ Returns a list of your uploaded IOCs that match the search criteria.
         "IOC": [
             {
                 "Action": "no_action",
-                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "CreatedTime": "2022-02-16T17:17:25.992164453Z",
                 "Description": "test",
                 "Expiration": "2022-02-17T13:47:57Z",
-                "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1",
-                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
                 "Platforms": [
                     "mac"
@@ -3187,12 +3187,12 @@ Returns a list of your uploaded IOCs that match the search criteria.
             },
             {
                 "Action": "no_action",
-                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "CreatedTime": "2022-02-16T17:16:44.514398876Z",
                 "Description": "test",
                 "Expiration": "2022-02-17T13:47:57Z",
-                "ID": "54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412",
-                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "ModifiedTime": "2022-02-16T17:16:44.514398876Z",
                 "Platforms": [
                     "mac"
@@ -3212,8 +3212,8 @@ Returns a list of your uploaded IOCs that match the search criteria.
 >### Indicators of Compromise
 >|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
->| 54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
 
 ### 44. cs-falcon-get-custom-ioc
 ***
@@ -3258,11 +3258,11 @@ Gets the full definition of one or more indicators that you are watching.
     "CrowdStrike": {
         "IOC": {
             "Action": "no_action",
-            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "CreatedTime": "2022-02-16T14:25:22.968603813Z",
             "Expiration": "2022-02-17T17:55:09Z",
-            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
-            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "ModifiedTime": "2022-02-16T14:25:22.968603813Z",
             "Platforms": [
                 "linux"
@@ -3285,7 +3285,7 @@ Gets the full definition of one or more indicators that you are watching.
 >### Indicator of Compromise
 >|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z |  | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
 
 ### 45. cs-falcon-upload-custom-ioc
 ***
@@ -3500,12 +3500,12 @@ Uploads a batch of indicators.
     "CrowdStrike": {
         "IOC": {
             "Action": "no_action",
-            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "CreatedTime": "2022-02-16T17:17:25.992164453Z",
             "Description": "test",
             "Expiration": "2022-02-17T13:47:57Z",
-            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
-            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
             "Platforms": [
                 "mac"
@@ -3524,7 +3524,7 @@ Uploads a batch of indicators.
 >### Custom IOC 1.1.8.9 was created successfully
 >|Action|CreatedBy|CreatedTime|Description|Expiration|ID|ModifiedBy|ModifiedTime|Platforms|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| no_action | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
+>| no_action | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
 
 ### 49. cs-falcon-rtr-kill-process
 
@@ -3553,7 +3553,7 @@ Execute an active responder kill command on a single host.
 
 #### Command example
 
-```!cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_ids=5260,123```
+```!cs-falcon-rtr-kill-process host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 process_ids=5260,123```
 
 #### Context Example
 
@@ -3564,12 +3564,12 @@ Execute an active responder kill command on a single host.
       "kill": [
         {
           "Error": "Cannot find a process with the process identifier 123.",
-          "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+          "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
           "ProcessID": "123"
         },
         {
           "Error": "Success",
-          "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+          "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
           "ProcessID": "5260"
         }
       ]
@@ -3580,7 +3580,7 @@ Execute an active responder kill command on a single host.
 
 #### Human Readable Output
 
-> ### CrowdStrike Falcon kill command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+> ### CrowdStrike Falcon kill command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:
 >|ProcessID|Error|
 >|---|---|
 >| 123 | Cannot find a process with the process identifier 123. |
@@ -3615,7 +3615,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 
 #### Command example
 
-```!cs-falcon-rtr-remove-file file_path="c:\\testfolder" host_ids=15dbb9d8f06b45fe9f61eb46e829d986 os=Windows```
+```!cs-falcon-rtr-remove-file file_path="c:\\testfolder" host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 os=Windows```
 
 #### Context Example
 
@@ -3625,7 +3625,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
     "Command": {
       "rm": {
         "Error": "Success",
-        "HostID": "15dbb9d8f06b45fe9f61eb46e829d986"
+        "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
       }
     }
   }
@@ -3637,7 +3637,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 > ### CrowdStrike Falcon rm over the file: c:\testfolder
 >|HostID|Error|
 >|---|---|
->| 15dbb9d8f06b45fe9f61eb46e829d986 | Success |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | Success |
 
 ### 51. cs-falcon-rtr-list-processes
 
@@ -3663,7 +3663,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 
 #### Command example
 
-```!cs-falcon-rtr-list-processes host_id=15dbb9d8f06b45fe9f61eb46e829d986```
+```!cs-falcon-rtr-list-processes host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
 #### Context Example
 
@@ -3672,18 +3672,18 @@ Executes an RTR active-responder ps command to get a list of active processes ac
   "CrowdStrike": {
     "Command": {
       "ps": {
-        "Filename": "ps-15dbb9d8f06b45fe9f61eb46e829d986"
+        "Filename": "ps-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
       }
     }
   },
   "File": {
     "EntryID": "1792@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
     "Info": "text/plain",
-    "MD5": "366bb9678c128d5091edfc1654b59efb",
-    "Name": "ps-15dbb9d8f06b45fe9f61eb46e829d986",
-    "SHA1": "73ee9b28b6705e0c818f3421d6220f2615919af3",
-    "SHA256": "a1fc102bd7c2f20eae6dc2060c615bffe8d88d255fb6df7a0ceacbb87e9f12cf",
-    "SHA512": "782f435f827fd1ebaf87a5536cc4cc51e28ed0bf4fcb5eb1dd957489bebebcb57fe01ea77bb31ea9e813b50fa7b2340d7813d7dfa18ca1c043f617dc9adf6871",
+    "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "Name": "ps-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a115919af3",
+    "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
     "SSDeep": "768:4jcAkTBaZ61QUEcDBdMoFwIxVvroYrohrbY2akHLnsa5fbqFEJtPNObzVj0ff+3K:4IraZ61QUEcDBdMoFwIxRJEbY2akHLnr",
     "Size": 30798,
     "Type": "ASCII text"
@@ -3693,7 +3693,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 
 #### Human Readable Output
 
-> ### CrowdStrike Falcon ps command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+> ### CrowdStrike Falcon ps command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:
 >|Stdout|
 >|---|
 >|TOO MUCH INFO TO DISPLAY|
@@ -3723,7 +3723,7 @@ host.
 
 #### Command example
 
-```!cs-falcon-rtr-list-network-stats host_id=15dbb9d8f06b45fe9f61eb46e829d986```
+```!cs-falcon-rtr-list-network-stats host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
 #### Context Example
 
@@ -3732,18 +3732,18 @@ host.
   "CrowdStrike": {
     "Command": {
       "netstat": {
-        "Filename": "netstat-15dbb9d8f06b45fe9f61eb46e829d986"
+        "Filename": "netstat-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
       }
     }
   },
   "File": {
     "EntryID": "1797@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
     "Info": "text/plain",
-    "MD5": "fb013c14d8562a9cb8722319399ff617",
-    "Name": "netstat-15dbb9d8f06b45fe9f61eb46e829d986",
-    "SHA1": "e140104e7739b1dc5fa4072088bfbe4a864ce595",
-    "SHA256": "418d920ff2b44de1efa6658bec8412cbccae52b2983976a2922690ab99ab74c6",
-    "SHA512": "3a57c5c673ee10fd01433a2888a69bc2989f6e060bccca81459275514e33edb4be2ac193131f736c719a2170cb1bc5a890e2563a61403e1b169692b448a76a48",
+    "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "Name": "netstat-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1864ce595",
+    "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
     "SSDeep": "48:XSvprPoeCfd8saowYL8zjt6yjjRchg24OI58RtTLvWptl6TtCla5n1lEtClMw/u:CRQeCxRmxVpIHUchCIvsCo",
     "Size": 4987,
     "Type": "ASCII text, with CRLF line terminators"
@@ -3753,7 +3753,7 @@ host.
 
 #### Human Readable Output
 
-> ### CrowdStrike Falcon netstat command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+> ### CrowdStrike Falcon netstat command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:
 >|Stdout|
 >|---|
 >|TOO MUCH INFO TO DISPLAY|
@@ -3782,7 +3782,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!cs-falcon-rtr-read-registry host_ids=15dbb9d8f06b45fe9f61eb46e829d986 registry_keys=`
+```!cs-falcon-rtr-read-registry host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 registry_keys=`
 HKEY_LOCAL_MACHINE,HKEY_USERS````
 
 #### Context Example
@@ -3793,11 +3793,11 @@ HKEY_LOCAL_MACHINE,HKEY_USERS````
     {
       "EntryID": "1806@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
       "Info": "text/plain",
-      "MD5": "df38aa69dd1f46299b82983d56255433",
-      "Name": "reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_USERS",
-      "SHA1": "4211347d6d1593593bb1a47925048ce439dd0333",
-      "SHA256": "9bbb0e60ae5fe3c59c1eea9f3c97ce424ab7f7c57c562255bfebdaa75e855c54",
-      "SHA512": "67569a073dfc7c6098c081256710d2e58b365a29428a1a276a890e6cf8d6a716a586983d1965e11979e6ed24e9b7aa74c61a5e5953e154c39555b883b6a0360f",
+      "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "Name": "reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_USERS",
+      "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a139dd0333",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "SSDeep": "12:uSn3PtdoI1pZI2WUNI2e6NI2vboI2vbP3I2zd:uSQIpZIII1aIUMIUjIcd",
       "Size": 656,
       "Type": "ASCII text, with CRLF, LF line terminators"
@@ -3805,11 +3805,11 @@ HKEY_LOCAL_MACHINE,HKEY_USERS````
     {
       "EntryID": "1807@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
       "Info": "text/plain",
-      "MD5": "ff089d21c7289844a93d6d7173db76d2",
-      "Name": "reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_LOCAL_MACHINE",
-      "SHA1": "a37c792a78872565b013c1b246fbe4d28e3b4919",
-      "SHA256": "ea50a7fc75e8d2579dd4a89701bdf8e2c1263ea56d85ea6a9c4c0828770184bc",
-      "SHA512": "826467ac3afae2ebaaa9ea53d7fd4fb26fdce5bf6dfb45f215bfbbee4b2b6faae0a4266c5994b47b1898c409a73d4344d5faad8057c3494eae2300b1d7803568",
+      "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "Name": "reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_LOCAL_MACHINE",
+      "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a18e3b4919",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "SSDeep": "6:zYuSugMQEYPtdWCMwdiwf2Jai2FU42DGE25/:zYuSnMQXPtd9/eJqy7yfh",
       "Size": 320,
       "Type": "ASCII text, with CRLF, LF line terminators"
@@ -3820,11 +3820,11 @@ HKEY_LOCAL_MACHINE,HKEY_USERS````
 
 #### Human Readable Output
 
-> ### CrowdStrike Falcon reg command on hosts ['15dbb9d8f06b45fe9f61eb46e829d986']:
+> ### CrowdStrike Falcon reg command on hosts ['a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1']:
 >|FileName| Stdout                    |
 >|---------------------------|---|
->| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_USERS | TOO MUCH INFO TO DISPLAY  |
->| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_LOCAL_MACHINE | TOO MUCH INFO TO DISPLAY  |
+>| reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_USERS | TOO MUCH INFO TO DISPLAY  |
+>| reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_LOCAL_MACHINE | TOO MUCH INFO TO DISPLAY  |
 
 ### 54. cs-falcon-rtr-list-scheduled-tasks
 
@@ -3849,7 +3849,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!cs-falcon-rtr-list-scheduled-tasks host_ids=15dbb9d8f06b45fe9f61eb46e829d986```
+```!cs-falcon-rtr-list-scheduled-tasks host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
 #### Context Example
 
@@ -3858,18 +3858,18 @@ There is no context output for this command.
   "CrowdStrike": {
     "Command": {
       "runscript": {
-        "Filename": "runscript-15dbb9d8f06b45fe9f61eb46e829d986"
+        "Filename": "runscript-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
       }
     }
   },
   "File": {
     "EntryID": "1812@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
     "Info": "text/plain",
-    "MD5": "d853562a2ca7f7ffe02be92542c6735b",
-    "Name": "runscript-15dbb9d8f06b45fe9f61eb46e829d986",
-    "SHA1": "ec16f99efa4d66157bc02c90fe92ae0cc589bf80",
-    "SHA256": "76c37df75416c65faf403faceb3fe0aa1d49890a38af37420c09fc7f006bd32a",
-    "SHA512": "6284197b398952b455f4243216e829cbe04cab2838aac2bc9464f3b7798ad37e1369767b8d772e58e45a2eda763a7880b22d999f8eec46ca2d9509690540a5ae",
+    "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "Name": "runscript-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1c589bf80",
+    "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
     "SSDeep": "3072:zjQ3/3YHGa8dbXbpbItbo4W444ibNb9MTf2Wat4cuuEqk4W4ybmF54c4eEEEjX6f:EXN8Nbw",
     "Size": 299252,
     "Type": "ASCII text"
@@ -3879,7 +3879,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-> ### CrowdStrike Falcon runscript command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+> ### CrowdStrike Falcon runscript command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:
 >| Stdout                    |
 ---------------------------|---|
 >| TOO MUCH INFO TO DISPLAY  |
@@ -3925,7 +3925,7 @@ Gets the RTR extracted file contents for the specified file path.
 
 #### Command example
 
-```!cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=15dbb9d8f06b45fe9f61eb46e829d986,046761c46ec84f40b27b6f79ce7cd32c```
+```!cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
 #### Human Readable Output
 
@@ -3955,17 +3955,17 @@ Gets the detections for a specific incident.
 | CrowdStrike.IncidentDetection.detection_ids | String | A list of detection ids connected to the incident. | 
 
 #### Command example
-```!cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593````
+```!cs-falcon-get-detections-for-incident incident_id=`inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1````
 #### Context Example
 ```json
 {
     "CrowdStrike": {
         "IncidentDetection": {
-            "behavior_id": "ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920",
+            "behavior_id": "ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920",
             "detection_ids": [
-                "ldt:0bde2c4645294245aca522971ccc44c4:38655034604"
+                "ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604"
             ],
-            "incident_id": "inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593"
+            "incident_id": "inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
         }
     }
 }
@@ -3976,10 +3976,10 @@ Gets the detections for a specific incident.
 >### Detection For Incident
 >|behavior_id|detection_ids|incident_id|
 >|---|---|---|
->| ind:0bde2c4645294245aca522971ccc44c4:162590282130-10303-6707968 | ldt:0bde2c4645294245aca522971ccc44c4:38656254663 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
->| ind:0bde2c4645294245aca522971ccc44c4:162596456872-10303-6710016 | ldt:0bde2c4645294245aca522971ccc44c4:38657629548 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
->| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
->| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162590282130-10303-6707968 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38656254663 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162596456872-10303-6710016 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38657629548 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162597577534-10305-6712576 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38658614774 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
 ### 17. cs-falcon-update-incident-comment
@@ -3998,7 +3998,7 @@ Updates CrowdStrike Incident with the comment.
 #### Context Output
 
 #### Command Example
-`cs-falcon-update-incident-comment ids=284771ee197e422d5176d6634a62b934 comment="Some comment"`
+`cs-falcon-update-incident-comment ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 comment="Some comment"`
 
 
 # Spotlight
@@ -4421,7 +4421,7 @@ Updates an ML exclusion. At least one argument is required in addition to the ID
 | CrowdStrike.MLExclusion.created_by | String | The date when the exclusion rule was created. | 
 
 #### Command example
-```!cs-falcon-update-ml-exclusion id=524fcaf1cbe93d09fffcf0737139896d comment=demo-comment```
+```!cs-falcon-update-ml-exclusion id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 comment=demo-comment```
 #### Context Example
 ```json
 {
@@ -4447,12 +4447,12 @@ Updates an ML exclusion. At least one argument is required in addition to the ID
                     "name": "Lab env"
                 }
             ],
-            "id": "524fcaf1cbe93d09fffcf0737139896d",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "last_modified": "2023-03-06T13:57:21.57829431Z",
             "modified_by": "api-client-id:123456",
             "regexp_value": "\\/demo",
             "value": "/demo",
-            "value_hash": "53a21a31163cea6582840a4862f776cf"
+            "value_hash": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
         }
     }
 }
@@ -4463,7 +4463,7 @@ Updates an ML exclusion. At least one argument is required in addition to the ID
 >### CrowdStrike Falcon machine learning exclusion
 >|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 524fcaf1cbe93d09fffcf0737139896d | /demo | \/demo | 53a21a31163cea6582840a4862f776cf | ***values***: extraction, blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:21.57829431Z | api-client-id:123456 | 2023-03-06T13:56:25.940685483Z | api-client-id:123456 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | /demo | \/demo | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | ***values***: extraction, blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:21.57829431Z | api-client-id:123456 | 2023-03-06T13:56:25.940685483Z | api-client-id:123456 |
 
 
 ### cs-falcon-delete-ml-exclusion
@@ -4999,3 +4999,4429 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The Quarantined File with IDs ['a123456_sha123456'] was successfully updated.
+### cs-falcon-ods-query-scan
+
+***
+Retrieve ODS scan details.
+
+#### Base Command
+
+`cs-falcon-ods-query-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Valid CS-Falcon-FQL filter to query with. | Optional | 
+| ids | Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments. | Optional | 
+| initiated_from | Comma-separated list of scan initiation sources to filter by. | Optional | 
+| status | Comma-separated list of scan statuses to filter by. | Optional | 
+| severity | Comma-separated list of scan severities to filter by. | Optional | 
+| scan_started_on | UTC-format time of scan start to filter by. | Optional | 
+| scan_completed_on | UTC-format time of scan start to filter by. | Optional | 
+| offset | Starting index of overall result set from which to return ids. | Optional | 
+| limit | Maximum number of resources to return. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.ODSScan.id | String | a unique identifier for the scan event. | 
+| CrowdStrike.ODSScan.cid | String | a unique identifier for the client that triggered the scan. | 
+| CrowdStrike.ODSScan.profile_id | String | a unique identifier for the scan profile used in the scan. | 
+| CrowdStrike.ODSScan.description | String | the ID of the description of the scan. | 
+| CrowdStrike.ODSScan.scan_inclusions | String | The files or folders included in the scan. | 
+| CrowdStrike.ODSScan.initiated_from | String | The source of the scan initiation. | 
+| CrowdStrike.ODSScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
+| CrowdStrike.ODSScan.preemption_priority | Number | The preemption priority for the scan. | 
+| CrowdStrike.ODSScan.metadata.host_id | String | A unique identifier for the host that was scanned. | 
+| CrowdStrike.ODSScan.metadata.host_scan_id | String | A unique identifier for the scan that was performed on the host. | 
+| CrowdStrike.ODSScan.metadata.scan_host_metadata_id | String | A unique identifier for the metadata associated with the host scan. | 
+| CrowdStrike.ODSScan.metadata.filecount.scanned | Number | The number of files that were scanned. | 
+| CrowdStrike.ODSScan.metadata.filecount.malicious | Number | The number of files that were identified as malicious. | 
+| CrowdStrike.ODSScan.metadata.filecount.quarantined | Number | The number of files that were quarantined. | 
+| CrowdStrike.ODSScan.metadata.filecount.skipped | Number | The number of files that were skipped during the scan. | 
+| CrowdStrike.ODSScan.metadata.filecount.traversed | Number | The number of files that were traversed during the scan. | 
+| CrowdStrike.ODSScan.metadata.status | String | The status of the scan on this host. \(e.q., "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.metadata.started_on | Date | The date and time that the scan started. | 
+| CrowdStrike.ODSScan.metadata.completed_on | Date | The date and time that the scan completed. | 
+| CrowdStrike.ODSScan.metadata.last_updated | Date | The date and time that the metadata was last updated. | 
+| CrowdStrike.ODSScan.status | String | The status of the scan. \(e.q., "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
+| CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
+| CrowdStrike.ODSScan.pause_duration | Number | The number of minutes to pause between scanning each file in hours. | 
+| CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in hours. | 
+| CrowdStrike.ODSScan.max_file_size | Number | The maximum file size \(in MB\) to scan. | 
+| CrowdStrike.ODSScan.sensor_ml_level_detection | Number | The level of detection sensitivity for the local sensor machine learning model. | 
+| CrowdStrike.ODSScan.sensor_ml_level_prevention | Number | The level of prevention sensitivity for the local sensor machine learning model. | 
+| CrowdStrike.ODSScan.cloud_ml_level_detection | Number | The level of detection sensitivity for the cloud machine learning model. | 
+| CrowdStrike.ODSScan.cloud_ml_level_prevention | Number | The level of prevention sensitivity for the cloud machine learning model. | 
+| CrowdStrike.ODSScan.policy_setting | Number | a list of policy setting IDs for the scan job \(these correspond to specific policy settings in the Falcon console\). | 
+| CrowdStrike.ODSScan.scan_started_on | Date | The timestamp when the scan was started. | 
+| CrowdStrike.ODSScan.scan_completed_on | Date | The timestamp when the scan was completed. | 
+| CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. | 
+| CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. | 
+| CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
+
+#### Command example
+```!cs-falcon-ods-query-scan```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "ODSScan": [
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-03-15T15:57:37.59543591Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "host_groups": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "cloud_scheduled",
+                "last_updated": "2023-04-05T02:23:10.316500752Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-15T16:02:20.845829991Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518464
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-15T16:02:20.845909034Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-15T15:57:37.59543591Z",
+                        "status": "completed"
+                    },
+                    {
+                        "filecount": {},
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-04-05T02:23:10.316500752Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "status": "failed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 15,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-15T15:57:37.59543591Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 4,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-03-13T14:47:18.32965729Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T16:38:26.312938637Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-13T14:50:26.259846586Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518511
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-13T14:50:26.259911476Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-13T14:47:44.674818897Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-13T14:50:26.259846586Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-13T14:47:44.674818897Z",
+                "sensor_ml_level_detection": 3,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-03-12T14:11:24.027721765Z",
+                "description": "desc",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T12:30:58.472528258Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-12T14:15:20.984032753Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518481
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-12T14:15:20.986833873Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-12T14:11:24.805466292Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-12T14:15:20.984032753Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-12T14:11:24.805466292Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-03-12T14:17:56.752827284Z",
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "cloud_adhoc",
+                "last_updated": "2023-04-05T12:25:24.330683524Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-12T14:21:05.762207432Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518481
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-12T14:21:05.76225248Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-12T14:18:14.009114761Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-12T14:21:05.762207432Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-12T14:18:14.009114761Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 1,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-03-12T14:34:59.454930793Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T12:27:33.014642857Z",
+                "max_duration": 24,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-12T14:37:53.171310445Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518481
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-12T14:37:53.29163927Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-12T14:35:00.865501243Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 0,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-12T14:37:53.171310445Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-12T14:35:00.865501243Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 3,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-03-12T14:37:53.669638248Z",
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "cloud_adhoc",
+                "last_updated": "2023-04-05T12:28:07.609159494Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-12T14:40:46.946583666Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518481
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-12T14:40:46.946620471Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-12T14:37:54.935871076Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-12T14:40:46.946583666Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-12T14:37:54.935871076Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-03-12T14:14:02.951708976Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T12:28:27.053998139Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-12T14:18:14.011702592Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518481
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-12T14:18:14.01175475Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-12T14:15:20.960068862Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-12T14:18:14.011702592Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-12T14:15:20.960068862Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-03-12T11:17:52.038334234Z",
+                "description": "scan 2",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T16:22:46.594910139Z",
+                "max_duration": 1,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "filecount": {},
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-04-05T16:22:46.594910139Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "status": "failed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_inclusions": [
+                    "*"
+                ],
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 3,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 4,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-03-13T09:59:37.049599586Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T16:45:35.573250305Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 17120
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-13T10:00:08.992003249Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-13T09:59:37.974507033Z",
+                        "status": "canceled"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-13T09:59:37.974507033Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-03-13T10:05:57.414861529Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T16:45:35.573250305Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-13T10:08:58.786187481Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518498
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-13T10:08:58.786255302Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-13T10:06:00.233484075Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-13T10:08:58.786187481Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-13T10:06:00.233484075Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_on": "2023-05-03T08:59:34.990464899Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\Bundlore\\Bundlore (Buca)\\Bundlore.dmg"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "endpoint_user",
+                "last_updated": "2023-05-03T08:59:35.242054606Z",
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:59:35.176166027Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 1,
+                            "traversed": 1
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:59:35.176241327Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:59:34.990464899Z",
+                        "status": "completed"
+                    }
+                ],
+                "policy_setting": [
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26456998543652,
+                    26456998543653,
+                    26456998543654,
+                    26456998543656,
+                    26456998543793,
+                    26456998543950,
+                    26456998543963,
+                    26456998544045
+                ],
+                "preemption_priority": 10,
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:59:35.176166027Z",
+                "scan_started_on": "2023-05-03T08:59:34.990464899Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 2,
+                "created_by": "ssokolovich@paloaltonetworks.com",
+                "created_on": "2023-05-03T08:15:30.635201485Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-03T08:18:35.786252371Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:18:35.556511376Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 2,
+                            "skipped": 15,
+                            "traversed": 524707
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:18:35.643840647Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:15:32.2508961Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:18:35.556511376Z",
+                "scan_inclusions": [
+                    "**\\Downloads\\**",
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\nc64.exe"
+                ],
+                "scan_started_on": "2023-05-03T08:15:32.2508961Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 2,
+                "created_by": "ssokolovich@paloaltonetworks.com",
+                "created_on": "2023-05-03T08:07:12.927675488Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-03T08:10:42.984761902Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:10:42.933994764Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 2,
+                            "skipped": 15,
+                            "traversed": 524707
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:10:42.934040069Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:07:14.380960165Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:10:42.933994764Z",
+                "scan_inclusions": [
+                    "*\\Users\\*\\Downloads\\**"
+                ],
+                "scan_started_on": "2023-05-03T08:07:14.380960165Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 2,
+                "created_by": "ssokolovich@paloaltonetworks.com",
+                "created_on": "2023-05-03T08:48:02.501694362Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-03T08:51:21.926342696Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:51:21.832148157Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 2,
+                            "skipped": 15,
+                            "traversed": 524688
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:51:21.832191944Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:48:03.780555592Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:51:21.832148157Z",
+                "scan_inclusions": [
+                    "**\\Downloads\\**"
+                ],
+                "scan_started_on": "2023-05-03T08:48:03.780555592Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_on": "2023-05-03T08:52:40.699880132Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\nc.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "endpoint_user",
+                "last_updated": "2023-05-03T08:52:41.294003403Z",
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:52:41.188303584Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 1,
+                            "skipped": 0,
+                            "traversed": 1
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:52:41.203956052Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:52:40.699880132Z",
+                        "status": "completed"
+                    }
+                ],
+                "policy_setting": [
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26456998543652,
+                    26456998543653,
+                    26456998543654,
+                    26456998543656,
+                    26456998543793,
+                    26456998543950,
+                    26456998543963,
+                    26456998544045
+                ],
+                "preemption_priority": 10,
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:52:41.188303584Z",
+                "scan_started_on": "2023-05-03T08:52:40.699880132Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_on": "2023-05-03T08:55:52.378940432Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\eicar_com.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "endpoint_user",
+                "last_updated": "2023-05-03T08:55:52.980440073Z",
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:55:52.937585067Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 1,
+                            "traversed": 1
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:55:52.937631808Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:55:52.378940432Z",
+                        "status": "completed"
+                    }
+                ],
+                "policy_setting": [
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26456998543652,
+                    26456998543653,
+                    26456998543654,
+                    26456998543656,
+                    26456998543793,
+                    26456998543950,
+                    26456998543963,
+                    26456998544045
+                ],
+                "preemption_priority": 10,
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:55:52.937585067Z",
+                "scan_started_on": "2023-05-03T08:55:52.378940432Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_on": "2023-05-03T08:35:38.266067826Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\nc.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "endpoint_user",
+                "last_updated": "2023-05-03T08:35:38.453066832Z",
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:35:38.377591708Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 1,
+                            "skipped": 0,
+                            "traversed": 1
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:35:38.397521129Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:35:38.266067826Z",
+                        "status": "completed"
+                    }
+                ],
+                "policy_setting": [
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26456998543652,
+                    26456998543653,
+                    26456998543654,
+                    26456998543656,
+                    26456998543793,
+                    26456998543950,
+                    26456998543963,
+                    26456998544045
+                ],
+                "preemption_priority": 10,
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:35:38.377591708Z",
+                "scan_started_on": "2023-05-03T08:35:38.266067826Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_on": "2023-05-03T08:37:23.872838644Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\eicar_com.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "endpoint_user",
+                "last_updated": "2023-05-03T08:37:24.324049696Z",
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:37:24.231065322Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 1,
+                            "traversed": 1
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:37:24.267043596Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:37:23.872838644Z",
+                        "status": "completed"
+                    }
+                ],
+                "policy_setting": [
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26456998543652,
+                    26456998543653,
+                    26456998543654,
+                    26456998543656,
+                    26456998543793,
+                    26456998543950,
+                    26456998543963,
+                    26456998544045
+                ],
+                "preemption_priority": 10,
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:37:24.231065322Z",
+                "scan_started_on": "2023-05-03T08:37:23.872838644Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_on": "2023-05-03T08:35:06.07325556Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\nc64.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "endpoint_user",
+                "last_updated": "2023-05-03T08:35:06.298791882Z",
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:35:06.233406943Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 1,
+                            "skipped": 0,
+                            "traversed": 1
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:35:06.233567627Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:35:06.07325556Z",
+                        "status": "completed"
+                    }
+                ],
+                "policy_setting": [
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26456998543652,
+                    26456998543653,
+                    26456998543654,
+                    26456998543656,
+                    26456998543793,
+                    26456998543950,
+                    26456998543963,
+                    26456998544045
+                ],
+                "preemption_priority": 10,
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:35:06.233406943Z",
+                "scan_started_on": "2023-05-03T08:35:06.07325556Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_on": "2023-05-03T08:36:24.242687872Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\eicar_com (1).zip"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "endpoint_user",
+                "last_updated": "2023-05-03T08:36:24.573327688Z",
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:36:24.504500933Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 1,
+                            "traversed": 1
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:36:24.807881351Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:36:24.242687872Z",
+                        "status": "completed"
+                    }
+                ],
+                "policy_setting": [
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26456998543652,
+                    26456998543653,
+                    26456998543654,
+                    26456998543656,
+                    26456998543793,
+                    26456998543950,
+                    26456998543963,
+                    26456998544045
+                ],
+                "preemption_priority": 10,
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:36:24.504500933Z",
+                "scan_started_on": "2023-05-03T08:36:24.242687872Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_by": "ssokolovich@paloaltonetworks.com",
+                "created_on": "2023-05-03T08:45:41.688556439Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\eicar_com.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-03T08:45:43.348230927Z",
+                "max_duration": 0,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:45:43.274953782Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 0
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:45:43.61797613Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:45:43.069273028Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675069,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936705,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675127,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675160,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675185,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675199,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26439818675207,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936763,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936796,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936821,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:45:43.274953782Z",
+                "scan_inclusions": [
+                    "**\\Downloads\\**"
+                ],
+                "scan_started_on": "2023-05-03T08:45:43.069273028Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-03-13T14:06:56.407253225Z",
+                "description": "scheduled 13.3",
+                "endpoint_notification": true,
+                "filecount": {},
+                "host_groups": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "cloud_scheduled",
+                "last_updated": "2023-03-21T09:27:37.601646718Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-13T14:09:04.7377423Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518499
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-13T14:09:04.73779404Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-13T14:06:56.407253225Z",
+                        "status": "completed"
+                    },
+                    {
+                        "filecount": {},
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-21T09:27:37.601646718Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "status": "failed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 15,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-13T14:06:56.407253225Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 3,
+                "cloud_ml_level_prevention": 3,
+                "cpu_priority": 4,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-03-12T14:54:43.659773852Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T16:56:14.972317443Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-12T14:57:37.338506965Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518485
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-12T14:57:37.338585331Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-12T14:54:45.210172175Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-12T14:57:37.338506965Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-12T14:54:45.210172175Z",
+                "sensor_ml_level_detection": 3,
+                "sensor_ml_level_prevention": 3,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-03-13T10:55:45.158535484Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T16:47:40.043479778Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-13T10:58:38.60733671Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518499
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-13T10:58:38.623578329Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-03-13T10:55:46.653143741Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-13T10:58:38.60733671Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-13T10:55:46.653143741Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "maizen@paloaltonetworks.com",
+                "created_on": "2023-02-27T09:51:33.028199819Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-05T17:32:13.349719687Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-02-27T10:11:01.671684323Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 26440,
+                            "skipped": 436989,
+                            "traversed": 463429
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-02-27T10:11:01.671731965Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-02-27T09:51:33.91608286Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-02-27T10:11:01.671684323Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-02-27T09:51:33.91608286Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-04-18T14:53:26.483145246Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-18T14:56:38.70208359Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-04-18T14:56:38.527255649Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524584
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-04-18T14:56:38.600126732Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-04-18T14:53:28.135747706Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-04-18T14:56:38.527255649Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-04-18T14:53:28.135747706Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-04-17T14:13:41.703236338Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-04-17T14:17:40.225867705Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-04-17T14:17:40.148325795Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524598
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-04-17T14:17:40.148453326Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-04-17T14:13:50.208645867Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-04-17T14:17:40.148325795Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-04-17T14:13:50.208645867Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-05-04T13:11:13.896496219Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-04T13:14:24.005843705Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-04T13:14:23.955571862Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524672
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-04T13:14:24.891486524Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-04T13:11:15.299994841Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-04T13:14:23.955571862Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-05-04T13:11:15.299994841Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-05-04T13:19:37.466878594Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-04T13:22:49.734806166Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-04T13:22:49.676185744Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524672
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-04T13:22:49.676235382Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-04T13:19:38.957611997Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 15,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-04T13:22:49.676185744Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-05-04T13:19:38.957611997Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-05-04T13:36:08.043444326Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-04T13:39:10.404678789Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-04T13:39:10.33051014Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524672
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-04T13:39:10.330561911Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-04T13:36:12.802090696Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 15,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-04T13:39:10.33051014Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-05-04T13:36:12.802090696Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-05-04T13:32:18.122280815Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-04T13:35:20.641405055Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-04T13:35:20.599105428Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524672
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-04T13:35:20.599178289Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-04T13:32:20.261810859Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 15,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-04T13:35:20.599105428Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-05-04T13:32:20.261810859Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 2,
+                "cloud_ml_level_prevention": 2,
+                "cpu_priority": 2,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-05-07T08:25:47.546660703Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-07T08:28:56.912966679Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-07T08:28:56.856506979Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524581
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-07T08:28:56.856575358Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-07T08:25:48.336234188Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 15,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675157,
+                    26439818675158,
+                    26439818675182,
+                    26439818675183,
+                    26439818675190,
+                    26439818675191,
+                    26439818675196,
+                    26439818675197,
+                    26439818675204,
+                    26439818675205,
+                    26405458936760,
+                    26405458936761,
+                    26405458936793,
+                    26405458936794,
+                    26405458936818,
+                    26405458936819,
+                    26405458936825,
+                    26405458936826,
+                    26405458936832,
+                    26405458936833,
+                    26405458936840,
+                    26405458936841,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-07T08:28:56.856506979Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-05-07T08:25:48.336234188Z",
+                "sensor_ml_level_detection": 2,
+                "sensor_ml_level_prevention": 2,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 3,
+                "cloud_ml_level_prevention": 3,
+                "cpu_priority": 1,
+                "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_on": "2023-05-07T14:41:28.801880427Z",
+                "description": "desc3456346",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-07T14:44:35.335712282Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-07T14:44:35.208913556Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 524579
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-07T14:44:35.259167508Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-07T14:41:30.290025282Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 15,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26439818675074,
+                    26405458936702,
+                    26405458936703,
+                    26405458936704,
+                    26405458936707,
+                    26439818675124,
+                    26439818675125,
+                    26439818675126,
+                    26439818675157,
+                    26439818675158,
+                    26439818675159,
+                    26439818675182,
+                    26439818675183,
+                    26439818675184,
+                    26439818675190,
+                    26439818675191,
+                    26439818675192,
+                    26439818675196,
+                    26439818675197,
+                    26439818675198,
+                    26439818675204,
+                    26439818675205,
+                    26439818675206,
+                    26405458936760,
+                    26405458936761,
+                    26405458936762,
+                    26405458936793,
+                    26405458936794,
+                    26405458936795,
+                    26405458936818,
+                    26405458936819,
+                    26405458936820,
+                    26405458936825,
+                    26405458936826,
+                    26405458936827,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-07T14:44:35.208913556Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-05-07T14:41:30.290025282Z",
+                "sensor_ml_level_detection": 3,
+                "sensor_ml_level_prevention": 3,
+                "status": "completed"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scans
+>|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
+>|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518464 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-03-15T15:57:37.59543591Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-03-13T14:47:44.674818897Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 | desc | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-12T14:15:20.984032753Z | 2023-03-12T14:11:24.805466292Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-12T14:21:05.762207432Z | 2023-03-12T14:18:14.009114761Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-12T14:37:53.171310445Z | 2023-03-12T14:35:00.865501243Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-12T14:40:46.946583666Z | 2023-03-12T14:37:54.935871076Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-12T14:18:14.011702592Z | 2023-03-12T14:15:20.960068862Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  |  | scan 2 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  |  | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 17120 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-03-13T09:59:37.974507033Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518498 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T10:08:58.786187481Z | 2023-03-13T10:06:00.233484075Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:59:35.176166027Z | 2023-05-03T08:59:34.990464899Z |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 2<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 15<br/>traversed: 524707 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:18:35.556511376Z | 2023-05-03T08:15:32.2508961Z | ssokolovich@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 2<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 15<br/>traversed: 524707 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:10:42.933994764Z | 2023-05-03T08:07:14.380960165Z | ssokolovich@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 2<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 15<br/>traversed: 524688 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:51:21.832148157Z | 2023-05-03T08:48:03.780555592Z | ssokolovich@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 1<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:52:41.188303584Z | 2023-05-03T08:52:40.699880132Z |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:55:52.937585067Z | 2023-05-03T08:55:52.378940432Z |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 1<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:35:38.377591708Z | 2023-05-03T08:35:38.266067826Z |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:37:24.231065322Z | 2023-05-03T08:37:23.872838644Z |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 1<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:35:06.233406943Z | 2023-05-03T08:35:06.07325556Z |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:36:24.504500933Z | 2023-05-03T08:36:24.242687872Z |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 0 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:45:43.274953782Z | 2023-05-03T08:45:43.069273028Z | ssokolovich@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518499 | scheduled 13.3 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-03-13T14:06:56.407253225Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518485 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-12T14:57:37.338506965Z | 2023-03-12T14:54:45.210172175Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518499 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T10:58:38.60733671Z | 2023-03-13T10:55:46.653143741Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 26440<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 436989<br/>traversed: 463429 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-02-27T10:11:01.671684323Z | 2023-02-27T09:51:33.91608286Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524584 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-04-18T14:56:38.527255649Z | 2023-04-18T14:53:28.135747706Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524598 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-04-17T14:17:40.148325795Z | 2023-04-17T14:13:50.208645867Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-04T13:14:23.955571862Z | 2023-05-04T13:11:15.299994841Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-04T13:22:49.676185744Z | 2023-05-04T13:19:38.957611997Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-04T13:39:10.33051014Z | 2023-05-04T13:36:12.802090696Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-04T13:35:20.599105428Z | 2023-05-04T13:32:20.261810859Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524581 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-07T08:28:56.856506979Z | 2023-05-07T08:25:48.336234188Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524579 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-07T14:44:35.208913556Z | 2023-05-07T14:41:30.290025282Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+
+### cs-falcon-ods-query-scheduled-scan
+
+***
+Retrieve ODS scheduled scan details.
+
+#### Base Command
+
+`cs-falcon-ods-query-scheduled-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Valid CS-Falcon-FQL filter to query with. | Optional | 
+| ids | Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments. | Optional | 
+| initiated_from | Comma-separated list of scan initiation sources to filter by. | Optional | 
+| status | Comma-separated list of scan statuses to filter by. | Optional | 
+| created_on | UTC-format time of scan creation to filter by. | Optional | 
+| created_by | UTC-format time of scan creator to filter by. | Optional | 
+| start_timestamp | UTC-format time of scan start to filter by. | Optional | 
+| deleted | Deleted scans only. | Optional | 
+| offset | Starting index of overall result set from which to return ids. | Optional | 
+| limit | Maximum number of resources to return. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.ODSScheduledScan.id | String | Unique identifier for the scan. | 
+| CrowdStrike.ODSScheduledScan.cid | String | Identifier for the customer or organization that owns the scan. | 
+| CrowdStrike.ODSScheduledScan.description | String | The ID of the description of the scan. | 
+| CrowdStrike.ODSScheduledScan.file_paths | String | The file or folder paths scanned. | 
+| CrowdStrike.ODSScheduledScan.scan_exclusions | String | The file or folder exclusions from the scan. | 
+| CrowdStrike.ODSScheduledScan.initiated_from | String | The source of the scan initiation. | 
+| CrowdStrike.ODSScheduledScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
+| CrowdStrike.ODSScheduledScan.preemption_priority | Number | The preemption priority for the scan. | 
+| CrowdStrike.ODSScheduledScan.status | String | The status of the scan, whether it's "scheduled", "running", "completed", etc. | 
+| CrowdStrike.ODSScheduledScan.host_groups | String | The host groups targeted by the scan. | 
+| CrowdStrike.ODSScheduledScan.endpoint_notification | Boolean | Whether notifications of the scan were sent to endpoints. | 
+| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of scan in hours. | 
+| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of scan in hours. | 
+| CrowdStrike.ODSScheduledScan.max_file_size | Number | The maximum file size that the scan can handle in MB. | 
+| CrowdStrike.ODSScheduledScan.sensor_ml_level_detection | Number | The machine learning detection level for the sensor. | 
+| CrowdStrike.ODSScheduledScan.cloud_ml_level_detection | Number | The machine learning detection level for the cloud. | 
+| CrowdStrike.ODSScheduledScan.schedule.start_timestamp | Date | The timestamp when the first scan was created. | 
+| CrowdStrike.ODSScheduledScan.schedule.interval | Number | The interval between scans. | 
+| CrowdStrike.ODSScheduledScan.created_on | Date | The timestamp when the scan was created. | 
+| CrowdStrike.ODSScheduledScan.created_by | String | The user who created the scan. | 
+| CrowdStrike.ODSScheduledScan.last_updated | Date | The timestamp when the scan was last updated. | 
+| CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan has been deleted. | 
+| CrowdStrike.ODSScheduledScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
+| CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
+| CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
+| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
+
+#### Command example
+```!cs-falcon-ods-query-scheduled-scan```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "ODSScheduledScan": {
+            "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 3,
+            "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_on": "2023-05-08T09:04:20.8414225Z",
+            "deleted": false,
+            "endpoint_notification": true,
+            "host_groups": [
+                "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+            ],
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "initiated_from": "cloud_scheduled",
+            "last_updated": "2023-05-08T09:22:48.408487143Z",
+            "max_duration": 2,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                    "last_updated": "2023-05-08T09:22:48.408487143Z"
+                }
+            ],
+            "pause_duration": 3,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26405458936707,
+                26439818675124,
+                26439818675125,
+                26439818675157,
+                26439818675158,
+                26439818675182,
+                26439818675183,
+                26439818675190,
+                26439818675191,
+                26439818675196,
+                26439818675197,
+                26439818675204,
+                26439818675205,
+                26405458936760,
+                26405458936761,
+                26405458936793,
+                26405458936794,
+                26405458936818,
+                26405458936819,
+                26405458936825,
+                26405458936826,
+                26405458936832,
+                26405458936833,
+                26405458936840,
+                26405458936841,
+                26456998543793,
+                26456998544045,
+                26456998543652,
+                26456998543653,
+                26456998543656,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 15,
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "schedule": {
+                "interval": 14,
+                "start_timestamp": "2023-05-20T06:49"
+            },
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "status": "scheduled"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scheduled Scans
+>|ID|Hosts targeted|Description|Host groups|Start time|Created by|
+>|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-20T06:49 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+
+### cs-falcon-ods-query-scan-host
+
+***
+Retrieve ODS scan host details.
+
+#### Base Command
+
+`cs-falcon-ods-query-scan-host`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Valid CS-Falcon-FQL filter to query with. | Optional | 
+| host_ids | Comma-separated list of host IDs to filter by. | Optional | 
+| scan_ids | Comma-separated list of scan IDs to filter by. | Optional | 
+| status | Comma-separated list of scan statuses to filter by. | Optional | 
+| started_on | UTC-format time of scan start to filter by. | Optional | 
+| completed_on | UTC-format time of scan completion to filter by. | Optional | 
+| offset | Starting index of overall result set from which to return ids. | Optional | 
+| limit | Maximum number of resources to return. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.ODSScanHost.id | String | a unique identifier for the scan event. | 
+| CrowdStrike.ODSScanHost.cid | String | a unique identifier for the client that triggered the scan. | 
+| CrowdStrike.ODSScanHost.scan_id | String | a unique identifier for the scan. | 
+| CrowdStrike.ODSScanHost.profile_id | String | a unique identifier for the scan profile used in the scan. | 
+| CrowdStrike.ODSScanHost.host_id | String | a unique identifier for the host that was scanned | 
+| CrowdStrike.ODSScanHost.host_scan_id | String | a unique identifier for the scan that was performed on the host. | 
+| CrowdStrike.ODSScanHost.filecount.scanned | Number | the number of files that were scanned during the scan. | 
+| CrowdStrike.ODSScanHost.filecount.malicious | Number | the number of files that were detected as malicious during the scan. | 
+| CrowdStrike.ODSScanHost.filecount.quarantined | Number | the number of files that were quarantined during the scan. | 
+| CrowdStrike.ODSScanHost.filecount.skipped | Number | the number of files that were skipped during the scan. | 
+| CrowdStrike.ODSScanHost.status | String | the status of the scan. \(e.g., "completed", "pending", "cancelled", "running", or "failed"\) | 
+| CrowdStrike.ODSScanHost.severity | Number | a severity score assigned to the scan, ranging from 0 to 100 | 
+| CrowdStrike.ODSScanHost.started_on | Date | the date and time when the scan was started. | 
+| CrowdStrike.ODSScanHost.completed_on | Date | the date and time when the scan was completed. | 
+| CrowdStrike.ODSScanHost.last_updated | Date | the date and time when the scan event was last updated. | 
+
+#### Command example
+```!cs-falcon-ods-query-scan-host```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "ODSScanHost": [
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "filecount": {},
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2022-11-27T17:15:50.056840267Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "status": "pending"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "filecount": {},
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-21T09:27:37.601646718Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-12T14:18:14.011702592Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518481
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-12T14:18:14.01175475Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-12T14:15:20.960068862Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-12T14:15:20.984032753Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518481
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-12T14:15:20.986833873Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-12T14:11:24.805466292Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-12T14:37:53.171310445Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518481
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-12T14:37:53.29163927Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-12T14:35:00.865501243Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-12T14:57:37.338506965Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518485
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-12T14:57:37.338585331Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-12T14:54:45.210172175Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-12T14:40:46.946583666Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518481
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-12T14:40:46.946620471Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-12T14:37:54.935871076Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-12T14:21:05.762207432Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518481
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-12T14:21:05.76225248Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-12T14:18:14.009114761Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-02-27T10:11:01.671684323Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 26440,
+                    "skipped": 436989,
+                    "traversed": 463429
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-02-27T10:11:01.671731965Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-02-27T09:51:33.91608286Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-15T16:02:20.845829991Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518464
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-15T16:02:20.845909034Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-15T15:57:37.59543591Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-13T14:09:04.7377423Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518499
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-13T14:09:04.73779404Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-13T14:06:56.407253225Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 17120
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-13T10:00:08.992003249Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-13T09:59:37.974507033Z",
+                "status": "canceled"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-13T10:08:58.786187481Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518498
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-13T10:08:58.786255302Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-13T10:06:00.233484075Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-13T14:50:26.259846586Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518511
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-13T14:50:26.259911476Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-13T14:47:44.674818897Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-03-13T10:58:38.60733671Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 518499
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-03-13T10:58:38.623578329Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-03-13T10:55:46.653143741Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "filecount": {},
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-04-05T16:22:46.594910139Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-04-18T14:56:38.527255649Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524584
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-04-18T14:56:38.600126732Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-04-18T14:53:28.135747706Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "filecount": {},
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-04-05T02:23:10.316500752Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "status": "failed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-04-17T14:17:40.148325795Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524598
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-04-17T14:17:40.148453326Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-04-17T14:13:50.208645867Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:18:35.556511376Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 2,
+                    "skipped": 15,
+                    "traversed": 524707
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:18:35.643840647Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:15:32.2508961Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:10:42.933994764Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 2,
+                    "skipped": 15,
+                    "traversed": 524707
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:10:42.934040069Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:07:14.380960165Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:35:06.233406943Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 1,
+                    "skipped": 0,
+                    "traversed": 1
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:35:06.233567627Z",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:35:06.07325556Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:35:38.377591708Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 1,
+                    "skipped": 0,
+                    "traversed": 1
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:35:38.397521129Z",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:35:38.266067826Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:45:43.274953782Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 0
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:45:43.61797613Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:45:43.069273028Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:59:35.176166027Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 1,
+                    "traversed": 1
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:59:35.176241327Z",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:59:34.990464899Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:51:21.832148157Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 2,
+                    "skipped": 15,
+                    "traversed": 524688
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:51:21.832191944Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:48:03.780555592Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:55:52.937585067Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 1,
+                    "traversed": 1
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:55:52.937631808Z",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:55:52.378940432Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:37:24.231065322Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 1,
+                    "traversed": 1
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:37:24.267043596Z",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:37:23.872838644Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:52:41.188303584Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 1,
+                    "skipped": 0,
+                    "traversed": 1
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:52:41.203956052Z",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:52:40.699880132Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-03T08:36:24.504500933Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 1,
+                    "traversed": 1
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-03T08:36:24.807881351Z",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-03T08:36:24.242687872Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-04T13:35:20.599105428Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524672
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-04T13:35:20.599178289Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-04T13:32:20.261810859Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-04T13:14:23.955571862Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524672
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-04T13:14:24.891486524Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-04T13:11:15.299994841Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-04T13:39:10.33051014Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524672
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-04T13:39:10.330561911Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-04T13:36:12.802090696Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-04T13:22:49.676185744Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524672
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-04T13:22:49.676235382Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-04T13:19:38.957611997Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-07T14:44:35.208913556Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524579
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-07T14:44:35.259167508Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-07T14:41:30.290025282Z",
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-07T08:28:56.856506979Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524581
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "last_updated": "2023-05-07T08:28:56.856575358Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-07T08:25:48.336234188Z",
+                "status": "completed"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scan Hosts
+>|ID|Scan ID|Host ID|Filecount|Status|Severity|Started on|
+>|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | pending |  |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | failed |  |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 | completed |  | 2023-03-12T14:15:20.960068862Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 | completed |  | 2023-03-12T14:11:24.805466292Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 | completed |  | 2023-03-12T14:35:00.865501243Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518485 | completed |  | 2023-03-12T14:54:45.210172175Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 | completed |  | 2023-03-12T14:37:54.935871076Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518481 | completed |  | 2023-03-12T14:18:14.009114761Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 26440<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 436989<br/>traversed: 463429 | completed |  | 2023-02-27T09:51:33.91608286Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518464 | completed |  | 2023-03-15T15:57:37.59543591Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518499 | completed |  | 2023-03-13T14:06:56.407253225Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 17120 | canceled |  | 2023-03-13T09:59:37.974507033Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518498 | completed |  | 2023-03-13T10:06:00.233484075Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 | completed |  | 2023-03-13T14:47:44.674818897Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518499 | completed |  | 2023-03-13T10:55:46.653143741Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | failed |  |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524584 | completed |  | 2023-04-18T14:53:28.135747706Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | failed |  |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524598 | completed |  | 2023-04-17T14:13:50.208645867Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 2<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 15<br/>traversed: 524707 | completed |  | 2023-05-03T08:15:32.2508961Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 2<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 15<br/>traversed: 524707 | completed |  | 2023-05-03T08:07:14.380960165Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 1<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 1 | completed |  | 2023-05-03T08:35:06.07325556Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 1<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 1 | completed |  | 2023-05-03T08:35:38.266067826Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 0 | completed |  | 2023-05-03T08:45:43.069273028Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 | completed |  | 2023-05-03T08:59:34.990464899Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 2<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 15<br/>traversed: 524688 | completed |  | 2023-05-03T08:48:03.780555592Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 | completed |  | 2023-05-03T08:55:52.378940432Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 | completed |  | 2023-05-03T08:37:23.872838644Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 1<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 1 | completed |  | 2023-05-03T08:52:40.699880132Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 1<br/>traversed: 1 | completed |  | 2023-05-03T08:36:24.242687872Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | completed |  | 2023-05-04T13:32:20.261810859Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | completed |  | 2023-05-04T13:11:15.299994841Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | completed |  | 2023-05-04T13:36:12.802090696Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524672 | completed |  | 2023-05-04T13:19:38.957611997Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524579 | completed |  | 2023-05-07T14:41:30.290025282Z |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524581 | completed |  | 2023-05-07T08:25:48.336234188Z |
+
+### cs-falcon-ods-query-malicious-files
+
+***
+Retrieve ODS malicious file details.
+
+#### Base Command
+
+`cs-falcon-ods-query-malicious-files`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Valid CS-Falcon-FQL filter to query with. | Optional | 
+| file_ids | Comma-separated list of malicious file IDs to retrieve details about. If set will override all other arguments. | Optional | 
+| host_ids | Comma-separated list of host IDs to filter by. | Optional | 
+| scan_ids | Comma-separated list of scan IDs to filter by. | Optional | 
+| file_paths | Comma-separated list of file paths to filter by. | Optional | 
+| file_names | Comma-separated list of file names to filter by. | Optional | 
+| hash | Comma-separated list of hashes to filter by. | Optional | 
+| offset | Starting index of overall result set from which to return ids. | Optional | 
+| limit | Maximum number of resources to return. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.ODSMaliciousFile.id | String | a unique identifier of the detection event. | 
+| CrowdStrike.ODSMaliciousFile.cid | String | a unique identifier for the client that triggered the detection event. | 
+| CrowdStrike.ODSMaliciousFile.scan_id | String | a unique identifier for the scan that triggered the detection event. | 
+| CrowdStrike.ODSMaliciousFile.host_id | String | a unique identifier for the scan that detected the file on the host. | 
+| CrowdStrike.ODSMaliciousFile.host_scan_id | String | a unique identifier for the scan that detected the file on the host. | 
+| CrowdStrike.ODSMaliciousFile.filepath | String | the full path to the malicious file on the host system. | 
+| CrowdStrike.ODSMaliciousFile.filename | String | the name of the malicious file. | 
+| CrowdStrike.ODSMaliciousFile.hash | String | a SHA-256 hash of the malicious file, which can be used to identify it. | 
+| CrowdStrike.ODSMaliciousFile.pattern_id | Number | the identifier of the pattern used to detect the malicious file. | 
+| CrowdStrike.ODSMaliciousFile.severity | Number | a severity score assigned to the detection event, ranging from 0 to 100. | 
+| CrowdStrike.ODSMaliciousFile.quarantined | Boolean | a Boolean value indicating whether the file has been quarantined. | 
+| CrowdStrike.ODSMaliciousFile.last_updated | Date | the date and time when the detection event was last updated. | 
+
+#### Command example
+```!cs-falcon-ods-query-malicious-files```
+#### Human Readable Output
+
+>No malicious files match the arguments/filter.
+### cs-falcon-ods-create-scan
+
+***
+Create an ODS scan.
+
+#### Base Command
+
+`cs-falcon-ods-create-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hosts | List of hosts to be scanned. "hosts" OR "host_groups" must be set. | Optional | 
+| host_groups | List of host groups to be scanned. Must be set if scan is scheduled. "hosts" OR "host_groups" must be set. | Optional | 
+| file_paths | List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_inclusions | List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_exclusions | List of excluded files or locations for this scan. | Optional | 
+| initiated_from | Scan origin. | Optional | 
+| cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. | Optional | 
+| description | Scan description. | Optional | 
+| quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
+| pause_duration | Amount of time (in seconds) for scan pauses. Default is 2. | Optional | 
+| sensor_ml_level_detection | Sensor ML detection level. | Optional | 
+| sensor_ml_level_prevention | Sensor ML prevention level. | Optional | 
+| cloud_ml_level_detection | ML Detection level for the scan. | Optional | 
+| cloud_ml_level_prevention | ML Prevention level for the scan. | Optional | 
+| max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
+| is_scheduled | If to make it a scheduled scan. Default is False. | Optional | 
+| schedule_start_timestamp | Time to start scan in yyyy-MM-ddThh:mm format. Must be set if scan is scheduled. | Optional | 
+| schedule_interval | Set the schedule interval. Must be set if scan is scheduled. Possible values are: never, daily, weekly, every other week, every 4 weeks, monthly. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.ODSScan.id | String | a unique identifier for the scan event. | 
+| CrowdStrike.ODSScan.cid | String | a unique identifier for the client that triggered the scan. | 
+| CrowdStrike.ODSScan.file_paths | String | The file or folder paths scanned. | 
+| CrowdStrike.ODSScan.profile_id | String | a unique identifier for the scan profile used in the scan. | 
+| CrowdStrike.ODSScan.description | String | the ID of the description of the scan. | 
+| CrowdStrike.ODSScan.scan_inclusions | String | The files or folders included in the scan. | 
+| CrowdStrike.ODSScan.initiated_from | String | The source of the scan initiation. | 
+| CrowdStrike.ODSScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
+| CrowdStrike.ODSScan.preemption_priority | Number | The preemption priority for the scan. | 
+| CrowdStrike.ODSScan.metadata.host_id | String | A unique identifier for the host that was scanned. | 
+| CrowdStrike.ODSScan.metadata.scan_host_metadata_id | String | A unique identifier for the metadata associated with the host scan. | 
+| CrowdStrike.ODSScan.metadata.filecount | Unknown | Placeholder key. | 
+| CrowdStrike.ODSScan.metadata.last_updated | Date | The date and time that the metadata was last updated. | 
+| CrowdStrike.ODSScan.status | String | The status of the scan. \(e.q., "scheduled", "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
+| CrowdStrike.ODSScan.host_groups | String | The host groups targeted by the scan. | 
+| CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
+| CrowdStrike.ODSScan.pause_duration | Number | The number of minutes to pause between scanning each file in hours. | 
+| CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in hours. | 
+| CrowdStrike.ODSScan.max_file_size | Number | The maximum file size \(in MB\) to scan. | 
+| CrowdStrike.ODSScan.sensor_ml_level_detection | Number | The level of detection sensitivity for the local sensor machine learning model. | 
+| CrowdStrike.ODSScan.sensor_ml_level_prevention | Number | The level of prevention sensitivity for the local sensor machine learning model. | 
+| CrowdStrike.ODSScan.cloud_ml_level_detection | Number | The level of detection sensitivity for the cloud machine learning model. | 
+| CrowdStrike.ODSScan.cloud_ml_level_prevention | Number | The level of prevention sensitivity for the cloud machine learning model. | 
+| CrowdStrike.ODSScan.policy_setting | Number | a list of policy setting IDs for the scan job \(these correspond to specific policy settings in the Falcon console\). | 
+| CrowdStrike.ODSScan.schedule.start_timestamp | Date | The timestamp when the first scan was created. | 
+| CrowdStrike.ODSScan.schedule.interval | Number | The interval between scans. | 
+| CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. | 
+| CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. | 
+| CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
+
+#### Command example
+```!cs-falcon-ods-create-scan cpu_priority=Low scan_inclusions=* host_groups=111111111111111 is_scheduled=true pause_duration=3 quarantine=true schedule_start_timestamp=2023-05-06T06:49 schedule_interval="every other week"```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "ODSScan": {
+            "cid": "111111111111111",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 2,
+            "created_by": "111111111111111",
+            "created_on": "2023-05-08T09:30:51.913654051Z",
+            "deleted": false,
+            "endpoint_notification": true,
+            "host_groups": [
+                "111111111111111"
+            ],
+            "id": "111111111111111",
+            "initiated_from": "cloud_scheduled",
+            "last_updated": "2023-05-08T09:30:51.913654051Z",
+            "max_duration": 2,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "host_id": "111111111111111",
+                    "last_updated": "2023-05-08T09:30:51.913654051Z"
+                }
+            ],
+            "pause_duration": 3,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26405458936707,
+                26439818675124,
+                26439818675125,
+                26439818675157,
+                26439818675158,
+                26439818675182,
+                26439818675183,
+                26439818675190,
+                26439818675191,
+                26439818675196,
+                26439818675197,
+                26439818675204,
+                26439818675205,
+                26405458936760,
+                26405458936761,
+                26405458936793,
+                26405458936794,
+                26405458936818,
+                26405458936819,
+                26405458936825,
+                26405458936826,
+                26405458936832,
+                26405458936833,
+                26405458936840,
+                26405458936841,
+                26456998543793,
+                26456998544045,
+                26456998543652,
+                26456998543653,
+                26456998543656,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 15,
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "schedule": {
+                "interval": 14,
+                "start_timestamp": "2023-05-06T06:49"
+            },
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "status": "scheduled"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Scheduled Scan Created
+>ID: 111111111111111
+### cs-falcon-ods-delete-scheduled-scan
+
+***
+Delete ODS scheduled scans.
+
+#### Base Command
+
+`cs-falcon-ods-delete-scheduled-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Comma-separated list of scheduled scan IDs to delete. | Optional | 
+| filter | Valid CS-Falcon-FQL filter to delete scans by. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cs-falcon-ods-delete-scheduled-scan ids=111111111111111```
+#### Human Readable Output
+
+>### Deleted Scans:
+>|Scan ID|
+>|---|
+>| 111111111111111 |
+

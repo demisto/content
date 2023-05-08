@@ -4817,7 +4817,7 @@ def test_map_scan_resource_to_UI(mocker):
         'Status': "failed",
         'Severity': None,
         'Description': "desc3456346",
-        'File Count': ' scanned: 0\n malicious: 0\n quarantined: 0\n skipped: 0\n traversed: 518464\n-\n scanned: 0\n malicious: 0\n quarantined: 0\n skipped: 0\n traversed: 209',
+        'File Count': 'scanned: 0\nmalicious: 0\nquarantined: 0\nskipped: 0\ntraversed: 518464\n-\nscanned: 0\nmalicious: 0\nquarantined: 0\nskipped: 0\ntraversed: 209',
         'Hosts/Host groups': [
             "7471ba0636b34cbb8c65fae7979a6a9b"
         ],
