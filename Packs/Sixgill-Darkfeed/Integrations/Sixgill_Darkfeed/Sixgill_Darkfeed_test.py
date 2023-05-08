@@ -566,7 +566,6 @@ def test_test_module_command(mocker):
 
 def test_filter_confidence(mocker):
     from Sixgill_Darkfeed import filter_confidence
-    
     assert True is filter_confidence('all', {"sixgill_confidence": 80})
     assert True is filter_confidence(60, {"sixgill_confidence": 80})
     assert True is filter_confidence(80, {"sixgill_confidence": 80})
