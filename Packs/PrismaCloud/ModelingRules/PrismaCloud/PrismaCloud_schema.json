@@ -103,6 +103,10 @@
         "isSuccess": {
             "type": "boolean",
             "is_array": false
-        }                                                                                                                
+        },
+        "userIdentity": {
+            "type": "string",
+            "is_array": false
+        }                                                                                                              
    }
 }
