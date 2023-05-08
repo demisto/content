@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import CommonServerPython
 from DeleteReportedEmail import *
 import DeleteReportedEmail
@@ -259,8 +261,17 @@ def test_search_args(mocker, brand):
     current_search_args.update(ADDED_SEARCH_ARGS.get(brand, {}))
     assert get_search_args({}) == current_search_args
 
-    # Test missing message id
-    INCIDENT_INFO['CustomFields'].pop("reportedemailmessageid")
+    # Test missing message id exception
+    incident_info_copy = deepcopy(INCIDENT_INFO)
+    mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
+    incident_info_copy['CustomFields'].pop("reportedemailmessageid")
+    with pytest.raises(ValueError):
+        get_search_args({})
+
+    # Test missing user id exception
+    incident_info_copy = deepcopy(INCIDENT_INFO)
+    mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
+    incident_info_copy['CustomFields'].pop("reportedemailto")
     with pytest.raises(ValueError):
         get_search_args({})
 

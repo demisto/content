@@ -290,7 +290,10 @@ def get_search_args(args: dict):
     delete_from_brand = delete_from_brand_handler(incident_info, args)
 
     if not message_id:
-        raise ValueError("Message ID ('reportedemailmessageid') is missing from the incident's custom fields.")
+        raise ValueError("Message ID ('reportedemailmessageid') of the original email could not be found.")
+
+    if not user_id:
+        raise ValueError("User ID ('reportedemailto') of the original email could not be found.")
 
     search_args = {
         'delete-type': delete_type,
