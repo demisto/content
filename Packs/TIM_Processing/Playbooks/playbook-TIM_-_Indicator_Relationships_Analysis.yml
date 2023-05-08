@@ -809,16 +809,6 @@ tasks:
             value:
               complex:
                 root: Relationships
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Relationships.EntityA
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.Indicator
-                      iscontext: true
                 accessor: EntityBType
             iscontext: true
           right:
@@ -872,15 +862,6 @@ tasks:
                 value:
                   simple: attack pattern
               ignorecase: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Relationships.EntityA
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.Indicator
-                iscontext: true
           accessor: EntityB
           transformers:
           - operator: uniq
