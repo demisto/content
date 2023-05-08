@@ -2206,6 +2206,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     bcc = get_none_empty_addresses(argToList(bcc))
     cc = get_none_empty_addresses(argToList(cc))
     to = get_none_empty_addresses(argToList(to))
+    render_body = argToBoolean(renderBody)
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
@@ -2228,12 +2229,12 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sent email', result_object),
     }]
-    if renderBody:
-        results.append(CommandResults(
-            entry_type=EntryType.NOTE,
-            content_format=EntryFormat.HTML,
-            raw_response=htmlBody,
-        ))
+    if render_body:
+        results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['html'],
+            'Contents': htmlBody
+        })
 
     return results
 
