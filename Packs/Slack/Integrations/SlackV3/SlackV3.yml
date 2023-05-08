@@ -53,6 +53,8 @@ configuration:
   - taskCompleted
   - incidentStatusChanged
   - failedFetchIncidents
+  - mentionNew
+  - mentionOld
   section: Collect
   advanced: true
   additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
