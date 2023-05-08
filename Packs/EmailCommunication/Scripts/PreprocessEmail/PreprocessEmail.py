@@ -417,8 +417,8 @@ def main():
         if incident_details['type'] == 'Email Communication':
             # Add new email message as Entry if type is 'Email Communication'
             demisto.debug(
-                f"Incoming email related to Email Communication Incident"
-                f" {email_related_incident}. Appending message there.")
+                "Incoming email related to Email Communication Incident"
+                f" {email_related_incident}. Appending a message there.")
             email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
             add_entries(email_reply, email_related_incident)
         else:
@@ -435,7 +435,7 @@ def main():
         if type(e).__name__ == 'IndexError':
             demisto.debug('No related incident was found. A new incident was created.')
         else:
-            demisto.debug(f"A new incident was created. Reason: \n {e}")
+            demisto.debug(f"A new incident was created. Reason:\n {e}")
 
         if create_incidents_untagged:
             # Return False - tell pre-processing not to create a new incident.
