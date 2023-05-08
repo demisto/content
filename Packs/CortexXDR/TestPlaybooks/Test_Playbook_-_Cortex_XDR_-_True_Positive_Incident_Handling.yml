@@ -556,10 +556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "262":
     id: "262"
-    taskid: d5355634-b6b2-49a8-87b6-74a07c4cf887
+    taskid: 61611644-57d7-4412-8d7f-94b7f4528d99
     type: regular
     task:
-      id: d5355634-b6b2-49a8-87b6-74a07c4cf887
+      id: 61611644-57d7-4412-8d7f-94b7f4528d99
       version: -1
       name: Set playbook for new incident
       description: commands.local.cmd.set.playbook
@@ -575,7 +575,7 @@ tasks:
         complex:
           root: CreatedIncidentID
       name:
-        simple: Cortex XDR - True Positive Incident Handling
+        simple: Test Playbook - Cortex XDR - True Positive Incident Handling
     separatecontext: false
     continueonerrortype: ""
     view: |-
