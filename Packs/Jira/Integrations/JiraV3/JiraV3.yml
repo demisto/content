@@ -12,12 +12,12 @@ configuration:
   defaultvalue: https://api.atlassian.com/ex/jira
   type: 0
   required: true
-  additionalinfo: The base URL. For cloud instance, please use the default URL as configured, for on-prem instance, use your respective domain.
+  additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
 - name: cloud_id
   display: Cloud ID
   hint: 11223344-a1b2-3b33-c444-def123456789
   type: 0
-  additionalinfo: This field is used to configure JIRA Cloud only.
+  additionalinfo: This field is used to configure the Jira Cloud.
 - name: callback_url
   display: Callback URL
   hint: https://www.callback.com
@@ -111,7 +111,7 @@ configuration:
   name: comment_tag_to_jira
   required: false
   type: 0
-- additionalinfo: Add this tag to an entry to mirror it as a comment from Jira..
+- additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
   hidden: false
@@ -154,28 +154,31 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Download attachments for a specific issue (Will download a file to war room).
+    description: Download attachments for a specific issue (Will download a file to War Room).
     execution: false
     name: jira-issue-get-attachment
     outputs:
-    - contextPath: File.Name
-      description: FileName
+    - contextPath: InfoFile.Name
+      description: The file name.
       type: String
-    - contextPath: File.EntryID
-      description: The EntryID of the report
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the file in the War Room.
       type: String
-    - contextPath: File.Size
-      description: File Size
+    - contextPath: InfoFile.Size
+      description: The size of the file (in bytes).
       type: Number
-    - contextPath: File.Type
-      description: File type e.g. "PE"
+    - contextPath: InfoFile.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
-    - contextPath: File.Info
-      description: Basic information of the file
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
       type: String
   - arguments:
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueIdOrKey
       hidden: true
@@ -242,15 +245,15 @@ script:
         type: String
   - arguments:
     - default: false
-      description: Please use global_id.
+      description: Deprecated. Please use global_id.
       isArray: false
       name: globalId
       required: false
       hidden: true
       secret: false
     - default: false
-      description: If a global_id is provided and a remote issue link exists with
-        that global_id, the remote issue link is updated.
+      description: If the global ID is provided and a remote issue link exists with
+        that global ID, the remote issue link is updated.
       isArray: false
       name: global_id
       required: false
@@ -280,7 +283,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueId
       required: false
@@ -305,7 +308,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use application_type.
+      description: Deprecated. Please use application_type.
       isArray: false
       name: applicationType
       required: false
@@ -319,7 +322,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use application_name.
+      description: Deprecated. Please use application_name.
       isArray: false
       name: applicationName
       required: false
@@ -388,7 +391,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use max_results.
+      description: Deprecated. Please use max_results.
       isArray: false
       name: maxResults
       hidden: true
@@ -403,12 +406,12 @@ script:
     - default: false
       description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will
         return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
-      isArray: false
+      isArray: true
       name:  fields
       required: false
       secret: false
     - default: false
-      description: Please use fields.
+      description: Deprecated. Please use fields.
       isArray: false
       name:  extraFields
       hidden: true
@@ -474,7 +477,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueId
       required: false
@@ -510,7 +513,7 @@ script:
     name: jira-issue-add-comment
   - arguments:
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueId
       required: false
@@ -542,7 +545,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use attachment_name.
+      description: Deprecated. Please use attachment_name.
       isArray: false
       name: attachmentName
       required: false
@@ -554,7 +557,7 @@ script:
     name: jira-issue-upload-file
   - arguments:
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueId
       required: false
@@ -618,7 +621,7 @@ script:
       - 'append'
       - 'rewrite'
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueId
       required: false
@@ -644,7 +647,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use issue_json.
+      description: Deprecated. Please use issue_json.
       isArray: false
       name: issueJson
       required: false
@@ -664,7 +667,7 @@ script:
       secret: false
     - default: false
       description: A CSV list of labels.
-      isArray: false
+      isArray: true
       name: labels
       required: false
       secret: false
@@ -681,7 +684,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use due_date.
+      description: Deprecated. Please use due_date.
       isArray: false
       name: dueDate
       required: false
@@ -689,13 +692,14 @@ script:
       secret: false
     - default: false
       description: The name of the assignee. Relevant for Jira Server only. If you
-        are using Jira Cloud, provide the assignee_id argument instead.
+        are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute
+        command to get the user's name.
       isArray: false
       name: assignee
       required: false
       secret: false
     - default: false
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+      description: The account Id of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
         command to get the user's account ID.
       isArray: false
       name: assignee_id
@@ -708,7 +712,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The issue transition (Either choose the issue status or transition, but not both)..
+      description: The issue transition (Either choose the issue status or transition, but not both).
       isArray: false
       name: transition
       required: false
@@ -788,7 +792,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use issue_json.
+      description: Deprecated. Please use issue_json.
       isArray: false
       name: issueJson
       required: false
@@ -807,7 +811,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use project_key.
+      description: Deprecated. Please use project_key.
       isArray: false
       name: projectKey
       required: false
@@ -820,7 +824,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use issue_type_name.
+      description: Deprecated. Please use issue_type_name.
       isArray: false
       name: issueTypeName
       required: false
@@ -833,7 +837,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use issue_type_id.
+      description: Deprecated. Please use issue_type_id.
       isArray: false
       name: issueTypeId
       required: false
@@ -846,7 +850,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use project_name.
+      description: Deprecated. Please use project_name.
       isArray: false
       name: projectName
       required: false
@@ -860,7 +864,7 @@ script:
       secret: false
     - default: false
       description: A CSV list of labels.
-      isArray: false
+      isArray: true
       name: labels
       required: false
       secret: false
@@ -877,7 +881,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use due_date.
+      description: Deprecated. Please use due_date.
       isArray: false
       name: dueDate
       required: false
@@ -885,27 +889,29 @@ script:
       secret: false
     - default: false
       description: The name of the assignee. Relevant for Jira Server only. If you
-        are using Jira Cloud, provide the assignee_id argument instead.
+        are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute
+        command to get the user's name.
       isArray: false
       name: assignee
       required: false
       secret: false
     - default: false
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+      description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
         command to get the user's account ID.
       isArray: false
       name: assignee_id
       required: false
       secret: false
     - default: false
-      description: The account ID of the reporter. Use the jira-get-id-by-attribute
+      description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
         command to get the user's account ID.
       isArray: false
       name: reporter_id
       required: false
       secret: false
     - default: false
-      description: The name of the of the reporter. Please use reporter_id for Jira Cloud.
+      description: The name of the of the reporter. Relevant for Jira Server only. Please use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute
+        command to get the user's name.
       isArray: false
       name: reporter
       required: false
@@ -917,7 +923,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use parent_issue_key.
+      description: Deprecated. Please use parent_issue_key.
       isArray: false
       name: parentIssueKey
       required: false
@@ -930,7 +936,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please use parent_issue_id.
+      description: Deprecated. Please use parent_issue_id.
       isArray: false
       name: parentIssueId
       required: false
@@ -950,7 +956,7 @@ script:
       secret: false
     - default: false
       description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem
-        instance, then the entered components must already exist.
+        instance, the entered components must already exist.
       isArray: true
       name: components
       required: false
@@ -970,12 +976,12 @@ script:
     - default: false
       description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will
         return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
-      isArray: false
+      isArray: true
       name:  fields
       required: false
       secret: false
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueId
       hidden: true
@@ -1013,7 +1019,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Please use get_attachments.
+      description: Deprecated. Please use get_attachments.
       isArray: false
       name: getAttachments
       predefined:
@@ -1025,7 +1031,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: If "true", expands the issue links (The Linked issues and Subtasks).
+      description: If "true", expands the issue links (the linked issues and subtasks).
       isArray: false
       name: expand_links
       predefined:
@@ -1036,7 +1042,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Please use expand_links.
+      description: Deprecated. Please use expand_links.
       isArray: false
       name: expandLinks
       predefined:
@@ -1132,7 +1138,7 @@ script:
       secret: false
       defaultValue: '50'
     - default: false
-      description: Please use issue_id or issue_key.
+      description: Deprecated. Please use issue_id or issue_key.
       isArray: false
       name: issueId
       required: false
@@ -1193,7 +1199,7 @@ script:
     name: jira-oauth-complete
   - deprecated: false
     description: "Use this command to start the authorization process. In order to authorize the instance, first run the command,
-                  and complete the process in the URL that is returned, after that, you will be redirected
+                  and complete the process in the URL that is returned. You will then be redirected
                   to the callback URL where you will copy the authorization code found in the query parameter
                   `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish
                   the process."
@@ -1279,19 +1285,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false
@@ -1402,7 +1408,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The board ID, can be only used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the
+      description: The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the
                   boards' ID.
       isArray: false
       name: board_id
@@ -1451,7 +1457,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Moves issues from backlog to board, the command does not work with boards with sprints. At most 50 issues may be moved at once. This command is only supported for Jira Cloud instance.
+    description: Moves issues from backlog to board, the command does not work with boards with sprints. At most 50 issues may be moved at once. This command is only supported for Jira Cloud instances.
     execution: false
     name: jira-issue-to-board
   - arguments:
@@ -1485,19 +1491,19 @@ script:
       - 'kanban'
       - 'simple'
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false
@@ -1521,7 +1527,7 @@ script:
       description: The type the board.
       type: String
     - contextPath: Jira.Board.admins
-      description: The type the board.
+      description: The administrators of the board.
       type: Object
     - contextPath: Jira.Board.admins.users
       description: The users who own the board.
@@ -1548,7 +1554,7 @@ script:
       description: The name of the group.
       type: String
     - contextPath: Jira.Board.admins.groups.self
-      description: The url of the group.
+      description: The URL of the group.
       type: String
     - contextPath: Jira.Board.location
       description: The container that the board is located in.
@@ -1572,13 +1578,13 @@ script:
       description: The project key.
       type: String
     - contextPath: Jira.Board.location.projectTypeKey
-      description: Add description.
+      description: The type of the project.
       type: String
     - contextPath: Jira.Board.location.avatarURI
-      description: Add description.
+      description: The avatar of the project.
       type: String
     - contextPath: Jira.Board.location.name
-      description: Add description.
+      description: The name of the project.
       type: String
     - contextPath: Jira.Board.canEdit
       description: Whether the board can be edited.
@@ -1603,25 +1609,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: Get issues from backlog of specific board. For Jira OnPrem, the board must be of type scrum.
+    description: Get issues from the backlog of a specific board. For Jira OnPrem, the board must be of type scrum.
     execution: false
     name: jira-board-backlog-list
     outputs:
@@ -1678,25 +1684,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: Get all issues from a specific board
+    description: Get all issues from a specific board.
     execution: false
     name: jira-board-issue-list
     outputs:
@@ -1747,19 +1753,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false
@@ -1779,7 +1785,7 @@ script:
       description: The ID of the sprint.
       type: Number
     - contextPath: Jira.BoardSprint.Sprints.self
-      description: The url of the sprint.
+      description: The URL of the sprint.
       type: String
     - contextPath: Jira.BoardSprint.Sprints.state
       description: The state of the sprint.
@@ -1821,19 +1827,19 @@ script:
       - 'false'
       - 'true'
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false
@@ -1856,7 +1862,7 @@ script:
       description: The key of the epic.
       type: String
     - contextPath: Jira.BoardEpic.Epics.self
-      description: The url of the epic.
+      description: The URL of the epic.
       type: String
     - contextPath: Jira.BoardEpic.Epics.name
       description: The name of the epic.
@@ -1893,19 +1899,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false
@@ -2006,19 +2012,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50
+      description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The page number. Default value is 0
+      description: The page number. Default value is 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page. Default value is 50
+      description: The number of requested results per page. Default value is 50.
       isArray: false
       name: page_size
       required: false

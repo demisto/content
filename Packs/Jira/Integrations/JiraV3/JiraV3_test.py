@@ -40,6 +40,10 @@ def jira_onprem_client_mock() -> JiraOnPremClient:
                             server_url='dummy_server_url')
 
 
+def test_v2_args_to_v3():
+    ...
+
+
 # Helper functions unit tests
 ADF_TEXT_CASES = [
     ('Hello there', {
@@ -1912,29 +1916,39 @@ class TestJiraFetchIncidents:
                              'updated_date': '2023-12-12 22:09'}
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
-    # def test_create_incident_from_issue(self, mocker):
-    #     from JiraV3 import fetch_incidents
-    #     query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
-    #     client = jira_base_client_mock()
-    #     mocker.patch.object(client, 'run_query', return_value=query_raw_response)
-    #     mocker.patch('JiraV3.get_fetched_attachments', return_value=[{'FileID': '1'}, {'FileID': '2'}])
-    #     comments_entries = [
-    #         {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
-    #          'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'}]
-    #     mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
-    #     incidents = fetch_incidents(
-    #         client=client,
-    #         issue_field_to_fetch_from='updated date',
-    #         fetch_query='status!=done',
-    #         id_offset=1234,
-    #         fetch_attachments=True,
-    #         fetch_comments=True,
-    #         max_fetch_incidents=3,
-    #         first_fetch_interval='3 days',
-    #         mirror_direction='Incoming And Outgoing',
-    #         comment_tag_to_jira='comment_tag_to_jira',
-    #         comment_tag_from_jira='comment_tag_from_jira',
-    #         attachment_tag_to_jira='attachment_tag_to_jira',
-    #         attachment_tag_from_jira='attachment_tag_from_jira'
-    #     )
-    #     x = 0
+    def test_create_incident_from_issue(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - Fetching incidents
+        Then
+            - Validate that the correct value of the rawJSON key is returned, which will be used for the
+            incident fields
+        """
+        from JiraV3 import fetch_incidents
+        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        issue_incident = util_load_json('test_data/fetch_incidents_test/issue_incident.json')
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'run_query', return_value=query_raw_response)
+        mocker.patch('JiraV3.get_fetched_attachments', return_value=[{'FileID': '1'}, {'FileID': '2'}])
+        comments_entries = [
+            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
+             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'}]
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
+        incidents = fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from='updated date',
+            fetch_query='status!=done',
+            id_offset=1234,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=3,
+            first_fetch_interval='3 days',
+            mirror_direction='Incoming And Outgoing',
+            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_from_jira='comment_tag_from_jira',
+            attachment_tag_to_jira='attachment_tag_to_jira',
+            attachment_tag_from_jira='attachment_tag_from_jira'
+        )
+        json.dumps(issue_incident) == incidents[0].get('rawJSON')

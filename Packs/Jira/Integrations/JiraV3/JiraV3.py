@@ -1471,7 +1471,7 @@ class JiraOnPremClient(JiraBaseClient):
         )
 
 
-class JiraIssueFieldsParser():
+class JiraIssueFieldsParser:
     """This class is in charge of parsing the issue fields returned from a response. The data of the fields are mostly
     returned as nested dictionaries, and it is not intuitive to retrieve the data of specific fields, therefore, this class
     helps the parsing process and encapsulates it in one place.
@@ -3097,8 +3097,8 @@ def link_issue_to_issue_command(client: JiraBaseClient, args: Dict[str, Any]) ->
 
     json_data = assign_params(
         comment={'body': text_to_adf(text=comment) if isinstance(client, JiraCloudClient) else comment} if comment else '',
-        inwardIssue={'key': inward_issue},
-        outwardIssue={'key': outward_issue},
+        inwardIssue={'id': inward_issue} if is_issue_id(inward_issue) else {'key': inward_issue},
+        outwardIssue={'id': outward_issue} if is_issue_id(outward_issue) else {'key': outward_issue},
         type={'name': link_type}
     )
     client.create_issue_link(json_data=json_data)
@@ -3369,8 +3369,8 @@ def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any]) -> Command
         CommandResults: CommandResults to return to XSOAR.
     """
     url = client.oauth_start()
-    return CommandResults(readable_output=('In order to retrieve the authorization code, please authorize'
-                                           f' yourself using the following link:\n{create_clickable_url(url)}\n'
+    return CommandResults(readable_output=('In order to retrieve the authorization code,'
+                                           f' use the following link:\n{create_clickable_url(url)}\n'
                                            'After authorizing, you will be redirected to the configured callback url, where you'
                                            ' will retrieve the authorization code provided as a query parameter called `code`,'
                                            ' and insert it as an argument to the !jira-oauth-complete command'))
@@ -3412,12 +3412,11 @@ def test_module() -> str:
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    # Test functions here
-    raise DemistoException(('In order to authorize the instance, first run the command `!jira-oauth-start`,'
-                            ' and complete the process in the URL that is returned, after that, you will be redirected'
-                            ' to the callback URL where you will copy the authorization code found in the query parameter'
-                            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
-                            ' the process'))
+    raise DemistoException(('In order to authorize the instance, first run the command !jira-oauth-start,'
+                            ' and complete the process in the URL that is returned. You will then be redirected'
+                            ' to the callback URL . Copy the authorization code found in the query parameter'
+                            ' code, and paste that value in the command !jira-ouath-complete as an argument to finish'
+                            ' the process.'))
 
 
 # Fetch Incidents
@@ -3627,16 +3626,14 @@ def get_attachments_entries_for_fetched_incident(
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
     """
     attachment_ids: List[str] = []
+    attachments_entries: List[Dict[str, Any]] = []
     for attachment_metadata in attachments_metadata:
         attachment_id = attachment_metadata.get('id', '')
+        attachments_entries.append(create_file_info_from_attachment(
+            client=client, attachment_id=attachment_id
+        ))
         attachment_ids.append(attachment_id)
     demisto.debug(f"The fetched attachments' ids {attachment_ids}")
-    attachments_entries: List[Dict[str, Any]] = [
-        create_file_info_from_attachment(
-            client=client, attachment_id=attachment_id
-        )
-        for attachment_id in attachment_ids
-    ]
     return attachments_entries
 
 
@@ -3651,8 +3648,10 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         fetch_attachments (bool): Whether to fetch the attachments or not.
         fetch_comments (bool): Whether to fetch the comments or not.
         mirror_direction (str): The mirroring direction.
-        comment_tag (str): The comment tag.
-        attachment_tag (str): The attachment tag.
+        comment_tag_from_jira (str): The comment tag to add to the entry if the comment is from Jira.
+        attachment_tag_from_jira (str): The attachment tag to add to the attachment if it is from Jira.
+        comment_tag_to_jira (str): The comment tag to add to the entry if the comment should be mirrored to Jira.
+        attachment_tag_to_jira (str): The attachment tag to add to the attachment if it should be mirrored to Jira.
 
     Returns:
         Dict[str, Any]: A dictionary that is represents an incident.
@@ -3877,7 +3876,7 @@ def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezo
     modified_issues = query_res.get('issues', [])
     result = [issue.get('id', '') for issue in modified_issues]
     demisto.debug(
-        f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR: {",".join(result)}'
+        f'The number of modified issues to update in XSOAR in this run is {len(result)}: {",".join(result)}'
     )
     return result
 
@@ -3913,7 +3912,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         demisto.debug(f'Got remote data for incident {issue_id}')
         parse_custom_fields(issue=issue,
                             issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
-        demisto.debug(f"\n\nRaw issue response: {issue}\n\n")
+        demisto.debug(f'Raw issue response: {issue}')
         issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
             issue).get('Description') or ''
         add_extracted_data_to_incident(issue=issue)
@@ -3938,7 +3937,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         return GetRemoteDataResponse(updated_incident, parsed_entries)
 
     except Exception as e:
-        demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id} \n"
+        demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id}"
                       f"Error message: {str(e)}")
 
         if "Rate limit exceeded" in str(e):
@@ -3981,8 +3980,8 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
     """
     parsed_entries: List[Dict[str, Any]] = []
-    demisto.debug((f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
-                  f"Reason: Issue modified in remote.\n"))
+    demisto.debug((f"Update incident, Incident name: Jira issue {issue.get('id')}"
+                  f"Reason: Issue modified in remote"))
     if mirror_resolved_issue:
         if closed_issue := handle_incoming_resolved_issue(
             updated_incident
@@ -3996,7 +3995,7 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
     )
     attachments_incident_field = []
-    demisto.debug(f'\nGot the following attachments entries {attachments_entries}\n')
+    demisto.debug(f'Got the following attachments entries {attachments_entries}')
     for attachment_entry in attachments_entries:
         if ATTACHMENT_MIRRORED_FROM_XSOAR not in attachment_entry.get('File', ''):
             attachment_entry['Tags'] = [attachment_tag_from_jira]
@@ -4134,14 +4133,14 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
                 demisto.debug(f'Got the entry tags: {entry_tags}')
                 demisto.debug(f'Sending entry {entry_id}, type: {entry_type}')
                 if entry_type == EntryType.FILE and attachment_tag_to_jira in entry_tags:
-                    demisto.debug('Add new file\n')
+                    demisto.debug('Add new file')
                     file_path = demisto.getFilePath(entry_id)
                     file_name, file_extension = os.path.splitext(file_path.get('name', ''))
                     upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id,
                                                     issue_id_or_key=remote_id,
                                                     attachment_name=f'{file_name}{ATTACHMENT_MIRRORED_FROM_XSOAR}{file_extension}')
                 elif comment_tag_to_jira in entry_tags:
-                    demisto.debug('Add new comment\n')
+                    demisto.debug('Add new comment')
                     entry_content = f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}'
                     comment_body = text_to_adf(entry_content) if isinstance(client, JiraCloudClient) else entry_content
                     payload = {
@@ -4334,7 +4333,6 @@ def main():
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        print(traceback.format_exc())
         return_error(str(e))
 
 
