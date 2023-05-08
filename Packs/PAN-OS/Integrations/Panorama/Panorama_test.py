@@ -6341,7 +6341,8 @@ class TestFetchIncidentsFlows:
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
         max_fetch = {'X_log_type': 10}
 
-        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00', 'device_name': 'device_for_test'}
+        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00',
+                       'device_name': 'device_for_test'}
         expected_parsed_incident_entries = {'name': 'device_for_test 000000001', 'occurred': '2022-01-01T12:00:00Z',
                                             'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
@@ -6583,7 +6584,8 @@ def test_filter_fetched_entries(mocker):
     When:
     - filter_fetched_entries is called.
     Then:
-    - return a dictionary the entries that there id is larger then the id in the id_dict, without the entries that do not have seqno.
+    - return a dictionary the entries that there id is larger then the id in the id_dict,
+        without the entries that do not have seqno.
     - confirm that the debug message is printed.
     - confirm that the debug was called twcie, once for missing seqno and once for missing device_name.
     """
