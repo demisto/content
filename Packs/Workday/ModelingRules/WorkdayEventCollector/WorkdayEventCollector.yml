@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: workday_workday_modeling_rule
+name: Workday Modeling Rule
+rules: ''
+schema: ''
+tags: workday

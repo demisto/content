@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,7 +14,41 @@ MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'Workday'
 PRODUCT = 'Workday'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+TEST = [{
+    "systemAccount": "123",
+    "activityAction": "test_action",
+    "requestTime": "2023-04-24T07:00:00Z",
+    "userAgent": "test_agent",
+    "taskId": "1",
+    "deviceType": "test_device",
+    "ipAddress": "1.1.1.1",
+    "userActivityEntryCount": "1234",
+    "sessionId": "test_session_id",
+    "target":
+        {
+            "id": "1234",
+            "descriptor": "test_descriptor",
+            "href": "test_href"
+        },
+    "taskDisplayName": "test_display"
+}, {
+    "systemAccount": "123",
+    "activityAction": "test_action",
+    "requestTime": "2023-04-24T07:00:00Z",
+    "userAgent": "test_agent",
+    "taskId": "2",
+    "deviceType": "test_device",
+    "ipAddress": "1.1.1.1",
+    "userActivityEntryCount": "1234",
+    "sessionId": "test_session_id",
+    "target":
+        {
+            "id": "1234",
+            "descriptor": "test_descriptor",
+            "href": "test_href"
+        },
+    "taskDisplayName": "test_display"
+}]
 ''' CLIENT CLASS '''
 
 
@@ -27,37 +61,33 @@ class Client(BaseClient):
         :param base_url (str): Workday server url.
         :param client_id (str): Workday client id.
         :param client_secret (str): Workday client_secret.
-        :param tenant_name (str): Workday tenant name.
+        :param token_url (str): Workday token url.
         :param refresh_token (str): Workday refresh token.
         :param verify (bool): specifies whether to verify the SSL certificate or not.
         :param proxy (bool): specifies if to use XSOAR proxy settings.
         """
 
-    def __init__(self, base_url, verify, proxy, headers, client_id, client_secret, refresh_token, tenant_name):
+    def __init__(self, base_url, token_url, verify, proxy, headers, client_id, client_secret, refresh_token):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
-        self.tenant_name = tenant_name
+        self.token_url = token_url
 
     def get_access_token(self):
         """
          Getting access token from Workday API.
         """
         demisto.debug("Fetching access token from Workday API.")
-        workday_req_token_endpoint = f"{self._base_url}/ccx/oauth2/{self.tenant_name}/token"
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-        b64_encoded_string = (self.client_id + ':' + self.client_secret).encode('utf-8')
-
-        data = {"grant_type": "refresh_token", "Authorization": "Basic {}".format(b64_encoded_string)}
+        data = {"grant_type": "refresh_token", "refresh_token": self.refresh_token}
 
         workday_resp_token = self._http_request(method="POST",
-                                                full_url=workday_req_token_endpoint,
+                                                full_url=self.token_url,
                                                 headers=headers,
-                                                data=data)
+                                                data=data,
+                                                auth=(self.client_id, self.client_secret))
         if workday_resp_token:
-            # return json.loads(workday_resp_token.text).get("access_token")
             return workday_resp_token.get("access_token")
 
     def http_request(self,
@@ -77,15 +107,15 @@ class Client(BaseClient):
                                   json_data=json_data,
                                   headers=headers)
 
-    def get_activity_logging_request(self, from_date: str, to_date: str, offset: int,
-                                     user_activity_entry_count: bool = False, limit: int = 1000) -> Dict[str, str]:
+    def get_activity_logging_request(self, from_date: str, to_date: str, offset: Optional[int] = 0,
+                                     user_activity_entry_count: bool = False, limit: Optional[int] = 1000) -> list:
         """Returns a simple python dict with the information provided
         Args:
             offset: The zero-based index of the first object in a response collection.
             limit: The maximum number of loggings to return.
             to_date: date to fetch events from.
             from_date: date to fetch events to.
-            user_activity_entry_count: If true, returns only the total count of user activity instances for the specified parameters.
+            user_activity_entry_count: If true, returns only the total count of user activity instances for the params.
 
         Returns:
             activity loggings returned from Workday API.
@@ -115,7 +145,7 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     Returns:
         Activity loggings fetched from Workday.
     """
-    activity_loggings = []
+    activity_loggings: list = []
     offset = 0
     while logging_to_fetch > 0:
         limit = logging_to_fetch if logging_to_fetch < 1000 else 1000
@@ -130,6 +160,7 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     demisto.debug(f'Found {len(activity_loggings)} activity loggings.')
     return activity_loggings
 
+
 def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, time_to_check: str):
     """
     Removes potential duplicated activity loggings.
@@ -139,9 +170,10 @@ def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, 
         last_run: Last run object.
         time_to_check: last request time from last run or first fetch.
     """
-    last_fetched_loggings: set = last_run.get('last_fetched_loggings', {})
+
+    last_fetched_loggings = set(last_run.get('last_fetched_loggings', []))
     demisto.debug(f'Looking for duplicated loggings with requestTime {time_to_check}')
-    for logging in activity_loggings:
+    for logging in activity_loggings.copy():
         logging_id = logging.get('taskId')
         logging_request_time: str = logging.get('requestTime')
         if datetime.strptime(logging_request_time, DATE_FORMAT) > datetime.strptime(time_to_check, DATE_FORMAT):
@@ -150,19 +182,49 @@ def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, 
             last_fetched_loggings = {logging_id}
         else:
             if logging_id in last_fetched_loggings:
-                activity_loggings.remove(logging_id)
+                activity_loggings.remove(logging)
             else:
                 last_fetched_loggings.add(logging_id)
-    return last_fetched_loggings
+    return activity_loggings, list(last_fetched_loggings)
 
 
+def remove_milliseconds_from_time_of_loggings(activity_loggings: list):
+    """
+    Workday API receive from_date only without milliseconds, therefor need to be removed.
+    Args:
+        activity_loggings: activity loggings
+
+    Returns:
+        The loggings with the string in the correct format.
+
+    """
+    date_format_with_milliseconds = '%Y-%m-%dT%H:%M:%S.%fZ'
+    if activity_loggings:
+        for logging in activity_loggings:
+            request_time_date_obj = datetime.strptime(logging.get('requestTime'), date_format_with_milliseconds)
+            request_time_date_obj.replace(microsecond=0)
+            logging['requestTime'] = datetime.strftime(request_time_date_obj, DATE_FORMAT)
+
+
+def add_time_to_loggings(activity_loggings):
+    """
+    Adds the _time key to the activity loggings.
+    Args:
+        activity_loggings: List[Dict] - list of activity loggings to add the _time key to.
+    Returns:
+        list: The activity loggings with the _time key.
+    """
+    if activity_loggings:
+        for logging in activity_loggings:
+            create_time = arg_to_datetime(arg=logging.get('requestTime'))
+            logging['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 ''' COMMAND FUNCTIONS '''
 
 
 def get_activity_logging_command(client: Client, from_date: str, to_date: str, limit: Optional[int],
-                                 offset: Optional[int]) -> CommandResults:
+                                 offset: Optional[int]) -> Tuple[list, CommandResults]:
     """
 
     Args:
@@ -176,14 +238,14 @@ def get_activity_logging_command(client: Client, from_date: str, to_date: str, l
         Activity loggings from Workday.
     """
 
-    activity_logging = client.get_activity_logging_request(to_date=to_date, from_date=from_date, limit=limit,
-                                                           offset=offset)
-
-    readable_output = tableToMarkdown('Activity Logging List:', activity_logging,
+    activity_loggings = client.get_activity_logging_request(to_date=to_date, from_date=from_date, limit=limit,
+                                                            offset=offset)
+    remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
+    readable_output = tableToMarkdown('Activity Logging List:', activity_loggings,
                                       removeNull=True,
-                                      headerTransform=string_to_table_header)
+                                      headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
 
-    return CommandResults(readable_output=readable_output, raw_response=activity_logging)
+    return activity_loggings, CommandResults(readable_output=readable_output)
 
 
 def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime, last_run: dict):
@@ -206,11 +268,14 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
                                                        logging_to_fetch=max_fetch,
                                                        from_date=from_date,
                                                        to_date=to_date)
+    # activity_loggings = TEST
     # setting last run object
+    remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
+    activity_loggings, last_fetched_loggings = remove_duplicated_activity_logging(
+        activity_loggings=activity_loggings,
+        last_run=last_run,
+        time_to_check=from_date)
     if activity_loggings:
-        last_fetched_loggings = remove_duplicated_activity_logging(activity_loggings=activity_loggings,
-                                                                   last_run=last_run,
-                                                                   time_to_check=from_date)
         last_log_time = activity_loggings[-1].get('requestTime')
         last_run = {'last_fetch_time': last_log_time,
                     'last_fetched_loggings': last_fetched_loggings}
@@ -218,7 +283,7 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
     return activity_loggings, last_run
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -246,31 +311,33 @@ def test_module(client: Client) -> str:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
 
     base_url = params.get('base_url')
+    token_url = params.get('token_url')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
-    tenant_name = params.get('tenant_name')
     token = params.get('token', {}).get('password')
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
-    first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))
+    first_fetch = arg_to_datetime(arg=params.get('first_fetch', '3 days'),
+                                  arg_name='First fetch time',
+                                  required=True)
 
     demisto.debug(f'Command being called is {command}')
     try:
 
         client = Client(
             base_url=base_url,
+            token_url=token_url,
             client_id=client_id,
             client_secret=client_secret,
-            tenant_name=tenant_name,
             refresh_token=token,
             verify=verify_certificate,
             proxy=proxy,
@@ -285,25 +352,32 @@ def main() -> None:
         elif command in ('workday-get-activity-logging', 'fetch-events'):
 
             if command == 'workday-get-activity-logging':
-                results = get_activity_logging_command(client=client,
-                                                       from_date=args.get('from_date'),
-                                                       to_date=args.get('to_date'),
-                                                       limit=arg_to_number(args.get('limit')),
-                                                       offset=arg_to_number(args.get('offset')))
+                should_push_events = argToBoolean(args.pop('should_push_events'))
+                activity_loggings, results = get_activity_logging_command(client=client,
+                                                                          from_date=args.get('from_date'),
+                                                                          to_date=args.get('to_date'),
+                                                                          limit=arg_to_number(args.get('limit')),
+                                                                          offset=arg_to_number(args.get('offset')))
                 return_results(results)
             else:  # command == 'fetch-events':
+                should_push_events = True
                 last_run = demisto.getLastRun()
-
                 activity_loggings, new_last_run = fetch_activity_logging(client=client,
                                                                          max_fetch=max_fetch,
-                                                                         first_fetch=first_fetch,
+                                                                         first_fetch=first_fetch,  # type: ignore
                                                                          last_run=last_run)
 
-                demisto.info(f'Setting new last_run to {new_last_run}')
-                demisto.setLastRun(new_last_run)
-
-            if argToBoolean(args.get('should_push_events', 'true')):
-                send_events_to_xsiam(activity_loggings, vendor=VENDOR, product=PRODUCT)
+            if should_push_events:
+                add_time_to_loggings(activity_loggings=activity_loggings)
+                send_events_to_xsiam(
+                    activity_loggings,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
+                if new_last_run:
+                    # saves next_run for the time fetch-events is invoked
+                    demisto.info(f'Setting new last_run to {new_last_run}')
+                    demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
     except Exception as e:

@@ -1,0 +1,13 @@
+ [MODEL: dataset=workday_workday_raw]
+    alter xdm.source.user.username = systemAccount,
+    xdm.observer.action = activityAction,
+    xdm.source.user_agent = userAgent,
+    xdm.event.id = taskId,
+    xdm.source.host.device_category = deviceType,
+    xdm.source.ipv4 = ipAddress,
+    xdm.source.ipv6 = ipAddress,
+    xdm.session_context_id = sessionId,
+    xdm.event.outcome_reason = taskDisplayName,
+    xdm.source.user.identifier = json_extract_scalar(`target`, "$.id"),
+    xdm.target.host.device_category = json_extract_scalar(`target`, "$.descriptor"),
+    xdm.target.url = json_extract_scalar(`target`, "$.href");

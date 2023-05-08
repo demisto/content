@@ -1,0 +1,56 @@
+{
+    "workday_workday_raw": {
+      "xsiam_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "username": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "user_agent": {
+        "type": "string",
+        "is_array": false
+      },
+      "id": {
+        "type": "string",
+        "is_array": false
+      },
+      "device_category": {
+        "type": "string",
+        "is_array": false
+      },
+      "ipv4": {
+        "type": "string",
+        "is_array": false
+      },
+      "ipv6": {
+        "type": "string",
+        "is_array": true
+      },
+      "session_context_id": {
+        "type": "string",
+        "is_array": false
+      },
+      "outcome_reason": {
+        "type": "string",
+        "is_array": false
+      },
+      "identifier": {
+        "type": "string",
+        "is_array": false
+      },
+      "device_category": {
+        "type": "string",
+        "is_array": false
+      },
+      "url": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
