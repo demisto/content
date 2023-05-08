@@ -13165,6 +13165,7 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
         # Upsert the device's id if it's a new device, or it's a larger id
         if device_name not in new_largest_id.keys() or int(incident_id) > int(new_largest_id[device_name]):
             new_largest_id[device_name] = incident_id
+    demisto.debug(f'{new_largest_id=}')
     return new_largest_id
 
 
@@ -13183,6 +13184,7 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
             device_name = log.get("device_name", '')
             current_log_id = arg_to_number(log.get("seqno"))
             latest_id_per_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
+            demisto.debug(f'{latest_id_per_device=} for {log_type=} and {device_name=}')
             if not current_log_id or not device_name:
                 demisto.debug(f'Could not parse seqno or device name from log: {log}, skipping.')
                 continue
@@ -13200,10 +13202,7 @@ def create_max_fetch_dict(queries_dict: Dict[str, str], configured_max_fetch: in
     Returns:
         max_fetch_dict (Dict[str, int]): a dictionary of log type and its max fetch value
     """
-    max_fetch_dict = {}
-    for key in queries_dict.keys():
-        max_fetch_dict.update({key: configured_max_fetch})
-    return max_fetch_dict
+    return {key: configured_max_fetch for key in queries_dict}
 
 
 def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, int], last_fetch_dict: Dict[str, str]) -> Dict[str, int]:
@@ -13220,12 +13219,12 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, i
         # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
         # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
         demisto.debug(
-            f"previous_fetch_timestamp: {previous_fetch_timestamp}, last_fetch_dict.get(log_type): {last_fetch_dict.get(log_type)}")
+            f"{previous_fetch_timestamp=}, {last_fetch_dict.get(log_type)=}")
         if previous_fetch_timestamp and previous_fetch_timestamp == last_fetch_dict.get(log_type):
             max_fetch_dict[log_type] += configured_max_fetch
         else:
             max_fetch_dict[log_type] = configured_max_fetch
-    demisto.debug(f"max_fetch_dict: {max_fetch_dict}")
+    demisto.debug(f"{max_fetch_dict=}")
     return max_fetch_dict
     
 
