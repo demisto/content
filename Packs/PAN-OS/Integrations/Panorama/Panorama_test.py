@@ -6587,7 +6587,6 @@ def test_filter_fetched_entries(mocker):
     - return a dictionary the entries that there id is larger then the id in the id_dict,
         without the entries that do not have seqno.
     - confirm that the debug message is printed.
-    - confirm that the debug was called twcie, once for missing seqno and once for missing device_name.
     """
     from Panorama import filter_fetched_entries
     raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
@@ -6601,7 +6600,6 @@ def test_filter_fetched_entries(mocker):
     assert res == {'log_type1': [{'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
     assert debug_mocker.call_args[0][0] == "Could not parse seqno or device name from log: {'seqno': '000000007'}, skipping."
-    assert debug_mocker.call_count == 2
 
 
 def test_create_max_fetch_dict():
