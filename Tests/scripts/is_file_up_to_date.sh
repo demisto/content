@@ -3,6 +3,10 @@ FILE_TO_CHECK=$1
 BRANCH=$2
 SHOULD_CHECKOUT=$3
 
+if [[ -n $BRANCH ]]; then
+    BRANCH=$(git branch --show-current)
+fi
+
 # Checks if there's any diff from master
 if [[ $(git diff origin/master -- ${FILE_TO_CHECK}) ]]; then
     # Checks if part of the branch's changes

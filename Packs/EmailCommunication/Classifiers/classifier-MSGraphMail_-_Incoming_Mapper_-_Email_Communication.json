@@ -24,24 +24,6 @@
 					},
 					"simple": ""
 				},
-				"Categories": {
-					"complex": {
-						"filters": [],
-						"root": "Categories",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
-				},
 				"Email BCC": {
 					"complex": {
 						"accessor": "",
@@ -135,29 +117,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				}
-			}
-		},
-		"Phishing": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Categories": {
-					"complex": {
-						"filters": [],
-						"root": "categories",
-						"transformers": [
-							{
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ","
-										}
-									}
-								},
-								"operator": "join"
-							}
-						]
-					}
 				}
 			}
 		}
