@@ -24,6 +24,8 @@ type: python
 dockerimage: demisto/python3:3.9.8.24399
 subtype: python3
 tags: [Cherwell]
+skipPrepare:
+- script-name-incident-to-alert
 dependson:
   must:
   - Cherwell|||cherwell-unlink-business-objects
