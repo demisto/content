@@ -1688,6 +1688,61 @@ Runs a Deep Visibility query and returns the queryId. You can use the queryId fo
 
 >The query ID is q15a9c0b5a5f2081188e70c42897ef5f9
 
+
+### sentinelone-get-status
+***
+Returns status of a Deep Visibility Query for a given QueryId
+
+
+#### Base Command
+
+`sentinelone-get-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | -- | --- |
+| query_id | The queryId that is returned when creating a query under Create Query. Example: "q1xx2xx3". Get the query_id from the "get-query-id" command. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- |--------| --- |
+| SentinelOne.Query.Status.progressStatus | String | Progress Query Status. | 
+| SentinelOne.Query.Status.queryModeInfo.lastActivatedAt | Date   | Last Activated At. | 
+| SentinelOne.Query.Status.queryModeInfo.mode | String | Query Mode. | 
+| SentinelOne.Query.Status.responseState | String | State of the Query. | 
+| SentinelOne.Query.Status.warnings | String | Warnings during Query. | 
+| SentinelOne.Query.Status.QueryId | String | QueryID From Request. | 
+
+#### Command Example
+```"!sentinelone-get-status query_id=q747b39436498a254f3e22c9b4ad14daf"```
+
+#### Context Example
+```json
+{
+	"SentinelOne": {
+		"Query": {
+			"Status": {
+				"QueryID": "q747b39436498a254f3e22c9b4ad14daf",
+				"progressStatus": 100,
+				"queryModeInfo": {
+					"lastActivatedAt": "2022-07-19T21:20:54+00:00",
+					"mode": "scalyr"
+				},
+				"responseState": "RUNNING",
+				"warnings": 0
+			}
+		}
+	}
+}
+```
+
+#### Human Readable Output
+
+>SentinelOne Query Status Markdown Table
+
+
 ### sentinelone-get-processes
 ***
 Returns a list of Deep Visibility events from query by event type - process.
@@ -2791,4 +2846,3 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 | SentinelOne.RunRemoteScript.parentTaskId | String | The parent task ID of the script execution task. Null in case of pending execution.                  |
 #### Command Example
 ```!sentinelone-run-remote-script account_ids="1431991147831493698" output_destination="None" task_description="a test" script_id="1235462642391383844" output_directory="file" agent_ids="1508658407921320788"```
-
