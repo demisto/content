@@ -209,7 +209,7 @@ class RecoClient(BaseClient):
         :param alert_id: The id of the alert to fetch
         :return: dict
         """
-        demisto.info("Get single alert, enter")
+        demisto.info(f"Get single alert, enter, alert_id: {alert_id}")
         alert: Dict[str, Any] = {}
         try:
             response = self._http_request(
@@ -615,6 +615,7 @@ def get_alerts(reco_client: RecoClient,
         alert_as_dict = parse_table_row_to_dict(alert.get("cells", {}))
         alert_id = alert_as_dict.get("id", None)
         if alert_id is not None:
+            alert_id = base64.b64decode(alert_id).decode("utf-8")
             single_alert = reco_client.get_single_alert(alert_id)
             violations = single_alert["policyViolations"]
             for violation in violations:
