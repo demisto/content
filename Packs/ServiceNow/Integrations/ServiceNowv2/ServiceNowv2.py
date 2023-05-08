@@ -520,7 +520,7 @@ def split_notes(raw_notes, note_type, time_info):
             if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
                 notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
-        note_info, note_value = note.split('\n')
+        note_info, note_value = note.split('\n', 1)
         created_on, created_by = note_info.split(' - ')
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
@@ -2157,6 +2157,11 @@ def fetch_incidents(client: Client) -> list:
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
+    # remove duplicate incidents which were already fetched
+    tickets_response = filter_incidents_by_duplicates_and_limit(
+        incidents_res=tickets_response, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='sys_id'
+    )
+
     for ticket in tickets_response:
         ticket.update(get_mirroring())
 
@@ -2183,14 +2188,10 @@ def fetch_incidents(client: Client) -> list:
             'severity': severity_map.get(ticket.get('severity', ''), 0),
             'attachment': get_ticket_file_attachments(client=client, ticket=ticket),
             'occurred': ticket.get(client.timestamp_field),
+            'sys_id': ticket.get('sys_id'),
             'rawJSON': json.dumps(ticket)
         })
         count += 1
-
-    # remove duplicate incidents which were already fetched
-    incidents = filter_incidents_by_duplicates_and_limit(
-        incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
-    )
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -2200,14 +2201,15 @@ def fetch_incidents(client: Client) -> list:
         end_fetch_time=end_snow_time,
         look_back=client.look_back,
         created_time_field='occurred',
-        id_field='name',
+        id_field='sys_id',
         date_format=DATE_FORMAT
     )
     demisto.debug(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
-        ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()}Z"
+        occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
+        ticket['occurred'] = f"{occurred}Z"
 
     demisto.setLastRun(last_run)
     return incidents

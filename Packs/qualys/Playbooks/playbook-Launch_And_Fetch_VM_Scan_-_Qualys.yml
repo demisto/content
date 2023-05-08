@@ -480,7 +480,10 @@ inputs:
     when SSL was used for the detection, “no” is returned when SSL was not used),
     and FQDN if applicable.'
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: Qualys.Report.VM.Launched
+  type: unknown
+  description: Launched VM scan.
 tests:
 - QualysVulnerabilityManagement-Test
 fromversion: 5.5.0

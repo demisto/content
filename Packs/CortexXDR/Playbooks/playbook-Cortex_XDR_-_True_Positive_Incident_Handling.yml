@@ -51,7 +51,9 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.deviceid}
+    complex:
+      root: incident
+      accessor: deviceid
 - description: Enter the File paths you would like to delete.
   key: FilePaths
   playbookInputQuery:
@@ -117,6 +119,7 @@ inputs:
           item:
             value:
               simple: URL
+            iscontext: true
       - operator: uniq
   required: false
   description: URL or domain to hunt for.
@@ -1809,4 +1812,3 @@ description: |-
   This playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.
 contentitemexportablefields:
   contentitemfields: {}
-system: true

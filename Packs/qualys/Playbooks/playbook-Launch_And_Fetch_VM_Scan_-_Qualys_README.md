@@ -1,22 +1,28 @@
 Launches a scan and fetches the scan when it's ready.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-GenericPolling
+
+* GenericPolling
 
 ### Integrations
-QualysV2
+
+* QualysV2
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * qualys-vm-scan-fetch
 * qualys-vm-scan-launch
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -58,9 +64,15 @@ This playbook does not use any scripts.
 | mode | qualys-vm-scan-fetch - The verbosity of the scan results details. One verbosity mode may be specified: brief \(the default\) or extended. The brief output includes this information: IP address, DNS hostname, NetBIOS hostname, QID and scan test results if applicable. The extended output includes the brief output plus this extended information: protocol, port, an SSL flag \(“yes” is returned when SSL was used for the detection, “no” is returned when SSL was not used\), and FQDN if applicable. |  | Optional |
 
 ## Playbook Outputs
+
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Qualys.Report.VM.Launched | Launched VM scan. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Launch And Fetch VM Scan - Qualys](../doc_files/Launch_And_Fetch_VM_Scan_-_Qualys.png)
