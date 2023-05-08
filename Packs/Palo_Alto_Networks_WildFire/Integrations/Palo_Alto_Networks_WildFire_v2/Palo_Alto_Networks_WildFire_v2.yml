@@ -768,7 +768,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Retrieves results for a URL using WildFire. The report format is in JSON.
+      description: Retrieves results for a URL using WildFire. The report will be populated in the context in JSON format.
       isArray: true
       name: url
       required: false
