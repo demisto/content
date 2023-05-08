@@ -3,7 +3,7 @@
 # check if poetry is installed
 if ! command -v poetry >/dev/null 2>&1; then
     echo "ERROR: poetry is missing. Please run the following command to install poetry:
-         curl -sSL https://install.python-poetry.org | python3 -"
+            curl -sSL https://install.python-poetry.org | python3 -"
     exit 1
 fi
 
