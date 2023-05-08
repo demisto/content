@@ -637,9 +637,16 @@ def get_remote_alert_data(client: Client, remote_alert_id: str) -> Tuple[Dict, D
     return alert_details, updated_object
 
 
-def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored_dismissal_note: str):
+def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored_dismissal_note: str) -> Dict:
     """
-    # TODO: need to add description
+    Closes an XSOAR incident.
+
+    Args:
+        remote_alert_id: The id of the mirrored Prisma alert to be closed.
+        mirrored_status: The status of the mirrored Prisma alert.
+        mirrored_dismissal_note: The dismissal note of the mirrored Prisma alert.
+
+    Returns: An entry object with relevant data for closing an XSOAR incident.
     """
     demisto.debug(f'Prisma Alert {remote_alert_id} was closed')
     entry = {
@@ -657,7 +664,13 @@ def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored
 
 def reopen_incident_in_xsoar(remote_alert_id: str):
     """
-    # TODO: need to add description
+    Reopens an XSOAR incident.
+
+    Args:
+        remote_alert_id:  The id of the mirrored Prisma alert to be reopened.
+
+    Returns: An entry object with relevant data for reopening an XSOAR incident.
+
     """
     demisto.debug(f'Prisma Alert {remote_alert_id} was reopened')
     entry = {
@@ -670,18 +683,24 @@ def reopen_incident_in_xsoar(remote_alert_id: str):
     return entry
 
 
-def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: str):
+def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: str) -> Dict | None:
     """
-    # TODO: need to add description
+    Extracts the status of the mirrored Prisma alert, and close/reopen the matched XSOAR incident in accordance.
+    Args:
+        updated_object: A dictionary contains the mirrored relevant fields.
+        remote_alert_id: The id of the mirrored Prisma alert.
+
+    Returns: An entry object with relevant data for closing or reopening an XSOAR incident.
     """
-    if demisto.params().get('close_incident'):  #  TODO: need to remove the close option parameters cause this is the only thing we do in this mirroring.
+    if demisto.params().get('close_incident'):
         mirrored_status = updated_object.get('status')
         if mirrored_status in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
             mirrored_dismissal_note = updated_object.get('dismissalNote')
             entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
+            return entry
         elif mirrored_status == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
             entry = reopen_incident_in_xsoar(remote_alert_id)
-        return entry
+            return entry
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
@@ -1656,12 +1675,11 @@ def get_modified_remote_data_command(client: Client,
     Returns:
         GetModifiedRemoteDataResponse object, which contains a list of the retrieved alerts IDs.
     """
-    demisto.debug('######## get-modified-remote-data is being called')
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
     parsed_date = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
     if not parsed_date:
-        raise DemistoException(f'could not parse {last_update}')  # TODO: verify with Judah if need to use assert here
+        raise DemistoException(f'could not parse {last_update}')
     last_update_timestamp = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
@@ -1680,7 +1698,7 @@ def get_modified_remote_data_command(client: Client,
     response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
     response_items = response.get('items', [])
     modified_records_ids = [str(item.get('id')) for item in response_items]
-    demisto.debug(f"##### Get modified records ids: {modified_records_ids}")
+    demisto.debug(f"{len(modified_records_ids)} alerts has detected as modified in Prisma")
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
 
