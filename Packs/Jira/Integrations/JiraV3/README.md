@@ -176,7 +176,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-delete-issue issue_key=COMPANYSA-114```
+```!jira-delete-issue issue_key=PROJECTKEY-114```
 
 #### Human Readable Output
 
@@ -212,7 +212,7 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 
 #### Command example
 
-```!jira-get-specific-field issue_key=COMPANYSA-35 fields="watches,rank"```
+```!jira-get-specific-field issue_key=PROJECTKEY-35 fields="watches,rank"```
 
 #### Context Example
 
@@ -267,7 +267,7 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
         "Description": "Edited subbscription",
         "DueDate": "2023-01-01",
         "Id": "21487",
-        "Key": "COMPANYSA-35",
+        "Key": "PROJECTKEY-35",
         "Labels": [
             "label1",
             "label2"
@@ -286,7 +286,7 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
             "issueFieldDisplayName": "Watchers",
             "rawData": {
                 "isWatching": true,
-                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/COMPANYSA-35/watchers",
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-35/watchers",
                 "watchCount": 1
             }
         }
@@ -296,11 +296,11 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 
 #### Human Readable Output
 
->### Issue COMPANYSA-35
+>### Issue PROJECTKEY-35
 >
 >|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | COMPANYSA-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
+>| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
 
 ### jira-issue-add-link
 
@@ -335,7 +335,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-issue-add-link title="Demo" url="https://demisto.com" issue_key=COMPANYSA-35```
+```!jira-issue-add-link title="Demo" url="https://demisto.com" issue_key=PROJECTKEY-35```
 
 #### Human Readable Output
 
@@ -343,7 +343,7 @@ There is no context output for this command.
 >
 >|id|ticket_link|
 >|---|---|
->| 16506 | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/COMPANYSA-35/remotelink/16506 |
+>| 16506 | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-35/remotelink/16506 |
 
 ### jira-get-id-by-attribute
 
@@ -581,7 +581,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-issue-add-comment issue_key=COMPANYSA-31 comment="New comment"```
+```!jira-issue-add-comment issue_key=PROJECTKEY-31 comment="New comment"```
 
 #### Human Readable Output
 
@@ -617,7 +617,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-issue-upload-file upload=10833@33e912c0-76a9-4a08-8cc6-1b20b1980b20 issue_key=COMPANYSA-31```
+```!jira-issue-upload-file upload=10833@33e912c0-76a9-4a08-8cc6-1b20b1980b20 issue_key=PROJECTKEY-31```
 
 #### Human Readable Output
 
@@ -625,7 +625,7 @@ There is no context output for this command.
 >
 >|Attachment Link|Attachment Name|Id|Issue Key|
 >|---|---|---|---|
->| https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/attachment/16505 | dummy.pdf | 16505 | COMPANYSA-31 |
+>| https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/attachment/16505 | dummy.pdf | 16505 | PROJECTKEY-31 |
 
 ### jira-list-transitions
 
@@ -656,16 +656,16 @@ Lists all possible transitions for a given ticket.
 
 #### Command example
 
-```!jira-list-transitions issue_key=COMPANYSA-35```
+```!jira-list-transitions issue_key=PROJECTKEY-35```
 
 #### Context Example
 
 ```json
 {
     "Ticket": {
-        "Key": "COMPANYSA-35",
+        "Key": "PROJECTKEY-35",
         "Transitions": {
-            "ticketId": "COMPANYSA-35",
+            "ticketId": "PROJECTKEY-35",
             "transitions": [
                 "Backlog",
                 "In Development"
@@ -740,7 +740,7 @@ Modifies an issue in Jira.
 
 #### Command example
 
-```!jira-edit-issue action=rewrite issue_key=COMPANYSA-35 assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 description="Edited subbscription" due_date="2023-01-01" environment="Windows XP" labels="label1,label2" priority="Highest" security=Anyone status="Backlog" summary="Edited Summary"```
+```!jira-edit-issue action=rewrite issue_key=PROJECTKEY-35 assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 description="Edited subbscription" due_date="2023-01-01" environment="Windows XP" labels="label1,label2" priority="Highest" security=Anyone status="Backlog" summary="Edited Summary"```
 
 #### Context Example
 
@@ -795,7 +795,7 @@ Modifies an issue in Jira.
         "Description": "Edited subbscription",
         "DueDate": "2023-01-01",
         "Id": "21487",
-        "Key": "COMPANYSA-35",
+        "Key": "PROJECTKEY-35",
         "Labels": [
             "label1",
             "label2"
@@ -812,11 +812,11 @@ Modifies an issue in Jira.
 
 #### Human Readable Output
 
->### Issue COMPANYSA-35
+>### Issue PROJECTKEY-35
 >
 >|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | COMPANYSA-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
+>| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
 
 ### jira-create-issue
 
@@ -868,7 +868,7 @@ Creates a new issue in Jira.
 
 #### Command example
 
-```!jira-create-issue summary="Dummy Summary" assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 components="dummy-comp,New-Component" description="Dummy description" due_date="2023-01-01" environment="Windows XP" issue_type_name="Sub-task" labels="label1,label2" parent_issue_key=COMPANYSA-35 priority=Highest project_name="Company Snoozing App" reporter_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 security=Assignee```
+```!jira-create-issue summary="Dummy Summary" assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 components="dummy-comp,New-Component" description="Dummy description" due_date="2023-01-01" environment="Windows XP" issue_type_name="Sub-task" labels="label1,label2" parent_issue_key=PROJECTKEY-35 priority=Highest project_name="Company Snoozing App" reporter_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 security=Assignee```
 
 #### Context Example
 
@@ -876,18 +876,18 @@ Creates a new issue in Jira.
 {
     "Ticket": {
         "Id": "21619",
-        "Key": "COMPANYSA-145"
+        "Key": "PROJECTKEY-145"
     }
 }
 ```
 
 #### Human Readable Output
 
->### Issue COMPANYSA-145
+>### Issue PROJECTKEY-145
 >
 >|Id|Key|Project Key|Ticket Link|
 >|---|---|---|---|
->| 21619 | COMPANYSA-145 | COMPANYSA | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21619 |
+>| 21619 | PROJECTKEY-145 | PROJECTKEY | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21619 |
 
 ### jira-get-issue
 
@@ -943,7 +943,7 @@ Fetches an issue from Jira.
 
 #### Command example
 
-```!jira-get-issue issue_key=COMPANYSA-35 expand_links=true fields=watches,rank get_attachments=true```
+```!jira-get-issue issue_key=PROJECTKEY-35 expand_links=true fields=watches,rank get_attachments=true```
 
 #### Context Example
 
@@ -1048,7 +1048,7 @@ Fetches an issue from Jira.
             "Description": "Edited subbscription",
             "DueDate": "2023-01-01",
             "Id": "21487",
-            "Key": "COMPANYSA-35",
+            "Key": "PROJECTKEY-35",
             "Labels": [
                 "label1",
                 "label2"
@@ -1067,7 +1067,7 @@ Fetches an issue from Jira.
                 "issueFieldDisplayName": "Watchers",
                 "rawData": {
                     "isWatching": true,
-                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/COMPANYSA-35/watchers",
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-35/watchers",
                     "watchCount": 1
                 }
             }
@@ -1081,7 +1081,7 @@ Fetches an issue from Jira.
             "Description": "",
             "DueDate": "",
             "Id": "21538",
-            "Key": "COMPANYSA-70",
+            "Key": "PROJECTKEY-70",
             "Labels": [],
             "LastSeen": "",
             "LastUpdate": "2023-04-13T00:13:02.152+0300",
@@ -1097,7 +1097,7 @@ Fetches an issue from Jira.
                 "issueFieldDisplayName": "Watchers",
                 "rawData": {
                     "isWatching": true,
-                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/COMPANYSA-70/watchers",
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-70/watchers",
                     "watchCount": 1
                 }
             }
@@ -1114,7 +1114,7 @@ Fetches an issue from Jira.
             "Description": "Dummy description",
             "DueDate": "2023-01-01",
             "Id": "21583",
-            "Key": "COMPANYSA-114",
+            "Key": "PROJECTKEY-114",
             "Labels": [
                 "label1",
                 "label2"
@@ -1133,7 +1133,7 @@ Fetches an issue from Jira.
                 "issueFieldDisplayName": "Watchers",
                 "rawData": {
                     "isWatching": true,
-                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/COMPANYSA-114/watchers",
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-114/watchers",
                     "watchCount": 1
                 }
             }
@@ -1250,7 +1250,7 @@ Returns the comments added to a ticket.
 
 #### Command example
 
-```!jira-get-comments issue_key=COMPANYSA-35 limit=2```
+```!jira-get-comments issue_key=PROJECTKEY-35 limit=2```
 
 #### Context Example
 
@@ -1276,7 +1276,7 @@ Returns the comments added to a ticket.
             }
         ],
         "Id": "21487",
-        "Key": "COMPANYSA-35"
+        "Key": "PROJECTKEY-35"
     }
 }
 ```
@@ -1366,7 +1366,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-issue-delete-comment issue_key=COMPANYSA-35 comment_id=18423```
+```!jira-issue-delete-comment issue_key=PROJECTKEY-35 comment_id=18423```
 
 #### Human Readable Output
 
@@ -1403,7 +1403,7 @@ Edit a comment that's part of an issue.
 
 #### Command example
 
-```!jira-issue-edit-comment issue_key=COMPANYSA-35 comment_id=18425 comment="New Hello There"```
+```!jira-issue-edit-comment issue_key=PROJECTKEY-35 comment_id=18425 comment="New Hello There"```
 
 #### Context Example
 
@@ -1437,7 +1437,7 @@ Edit a comment that's part of an issue.
             }
         ],
         "Id": "21487",
-        "Key": "COMPANYSA-35"
+        "Key": "PROJECTKEY-35"
     }
 }
 ```
@@ -1613,7 +1613,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-issue-to-board issues="COMPANYSA-35,COMPANYSA-39" board_id=14```
+```!jira-issue-to-board issues="PROJECTKEY-35,PROJECTKEY-39" board_id=14```
 
 #### Human Readable Output
 
@@ -1674,7 +1674,7 @@ Get board data. If board_id is given, then only the board that corresponds to th
 
 #### Command example
 
-```!jira-board-list project_key_id=COMPANYSA type=kanban```
+```!jira-board-list project_key_id=PROJECTKEY type=kanban```
 
 #### Context Example
 
@@ -1685,14 +1685,14 @@ Get board data. If board_id is given, then only the board that corresponds to th
             "id": 14,
             "location": {
                 "avatarURI": "https://api.atlassian.com/ex/jira/1234/rest/api/2/universal_avatar/view/type/project/avatar/10402?size=small",
-                "displayName": "Company Snoozing App (COMPANYSA)",
-                "name": "Company Snoozing App (COMPANYSA)",
+                "displayName": "Company Snoozing App (PROJECTKEY)",
+                "name": "Company Snoozing App (PROJECTKEY)",
                 "projectId": 10022,
-                "projectKey": "COMPANYSA",
+                "projectKey": "PROJECTKEY",
                 "projectName": "Company Snoozing App",
                 "projectTypeKey": "software"
             },
-            "name": "COMPANYSA board",
+            "name": "PROJECTKEY board",
             "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/board/14",
             "type": "kanban"
         }
@@ -1706,7 +1706,7 @@ Get board data. If board_id is given, then only the board that corresponds to th
 >
 >|ID|Name|Project ID|Project Name|Type|
 >|---|---|---|---|---|
->| 14 | COMPANYSA board | 10022 | Company Snoozing App | kanban |
+>| 14 | PROJECTKEY board | 10022 | Company Snoozing App | kanban |
 
 ### jira-board-backlog-list
 
@@ -1765,7 +1765,7 @@ Get issues from the backlog of a specific board. For Jira OnPrem, the board must
                     "Description": "",
                     "DueDate": "",
                     "Id": "21360",
-                    "Key": "COMPANYSA-1",
+                    "Key": "PROJECTKEY-1",
                     "Labels": [],
                     "LastSeen": "",
                     "LastUpdate": "2023-03-07T17:31:48.332+0200",
@@ -1785,7 +1785,7 @@ Get issues from the backlog of a specific board. For Jira OnPrem, the board must
                     "Description": "Complete this issue",
                     "DueDate": "2023-09-09",
                     "Id": "21424",
-                    "Key": "COMPANYSA-30",
+                    "Key": "PROJECTKEY-30",
                     "Labels": [
                         "collab",
                         "good_job"
@@ -1810,8 +1810,8 @@ Get issues from the backlog of a specific board. For Jira OnPrem, the board must
 >
 >|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 2023-01-01T22:57:28.689+0200 | Example User(<example@example.com>) |  |  | 21360 | Epic | COMPANYSA-1 |  | Medium | Company Snoozing App | Example User(<example@example.com>) | Backlog | Start creating the company snoozing app | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21360 |
->| Example User() | 2023-01-30T16:42:47.476+0200 | Example User(<example@example.com>) | Complete this issue | 2023-09-09 | 21424 | Epic | COMPANYSA-30 | collab,<br/>good_job | Highest | Company Snoozing App | Example User() | Backlog | Issue for demo | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21424 |
+>|  | 2023-01-01T22:57:28.689+0200 | Example User(<example@example.com>) |  |  | 21360 | Epic | PROJECTKEY-1 |  | Medium | Company Snoozing App | Example User(<example@example.com>) | Backlog | Start creating the company snoozing app | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21360 |
+>| Example User() | 2023-01-30T16:42:47.476+0200 | Example User(<example@example.com>) | Complete this issue | 2023-09-09 | 21424 | Epic | PROJECTKEY-30 | collab,<br/>good_job | Highest | Company Snoozing App | Example User() | Backlog | Issue for demo | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21424 |
 
 ### jira-board-issue-list
 
@@ -1874,7 +1874,7 @@ Get all issues from a specific board.
                     "Description": "",
                     "DueDate": "2023-09-09",
                     "Id": "21423",
-                    "Key": "COMPANYSA-29",
+                    "Key": "PROJECTKEY-29",
                     "Labels": [
                         "Demisto",
                         "XSOAR",
@@ -1909,7 +1909,7 @@ Get all issues from a specific board.
                     "Description": "This issue is for creating the home page.",
                     "DueDate": "",
                     "Id": "21361",
-                    "Key": "COMPANYSA-2",
+                    "Key": "PROJECTKEY-2",
                     "Labels": [
                         "Demisto",
                         "testnow"
@@ -1934,8 +1934,8 @@ Get all issues from a specific board.
 >
 >|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Example User() | 2023-01-30T16:35:50.482+0200 | Example User(<example@example.com>) |  | 2023-09-09 | 21423 | Sub-task | COMPANYSA-29 | Demisto,<br/>XSOAR,<br/>testnow | Low | Company Snoozing App | Example User() | Selected for Development | Issue for demo | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21423 |
->|  | 2023-01-03T10:25:17.257+0200 | Example User(<example@example.com>) | This issue is for creating the home page. |  | 21361 | Story | COMPANYSA-2 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Create Home Page (including the log in option) | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21361 |
+>| Example User() | 2023-01-30T16:35:50.482+0200 | Example User(<example@example.com>) |  | 2023-09-09 | 21423 | Sub-task | PROJECTKEY-29 | Demisto,<br/>XSOAR,<br/>testnow | Low | Company Snoozing App | Example User() | Selected for Development | Issue for demo | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21423 |
+>|  | 2023-01-03T10:25:17.257+0200 | Example User(<example@example.com>) | This issue is for creating the home page. |  | 21361 | Story | PROJECTKEY-2 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Create Home Page (including the log in option) | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21361 |
 
 ### jira-board-sprint-list
 
@@ -2077,7 +2077,7 @@ Get all epics from a specific board
                     },
                     "done": false,
                     "id": 21360,
-                    "key": "COMPANYSA-1",
+                    "key": "PROJECTKEY-1",
                     "name": "Create Company Snoozing App",
                     "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/epic/21360",
                     "summary": "Start creating the company snoozing app"
@@ -2088,7 +2088,7 @@ Get all epics from a specific board
                     },
                     "done": false,
                     "id": 21424,
-                    "key": "COMPANYSA-30",
+                    "key": "PROJECTKEY-30",
                     "name": "New Epic",
                     "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/epic/21424",
                     "summary": "Issue for demo"
@@ -2106,8 +2106,8 @@ Get all epics from a specific board
 >
 >|Done|ID|Key|Name|Summary|
 >|---|---|---|---|---|
->| false | 21360 | COMPANYSA-1 | Create Company Snoozing App | Start creating the company snoozing app |
->| false | 21424 | COMPANYSA-30 | New Epic | Issue for demo |
+>| false | 21360 | PROJECTKEY-1 | Create Company Snoozing App | Start creating the company snoozing app |
+>| false | 21424 | PROJECTKEY-30 | New Epic | Issue for demo |
 
 ### jira-sprint-issue-list
 
@@ -2303,7 +2303,7 @@ Get all issues that belong to an epic (Child Issues).
 
 #### Command example
 
-```!jira-epic-issue-list epic_key=COMPANYSA-1 jql_query="status!=done"```
+```!jira-epic-issue-list epic_key=PROJECTKEY-1 jql_query="status!=done"```
 
 #### Context Example
 
@@ -2334,7 +2334,7 @@ Get all issues that belong to an epic (Child Issues).
                     "Description": "This issue is for creating the home page.",
                     "DueDate": "",
                     "Id": "21361",
-                    "Key": "COMPANYSA-2",
+                    "Key": "PROJECTKEY-2",
                     "Labels": [
                         "Demisto",
                         "testnow"
@@ -2371,7 +2371,7 @@ Get all issues that belong to an epic (Child Issues).
                     "Description": "Dummy child description",
                     "DueDate": "",
                     "Id": "21496",
-                    "Key": "COMPANYSA-39",
+                    "Key": "PROJECTKEY-39",
                     "Labels": [
                         "Demisto",
                         "testnow"
@@ -2392,12 +2392,12 @@ Get all issues that belong to an epic (Child Issues).
 
 #### Human Readable Output
 
->### Child Issues in epic COMPANYSA-1
+>### Child Issues in epic PROJECTKEY-1
 >
 >|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 2023-01-03T10:25:17.257+0200 | Example User(<example@example.com>) | This issue is for creating the home page. |  | 21361 | Story | COMPANYSA-2 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Create Home Page (including the log in option) | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21361 |
->|  | 2023-03-07T17:31:48.225+0200 | Example User(<example@example.com>) | Dummy child description |  | 21496 | Task | COMPANYSA-39 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Dummy child issue - delete later | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21496 |
+>|  | 2023-01-03T10:25:17.257+0200 | Example User(<example@example.com>) | This issue is for creating the home page. |  | 21361 | Story | PROJECTKEY-2 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Create Home Page (including the log in option) | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21361 |
+>|  | 2023-03-07T17:31:48.225+0200 | Example User(<example@example.com>) | Dummy child description |  | 21496 | Task | PROJECTKEY-39 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Dummy child issue - delete later | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21496 |
 
 ### jira-issue-link-type-get
 
@@ -2517,7 +2517,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-issue-to-issue-link inward_issue=COMPANYSA-31 outward_issue=XSOAR-19 link_type="Post-Incident Reviews" comment="Dummy Link"```
+```!jira-issue-to-issue-link inward_issue=PROJECTKEY-31 outward_issue=XSOAR-19 link_type="Post-Incident Reviews" comment="Dummy Link"```
 
 #### Human Readable Output
 
