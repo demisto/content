@@ -136,6 +136,8 @@ tags:
 - dedup
 - duplicate
 - incidents
+skipPrepare:
+- script-name-incident-to-alert
 timeout: 300ns
 type: python
 dockerimage: demisto/python3:3.10.10.48392
