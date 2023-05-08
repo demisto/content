@@ -437,6 +437,16 @@ def test_get_items_from_mailbox(mocker, item_ids, should_throw_exception):
 
 
 def test_categories_parse_item_as_dict():
+    """
+    Given -
+        a Message with categories.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the categories were parsed correctly.
+    """
     from EWSv2 import parse_item_as_dict
 
     message = Message(subject='message4',
