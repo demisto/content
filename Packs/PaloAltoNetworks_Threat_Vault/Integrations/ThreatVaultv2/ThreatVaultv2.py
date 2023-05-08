@@ -862,7 +862,7 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
     return command_results_list
 
 
-def atp_report_pcap_command(client: Client, args: Dict):
+def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:
 
     report_id = args.get("report_id")
 
@@ -875,8 +875,8 @@ def atp_report_pcap_command(client: Client, args: Dict):
 
         try:
             response = client.atp_report_pcap_request(args=query)
-            response_data_headers = json.loads(json.dumps(dict(response.headers)))
-            response_content = response.content
+            response_data_headers = json.loads(json.dumps(dict(response.headers)))  # type: ignore
+            response_content = response.content  # type: ignore
 
         except DemistoException as err:
             if err.res is not None and err.res.status_code == 404:
