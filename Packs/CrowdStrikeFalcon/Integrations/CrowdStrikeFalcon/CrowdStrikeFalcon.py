@@ -5094,10 +5094,10 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     response = create_ODS_scan_request(args, is_scheduled)
 
     resources = response.get('resources', [])
-    
+
     if not resources:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
-    
+
     human_readable = f'{"Scheduled "*is_scheduled}Scan Created\nID: {resources[0].get("id")}'
 
     command_results = CommandResults(
