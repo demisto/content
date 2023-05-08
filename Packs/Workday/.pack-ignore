@@ -7,6 +7,9 @@ ignore=IN145
 [file:Workday_image.png]
 ignore=IM111
 
+[file:WorkdayEventCollector_image.png]
+ignore=IM111
+
 [file:WorkdayIAMEventsGenerator_image.png]
 ignore=IM111
 
