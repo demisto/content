@@ -27,7 +27,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pipenv==2021.5.29
-          python -m pip install demisto-sdk
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v14.6  # disable-secrets-detection
@@ -40,7 +39,8 @@ jobs:
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
           pipenv sync
-
+          
+          python -m pip install demisto-sdk
           pipenv run ./handle_external_pr.py --changed_files "${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Finished Handling External PR"
       - name: Send Notification
