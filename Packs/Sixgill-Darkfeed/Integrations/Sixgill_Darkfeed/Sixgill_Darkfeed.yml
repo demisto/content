@@ -18,10 +18,10 @@ configuration:
   type: 15
   options:
   - all
-  - 90
-  - 80
-  - 70
-  - 60
+  - "90"
+  - "80"
+  - "70"
+  - "60"
   additionalinfo: 'Ingest all IOCs=all, IOC exactly fits description=90, IOC almost exactly fits description=80, IOC mostly fits description=70, IOC generally fits description=60'
 - defaultvalue: 'true'
   display: Fetch indicators
