@@ -5,36 +5,32 @@ name: Jira V3
 display: Atlassian Jira V3
 category: Case Management
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
+  The integration now supports both on-prem, and cloud instances.
 configuration:
 - name: server_url
   display: Server URL
-  # hint: https://www.example.com
   defaultvalue: https://api.atlassian.com/ex/jira
   type: 0
   required: true
-  additionalinfo: The base URL. For cloud instance, please use the default URL as configured, for OnPrem instance, use your respective domain
+  additionalinfo: The base URL. For cloud instance, please use the default URL as configured, for on-prem instance, use your respective domain.
 - name: cloud_id
   display: Cloud ID
   hint: 11223344-a1b2-3b33-c444-def123456789
   type: 0
-  required: false
-  additionalinfo: This field is used to configure JIRA Cloud.
+  additionalinfo: This field is used to configure JIRA Cloud only.
 - name: callback_url
   display: Callback URL
   hint: https://www.callback.com
   type: 0
   required: true
-- name: client_id
-  display: Client ID
-  type: 14
-  required: true
-- name: client_secret
-  display: Client Secret
-  type: 14
+- display: Client ID
+  type: 9
+  name: credentials
+  displaypassword: Client Secret
   required: true
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
-  additionalinfo: The field that was selected in the "Issue Field to Fetch from" can't be used
+  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used.
     in the query.
   name: fetch_query
   required: false
@@ -50,10 +46,11 @@ configuration:
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
 - display: Issue index to start fetching incidents from
-  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch from". This will
+  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will
     only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.
   name: id_offset
   required: false
+  defaultvalue: 0
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
@@ -74,21 +71,9 @@ configuration:
   name: incidentType
   required: false
   type: 13
-# - defaultvalue: 'false'
-#   display: Mirror incoming incidents
-#   hidden: false
-#   name: incoming_mirror
-#   required: false
-#   type: 8
-# - display: Mirror outgoing incidents
-#   hidden: false
-#   name: outgoing_mirror
-#   required: false
-#   type: 8
-#   defaultvalue: 'false'
 - defaultvalue: 'false'
   additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close
-    the corresponding incident. Please make sure the `Resolved` field is configured in order for this to work properly,
+    the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly,
     if not, it will rely on if the status of the issue is changed to `Done`.
   display: Close Mirrored XSOAR Incident
   name: close_incident
@@ -105,30 +90,28 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
-- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
-    in Jira.
+- additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
   display: Attachment Entry Tag to Jira
   hidden: false
   name: attachment_tag_to_jira
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
-    from Jira.
+- additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
   defaultvalue: attachment tag from Jira
   display: Attachment Entry Tag from Jira
   hidden: false
   name: attachment_tag_from_jira
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
+- additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
   display: Comment Entry Tag to Jira
   hidden: false
   name: comment_tag_to_jira
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as a comment from Jira.
+- additionalinfo: Add this tag to an entry to mirror it as a comment from Jira..
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
   hidden: false
@@ -156,7 +139,7 @@ configuration:
   type: 0
 - defaultvalue: 3 days
   display: "The time range to consider for the initial data fetch in format: <number>
-    <unit>. Default is 3 days."
+    <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days."
   additionalinfo: "For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
   name: first_fetch
   required: false
@@ -1085,30 +1068,12 @@ script:
     - contextPath: Ticket.Status
       description: The ticket status.
       type: String
-    - contextPath: InfoFile.Name
-      description: The file name.
-      type: String
     - contextPath: Ticket.Labels
       description: The ticket's labels.
       type: Array
     - contextPath: Ticket.Components
       description: The ticket's components.
       type: Array
-    - contextPath: InfoFile.EntryID
-      description: The ID for locating the file in the War Room.
-      type: String
-    - contextPath: InfoFile.Size
-      description: The size of the file (in bytes).
-      type: Number
-    - contextPath: InfoFile.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
-      type: String
-    - contextPath: InfoFile.Extension
-      description: The file extension.
-      type: String
-    - contextPath: InfoFile.Info
-      description: Basic information about the file.
-      type: String
     - contextPath: Ticket.Priority
       description: The ticket priority.
       type: String
@@ -1127,6 +1092,36 @@ script:
     - contextPath: Ticket.LastUpdate
       description: The last time the ticket was updated.
       type: Date
+    - contextPath: Ticket.Attachments.created
+      description: The created time of the attachment.
+      type: Date
+    - contextPath: Ticket.Attachments.filename
+      description: The file name of the attachment.
+      type: String
+    - contextPath: Ticket.Attachments.id
+      description: The id of the attachment.
+      type: String
+    - contextPath: Ticket.Attachments.size
+      description: The size (in bytes) of the attachment.
+      type: Number
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the file (in bytes).
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information about the file.
+      type: String
   - arguments:
     - default: false
       description: The maximum number of results to return. Default is 50 and maximum is 5000.
@@ -1508,7 +1503,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get board data
+    description: Get board data. If board_id is given, then only the board that corresponds to the board_id is returned,
+      otherwise, the the command will return boards that match the project_key_id, type, or board_name arguments.
     execution: false
     name: jira-board-list
     outputs:

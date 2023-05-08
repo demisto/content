@@ -1770,7 +1770,7 @@ class TestJiraFetchIncidents:
             max_fetch_incidents=DEFAULT_FETCH_LIMIT,
             first_fetch_interval='3 days',
             mirror_direction='Incoming And Outgoing',
-            comment_tag_to_jira='comment_tag_to_jira',
+            comment_tag_to_jira="comment_tag_to_jira",
             comment_tag_from_jira='comment_tag_from_jira',
             attachment_tag_to_jira='attachment_tag_to_jira',
             attachment_tag_from_jira='attachment_tag_from_jira'

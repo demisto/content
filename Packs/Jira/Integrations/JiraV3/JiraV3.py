@@ -7,7 +7,6 @@ from collections import defaultdict
 from bs4 import BeautifulSoup
 from datetime import timezone
 import hashlib
-urllib3.disable_warnings()
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -32,10 +31,8 @@ DEFAULT_FETCH_INTERVAL = 1  # Unit is in minutes
 DEFAULT_PAGE = 0
 DEFAULT_PAGE_SIZE = 50
 # Errors
-OAUTH2_AUTH_NOT_APPLICABLE_ERROR = ('This command is not applicable to run with a Jira On Prem instance since On Prem instances'
-                                    ' do not use OAuth2 for authorization.')
-ID_OR_KEY_MISSING_ERROR = 'Please provide either the issue ID or key.'
-EPIC_ID_OR_KEY_MISSING_ERROR = 'Please provide either the epic ID or key.'
+ID_OR_KEY_MISSING_ERROR = 'Please provide either an issue ID or issue key.'
+EPIC_ID_OR_KEY_MISSING_ERROR = 'Please provide either an epic ID or epic key.'
 CLOSE_INCIDENT_REASON = 'Issue was marked as "Resolved", or status was changed to "Done"'
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -78,7 +75,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'project_id': 'fields.project.id',
         'issue_type_name': 'fields.issuetype.name',
         'issue_type_id': 'fields.issuetype.id',
-        # 'project_name': 'fields.project.name',  # Does not work for Jira Cloud
         'description': 'fields.description',
         'labels': 'fields.labels',
         'priority': 'fields.priority.name',
@@ -127,9 +123,9 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
                                        files: Dict[str, Any] | None = None) -> Any:
         """This method wraps the _http_request that comes from the BaseClient class, and adds the access_token
         of the client to the headers request, by calling the get_access_token method, which is an abstract method,
-        and every child class mush implement it.
+        and every child class must implement it.
         Returns:
-            _type_: _description_
+            Depends on the resp_type parameter: The response of the API endpoint.
         """
         if headers is None:
             headers = {}
@@ -2338,6 +2334,7 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     """
     if 'project_name' in args:
         args['project_id'] = get_project_id_from_name(client=client, project_name=args['project_name'])
+
     issue_fields = create_issue_fields(client=client, issue_args=args,
                                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     res = client.create_issue(json_data=issue_fields)
@@ -2996,7 +2993,7 @@ def epic_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Co
         args (Dict[str, Any]): The arguments supplied by the user.
 
     Raises:
-        DemistoException: If neither an epic id not a key was supplied.
+        DemistoException: If neither an epic id nor a key was supplied.
 
     Returns:
         CommandResults: CommandResults to return to XSOAR.
@@ -3675,7 +3672,6 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
         {'type': 'description', 'value': issue_description},
-
     ]
     issue['parsedDescription'] = issue_description
     add_extracted_data_to_incident(issue=issue)
@@ -4202,31 +4198,30 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
     return v3_args
 
 
-def main() -> None:
+def main():
     params: Dict[str, Any] = demisto.params()
-    # args: Dict[str, Any] = demisto.args()
     args = map_v2_args_to_v3(demisto.args())
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    # Cloud configuration params
-    cloud_id = params.get('cloud_id', '')
-    client_id = params.get('client_id', '')
-    client_secret = params.get('client_secret', '')
+
+    # Cloud + on-prem configuration params
+    server_url = params.get('server_url', 'https://api.atlassian.com/ex/jira')
+    client_id = params.get('credentials', {}).get('identifier', '')
+    client_secret = params.get('credentials', {}).get('password', '')
     callback_url = params.get('callback_url', '')
 
-    # OnPrem configuration params
-    server_url = params.get('server_url', 'https://api.atlassian.com/ex/jira')
+    # Cloud configuration params
+    cloud_id = params.get('cloud_id', '')
 
     # Fetch params
     issue_field_to_fetch_from = params.get('issue_field_to_fetch_from', 'id')
     fetch_query = params.get('fetch_query', 'status!=done')
-    id_offset = params.get('id_offset', '0')
+    id_offset = params.get('id_offset', 0)
     fetch_attachments = argToBoolean(params.get('fetch_attachments', False))
     fetch_comments = argToBoolean(params.get('fetch_comments', False))
     max_fetch = params.get('max_fetch', DEFAULT_FETCH_LIMIT)
-    fetch_interval = params.get('incidentFetchInterval', DEFAULT_FETCH_INTERVAL)  # in minutes
-    # This is used in the first fetch of an instance, when issue_field_to_fetch_from is either, update date, or created date,
-    # it holds values such as: 3 days, 1 minute, 5 hours,...
+    # This is used in the first fetch of an instance, when issue_field_to_fetch_from is either, updated date, or created date
+    # It holds values such as: 3 days, 1 minute, 5 hours,...
     first_fetch_interval = params.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL)
     mirror_direction = params.get('mirror_direction', 'None')
     comment_tag_to_jira = params.get('comment_tag_to_jira', 'comment tag')
@@ -4242,8 +4237,6 @@ def main() -> None:
                                'from jira cannot have the same value.'))
     # Mirroring params
     mirror_resolved_issue = argToBoolean(params.get('close_incident', False))
-    # Print to demisto.info which Jira instance the user supplied.
-    # From param or if automatically
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands: Dict[str, Callable] = {
@@ -4284,6 +4277,7 @@ def main() -> None:
     try:
         client: JiraBaseClient
         if cloud_id:
+            # Configure JiraCloudClient
             client = JiraCloudClient(
                 cloud_id=cloud_id,
                 verify=verify_certificate,
@@ -4294,7 +4288,6 @@ def main() -> None:
                 server_url=server_url)
         else:
             # Configure JiraOnPremClient
-            # urljoin(url, '/')
             client = JiraOnPremClient(
                 verify=verify_certificate,
                 proxy=proxy,
@@ -4302,10 +4295,7 @@ def main() -> None:
                 client_secret=client_secret,
                 callback_url=callback_url,
                 server_url=server_url)
-            # client.oauth_start()
         demisto.debug(f'The configured Jira client is: {type(client)}')
-        # else:
-        #     raise DemistoException('Cloud ID and Server URL cannot be configured at the same time')
 
         if command == 'test-module':
             return_results(test_module())
@@ -4344,7 +4334,7 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        print(traceback.format_exc())
         return_error(str(e))
 
 
