@@ -8,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import uuid
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
-from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
+from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor  # TODO, ASN
 from stix2 import Tool, CourseOfAction
 from typing import Any, Callable
 
@@ -26,7 +26,8 @@ SCOs: dict[str, str] = {  # pragma: no cover
     "account": "user-account:account_login",
     "domain": "domain-name:value",
     "host": "domain-name:value",
-    "registry key": "windows-registry-key:key"
+    "registry key": "windows-registry-key:key",
+    "asn": "autonomous-system:name"
 }
 
 SDOs: dict[str, Callable] = {  # pragma: no cover
@@ -45,7 +46,7 @@ SDOs: dict[str, Callable] = {  # pragma: no cover
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 
-XSOAR_TYPES_TO_STIX_SCO = {
+XSOAR_TYPES_TO_STIX_SCO = {   # pragma: no cover
     FeedIndicatorType.CIDR: 'ipv4-addr',
     FeedIndicatorType.DomainGlob: 'domain-name',
     FeedIndicatorType.IPv6: 'ipv6-addr',
@@ -58,20 +59,28 @@ XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.File: 'file',
     FeedIndicatorType.URL: 'url',
     FeedIndicatorType.Software: 'software',
-    FeedIndicatorType.AS: 'asn',
+    FeedIndicatorType.AS: 'autonomous-system',
 }
 
-XSOAR_TYPES_TO_STIX_SDO = {
+XSOAR_TYPES_TO_STIX_SDO = {  # pragma: no cover
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
     ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
     ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
-    ThreatIntel.ObjectsNames.INTRUSION_SET: 'instruction-set',
+    ThreatIntel.ObjectsNames.INTRUSION_SET: 'intrusion-set',
     ThreatIntel.ObjectsNames.REPORT: 'report',
     ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
     ThreatIntel.ObjectsNames.TOOL: 'tool',
     ThreatIntel.ObjectsNames.MALWARE: 'malware',
     FeedIndicatorType.CVE: 'vulnerability',
+}
+
+
+HASH_TYPE_TO_STIX_HASH_TYPE = {  # pragma: no cover
+    'md5': 'MD5',
+    'sha1': 'SHA-1',
+    'sha256': 'SHA-256',
+    'sha512': 'SHA-512',
 }
 
 
@@ -159,6 +168,49 @@ def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value:
     return f'{stix_type}--{unique_id}'
 
 
+def add_file_fields_to_indicator(xsoar_indicator: Dict, value: str) -> Dict:
+    """
+    Create the hashes dictionary for the indicator object.
+    Args:
+        xsoar_indicator: Dict - The XSOAR representation of the indicator.
+        value: str - The value of the indicator.
+    Returns:
+        The dictionary with the file hashes.
+    """
+    hashes_dict = {}
+    for hash_kind in ['md5', 'sha1', 'sha256', 'sha512']:
+        if get_hash_type(value) == hash_kind:
+            hashes_dict[HASH_TYPE_TO_STIX_HASH_TYPE.get(hash_kind)] = value
+        elif hash_kind in xsoar_indicator:
+            hashes_dict[HASH_TYPE_TO_STIX_HASH_TYPE.get(hash_kind)] = xsoar_indicator.get(hash_kind, '')
+    return hashes_dict
+
+
+def create_stix_sco_indicator(stix_id: Optional[str], stix_type: Optional[str], value: str, xsoar_indicator: Dict) -> Dict:
+    """
+    Create stix sco indicator object.
+    Args:
+        stix_id: Optional[str] - The stix id of the indicator.
+        stix_type: str - the stix type of the indicator.
+        xsoar_indicator: Dict - The XSOAR representation of the indicator.
+        value: str - The value of the indicator.
+    Returns:
+        The Dictionary representing the stix indicator.
+    """
+    stix_indicator: Dict[str, Any] = {
+        "type": stix_type,
+        "spec_version": "2.1",
+        "value": value,
+        "id": stix_id
+    }
+    if stix_type == 'file':
+        stix_indicator['hashes'] = add_file_fields_to_indicator(xsoar_indicator, value)
+    elif stix_type == 'autonomous-system':
+        stix_indicator['number'] = value
+        stix_indicator['name'] = xsoar_indicator.get('name', '')
+    return stix_indicator
+
+
 def main():
 
     user_args = demisto.args().get('indicators', 'Unknown')
@@ -180,26 +232,22 @@ def main():
     for indicator_fields in all_args:
         kwargs: dict[str, Any] = {"allow_custom": True}
 
-        indicator_dict = all_args[indicator_fields]
-        demisto_indicator_type = indicator_dict.get('indicator_type', 'Unknown')
+        xsoar_indicator = all_args[indicator_fields]
+        demisto_indicator_type = xsoar_indicator.get('indicator_type', 'Unknown')
 
         if doubleBackslash:
-            value = indicator_dict.get('value', '').replace('\\', r'\\')
+            value = xsoar_indicator.get('value', '').replace('\\', r'\\')
         else:
-            value = indicator_dict.get('value', '')
+            value = xsoar_indicator.get('value', '')
 
         if demisto_indicator_type in XSOAR_TYPES_TO_STIX_SCO and is_sco:
             stix_type = XSOAR_TYPES_TO_STIX_SCO.get(demisto_indicator_type)
-            stix_id = create_sco_stix_uuid(indicator_dict, stix_type, value)
-            indicator = {
-                "type": stix_type,
-                "spec_version": "2.1",
-                "value": value,
-                "id": stix_id
-            }
-            indicators.append(indicator)
+            stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type, value)
+            stix_indicator = create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator)
+            indicators.append(stix_indicator)
+
         else:
-            demisto_score = indicator_dict.get('score', '').lower()
+            demisto_score = xsoar_indicator.get('score', '').lower()
 
             if demisto_score in ["bad", "malicious"]:
                 kwargs["score"] = "High"
@@ -214,13 +262,13 @@ def main():
                 kwargs["score"] = "Not Specified"
 
             stix_type = XSOAR_TYPES_TO_STIX_SDO.get(demisto_indicator_type, 'indicator')
-            stix_id = create_sdo_stix_uuid(indicator_dict, stix_type, value)
+            stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type, value)
             kwargs["id"] = stix_id
 
-            kwargs["created"] = dateparser.parse(indicator_dict.get('timestamp', ''))
-            kwargs["modified"] = dateparser.parse(indicator_dict.get('lastSeen', f'{kwargs["created"]}'))
+            kwargs["created"] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
+            kwargs["modified"] = dateparser.parse(xsoar_indicator.get('lastSeen', f'{kwargs["created"]}'))
             kwargs["labels"] = [demisto_indicator_type.lower()]
-            kwargs["description"] = indicator_dict.get('description', '')
+            kwargs["description"] = xsoar_indicator.get('description', '')
 
             kwargs = {k: v for k, v in kwargs.items() if v}  # Removing keys with empty strings
 
@@ -247,7 +295,7 @@ def main():
 
                     elif indicator_type == "attack pattern":
                         try:
-                            mitreid = indicator_dict.get('mitreid', '')
+                            mitreid = xsoar_indicator.get('mitreid', '')
                             if mitreid:
                                 kwargs["external_references"] = [ExternalReference(source_name="mitre", external_id=mitreid)]
 
@@ -256,7 +304,7 @@ def main():
 
                     elif indicator_type == 'malware':
 
-                        kwargs['is_family'] = argToBoolean(indicator_dict.get('ismalwarefamily', 'False').lower())
+                        kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
 
                     indicator = SDOs[indicator_type](
                         name=value,

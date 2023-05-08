@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
-from StixCreator import main, guess_indicator_type, create_sco_stix_uuid, create_sdo_stix_uuid
+from StixCreator import main, guess_indicator_type, create_sco_stix_uuid, create_sdo_stix_uuid, \
+    add_file_fields_to_indicator, create_stix_sco_indicator
 
 FILE_INDICATOR = \
     {
@@ -204,11 +205,11 @@ sdo_stix_type_2 = 'malware'
 sdo_value_2 = 'bad malware'
 sdo_expected_stix_id_2 = 'malware--bddcf01f-9fd0-5107-a013-4b174285babc'
 
-test_test_create_sdo_stix_uuid_params = [(sdo_xsoar_indicator_1, sdo_stix_type_1, sdo_value_1, sdo_expected_stix_id_1),
-                                         (sdo_xsoar_indicator_2, sdo_stix_type_2, sdo_value_2, sdo_expected_stix_id_2)]
+test_create_sdo_stix_uuid_params = [(sdo_xsoar_indicator_1, sdo_stix_type_1, sdo_value_1, sdo_expected_stix_id_1),
+                                    (sdo_xsoar_indicator_2, sdo_stix_type_2, sdo_value_2, sdo_expected_stix_id_2)]
 
 
-@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_test_create_sdo_stix_uuid_params)
+@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_create_sdo_stix_uuid_params)
 def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
     """
     Given:
@@ -222,3 +223,112 @@ def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_i
     """
     stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type, value)
     assert expected_stix_id == stix_id
+
+
+xsoar_indicator_file = {'expirationStatus': 'active',
+                        'firstSeen': '2023-05-07T14:42:59Z',
+                        'indicator_type': 'File',
+                        'lastSeen': '2023-05-07T14:42:59Z',
+                        'score': 'Unknown',
+                        'sha1': '57218c316b6921e2cd61027a2387edc31a2d9471',
+                        'sha256': 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5',
+                        'sha512': '37c783b80b1d458b89e712c2dfe2777050eff0aefc9f6d8beedee77807d9aeb2e27d14815cf4f0229'
+                                  'b1d36c186bb5f2b5ef55e632b108cc41e9fb964c39b42a5',
+                        'ssdeep': '3:g:g',
+                        'timestamp': '2023-05-07T14:42:59Z',
+                        'value': 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5'}
+
+
+def test_add_file_fields_to_indicator():
+    """
+    Given:
+        - A dictionary representing a xsoar indicator.
+    When:
+        - Creating a dictionary containing the file hashes.
+    Then:
+        - check the hashes dictionary
+    """
+    expected_hashes_dict = {'SHA-1': '57218c316b6921e2cd61027a2387edc31a2d9471',
+                            'SHA-256': 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5',
+                            'SHA-512': '37c783b80b1d458b89e712c2dfe2777050eff0aefc9f6d8beedee77807d9aeb2e27d14815cf4f0'
+                                       '229b1d36c186bb5f2b5ef55e632b108cc41e9fb964c39b42a5'}
+    value = xsoar_indicator_file.get('value', '')
+    result = add_file_fields_to_indicator(xsoar_indicator_file, value)
+    assert expected_hashes_dict == result
+
+
+xsoar_indicator_domain = {'expirationStatus': 'active',
+                          'firstSeen': '2023-05-07T13:18:27Z',
+                          'indicator_type': 'Domain',
+                          'lastSeen': '2023-05-07T13:18:27Z',
+                          'score': 'Unknown',
+                          'timestamp': '2023-05-07T13:18:27Z',
+                          'value': 'hello@test.com'}
+xsoar_indicator_asn = {'expirationStatus': 'active',
+                       'firstSeen': '2023-05-07T07:37:30Z',
+                       'indicator_type': 'ASN',
+                       'lastSeen': '2023-05-07T07:37:30Z',
+                       'name': 'name',
+                       'score': 'Unknown',
+                       'timestamp': '2023-05-07T07:37:30Z',
+                       'value': '54538'}
+
+file_stix_id = 'file--a1b6bbfd-73cd-5fef-9e12-9453e3b74cc5'
+domain_stix_id = 'domain-name--fdf407b4-c3d0-5011-a66c-5ef889593b08'
+asn_stix_id = 'autonomous-system--937a0541-d893-5707-ad67-bcfe8398164e'
+
+file_stix_type = 'file'
+domain_stix_type = 'domain-name'
+asn_stix_type = 'autonomous-system'
+
+file_value = 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5'
+domain_value = 'hello@test.com'
+asn_value = '54538'
+
+expectes_stix_file_indicator = {'type': 'file',
+                                'spec_version': '2.1',
+                                'value': 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5',
+                                'id': 'file--a1b6bbfd-73cd-5fef-9e12-9453e3b74cc5',
+                                'hashes': {
+                                    'SHA-1': '57218c316b6921e2cd61027a2387edc31a2d9471',
+                                    'SHA-256': 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5',
+                                    'SHA-512': '37c783b80b1d458b89e712c2dfe2777050eff0aefc9f6d8beedee77807d9aeb2e27d14'
+                                               '815cf4f0229b1d36c186bb5f2b5ef55e632b108cc41e9fb964c39b42a5'}}
+expectes_stix_domain_indicator = {'type': 'domain-name',
+                                  'spec_version': '2.1',
+                                  'value': 'hello@test.com',
+                                  'id': 'domain-name--fdf407b4-c3d0-5011-a66c-5ef889593b08'}
+expectes_stix_asn_indicator = {'type': 'autonomous-system',
+                               'spec_version': '2.1',
+                               'value': '54538',
+                               'id': 'autonomous-system--937a0541-d893-5707-ad67-bcfe8398164e',
+                               'number': '54538',
+                               'name': 'name'}
+params_test_create_stix_sco_indicator = [(file_stix_id, file_stix_type, file_value, xsoar_indicator_file,
+                                          expectes_stix_file_indicator),
+                                         (domain_stix_id, domain_stix_type, domain_value, xsoar_indicator_domain,
+                                          expectes_stix_domain_indicator),
+                                         (asn_stix_id, asn_stix_type, asn_value, xsoar_indicator_asn,
+                                          expectes_stix_asn_indicator)]
+
+
+@pytest.mark.parametrize('stix_id, stix_type, value, xsoar_indicator, expectes_stix_indicator',
+                         params_test_create_stix_sco_indicator)
+def test_create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator, expectes_stix_indicator):
+    """
+    Given:
+        - Case 1: A XSOAR indicator of type 'File', with a stix id of 'file--a1b6bbfd-73cd-5fef-9e12-9453e3b74cc5',
+            stix type of 'file' and a value of 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5'.
+        - Case 2: A XSOAR indicator of type 'Domain', with a stix id of
+            'domain-name--fdf407b4-c3d0-5011-a66c-5ef889593b08', stix type of 'domain-name' and a value of
+            'hello@test.com'.
+        - Case 2: A XSOAR indicator of type 'ASN', with a stix id of
+            'autonomous-system--937a0541-d893-5707-ad67-bcfe8398164e', stix type of 'autonomous-system' and a value of
+            '54538'.
+    When:
+        - Creating a SCO indicator and calling create_stix_sco_indicator.
+    Then:
+         - Assert the indicator dictionary is as expected.
+    """
+    result = create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator)
+    assert result == expectes_stix_indicator
