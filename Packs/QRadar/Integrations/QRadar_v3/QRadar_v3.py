@@ -296,6 +296,7 @@ LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
     'source_address_ids': 'SourceAddressIDs'
 }
 
+
 SOURCE_IPS_OLD_NEW_MAP = {
     'domain_id': 'DomainID',
     'event_flow_count': 'EventFlowCount',
