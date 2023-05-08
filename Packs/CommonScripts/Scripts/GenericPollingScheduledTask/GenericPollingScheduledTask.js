@@ -17,8 +17,8 @@
  */
 
 // Constant to verify the minimum build number and XSIAM version for the new polling command (stopScheduleEntry feature).
-//const MINIMUM_XSIAM_VERSION = '8.3.0';
-//const MINIMUM_BUILD_NUMBER_XSIAM = 313276;
+const MINIMUM_XSIAM_VERSION = '8.3.0';
+const MINIMUM_BUILD_NUMBER_XSIAM = 313276;
 const MINIMUM_XSOAR_VERSION = '8.2.0';
 const MINIMUM_BUILD_NUMBER_XSOAR = 309463;
 
@@ -239,14 +239,12 @@ function shouldRunWithGuid() {
     platform = res.platform;
     version = res.version;
     buildNumber = res.buildNumber;
-    
-    // Feature needs: to support XSIAM.
-    // ((platform === "x2") && (compareVersions(version, MINIMUM_XSIAM_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSIAM))
-    
+
     // Checking if the stopScheduleEntry command is available.
     // If not, we are running on an older version of platform and we need to use the old polling mechanism.
     if ((buildNumber !== "REPLACE_THIS_WITH_CI_BUILD_NUM") &&
-        ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR))) {
+         (((platform === "x2") && (compareVersions(version, MINIMUM_XSIAM_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSIAM)) ||
+        ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR)))) {
         return true;
     }
 }

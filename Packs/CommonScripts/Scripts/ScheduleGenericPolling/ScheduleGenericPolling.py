@@ -3,8 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import uuid
 
 # Constant to verify the minimum build number and XSIAM version for the new polling command (stopScheduleEntry feature).
-# MINIMUM_XSIAM_VERSION = '8.3.0'
-# MINIMUM_BUILD_NUMBER_XSIAM = 313276
+MINIMUM_XSIAM_VERSION = '8.3.0'
+MINIMUM_BUILD_NUMBER_XSIAM = 313276
 MINIMUM_XSOAR_VERSION = '8.2.0'
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
@@ -32,13 +32,11 @@ def should_run_with_guid():
     build_number = res_version.get('buildNumber')
     platform = res_version.get('platform')
 
-    # Feature needs: to support XSIAM.
-    # (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
-    #     build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
-
     return build_number != "REPLACE_THIS_WITH_CI_BUILD_NUM" and \
-        (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(
-            build_number) >= MINIMUM_BUILD_NUMBER_XSOAR)
+        (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and (int(
+            build_number) >= MINIMUM_BUILD_NUMBER_XSIAM) or
+         (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(
+             build_number) >= MINIMUM_BUILD_NUMBER_XSOAR))
 
 
 def main():
