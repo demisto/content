@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 170,
-          "y": -360
+          "y": -380
         }
       }
     note: false
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": 880
+          "y": 1070
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 0
+          "y": -20
         }
       }
     note: false
@@ -204,7 +204,7 @@ tasks:
       {
         "position": {
           "x": 170,
-          "y": -210
+          "y": -230
         }
       }
     note: false
@@ -231,8 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 1100
+          "x": 240,
+          "y": 1260
         }
       }
     note: false
@@ -278,7 +278,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 590
+          "y": 870
         }
       }
     note: false
@@ -304,7 +304,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "14"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -321,7 +321,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 340
+          "y": 330
         }
       }
     note: false
@@ -364,7 +364,68 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 180
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 82bd90cf-7ff2-4062-867e-d620bedbbfea
+    type: condition
+    task:
+      id: 82bd90cf-7ff2-4062-867e-d620bedbbfea
+      version: -1
+      name: Is Cortex ASM enabled?
+      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to continue with cloud enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Attack Surface Management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 630
         }
       }
     note: false
@@ -380,15 +441,17 @@ view: |-
       "14_10_#default#": 0.46,
       "14_6_GCP": 0.47,
       "15_10_#default#": 0.2,
+      "17_10_#default#": 0.22,
+      "17_14_yes": 0.64,
       "9_10_#default#": 0.33,
       "9_7_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 1525,
-        "width": 730,
+        "height": 1705,
+        "width": 760,
         "x": -140,
-        "y": -360
+        "y": -380
       }
     }
   }
