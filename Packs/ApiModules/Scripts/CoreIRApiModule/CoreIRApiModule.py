@@ -3654,9 +3654,9 @@ def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandR
         ValueError: If the API connection failed.
     """
     try:
-        list_users: list = client.get_list_users().get('reply', [])
+        list_users: list[dict[str, Any]] = client.get_list_users().get('reply', [])
     except Exception as e:
-        raise ValueError(f'API connection failed {e}')
+        raise ValueError(f'API connection failed {e}') from e
 
     table_for_markdown = [parse_list_users(user) for user in list_users]
     readable_output = tableToMarkdown(name='Users', t=table_for_markdown)
@@ -3691,7 +3691,7 @@ def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
     """
     pattern = fr"{id_or_group_or_role} \\?'([\(\)\[\]A-Za-z 0-9]+)\\?'"
     if match := re.search(pattern, err):
-        return f'Error: {id_or_group_or_role} {match.group(1)} was not found'
+        return f'Error: {id_or_group_or_role} {match[1]} was not found'
     return "Error: "
 
 
