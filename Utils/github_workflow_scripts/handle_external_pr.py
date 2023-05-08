@@ -140,8 +140,7 @@ def main():
     pr = content_repo.get_pull(pr_number)
 
     parser_args = parse_changed_files_names()
-    changed_files_list = parser_args.changed_files
-    print(f'{changed_files_list=}')
+    changed_files_list = parser_args.changed_files.split(' ')
 
     labels_to_add = [CONTRIBUTION_LABEL]
     if support_label := get_packs_support_level_label(changed_files_list):
