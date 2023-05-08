@@ -13,17 +13,10 @@ def create_output(error_msg):
 
 
 def main():
-    output = {}
     try:
         apply_transition()
-    except Exception as e:
-        output = create_output(
-            ('Error occurred while running script-JiraChangeStatus. got the next error:\n'
-             f'{e}')
-        )
-    finally:
-        if output:
-            demisto.results(output)
+    except Exception as exc:
+        return_error(f'Failed to execute script-JiraChangeStatus. Error: {exc}')
 
 
 def apply_transition():

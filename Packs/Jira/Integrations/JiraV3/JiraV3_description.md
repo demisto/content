@@ -3,27 +3,31 @@ Please configure only one of the following fields:
 1. Cloud ID - Used for Jira Cloud instance.
 2. OnPrem - Leave the Cloud ID empty, and fill in the rest of the fields.
 
+For both instances, it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The oproxy url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the oproxy url, you may use a localhost url on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the url address bar in the response.
+
 ### Cloud authentication
 
-Go to your [Developer console](https://developer.atlassian.com/console/myapps/) page, and choose the App you want to integrate with your instance, it must be of type OAuth 2.0. For creating a new app with type OAuth 2.0, press the Create button and choose `OAuth 2.0 integration`, and follow the steps.
+Go to your [Developer console](https://developer.atlassian.com/console/myapps/) page, and choose the App you want to integrate with your instance. It must be of type OAuth 2.0. For creating a new app with type OAuth 2.0, click **Create** and choose **OAuth 2.0 integration** and follow the steps.
 
 #### Callback URL
 
-Go to the `Authorization` tab, and press on the `Configure` button of the authorization with type of OAuth 2.0 (3LO), and copy the content of the `Callback URL`.
+1. Go to the **Authorization** tab, and click **Add** on the authorization with type of OAuth 2.0 (3LO).
+2. Insert a **Callback URL**.
 
 #### Client ID, Client Secret
 
-Go to the `Settings` tab, and copy the `Client ID`, and `Secret` to the Client ID, and Client Secret fields, respectively.
+1. Go to the **Settings** tab.
+2. Copy the **Client ID** and **Secret** to the Client ID and Client Secret fields, respectively.
 
 #### Cloud ID
 
-Go to your [Admin page](https://admin.atlassian.com/), and choose the `Jira Software` product by pressing the three dots and choosing `Manage users`, after that, your Cloud ID will be shown in the url:
+Go to your [Admin page](https://admin.atlassian.com/), and choose the `Jira Software` product by clicking the three dots and choosing **Manage users**. Your Cloud ID will appear in the URL:
 `https://admin.atlassian.com/s/{cloud_id}/users`
-(if you do not have it, then press on `Products` and the then add the `Jira Software` product to your products list)
+(If you do not have it, click **Products** and add the `Jira Software` product to your products list.)
 
 #### Cloud Scopes
 
-The integration uses the *offline_access* scope, in order to retrieve refresh tokens
+The integration uses the *offline_access* scope, in order to retrieve refresh tokens.
 
 ##### Classic Scopes
 
@@ -43,10 +47,14 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 
 ### OnPrem authentication
 
-Log in to Jira as a user with `Jira Administrator` permissions, then click on the Jira Administration tab (the gear icon found in the top right corner), and press on `Applications`. For creating a new `Application link`, which will be used to integrate XSOAR with Jira, press on `Application links` under `Integrations`, found on the left side menu, then press on `Create link`, and choose `External application`, with the `Incoming` direction.
-Fill in the required details as explained in the page, and on permissions, choose the permission `Write`.
-Once the link is created, you will be able to see `Client ID`, and the `Client secret`, which are required in the configuration screen, copy them into the respective fields.
+1. Log in to Jira as a user with `Jira Administrator` permissions.
+2. Click the Jira Administration tab (the gear icon found in the top right corner) and click **Applications**.
+3. To create a new `Application link`, which will be used to integrate Cortex XSOAR with Jira:
+    a. Click **Application links** under `Integrations`, found on the left side menu.
+    b. Click **Create link** and choose **External application** with the **Incoming** direction.
+4. Fill in the required details as explained in the page and choose the permission **Write**.
+5. Once the link is created, you will be able to see `Client ID`, and the `Client secret`, which are required in the configuration screen. Copy these values and paste them into the respective fields in the configuration screen.
 
 #### OnPrem Scopes
 
-* Write
+Write

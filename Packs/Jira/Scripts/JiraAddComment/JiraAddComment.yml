@@ -1,10 +1,10 @@
 args:
-- description: comment to be added to the Jira issue.
+- description: Comment to be added to the Jira issue.
   name: comment
   required: true
 - auto: PREDEFINED
   defaultValue: comment tag
-  description: The comment tag. Use the comment entry tag to Jira configured in your instance to mirror
+  description: The comment tag. Use the comment entry tag (defined in your instance configuration) to mirror
     the comment to Jira.
   name: tags
   predefined:

@@ -16,6 +16,6 @@ engineinfo: {}
 mainengineinfo: {}
 fromversion: 5.0.0
 comment: |-
-  This script changes the status field of an issue. It gets the new Jira status and updates the Cortex XSOAR incident status.
+  This script changes the status field of a Jira incident. It gets the new Jira status of the remote Jira issue and updates the Cortex XSOAR incident status.
 tests:
 - Jira-v2-Test

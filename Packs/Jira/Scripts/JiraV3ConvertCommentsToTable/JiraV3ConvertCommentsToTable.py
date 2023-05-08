@@ -39,9 +39,8 @@ def main():  # pragma: no cover
         else:
             raise DemistoException('No data to present')
 
-    except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(str(e))
+    except Exception as exc:
+        return_error(f'Failed to execute JiraV3ConvertCommentsToTable. Error: {exc}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
