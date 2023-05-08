@@ -235,8 +235,7 @@ xsoar_indicator_file = {'expirationStatus': 'active',
                         'sha512': '37c783b80b1d458b89e712c2dfe2777050eff0aefc9f6d8beedee77807d9aeb2e27d14815cf4f0229'
                                   'b1d36c186bb5f2b5ef55e632b108cc41e9fb964c39b42a5',
                         'ssdeep': '3:g:g',
-                        'timestamp': '2023-05-07T14:42:59Z',
-                        'value': 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5'}
+                        'timestamp': '2023-05-07T14:42:59Z'}
 
 
 def test_add_file_fields_to_indicator():
@@ -270,8 +269,7 @@ xsoar_indicator_asn = {'expirationStatus': 'active',
                        'lastSeen': '2023-05-07T07:37:30Z',
                        'name': 'name',
                        'score': 'Unknown',
-                       'timestamp': '2023-05-07T07:37:30Z',
-                       'value': '54538'}
+                       'timestamp': '2023-05-07T07:37:30Z'}
 
 file_stix_id = 'file--a1b6bbfd-73cd-5fef-9e12-9453e3b74cc5'
 domain_stix_id = 'domain-name--fdf407b4-c3d0-5011-a66c-5ef889593b08'
@@ -287,7 +285,6 @@ asn_value = '54538'
 
 expectes_stix_file_indicator = {'type': 'file',
                                 'spec_version': '2.1',
-                                'value': 'f1945cd6c19e56b3c1c78943ef5ec18116907a4ca1efc40a57d48ab1db7adfc5',
                                 'id': 'file--a1b6bbfd-73cd-5fef-9e12-9453e3b74cc5',
                                 'hashes': {
                                     'SHA-1': '57218c316b6921e2cd61027a2387edc31a2d9471',
@@ -300,7 +297,6 @@ expectes_stix_domain_indicator = {'type': 'domain-name',
                                   'id': 'domain-name--fdf407b4-c3d0-5011-a66c-5ef889593b08'}
 expectes_stix_asn_indicator = {'type': 'autonomous-system',
                                'spec_version': '2.1',
-                               'value': '54538',
                                'id': 'autonomous-system--937a0541-d893-5707-ad67-bcfe8398164e',
                                'number': '54538',
                                'name': 'name'}

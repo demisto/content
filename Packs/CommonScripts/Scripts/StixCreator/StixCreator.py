@@ -200,7 +200,6 @@ def create_stix_sco_indicator(stix_id: Optional[str], stix_type: Optional[str], 
     stix_indicator: Dict[str, Any] = {
         "type": stix_type,
         "spec_version": "2.1",
-        "value": value,
         "id": stix_id
     }
     if stix_type == 'file':
@@ -208,6 +207,8 @@ def create_stix_sco_indicator(stix_id: Optional[str], stix_type: Optional[str], 
     elif stix_type == 'autonomous-system':
         stix_indicator['number'] = value
         stix_indicator['name'] = xsoar_indicator.get('name', '')
+    else:
+        stix_indicator['value'] = value
     return stix_indicator
 
 
