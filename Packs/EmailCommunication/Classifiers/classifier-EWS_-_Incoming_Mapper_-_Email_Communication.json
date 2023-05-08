@@ -156,24 +156,6 @@
      },
      "simple": ""
     },
-    "Categories": {
-        "complex": {
-            "filters": [],
-            "root": "categories",
-            "transformers": [
-                {
-                    "args": {
-                        "separator": {
-                            "value": {
-                                "simple": ","
-                            }
-                        }
-                    },
-                    "operator": "join"
-                }
-            ]
-        }
-    },
     "Email BCC": {
      "complex": null,
      "simple": "bcc_recipients.email_address"
@@ -548,24 +530,6 @@
       ]
      },
      "simple": ""
-    },
-    "Categories": {
-        "complex": {
-            "filters": [],
-            "root": "categories",
-            "transformers": [
-                {
-                    "args": {
-                        "separator": {
-                            "value": {
-                                "simple": ","
-                            }
-                        }
-                    },
-                    "operator": "join"
-                }
-            ]
-        }
     },
     "Email BCC": {
      "complex": null,
