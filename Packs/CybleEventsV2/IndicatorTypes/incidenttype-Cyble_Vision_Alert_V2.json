@@ -1,0 +1,12 @@
+{
+    "id": "Cyble Vision Alert V2",
+    "version": -1,
+    "locked": false,
+    "system": false,
+    "disabled": false,
+    "layout": "88a96dfd-1951-459e-843c-bcb420d9f372",
+    "fromVersion": "6.8.0",
+    "details": "Cyble Vision Alert V2",
+    "regex": "",
+    "expiration": 1
+}

@@ -1,0 +1,65 @@
+{
+  "data": {
+    "pagination": {
+      "count": 17381117,
+      "items_per_page": 10,
+      "page": 1
+    },
+    "result": [
+      {
+        "asn_id": null,
+        "attack_id": [
+          {
+            "created_at": "2023-01-05T04:09:37.034894Z",
+            "attack_id": "T1071.001",
+            "name": "sample protocol name",
+            "updated_at": "2023-01-05T04:09:37.034894Z",
+            "uuid": "8992fe13-010f-5863-b025-6c15c07d00a7",
+            "pivot": {
+                "ioc_id": "488d7413-6bdc-5841-b782-dc1909bdead2",
+                "ioc_attack_id": "8992fe13-010f-5863-b025-6c15c07d00a7"
+            }
+          }
+        ],
+        "confident_rating": "Some confident Rating",
+        "created_at": "2023-02-21T02:51:38.959289Z",
+        "created_by": null,
+        "first_seen": "2023-02-20 21:00:55",
+        "ioc": "Indicator",
+        "ioc_type": {
+          "created_at": "2023-01-05T03:00:46.918397Z",
+          "created_by": null,
+          "updated_at": "2023-01-05T03:00:46.918397Z",
+          "uuid": "6e6e6fc5-f778-581b-a49a-ca735f250e48",
+          "name": "some indicator type"
+        },
+        "ioc_tags": [
+          {
+            "created_at": "2023-02-12T16:57:07.204597Z",
+            "name": "Tag Name",
+            "pivot": {
+              "ioc_id": "55f763d3-6c11-5697-9a40-8218f9c459b4",
+              "tag_id": "94fva158-3963-5bc8-959b-17f7e5a1c23a"
+            },
+            "tag_type_id": "d83a7e71-4bbc-59c0-9734-e3604a33fe30",
+            "updated_at": "2023-02-12T16:57:07.204597Z",
+            "uuid": "9wfea158-3963-5bc8-959b-17f7e5a1c23a"
+          }
+        ],
+        "iocs_source_name": {
+          "created_at": "2023-02-10T06:20:56.328463Z",
+          "name": "Feed Name",
+          "updated_at": "2023-02-10T06:20:56.328463Z",
+          "uuid": "e80305e3-545c-5ec8-8492-3a9f1fa11786"
+        },
+        "last_seen": "2023-02-20 21:00:55",
+        "reference_link": null,
+        "risk_rating": "Some Risk Rating",
+        "source_name_id": "8w0305e3-545c-5ec8-8492-3a9f1fa11786",
+        "updated_at": "2023-02-21T02:51:38.959289Z",
+        "uuid": "5rf763d3-6c11-5697-9a40-8218f9c459b4"
+      }
+    ]
+  },
+  "success": true
+}

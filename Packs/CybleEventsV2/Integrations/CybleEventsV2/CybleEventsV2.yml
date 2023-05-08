@@ -1,0 +1,251 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: cybleevents v2
+  version: -1
+configuration:
+- additionalinfo: Server URL (e.g. https://example.net)
+  defaultvalue: example.net
+  display: URL
+  name: base_url
+  required: true
+  type: 0
+- additionalinfo: Access Token
+  defaultvalue: Access Token
+  display: Access Token
+  name: token
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incidents Fetch Interval
+  hidden: false
+  name: incidentFetchInterval
+  required: false
+  type: 0
+- additionalinfo: Maximum incidents to be fetched every time. Upper limit is 50 incidents.
+  defaultvalue: '1'
+  display: Incident Fetch Limit
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 1 days
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
+display: CybleEvents v2
+name: cybleevents v2
+script:
+  commands:
+  - deprecated: false
+    description: Get list of Subscribed services
+    execution: false
+    name: subscribed-services
+    outputs:
+    - contextPath: CybleEventsV2.SubscribedServices
+      description: List of subscribed services from Cyble vision
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email
+      description: Returns record by type like(Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email)
+      isArray: true
+      name: iocType
+      required: false
+      secret: false
+    - default: false
+      description: Returns records for the specified indicator value
+      isArray: false
+      name: ioc
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Returns records started with given value
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Number of records to return (max 1000). Using a smaller limit will get faster responses.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: last_seen
+      description: Sorting based on the column(last_seen,first_seen,ioc_type)
+      isArray: false
+      name: sortBy
+      predefined:
+      - last_seen
+      - first_seen
+      - ioc_type
+      required: false
+      secret: false
+    - default: true
+      defaultValue: desc
+      description: Sorting order for ioc either Ascending or Descending based on sort by
+      isArray: false
+      name: order
+      required: false
+      secret: false
+    - default: false
+      description: Returns records for the specified tags
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Timeline start date in the format "YYYY-MM-DD". Need to used with end_date as timeline range.
+      isArray: false
+      name: startDate
+      required: false
+      secret: false
+    - default: false
+      description: Timeline end date in the format "YYYY-MM-DD". Need to used with end_date as timeline range.
+      isArray: false
+      name: endDate
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch the indicators for the given timeline
+    execution: false
+    name: cyble-vision-v2-fetch-iocs
+    outputs:
+    - contextPath: CybleEventsV2.IoCs.Data
+      description: Returns indicator with risk score, confident rating, first seen and last seen
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: Number of records to return (max 50). Using a smaller limit will get faster responses.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+      isArray: false
+      name: startDate
+      required: true
+      secret: false
+    - default: false
+      description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+      isArray: false
+      name: endDate
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: Sorting order for alert fetch either Ascending or Descending
+      isArray: false
+      name: orderBy
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Returns records for the timeline starting from given indice
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch Incident event alerts based on the given parameters. Alerts would have multiple events grouped into one based on specific service type. So user would see in few cases more events than the limit provided.
+    execution: true
+    name: cyble-vision-v2-fetch-alerts
+    outputs:
+    - contextPath: CybleEventsV2.Events.name
+      description: Return Event name
+      type: String
+    - contextPath: CybleEventsV2.Events.alert_group_id
+      description: Return alert group id
+      type: String
+    - contextPath: CybleEventsV2.Events.event_id
+      description: 'Return event id '
+      type: String
+    - contextPath: CybleEventsV2.Events.keyword
+      description: Return keywords
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: Sorting order for alert fetch either Ascending or Descending
+      isArray: false
+      name: orderBy
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of records to return (max 50). Using a smaller limit will get faster responses.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+      isArray: false
+      name: startDate
+      required: true
+      secret: false
+    - default: false
+      description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601)
+      isArray: false
+      name: endDate
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Returns records for the timeline starting from given indice
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch incident event group
+    execution: false
+    name: fetch-alert-groups
+    outputs:
+    - contextPath: CybleEventsV2.AlertGroup
+      description: Fetch all the alert groups
+      type: String
+  dockerimage: demisto/python3:3.10.11.57293
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
