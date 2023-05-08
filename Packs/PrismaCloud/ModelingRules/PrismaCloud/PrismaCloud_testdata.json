@@ -1,0 +1,115 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "086f7997-0430-44f7-809e-e630fd70ec0c",
+            "vendor": "prisma",
+            "product": "cloud",
+            "dataset": "prisma_cloud_raw",
+            "event_data": {
+                "alertTime":"1683472842125",
+                "policy": {
+                    "description":"ThisIsADescription",
+                    "labels":"ThisIsALabel",
+                    "name":"PolicyName",
+                    "policyId":"0000-2121212-324324234234",
+                    "severity":"High"
+                },
+                "resource": {
+                    "account":"MyAccount",
+                    "accountId":"1111-123123123-456456456456",
+                    "cloudAccountGroups":["Group1","Group2"],
+                    "cloudAccountOwners":"IamTheOwner",
+                    "id":"2222-567567567-123123123",
+                    "name":"ThisIsTheHostName",
+                    "region":"GCP TelAviv",
+                    "url":"this.url.com"
+                },
+                "sourceIp":"10.10.10.10",
+                "sourceIPAddress":"11.11.11.11",
+                "tlsDetails": {
+                    "cipherSuite":"198327-sdfb-123123s-asdasd",
+                    "clientProvidedHostHeader":"sssadikio234edfmdsfnoisdifh"
+                },
+                "userIdentity": {
+                    "userName":"IamAuser",
+                    "mfaAuthenticated":"false"
+                },
+                "anomalyDetail": {
+                    "srcHost":"ThisSrcHost",
+                    "SrcDetails": {
+                        "ip":"12.12.12.12"
+                    },
+                    "targetHost":"ThisTarHost",
+                    "TarDetails": {
+                        "ip":"13.13.13.13",
+                        "port":"5050"
+                    }
+                },
+                "additionalEventData": {
+                    "CipherSuite":"ThisIsAcipherCode",
+                    "bytesTransferredIn":"111111",
+                    "bytesTransferredOut":"222222"
+                },
+                "userAgentOsName":"WINDOWS",
+                "role":"user",
+                "region":"us-east",
+                "awsRegion":"London-West",
+                "type":"create",
+                "userAgentBrowserName":"chrome",
+                "isSuccess": true,
+                "status":"TheEventWasMitigated",
+                "source":"ThisIsAsrcName",
+                "eventSource":"ThisEventIsAsrcName",
+                "name":"AnameForTheEvent",
+                "eventName":"AnothernameForTheEvent",
+                "errorCode":"AnError",
+                "reason":"AnEventWasGenerated",
+                "eventType":"TheTyoeIfTheEventGen",
+                "id":"12345-6789123546897-897987987987",
+                "cloudType":"baba",
+                "userAgent":"ThisIsMyBrowser"
+            },
+            "expected_values": {
+                "xdm.alert.description": "ThisIsADescription",
+                "xdm.alert.severity": "High",
+                "xdm.target.sent_bytes": null,
+                "xdm.source.agent.identifier": "MyAccount",
+                "xdm.network.http.browser": "chrome",
+                "xdm.source.user.username": "IamAuser",
+                "xdm.event.outcome": "SUCCESS",
+                "xdm.event.outcome_reason": "TheEventWasMitigated",
+                "xdm.source.user.identifier": "1111-123123123-456456456456",
+                "xdm.target.host.ipv4_addresses": ["13.13.13.13"],
+                "xdm.network.http.url": "this.url.com",
+                "xdm.source.host.ipv6_addresses": null,
+                "xdm.alert.original_threat_id": null,
+                "xdm.source.host.hostname": "ThisIsAsrcName",
+                "xdm.alert.original_alert_id": null,
+                "xdm.source.cloud.region": "us-east",
+                "xdm.source.ipv6": null,
+                "xdm.source.user.groups": ["Group1", "Group2", "", "", "", "", ""],
+                "xdm.network.tls.server_name": "sssadikio234edfmdsfnoisdifh",
+                "xdm.source.host.os_family": "WINDOWS",
+                "xdm.intermediate.host.device_category": "GCP TelAviv",
+                "xdm.event.type": "AnothernameForTheEvent",
+                "xdm.source.sent_bytes": null,
+                "xdm.auth.is_mfa_needed": null,
+                "xdm.network.rule": "PolicyName",
+                "xdm.database.operation": "CREATE",
+                "xdm.event.operation_sub_type": "AnError",
+                "xdm.event.id": "12345-6789123546897-897987987987",
+                "xdm.source.cloud.zone": null,
+                "xdm.alert.subcategory": null,
+                "xdm.target.host.ipv6_addresses": null,
+                "xdm.source.ipv4": "10.10.10.10",
+                "xdm.source.user.user_type": "REGULAR",
+                "xdm.source.cloud.provider": "ALIBABA",
+                "xdm.source.host.ipv4_addresses": ["12.12.12.12"],
+                "xdm.target.resource.name": null,
+                "xdm.target.port": null,
+                "xdm.source.user_agent": "ThisIsMyBrowser",
+                "xdm.network.tls.cipher": "198327-sdfb-123123s-asdasd"
+            }
+        }
+    ]
+}

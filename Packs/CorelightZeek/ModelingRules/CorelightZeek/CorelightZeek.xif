@@ -118,7 +118,7 @@ filter _path ~= "kerberos"
     xdm.observer.version = version,
     xdm.observer.name = _system_name,
     xdm.event.id = uid,
-    xdm.event.outcome = if(success = "true", XDM_CONST.OUTCOME_SUCCESS, success = "false", XDM_CONST.OUTCOME_FAILED , success = null, null, to_string(success)),
+    xdm.event.outcome = if(success = true, XDM_CONST.OUTCOME_SUCCESS, success = false, XDM_CONST.OUTCOME_FAILED , success = null, null, to_string(success)),
     xdm.auth.kerberos_tgt.msg_type = if(request_type = "AS", XDM_CONST.KERBEROS_MSG_TYPE_AS_REQ, request_type = "TGS", XDM_CONST.KERBEROS_MSG_TYPE_TGS_REQ, request_type = "AP", XDM_CONST.KERBEROS_MSG_TYPE_AP_REQ, request_type = "RESERVED16", XDM_CONST.KERBEROS_MSG_TYPE_RESERVED16, request_type = "SAFE", XDM_CONST.KERBEROS_MSG_TYPE_SAFE, request_type = "PRIV", XDM_CONST.KERBEROS_MSG_TYPE_PRIV, request_type = "CRED", XDM_CONST.KERBEROS_MSG_TYPE_CRED, request_type = "ERROR", XDM_CONST.KERBEROS_MSG_TYPE_ERROR, request_type = null, null, to_string(request_type)),    
     xdm.auth.kerberos_tgt.spn_values = arraycreate(service),
     xdm.auth.kerberos_tgt.cname_values = arraycreate(client),
