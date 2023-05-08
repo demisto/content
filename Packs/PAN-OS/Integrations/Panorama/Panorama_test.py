@@ -6341,8 +6341,8 @@ class TestFetchIncidentsFlows:
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
         max_fetch = {'X_log_type': 10}
 
-        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
-        expected_parsed_incident_entries = {'name': 'None 000000001', 'occurred': '2022-01-01T12:00:00Z',
+        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00', 'device_name': 'device_for_test'}
+        expected_parsed_incident_entries = {'name': 'device_for_test 000000001', 'occurred': '2022-01-01T12:00:00Z',
                                             'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -6354,7 +6354,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'': '000000001'}
+        assert last_id_dict.get('X_log_type', '') == {'device_for_test': '000000001'}
 
     def test_second_fetch_with_no_incidents_flow(self, mocker):
         """
