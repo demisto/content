@@ -1,5 +1,3 @@
-
-
 /*****************************************************/
 /* TM (Trend Micro) DS (Deep Security) Utility Rules */
 /*****************************************************/
@@ -121,7 +119,6 @@ call tm_ds_convert_cef_event_id_to_int
     xdm.network.http.http_header.value = xff,
     xdm.network.http.http_header.header = if(xff != null, "X-Forwarded-For", null)
 ;
-
 
 /* Integrity Monitoring Events := cefDeviceEventClassId in ([30], [2000000-2999999]) */
 call tm_ds_convert_cef_event_id_to_int
