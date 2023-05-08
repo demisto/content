@@ -11,6 +11,7 @@ alter event_tags = regextract(TrendMicroDsTags, "[\w-]+")
     xdm.event.id  = cefDeviceEventClassId,
     xdm.event.description  = cefName,
     xdm.event.tags  = event_tags, 
+    xdm.alert.name = cefName,
     xdm.source.agent.type = TrendMicroDsTenant, 
     xdm.source.agent.identifier = TrendMicroDsTenantId,
     xdm.observer.type = TrendMicroDsTenant,
@@ -21,8 +22,8 @@ alter event_tags = regextract(TrendMicroDsTags, "[\w-]+")
 [RULE: tm_ds_agent_common_fields_modeling]
 /* Model fields that are common to all of agent (security) event types. */
 alter 
-    xdm.source.ipv4 = dvc, /* The IPv4 address for cn1. Does not appear if the source is an IPv6 address or hostname. (Uses dvchost instead.)*/
-    xdm.source.ipv6 = if(dvchost ~= ":", dvchost, null), /* The hostname or IPv6 address for cn1. Does not appear if the source is an IPv4 address. (Uses dvc field instead.) */
+    xdm.source.ipv4 = dvc, /* The IPv4 address of the agent. Does not appear if the source is an IPv6 address or hostname. (Uses dvchost instead.)*/
+    xdm.source.ipv6 = if(dvchost ~= ":", dvchost, null), /* The hostname or IPv6 address of the agent. Does not appear if the source is an IPv4 address. (Uses dvc field instead.) */
     xdm.source.host.hostname = if(dvchost != null and dvchost !~= ":", dvchost, null),
     xdm.source.host.device_id = to_string(cn1), // The agent computers internal unique identifier 
     xdm.observer.name = coalesce(dvchost, dvc)
@@ -31,13 +32,15 @@ alter
 [RULE: tm_ds_network_common_fields_modeling]
 /* Model network fields that are common network event types, i.e., FW & IPS events. */
 alter 
+    outcome = uppercase(act),
     src_ipv4 = if(src !~= ":", src, null),
     src_ipv6 = if(src ~= ":", src, null),
     dst_ipv4 = if(dst !~= ":", dst, null),
     dst_ipv6 = if(dst ~= ":", dst, null),
     icmp_type_n_code = regextract(cs4, "\S+")
 | alter 
-    xdm.event.outcome = act,  
+    xdm.observer.action = act, 
+    xdm.event.outcome = if(outcome ~= "DENY" or outcome ~= "BLOCK" or outcome ~= "DROP", XDM_CONST.OUTCOME_FAILED, outcome ~= "ALLOW" or outcome ~= "ACCEPT", XDM_CONST.OUTCOME_SUCCESS, outcome ~= "LOG" or outcome ~= "DETECT", XDM_CONST.OUTCOME_PARTIAL, to_string(act)),  
     xdm.source.interface = smac,
     xdm.source.port = spt,
     xdm.source.ipv4 = coalesce(src_ipv4, dvc),
@@ -68,22 +71,23 @@ alter event_id = to_integer(cefDeviceEventClassId)
 /*********************************************/
 /* DSM (Deep Security Manager) System Events */
 /*********************************************/
-[MODEL: dataset="trend_micro_deep_security_manager_raw"]
+[MODEL: dataset="trend_micro_deep_security_manager2_raw"]
 call tm_ds_common_fields_modeling
+| alter 
+    target_type = uppercase(targetType)
 | alter 
     xdm.event.type = "System",
     xdm.alert.description = msg, 
     xdm.source.user.username = suser,
     xdm.source.ipv4 = if(src !~= ":", src, null),
     xdm.source.ipv6 = if(src ~= ":", src, null),
-    /* The subject of the event. It can be the administrator logged into Deep Security Manager, or a computer. */
     xdm.target.resource.type = targetType,
     xdm.target.resource.id = targetID, 
     xdm.target.resource.value = `target`,
-    xdm.target.user.username = if(targetType ~= "User", `target`, null),
-    xdm.target.user.identifier = if(targetType ~= "User", targetID, null),
-    xdm.target.host.hostname =  if(targetType ~= "Host", `target`, null),
-    xdm.target.host.device_id = if(targetType ~= "Host", targetID, null)
+    xdm.target.user.username = if(target_type ~= "USER", `target`, null),
+    xdm.target.user.identifier = if(target_type ~= "USER", targetID, null),
+    xdm.target.host.hostname =  if(target_type ~= "HOST", `target`, null),
+    xdm.target.host.device_id = if(target_type ~= "HOST", targetID, null)
 ;
 
 
@@ -126,12 +130,13 @@ call tm_ds_convert_cef_event_id_to_int
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
 | alter 
-    process_file_name =  arrayindex(regextract(sproc, "[\/\\]([\w-\.]+)$"), 0)
+    operation = uppercase(act),
+    process_file_name =  if(sproc != null and sproc != "N/A", arrayindex(regextract(sproc, "[\/\\]([\w-\.]+)$"), 0), null)
 | alter 
     process_extension =  arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
 | alter 
     xdm.observer.action = act, // The action detected by the integrity rule: created/updated/deleted/renamed
-    xdm.event.operation= act,  
+    xdm.event.operation= if(operation ~= "CREATE", XDM_CONST.OPERATION_TYPE_FILE_CREATE, operation ~= "UPDATE", XDM_CONST.OPERATION_TYPE_FILE_WRITE,  operation ~= "DELETE", XDM_CONST.OPERATION_TYPE_FILE_REMOVE, operation ~= "RENAME", XDM_CONST.OPERATION_TYPE_FILE_RENAME, to_string(act)),  
     xdm.event.operation_sub_type = msg, // List of changed attribute names. Relevant only for act="renamed"
     xdm.source.user.username = suser,
     xdm.source.process.executable.path = sproc,
@@ -155,7 +160,7 @@ call tm_ds_convert_cef_event_id_to_int
     xdm.alert.description = msg, 
     xdm.source.ipv4 = coalesce(src_ipv4, dvc),
     xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, dvchost ~= ":", dvchost, null),
-    xdm.source.host.hostname = shost, 
+    xdm.source.host.hostname = if(shost != null, shost, dvchost !~= ":", dvchost, null),
     xdm.target.user.username = duser, 
     xdm.target.resource.value = fname // Rule target entity: a file, directory path, registry key, etc.
 ;
@@ -171,21 +176,22 @@ call tm_ds_convert_cef_event_id_to_int
     container_id = arrayindex(regextract(cs6, "[^\|]+\|[^\|]+\|\s*(\S+)"), 0), 
     process_file_name =  arrayindex(regextract(filePath, "[\/\\]([\w-\.]+)$"), 0),
     cve_list = regextract(TrendMicroDsCve, "[\w-]+"),
-    mitre_tactics_list = regextract(TrendMicroDsMitre, "\w+"),
+    mitre_techniques_list = regextract(TrendMicroDsMitre, "\w+"),
     spyware_infected_resource = cs3, /* Spyware item path. This field is only for spyware detection events.  */
     spyware_infected_resource_type = if(cs4="10", "Files and Directories", cs4="11", "System Registry", cs4="12", "Internet Cookies", cs4="13", "Internet URL Shortcut", cs4="14", "Programs in Memory", cs4="15", "Program Startup Areas", cs4="16", "Browser Helper Object", cs4="17", "Layered Service Provider", cs4="18", "Hosts File", cs4="19", "Windows Policy Settings", cs4="20", "Browser", cs4="23", "Windows Shell Setting", cs4="24", "IE Downloaded Program Files", cs4="25", "Add/Remove Programs", cs4="26", "Services", "Other"),
     spyware_risk_level = if(cs5="0", "Very Low", cs5="24", "Low", cs5="50", "Medium", cs5="75", "High", cs5="100", "Very High")
 | alter 
     process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
 | alter 
-    xdm.event.operation = act,  /* Action performed by the Anti-Malware engine: Deny Access, Quarantine, Delete, Pass, Clean, Terminate, and Unspecified. */
-    xdm.event.outcome = result,  /* The result of the failed Anti-Malware action (Deleted, Quarantined). */
+    xdm.observer.action = act,  /* Action performed by the Anti-Malware engine: Deny Access, Quarantine, Delete, Pass, Clean, Terminate, and Unspecified. */
+    xdm.event.operation = if(act in ("Deny Access", "Quarantine"), XDM_CONST.OPERATION_TYPE_FILE_SET_SECURITY, act in ("Delete", "Clean"), XDM_CONST.OPERATION_TYPE_FILE_REMOVE, act="Pass", XDM_CONST.OPERATION_TYPE_FILE_STATS, act="Terminate", XDM_CONST.OPERATION_TYPE_PROCESS_TERMINATE, to_string(act)),   
+    xdm.event.outcome = if(act="Delete", XDM_CONST.OUTCOME_SUCCESS, act in ("Clean", "Deny Access", "Quarantine", "Terminate"), XDM_CONST.OUTCOME_PARTIAL, act="Pass", XDM_CONST.OUTCOME_FAILED, act="Unspecified", XDM_CONST.OUTCOME_UNKNOWN, result != null, to_string(result), to_string(act)),  /* The result of the failed Anti-Malware action (Deleted, Quarantined). */
     xdm.event.tags = arrayconcat(event_tags, cve_list),
-    xdm.alert.name = TrendMicroDsRelevantDetectionNames, /* Indicates the most likely type of threat contained in the file after Predictive ML compared the analysis to other known threats(separated by ";" ) */ 
+    xdm.alert.name = coalesce(TrendMicroDsRelevantDetectionNames, cefName), /* Indicates the most likely type of threat contained in the file after Predictive ML compared the analysis to other known threats(separated by ";" ) */ 
     xdm.alert.original_threat_id = TrendMicroDsBehaviorRuleID, /* The behavior monitoring rule ID for internal malware case tracking. */ 
     xdm.alert.category = TrendMicroDsBehaviorType, /* The type of behavior monitoring event detected. */ 
     xdm.alert.severity = coalesce(spyware_risk_level, cefSeverity),
-    xdm.alert.mitre_tactics = mitre_tactics_list,
+    xdm.alert.mitre_techniques = mitre_techniques_list,
     xdm.source.user.username = suser,
     xdm.source.process.container_id = container_id,
     xdm.source.process.name = TrendMicroDsProcess, 
@@ -211,8 +217,11 @@ call tm_ds_convert_cef_event_id_to_int
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
 | alter 
+    outcome = uppercase(msg)
+| alter 
     xdm.target.url = request, 
-    xdm.event.outcome = msg 
+    xdm.observer.action = msg,
+    xdm.event.outcome = if(outcome ~= "BLOCKED", XDM_CONST.OUTCOME_FAILED, outcome ~= "PERMIT" or outcome ~= "ALLOW", XDM_CONST.OUTCOME_SUCCESS, to_string(msg)) 
 ;
 
 /*  Application Control Events := cefDeviceEventClassId in [6000000-6999999] */
@@ -222,11 +231,13 @@ call tm_ds_convert_cef_event_id_to_int
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
 | alter
+    outcome = uppercase(act),
     process_file_name = arrayindex(regextract(filePath, "[\/\\]([\w-\.]+)$"), 0)
 | alter 
     process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
 | alter 
-    xdm.event.outcome = act,  
+    xdm.observer.action = act,
+    xdm.event.outcome = if(outcome ~= "BLOCKED", XDM_CONST.OUTCOME_FAILED, outcome ~= "ALLOWED", XDM_CONST.OUTCOME_SUCCESS,  outcome ~= "DETECT", XDM_CONST.OUTCOME_PARTIAL, to_string(act)),  
     xdm.event.outcome_reason = cs1, 
     xdm.source.user.identifier = suid, 
     xdm.source.user.username = suser, 
