@@ -54,9 +54,9 @@ INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'Open'
 INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING = {
-    'Dismissed': 'Other',
-    'Resolved': 'Resolved',
-    'Snoozed': 'Other'
+    'dismissed': 'Other',
+    'resolved': 'Resolved',
+    'snoozed': 'Other'
 }  # Maps Alert closing statuses in Prisma Cloud to possible incident closing reasons in XSOAR
 
 PAGE_NUMBER_DEFAULT_VALUE = 1
@@ -647,8 +647,8 @@ def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored
         'Contents': {
             'dbotIncidentClose': True,
             'rawCloseReason': mirrored_status,
-            'closeReason': f'Alert was {mirrored_status} on Prisma Cloud. Marked as '
-                           f'{INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING.get(mirrored_status)} in XSOAR.',
+            'closeReason': (f'Alert was {mirrored_status} on Prisma Cloud. Marked as '
+                            f'{INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING.get(mirrored_status)} in XSOAR.'),
             'closeNotes': mirrored_dismissal_note
         },
         'ContentsFormat': EntryFormat.JSON
