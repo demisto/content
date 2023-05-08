@@ -154,26 +154,10 @@ function genericPollingScheduledTaskWithoutGuid() {
 function genericPollingScheduledTaskWithGuid() {
     try {
         var guid = args.scheduledEntryGuid;
-        var contextTimeoutKey = `GP-${guid}`;
-        var timeout = parseInt(args.timeout);
-        var interval = parseInt(args.interval);
-
-        if ('playbookId' in args) {
-            const subPlaybook = `subplaybook-${args.playbookId}`;
-            if ((!invContext[subPlaybook][contextTimeoutKey]) && (invContext[subPlaybook][contextTimeoutKey] !== 0)) {
-                setContext(`${subPlaybook}.${contextTimeoutKey}`, (Math.floor(timeout / interval)));
-            }
-            else{
-                timeout = invContext[subPlaybook][contextTimeoutKey];
-            }
-            var origTimeout = timeout - interval;
-            if (origTimeout <= 0) {
-                return finish(args.playbookId, args.tag, undefined, guid);
-            }
-        setContext(`${subPlaybook}.${contextTimeoutKey}`, origTimeout);
-        }
-        else{
-            logError('playbookId is not defined');
+        var endTime = stringToDate(args.endTime, "%Y-%m-%d %H:%M:%S");
+        var currentTime = new Date();
+        if (currentTime >= endTime) {
+            return finish(args.playbookId, args.tag, undefined, guid);
         }
 
         // Get ids that have not finished yet

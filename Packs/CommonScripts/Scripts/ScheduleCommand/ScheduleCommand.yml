@@ -25,6 +25,7 @@ args:
 - name: scheduledEntryGuid
   description: The GUID of the scheduled entry that runs the polling command.
   type: textArea
+
 scripttarget: 0
 dependson: {}
 timeout: 0s

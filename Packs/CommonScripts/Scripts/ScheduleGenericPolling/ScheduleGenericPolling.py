@@ -41,6 +41,13 @@ def should_run_with_guid():
             build_number) >= MINIMUM_BUILD_NUMBER_XSOAR)
 
 
+def calculate_end_time(timeout):
+    now = get_current_time()
+    new_time = now + timedelta(minutes=timeout)
+    short_format = "%Y-%m-%d %H:%M:%S"
+    return new_time.strftime(short_format)
+
+
 def main():
     args = demisto.args()
     ids = parseIds(args.get('ids'))
@@ -80,10 +87,10 @@ def main():
     if should_run_with_guid():
         # Generate a GUID for the scheduled entry and add it to the command.
         entryGuid = str(uuid.uuid4())
-        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}"'
+        command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
         schedule_command_args['command'] = command_string
         # Set the times to be the number of times the polling command should run (using the cron job functionally).
-        schedule_command_args['times'] = timeout // interval
+        schedule_command_args['times'] = (timeout // interval) + interval
         schedule_command_args['scheduledEntryGuid'] = entryGuid
 
     res = demisto.executeCommand("ScheduleCommand",
