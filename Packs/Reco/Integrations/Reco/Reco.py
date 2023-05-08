@@ -589,7 +589,7 @@ def parse_table_row_to_dict(alert: List[Dict[str, Any]]) -> Dict[str, Any]:
             try:
                 obj[key] = int(obj[key])
             except Exception:
-                obj[key] = str(obj[key])
+                demisto.info(f"Could not parse risk level {obj[key]} to int")
         alert_as_dict[key] = obj[key]
 
     return alert_as_dict
@@ -844,7 +844,7 @@ def fetch_incidents(
         incident
         for incident in incidents
         if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
-           and (incident.get("dbotMirrorId", None) not in existing_incidents)
+        and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
