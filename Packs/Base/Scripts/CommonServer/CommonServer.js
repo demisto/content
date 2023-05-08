@@ -2104,13 +2104,65 @@ function mergeContextLists(newItems, oldItems, objectKey) {
     return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(function() {return !e['remove']});
 }
 
-
-function fileResult(){
+/**
+ * Creates a file result object with the specified properties.
+ * @param {Object} entryType - The  entry type from entryTypes.
+ * @param {Object} fileEntryId- if file entry exist then fyck
+ * @param {string} file_name - The name of the file.
+ * @param {string} file_content - The content of the file.
+ * @param {boolean} human_readable - (Optional) if human_readable isn't passed the human readable would be the name of the file.
+ * @returns {Object} A file result object with the specified properties.
+ */
+function fileResult(entryType, fileEntryId, file_name, file_content, human_readable_optional){
+  HumanReadable = (!(human_readable_optional)) ? file_name : human_readable_optional;
+  fileEntryId = (!fileEntryId) ? saveFile(file_content):fileEntryId;
   return {
-        Type: entryTypes.file,
-        FileID: fileEntryId,
-        File: file_name,
-        Contents: file_content,
-        HumanReadable: md
-    };
+    Type: entryType,
+    FileID: fileEntryId,
+    File: file_name,
+    Contents: file_content,
+    HumanReadable: HumanReadable
+  };
 }
+// var demistoFileId = saveFile(fileData, undefined, true);
+/**
+ *  switch (fileType) {
+        case 'pcap':
+        case 'bin':
+        case 'xml':
+        case 'html':
+            filename += '.gz';
+            break;
+        case 'json':
+            filename += '.json';
+            result = JSON.stringify(result);
+            break;
+        case 'misp':
+        case 'stix':
+            filename += '.xml';
+            break;
+        case 'pdf':
+            filename += '.pdf';
+    }
+if (!args.data && !args.entryId) {
+    return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Either data or entryId arguments need to be provided.' };
+}
+if (args.data && args.entryId) {
+    return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Cannot provide both data and entryId arguments.' };
+}
+
+var data = "";
+if (args.data) {
+    data = args.data;
+}
+if (args.entryId) {
+    var res = executeCommand("getEntry", {"id":args.entryId});
+    if (res[0].Type === entryTypes.error) {
+        return res;
+    }
+    data = res[0].Contents;
+}
+var createdFileID = saveFile(data);
+return {Type: 3, FileID: createdFileID, File: args.filename, Contents: args.filename}; 
+    */
+

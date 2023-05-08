@@ -1,4 +1,3 @@
-import "Lodaash";
 
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
@@ -121,6 +120,7 @@ sendMultipart = function (uri, entryID, body) {
 
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = getRequestURL(uri)
+    log(requestUrl);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
@@ -184,30 +184,6 @@ function generate_uuidv4() {
         }
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
-}
-
-function fileResult(filename, data, file_type = null) {
-    var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5,
-         userManagement: 6, image: 7, plagroundError: 8, playgroundError: 8, entryInfoFile: 9,
-         map: 15, widget: 17};
-    console.log(file_type);
-    if (file_type === null) {
-        file_type = entryTypes['file'];
-    }
-
-    const temp = generate_uuidv4(); // crypto.randomUUID()
-    if (typeof data === 'string') {
-        data = Buffer.from(data, 'utf-8');
-    }
-    const fs = require('fs');
-    fs.writeFileSync(`${temp}`, data);
-    return {
-        'Contents': '',
-        'ContentsFormat': formats['text'],
-        'Type': file_type,
-        'File': filename,
-        'FileID': temp
-    };
 }
 
 
@@ -372,31 +348,116 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
             }
         }
     };
-    console.log(body)
-    var res = sendRequest('POST', `/${service}/upload/${incident_id}`, JSON.stringify(body));
+    var res = sendRequest('POST', `/${service}/upload/${incident_id}/attachment`, JSON.stringify(body));
     if (isError(res[0])) {
         throw res[0].Contents;
     }
 
-    var response = res['response'];
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
     // in case the file uploaded as war room entry
     if (target === 'war room entry') {
-        md += ` Entry ID is ${response.entries[0].id}`;
+        md += ` Entry ID is ${res['response'].entries[0].id}`;
     }
-    //return fileResult(file_name, response, 'entryInfoFile')
-    let fileEntryId = saveFile(file_content);
     return {
-        Type: alert(colorCodes.back),
-        FileID: fileEntryId,
+        Type: entryTypes.file,
+        FileID: saveFile(file_content),
         File: file_name,
         Contents: file_content,
         HumanReadable: md
     };
 };
 
+var get_incident_id = function (entry_id) {
+    const res = entry_id.match(/(\d+)@(\d+)/);
+    if (!res) {
+        throw new Error("EntryID unknown or malformatted!");
+    }
+    return res[0][1];
+};
+
+var fileDelete = function(entryId) {
+    /**
+     * Upload a new file
+    Arguments:
+        @param {String} entryId  -- entry ID of the file
+    Returns:
+        Message that the file was deleted successfully + entry_id
+    """
+     */
+    //let files = demisto.context().File || [];
+    //files = Array.isArray(files) ? files : [files];
+    logDebug('mm-whta')
+    
+    try { 
+        var body = {
+            id: entryId
+        };
+        logDebug('mm-whta')
+        const response = sendRequest('POST',`/Indicators/delete/v2/${entryId}`, JSON.stringify(body));
+    } catch (e) {
+        throw new Error(`File already deleted or not found!\n${e}`);
+    }
+    logDebug('mm-whta')
+    const incident_id = get_incident_id(entryId);
+    bodyContent = {
+        id: "",
+        version: 0,
+        investigationId: incident_id,
+        data: `!DeleteContext key=${'File'}`,
+        args: null,
+        markdown: false
+    };
+    sendRequest('DELETE','/entry', JSON.stringify(bodyContent));
+    //sleep(1000); // To let the API execute the request
+    
+    //const new_files = files.filter(file => file.EntryID !== entryId);
+    return "new_files";
+
+};
+
+function fileDeleteCommand(entryId) {
+    const new_files = fileDelete(entryId);
+    logDebug('mm-the fuck')
+    console.log('mm- nuuu')
+    return {
+        readable_output: `File ${entryId} deleted!`,
+        outputs: new_files,
+        outputs_prefix: "File"
+    };
+}
 
 
+
+function coreApiFileCheckCommand(entryId) {
+    
+    if (Object.keys(output_content).length > 0) {
+        //client.delete_context(demisto.incident.id, 'IsFileExists');
+        sleep(1000); // To let the API execute the request
+    }
+    
+    try {
+        //const path_res = demisto.getFilePath(entryId);
+        const file_name = path_res.name;
+        
+        const output_tmp = { [entryId]: true };
+        //output_content = { ...output_content, ...output_tmp };
+        
+        return {
+            readable_output: `File ${entryId} exists under the name ${file_name}!`,
+            outputs_prefix: 'IsFileExists',
+            outputs: output_content
+        };
+    } catch (err) {
+        const output_tmp = { [entryId]: false };
+        //output_content = { ...output_content, ...output_tmp };
+        
+        return {
+            readable_output: `File ${entryId} does not exist! ${err}`,
+            outputs_prefix: 'IsFileExists',
+            outputs: output_content
+        };
+    }
+}
 
 switch (command) {
     case 'test-module':
@@ -446,15 +507,14 @@ switch (command) {
     case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
     case 'core-api-file-upload':
-        console.log('in case')
-        console.log(args)
         return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entryID, args.target)
     case 'core-api-file-delete':
-        return null
+        logDebug('mm-whta')
+        return fileDeleteCommand(args.entry_id);
     case 'core-api-file-attachment-delete':
         return null
     case 'core-api-file-check':
-        return null
+        return coreApiFileCheckCommand(args.entry_id);
     default:
         throw 'Core REST APIs - unknown command';
 }
