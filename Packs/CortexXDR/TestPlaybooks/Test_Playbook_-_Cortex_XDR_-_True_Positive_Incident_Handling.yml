@@ -556,10 +556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "262":
     id: "262"
-    taskid: 4353f24b-31df-4357-88ed-330b472ea52f
+    taskid: fcf659ec-dee0-4d20-8f07-eac386b66b87
     type: regular
     task:
-      id: 4353f24b-31df-4357-88ed-330b472ea52f
+      id: fcf659ec-dee0-4d20-8f07-eac386b66b87
       version: -1
       name: Set playbook for new incident
       description: commands.local.cmd.set.playbook
@@ -575,7 +575,7 @@ tasks:
         complex:
           root: CreatedIncidentID
       name:
-        simple: Test Playbook - Cortex XDR - True Positive Incident Handling
+        simple: Cortex XDR - True Positive Incident Handling
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1296,10 +1296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "294":
     id: "294"
-    taskid: 3239b4d4-ac29-457c-8c9a-94b964cef5c2
+    taskid: 5c547669-81c1-4198-881c-6e3f64ff07e5
     type: regular
     task:
-      id: 3239b4d4-ac29-457c-8c9a-94b964cef5c2
+      id: 5c547669-81c1-4198-881c-6e3f64ff07e5
       version: -1
       name: Completed Task Manually - Open Jira ticket
       description: commands.local.cmd.task.complete
@@ -1328,7 +1328,7 @@ tasks:
       isAutoRun:
         simple: "true"
       parentPlaybookID:
-        simple: Test Playbook - Cortex XDR - True Positive Incident Handling
+        simple: Cortex XDR - True Positive Incident Handling
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1347,10 +1347,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "295":
     id: "295"
-    taskid: 49bafb71-c2dc-452f-8038-fe5a002924db
+    taskid: 17d4639e-fe02-4c30-8877-1b3b1c2db609
     type: regular
     task:
-      id: 49bafb71-c2dc-452f-8038-fe5a002924db
+      id: 17d4639e-fe02-4c30-8877-1b3b1c2db609
       version: -1
       name: Completed Task Manually - Open Snow ticket
       description: commands.local.cmd.task.complete
@@ -1377,7 +1377,7 @@ tasks:
       isAutoRun:
         simple: "true"
       parentPlaybookID:
-        simple: Test Playbook - Cortex XDR - True Positive Incident Handling
+        simple: Cortex XDR - True Positive Incident Handling
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1960,4 +1960,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.8.0
+fromversion: 6.5.0
