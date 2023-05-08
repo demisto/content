@@ -54,6 +54,8 @@ commonfields:
 enabled: false
 name: CherwellUpdateIncident
 tags: [Cherwell]
+skipPrepare:
+- script-name-incident-to-alert
 dependson:
   must:
   - Cherwell|||cherwell-update-business-object

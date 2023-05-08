@@ -147,7 +147,7 @@ tasks:
     task:
       id: e04688d1-7330-484d-8ce1-25a82a9fb0f5
       version: -1
-      name: Sleep to let incidents settle down
+      name: Sleep to let <-incidents-> settle down
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -867,7 +867,7 @@ tasks:
       id: 3d9fdb83-dc2b-43c2-8aba-86bdc538b0a3
       version: -1
       name: Search for a campaign incident
-      description: Searches Demisto incidents
+      description: Searches Demisto <-incidents->
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false

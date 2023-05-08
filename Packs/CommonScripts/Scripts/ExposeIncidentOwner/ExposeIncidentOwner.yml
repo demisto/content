@@ -6,6 +6,8 @@ script: ''
 type: javascript
 tags:
 - Utility
+skipPrepare:
+- script-name-incident-to-alert
 comment: Expose the incident owner into <-Incident->Owner context key
 enabled: true
 outputs:
