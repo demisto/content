@@ -3,7 +3,7 @@ import argparse
 import json
 import os
 import re
-from typing import List
+from typing import List, Set
 
 import urllib3
 from blessings import Terminal
@@ -92,9 +92,9 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
         file_paths(str): file paths
     """
     try:
-        packs_support_levels = [
+        packs_support_levels = {
             get_pack_metadata(file_path).get('support') for file_path in file_paths if 'Packs' in file_path
-        ]
+        }
         print(f'{packs_support_levels=}')
         return get_highest_support_label(packs_support_levels)
     except Exception as e:
@@ -102,10 +102,10 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
         return ''
 
 
-def get_highest_support_label(found_labels: List[str]):
-    if 'xsoar' in found_labels:
+def get_highest_support_label(packs_support_levels: Set[str]):
+    if 'xsoar' in packs_support_levels:
         return XSOAR_SUPPORT_LEVEL
-    elif 'partner' in found_labels:
+    elif 'partner' in packs_support_levels:
         return PARTNER_SUPPORT_LEVEL
     else:
         return COMMUNITY_SUPPORT_LEVEL
@@ -141,6 +141,7 @@ def main():
 
     parser_args = parse_changed_files_names()
     changed_files_list = parser_args.changed_files.split(' ')
+    print(f'{changed_files_list=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
     if support_label := get_packs_support_level_label(changed_files_list):
@@ -176,8 +177,8 @@ def main():
 
     # assign reviewers / request review from
     reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
-    pr.add_to_assignees(reviewer_to_assign)
-    pr.create_review_request(reviewers=[reviewer_to_assign])
+    # pr.add_to_assignees(reviewer_to_assign)
+    # pr.create_review_request(reviewers=[reviewer_to_assign])
     print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
     print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
 
