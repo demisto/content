@@ -265,7 +265,7 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
 @pytest.mark.parametrize('args, expected_error, api_version', [
     ({'assigned_to': 'someone'}, 'When using Legacy Alerts, both vendor_information and provider_information must be provided.',
      API_V1),
-    ({'closed_date_time': 'now'}, "No data relevant for API Alerts v2 to update was provided, please provide at least one of the "
+    ({'closed_date_time': 'now'}, "No data relevant for Alerts v2 to update was provided, please provide at least one of the "
      "following: assigned_to, determination, classification, status.", API_V2)
 ])
 def test_create_data_to_update_errors(mocker, args, expected_error, api_version):

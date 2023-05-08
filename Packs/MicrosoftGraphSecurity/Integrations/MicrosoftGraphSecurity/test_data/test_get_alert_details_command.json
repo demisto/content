@@ -78,7 +78,7 @@
                                       "title": "Automated", "lastUpdateDateTime": "2022-10-16T02:08:57.1233333Z"
                                     },
                     "api_version": "Alerts v2",
-                    "expected_ec": {"MsGraph.Alert(val.id && val.id === obj.id)": {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2/$entity",
+                    "expected_ec": {"MsGraph.Alert(val.ID && val.ID === obj.ID)": {"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2/$entity",
                                                                                    "ActorDisplayName": null, "AlertWebUrl": "https://security.microsoft.com/alerts/alert_id?tid=tid",
                                                                                    "AssignedTo": null, "Category": "SuspiciousActivity", "Classification": null, "Comments": [],
                                                                                    "CreatedDate": "2022-10-16T01:48:05.8655909Z",
