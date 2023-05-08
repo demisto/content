@@ -52,7 +52,7 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
-INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'Open'
+INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'open'
 INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING = {
     'dismissed': 'Other',
     'resolved': 'Resolved',
@@ -647,8 +647,7 @@ def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored
         'Contents': {
             'dbotIncidentClose': True,
             'rawCloseReason': mirrored_status,
-            'closeReason': (f'Alert was {mirrored_status} on Prisma Cloud. Marked as '
-                            f'{INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING.get(mirrored_status)} in XSOAR.'),
+            'closeReason': f'Alert was {mirrored_status} on Prisma Cloud.',
             'closeNotes': mirrored_dismissal_note
         },
         'ContentsFormat': EntryFormat.JSON
@@ -676,14 +675,11 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
     # TODO: need to add description
     """
     if demisto.params().get('close_incident'):  #  TODO: need to remove the close option parameters cause this is the only thing we do in this mirroring.
-        demisto.debug("#### In close_incident condition")
-        demisto.debug(f"#### mirrored_status: {updated_object.get('status')}, mirrored_dismissal_note: {updated_object.get('dismissalNote')}")
-        if mirrored_status := updated_object.get('status'):
-            if mirrored_status in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
-                mirrored_dismissal_note = updated_object.get('dismissalNote')
-                entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
-        elif updated_object.get('status') == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
-            # TODO: need to verify that with Dima (if this is the only option for re-open scenario) - test all possible scenarios.
+        mirrored_status = updated_object.get('status')
+        if mirrored_status in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
+            mirrored_dismissal_note = updated_object.get('dismissalNote')
+            entry = close_incident_in_xsoar(remote_alert_id, mirrored_status, mirrored_dismissal_note)
+        elif mirrored_status == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
             entry = reopen_incident_in_xsoar(remote_alert_id)
         return entry
 

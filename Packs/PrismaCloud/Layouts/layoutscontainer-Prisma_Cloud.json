@@ -2,7 +2,6 @@
     "id": "Prisma Cloud",
     "group": "incident",
     "name": "Prisma Cloud Incident",
-    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
@@ -771,5 +770,8 @@
             }
         ]
     },
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }
