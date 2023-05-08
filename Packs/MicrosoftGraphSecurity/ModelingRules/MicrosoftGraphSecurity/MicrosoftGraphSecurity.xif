@@ -1,18 +1,18 @@
 [MODEL: dataset=msft_graph_security_alerts_raw]
 filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alerts_v2"
 | alter 
-    alertEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null))),
-    analyzedMessageEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null))),
-    cloudApplicationEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null))),
-    deviceEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null))),
-    fileEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null))),
-    ipEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null))),
-    mailboxEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null))),
-    processEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null))),
-    registryKeyEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null))),
-    registryValueEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null))),
-    urlEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null))),
-    userEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "userEvidence", "@element", null)))
+    alertEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null)), ""),
+    analyzedMessageEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)), ""),
+    cloudApplicationEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null)), ""),
+    deviceEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null)), ""),
+    fileEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null)), ""),
+    ipEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null)), ""),
+    mailboxEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null)), ""),
+    processEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null)), ""),
+    registryKeyEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null)), ""),
+    registryValueEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null)), ""),
+    urlEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null)), ""),
+    userEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "userEvidence", "@element", null)), "")
 | alter
 // userEvidence Fields
     userEvidence_userAccount_accountName = json_extract_scalar(userEvidence_json, "$.userAccount.accountName"),
