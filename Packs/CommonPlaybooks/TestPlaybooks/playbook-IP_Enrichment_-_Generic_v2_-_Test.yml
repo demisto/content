@@ -1,6 +1,6 @@
 id: IP Enrichment - Generic v2 - Test
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 5.0.0
 name: IP Enrichment - Generic v2 - Test
 starttaskid: "0"
 tasks:
@@ -14,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -29,6 +29,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -41,8 +42,7 @@ tasks:
       id: aa832f55-5765-4bfc-8e0a-29ed6493ef1b
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary
-        data.
+      description: Deletes the context of the incident to start the test with no unnecessary data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -55,7 +55,6 @@ tasks:
         simple: "yes"
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -66,6 +65,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -107,7 +107,6 @@ tasks:
         complex:
           root: inputs.ResolveIP
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -123,6 +122,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -147,7 +147,6 @@ tasks:
       - "2"
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -158,6 +157,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -173,8 +173,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -185,6 +185,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -197,8 +198,7 @@ tasks:
       id: 992e62e7-f6a3-4060-8655-a279f32a737c
       version: -1
       name: Was external IP resolved?
-      description: Checks whether one of the external IPs was resolved to the yahoo.com
-        domain.
+      description: Checks whether one of the external IPs was resolved to the yahoo.com domain.
       type: condition
       iscommand: false
       brand: ""
@@ -228,7 +228,6 @@ tasks:
                 accessor: Hostname
             iscontext: true
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -239,6 +238,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -251,8 +251,7 @@ tasks:
       id: 3fa2050e-5238-41b6-8db6-bc10db382ba8
       version: -1
       name: Was internal IP resolved?
-      description: Checks whether the internal IP specified in this test, has been
-        resolved.
+      description: Checks whether the internal IP specified in this test, has been resolved.
       type: condition
       iscommand: false
       brand: ""
@@ -292,7 +291,6 @@ tasks:
                 accessor: Hostname
             iscontext: true
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -303,6 +301,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -356,7 +355,6 @@ tasks:
                         simple: DBotScore.Indicator
                       iscontext: true
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -367,6 +365,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -388,11 +387,8 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: IP Enrichment has failed. Please check the conditions and see which
-          one was not met, or if another error has occurred during the enrichment
-          process.
+        simple: IP Enrichment has failed. Please check the conditions and see which one was not met, or if another error has occurred during the enrichment process.
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -403,6 +399,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -418,6 +415,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -445,8 +443,7 @@ tasks:
       id: 3fedeed7-2bf4-4655-85f1-8c53fc6cc36e
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary
-        data.
+      description: Deletes the context of the incident to start the test with no unnecessary data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -535,6 +532,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -578,8 +576,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert
-    IP addresses to hostnames using a DNS query. You can set this to either True or
-    False.
-  playbookInputQuery: null
+  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
+  playbookInputQuery:
 outputs: []
+description: IP Enrichment V2 Test playbook check the IP Enrichment V2 playbook with different inputs.
