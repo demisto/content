@@ -13,7 +13,6 @@ defusedxml = "^0.7.1"
 demisto_sdk = "1.14.0"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
-hypothesis = "^6.75.2"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
