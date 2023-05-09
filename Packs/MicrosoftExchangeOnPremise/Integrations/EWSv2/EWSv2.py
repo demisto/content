@@ -1337,10 +1337,10 @@ def fetch_emails_as_incidents(account_email, folder_name):
                     incidents.append(incident)
                     last_incident_run_time = item.datetime_received
                     demisto.debug('Appended incident: {}'.format(item.message_id))
-                    demisto.debug("The item is: {}".format(item))
+
                 if len(incidents) >= MAX_FETCH:
                     break
-        demisto.debug("The incidents are: {}".format(incidents))
+
         demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
         last_fetch_time = last_run.get(LAST_RUN_TIME)
         last_incident_run_time = last_fetch_time if not last_incident_run_time else last_incident_run_time
