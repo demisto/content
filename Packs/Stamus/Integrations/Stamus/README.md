@@ -1,5 +1,5 @@
 [Get Declaration of Compromises from Stamus Security Platform and build Incidents. Then get related artifacts, events and Host Insight information]
-This integration was integrated and tested with version xx of Stamus
+This integration was integrated and tested with version 39.0.0 of Stamus
 
 ## Configure Stamus on Cortex XSOAR
 
@@ -38,14 +38,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | [Indicator of Compromise key]. | Required | 
-| value | [Indicator of Compromise value]. | Required | 
+| key | [Indicator of Compromise key]. | Required |
+| value | [Indicator of Compromise value]. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| StamusIntegration.Output | String | \[Fetch events matching an IOC.\] | 
+| StamusIntegration.IOC | String | \[Fetch events matching an IOC.\] |
 
 ### Stamus-Get-Host-Insight
 
@@ -60,13 +60,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | [IP to get Host Insights information]. | Required | 
+| ip | [IP to get Host Insights information]. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| StamusIntegration.Output | String | \[Fetch information about a host known by Host Insight module\] | 
+| StamusIntegration.HostInsights | String | \[Fetch information about a host known by Host Insight module\] |
 
 ### Stamus-Get-DoC-Events
 
@@ -81,10 +81,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | [Stamus ID used to get related information]. | Required | 
+| id | [Stamus ID used to get related information]. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| StamusIntegration.Output | String | \[Get events for a Declaration of Compromise.\] | 
+| StamusIntegration.RelatedEvents | String | \[Get events for a Declaration of Compromise.\] |
