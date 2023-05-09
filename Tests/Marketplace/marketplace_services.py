@@ -110,6 +110,7 @@ class Pack(object):
         self._preview_only = None  # initialized in enhance_pack_attributes function
         self._disable_monthly = None  # initialized in enhance_pack_attributes
         self._tags = None  # initialized in enhance_pack_attributes function
+        self._modules = None
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
         self._content_displays_map = None  # initialized in collect_content_items function
@@ -701,6 +702,7 @@ class Pack(object):
             Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
+            Metadata.MODULES: list(self._modules or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
             Metadata.CONTENT_DISPLAYS: self._content_displays_map,
@@ -2500,6 +2502,7 @@ class Pack(object):
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar'])
+            self._modules = user_metadata.get(Metadata.MODULES, [])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
