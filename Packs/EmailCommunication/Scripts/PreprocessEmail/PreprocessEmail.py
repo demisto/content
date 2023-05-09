@@ -380,7 +380,6 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 
 def main():
     incident = demisto.incident()
-    args = demisto.args()
     custom_fields = incident.get('CustomFields')
     email_from = custom_fields.get('emailfrom', '')
     email_cc = custom_fields.get('emailcc', '')
@@ -393,7 +392,6 @@ def main():
     email_replyto = custom_fields.get('emailreplyto', '')
     attachments = incident.get('attachment', [])
     email_latest_message = custom_fields.get('emaillatestmessage', '')
-    create_incidents_untagged = argToBoolean(args.get('create_incidents_untagged', False))
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
@@ -437,6 +435,8 @@ def main():
         else:
             demisto.debug(f"A new incident was created. Reason:\n {e}")
 
+        args = demisto.args()
+        create_incidents_untagged = argToBoolean(args.get('create_incidents_untagged', False))
         if create_incidents_untagged:
             # Return False - tell pre-processing not to create a new incident.
             return_results(False)
