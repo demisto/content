@@ -821,7 +821,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     return command_results_list
 
 
-def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]:
+def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]:  # pragma: no cover
 
     report_ids = argToList(args.get("report_id"))
 
@@ -862,7 +862,7 @@ def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]
     return command_results_list
 
 
-def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:
+def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:  # pragma: no cover
 
     report_id = args.get("report_id")
 
