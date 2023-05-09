@@ -24,7 +24,6 @@ args:
   description: The number of times to run. Optional.
 - name: scheduledEntryGuid
   description: The GUID of the scheduled entry that runs the polling command.
-
 scripttarget: 0
 dependson: {}
 timeout: 0s

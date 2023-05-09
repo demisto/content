@@ -1,4 +1,4 @@
-Schedule a command to run inside the war room at a future time (once or reoccurring)
+Schedules a command to run inside the War Room at a future time. Can be once or reoccurring.
 
 ## Script Data
 

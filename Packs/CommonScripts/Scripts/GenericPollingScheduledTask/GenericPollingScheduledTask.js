@@ -224,7 +224,7 @@ function shouldRunWithGuid() {
     version = res.version;
     buildNumber = res.buildNumber;
 
-    // Feature needs: to support XSIAM.
+    // conditions to add when the feature is supported in XSIAM:
     // ((platform === "x2") && (compareVersions(version, MINIMUM_XSIAM_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSIAM))
 
     // Checking if the stopScheduleEntry command is available.
