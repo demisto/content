@@ -1,0 +1,2703 @@
+Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both on-prem, and cloud instances.
+This integration was integrated and tested with version xx of Jira V3
+
+Some changes have been made that might affect your existing content.
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-atlassian-jira-v3).
+
+## Configure Atlassian Jira V3 on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Atlassian Jira V3.
+3. **Authentication**: OAuth 2.0 is used for both Jira Cloud, and OnPrem. Read the [Authentication](#authentication) process in order to configure your instance
+4. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL | The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain. | True |
+    | Cloud ID | This field is used to configure the Jira Cloud. |  |
+    | Callback URL |  | True |
+    | Client ID |  | True |
+    | Client Secret |  | True |
+    | Query (in JQL) for fetching incidents | The field that was selected in the "Issue Field to fetch by" can't be used. in the query. | False |
+    | Issue Field to fetch by | This is how the field \(e.g, created date\) is applied to the query: created &amp;gt;= \{created date in last run\} ORDER BY created ASC | False |
+    | Issue index to start fetching incidents from | This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Close Mirrored XSOAR Incident | When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the \`Resolved\` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to \`Done\`. | False |
+    | Mirroring Direction |  | False |
+    | Attachment Entry Tag to Jira | Add this tag to an entry to mirror it as an attachment to Jira. | False |
+    | Attachment Entry Tag from Jira | Add this tag to an entry to mirror it as an attachment from Jira. | False |
+    | Comment Entry Tag to Jira | Add this tag to an entry to mirror it as a comment in Jira. | False |
+    | Comment Entry Tag from Jira | Add this tag to an entry to mirror it as a comment from Jira. | False |
+    | Fetch comments | Fetch comments for a Jira ticket. | False |
+    | Fetch attachments | Fetch attachments for a Jira ticket. | False |
+    | Max incidents per fetch |  | False |
+    | Time range for initial data fetch | The time range to consider for the initial data fetch in format: &lt;number&gt; &lt;unit&gt;. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years | False |
+
+5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
+
+## Authentication
+
+For both instances, it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The oproxy url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the oproxy url, you may use a localhost url on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the url address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
+
+### Cloud authentication
+
+Go to your [Developer console](https://developer.atlassian.com/console/myapps/) page, and choose the App you want to integrate with your instance. It must be of type OAuth 2.0. For creating a new app with type OAuth 2.0, click **Create** and choose **OAuth 2.0 integration** and follow the steps.
+
+#### Callback URL
+
+1. Go to the **Authorization** tab, and click **Add** on the authorization with type of OAuth 2.0 (3LO).
+2. Insert a **Callback URL**.
+
+#### Client ID, Client Secret
+
+1. Go to the **Settings** tab.
+2. Copy the **Client ID** and **Secret** to the Client ID and Client Secret fields, respectively.
+
+#### Cloud ID
+
+Go to your [Admin page](https://admin.atlassian.com/), and choose the `Jira Software` product by clicking the three dots and choosing **Manage users**. Your Cloud ID will appear in the URL:
+`https://admin.atlassian.com/s/{cloud_id}/users`
+(If you do not have it, click **Products** and add the `Jira Software` product to your products list.)
+
+#### Cloud Scopes
+
+The integration uses the *offline_access* scope, in order to retrieve refresh tokens.
+
+##### Classic Scopes
+
+* read:jira-work
+* read:jira-user
+* write:jira-work
+* read:jql:jira
+
+#### Granular Scopes
+
+* read:issue-details:jira
+* write:board-scope:jira-software
+* read:board-scope:jira-software
+* read:sprint:jira-software
+* read:epic:jira-software
+* write:sprint:jira-software
+
+### OnPrem authentication
+
+1. Log in to Jira as a user with `Jira Administrator` permissions.
+2. Click the Jira Administration tab (the gear icon found in the top right corner) and click **Applications**.
+3. To create a new `Application link`, which will be used to integrate Cortex XSOAR with Jira:
+    a. Click **Application links** under `Integrations`, found on the left side menu.
+    b. Click **Create link** and choose **External application** with the **Incoming** direction.
+4. Fill in the required details as explained in the page and choose the permission **Write**.
+5. Once the link is created, you will be able to see `Client ID`, and the `Client secret`, which are required in the configuration screen. Copy these values and paste them into the respective fields in the configuration screen.
+
+#### OnPrem Scopes
+
+Write
+
+### Authorization Flow In Cortex XSOAR
+
+1. Create the authentication application as explained in the [Authentication](#authentication) section.
+2. Run the command `!jira-oauth-start`, where you will be presented with a URL to authenticate yourself.
+3. After authenticating, you will be redirected to the configured callback URL, where you will retrieve the authorization code provided as a query parameter called `code`.
+4. Insert the retrieved authorization code as an argument to the `!jira-oauth-complete` command.
+5. Run the `!jira-oauth-test` to test the connection of the instance.
+
+![Authenticating using custom callback URL](doc_files/jira-oauth-custom-callback-url.gif)
+
+![Authenticating using the oproxy callback URL](doc_files/jira-oauth-oproxy-callback-url.gif)
+
+## Fetch Incidents
+
+When you enable incidents fetching, you have the option to configure a query which will be used to fetch Jira issues as incidents in Cortex XSOAR. The query uses one of the following fields in order to progressively fetch incidents:
+
+* `id` of Jira issues
+* `created time` of Jira issues
+* `updated time` of Jira issues
+
+If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
+
+When you enable incidents fetching, Cortex XSOAR fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Cortex XSOAR fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are fetched for each call. To fetch older Jira issues, use the query to fetch issues option.
+If `Fetch comments` is enabled, The fetched incident will include the comments in the Jira issue.
+If `Fetch attachments` is enabled, The fetched incident will include the attachments in the Jira issue.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### jira-issue-get-attachment
+
+***
+Download attachments for a specific issue (Will download a file to War Room).
+
+#### Base Command
+
+`jira-issue-get-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attachment_id | A CSV list of the attachments' ID, which can be retrieved using the `jira-get-issue` command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | The file name. |
+| InfoFile.EntryID | String | The EntryID of the file in the War Room. |
+| InfoFile.Size | Number | The size of the file \(in bytes\). |
+| InfoFile.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
+| InfoFile.Extension | String | The file extension. |
+| InfoFile.Info | String | Basic information of the file. |
+
+#### Command example
+
+```!jira-issue-get-attachment attachment_id=16477```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": {
+        "EntryID": "10906@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
+        "Extension": "pdf",
+        "Info": "application/pdf",
+        "Name": "dummy.pdf",
+        "Size": 13264,
+        "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
+    }
+}
+```
+
+#### Human Readable Output
+
+### jira-delete-issue
+
+***
+Deletes an issue in Jira. Issue's sub-tasks will also be deleted if there are any.
+
+#### Base Command
+
+`jira-delete-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueIdOrKey | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-delete-issue issue_key=PROJECTKEY-114```
+
+#### Human Readable Output
+
+>Issue deleted successfully.
+
+### jira-get-specific-field
+
+***
+Gets specific fields from a Jira issue and adds it to context dynamically.
+
+#### Base Command
+
+`jira-get-specific-field`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| fields | The fields to retrieve from the issue. For example field="customfield_164,labels". | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Assignee | String | The user assigned to the ticket. |
+| Ticket.Creator | String | The user who created the ticket. |
+| Ticket.Summary | String | The ticket summary. |
+| Ticket.Status | String | The ticket status. |
+
+#### Command example
+
+```!jira-get-specific-field issue_key=PROJECTKEY-35 fields="watches,rank"```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Assignee": "Example User(example@example.com)",
+        "Attachments": [
+            {
+                "created": "2023-04-24T15:46:18.919+0300",
+                "filename": "1682340338180_home_screen_background_mirrored_from_xsoar.png",
+                "id": "16466",
+                "size": 212597
+            },
+            {
+                "created": "2023-05-07T20:00:59.121+0300",
+                "filename": "dummy_attachment_content.txt",
+                "id": "16504",
+                "size": 13264
+            },
+            {
+                "created": "2023-05-04T21:11:51.286+0300",
+                "filename": "dummy_attachment_content.txt",
+                "id": "16475",
+                "size": 13264
+            },
+            {
+                "created": "2023-04-30T20:19:42.760+0300",
+                "filename": "dummy_file_name",
+                "id": "16467",
+                "size": 13
+            },
+            {
+                "created": "2023-05-04T21:32:57.042+0300",
+                "filename": "dummy.pdf",
+                "id": "16478",
+                "size": 13264
+            },
+            {
+                "created": "2023-05-04T21:29:49.246+0300",
+                "filename": "dummy.pdf",
+                "id": "16477",
+                "size": 13264
+            }
+        ],
+        "Components": [
+            "dummy-comp",
+            "Integration"
+        ],
+        "Created": "2023-03-01T11:34:49.730+0200",
+        "Creator": "Example User(example@example.com)",
+        "Description": "Edited subbscription",
+        "DueDate": "2023-01-01",
+        "Id": "21487",
+        "Key": "PROJECTKEY-35",
+        "Labels": [
+            "label1",
+            "label2"
+        ],
+        "LastSeen": "2023-05-08T19:02:34.151+0300",
+        "LastUpdate": "2023-05-08T19:07:44.900+0300",
+        "Priority": "Highest",
+        "ProjectName": "Company Snoozing App",
+        "Status": "Backlog",
+        "Summary": "Edited Summary",
+        "customfield_10019": {
+            "issueFieldDisplayName": "Rank",
+            "rawData": "0|i00kjb:"
+        },
+        "watches": {
+            "issueFieldDisplayName": "Watchers",
+            "rawData": {
+                "isWatching": true,
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-35/watchers",
+                "watchCount": 1
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Issue PROJECTKEY-35
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
+
+### jira-issue-add-link
+
+***
+Creates (or updates) an issue link.
+
+#### Base Command
+
+`jira-issue-add-link`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| globalId | Deprecated. Please use global_id. | Optional |
+| global_id | If the global ID is provided and a remote issue link exists with that global ID, the remote issue link is updated. | Optional |
+| relationship | The object relationship to the issue, for example: causes. | Optional |
+| url | The URL link. | Required |
+| title | The link title. | Required |
+| summary | The link summary. | Optional |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| application_type | The application type of the linked remote application. For example "com.atlassian.confluence". | Optional |
+| applicationType | Deprecated. Please use application_type. | Optional |
+| application_name | The application name of the linked remote application. For example "My Confluence Instance". | Optional |
+| applicationName | Deprecated. Please use application_name. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-add-link title="Demo" url="https://demisto.com" issue_key=PROJECTKEY-35```
+
+#### Human Readable Output
+
+>### Remote Issue Link
+>
+>|id|ticket_link|
+>|---|---|
+>| 16506 | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-35/remotelink/16506 |
+
+### jira-get-id-by-attribute
+
+***
+Gets the account ID for a given user attribute.
+
+#### Base Command
+
+`jira-get-id-by-attribute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute | The user attribute value. For Jira Cloud, this value can be the display name, or email address, and for Jira OnPrem, this value can be the display name, email address, or username. | Required |
+| max_results | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.User.Attribute | String | The user's attribute. |
+| Jira.User.AccountId | String | The user's account ID. |
+
+#### Command example
+
+```!jira-get-id-by-attribute attribute=Tomer```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "User": {
+            "AccountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+            "Attribute": "Tomer"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>The account ID that holds the attribute `Tomer`: 557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76
+
+### jira-issue-query
+
+***
+Queries Jira issues.
+
+#### Base Command
+
+`jira-issue-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The JQL query string. | Required |
+| start_at | The index (integer) of the first issue to return (0-based). | Optional |
+| startAt | Please ue start_at. | Optional |
+| max_results | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated. | Optional |
+| maxResults | Deprecated. Please use max_results. | Optional |
+| headers | Displays the headers in human readable format. | Optional |
+| fields | A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command. | Optional |
+| extraFields | Deprecated. Please use fields. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Assignee | String | The user assigned to the ticket. |
+| Ticket.Creator | String | The user who created the ticket. |
+| Ticket.Summary | String | The ticket summary. |
+| Ticket.Description | String | The ticket's description. |
+| Ticket.Labels | Array | The ticket's labels. |
+| Ticket.Components | Array | The ticket's components. |
+| Ticket.Status | String | The ticket status. |
+| Ticket.Priority | String | The ticket priority. |
+| Ticket.ProjectName | String | The ticket project name. |
+| Ticket.DueDate | Date | The due date. |
+| Ticket.Created | Date | The time the ticket was created. |
+| Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-issue-query query="status!=done" max_results=2 fields="watches,rank"```
+
+#### Context Example
+
+```json
+{
+    "Ticket": [
+        {
+            "Assignee": "",
+            "Attachments": [
+                {
+                    "created": "2023-03-26T18:06:24.325+0300",
+                    "filename": "DemistoContent-InstallContentEnvironment-160822-0023-68.pdf",
+                    "id": "16426",
+                    "size": 17815
+                }
+            ],
+            "Components": [],
+            "Created": "2023-03-01T11:59:18.202+0200",
+            "Creator": "Example User(example@example.com)",
+            "Description": "Dummy description",
+            "DueDate": "",
+            "Id": "21490",
+            "Key": "XSOAR-19",
+            "Labels": [],
+            "LastSeen": "",
+            "LastUpdate": "2023-05-04T21:41:44.516+0300",
+            "Priority": "Highest",
+            "ProjectName": "XSOARJiraV3",
+            "Status": "To Do",
+            "Summary": "something",
+            "customfield_10019": {
+                "issueFieldDisplayName": "Rank",
+                "rawData": "0|i00kjr:"
+            },
+            "watches": {
+                "issueFieldDisplayName": "Watchers",
+                "rawData": {
+                    "isWatching": true,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/XSOAR-19/watchers",
+                    "watchCount": 1
+                }
+            }
+        },
+        {
+            "Assignee": "",
+            "Attachments": [],
+            "Components": [],
+            "Created": "2023-03-01T14:10:55.495+0200",
+            "Creator": "Example User(example@example.com)",
+            "Description": "Dummy",
+            "DueDate": "",
+            "Id": "21494",
+            "Key": "XSOAR-18",
+            "Labels": [],
+            "LastSeen": "",
+            "LastUpdate": "2023-03-01T14:10:55.495+0200",
+            "Priority": "Medium",
+            "ProjectName": "XSOARJiraV3",
+            "Status": "To Do",
+            "Summary": "something something",
+            "customfield_10019": {
+                "issueFieldDisplayName": "Rank",
+                "rawData": "0|i00kkn:"
+            },
+            "watches": {
+                "issueFieldDisplayName": "Watchers",
+                "rawData": {
+                    "isWatching": true,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/XSOAR-18/watchers",
+                    "watchCount": 1
+                }
+            }
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Issue XSOAR-18
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 2023-03-01T14:10:55.495+0200 | Example User(<example@example.com>) | Dummy |  | 21494 | Task | XSOAR-18 |  | Medium | XSOARJiraV3 | Example User(<example@example.com>) | To Do | something something | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21494 |
+
+### jira-get-id-offset
+
+***
+Returns the ID offset. For example the first issue ID.
+
+#### Base Command
+
+`jira-get-id-offset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.idOffSet | String | The ID offset. |
+
+#### Command example
+
+```!jira-get-id-offset```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "idOffSet": "10161"
+    }
+}
+```
+
+#### Human Readable Output
+
+>ID Offset: 10161
+
+### jira-issue-add-comment
+
+***
+Adds a new comment to an existing Jira issue.
+
+#### Base Command
+
+`jira-issue-add-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| comment | The comment body. | Required |
+| visibility | The roles that can view the comment, for example: Administrators. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-add-comment issue_key=PROJECTKEY-31 comment="New comment"```
+
+#### Human Readable Output
+
+>### Comment added successfully
+>
+>|Comment|Id|Ticket Link|
+>|---|---|---|
+>| New comment | 18456 | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21432/comment/18456 |
+
+### jira-issue-upload-file
+
+***
+Uploads a file attachment to an issue.
+
+#### Base Command
+
+`jira-issue-upload-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| upload | The entry ID to upload. | Required |
+| attachment_name | The attachment name to be displayed in Jira (overrides the original file name). | Optional |
+| attachmentName | Deprecated. Please use attachment_name. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-upload-file upload=10833@33e912c0-76a9-4a08-8cc6-1b20b1980b20 issue_key=PROJECTKEY-31```
+
+#### Human Readable Output
+
+>### Attachment added successfully
+>
+>|Attachment Link|Attachment Name|Id|Issue Key|
+>|---|---|---|---|
+>| https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/attachment/16505 | dummy.pdf | 16505 | PROJECTKEY-31 |
+
+### jira-list-transitions
+
+***
+Lists all possible transitions for a given ticket.
+
+#### Base Command
+
+`jira-list-transitions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Transitions | Object | An object that holds data about all possible transitions. |
+| Ticket.Transitions.transitions | Array | An array of all possible transitions. |
+| Ticket.Transitions.ticketId | String | The ticket ID. |
+
+#### Command example
+
+```!jira-list-transitions issue_key=PROJECTKEY-35```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Key": "PROJECTKEY-35",
+        "Transitions": {
+            "ticketId": "PROJECTKEY-35",
+            "transitions": [
+                "Backlog",
+                "In Development"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### List Transitions
+>
+>|Transition Names|
+>|---|
+>| Backlog |
+>| In Development |
+
+### jira-edit-issue
+
+***
+Modifies an issue in Jira.
+
+#### Base Command
+
+`jira-edit-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent_issue_key | The parent issue key (if you're editing a sub-task). This argument is only relevant for Jira Cloud. | Optional |
+| parent_issue_id | The parent issue ID (if you're editing a sub-task). This argument is only relevant for Jira Cloud. | Optional |
+| action | Whether to append or rewrite the values. The default value is `rewrite`. Only the `labels`, and `components` arguments support the action append. Possible values are: append, rewrite. Default is rewrite. | Optional |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| issue_json | The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}. | Optional |
+| issueJson | Deprecated. Please use issue_json. | Optional |
+| summary | The issue summary. | Optional |
+| description | The issue description. | Optional |
+| labels | A CSV list of labels. | Optional |
+| priority | The issue priority, for example: High, Medium. | Optional |
+| due_date | The due date for the issue (in the format yyyy-mm-dd). | Optional |
+| dueDate | Deprecated. Please use due_date. | Optional |
+| assignee | The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name. | Optional |
+| assignee_id | The account Id of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional |
+| status | The issue status (Either choose the issue status or transition, but not both). | Optional |
+| transition | The issue transition (Either choose the issue status or transition, but not both). | Optional |
+| environment | A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7". | Optional |
+| security | The security level name of the issue. For example security="Anyone". | Optional |
+| components | A CSV list of components. For example components="component1,component2". When using a Jira OnPrem instance, or using the action append, the entered components must already exist. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Assignee | String | The user assigned to the ticket. |
+| Ticket.Creator | String | The user who created the ticket. |
+| Ticket.Summary | String | The ticket summary. |
+| Ticket.Description | String | The ticket's project description. |
+| Ticket.Labels | Array | The ticket's project labels. |
+| Ticket.Status | String | The ticket status. |
+| Ticket.Priority | String | The ticket priority. |
+| Ticket.ProjectName | String | The ticket project name. |
+| Ticket.DueDate | Date | The due date. |
+| Ticket.Created | Date | The time the ticket was created. |
+| Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-edit-issue action=rewrite issue_key=PROJECTKEY-35 assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 description="Edited subbscription" due_date="2023-01-01" environment="Windows XP" labels="label1,label2" priority="Highest" security=Anyone status="Backlog" summary="Edited Summary"```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Assignee": "Example User(example@example.com)",
+        "Attachments": [
+            {
+                "created": "2023-04-24T15:46:18.919+0300",
+                "filename": "1682340338180_home_screen_background_mirrored_from_xsoar.png",
+                "id": "16466",
+                "size": 212597
+            },
+            {
+                "created": "2023-05-07T20:00:59.121+0300",
+                "filename": "dummy_attachment_content.txt",
+                "id": "16504",
+                "size": 13264
+            },
+            {
+                "created": "2023-05-04T21:11:51.286+0300",
+                "filename": "dummy_attachment_content.txt",
+                "id": "16475",
+                "size": 13264
+            },
+            {
+                "created": "2023-04-30T20:19:42.760+0300",
+                "filename": "dummy_file_name",
+                "id": "16467",
+                "size": 13
+            },
+            {
+                "created": "2023-05-04T21:32:57.042+0300",
+                "filename": "dummy.pdf",
+                "id": "16478",
+                "size": 13264
+            },
+            {
+                "created": "2023-05-04T21:29:49.246+0300",
+                "filename": "dummy.pdf",
+                "id": "16477",
+                "size": 13264
+            }
+        ],
+        "Components": [
+            "dummy-comp",
+            "Integration"
+        ],
+        "Created": "2023-03-01T11:34:49.730+0200",
+        "Creator": "Example User(example@example.com)",
+        "Description": "Edited subbscription",
+        "DueDate": "2023-01-01",
+        "Id": "21487",
+        "Key": "PROJECTKEY-35",
+        "Labels": [
+            "label1",
+            "label2"
+        ],
+        "LastSeen": "2023-05-08T19:02:34.151+0300",
+        "LastUpdate": "2023-05-08T19:07:44.900+0300",
+        "Priority": "Highest",
+        "ProjectName": "Company Snoozing App",
+        "Status": "Backlog",
+        "Summary": "Edited Summary"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Issue PROJECTKEY-35
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
+
+### jira-create-issue
+
+***
+Creates a new issue in Jira.
+
+#### Base Command
+
+`jira-create-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_json | The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}. | Optional |
+| issueJson | Deprecated. Please use issue_json. | Optional |
+| summary | The summary of the issue. | Required |
+| project_key | The project key with which to associate the issue (Project Key or name is required). | Optional |
+| projectKey | Deprecated. Please use project_key. | Optional |
+| issue_type_name | Selects an issue type by name, for example: "Problem". (Issue type name or id is required). | Optional |
+| issueTypeName | Deprecated. Please use issue_type_name. | Optional |
+| issue_type_id | Selects an issue type by its numeric ID (Issue type name or id is required). | Optional |
+| issueTypeId | Deprecated. Please use issue_type_id. | Optional |
+| project_name | The project name with which to associate the issue (Project Key or name is required). | Optional |
+| projectName | Deprecated. Please use project_name. | Optional |
+| description | A description of the issue. | Optional |
+| labels | A CSV list of labels. | Optional |
+| priority | The priority of the issue, for example: High, Medium. | Optional |
+| due_date | The due date for the issue (in the format yyyy-mm-dd). | Optional |
+| dueDate | Deprecated. Please use due_date. | Optional |
+| assignee | The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name. | Optional |
+| assignee_id | The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional |
+| reporter_id | The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional |
+| reporter | The name of the of the reporter. Relevant for Jira Server only. Please use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name. | Optional |
+| parent_issue_key | The parent issue key (if you're creating a sub-task). | Optional |
+| parentIssueKey | Deprecated. Please use parent_issue_key. | Optional |
+| parent_issue_id | The parent issue ID (if you're creating a sub-task). | Optional |
+| parentIssueId | Deprecated. Please use parent_issue_id. | Optional |
+| environment | A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7". | Optional |
+| security | The security level of the issue. For example security="Anyone". | Optional |
+| components | The component names of the issue. For example components="component1,component2". When using a Jira OnPrem instance, the entered components must already exist. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+
+#### Command example
+
+```!jira-create-issue summary="Dummy Summary" assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 components="dummy-comp,New-Component" description="Dummy description" due_date="2023-01-01" environment="Windows XP" issue_type_name="Sub-task" labels="label1,label2" parent_issue_key=PROJECTKEY-35 priority=Highest project_name="Company Snoozing App" reporter_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 security=Assignee```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Id": "21619",
+        "Key": "PROJECTKEY-145"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Issue PROJECTKEY-145
+>
+>|Id|Key|Project Key|Ticket Link|
+>|---|---|---|---|
+>| 21619 | PROJECTKEY-145 | PROJECTKEY | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21619 |
+
+### jira-get-issue
+
+***
+Fetches an issue from Jira.
+
+#### Base Command
+
+`jira-get-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fields | A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command. | Optional |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| headers | Displays the headers in human readable format. | Optional |
+| get_attachments | If "true", retrieves the issue attachments and downloads the file to the War Room. Possible values are: true, false. Default is false. | Optional |
+| getAttachments | Deprecated. Please use get_attachments. Possible values are: true, false. Default is false. | Optional |
+| expand_links | If "true", expands the issue links (the linked issues and subtasks). Possible values are: true, false. Default is false. | Optional |
+| expandLinks | Deprecated. Please use expand_links. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Assignee | String | The user assigned to the ticket, in the form \`Username\(User email address\)\`. |
+| Ticket.Creator | String | The user who created the ticket. |
+| Ticket.Summary | String | The ticket summary. |
+| Ticket.Status | String | The ticket status. |
+| Ticket.Labels | Array | The ticket's labels. |
+| Ticket.Components | Array | The ticket's components. |
+| Ticket.Priority | String | The ticket priority. |
+| Ticket.ProjectName | String | The ticket project name. |
+| Ticket.DueDate | Date | The due date. |
+| Ticket.Created | Date | The time the ticket was created. |
+| Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Ticket.LastUpdate | Date | The last time the ticket was updated. |
+| Ticket.Attachments.created | Date | The created time of the attachment. |
+| Ticket.Attachments.filename | String | The file name of the attachment. |
+| Ticket.Attachments.id | String | The id of the attachment. |
+| Ticket.Attachments.size | Number | The size \(in bytes\) of the attachment. |
+| InfoFile.Name | String | The file name. |
+| InfoFile.EntryID | String | The ID for locating the file in the War Room. |
+| InfoFile.Size | Number | The size of the file \(in bytes\). |
+| InfoFile.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). |
+| InfoFile.Extension | String | The file extension. |
+| InfoFile.Info | String | Basic information about the file. |
+
+#### Command example
+
+```!jira-get-issue issue_key=PROJECTKEY-35 expand_links=true fields=watches,rank get_attachments=true```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": [
+        {
+            "EntryID": "10845@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
+            "Extension": "png",
+            "Info": "image/png",
+            "Name": "1682340338180_home_screen_background_mirrored_from_xsoar.png",
+            "Size": 212597,
+            "Type": "PNG image data, 430 x 932, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "10846@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
+            "Extension": "txt",
+            "Info": "text/plain; charset=utf-8",
+            "Name": "dummy_attachment_content.txt",
+            "Size": 13264,
+            "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
+        },
+        {
+            "EntryID": "10847@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
+            "Extension": "txt",
+            "Info": "text/plain; charset=utf-8",
+            "Name": "dummy_attachment_content.txt",
+            "Size": 13264,
+            "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
+        },
+        {
+            "EntryID": "10848@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
+            "Info": "text/plain",
+            "Name": "dummy_file_name",
+            "Size": 13,
+            "Type": "ASCII text, with no line terminators"
+        },
+        {
+            "EntryID": "10849@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
+            "Extension": "pdf",
+            "Info": "application/pdf",
+            "Name": "dummy.pdf",
+            "Size": 13264,
+            "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
+        },
+        {
+            "EntryID": "10850@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
+            "Extension": "pdf",
+            "Info": "application/pdf",
+            "Name": "dummy.pdf",
+            "Size": 13264,
+            "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
+        }
+    ],
+    "Ticket": [
+        {
+            "Assignee": "Example User(example@example.com)",
+            "Attachments": [
+                {
+                    "created": "2023-04-24T15:46:18.919+0300",
+                    "filename": "1682340338180_home_screen_background_mirrored_from_xsoar.png",
+                    "id": "16466",
+                    "size": 212597
+                },
+                {
+                    "created": "2023-05-07T20:00:59.121+0300",
+                    "filename": "dummy_attachment_content.txt",
+                    "id": "16504",
+                    "size": 13264
+                },
+                {
+                    "created": "2023-05-04T21:11:51.286+0300",
+                    "filename": "dummy_attachment_content.txt",
+                    "id": "16475",
+                    "size": 13264
+                },
+                {
+                    "created": "2023-04-30T20:19:42.760+0300",
+                    "filename": "dummy_file_name",
+                    "id": "16467",
+                    "size": 13
+                },
+                {
+                    "created": "2023-05-04T21:32:57.042+0300",
+                    "filename": "dummy.pdf",
+                    "id": "16478",
+                    "size": 13264
+                },
+                {
+                    "created": "2023-05-04T21:29:49.246+0300",
+                    "filename": "dummy.pdf",
+                    "id": "16477",
+                    "size": 13264
+                }
+            ],
+            "Components": [
+                "dummy-comp",
+                "Integration"
+            ],
+            "Created": "2023-03-01T11:34:49.730+0200",
+            "Creator": "Example User(example@example.com)",
+            "Description": "Edited subbscription",
+            "DueDate": "2023-01-01",
+            "Id": "21487",
+            "Key": "PROJECTKEY-35",
+            "Labels": [
+                "label1",
+                "label2"
+            ],
+            "LastSeen": "2023-05-08T19:02:34.151+0300",
+            "LastUpdate": "2023-05-08T19:05:03.569+0300",
+            "Priority": "Highest",
+            "ProjectName": "Company Snoozing App",
+            "Status": "Selected for Development",
+            "Summary": "Edited Summary",
+            "customfield_10019": {
+                "issueFieldDisplayName": "Rank",
+                "rawData": "0|i00kjb:"
+            },
+            "watches": {
+                "issueFieldDisplayName": "Watchers",
+                "rawData": {
+                    "isWatching": true,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-35/watchers",
+                    "watchCount": 1
+                }
+            }
+        },
+        {
+            "Assignee": "",
+            "Attachments": [],
+            "Components": [],
+            "Created": "2023-04-10T06:55:43.409+0300",
+            "Creator": "Example User(example@example.com)",
+            "Description": "",
+            "DueDate": "",
+            "Id": "21538",
+            "Key": "PROJECTKEY-70",
+            "Labels": [],
+            "LastSeen": "",
+            "LastUpdate": "2023-04-13T00:13:02.152+0300",
+            "Priority": "Medium",
+            "ProjectName": "Company Snoozing App",
+            "Status": "Selected for Development",
+            "Summary": "Test Test",
+            "customfield_10019": {
+                "issueFieldDisplayName": "Rank",
+                "rawData": "0|i00kpz:"
+            },
+            "watches": {
+                "issueFieldDisplayName": "Watchers",
+                "rawData": {
+                    "isWatching": true,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-70/watchers",
+                    "watchCount": 1
+                }
+            }
+        },
+        {
+            "Assignee": "Example User(example@example.com)",
+            "Attachments": [],
+            "Components": [
+                "dummy-comp",
+                "New-Component"
+            ],
+            "Created": "2023-05-04T21:48:09.978+0300",
+            "Creator": "Example User(example@example.com)",
+            "Description": "Dummy description",
+            "DueDate": "2023-01-01",
+            "Id": "21583",
+            "Key": "PROJECTKEY-114",
+            "Labels": [
+                "label1",
+                "label2"
+            ],
+            "LastSeen": "2023-05-08T17:25:12.597+0300",
+            "LastUpdate": "2023-05-04T21:48:10.514+0300",
+            "Priority": "Highest",
+            "ProjectName": "Company Snoozing App",
+            "Status": "Backlog",
+            "Summary": "Dummy Summary",
+            "customfield_10019": {
+                "issueFieldDisplayName": "Rank",
+                "rawData": "0|i00ktr:"
+            },
+            "watches": {
+                "issueFieldDisplayName": "Watchers",
+                "rawData": {
+                    "isWatching": true,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-114/watchers",
+                    "watchCount": 1
+                }
+            }
+        },
+        {
+            "Assignee": "",
+            "Attachments": [],
+            "Components": [],
+            "Created": "2023-02-02T17:59:40.530+0200",
+            "Creator": "Example User(example@example.com)",
+            "Description": "",
+            "DueDate": "",
+            "Id": "21431",
+            "Key": "TSTPRD-6",
+            "Labels": [],
+            "LastSeen": "2023-05-07T19:04:54.053+0300",
+            "LastUpdate": "2023-05-07T19:47:49.296+0300",
+            "Priority": "Medium",
+            "ProjectName": "TestProd",
+            "Status": "To Do",
+            "Summary": "Hire UX designers DO NOT DELETE OR MOVE",
+            "customfield_10019": {
+                "issueFieldDisplayName": "Rank",
+                "rawData": "0|i00kky:zzzr"
+            },
+            "watches": {
+                "issueFieldDisplayName": "Watchers",
+                "rawData": {
+                    "isWatching": true,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/TSTPRD-6/watchers",
+                    "watchCount": 1
+                }
+            }
+        },
+        {
+            "Assignee": "",
+            "Attachments": [
+                {
+                    "created": "2023-03-26T18:06:24.325+0300",
+                    "filename": "DemistoContent-InstallContentEnvironment-160822-0023-68.pdf",
+                    "id": "16426",
+                    "size": 17815
+                }
+            ],
+            "Components": [],
+            "Created": "2023-03-01T11:59:18.202+0200",
+            "Creator": "Example User(example@example.com)",
+            "Description": "Dummy description",
+            "DueDate": "",
+            "Id": "21490",
+            "Key": "XSOAR-19",
+            "Labels": [],
+            "LastSeen": "",
+            "LastUpdate": "2023-05-04T21:41:44.516+0300",
+            "Priority": "Highest",
+            "ProjectName": "XSOARJiraV3",
+            "Status": "To Do",
+            "Summary": "something",
+            "customfield_10019": {
+                "issueFieldDisplayName": "Rank",
+                "rawData": "0|i00kjr:"
+            },
+            "watches": {
+                "issueFieldDisplayName": "Watchers",
+                "rawData": {
+                    "isWatching": true,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/XSOAR-19/watchers",
+                    "watchCount": 1
+                }
+            }
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Issue XSOAR-19
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 2023-03-01T11:59:18.202+0200 | Example User(<example@example.com>) | Dummy description |  | 21490 | Task | XSOAR-19 |  | Highest | XSOARJiraV3 | Example User(<example@example.com>) | To Do | something | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21490 |
+
+### jira-get-comments
+
+***
+Returns the comments added to a ticket.
+
+#### Base Command
+
+`jira-get-comments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of results to return. Default is 50 and maximum is 5000. Default is 50. | Optional |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ID of the ticket. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Comment.Id | String | The ID of the comment. |
+| Ticket.Comment.Comment | String | The text of the comment. |
+| Ticket.Comment.Created | Date | The comment creation date. |
+| Ticket.Comment.Updated | Date | The comment updated date. |
+| Ticket.Comment.User | String | The user that created the comment. |
+| Ticket.Comment.UpdateUser | String | The user that updated the comment. |
+
+#### Command example
+
+```!jira-get-comments issue_key=PROJECTKEY-35 limit=2```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Comment": [
+            {
+                "Comment": "New comment",
+                "Created": "2023-05-04T21:29:51.036+0300",
+                "Id": "18423",
+                "UpdateUser": "Example User",
+                "Updated": "2023-05-04T21:29:51.036+0300",
+                "User": "Example User"
+            },
+            {
+                "Comment": "Dummy Link",
+                "Created": "2023-05-04T21:30:29.599+0300",
+                "Id": "18424",
+                "UpdateUser": "Example User",
+                "Updated": "2023-05-04T21:30:29.599+0300",
+                "User": "Example User"
+            }
+        ],
+        "Id": "21487",
+        "Key": "PROJECTKEY-35"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Comments
+>
+>|Comment|Created|Id|UpdateUser|Updated|User|
+>|---|---|---|---|---|---|
+>| New comment | 2023-05-04T21:29:51.036+0300 | 18423 | Example User | 2023-05-04T21:29:51.036+0300 | Example User |
+>| Dummy Link | 2023-05-04T21:30:29.599+0300 | 18424 | Example User | 2023-05-04T21:30:29.599+0300 | Example User |
+
+### jira-oauth-complete
+
+***
+Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process.
+
+#### Base Command
+
+`jira-oauth-complete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| code | The authorization code retrieved from the callback URL according to the documentation. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### jira-oauth-start
+
+***
+Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process.
+
+#### Base Command
+
+`jira-oauth-start`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### jira-oauth-test
+
+***
+Use this command to test the connectivity of the Jira instance.
+
+#### Base Command
+
+`jira-oauth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### jira-issue-delete-comment
+
+***
+Delete a comment that's part of an issue.
+
+#### Base Command
+
+`jira-issue-delete-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment_id | The comment ID. | Required |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-delete-comment issue_key=PROJECTKEY-35 comment_id=18423```
+
+#### Human Readable Output
+
+>Comment deleted successfully.
+
+### jira-issue-edit-comment
+
+***
+Edit a comment that's part of an issue.
+
+#### Base Command
+
+`jira-issue-edit-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| comment_id | The comment ID. | Required |
+| comment | The content of the comment. | Required |
+| visibility | The roles that can view the comment, for example: Administrators. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ID of the ticket. |
+| Ticket.Comment.Id | String | The ID of the comment. |
+| Ticket.Comment.Comment | String | The text of the comment. |
+| Ticket.Comment.Created | String | The issue creation date. |
+| Ticket.Comment.User | String | The user that created the comment. |
+
+#### Command example
+
+```!jira-issue-edit-comment issue_key=PROJECTKEY-35 comment_id=18425 comment="New Hello There"```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Comment": [
+            {
+                "Comment": "Dummy Link",
+                "Created": "2023-05-04T21:30:29.599+0300",
+                "Id": "18424",
+                "UpdateUser": "Example User",
+                "Updated": "2023-05-04T21:30:29.599+0300",
+                "User": "Example User"
+            },
+            {
+                "Comment": "New Hello There",
+                "Created": "2023-05-04T21:32:58.870+0300",
+                "Id": "18425",
+                "UpdateUser": "Example User",
+                "Updated": "2023-05-08T19:08:04.346+0300",
+                "User": "Example User"
+            },
+            {
+                "Comment": "Dummy Link",
+                "Created": "2023-05-04T21:33:29.986+0300",
+                "Id": "18426",
+                "UpdateUser": "Example User",
+                "Updated": "2023-05-04T21:33:29.986+0300",
+                "User": "Example User"
+            }
+        ],
+        "Id": "21487",
+        "Key": "PROJECTKEY-35"
+    }
+}
+```
+
+#### Human Readable Output
+
+>The comment has been edited successfully
+
+### jira-issue-list-fields
+
+***
+This command returns the issue fields, both system and custom fields.
+
+#### Base Command
+
+`jira-issue-list-fields`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueField.id | String | The ID of the field. |
+| Jira.IssueField.key | String | The key of the field. |
+| Jira.IssueField.name | String | The name of the field. |
+| Jira.IssueField.custom | String | Whether the field is a custom field. |
+| Jira.IssueField.orderable | String | Whether the content of the field can be used to order lists. |
+| Jira.IssueField.navigable | String | Whether the field can be used as a column on the issue navigator. |
+| Jira.IssueField.searchable | String | Whether the content of the field can be searched. |
+| Jira.IssueField.clauseNames | Array | The names that can be used to reference the field in an advanced search. |
+| Jira.IssueField.scope | Object | The scope of the field. |
+| Jira.IssueField.scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE |
+| Jira.IssueField.scope.project | Object | The project the item has scope in. |
+| Jira.IssueField.scope.project.self | String | The URL of the project details. |
+| Jira.IssueField.scope.project.id | String | The ID of the project. |
+| Jira.IssueField.scope.project.key | String | The key of the project. |
+| Jira.IssueField.scope.project.name | String | The name of the project. |
+| Jira.IssueField.scope.project.projectTypeKey | String | The project type of the project. Valid values: software, service_desk, business |
+| Jira.IssueField.scope.project.simplified | Boolean | Whether or not the project is simplified. |
+| Jira.IssueField.scope.project.avatarUrls | Object | The URLs of the project's avatars. |
+| Jira.IssueField.scope.project.projectCategory | Object | The category the project belongs to. |
+| Jira.IssueField.scope.project.projectCategory.self | String | The URL of the project category. |
+| Jira.IssueField.scope.project.projectCategory.id | String | The ID of the project category. |
+| Jira.IssueField.scope.project.projectCategory.description | String | The name of the project category. |
+| Jira.IssueField.scope.project.projectCategory.name | String | The description of the project category. |
+| Jira.IssueField.scope.type | String | The type of scope. Valid values: PROJECT, TEMPLATE |
+| Jira.IssueField.schema | Object | The data schema for the field. |
+| Jira.IssueField.schema.type | String | The data type of the field. |
+| Jira.IssueField.schema.items | String | When the data type is an array, the name of the field items within the array. |
+| Jira.IssueField.schema.system | String | If the field is a system field, the name of the field. |
+| Jira.IssueField.schema.custom | String | If the field is a custom field, the URI of the field. |
+| Jira.IssueField.schema.customId | Number | If the field is a custom field, the custom ID of the field. |
+| Jira.IssueField.schema.configuration | Object | If the field is a custom field, the configuration of the field. |
+
+#### Command example
+
+```!jira-issue-list-fields page=1 page_size=2```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "IssueField": [
+            {
+                "clauseNames": [],
+                "custom": true,
+                "id": "customfield_10070",
+                "key": "customfield_10070",
+                "name": "Responders",
+                "navigable": true,
+                "orderable": true,
+                "schema": {
+                    "custom": "com.atlassian.jira.modules.servicemanagement.responders-entity:responders-entity-field-cftype",
+                    "customId": 10070,
+                    "items": "string",
+                    "type": "array"
+                },
+                "searchable": true,
+                "untranslatedName": "Responders"
+            },
+            {
+                "clauseNames": [
+                    "cf[10071]",
+                    "Time to resolution"
+                ],
+                "custom": true,
+                "id": "customfield_10071",
+                "key": "customfield_10071",
+                "name": "Time to resolution",
+                "navigable": true,
+                "orderable": true,
+                "schema": {
+                    "custom": "com.atlassian.servicedesk:sd-sla-field",
+                    "customId": 10071,
+                    "type": "sd-servicelevelagreement"
+                },
+                "searchable": true,
+                "untranslatedName": "Time to resolution"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Issue Fields
+>
+>|Custom|Id|Name|Schema Type|Searchable|
+>|---|---|---|---|---|
+>| true | customfield_10070 | Responders | array | true |
+>| true | customfield_10071 | Time to resolution | sd-servicelevelagreement | true |
+
+### jira-issue-to-backlog
+
+***
+Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints, then the board_id argument is required. At most 50 issues may be moved at once.
+
+#### Base Command
+
+`jira-issue-to-backlog`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issues | The issues to move to backlog. | Required |
+| board_id | The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the boards' ID. | Optional |
+| rank_before_issue | To rank the issues before the stated issue (supports issue key and ID). This argument can be used when supplying the board ID. | Optional |
+| rank_after_issue | To rank the issues after the stated issue (supports issue key and ID). This argument can be used when supplying the board ID. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-to-backlog issues="TSTPRD-3,TSTPRD-6" rank_before_issue="TSTPRD-4" board_id=12```
+
+#### Human Readable Output
+
+>Issues were moved to Backlog successfully
+
+### jira-issue-to-board
+
+***
+Moves issues from backlog to board, the command does not work with boards with sprints. At most 50 issues may be moved at once. This command is only supported for Jira Cloud instances.
+
+#### Base Command
+
+`jira-issue-to-board`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issues | The issues to move to board. | Required |
+| board_id | The board ID. | Required |
+| rank_before_issue | To rank the issues before the stated issue (supports issue key and ID). | Optional |
+| rank_after_issue | To rank the issues after the stated issue (supports issue key and ID). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-to-board issues="PROJECTKEY-35,PROJECTKEY-39" board_id=14```
+
+#### Human Readable Output
+
+>Issues were moved to Board successfully
+
+### jira-board-list
+
+***
+Get board data. If board_id is given, then only the board that corresponds to the board_id is returned, otherwise, the the command will return boards that match the project_key_id, type, or board_name arguments.
+
+#### Base Command
+
+`jira-board-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| board_name | The name of the board. | Optional |
+| board_id | The board ID. | Optional |
+| project_key_id | The project key or ID. | Optional |
+| type | The type of the board. Allowed values are: scrum, kanban, simple. Possible values are: scrum, kanban, simple. | Optional |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.Board.id | Number | The ID of the board. |
+| Jira.Board.self | String | The URL of the board. |
+| Jira.Board.name | String | The name of the board. |
+| Jira.Board.type | String | The type the board. |
+| Jira.Board.admins | Object | The administrators of the board. |
+| Jira.Board.admins.users | Object | The users who own the board. |
+| Jira.Board.admins.users.self | String | The URL of the user. |
+| Jira.Board.admins.users.displayName | String | The display name of the user. Depending on the user’s privacy setting, this may return an alternative value. |
+| Jira.Board.admins.users.active | String | Whether the user is active. |
+| Jira.Board.admins.users.accountId | String | The account ID of the user, which uniquely identifies the user across all Atlassian products. |
+| Jira.Board.admins.users.avatarUrls | Object | The avatars of the user. |
+| Jira.Board.admins.groups | Object | The groups who own the board. |
+| Jira.Board.admins.groups.name | String | The name of the group. |
+| Jira.Board.admins.groups.self | String | The URL of the group. |
+| Jira.Board.location | Object | The container that the board is located in. |
+| Jira.Board.location.projectId | Number | The project ID. |
+| Jira.Board.location.userId | Number | The user ID. |
+| Jira.Board.location.userAccountId | String | The user account ID. |
+| Jira.Board.location.displayName | String | The display name of the project. |
+| Jira.Board.location.projectName | String | The project name. |
+| Jira.Board.location.projectKey | String | The project key. |
+| Jira.Board.location.projectTypeKey | String | The type of the project. |
+| Jira.Board.location.avatarURI | String | The avatar of the project. |
+| Jira.Board.location.name | String | The name of the project. |
+| Jira.Board.canEdit | String | Whether the board can be edited. |
+| Jira.Board.isPrivate | String | Whether the board is private. |
+| Jira.Board.favourite | String | Whether the board is selected as a favorite. |
+
+#### Command example
+
+```!jira-board-list project_key_id=PROJECTKEY type=kanban```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "Board": {
+            "id": 14,
+            "location": {
+                "avatarURI": "https://api.atlassian.com/ex/jira/1234/rest/api/2/universal_avatar/view/type/project/avatar/10402?size=small",
+                "displayName": "Company Snoozing App (PROJECTKEY)",
+                "name": "Company Snoozing App (PROJECTKEY)",
+                "projectId": 10022,
+                "projectKey": "PROJECTKEY",
+                "projectName": "Company Snoozing App",
+                "projectTypeKey": "software"
+            },
+            "name": "PROJECTKEY board",
+            "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/board/14",
+            "type": "kanban"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Boards
+>
+>|ID|Name|Project ID|Project Name|Type|
+>|---|---|---|---|---|
+>| 14 | PROJECTKEY board | 10022 | Company Snoozing App | kanban |
+
+### jira-board-backlog-list
+
+***
+Get issues from the backlog of a specific board. For Jira OnPrem, the board must be of type scrum.
+
+#### Base Command
+
+`jira-board-backlog-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| board_id | The board ID. | Required |
+| jql_query | A JQL query to filter the issues. | Optional |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.BoardBacklog.boardId | Number | The ID of the board. |
+| Jira.BoardBacklog.Ticket.Id | Number | The ticket ID. |
+| Jira.BoardBacklog.Ticket.Key | String | The ticket key. |
+| Jira.BoardBacklog.Ticket.Assignee | String | The user assigned to the ticket. |
+| Jira.BoardBacklog.Ticket.Creator | String | The user who created the ticket. |
+| Jira.BoardBacklog.Ticket.Summary | String | The ticket summary. |
+| Jira.BoardBacklog.Ticket.Status | String | The ticket status. |
+| Jira.BoardBacklog.Ticket.Priority | String | The ticket priority. |
+| Jira.BoardBacklog.Ticket.ProjectName | String | The ticket project name. |
+| Jira.BoardBacklog.Ticket.DueDate | Date | The due date. |
+| Jira.BoardBacklog.Ticket.Created | Date | The time the ticket was created. |
+| Jira.BoardBacklog.Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Jira.BoardBacklog.Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-board-backlog-list board_id=14 jql_query="status!=done" limit=2```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "BoardBacklog": {
+            "Ticket": [
+                {
+                    "Assignee": "",
+                    "Attachments": [],
+                    "Components": [],
+                    "Created": "2023-01-01T22:57:28.689+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "",
+                    "DueDate": "",
+                    "Id": "21360",
+                    "Key": "PROJECTKEY-1",
+                    "Labels": [],
+                    "LastSeen": "",
+                    "LastUpdate": "2023-03-07T17:31:48.332+0200",
+                    "Priority": "Medium",
+                    "ProjectName": "Company Snoozing App",
+                    "Status": "Backlog",
+                    "Summary": "Start creating the company snoozing app"
+                },
+                {
+                    "Assignee": "Example User()",
+                    "Attachments": [],
+                    "Components": [
+                        "Integration"
+                    ],
+                    "Created": "2023-01-30T16:42:47.476+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "Complete this issue",
+                    "DueDate": "2023-09-09",
+                    "Id": "21424",
+                    "Key": "PROJECTKEY-30",
+                    "Labels": [
+                        "collab",
+                        "good_job"
+                    ],
+                    "LastSeen": "",
+                    "LastUpdate": "2023-03-13T21:09:47.898+0200",
+                    "Priority": "Highest",
+                    "ProjectName": "Company Snoozing App",
+                    "Status": "Backlog",
+                    "Summary": "Issue for demo"
+                }
+            ],
+            "boardId": "14"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Backlog Issues
+>
+>|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 2023-01-01T22:57:28.689+0200 | Example User(<example@example.com>) |  |  | 21360 | Epic | PROJECTKEY-1 |  | Medium | Company Snoozing App | Example User(<example@example.com>) | Backlog | Start creating the company snoozing app | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21360 |
+>| Example User() | 2023-01-30T16:42:47.476+0200 | Example User(<example@example.com>) | Complete this issue | 2023-09-09 | 21424 | Epic | PROJECTKEY-30 | collab,<br/>good_job | Highest | Company Snoozing App | Example User() | Backlog | Issue for demo | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21424 |
+
+### jira-board-issue-list
+
+***
+Get all issues from a specific board.
+
+#### Base Command
+
+`jira-board-issue-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| board_id | The board ID. | Required |
+| jql_query | A JQL query to filter the issues. | Optional |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.BoardIssue.boardId | Number | The ID of the board. |
+| Jira.BoardIssue.Ticket.Id | Number | The ticket ID. |
+| Jira.BoardIssue.Ticket.Key | String | The ticket key. |
+| Jira.BoardIssue.Ticket.Assignee | String | The user assigned to the ticket. |
+| Jira.BoardIssue.Ticket.Creator | String | The user who created the ticket. |
+| Jira.BoardIssue.Ticket.Summary | String | The ticket summary. |
+| Jira.BoardIssue.Ticket.Status | String | The ticket status. |
+| Jira.BoardIssue.Ticket.Priority | String | The ticket priority. |
+| Jira.BoardIssue.Ticket.ProjectName | String | The ticket project name. |
+| Jira.BoardIssue.Ticket.DueDate | Date | The due date. |
+| Jira.BoardIssue.Ticket.Created | Date | The time the ticket was created. |
+| Jira.BoardIssue.Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Jira.BoardIssue.Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-board-issue-list board_id=14 jql_query="status!=done" limit=2```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "BoardIssue": {
+            "Ticket": [
+                {
+                    "Assignee": "Example User()",
+                    "Attachments": [],
+                    "Components": [
+                        "comp2",
+                        "Integration",
+                        "test_test"
+                    ],
+                    "Created": "2023-01-30T16:35:50.482+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "",
+                    "DueDate": "2023-09-09",
+                    "Id": "21423",
+                    "Key": "PROJECTKEY-29",
+                    "Labels": [
+                        "Demisto",
+                        "XSOAR",
+                        "testnow"
+                    ],
+                    "LastSeen": "2023-05-07T17:40:56.751+0300",
+                    "LastUpdate": "2023-03-26T18:26:06.762+0300",
+                    "Priority": "Low",
+                    "ProjectName": "Company Snoozing App",
+                    "Status": "Selected for Development",
+                    "Summary": "Issue for demo"
+                },
+                {
+                    "Assignee": "",
+                    "Attachments": [
+                        {
+                            "created": "2023-01-22T16:43:29.878+0200",
+                            "filename": "Screen Shot 2022-10-19 at 20.09.46.png",
+                            "id": "16387",
+                            "size": 450738
+                        },
+                        {
+                            "created": "2023-02-05T21:11:43.429+0200",
+                            "filename": "stam.png",
+                            "id": "16399",
+                            "size": 450738
+                        }
+                    ],
+                    "Components": [],
+                    "Created": "2023-01-03T10:25:17.257+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "This issue is for creating the home page.",
+                    "DueDate": "",
+                    "Id": "21361",
+                    "Key": "PROJECTKEY-2",
+                    "Labels": [
+                        "Demisto",
+                        "testnow"
+                    ],
+                    "LastSeen": "",
+                    "LastUpdate": "2023-02-26T18:24:04.172+0200",
+                    "Priority": "Medium",
+                    "ProjectName": "Company Snoozing App",
+                    "Status": "Selected for Development",
+                    "Summary": "Create Home Page (including the log in option)"
+                }
+            ],
+            "boardId": "14"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Board Issues
+>
+>|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Example User() | 2023-01-30T16:35:50.482+0200 | Example User(<example@example.com>) |  | 2023-09-09 | 21423 | Sub-task | PROJECTKEY-29 | Demisto,<br/>XSOAR,<br/>testnow | Low | Company Snoozing App | Example User() | Selected for Development | Issue for demo | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21423 |
+>|  | 2023-01-03T10:25:17.257+0200 | Example User(<example@example.com>) | This issue is for creating the home page. |  | 21361 | Story | PROJECTKEY-2 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Create Home Page (including the log in option) | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21361 |
+
+### jira-board-sprint-list
+
+***
+Get all sprints of a specific board.
+
+#### Base Command
+
+`jira-board-sprint-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| board_id | The board ID. | Required |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.BoardSprint.boardId | String | The ID of the board. |
+| Jira.BoardSprint.Sprints | Object | The sprints in the board. |
+| Jira.BoardSprint.Sprints.id | Number | The ID of the sprint. |
+| Jira.BoardSprint.Sprints.self | String | The URL of the sprint. |
+| Jira.BoardSprint.Sprints.state | String | The state of the sprint. |
+| Jira.BoardSprint.Sprints.name | String | The name of the sprint. |
+| Jira.BoardSprint.Sprints.startDate | String | The starting date of the sprint. |
+| Jira.BoardSprint.Sprints.endDate | String | The ending date of the sprint. |
+| Jira.BoardSprint.Sprints.completeDate | String | The date the sprint was completed. |
+| Jira.BoardSprint.Sprints.originBoardId | Number | The ID of the origin board. |
+| Jira.BoardSprint.Sprints.goal | String | The goal of the sprint. |
+
+#### Command example
+
+```!jira-board-sprint-list board_id=12```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "BoardSprint": {
+            "Sprints": [
+                {
+                    "endDate": "2023-02-27T15:12:00.000Z",
+                    "goal": "",
+                    "id": 4,
+                    "name": "TSTPRD Sprint 1",
+                    "originBoardId": 12,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/sprint/4",
+                    "startDate": "2023-02-13T15:12:39.565Z",
+                    "state": "active"
+                },
+                {
+                    "endDate": "2023-02-23T14:57:00.000Z",
+                    "goal": "Goal",
+                    "id": 5,
+                    "name": "TSTPRD Sprint 2",
+                    "originBoardId": 12,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/sprint/5",
+                    "startDate": "2023-02-07T14:57:00.000Z",
+                    "state": "future"
+                },
+                {
+                    "id": 6,
+                    "name": "TSTPRD Sprint 3",
+                    "originBoardId": 12,
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/sprint/6",
+                    "state": "future"
+                }
+            ],
+            "boardId": "12"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sprints
+>
+>|End Date|ID|Name|Start Date|State|
+>|---|---|---|---|---|
+>| 2023-02-27T15:12:00.000Z | 4 | TSTPRD Sprint 1 | 2023-02-13T15:12:39.565Z | active |
+>| 2023-02-23T14:57:00.000Z | 5 | TSTPRD Sprint 2 | 2023-02-07T14:57:00.000Z | future |
+>|  | 6 | TSTPRD Sprint 3 |  | future |
+
+### jira-board-epic-list
+
+***
+Get all epics from a specific board
+
+#### Base Command
+
+`jira-board-epic-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| board_id | The board ID. | Required |
+| done | Filters results to epics that are either done or not done. This uses the `Epic Status` field, and not the `Status` field of the issue. Possible values are: false, true. Default is false. | Optional |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.BoardEpic.boardId | Number | The ID of the board. |
+| Jira.BoardEpic.Epics | Object | Holds the data of the epic issues. |
+| Jira.BoardEpic.Epics.id | Number | The ID of the epic. |
+| Jira.BoardEpic.Epics.key | String | The key of the epic. |
+| Jira.BoardEpic.Epics.self | String | The URL of the epic. |
+| Jira.BoardEpic.Epics.name | String | The name of the epic. |
+| Jira.BoardEpic.Epics.summary | String | The summary of the epic. |
+| Jira.BoardEpic.Epics.done | Boolean | Whether the epic has been completed or not. |
+| Jira.BoardEpic.Epics.color | Object | Data about the color of the epic. |
+| Jira.BoardEpic.Epics.color.key | String | The key of the color associated with the epic. |
+
+#### Command example
+
+```!jira-board-epic-list board_id=14```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "BoardEpic": {
+            "Epics": [
+                {
+                    "color": {
+                        "key": "color_4"
+                    },
+                    "done": false,
+                    "id": 21360,
+                    "key": "PROJECTKEY-1",
+                    "name": "Create Company Snoozing App",
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/epic/21360",
+                    "summary": "Start creating the company snoozing app"
+                },
+                {
+                    "color": {
+                        "key": "color_3"
+                    },
+                    "done": false,
+                    "id": 21424,
+                    "key": "PROJECTKEY-30",
+                    "name": "New Epic",
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/agile/1.0/epic/21424",
+                    "summary": "Issue for demo"
+                }
+            ],
+            "boardId": "14"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Epics
+>
+>|Done|ID|Key|Name|Summary|
+>|---|---|---|---|---|
+>| false | 21360 | PROJECTKEY-1 | Create Company Snoozing App | Start creating the company snoozing app |
+>| false | 21424 | PROJECTKEY-30 | New Epic | Issue for demo |
+
+### jira-sprint-issue-list
+
+***
+Get all issues in a sprint.
+
+#### Base Command
+
+`jira-sprint-issue-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| board_id | The board ID. | Optional |
+| sprint_id | The sprint ID. | Required |
+| jql_query | A JQL query to filter the issues. | Optional |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.SprintIssues.boardId | String | The ID of the board that the sprint belongs to. |
+| Jira.SprintIssues.sprintId | String | The ID of the sprint. |
+| Jira.SprintIssues.Ticket.Id | Number | The ticket ID. |
+| Jira.SprintIssues.Ticket.Key | String | The ticket key. |
+| Jira.SprintIssues.Ticket.Assignee | String | The user assigned to the ticket. |
+| Jira.SprintIssues.Ticket.Creator | String | The user who created the ticket. |
+| Jira.SprintIssues.Ticket.Summary | String | The ticket summary. |
+| Jira.SprintIssues.Ticket.Status | String | The ticket status. |
+| Jira.SprintIssues.Ticket.Priority | String | The ticket priority. |
+| Jira.SprintIssues.Ticket.ProjectName | String | The ticket project name. |
+| Jira.SprintIssues.Ticket.DueDate | Date | The due date. |
+| Jira.SprintIssues.Ticket.Created | Date | The time the ticket was created. |
+| Jira.SprintIssues.Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Jira.SprintIssues.Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-sprint-issue-list sprint_id=4```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "SprintIssues": {
+            "Ticket": [
+                {
+                    "Assignee": "",
+                    "Attachments": [],
+                    "Components": [],
+                    "Created": "2023-02-02T17:59:21.527+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "Please finish this ASAP.",
+                    "DueDate": "",
+                    "Id": "21430",
+                    "Key": "TSTPRD-5",
+                    "Labels": [],
+                    "LastSeen": "2023-05-07T19:11:24.324+0300",
+                    "LastUpdate": "2023-05-07T19:11:25.682+0300",
+                    "Priority": "Medium",
+                    "ProjectName": "TestProd",
+                    "Status": "To Do",
+                    "Summary": "Hire managers DO NOT DELETE OR MOVE"
+                },
+                {
+                    "Assignee": "",
+                    "Attachments": [],
+                    "Components": [],
+                    "Created": "2023-02-02T16:44:38.839+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "",
+                    "DueDate": "",
+                    "Id": "21427",
+                    "Key": "TSTPRD-2",
+                    "Labels": [],
+                    "LastSeen": "2023-05-07T19:37:42.323+0300",
+                    "LastUpdate": "2023-05-07T19:11:33.460+0300",
+                    "Priority": "Medium",
+                    "ProjectName": "TestProd",
+                    "Status": "To Do",
+                    "Summary": "Build UI DO NOT DELETE OR MOVE"
+                },
+                {
+                    "Assignee": "",
+                    "Attachments": [],
+                    "Components": [],
+                    "Created": "2023-02-02T16:45:37.346+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "",
+                    "DueDate": "",
+                    "Id": "21429",
+                    "Key": "TSTPRD-4",
+                    "Labels": [],
+                    "LastSeen": "2023-05-04T20:45:40.938+0300",
+                    "LastUpdate": "2023-05-04T21:03:30.876+0300",
+                    "Priority": "Medium",
+                    "ProjectName": "TestProd",
+                    "Status": "To Do",
+                    "Summary": "Build testing env"
+                }
+            ],
+            "boardId": "12",
+            "sprintId": "4"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Sprint Issues in board 12
+>
+>|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 2023-02-02T17:59:21.527+0200 | Example User(<example@example.com>) | Please finish this ASAP. |  | 21430 | Story | TSTPRD-5 |  | Medium | TestProd | Example User(<example@example.com>) | To Do | Hire managers DO NOT DELETE OR MOVE | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21430 |
+>|  | 2023-02-02T16:44:38.839+0200 | Example User(<example@example.com>) |  |  | 21427 | Task | TSTPRD-2 |  | Medium | TestProd | Example User(<example@example.com>) | To Do | Build UI DO NOT DELETE OR MOVE | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21427 |
+>|  | 2023-02-02T16:45:37.346+0200 | Example User(<example@example.com>) |  |  | 21429 | Task | TSTPRD-4 |  | Medium | TestProd | Example User(<example@example.com>) | To Do | Build testing env | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21429 |
+
+### jira-sprint-issue-move
+
+***
+Moves issues to a sprint, for a given sprint ID. Issues can only be moved to open or active sprints. At most 50 issues may be moved at once.
+
+#### Base Command
+
+`jira-sprint-issue-move`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issues | The issues to move to the sprint. | Required |
+| sprint_id | The sprint ID. | Required |
+| rank_before_issue | To rank the issues before the stated issue (supports issue key and ID). | Optional |
+| rank_after_issue | To rank the issues after the stated issue (supports issue key and ID). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-sprint-issue-move issues=TSTPRD-4 sprint_id=4```
+
+#### Human Readable Output
+
+>Issues were moved to the Sprint successfully
+
+### jira-epic-issue-list
+
+***
+Get all issues that belong to an epic (Child Issues).
+
+#### Base Command
+
+`jira-epic-issue-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| epic_key | The key of the epic. (The epic ID or key is required). | Optional |
+| epic_id | The ID of the epic. (The epic ID or key is required). | Optional |
+| jql_query | A JQL query to filter the issues. | Optional |
+| limit | The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50. | Optional |
+| page | The page number. Default value is 0. | Optional |
+| page_size | The number of requested results per page. Default value is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.EpicIssues.boardId | String | The ID of the board that holds the issues. |
+| Jira.EpicIssues.epicId | String | The ID of the epic that holds the issues. |
+| Jira.EpicIssues.key | String | The key of the epic. |
+| Jira.EpicIssues.Ticket.Id | Number | The ticket ID. |
+| Jira.EpicIssues.Ticket.Key | String | The ticket key. |
+| Jira.EpicIssues.Ticket.Assignee | String | The user assigned to the ticket. |
+| Jira.EpicIssues.Ticket.Creator | String | The user who created the ticket. |
+| Jira.EpicIssues.Ticket.Summary | String | The ticket summary. |
+| Jira.EpicIssues.Ticket.Status | String | The ticket status. |
+| Jira.EpicIssues.Ticket.Priority | String | The ticket priority. |
+| Jira.EpicIssues.Ticket.ProjectName | String | The ticket project name. |
+| Jira.EpicIssues.Ticket.DueDate | Date | The due date. |
+| Jira.EpicIssues.Ticket.Created | Date | The time the ticket was created. |
+| Jira.EpicIssues.Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Jira.EpicIssues.Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-epic-issue-list epic_key=PROJECTKEY-1 jql_query="status!=done"```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "EpicIssues": {
+            "Ticket": [
+                {
+                    "Assignee": "",
+                    "Attachments": [
+                        {
+                            "created": "2023-01-22T16:43:29.878+0200",
+                            "filename": "Screen Shot 2022-10-19 at 20.09.46.png",
+                            "id": "16387",
+                            "size": 450738
+                        },
+                        {
+                            "created": "2023-02-05T21:11:43.429+0200",
+                            "filename": "stam.png",
+                            "id": "16399",
+                            "size": 450738
+                        }
+                    ],
+                    "Components": [],
+                    "Created": "2023-01-03T10:25:17.257+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "This issue is for creating the home page.",
+                    "DueDate": "",
+                    "Id": "21361",
+                    "Key": "PROJECTKEY-2",
+                    "Labels": [
+                        "Demisto",
+                        "testnow"
+                    ],
+                    "LastSeen": "",
+                    "LastUpdate": "2023-02-26T18:24:04.172+0200",
+                    "Priority": "Medium",
+                    "ProjectName": "Company Snoozing App",
+                    "Status": "Selected for Development",
+                    "Summary": "Create Home Page (including the log in option)"
+                },
+                {
+                    "Assignee": "",
+                    "Attachments": [
+                        {
+                            "created": "2023-03-08T21:04:02.570+0200",
+                            "filename": "DemistoContent-InstallContentEnvironment-160822-0023-68.pdf",
+                            "id": "16401",
+                            "size": 17815
+                        },
+                        {
+                            "created": "2023-03-08T21:03:37.418+0200",
+                            "filename": "Screen_Shot_2022-10-19_at_20.09.46 (2).png",
+                            "id": "16400",
+                            "size": 450738
+                        }
+                    ],
+                    "Components": [
+                        "comp2",
+                        "Integration"
+                    ],
+                    "Created": "2023-03-07T17:31:48.225+0200",
+                    "Creator": "Example User(example@example.com)",
+                    "Description": "Dummy child description",
+                    "DueDate": "",
+                    "Id": "21496",
+                    "Key": "PROJECTKEY-39",
+                    "Labels": [
+                        "Demisto",
+                        "testnow"
+                    ],
+                    "LastSeen": "",
+                    "LastUpdate": "2023-05-04T21:46:22.076+0300",
+                    "Priority": "Medium",
+                    "ProjectName": "Company Snoozing App",
+                    "Status": "Selected for Development",
+                    "Summary": "Dummy child issue - delete later"
+                }
+            ],
+            "epicId": "21360"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Child Issues in epic PROJECTKEY-1
+>
+>|Assignee|Created|Creator|Description|DueDate|Id|IssueType|Key|Labels|Priority|ProjectName|Reporter|Status|Summary|TicketLink|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 2023-01-03T10:25:17.257+0200 | Example User(<example@example.com>) | This issue is for creating the home page. |  | 21361 | Story | PROJECTKEY-2 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Create Home Page (including the log in option) | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21361 |
+>|  | 2023-03-07T17:31:48.225+0200 | Example User(<example@example.com>) | Dummy child description |  | 21496 | Task | PROJECTKEY-39 | Demisto,<br/>testnow | Medium | Company Snoozing App | Example User(<example@example.com>) | Selected for Development | Dummy child issue - delete later | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/agile/1.0/issue/21496 |
+
+### jira-issue-link-type-get
+
+***
+Returns a list of all issue link types.
+
+#### Base Command
+
+`jira-issue-link-type-get`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.IssueLinkType | Object | The issue link type bean. |
+| Jira.IssueLinkType.id | String | The ID of the issue link type. |
+| Jira.IssueLinkType.inward | String | The description of the issue link type inward link. |
+| Jira.IssueLinkType.name | String | The name of the issue link type. |
+| Jira.IssueLinkType.outward | String | The description of the issue link type outward link. |
+| Jira.IssueLinkType.self | String | The URL of the issue link type. |
+
+#### Command example
+
+```!jira-issue-link-type-get```
+
+#### Context Example
+
+```json
+{
+    "Jira": {
+        "IssueLinkType": [
+            {
+                "id": "10000",
+                "inward": "is blocked by",
+                "name": "Blocks",
+                "outward": "blocks",
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issueLinkType/10000"
+            },
+            {
+                "id": "10001",
+                "inward": "is cloned by",
+                "name": "Cloners",
+                "outward": "clones",
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issueLinkType/10001"
+            },
+            {
+                "id": "10002",
+                "inward": "is duplicated by",
+                "name": "Duplicate",
+                "outward": "duplicates",
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issueLinkType/10002"
+            },
+            {
+                "id": "10202",
+                "inward": "is reviewed by",
+                "name": "Post-Incident Reviews",
+                "outward": "reviews",
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issueLinkType/10202"
+            },
+            {
+                "id": "10201",
+                "inward": "is caused by",
+                "name": "Problem/Incident",
+                "outward": "causes",
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issueLinkType/10201"
+            },
+            {
+                "id": "10003",
+                "inward": "relates to",
+                "name": "Relates",
+                "outward": "relates to",
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issueLinkType/10003"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Issue Link Types
+>
+>|ID|Inward|Name|Outward|
+>|---|---|---|---|
+>| 10000 | is blocked by | Blocks | blocks |
+>| 10001 | is cloned by | Cloners | clones |
+>| 10002 | is duplicated by | Duplicate | duplicates |
+>| 10202 | is reviewed by | Post-Incident Reviews | reviews |
+>| 10201 | is caused by | Problem/Incident | causes |
+>| 10003 | relates to | Relates | relates to |
+
+### jira-issue-to-issue-link
+
+***
+Use this command to create a link between two issues.
+
+#### Base Command
+
+`jira-issue-to-issue-link`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| outward_issue | The key of the outward issue. | Required |
+| inward_issue | The key of the inward issue. | Required |
+| link_type | The name of the link to apply. Use `jira-issue-link-type-get` to see available links. | Required |
+| comment | A comment to add to the inward issue. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-to-issue-link inward_issue=PROJECTKEY-31 outward_issue=XSOAR-19 link_type="Post-Incident Reviews" comment="Dummy Link"```
+
+#### Human Readable Output
+
+>Issue link created successfully
+
+### fetch-incidents
+
+***
+Dummy fetch
+
+#### Base Command
+
+`fetch-incidents`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-remote-data
+
+***
+Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+
+#### Base Command
+
+`get-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote incident ID. | Required |
+| lastUpdate | The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time. Default is 0. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-mapping-fields
+
+***
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-modified-remote-data
+
+***
+Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | Date string representing the local time. The incident is only returned if it was modified after the last update time. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### update-remote-system
+
+***
+Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+
+#### Base Command
+
+`update-remote-system`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Atlassian Jira V3 corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Atlassian Jira V3 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Atlassian Jira V3 events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Atlassian Jira V3 events will be reflected in both directions. |
+
+3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Atlassian Jira V3.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Atlassian Jira V3.
+
+## Breaking changes from the previous version of this integration - Atlassian Jira V3
+
+%%FILL HERE%%
+The following sections list the changes in this version.
+
+### Commands
+
+#### The following commands were removed in this version
+
+* *commandName* - this command was replaced by XXX.
+* *commandName* - this command was replaced by XXX.
+
+### Arguments
+
+#### The following arguments were removed in this version
+
+In the *commandName* command:
+
+* *argumentName* - this argument was replaced by XXX.
+* *argumentName* - this argument was replaced by XXX.
+
+#### The behavior of the following arguments was changed
+
+In the *commandName* command:
+
+* *argumentName* - is now required.
+* *argumentName* - supports now comma separated values.
+
+### Outputs
+
+#### The following outputs were removed in this version
+
+In the *commandName* command:
+
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+In the *commandName* command:
+
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+## Additional Considerations for this version
+
+%%FILL HERE%%
+
+* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
