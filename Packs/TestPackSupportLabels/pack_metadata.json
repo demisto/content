@@ -1,0 +1,19 @@
+{
+    "name": "TestPackSupportLabels",
+    "description": "test",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "GuyAfik",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": []
+}
