@@ -485,7 +485,7 @@ script:
         - contextPath: Netmiko.Output
           description: The results of the command.
           type: string
-  dockerimage: demisto/netmiko:1.0.0.56323
+  dockerimage: demisto/netmiko:1.0.0.57793
   runonce: false
   script: ""
   subtype: python3

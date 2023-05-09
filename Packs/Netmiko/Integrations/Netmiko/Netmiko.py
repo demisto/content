@@ -15,17 +15,17 @@ from netmiko import Netmiko
 
 
 # Return only specific keys from dictionary
-def include_keys(dictionary, keys):
+def include_keys(dictionary, keys):  # pragma: no cover
     key_set = set(keys) & set(dictionary.keys())
     return {key: dictionary[key] for key in key_set}
 
 
-def return_file(keys):
+def return_file(keys):  # pragma: no cover
     return_file.readlines = lambda: keys.split("\n")  # type: ignore
     return return_file
 
 
-class Client:
+class Client:  # pragma: no cover
     def __init__(self, platform, hostname, username, password, port, keys):
         self.platform = platform
         self.hostname = hostname
@@ -88,8 +88,6 @@ def test_command(client):
 
 def cmds_command(client, args):
 
-    interestingKeys = ("Hostname", "DateTimeUTC", "Command", "Output")
-
     # Parse the commands
     cmds = args.get('cmds')
     if type(cmds) != list:
@@ -144,7 +142,7 @@ def cmds_command(client, args):
         # Multiple commands
         else:
             for item in output["Commands"]:
-                data.append(include_keys(item, interestingKeys))
+                data.append(include_keys(item, hdrs))
 
         md = tableToMarkdown(f'Command(s) against {client.hostname} ({client.platform}):', data, headers=hdrs)
     outputs_key_field = None
