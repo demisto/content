@@ -3371,7 +3371,7 @@ def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any]) -> Command
     url = client.oauth_start()
     return CommandResults(readable_output=('In order to retrieve the authorization code,'
                                            f' use the following link:\n{create_clickable_url(url)}\n'
-                                           'After authorizing, you will be redirected to the configured callback url, where you'
+                                           'After authorizing, you will be redirected to the configured callback URL, where you'
                                            ' will retrieve the authorization code provided as a query parameter called `code`,'
                                            ' and insert it as an argument to the !jira-oauth-complete command'))
 

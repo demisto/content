@@ -34,11 +34,11 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Fetch comments | Fetch comments for a Jira ticket. | False |
     | Fetch attachments | Fetch attachments for a Jira ticket. | False |
     | Max incidents per fetch |  | False |
-    | The time range to consider for the initial data fetch in format: &lt;number&gt; &lt;unit&gt;. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. | For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years | False |
+    | Time range for initial data fetch | The time range to consider for the initial data fetch in format: &lt;number&gt; &lt;unit&gt;. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years | False |
 
-5. Click **Test** to validate the URLs, token, and connection.
+5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
 
-# Authentication
+## Authentication
 
 For both instances, it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The oproxy url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the oproxy url, you may use a localhost url on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the url address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
 
@@ -98,8 +98,29 @@ Write
 
 ### Authorization Flow In Cortex XSOAR
 
-![Alt text](doc_files/jira-oauth-custom-callback-url.gif)
-![Alt text](doc_files/jira-oauth-oproxy-callback-url.gif)
+1. Create the authentication application as explained in the [Authentication](#authentication) section.
+2. Run the command `!jira-oauth-start`, where you will be presented with a URL to authenticate yourself.
+3. After authenticating, you will be redirected to the configured callback URL, where you will retrieve the authorization code provided as a query parameter called `code`.
+4. Insert the retrieved authorization code as an argument to the `!jira-oauth-complete` command.
+5. Run the `!jira-oauth-test` to test the connection of the instance.
+
+![Authenticating using custom callback URL](doc_files/jira-oauth-custom-callback-url.gif)
+
+![Authenticating using the oproxy callback URL](doc_files/jira-oauth-oproxy-callback-url.gif)
+
+## Fetch Incidents
+
+When you enable incidents fetching, you have the option to configure a query which will be used to fetch Jira issues as incidents in Cortex XSOAR. The query uses one of the following fields in order to progressively fetch incidents:
+
+* `id` of Jira issues
+* `created time` of Jira issues
+* `updated time` of Jira issues
+
+If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
+
+When you enable incidents fetching, Cortex XSOAR fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Cortex XSOAR fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are fetched for each call. To fetch older Jira issues, use the query to fetch issues option.
+If `Fetch comments` is enabled, The fetched incident will include the comments in the Jira issue.
+If `Fetch attachments` is enabled, The fetched incident will include the attachments in the Jira issue.
 
 ## Commands
 
