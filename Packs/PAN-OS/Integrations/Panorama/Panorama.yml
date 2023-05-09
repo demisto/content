@@ -124,6 +124,7 @@ configuration:
   section: Collect
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  additionalinfo: "Note: Incidents returned by the API are sorted from latest to earliest, which may affect the fetch operation. For example, if the timestamp is one week ago and the system has generated more incidents than the maximum number of incidents per fetch since then, the fetch operation will only retrieve the latest 'Max incidents per fetch' incidents."
   name: first_fetch
   required: false
   type: 0
