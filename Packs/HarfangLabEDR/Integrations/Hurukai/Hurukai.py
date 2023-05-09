@@ -254,6 +254,72 @@ class Client(BaseClient):
             url_suffix=f'/api/data/endpoint/Agent/{agentid}/isolate/',
         )
 
+    def get_process_graph(self, process_uuid):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/api/data/telemetry/Processes/{process_uuid}/graph/',
+        )
+
+    def search_whitelist(self, keyword):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/?offset=0&limit=100&search={keyword}&ordering=-last_update&provided_by_hlab=false',
+        )
+
+    def add_whitelist(self, comment, sigma_rule_id, target, field, case_insensitive, operator, value):
+
+        data = {
+            'comment': comment,
+            'sigma_rule_id': sigma_rule_id,
+            'target': target,
+            'criteria': [
+                {
+                    'case_insensitive': case_insensitive,
+                    'field': field,
+                    'operator': operator,
+                    'value': value
+                }
+            ]
+        }
+
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/',
+            json_data=data
+        )
+
+    def add_criterion_to_whitelist(self, id, field, case_insensitive, operator, value):
+
+        data = self.get_whitelist(id)
+        data['criteria'].append({
+            'case_insensitive': case_insensitive,
+            'field': field,
+            'operator': operator,
+            'value': value
+        })
+
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/{id}/',
+            json_data=data
+        )
+
+    def get_whitelist(self, id):
+
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/{id}/'
+        )
+
+
+    def delete_whitelist(self, id):
+
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/{id}/',
+            return_empty_response=True
+        )
+
     def deisolate_endpoint(self, agentid):
         return self._http_request(
             method='POST',
@@ -401,6 +467,8 @@ def test_module(client, args):
 
 def fetch_incidents(client, args):
 
+    agents = {}
+
     last_run = demisto.getLastRun()
 
     days = int(args['first_fetch']) if 'first_fetch' in args and args['first_fetch'] else 0
@@ -485,6 +553,25 @@ def fetch_incidents(client, args):
 
                 alert_id = alert.get('id', None)
                 alert['incident_link'] = f'{client._base_url}/security-event/{alert_id}/summary'
+
+                #Retrieve additional endpoint information
+                groups = []
+                agentid = alert.get('agent', {}).get('agentid')
+                if agentid in agents:
+                    agent = agents[agentid]
+                else:
+                    try:
+                        agent = client.get_endpoint_info(agentid)
+                    except Exception as e:
+                        agent = None
+                    agents[agentid] = agent
+
+                if agent:
+                    for g in agent.get('groups',[]):
+                        groups.append(g['name'])
+                    alert['agent']['policy_name'] = agent.get('policy',{}).get('name')
+                    alert['agent']['groups'] = groups
+
                 incident = {
                     'name': alert.get('rule_name', None),
                     'occurred': alert.get('alert_time', None),
@@ -1670,6 +1757,131 @@ def result_artifact_ramdump(client, args):
     })
     return output
 
+def get_process_graph(client, args):
+    process_uuid = args.get('process_uuid', None)
+
+    data = client.get_process_graph(process_uuid)
+
+#    readable_output = tableToMarkdown(
+#        f'Endpoint information for Hostname : {hostname}', data['results'], removeNull=True)
+
+    outputs = {
+        'Harfanglab.ProcessGraph(val.current_process_id == obj.current_process_id)': data
+    }
+
+    return_outputs(
+        None,
+        outputs,
+        data
+    )
+    return data
+
+def search_whitelist(client, args):
+    keyword = args.get('keyword', None)
+
+    data = client.search_whitelist(keyword)
+
+    for wl in data['results']:
+        criteria = []
+        for c in wl['criteria']:
+            criteria.append(f'{c["field"]} {c["operator"]} {c["value"]}')
+        wl['criteria_str'] = ', '.join(criteria)
+
+    readable_output = tableToMarkdown(
+        f'Whitelists found for keyword : {keyword}',
+        data['results'],
+        headers=['comment', 'creation_date', 'last_update', 'target', 'criteria_str', 'sigma_rule_name'],
+        removeNull=True)
+
+    outputs = {
+        'Harfanglab.Whitelists(val.id == obj.id)': data['results']
+    }
+
+    return_outputs(
+        readable_output,
+        outputs,
+        data
+    )
+    return data
+
+
+def add_whitelist(client, args):
+    comment = args.get('comment', None)
+    sigma_rule_id = args.get('sigma_rule_id', "")
+    target = args.get('target', "all")
+    field = args.get('field', None)
+    case_insensitive = args.get('case_insensitive', True)
+    operator = args.get('operator', None)
+    value = args.get('value', None)
+
+    message = None
+    outputs = None
+    data = None
+
+    if target not in ['all', 'sigma', 'yara', 'hlai', 'vt', 'ransom', 'orion', 'glimps', 'cape', 'driver']:
+        message = 'Invalid target. Target must be "all", "sigma", "yara", "hlai", "vt", "ransom", "orion", "glimps", "cape" or "driver"'
+    elif operator not in ['eq', 'regex', 'contains']:
+        message = 'Invalid operator. Operator must be "eq", "regex", or "contains"'
+    else:
+        data = client.add_whitelist(comment, sigma_rule_id, target, field, case_insensitive, operator, value)
+        message = 'Successfully added whitelist'
+
+        outputs = {
+            'Harfanglab.Whitelists(val.id == obj.id)': data
+        }
+
+    return_outputs(
+        message,
+        outputs,
+        data
+    )
+
+    return data
+
+def add_criterion_to_whitelist(client, args):
+    id = args.get('id', None)
+    field = args.get('field', None)
+    case_insensitive = args.get('case_insensitive', True)
+    operator = args.get('operator', None)
+    value = args.get('value', None)
+
+    message = None
+    outputs = None
+    data = None
+
+    if operator not in ['eq', 'regex', 'contains']:
+        message = 'Invalid operator. Operator must be "eq", "regex", or "contains"'
+    else:
+
+        data = client.add_criterion_to_whitelist(id, field, case_insensitive, operator, value)
+        message = 'Successfully added criterion to whitelist'
+
+        outputs = {
+            'Harfanglab.Whitelists(val.id == obj.id)': data
+        }
+
+    return_outputs(
+        message,
+        outputs,
+        data
+    )
+
+    return data
+
+
+def delete_whitelist(client, args):
+    id = args.get('id', None)
+
+    client.delete_whitelist(id)
+
+    return_outputs(
+        'Successfully deleted whitelist',
+        None,
+        None
+    )
+
+    return
+
 
 def hunt_search_hash(client, args):
     filehash = args.get('hash', None)
@@ -2272,6 +2484,7 @@ def get_function_from_command_name(command):
         'harfanglab-telemetry-network': TelemetryNetwork().telemetry,
         'harfanglab-telemetry-eventlog': TelemetryEventLog().telemetry,
         'harfanglab-telemetry-binary': TelemetryBinary().telemetry,
+        'harfanglab-telemetry-process-graph': get_process_graph,
 
         'harfanglab-hunt-search-hash': hunt_search_hash,
         'harfanglab-hunt-search-running-process-hash': hunt_search_running_process_hash,
@@ -2285,6 +2498,11 @@ def get_function_from_command_name(command):
         'harfanglab-assign-policy-to-agent': assign_policy_to_agent,
         'harfanglab-add-ioc-to-source': add_ioc_to_source,
         'harfanglab-delete-ioc-from-source': delete_ioc_from_source,
+
+        'harfanglab-whitelist-search': search_whitelist,
+        'harfanglab-whitelist-add': add_whitelist,
+        'harfanglab-whitelist-add-criterion': add_criterion_to_whitelist,
+        'harfanglab-whitelist-delete': delete_whitelist,
 
         'fetch-incidents': fetch_incidents,
         'test-module': test_module

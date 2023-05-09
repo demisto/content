@@ -95,6 +95,77 @@ script:
     - contextPath: Harfanglab.Agent
       description: Agent information
   - arguments:
+    - name: process_uuid
+      description: Process UUID
+    description: Get a process graph
+    name: harfanglab-telemetry-process-graph
+    outputs:
+    - contextPath: Harfanglab.ProcessGraph
+      description: Process Graph
+      type: unknown
+
+  - arguments:
+    - name: keyword
+      description: Keyword to search whitelist
+    description: Search whitelists from a keyword
+    name: harfanglab-whitelist-search
+    outputs:
+    - contextPath: Harfanglab.Whitelists
+      description: Whitelists
+      type: unknown
+
+  - arguments:
+    - name: comment
+      description: Comment associated to the whitelist
+    - name: target
+      description: Detection engine associated to the whitelist (all, sigma, yara, hlai, vt, ransom, orion, glimps, cape, driver)
+    - name: sigma_rule_id
+      description: UUID of the targeted sigma rule (for sigma whitelist)
+    - name: field
+      description: Field used for checking the criterion
+    - name: case_insensitive
+      description: Whether checking must be case sensitive or not
+      default: true
+    - name: operator
+      description: Operator used for the criterion (eq, contains, regex)
+      default: 'eq'
+    - name: value
+      description: Value used for the criterion
+    description: Add a whitelist
+    name: harfanglab-whitelist-add
+    outputs:
+    - contextPath: Harfanglab.Whitelists
+      description: Whitelists
+      type: unknown
+
+  - arguments:
+    - name: id
+      description: Whitelist id
+    - name: field
+      description: Field used for checking the criterion
+    - name: case_insensitive
+      description: Whether checking must be case sensitive or not
+      default: true
+    - name: operator
+      description: Operator used for the criterion (eq, contains, regex)
+      default: 'eq'
+    - name: value
+      description: Value used for the criterion
+    description: Add a criterion to an existing whitelist
+    name: harfanglab-whitelist-add-criterion
+    outputs:
+    - contextPath: Harfanglab.Whitelists
+      description: Whitelists
+      type: unknown
+
+  - arguments:
+    - name: id
+      description: Whitelist identifier
+    description: Delete a whitelist
+    name: harfanglab-whitelist-delete
+    outputs:
+
+  - arguments:
     - name: hostname
       description: Endpoint hostname
     description: Search for endpoint information from a hostname
