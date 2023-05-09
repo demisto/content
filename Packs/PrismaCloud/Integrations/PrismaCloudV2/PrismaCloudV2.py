@@ -171,7 +171,7 @@ class Client(BaseClient):
 
     def alert_dismiss_request(self, dismissal_note: str, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                               policy_ids: Optional[List[str]] = None, dismissal_time_range: Optional[Dict[str, Any]] = None,
-                              filters: Optional[List[str]] = None) -> Requests.Response:
+                              filters: Optional[List[str]] = None) -> requests.Response:
         data = remove_empty_values({'alerts': alert_ids,
                                     'policies': policy_ids,
                                     'dismissalNote': dismissal_note,
@@ -184,7 +184,7 @@ class Client(BaseClient):
         return self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
 
     def alert_reopen_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
-                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None) -> Requests.Response:
+                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None) -> requests.Response:
         data = remove_empty_values({'alerts': alert_ids,
                                     'policies': policy_ids,
                                     'dismissalTimeRange': time_range,
@@ -716,7 +716,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
             return entry
 
 
-def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]) -> Requests.Response:
+def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]) -> requests.Response:
     """
 
     Args:
@@ -737,7 +737,7 @@ def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str,
     return client.alert_dismiss_request(dismissal_note=dismissal_note, time_range=time_filter, alert_ids=ids)
 
 
-def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]) -> Requests.Response:
+def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]) -> requests.Response:
     """
 
     Args:
@@ -785,7 +785,7 @@ def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     return demisto.params().get('close_ticket') and delta == {'closingUserId': '', 'runStatus': ''}
 
 
-def update_remote_incident_status(client: Client, delta, inc_status: IncidentStatus, incident_id: str) -> Requests.Response:
+def update_remote_incident_status(client: Client, delta, inc_status: IncidentStatus, incident_id: str) -> requests.Response:
     """
 
     Args:
