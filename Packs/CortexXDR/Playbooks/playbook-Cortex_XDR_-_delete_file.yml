@@ -1,59 +1,27 @@
-description: Initiates a new endpoint script execution to delete the specified file
-  and retrieve the results.
 id: Cortex XDR - delete file
-inputs:
-- description: 'A comma-separated list of endpoint IDs. '
-  key: endpoint_id
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: |-
-    A comma-separated list of file paths to delete.
-    Files will be deleted on all provided endpoint ids
-  key: file_path
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: |-
-    The timeout in seconds for this execution.
-    (Default is: '600')
-  key: script_timeout
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Amount of time to poll action status before declaring a timeout and
-    resuming the playbook (in minutes).
-  key: polling_timeout
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "10"
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR - delete file
-outputs:
-- contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
-  description: Value returned by the script in case the type is not a dictionary.
+description: Initiates a new endpoint script execution to delete the specified file and retrieve the results.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 2e8588ea-e14e-4a63-87e5-35bcb394c162
+    type: start
+    task:
+      id: 2e8588ea-e14e-4a63-87e5-35bcb394c162
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 2e8588ea-e14e-4a63-87e5-35bcb394c162
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 2e8588ea-e14e-4a63-87e5-35bcb394c162
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -61,14 +29,29 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: 2a6a0fd6-b02f-49ee-8d14-4c0a32bb64b7
+    type: regular
+    task:
+      id: 2a6a0fd6-b02f-49ee-8d14-4c0a32bb64b7
+      version: -1
+      name: Run script delete file
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||xdr-file-delete-script-execute'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       endpoint_ids:
         complex:
@@ -80,20 +63,7 @@ tasks:
         complex:
           root: inputs.script_timeout
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Initiates a new endpoint script execution to delete the specified
-        file.
-      id: d5336998-61b4-4fa1-8e34-00a69873b5cc
-      iscommand: true
-      name: Run script delete file
-      script: '|||xdr-run-script-delete-file'
-      type: regular
-      version: -1
-    taskid: d5336998-61b4-4fa1-8e34-00a69873b5cc
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -101,42 +71,44 @@ tasks:
           "y": 200
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
+    taskid: ec15490c-27b7-4852-80e1-04d66ba73b0c
+    type: playbook
+    task:
+      id: ec15490c-27b7-4852-80e1-04d66ba73b0c
+      version: -1
+      name: Cortex XDR - Check Action Status
+      description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
+      playbookName: Cortex XDR - Check Action Status
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       action_id:
         complex:
-          accessor: action_id
           root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
       timeout:
         complex:
           root: inputs.polling_timeout
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks the action status of an action ID. \nEnter the action ID
-        of the action whose status you want to know.
-      id: ec15490c-27b7-4852-80e1-04d66ba73b0c
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: Cortex XDR - Check Action Status
-      playbookId: Cortex XDR - Check Action Status
-      type: playbook
-      version: -1
-    taskid: ec15490c-27b7-4852-80e1-04d66ba73b0c
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -144,33 +116,36 @@ tasks:
           "y": 380
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    ignoreworker: false
+    taskid: 8034abda-d134-4b58-821b-54de3c774b29
+    type: regular
+    task:
+      id: 8034abda-d134-4b58-821b-54de3c774b29
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       action_id:
         complex:
-          accessor: action_id
           root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Retrieve the results of a script execution action.
-      id: 8034abda-d134-4b58-821b-54de3c774b29
-      iscommand: true
-      name: Get script execution results
-      script: '|||xdr-get-script-execution-results'
-      type: regular
-      version: -1
-    taskid: 8034abda-d134-4b58-821b-54de3c774b29
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -178,24 +153,27 @@ tasks:
           "y": 560
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 91e2d310-e3ac-4781-8866-d2a422edc8b6
+    type: title
     task:
-      brand: ""
       id: 91e2d310-e3ac-4781-8866-d2a422edc8b6
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 91e2d310-e3ac-4781-8866-d2a422edc8b6
-    timertriggers: []
-    type: title
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -203,7 +181,13 @@ tasks:
           "y": 740
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -216,6 +200,35 @@ view: |-
       }
     }
   }
+inputs:
+- key: endpoint_id
+  value: {}
+  required: false
+  description: 'A comma-separated list of endpoint IDs. '
+  playbookInputQuery:
+- key: file_path
+  value: {}
+  required: false
+  description: |-
+    A comma-separated list of file paths to delete.
+    Files will be deleted on all provided endpoint ids
+  playbookInputQuery:
+- key: script_timeout
+  value: {}
+  required: false
+  description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  playbookInputQuery:
+- key: polling_timeout
+  value:
+    simple: "10"
+  required: false
+  description: Amount of time to poll action status before declaring a timeout and resuming the playbook (in minutes).
+  playbookInputQuery:
+outputs:
+- contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
+  description: Value returned by the script in case the type is not a dictionary.
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
