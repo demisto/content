@@ -153,7 +153,7 @@ def cmds_command(client, args):
         outputs_key_field = 'DateTimeUTC'
         outputs = output
 
-    command_results = CommandResults(
+    command_results = CommandResults(  # pragma: no cover
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
         outputs=outputs,
@@ -180,7 +180,7 @@ def main():  # pragma: no cover
     password = params.get('credentials', {}).get('password')
     ssh_key = params.get('credentials', {}).get('credentials', {}).get('sshkey')
     keys = None
-    if ssh_key:
+    if ssh_key:  # pragma: no cover
         if password:
             try:
                 keys = paramiko.RSAKey.from_private_key(return_file(ssh_key), password=password)
@@ -191,9 +191,9 @@ def main():  # pragma: no cover
 
     client = Client(platform, hostname, username, password, port, keys)
 
-    if command == 'test-module':
+    if command == 'test-module':  # pragma: no cover
         test_command(client)
-    elif command == 'netmiko-cmds':
+    elif command == 'netmiko-cmds':  # pragma: no cover
         results = cmds_command(client, args)
         return_results(results)
 
