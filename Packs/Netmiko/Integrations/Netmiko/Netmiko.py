@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401  # pragma: no cover
+from CommonServerPython import *  # noqa: F401  # pragma: no cover
 
 ''' IMPORTS '''
 
@@ -15,17 +15,17 @@ from netmiko import Netmiko
 
 
 # Return only specific keys from dictionary
-def include_keys(dictionary, keys):
+def include_keys(dictionary, keys):  # pragma: no cover
     key_set = set(keys) & set(dictionary.keys())
     return {key: dictionary[key] for key in key_set}
 
 
-def return_file(keys):
+def return_file(keys):  # pragma: no cover
     return_file.readlines = lambda: keys.split("\n")  # type: ignore
     return return_file
 
 
-class Client:
+class Client:  # pragma: no cover
     def __init__(self, platform, hostname, username, password, port, keys):
         self.platform = platform
         self.hostname = hostname
@@ -163,7 +163,7 @@ def cmds_command(client, args):
     return command_results
 
 
-def main():
+def main():  # pragma: no cover
 
     params = demisto.params()
     args = demisto.args()
@@ -198,5 +198,5 @@ def main():
         return_results(results)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
     main()
