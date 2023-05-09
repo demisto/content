@@ -4,11 +4,11 @@ from CommonServerPython import *  # noqa: F401  # pragma: no cover
 ''' IMPORTS '''
 
 
-import sys
-from datetime import datetime
+import sys  # pragma: no cover
+from datetime import datetime  # pragma: no cover
 
-import paramiko
-from netmiko import Netmiko
+import paramiko  # pragma: no cover
+from netmiko import Netmiko  # pragma: no cover
 
 
 ''' HELPER FUNCTIONS '''
@@ -26,7 +26,7 @@ def return_file(keys):  # pragma: no cover
 
 
 class Client:  # pragma: no cover
-    def __init__(self, platform, hostname, username, password, port, keys):
+    def __init__(self, platform, hostname, username, password, port, keys):  # pragma: no cover
         self.platform = platform
         self.hostname = hostname
         self.username = username
