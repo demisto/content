@@ -2532,6 +2532,18 @@ tasks:
       UserVerification:
         complex:
           root: inputs.UserVerification
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+            - operator: replace
+              args:
+                limit: { }
+                replaceWith: { }
+                toReplace:
+                  value:
+                    simple: inputs.Username
+                  iscontext: true
     separatecontext: true
     loop:
       iscommand: false
@@ -2671,6 +2683,18 @@ tasks:
       UserVerification:
         complex:
           root: inputs.UserVerification
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+            - operator: replace
+              args:
+                limit: { }
+                replaceWith: { }
+                toReplace:
+                  value:
+                    simple: inputs.Username
+                  iscontext: true
     separatecontext: true
     loop:
       iscommand: false
