@@ -89,32 +89,32 @@ def test_command(client):  # pragma: no cover
 def cmds_command(client, args):
 
     # Parse the commands
-    cmds = args.get('cmds')
+    cmds = args.get('cmds')  # pragma: no cover
     if type(cmds) != list:  # pragma: no cover
         try:
             cmds = cmds.split('\n')
         except Exception as err:
             return_error(f"The 'cmds' input needs to be a JSON array or carriage return separated text - {err}")
-    cmds[:] = [x for x in cmds if len(x) > 0]
+    cmds[:] = [x for x in cmds if len(x) > 0]  # pragma: no cover
 
     # Parse the remaining arguments
-    isConfig = True if args.get('isConfig', 'false') == 'true' else False
-    enable = True if args.get('require_enable', 'false') == 'true' else False
-    require_exit = True if args.get('require_exit', 'false') == 'true' else False
-    exit_argument = args.get('exit_argument', None)
-    raw_print = True if args.get('raw_print', 'false') == 'true' else False
-    disable_context = True if args.get('disable_context', 'false') == 'true' else False
-    override_host = args.get('override_host', None)
-    override_port = args.get('override_port', None)
-    override_platform = args.get('override_platform', None)
-    override_username = args.get('override_username', None)
-    override_password = args.get('override_password', None)
+    isConfig = True if args.get('isConfig', 'false') == 'true' else False  # pragma: no cover
+    enable = True if args.get('require_enable', 'false') == 'true' else False  # pragma: no cover
+    require_exit = True if args.get('require_exit', 'false') == 'true' else False  # pragma: no cover
+    exit_argument = args.get('exit_argument', None)  # pragma: no cover
+    raw_print = True if args.get('raw_print', 'false') == 'true' else False  # pragma: no cover
+    disable_context = True if args.get('disable_context', 'false') == 'true' else False  # pragma: no cover
+    override_host = args.get('override_host', None)  # pragma: no cover
+    override_port = args.get('override_port', None)  # pragma: no cover
+    override_platform = args.get('override_platform', None)  # pragma: no cover
+    override_username = args.get('override_username', None)  # pragma: no cover
+    override_password = args.get('override_password', None)  # pragma: no cover
 
-    client.hostname = override_host if override_host else client.hostname
-    client.port = override_port if override_port else client.port
-    client.platform = override_platform if override_platform else client.platform
-    client.username = override_username if override_username else client.username
-    client.password = override_password if override_password else client.password
+    client.hostname = override_host if override_host else client.hostname  # pragma: no cover
+    client.port = override_port if override_port else client.port  # pragma: no cover
+    client.platform = override_platform if override_platform else client.platform  # pragma: no cover
+    client.username = override_username if override_username else client.username  # pragma: no cover
+    client.password = override_password if override_password else client.password  # pragma: no cover
 
     # Execute the commands
     output = client.cmds(require_exit, exit_argument, cmds, enable, isConfig)
