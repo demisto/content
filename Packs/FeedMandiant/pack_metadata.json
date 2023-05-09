@@ -1,6 +1,7 @@
 {
     "name": "Mandiant Advantage Feed (Deprecated)",
     "description": "Deprecated. Use Mandiant Advantage Threat Intelligence instead.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",
