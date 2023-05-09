@@ -121,17 +121,18 @@ tasks:
       id: c906e63c-45c5-4540-8f42-b74db1943725
       version: -1
       name: List all agents that the hash has been executed on
-      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      description: Retrieves the set of systems which have referenced (typically executed) the specified hashes.
+      script: '|||tie-file-references'
       type: regular
       iscommand: true
-      brand: McAfee Threat Intelligence Exchange
-      description: Retrieves the set of systems which have been referenced (typically executed).
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       file:
-        simple: ${inputs.Hash}
+        complex:
+          root: inputs.Hash
     separatecontext: false
     view: |-
       {
@@ -163,7 +164,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 155,
+          "x": 162.5,
           "y": 1962
         }
       }
@@ -410,8 +411,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1977,
-        "width": 1375,
-        "x": 155,
+        "width": 1367.5,
+        "x": 162.5,
         "y": 50
       }
     }
