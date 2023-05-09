@@ -126,6 +126,32 @@ def test_decode_arcsight_output_event_ids():
     assert d == expected
 
 
+def test_decoding_incidents():
+    """
+    Given
+    - an incident created while fetch.
+    When
+    - running fetch_incidents.
+    Then
+    - create incidents without bytes objects.
+
+    """
+    import ArcSightESMv2
+    import demistomock as demisto
+    incident = {'name': 'Test XSOAR', 'occurred': '2023-03-22T12:44:51.000Z',
+                'labels': [{'type': b'Event ID', 'value': b'1234'},
+                           {'type': b'Start Time', 'value': b'1234'}, {'type': b'Name', 'value': b'Test XSOAR'},
+                           {'type': b'Message', 'value': None}, {'type': b'End Time', 'value': b'1234'},
+                           ],
+                'rawJSON': '{"Event ID": "1234", "Start Time": "1234", "Name": "Test XSOAR",'
+                           ' "Message": null, "End Time": "1234"}'}
+    d = ArcSightESMv2.decode_arcsight_output(incident)
+    try:
+        demisto.incidents(d)
+    except Exception as e:
+        pytest.fail(str(e))
+
+
 def test_filtered():
     import ArcSightESMv2
     entries = [

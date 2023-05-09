@@ -1,16 +1,16 @@
 alert_category: EXFILTRATION
 alert_description: This rule detects more than 100 downloaded files during an hour by the same user. This is a suspicious behavior which can be an indication of a data exfiltration.
 alert_fields:
-  actor_image: Files
-  actor_path:
-  cmd:
-  domain:
-  hash:
-  hostname:
-  local_ip:
-  remote_ip: SourceIP
-  remote_port:
-  username: user
+  actor_process_image_name: Files
+  actor_process_image_path:
+  actor_process_command_line:
+  agent_device_domain:
+  actor_process_image_sha256:
+  agent_hostname:
+  action_local_ip:
+  action_remote_ip: SourceIP
+  action_remote_port:
+  actor_effective_username: user
 alert_name: DropBox - Massive File Downloads
 crontab: 0 * * * *
 dataset: alerts

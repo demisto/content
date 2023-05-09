@@ -50,11 +50,11 @@ ignore=IF115
 ignore=IF115
 
 [known_words]
-Extrahop
-Mappers
-Mapper
-Reveal(x
-CVE-2019-0708
+extrahop
+mappers
+mapper
+reveal(x
+cve-2019-0708
 extrahop-detections-list
 extrahop-metrics-list
 extrahop-watchlist-get
@@ -69,3 +69,7 @@ extrahop-devices-tag
 extrahop-alert-rule-create
 extrahop-alert-rule-edit
 extrahop-watchlist-edit
+
+[file:ExtraHopTrackIncidents.yml]
+ignore=BA124
+

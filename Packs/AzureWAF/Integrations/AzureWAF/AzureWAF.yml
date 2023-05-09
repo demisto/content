@@ -259,7 +259,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of subscription IDs. Will override the default subscription ID.        
+      description: Comma-separated list of subscription IDs. Will override the default subscription ID.
       isArray: true
       name: subscription_id
       required: false
@@ -564,7 +564,7 @@ script:
     name: azure-waf-generate-login-url
     arguments: []
   - description: Gets all subscriptions for a tenant.
-    deprecated: false  
+    deprecated: false
     execution: false
     name: azure-waf-subscriptions-list
     arguments: []
@@ -588,10 +588,10 @@ script:
       description: The tenatnt ID of the subscription.
       type: String
   - description: Gets all the resource groups for a subscription.
-    deprecated: false  
+    deprecated: false
     execution: false
     name: azure-waf-resource-group-list
-    arguments: 
+    arguments:
     - default: false
       description: Comma-separated value list of subscription IDs. If not provided, the integration default subscription ID will be used.
       isArray: true
@@ -610,7 +610,7 @@ script:
       isArray: false
       name: limit
       required: false
-      secret: false  
+      secret: false
     outputs:
     - contextPath: AzureWAF.ResourceGroup.id
       description: Resource group ID.
@@ -629,9 +629,9 @@ script:
       type: String
     - contextPath: AzureWAF.ResourceGroup.tags
       description: Resource group tags.
-      type: String  
-  
-  dockerimage: demisto/crypto:1.0.0.50394
+      type: String
+
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

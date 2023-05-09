@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 import base64
 import copy
+import defusedxml.ElementTree as defused_ET
 from requests import Response
 import urllib3
 
@@ -230,7 +231,7 @@ def parse_xml_response(xml_string_response: str, tag_path: str = "", find_tag: b
 
     """
 
-    tree = ET.ElementTree(ET.fromstring(xml_string_response))
+    tree = ET.ElementTree(defused_ET.fromstring(xml_string_response))
 
     root = tree.getroot()
 
@@ -324,7 +325,7 @@ def get_pagination_next_marker_element(limit: str, page: int, client_request: Ca
     """
     offset = int(limit) * (page - 1)
     response = client_request(limit=str(offset), **params)
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     return root.findtext('NextMarker')  # type: ignore
