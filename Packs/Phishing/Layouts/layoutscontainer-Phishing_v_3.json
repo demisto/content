@@ -180,7 +180,16 @@
                                 "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+							{
+								"endCol": 2,
+								"fieldId": "categories",
+								"height": 22,
+								"id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -504,6 +513,7 @@
                         "h": 2,
                         "i": "swtuqptgvs-1a52c090-c187-11ed-a413-1fc9f082fba8",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -695,7 +705,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -747,7 +757,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 3
                     },
                     {
                         "description": "Provides machine-learning based detection of phishing URLs (shows only malicious detections).",
@@ -795,7 +805,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 9
+                        "y": 8
                     },
                     {
                         "description": "In case there were URLs in the email with a score of 3 or above which the user clicked for the email investigated in this incident, they will appear in the **Clicked URLs** table. **Total Malicious URLs Clicks** represents the number of clicks in all emails (other emails as well) associated with any of the malicious URLs found in this email. **Malicious URL Viewed** will be **True** if the click was allowed or the user clicked through, in case it was blocked.",
@@ -849,42 +859,6 @@
                         "w": 2,
                         "x": 0,
                         "y": 5
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "swtuqptgvs-49757090-dd32-11ed-a43a-9b5573aed335",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "relatedreport",
-                                "height": 22,
-                                "id": "615fe050-dd32-11ed-a43a-9b5573aed335",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "relatedcampaign",
-                                "height": 22,
-                                "id": "5eafb470-dd32-11ed-a43a-9b5573aed335",
-                                "index": 1,
-                                "listId": "swtuqptgvs-49757090-dd32-11ed-a43a-9b5573aed335",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Threat Intelligence",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 3
                     }
                 ],
                 "type": "custom"
