@@ -1,7 +1,8 @@
-id: 9724acaf-217d-429a-82fd-2991c92cc6dc
-version: 6
-vcShouldKeepItemLegacyProdMachine: false
+id: Stamus Networks - Get Extra Data
+version: -1
 name: Stamus Networks - Get Extra Data
+description: Get Extra Information from a Declaration of Compromise
+fromversion: "6.8.0"
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -42,8 +44,7 @@ tasks:
       id: af372da4-9b8f-4cf0-8e48-f4cfca8eedb1
       version: -1
       name: Get Event
-      description: '[Get base events including protocol metadata
-        that can be used as IOCs.]'
+      description: '[Get base events including protocol metadata that can be used as IOCs.]'
       script: '|||stamus-get-events'
       type: regular
       iscommand: true
@@ -147,6 +148,7 @@ tasks:
       id: 12c9eb19-e96b-47f6-8b4f-47232395acfb
       version: -1
       name: Quarantine EDR
+      description: '[Trigger Quarantine on EDR]'
       type: regular
       iscommand: false
       brand: ""
@@ -177,6 +179,7 @@ tasks:
       id: 3e883fee-f4e5-4c0d-8b79-0b0385109651
       version: -1
       name: Enevent to SIEM
+      description: '[Send event to SIEM]'
       type: regular
       iscommand: false
       brand: ""
@@ -207,6 +210,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: '[Get Metadata associated to event]'
     nexttasks:
       '#none#':
       - "1"
@@ -237,6 +241,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: '[Get information about asset from Host Insight]'
     nexttasks:
       '#none#':
       - "2"
@@ -270,3 +275,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
