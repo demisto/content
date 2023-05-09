@@ -4148,9 +4148,9 @@ def reputation_handler(
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     ioc_values: List[str] = argToList(args[key])
-    if args['unfinished_enriches'] == '-1':
-        args['unfinished_enriches'] = len(ioc_values)
+
     responses = [client.enrich_ioc(ioc_value=ioc_value) for ioc_value in ioc_values]
+
     command_results = []
     done_responses = list(filter(
         lambda response: response["Status"] == "Done",
@@ -4164,29 +4164,30 @@ def reputation_handler(
         lambda response: response["Status"] == "QuotaExceeded",
         responses
     ))
-    execution_metrics.success += len(done_responses)
-    execution_metrics.general_error += len(failed_responses)
-    execution_metrics.quota_error += len(quota_responses)
     for response in done_responses + failed_responses + quota_responses:
         ioc_values.remove(response['OriginalValue'])
-    args[key] = (',').join(ioc_values)
-    args['unfinished_enriches'] = str(len(ioc_values))
-    for response in done_responses:
-        command_results.append(handler_command(client=client, obj=response, obj_id=response['OriginalValue']))
-    for response in failed_responses + quota_responses:
-        command_results.append(
-            CommandResults(readable_output=ReadableErrors.ENRICH_FAIL.value.format(response["Status"])))
 
-    command_results.append(cast(CommandResults, execution_metrics.metrics))
+    if not ioc_values:
+        execution_metrics.success += len(done_responses)
+        execution_metrics.general_error += len(failed_responses)
+        execution_metrics.quota_error += len(quota_responses)
+        for response in done_responses:
+            command_results.append(handler_command(client=client, obj=response, obj_id=response['OriginalValue']))
+        for response in failed_responses + quota_responses:
+            command_results.append(
+                CommandResults(readable_output=ReadableErrors.ENRICH_FAIL.value.format(response["Status"])))
 
-    if args['unfinished_enriches'] == '0' or quota_responses:
+        command_results.append(cast(CommandResults, execution_metrics.metrics))
+
         return PollResult(
             response=command_results,
             continue_to_poll=False,
             args_for_next_run=args
         )
+
     return PollResult(
-        partial_result=command_results,
+        partial_result=CommandResults(
+            readable_output=f'Waiting for "{ioc_values}" to finish...'),
         response=command_results,
         continue_to_poll=True,
         args_for_next_run=args
