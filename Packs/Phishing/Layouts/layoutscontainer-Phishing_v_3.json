@@ -39,7 +39,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 3
+                        "y": 4
                     },
                     {
                         "description": "",
@@ -180,16 +180,7 @@
                                 "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-							{
-								"endCol": 2,
-								"fieldId": "categories",
-								"height": 22,
-								"id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
-								"index": 11,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
+                            }
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -228,7 +219,7 @@
                         "type": "invTimeline",
                         "w": 3,
                         "x": 0,
-                        "y": 14
+                        "y": 15
                     },
                     {
                         "displayType": "ROW",
@@ -311,7 +302,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 6
                     },
                     {
                         "h": 2,
@@ -325,7 +316,7 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
@@ -411,7 +402,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
@@ -445,7 +436,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 12
+                        "y": 13
                     },
                     {
                         "columns": [
@@ -506,7 +497,7 @@
                         "type": "linkedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 18
+                        "y": 19
                     },
                     {
                         "description": "Indicators selected to be blocked.",
@@ -523,7 +514,32 @@
                         "type": "indicators",
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 11
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "swtuqptgvs-c871a080-ea70-11ed-9b49-8f7dd2d50994",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "categories",
+                                "height": 22,
+                                "id": "d9e4ca40-ea70-11ed-9b49-8f7dd2d50994",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email categories",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
                     }
                 ],
                 "type": "custom"
@@ -704,7 +720,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -756,7 +772,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 3
                     },
                     {
                         "description": "Provides machine-learning based detection of phishing URLs (shows only malicious detections).",
@@ -804,7 +820,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 9
+                        "y": 8
                     },
                     {
                         "description": "In case there were URLs in the email with a score of 3 or above which the user clicked for the email investigated in this incident, they will appear in the **Clicked URLs** table. **Total Malicious URLs Clicks** represents the number of clicks in all emails (other emails as well) associated with any of the malicious URLs found in this email. **Malicious URL Viewed** will be **True** if the click was allowed or the user clicked through, in case it was blocked.",
@@ -858,42 +874,6 @@
                         "w": 2,
                         "x": 0,
                         "y": 5
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "swtuqptgvs-49757090-dd32-11ed-a43a-9b5573aed335",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "relatedreport",
-                                "height": 22,
-                                "id": "615fe050-dd32-11ed-a43a-9b5573aed335",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "relatedcampaign",
-                                "height": 22,
-                                "id": "5eafb470-dd32-11ed-a43a-9b5573aed335",
-                                "index": 1,
-                                "listId": "swtuqptgvs-49757090-dd32-11ed-a43a-9b5573aed335",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Threat Intelligence",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 3
                     }
                 ],
                 "type": "custom"
@@ -1292,6 +1272,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.1.0",
-    "description": "",
-    "marketplaces": ["xsoar"]
+    "description": ""
 }
