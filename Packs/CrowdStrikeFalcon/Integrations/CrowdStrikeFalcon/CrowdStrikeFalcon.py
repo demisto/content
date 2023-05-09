@@ -5098,7 +5098,7 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     if not resources:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
-    human_readable = tableToMarkdown(f'{"Scheduled "*is_scheduled}Scan Created', [resources[0].get("id")], headers=['Scan ID']) 
+    human_readable = tableToMarkdown(f'{"Scheduled "*is_scheduled}Scan Created', [resources[0].get("id")], headers=['Scan ID'])
 
     command_results = CommandResults(
         raw_response=response,
