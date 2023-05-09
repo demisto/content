@@ -933,7 +933,6 @@ def main():
     proxy = argToBoolean(params.get('proxy', False))
     handle_proxy()
 
-    demisto.info('Test packs subscription 2')
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
