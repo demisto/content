@@ -1,28 +1,38 @@
-Initiates an Archer incident.
+Deprecated. Use the `archer-get-file` command directly instead.
+initiate Archer incident
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
-## Integrations
+### Integrations
+
 * RSA Archer
 
-## Scripts
+### Scripts
+
 This playbook does not use any scripts.
 
-## Commands
+### Commands
+
 * archer-get-file
 
 ## Playbook Inputs
+
 ---
 There are no inputs for this playbook.
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Archer_initiate_incident](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Archer_initiate_incident.png)
+
+![Archer initiate incident](../doc_files/Archer_initiate_incident.png)
