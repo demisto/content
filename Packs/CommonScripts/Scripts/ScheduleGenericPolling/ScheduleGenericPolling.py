@@ -32,7 +32,7 @@ def should_run_with_guid():
     build_number = res_version.get('buildNumber')
     platform = res_version.get('platform')
 
-    # Feature needs: to support XSIAM.
+    # conditions to add when the feature is supported in XSIAM:
     # (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
     #     build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
 
