@@ -1,7 +1,7 @@
 id: Domain Enrichment - Generic v2 - Test
 version: -1
 name: Domain Enrichment - Generic v2 - Test
-description: A test for the Domain Enrichment - Generic v2 playbook.
+description: A test for the Domain Enrichment - Generic v2 playbook
 starttaskid: "0"
 tasks:
   "0":
