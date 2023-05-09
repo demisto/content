@@ -1703,7 +1703,7 @@ class TestJiraFetchIncidents:
         add_extracted_data_to_incident(issue=issue)
         expected_extracted_issue_data = {'extractedSubtasks': [
             {'id': '21525', 'key': 'COMPANYSA-63'}, {'id': '21538', 'key': 'COMPANYSA-70'}],
-            'extractedCreator': 'Tomer Malache(admin@demistodev.com)', 'extractedComponents': [
+            'extractedCreator': 'Example User(admin@demistodev.com)', 'extractedComponents': [
                 'Almost-Done', 'dummy-comp', 'Integration', 'New-Component']}
         assert expected_extracted_issue_data.items() <= issue.items()
 
