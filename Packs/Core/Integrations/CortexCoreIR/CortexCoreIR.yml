@@ -3652,7 +3652,7 @@ script:
   - arguments:
     - description: |
         Unique ID of a specific user.
-        User ID should be in the following format: dummy/dummy
+        User ID could be in the following format: dummy/dummy
       name: user_id
     - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user)
       name: limit
@@ -3803,7 +3803,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.57293
 tests:
 - No tests
 fromversion: 6.2.0

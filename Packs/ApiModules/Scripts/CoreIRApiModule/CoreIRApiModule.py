@@ -1242,40 +1242,40 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
 
-    def get_list_users(self) -> dict:
+    def get_list_users(self) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/rbac/get_users/',
             json_data={"request_data": {}},
         )
 
-    def get_risk_score_user_or_host(self, user_or_host_id: str) -> dict:
+    def get_risk_score_user_or_host(self, user_or_host_id: str) -> dict[str, dict[str, Any]]:
         return self._http_request(
             method='POST',
             url_suffix='/get_risk_score/',
             json_data={"request_data": {"id": user_or_host_id}},
         )
 
-    def get_list_risky_users(self) -> dict:
+    def get_list_risky_users(self) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/get_risky_users/',
         )
 
-    def get_list_risky_hosts(self) -> dict:
+    def get_list_risky_hosts(self) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/get_risky_hosts/',
         )
 
-    def get_list_user_groups(self, groups_name: list) -> dict:
+    def get_list_user_groups(self, group_names: list[str]) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/rbac/get_user_group/',
-            json_data={"request_data": {"group_names": groups_name}},
+            json_data={"request_data": {"group_names": group_names}},
         )
 
-    def get_list_roles(self, role_names: list) -> dict:
+    def get_list_roles(self, role_names: list[str]) -> dict[str, list[list[dict[str, Any]]]]:
         return self._http_request(
             method='POST',
             url_suffix='/rbac/get_roles/',
@@ -3638,6 +3638,53 @@ def parse_list_users(user: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def parse_risky_users_or_hosts(user_or_host: dict[str, Any], table_title: str) -> dict[str, Any]:
+    return {
+        table_title: user_or_host.get('id'),
+        'Score': user_or_host.get('score'),
+        'Description': user_or_host.get('reasons', [])[0].get('description') if user_or_host.get('reasons', []) else None,
+    }
+
+
+def parse_user_groups(group: dict[str, Any]) -> list[dict[str, Optional[str]]]:
+    return [
+        {
+            'User email': user,
+            'Group Name': group.get('group_name'),
+            'Group Description': group.get('description'),
+        }
+        for user in group.get("user_email", [])
+    ]
+
+
+def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "Role Name": role_data.get("pretty_name"),
+        "Description": role_data.get("description"),
+        "Permission": role_data.get("permissions", []),
+        "Users": role_data.get("users", []),
+        "Groups": role_data.get("groups", []),
+    }
+
+
+def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
+    """
+    Finds the cause of an error message related to a missing ID, group or role.
+
+    Args:
+        err: A string containing the error message to parse.
+        id_or_group_or_role: A string representing the type of entity (ID, group or role) that was not found.
+
+    Returns:
+        A string describing the cause of the error message.
+
+    """
+    pattern = fr"{id_or_group_or_role} \\?'([\(\)\[\]A-Za-z 0-9]+)\\?'"
+    if match := re.search(pattern, err):
+        return f'Error: {id_or_group_or_role} {match[1]} was not found'
+    return "Error: "
+
+
 def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
     Returns a list of all users using the Core API client.
@@ -3669,32 +3716,6 @@ def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandR
     )
 
 
-def parse_risky_users_or_hosts(user_or_host: dict, table_title: str) -> dict:
-    return {
-        table_title: user_or_host.get('id'),
-        'Score': user_or_host.get('score'),
-        'Description': user_or_host.get('reasons', [])[0].get('description') if user_or_host.get('reasons', []) else None,
-    }
-
-
-def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
-    """
-    Finds the cause of an error message related to a missing ID, group or role.
-
-    Args:
-        err: A string containing the error message to parse.
-        id_or_group_or_role: A string representing the type of entity (ID, group or role) that was not found.
-
-    Returns:
-        A string describing the cause of the error message.
-
-    """
-    pattern = fr"{id_or_group_or_role} \\?'([\(\)\[\]A-Za-z 0-9]+)\\?'"
-    if match := re.search(pattern, err):
-        return f'Error: {id_or_group_or_role} {match[1]} was not found'
-    return "Error: "
-
-
 def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
     Retrieves a list of risky users or details about a specific user's risk score.
@@ -3716,7 +3737,7 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
 
     if user_id := args.get('user_id'):
         try:
-            outputs = client.get_risk_score_user_or_host(user_id).get('reply', {})
+            outputs: dict[str, Any] = client.get_risk_score_user_or_host(user_id).get('reply', {})
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
                 error_msg = find_the_cause_error(str(e), "id")
@@ -3726,7 +3747,7 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
 
     else:
         list_limit = int(args.get('limit', 50))
-        outputs = client.get_list_risky_users().get('reply', [])[:list_limit]
+        outputs: list[dict[str, Any]] = client.get_list_risky_users().get('reply', [])[:list_limit]
 
         table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
 
@@ -3763,7 +3784,7 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
 
     if host_id := args.get('host_id'):
         try:
-            outputs = client.get_risk_score_user_or_host(host_id).get('reply', {})
+            outputs: dict[str, Any] = client.get_risk_score_user_or_host(host_id).get('reply', {})
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
                 error_msg = find_the_cause_error(str(e), "id")
@@ -3773,7 +3794,7 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
     else:
         list_limit = int(args.get('limit', 50))
 
-        outputs = client.get_list_risky_hosts().get('reply', [])[:list_limit]
+        outputs: list[dict[str, Any]] = client.get_list_risky_hosts().get('reply', [])[:list_limit]
         table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
 
     readable_output = tableToMarkdown(name='Risky Hosts', t=table_for_markdown)
@@ -3784,17 +3805,6 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
         outputs_key_field='id',
         outputs=outputs,
     )
-
-
-def parse_user_groups(group: dict) -> list:
-    return [
-        {
-            'User email': user,
-            'Group Name': group.get('group_name'),
-            'Group Description': group.get('description'),
-        }
-        for user in group.get("user_email", {})
-    ]
 
 
 def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
@@ -3822,7 +3832,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
                 f'{error_msg}, Note: If you sent more than one group name, they may not exist either, full error message: {e}'
             ) from e
         raise
-    table_for_markdown: list = []
+    table_for_markdown: list[dict[str, Optional[str]]]
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
     readable_output = tableToMarkdown(name='Groups', t=table_for_markdown)
@@ -3832,16 +3842,6 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
         outputs_key_field='group_name',
         outputs=outputs,
     )
-
-
-def parse_role_names(role_data):
-    return {
-        "Role Name": role_data.get("pretty_name"),
-        "Description": role_data.get("description"),
-        "Permission": role_data.get("permissions", []),
-        "Users": role_data.get("users", []),
-        "Groups": role_data.get("groups", []),
-    }
 
 
 def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
@@ -3874,7 +3874,7 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
         return CommandResults(readable_output="No entries")
 
     headers = ["Role Name", "Description", "Permissions", "Users", "Groups"]
-    table_for_markdown = [parse_role_names(role[0]) for role in outputs]
+    table_for_markdown = [parse_role_names(role[0]) for role in outputs if len(role) == 1]
     readable_output = tableToMarkdown(
         name='Roles',
         t=table_for_markdown,
@@ -3890,23 +3890,28 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
 
 def set_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     user_emails = argToList(args.get('user_emails'))
-    role_name = args.get('role_name')
 
-    try:
-        if role_name:
-            client.set_user_role(user_emails, role_name)
-    except DemistoException:
-        raise
+    if role_name := args.get('role_name'):
+        client.set_user_role(user_emails, role_name)
 
     return CommandResults(readable_output="User Role Was Updated Successfully")
 
 
 def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Removes one or more users.
+
+    Args:
+        client (CoreClient): An instance of the CoreClient class.
+        args (dict[str, str]): A dictionary of arguments passed to the function, including:
+            user_emails (str): A comma-separated list of email addresses for the users to be removed.
+
+    Returns:
+        CommandResults: An instance of the CommandResults class, containing a human-readable 
+        message indicating that the users were removed successfully.
+    """
     user_emails = argToList(args.get('user_emails'))
 
-    try:
-        client.remove_user_role(user_emails)
-    except DemistoException:
-        raise
+    client.remove_user_role(user_emails)
 
-    return CommandResults(readable_output="User Role Was Removed Successfully")
+    return CommandResults(readable_output="User Was Removed Successfully")
