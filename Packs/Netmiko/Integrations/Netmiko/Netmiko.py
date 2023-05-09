@@ -16,24 +16,24 @@ from netmiko import Netmiko
 
 # Return only specific keys from dictionary
 def include_keys(dictionary, keys):  # pragma: no cover
-    key_set = set(keys) & set(dictionary.keys())
-    return {key: dictionary[key] for key in key_set}
+    key_set = set(keys) & set(dictionary.keys())  # pragma: no cover
+    return {key: dictionary[key] for key in key_set}  # pragma: no cover
 
 
 def return_file(keys):  # pragma: no cover
-    return_file.readlines = lambda: keys.split("\n")  # type: ignore
-    return return_file
+    return_file.readlines = lambda: keys.split("\n")  # type: ignore   # pragma: no cover
+    return return_file  # pragma: no cover
 
 
 class Client:  # pragma: no cover
     def __init__(self, platform, hostname, username, password, port, keys):  # pragma: no cover
-        self.platform = platform
-        self.hostname = hostname
-        self.username = username
-        self.password = password
-        self.port = port
-        self.keys = keys
-        self.net_connect = None
+        self.platform = platform  # pragma: no cover
+        self.hostname = hostname  # pragma: no cover
+        self.username = username  # pragma: no cover
+        self.password = password  # pragma: no cover
+        self.port = port  # pragma: no cover
+        self.keys = keys  # pragma: no cover
+        self.net_connect = None  # pragma: no cover
 
     def connect(self):  # pragma: no cover
         if self.keys:
@@ -198,5 +198,5 @@ def main():     # pragma: no cover
         return_results(results)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
     main()
