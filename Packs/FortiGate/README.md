@@ -5,7 +5,7 @@ In order to use the collector, you can use one of the following options to colle
 
 In either option, you will need to configure the vendor and product for this specific collector.
 
-* Support for log ingestion is available only for the **FTNTFGTeventtime** field in UTC +0000 time.
+* Support for time parsing is available only for the **FTNTFGTeventtime** field in UTC +0000 time.
 
 ### Broker VM
 You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).\
