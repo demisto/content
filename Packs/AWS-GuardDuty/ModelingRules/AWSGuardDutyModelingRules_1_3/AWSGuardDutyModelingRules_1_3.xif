@@ -17,5 +17,5 @@ alter targetIP1 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction
     xdm.source.host.ipv4_addresses = arraycreate(coalesce(json_extract_scalar(Service,  "$.Action.AwsApiCallAction.RemoteIpDetails.IpAddressV4"), "")),
     xdm.source.ipv4 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction.LocalIpDetails.IpAddressV4"),
     xdm.target.ipv4 = coalesce(targetIP1, targetIP2),
-    xdm.source.user.username = coalesce(username1, username2 )
+    xdm.source.user.username = coalesce(username1, username2 ),
     xdm.target.cloud.region = Region;
