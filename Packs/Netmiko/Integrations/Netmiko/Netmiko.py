@@ -16,26 +16,26 @@ from netmiko import Netmiko
 
 # Return only specific keys from dictionary
 def include_keys(dictionary, keys):  # pragma: no cover
-    key_set = set(keys) & set(dictionary.keys())  # pragma: no cover
-    return {key: dictionary[key] for key in key_set}  # pragma: no cover
+    key_set = set(keys) & set(dictionary.keys())
+    return {key: dictionary[key] for key in key_set}
 
 
 def return_file(keys):  # pragma: no cover
-    return_file.readlines = lambda: keys.split("\n")  # type: ignore   # pragma: no cover
-    return return_file  # pragma: no cover
+    return_file.readlines = lambda: keys.split("\n")  # type: ignore
+    return return_file
 
 
 class Client:  # pragma: no cover
-    def __init__(self, platform, hostname, username, password, port, keys):  # pragma: no cover
-        self.platform = platform  # pragma: no cover
-        self.hostname = hostname  # pragma: no cover
-        self.username = username  # pragma: no cover
-        self.password = password  # pragma: no cover
-        self.port = port  # pragma: no cover
-        self.keys = keys  # pragma: no cover
-        self.net_connect = None  # pragma: no cover
+    def __init__(self, platform, hostname, username, password, port, keys):
+        self.platform = platform
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.port = port
+        self.keys = keys
+        self.net_connect = None
 
-    def connect(self):  # pragma: no cover
+    def connect(self):
         if self.keys:
             try:
                 self.net_connect = Netmiko(device_type=self.platform, host=self.hostname, port=self.port,
@@ -49,14 +49,14 @@ class Client:  # pragma: no cover
             except Exception as err:
                 return_error(err)
 
-    def disconnect(self):  # pragma: no cover
+    def disconnect(self):
         try:
             if self.net_connect:
                 self.net_connect.disconnect()
         except Exception as err:
             return_error(err)
 
-    def cmds(self, require_exit, exit_argument, commands, enable, isConfig):  # pragma: no cover
+    def cmds(self, require_exit, exit_argument, commands, enable, isConfig):
         try:
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
@@ -72,14 +72,14 @@ class Client:  # pragma: no cover
                          "Output": f"{prompt} {self.net_connect.send_command_timing(cmd)}"}  # type: ignore
                     output['Commands'].append(c)
 
-        except Exception as err:  # pragma: no cover
+        except Exception as err:
             return_error(err)
         finally:
             self.disconnect()
         return output
 
 
-def test_command(client):  # pragma: no cover
+def test_command(client):
     client.connect()
     client.disconnect()
     demisto.results('ok')
