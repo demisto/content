@@ -8383,7 +8383,7 @@ if 'requests' in sys.modules:
 
             def __init__(self, verify=True, **kwargs):
                 # type: (bool, dict) -> None
-                if not verify:
+                if not verify and IS_PY3:
                     self.context.check_hostname = False
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
