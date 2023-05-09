@@ -1,0 +1,225 @@
+[
+    {
+        "_id": "Cortex XSOAR",
+        "cortex": {
+            "application": "xsoar",
+            "credentialId": "",
+            "enabled": true,
+            "url": ""
+        },
+        "email": {
+            "credentialId": "",
+            "enabled": false,
+            "from": "",
+            "port": 0,
+            "smtpAddress": "",
+            "ssl": false
+        },
+        "gcpPubsub": {
+            "credentialId": "",
+            "enabled": false,
+            "topic": ""
+        },
+        "jira": {
+            "assignee": {},
+            "baseUrl": "",
+            "caCert": "",
+            "credentialId": "",
+            "enabled": false,
+            "issueType": "",
+            "labels": {},
+            "priority": "",
+            "projectKey": {}
+        },
+        "lastError": "",
+        "modified": "2023-03-29T01:34:26.017Z",
+        "name": "Cortex XSOAR",
+        "owner": "admin",
+        "pagerduty": {
+            "routingKey": {
+                "encrypted": ""
+            },
+            "severity": "",
+            "summary": ""
+        },
+        "policy": {
+            "admission": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "agentlessAppFirewall": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "appEmbeddedAppFirewall": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "appEmbeddedRuntime": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "cloudDiscovery": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "codeRepoVulnerability": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "containerAppFirewall": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "containerCompliance": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "containerComplianceScan": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "containerRuntime": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "containerVulnerability": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "defender": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "docker": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "hostAppFirewall": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "hostCompliance": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "hostComplianceScan": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "hostRuntime": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "hostVulnerability": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "incident": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "kubernetesAudit": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "networkFirewall": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "registryVulnerability": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "serverlessAppFirewall": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "serverlessRuntime": {
+                "allRules": true,
+                "enabled": true,
+                "rules": []
+            },
+            "vmCompliance": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "vmVulnerability": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            },
+            "waasHealth": {
+                "allRules": true,
+                "enabled": false,
+                "rules": []
+            }
+        },
+        "previousName": "",
+        "securityAdvisor": {
+            "credentialID": "",
+            "enabled": false,
+            "findingsURL": "",
+            "providerId": "",
+            "tokenURL": ""
+        },
+        "securityCenter": {
+            "credentialId": "",
+            "enabled": false,
+            "sourceID": ""
+        },
+        "securityHub": {
+            "accountID": "",
+            "credentialId": "",
+            "enabled": false,
+            "region": ""
+        },
+        "serviceNow": {
+            "application": "",
+            "assignee": "",
+            "credentialID": "",
+            "project": ""
+        },
+        "slack": {
+            "enabled": false,
+            "webhookUrl": ""
+        },
+        "splunk": {
+            "authToken": {
+                "encrypted": ""
+            },
+            "sourceType": "",
+            "url": ""
+        },
+        "sqs": {},
+        "vulnerabilityImmediateAlertsEnabled": false,
+        "webhook": {
+            "credentialId": "",
+            "url": ""
+        }
+    }
+]

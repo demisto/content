@@ -15,6 +15,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | URL (for example: https://192.168.0.1:5000) | True |
     | User Name | True |
     | Password | True |
+    | Product Version | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -353,7 +354,7 @@ There is no context output for this command.
 
 ### nsm-list-domain-rule-object
 ***
-Updates the firewall policy details.
+Gets the list of rule objects defined in a particular domain.
 
 
 #### Base Command
@@ -559,6 +560,7 @@ Adds a new rule object.
 | address_ip_v.6 | List of IPv6 host addresses, separated by a comma.                                                                                                                                                                                                                                                                                                                                                                              | Optional | 
 | from_address_ip_v.6 | Start of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
 | to_address_ip_v.6 | End of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                          | Optional | 
+|state|Whether to enable or disable the rule object. Note: This argument is only relevant to version 10x. Default value is 'Enabled'|Optional|
 
 
 #### Context Output
@@ -610,6 +612,7 @@ Updates a Rule object. In case of address rule update:
 | from_address_ip_v.6 | Start of the IPv6 range. | Optional | 
 | to_address_ip_v.6 | End of the IPv6 range. | Optional | 
 | is_overwrite | Whether the new addresses that were provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added. Possible values are: true, false. | Optional | 
+|state|Whether to enable or disable the rule object. Note: This argument is only relevant to version 10x. Default value is 'Enabled'|Optional|
 
 
 #### Context Output
@@ -1989,7 +1992,7 @@ Exports the captured PCAP file.
 | InfoFile.Info | string | Basic information about the file. | 
 
 #### Command example
-```!nsm-export-pcap-file sensor_id=1003 file_name=Virtual_NSP_01-PacketCapture-2022-12-21_16-25-52.pcap```
+```!nsm-export-pcap-file sensor_id=1003 file_name=Dummy Device Name-PacketCapture-2022-12-21_16-25-52.pcap```
 
 #### Human Readable Output
 There isn't a human readable.
@@ -2016,3 +2019,495 @@ In the *nsm-get-alerts* command:
 
 In the *nsm-get-alert-details* command:
 * *sensor_id* - Is now required.
+### nsm-list-domain-device
+
+***
+List the devices related to a given domain.
+
+#### Base Command
+
+`nsm-list-domain-device`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The ID of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
+| limit | The maximum number of devices to return. | Optional | 
+| all_results | Return all devices related to the given domain. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.Device.ContactInformation | string | The contact information of the device. | 
+| NSM.Device.DeviceId | number | The id of the device. | 
+| NSM.Device.DeviceName | string | The name of the device. | 
+| NSM.Device.DeviceType | string | The type of the device. | 
+| NSM.Device.Location | string | The location of the device. | 
+| NSM.Device.UpdatingMode | string | The updating mode of the device. | 
+
+#### Command example
+```!nsm-list-domain-device domain_id=0```
+#### Context Example
+```json
+{
+    "NSM": {
+        "Device": [
+            {
+                "ContactInformation": null,
+                "DeviceId": 1003,
+                "DeviceName": "Dummy Device Name",
+                "DeviceType": "IPS_NAC_SENSOR",
+                "Location": null,
+                "UpdatingMode": "ONLINE"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Domain devices List
+>|DeviceId|DeviceName|DeviceType|UpdatingMode|
+>|---|---|---|---|
+>| 1003 | Dummy Device Name | IPS_NAC_SENSOR | ONLINE |
+
+
+### nsm-list-device-interface
+
+***
+List the interfaces related to a given device.
+
+#### Base Command
+
+`nsm-list-device-interface`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The ID of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
+| device_id | The ID of the device. To get the device ID, use the !nsm-list-domain-device command. | Required | 
+| limit | The maximum number of interfaces to return. | Optional | 
+| all_results | Return all interfaces related to the given device. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.Interface.InterfaceId | number | The id of the interface. | 
+| NSM.Interface.InterfaceName | Unknown | The name of the interface. | 
+| NSM.Interface.InterfaceType | string | The type of the interface. | 
+
+#### Command example
+```!nsm-list-device-interface device_id=1003 domain_id=0```
+#### Context Example
+```json
+{
+    "NSM": {
+        "Interface": [
+            {
+                "InterfaceId": 102,
+                "InterfaceName": "5-6",
+                "InterfaceType": "Dedicated"
+            },
+            {
+                "InterfaceId": 103,
+                "InterfaceName": "3-4",
+                "InterfaceType": "Dedicated"
+            },
+            {
+                "InterfaceId": 104,
+                "InterfaceName": "1-2",
+                "InterfaceType": "Dedicated"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Device interfaces List
+>|InterfaceId|InterfaceName|InterfaceType|
+>|---|---|---|
+>| 102 | 5-6 | Dedicated |
+>| 103 | 3-4 | Dedicated |
+>| 104 | 1-2 | Dedicated |
+
+
+### nsm-list-device-policy
+
+***
+List all the policies assigned to a domain or a specific device.
+
+#### Base Command
+
+`nsm-list-device-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The ID of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
+| device_id | The ID of the device. To get the device ID, use the !nsm-list-domain-device command. | Optional | 
+| limit | The maximum number of policies to return. | Optional | 
+| all_results | Return all policies assigned to a domain or a specific device. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.DevicePolicy.DeviceName | string | The name of the device. | 
+| NSM.DevicePolicy.AtdUserForInboundATDAnalysis | Unknown |  | 
+| NSM.DevicePolicy.InterfaceName | string | The name of the interface. | 
+| NSM.DevicePolicy.FirewallPolicyLast | Unknown |  | 
+| NSM.DevicePolicy.ReconnaissancePolicy | Unknown |  | 
+| NSM.DevicePolicy.PolicyGroup | Unknown |  | 
+| NSM.DevicePolicy.AtdUserForOutboundATDAnalysis | Unknown |  | 
+| NSM.DevicePolicy.DeviceId | number | The id of the device. | 
+| NSM.DevicePolicy.AdvancedMalwareOutboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosInboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.ConnectionLimitingPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosOutboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.ProtectionOptionsPolicy | Unknown |  | 
+| NSM.DevicePolicy.AdvancedMalwareInboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosOutboundRateLimitingProfile | Unknown |  | 
+| NSM.DevicePolicy.IpsPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosInboundRateLimitingProfile | Unknown |  | 
+| NSM.DevicePolicy.FirewallPolicyFirst | Unknown |  | 
+
+#### Command example
+```!nsm-list-device-policy domain_id=0```
+#### Context Example
+```json
+{
+    "NSM": {
+        "DevicePolicy": [
+            {
+                "AdvancedMalwareInboundPolicy": null,
+                "AdvancedMalwareOutboundPolicy": null,
+                "AtdUserForInboundATDAnalysis": null,
+                "AtdUserForOutboundATDAnalysis": null,
+                "ConnectionLimitingPolicy": null,
+                "DeviceId": 1003,
+                "DeviceName": "Dummy Device Name",
+                "FirewallPolicy": null,
+                "FirewallPolicyFirst": "Test",
+                "FirewallPolicyLast": null,
+                "FirewallPortPolicy": null,
+                "InterfaceId": 0,
+                "InterfaceName": null,
+                "IpsPolicy": null,
+                "PolicyGroup": null,
+                "ProtectionOptionsPolicy": null,
+                "QosInboundPolicy": null,
+                "QosInboundRateLimitingProfile": null,
+                "QosOutboundPolicy": null,
+                "QosOutboundRateLimitingProfile": null,
+                "ReconnaissancePolicy": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Device policy List
+>|DeviceId|DeviceName|FirewallPolicyFirst|InterfaceId|
+>|---|---|---|---|
+>| 1003 | Dummy Device Name | Test | 0 |
+
+
+### nsm-list-interface-policy
+
+***
+List all the policies assigned to all interfaces or a specific interface.
+
+#### Base Command
+
+`nsm-list-interface-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The ID of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
+| interface_id | The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command. | Optional | 
+| limit | The maximum number of policies to return. | Optional | 
+| all_results | Return all policies assigned to all interfaces or a specific interface. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.InterfacePolicy.DeviceName | string | The name of the device. | 
+| NSM.InterfacePolicy.AtdUserForInboundATDAnalysis | Unknown |  | 
+| NSM.InterfacePolicy.InterfaceName | string | The name of the interface. | 
+| NSM.InterfacePolicy.FirewallPolicyLast | Unknown |  | 
+| NSM.InterfacePolicy.ReconnaissancePolicy | Unknown |  | 
+| NSM.InterfacePolicy.PolicyGroup | Unknown |  | 
+| NSM.InterfacePolicy.AtdUserForOutboundATDAnalysis | Unknown |  | 
+| NSM.InterfacePolicy.DeviceId | number | The id of the device. | 
+| NSM.InterfacePolicy.AdvancedMalwareOutboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosInboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.ConnectionLimitingPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosOutboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.ProtectionOptionsPolicy | Unknown |  | 
+| NSM.InterfacePolicy.AdvancedMalwareInboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosOutboundRateLimitingProfile | Unknown |  | 
+| NSM.InterfacePolicy.IpsPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosInboundRateLimitingProfile | Unknown |  | 
+| NSM.InterfacePolicy.FirewallPolicyFirst | Unknown |  | 
+
+#### Command example
+```!nsm-list-interface-policy domain_id=0```
+#### Context Example
+```json
+{
+    "NSM": {
+        "InterfacePolicy": [
+            {
+                "AdvancedMalwareInboundPolicy": null,
+                "AdvancedMalwareOutboundPolicy": null,
+                "AtdUserForInboundATDAnalysis": null,
+                "AtdUserForOutboundATDAnalysis": null,
+                "ConnectionLimitingPolicy": null,
+                "DeviceId": 1003,
+                "DeviceName": "Dummy Device Name",
+                "FirewallPolicy": "a policy",
+                "FirewallPolicyFirst": null,
+                "FirewallPolicyLast": null,
+                "FirewallPortPolicy": null,
+                "InterfaceId": 104,
+                "InterfaceName": "1-2",
+                "IpsPolicy": "Default Prevention",
+                "PolicyGroup": null,
+                "ProtectionOptionsPolicy": null,
+                "QosInboundPolicy": null,
+                "QosInboundRateLimitingProfile": null,
+                "QosOutboundPolicy": null,
+                "QosOutboundRateLimitingProfile": null,
+                "ReconnaissancePolicy": null
+            },
+            {
+                "AdvancedMalwareInboundPolicy": null,
+                "AdvancedMalwareOutboundPolicy": null,
+                "AtdUserForInboundATDAnalysis": null,
+                "AtdUserForOutboundATDAnalysis": null,
+                "ConnectionLimitingPolicy": null,
+                "DeviceId": 1003,
+                "DeviceName": "Dummy Device Name",
+                "FirewallPolicy": null,
+                "FirewallPolicyFirst": null,
+                "FirewallPolicyLast": null,
+                "FirewallPortPolicy": null,
+                "InterfaceId": 103,
+                "InterfaceName": "3-4",
+                "IpsPolicy": "testing",
+                "PolicyGroup": null,
+                "ProtectionOptionsPolicy": null,
+                "QosInboundPolicy": null,
+                "QosInboundRateLimitingProfile": null,
+                "QosOutboundPolicy": null,
+                "QosOutboundRateLimitingProfile": null,
+                "ReconnaissancePolicy": null
+            },
+            {
+                "AdvancedMalwareInboundPolicy": null,
+                "AdvancedMalwareOutboundPolicy": null,
+                "AtdUserForInboundATDAnalysis": null,
+                "AtdUserForOutboundATDAnalysis": null,
+                "ConnectionLimitingPolicy": null,
+                "DeviceId": 1003,
+                "DeviceName": "Dummy Device Name",
+                "FirewallPolicy": null,
+                "FirewallPolicyFirst": null,
+                "FirewallPolicyLast": null,
+                "FirewallPortPolicy": null,
+                "InterfaceId": 102,
+                "InterfaceName": "5-6",
+                "IpsPolicy": "testing",
+                "PolicyGroup": null,
+                "ProtectionOptionsPolicy": null,
+                "QosInboundPolicy": null,
+                "QosInboundRateLimitingProfile": null,
+                "QosOutboundPolicy": null,
+                "QosOutboundRateLimitingProfile": null,
+                "ReconnaissancePolicy": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Interface policy List
+>|DeviceId|DeviceName|FirewallPolicy|InterfaceId|InterfaceName|IpsPolicy|
+>|---|---|---|---|---|---|
+>| 1003 | Dummy Device Name | a policy | 104 | 1-2 | Default Prevention |
+>| 1003 | Dummy Device Name |  | 103 | 3-4 | testing |
+>| 1003 | Dummy Device Name |  | 102 | 5-6 | testing |
+
+
+### nsm-assign-device-policy
+
+***
+Assign a policy to a specific device.
+
+#### Base Command
+
+`nsm-assign-device-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The ID of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
+| device_id | The ID of the device. To get the device ID, use the !nsm-list-domain-device command. | Required | 
+| pre_firewall_policy_name | The name of the policy to add to the top of the rule order and evaluated first. To get the policies, use the !nsm-list-domain-firewall-policy command. | Optional | 
+| post_firewall_policy_name | The name of the policy to add to the end of the rule order and evaluated last. To get the policies, use the !nsm-list-domain-firewall-policy command. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nsm-assign-device-policy device_id=1003 domain_id=0 pre_firewall_policy_name=Test```
+#### Human Readable Output
+
+>Policy assigned successfully.
+### nsm-assign-interface-policy
+
+***
+Assign a policy to a specific interface.
+
+#### Base Command
+
+`nsm-assign-interface-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain_id | The ID of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
+| interface_id | The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command. | Required | 
+| firewall_policy_name | The name of the firewall policy that will be connected to the interface. To get the policy name, use the !nsm-list-domain-firewall-policy command. | Optional | 
+| firewall_port_policy_name | The name of the firewall policy that will be connected to the interface/port. To get the policy name, use the !nsm-list-domain-firewall-policy command. | Optional | 
+| ips_policy_name | The name of the IPS policy that will be connected to the interface. To get the policy name, use the !nsm-get-ips-policies command. | Optional | 
+| custom_policy_json | A Json with firewall policy types as keys and firewall policy names as values. (e.g `{"advancedMalwareInboundPolicy":"test"}`). To see all the firewall policy options visit this page https://docs.trellix.com/bundle/network-security-platform-9.1.x-manager-api-reference-guide/page/GUID-5E5F9514-935F-4F16-B2F0-C48E465A4E7C.html. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nsm-assign-interface-policy domain_id=0 interface_id=102 ips_policy_name=testing```
+#### Human Readable Output
+
+>Policy assigned successfully.
+### nsm-get-device-configuration
+
+***
+Provides configuration information of a given device.
+
+#### Base Command
+
+`nsm-get-device-configuration`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The ID of the device. To get the device ID, use the !nsm-get-sensors command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.DeviceConfiguration.IsSSLConfigurationChanged | boolean | Was the ssl configuration changed. | 
+| NSM.DeviceConfiguration.DeviceName | string | The name of the device. | 
+| NSM.DeviceConfiguration.IsConfigurationChanged | boolean | Was the configuration changed. | 
+| NSM.DeviceConfiguration.IsMalwareConfigurationChanged | boolean |  | 
+| NSM.DeviceConfiguration.LastUpdateTime | Unknown |  | 
+| NSM.DeviceConfiguration.IsGAMUpdateRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsSignatureSetConfigurationChanged | Unknown |  | 
+| NSM.DeviceConfiguration.IsSigsetConfigPushRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsBotnetPushRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsPolicyConfigurationChanged | boolean |  | 
+| NSM.DeviceConfiguration.IsSSLPushRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsGloablPolicyConfigurationChanged | boolean |  | 
+| NSM.DeviceConfiguration.IsBotnetConfigurationChanged | boolean |  | 
+
+#### Command example
+```!nsm-get-device-configuration device_id=1003```
+#### Context Example
+```json
+{
+    "NSM": {
+        "DeviceConfiguration": {
+            "DeviceName": "Dummy Device Name",
+            "IsBotnetConfigurationChanged": false,
+            "IsBotnetPushRequired": false,
+            "IsConfigurationChanged": true,
+            "IsGAMUpdateRequired": false,
+            "IsGloablPolicyConfigurationChanged": false,
+            "IsMalwareConfigurationChanged": false,
+            "IsPolicyConfigurationChanged": false,
+            "IsSSLConfigurationChanged": false,
+            "IsSSLPushRequired": false,
+            "IsSignatureSetConfigurationChanged": false,
+            "IsSigsetConfigPushRequired": true,
+            "LastUpdateTime": "2023-03-25 20:52:59.600 UTC"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Device Configuration
+>|DeviceName|IsBotnetConfigurationChanged|IsBotnetPushRequired|IsConfigurationChanged|IsGAMUpdateRequired|IsGloablPolicyConfigurationChanged|IsMalwareConfigurationChanged|IsPolicyConfigurationChanged|IsSSLConfigurationChanged|IsSSLPushRequired|IsSignatureSetConfigurationChanged|IsSigsetConfigPushRequired|LastUpdateTime|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Dummy Device Name | false | false | true | false | false | false | false | false | false | false | true | 2023-03-25 20:52:59.600 UTC |
+
+
+### nsm-deploy-device-configuration
+
+***
+Deploy the pending changes.
+ Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.
+To get the pending changes, use the !nsm-get-device-configuration command.
+
+#### Base Command
+
+`nsm-deploy-device-configuration`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | This is for the polling to work. not for the user. | Optional | 
+| device_id | The ID of the device. To get the device ID, use the !nsm-get-sensors command. | Required | 
+| push_ssl_key | Deploy the SSL configuration pending changes. Possible values are: true, false. | Optional | 
+| push_gam_updates | Deploy the Gateway Anti-Malware configuration pending changes. Possible values are: true, false. | Optional | 
+| push_configuration_signature_set | Deploy the Signature set configuration pending changes. Possible values are: true, false. | Optional | 
+| push_botnet | Deploy the Firewall policy description pending changes. Possible values are: true, false. | Optional | 
+| interval_in_seconds | The interval between status checks. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nsm-deploy-device-configuration device_id=1003 push_configuration_signature_set="true" interval_in_seconds=10```
+#### Human Readable Output
+
+>
+>The current percentage of deployment for 'push_configuration_signature_set' is: 0%
+>                
+>And the current message is: NA
+>
+>
+>Checking again in 10 seconds...

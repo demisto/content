@@ -306,6 +306,9 @@ ignore=IF100
 [file:incidentfield-Verdict.json]
 ignore=IF115
 
+[file:incidentfield-Incident_Duration.json]
+ignore=IF100
+
 [file:incidentfield-SSDeep.json]
 ignore=IF115
 

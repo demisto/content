@@ -58,9 +58,12 @@ ignore=IF100
 [file:playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle.yml]
 ignore=PB114
 
-
 [file:GoogleChronicleBackstory_image.png]
 ignore=IM111
 
 [file:classifier-Chronicle.json]
 ignore=BA101
+
+[file:ListDeviceEventsScript.yml]
+ignore=BA124
+

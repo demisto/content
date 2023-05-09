@@ -383,6 +383,35 @@ def test_update_remote_system_escalate(mocker):
     assert response == "1"
 
 
+def test_update_remote_system_escalate_and_comment(mocker):
+    # escalate should take priority over comment
+    client = get_test_client()
+    mocker.patch.object(client, "get_alert", return_value=alert_data()[0])
+    mocker.patch.object(client, "reassign_alert_to_org")
+    mocker.patch.object(client, "get_organizations", return_value=organization_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
+
+    client.close_incident = True
+    args = {
+        "remoteId": "1",
+        "status": 1,
+        "entries": [
+            {
+                "user": "test user",
+                "contents": "test contents",
+                "tags": [TEST_COMMENT_TAG, TEST_ESCALATE_TAG],
+            }
+        ],
+        "incidentChanged": False,
+    }
+    investigation = {}
+    response = update_remote_system(client, investigation, args)
+
+    client.reassign_alert_to_org.assert_called()
+
+    assert response == "1"
+
+
 def test_update_remote_system_closed(mocker):
     client = get_test_client()
     mocker.patch.object(client, "get_alert", return_value=alert_data()[0])
