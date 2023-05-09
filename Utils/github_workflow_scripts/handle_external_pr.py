@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
-import os
-import re
+
 from typing import List, Set
 
 import urllib3
@@ -108,7 +107,7 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
 
     for pack_dir in changed_pack_dirs:
         if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'pack support level for pack {pack_dir} is {pack_support_level}')
+            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
             packs_support_levels.add(pack_support_level)
 
     print(f'{packs_support_levels=}')
