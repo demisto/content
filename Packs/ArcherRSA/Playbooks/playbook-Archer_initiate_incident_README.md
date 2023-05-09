@@ -1,4 +1,4 @@
-Deprecated. Use the `archer-get-file` command instead.
+Deprecated. Use the `archer-get-file` command directly instead.
 initiate Archer incident
 
 ## Dependencies
