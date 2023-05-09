@@ -185,15 +185,15 @@ def main():
         master_branch_commit_sha = content_repo.get_branch('master').commit.sha
         # create new branch
         print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
-        # content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
+        content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
         # update base branch of the PR
-        # pr.edit(base=new_branch_name)
+        pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
     # assign reviewers / request review from
     reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
-    # pr.add_to_assignees(reviewer_to_assign)
-    # pr.create_review_request(reviewers=[reviewer_to_assign])
+    pr.add_to_assignees(reviewer_to_assign)
+    pr.create_review_request(reviewers=[reviewer_to_assign])
     print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
     print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
 
