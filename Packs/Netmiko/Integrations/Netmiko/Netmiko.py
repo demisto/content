@@ -15,17 +15,17 @@ from netmiko import Netmiko
 
 
 # Return only specific keys from dictionary
-def include_keys(dictionary, keys):  # pragma: no cover
+def include_keys(dictionary, keys):
     key_set = set(keys) & set(dictionary.keys())
     return {key: dictionary[key] for key in key_set}
 
 
-def return_file(keys):  # pragma: no cover
+def return_file(keys):
     return_file.readlines = lambda: keys.split("\n")  # type: ignore
     return return_file
 
 
-class Client:  # pragma: no cover
+class Client:
     def __init__(self, platform, hostname, username, password, port, keys):
         self.platform = platform
         self.hostname = hostname
@@ -79,7 +79,7 @@ class Client:  # pragma: no cover
         return output
 
 
-def test_command(client):  # pragma: no cover
+def test_command(client):
     client.connect()
     client.disconnect()
     demisto.results('ok')
@@ -153,7 +153,7 @@ def cmds_command(client, args):
         outputs_key_field = 'DateTimeUTC'
         outputs = output
 
-    command_results = CommandResults(  # pragma: no cover
+    command_results = CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
         outputs=outputs,
@@ -163,7 +163,7 @@ def cmds_command(client, args):
     return command_results
 
 
-def main():  # pragma: no cover
+def main():
 
     params = demisto.params()
     args = demisto.args()
@@ -172,9 +172,9 @@ def main():  # pragma: no cover
     platform = params.get('platform')
     hostname = params.get('hostname')
     port = params.get('port')
-    try:  # pragma: no cover
+    try:
         port = int(port)
-    except Exception as err:  # pragma: no cover
+    except Exception as err:
         return_error(f"Please ensure the port number is a number - {err}")
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
@@ -191,12 +191,12 @@ def main():  # pragma: no cover
 
     client = Client(platform, hostname, username, password, port, keys)
 
-    if command == 'test-module':  # pragma: no cover
+    if command == 'test-module':
         test_command(client)
-    elif command == 'netmiko-cmds':  # pragma: no cover
+    elif command == 'netmiko-cmds':
         results = cmds_command(client, args)
         return_results(results)
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
