@@ -1161,25 +1161,24 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
     if limit > 200:
         limit = 200
 
-    vuln_filter = [{
-        'filterName': 'pluginID',
-        'operator': '=',
-        'value': vuln_id
-    }]
-
     query = {
-        'filters': vuln_filter,
         'tool': 'vulndetails',
         'type': 'vuln',
         'startOffset': page,  # Lower bound for the results list (must be specified)
-        'endOffset': page + limit  # Upper bound for the results list (must be specified)
-        # 'sortField': sort_field,
-        # 'sortDir': sort_direction
+        'endOffset': page + limit,  # Upper bound for the results list (must be specified)
+        'sortField': sort_field,
+        'sortDir': sort_direction
     }
 
     if source_type == 'individual':
         if scan_results_id:
             query['scanID'] = scan_results_id
+            vuln_filter = [{
+                'filterName': 'pluginID',
+                'operator': '=',
+                'value': vuln_id
+            }]
+            query["filters"] = vuln_filter
         else:
             return_error("When choosing source_type = individual - scan_results_id must be provided.")
     else:
