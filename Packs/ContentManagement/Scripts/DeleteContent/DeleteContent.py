@@ -420,7 +420,7 @@ class InstalledPackAPI(EntityAPI):
         if proxy_skip:
             skip_proxy()
         core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=verify)
-        self.always_excluded = json.loads(core_packs_response.text) + self.always_excluded
+        self.always_excluded = json.loads(core_packs_response.text).get("core_packs_list") + self.always_excluded
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-get',
