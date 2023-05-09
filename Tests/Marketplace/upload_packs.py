@@ -436,7 +436,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
                     core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name,
                                                         core_pack_storage_path)
                 else:  # versioned core pack file
-                    core_pack_public_url = core_pack_relative_path  # in versioned core pack files, use relative paths (CIAC-5745)
+                    core_pack_public_url = core_pack_relative_path  # Use relative paths in versioned core pack files
 
                 core_packs_public_urls.append(core_pack_public_url)
                 bucket_core_packs.add(pack.name)
@@ -446,12 +446,12 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
 
         if missing_core_packs:
             logging.critical(
-                f"missing {len(missing_core_packs)} packs (expected in core_packs configuration, but not found in bucket): "
-                f"{','.join(sorted(missing_core_packs))}")
+                f"Missing {len(missing_core_packs)} packs (expected in core_packs configuration, but not found in bucket): "
+                f"{','.join(sorted(missing_core_packs))}, exiting...")
         if unexpected_core_packs:
             logging.critical(
-                f"unexpected {len(missing_core_packs)} packs in bucket (not in the core_packs configuration): "
-                f"{','.join(sorted(unexpected_core_packs))}")
+                f"Unexpected {len(missing_core_packs)} packs in bucket (not in the core_packs configuration): "
+                f"{','.join(sorted(unexpected_core_packs))}, exiting...")
         if missing_core_packs or unexpected_core_packs:
             sys.exit(1)
 
@@ -459,7 +459,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         core_packs_data = {
             'corePacks': core_packs_public_urls,
             'upgradeCorePacks': GCPConfig.get_core_packs_to_upgrade(marketplace),
-            'buildNumber': build_number
+            'buildNumber': build_number,
         }
         json_write(corepacks_json_path, core_packs_data)
         logging.success(f"Finished copying {corepacks_file} to artifacts.")

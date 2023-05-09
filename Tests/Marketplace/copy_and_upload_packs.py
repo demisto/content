@@ -177,7 +177,7 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             core_packs_data = {
                 'corePacks': corepacks_list,
                 'upgradeCorePacks': corepacks_file_content.get('upgradeCorePacks', []),
-                'buildNumber': build_number
+                'buildNumber': build_number,
             }
 
             # upload core pack json file to gcs
@@ -194,7 +194,7 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             if copied_corepacks_file.exists():
                 logging.success(f"Finished uploading {corepacks_file} to storage.")
             else:
-                logging.error(f"Failed copying {corepacks_file} from build bucket - blob does not exist.")
+                logging.error(f"Failed copying {corepacks_file} from build bucket - blob does not exist, exiting...")
                 sys.exit(1)
 
 
@@ -223,7 +223,7 @@ def upload_versions_metadata(production_bucket: Bucket, build_bucket: Bucket, st
     if copied_versions_metadata.exists():
         logging.success(f"Finished uploading {GCPConfig.VERSIONS_METADATA_FILE} to storage.")
     else:
-        logging.error(f"Failed copying {GCPConfig.VERSIONS_METADATA_FILE} from build bucket - blob does not exist.")
+        logging.error(f"Failed copying {GCPConfig.VERSIONS_METADATA_FILE} from build bucket - blob does not exist, exiting...")
         sys.exit(1)
 
 

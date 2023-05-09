@@ -1,10 +1,10 @@
 import logging
 import warnings
-# import google.auth
+import google.auth
 from pprint import pformat
 from pandas.core.frame import DataFrame, Series
-# from google.cloud.bigquery.client import Client
-# from google.cloud import bigquery
+from google.cloud.bigquery.client import Client
+from google.cloud import bigquery
 from datetime import timedelta
 from typing import List, Dict
 
