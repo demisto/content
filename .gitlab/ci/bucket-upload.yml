@@ -42,7 +42,7 @@
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload packs_dependencies.json to GCP" --collapsed
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
         gsutil cp $ARTIFACTS_FOLDER/packs_dependencies.json "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
         section_end "Upload packs_dependencies.json to GCP"
       fi
@@ -205,7 +205,7 @@ install-packs-in-server-master:
     - section_end "Download configuration"
     - section_start "Lock Machine"
     - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh
     - source CloudEnvVariables
@@ -229,7 +229,7 @@ install-packs-in-server-master:
     - exit "$EXIT_CODE"
   after_script:
     - echo "Job finished, removing lock file"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/machines_locks/*-lock-$CI_JOB_ID"
     - echo "Finished removing lock file"
 
