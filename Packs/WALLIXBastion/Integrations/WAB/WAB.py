@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import time
+import requests
 from requests import Response
 
 
@@ -40,7 +41,7 @@ class Client(BaseClient):
 
         try:
             resp: Response = super()._http_request(
-                *args, **kwargs, resp_type="response", error_handler=client_err_handler
+                *args, **kwargs, resp_type="response", error_handler=client_err_handler  # type: ignore
             )
         except AuthError:  # AuthError is only raised when first_auth is False
             update_session_token(None)
@@ -51,7 +52,7 @@ class Client(BaseClient):
 
             # retry
             resp = super()._http_request(
-                *args, **kwargs, resp_type="response"
+                *args, **kwargs, resp_type="response"  # type: ignore
             )
 
         if first_auth:
