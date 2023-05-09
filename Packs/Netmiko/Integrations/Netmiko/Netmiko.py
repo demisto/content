@@ -79,7 +79,7 @@ class Client:  # pragma: no cover
         return output
 
 
-def test_command(client):
+def test_command(client):  # pragma: no cover
     client.connect()
     client.disconnect()
     demisto.results('ok')
@@ -163,7 +163,7 @@ def cmds_command(client, args):
     return command_results
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
 
     params = demisto.params()
     args = demisto.args()
