@@ -47,17 +47,22 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction')) # TODO: better to pass that as an arg to the fetch command through the main function
+MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction'))  # TODO: better to pass that as an arg to the fetch command through the main function
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'open'
-INCIDENT_INCOMING_MIRROR_CLOSING_MAPPING = {
-    'dismissed': 'Other',
-    'resolved': 'Resolved',
-    'snoozed': 'Other'
-}  # Maps Alert closing statuses in Prisma Cloud to possible incident closing reasons in XSOAR
+INCIDENT_OUTGOING_MIRROR_ARGS = {'status': 'Updated incident status'}  # TODO: not sure about the args names here, also not sure about the dismissal note - it should be a constant string saying - Closed by XSOAR.
+PRISMA_CLOUD_MIRRORED_INCIDENT_TYPES = [
+    'AWS CloudTrail Misconfiguration',
+    'AWS EC2 Instance Misconfiguration',
+    'AWS IAM Policy Misconfiguration',
+    'GCP Compute Engine Misconfiguration',
+    'GCP Kubernetes Engine Misconfiguration',
+    'Prisma Cloud',
+    'Prisma Cloud - VM Alert Prioritization'
+]
 
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
@@ -1679,8 +1684,7 @@ def get_modified_remote_data_command(client: Client,
             last_update: The last time we retrieved modified incidents.
         params: Demisto params.
 
-    Returns:
-        GetModifiedRemoteDataResponse object, which contains a list of the retrieved alerts IDs.
+    Returns: GetModifiedRemoteDataResponse object, which contains a list of the retrieved alerts IDs.
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
@@ -1726,8 +1730,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
             id: alert id to retrieve.
             lastUpdate: when was the last time we retrieved data.
 
-    Returns:
-        GetRemoteDataResponse object, which contains the alert data to update.
+    Returns: GetRemoteDataResponse object, which contains the alert data to update.
     """
     remote_args = GetRemoteDataArgs(args)
     remote_alert_id = remote_args.remote_incident_id
@@ -1757,6 +1760,68 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
         mirrored_data['in_mirror_error'] = str(e)
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    Returns the list of fields to map in outgoing mirroring.
+
+    Returns: GetMappingFieldsResponse object, which contains the the list of fields to map in outgoing mirroring.
+
+    """
+    mapping_response = GetMappingFieldsResponse()
+
+    for incident_type in PRISMA_CLOUD_MIRRORED_INCIDENT_TYPES:
+        incident_type_scheme = SchemeTypeMapping(type_name=incident_type)
+        # TODO: what should be the type name?  should I create a scheme type mapping for each incident type in the Incoming mapper?
+        for argument, description in INCIDENT_OUTGOING_MIRROR_ARGS.items():
+            incident_type_scheme.add_field(name=argument, description=description)
+        mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
+def update_remote_system_command(args: Dict[str, Any]) -> str:
+    """
+    Mirrors out local changes to the remote system (Prisma Cloud).
+    TODO: check why in the yml this command has no arguments but in the py file it seems that it has.
+    Args:
+        args: A dictionary containing the data regarding a modified incident, including: data, entries,
+              incident_changed, remote_incident_id, inc_status and delta.
+
+    Returns: The remote incident id that was modified.
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    remote_incident_id = parsed_args.remote_incident_id
+    demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
+    if delta:
+        demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
+
+    try:
+        incident_type = find_incident_type(remote_incident_id)
+        if parsed_args.incident_changed:
+            if incident_type == IncidentType.INCIDENT:
+                result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f'Incident updated successfully. Result: {result}')
+
+            elif incident_type == IncidentType.DETECTION:
+                result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f'Detection updated successfully. Result: {result}')
+
+            else:
+                raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
+
+        else:
+            demisto.debug(f"Skipping updating remote incident or detection {remote_incident_id} as it didn't change.")
+
+    except Exception as e:
+        demisto.error(f'Error in CrowdStrike Falcon outgoing mirror for incident or detection {remote_incident_id}. '
+                      f'Error message: {str(e)}')
+
+    return remote_incident_id
 
 
 ''' TEST MODULE '''
@@ -1875,6 +1940,10 @@ def main() -> None:
             })
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, params))
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
