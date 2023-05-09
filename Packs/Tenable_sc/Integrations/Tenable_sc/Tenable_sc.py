@@ -189,11 +189,11 @@ class Client(BaseClient):
                     body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
                 else:
                     return_error("Please make sure to provide both time_zone and start_time.")
-                if all(repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day):
+                if all([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
                     body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};BYDAY={repeat_rule_by_day}"
                 elif repeat_rule_freq and repeat_rule_interval:
                     body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval}"
-                elif any(repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day):
+                elif any([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
                     return_error("Please make sure to provide repeat_rule_freq, repeat_rule_interval with or without "
                                  "repeat_rule_by_day, or don't provide any of them.")
                 body['schedule']['enabled'] = enabled
