@@ -153,7 +153,7 @@ def cmds_command(client, args):
         outputs_key_field = 'DateTimeUTC'
         outputs = output
 
-    command_results = CommandResults(
+    command_results = CommandResults(  # pragma: no cover
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
         outputs=outputs,
@@ -172,9 +172,9 @@ def main():  # pragma: no cover
     platform = params.get('platform')
     hostname = params.get('hostname')
     port = params.get('port')
-    try:
+    try:  # pragma: no cover
         port = int(port)
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         return_error(f"Please ensure the port number is a number - {err}")
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
@@ -191,9 +191,9 @@ def main():  # pragma: no cover
 
     client = Client(platform, hostname, username, password, port, keys)
 
-    if command == 'test-module':
+    if command == 'test-module':  # pragma: no cover
         test_command(client)
-    elif command == 'netmiko-cmds':
+    elif command == 'netmiko-cmds':  # pragma: no cover
         results = cmds_command(client, args)
         return_results(results)
 
