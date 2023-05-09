@@ -90,16 +90,32 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
 
     Args:
         file_paths(str): file paths
+
+    Returns:
+        highest support level of the packs that were changed, empty string in case no packs were changed.
     """
-    try:
-        packs_support_levels = {
-            get_pack_metadata(file_path).get('support') for file_path in file_paths if 'Packs' in file_path
-        }
-        print(f'{packs_support_levels=}')
+    changed_pack_dirs = set()
+    for file_path in file_paths:
+        try:
+            if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
+                changed_pack_dirs.add(f'Packs/{pack_name}')
+        except Exception as err:
+            print(f'Could not retrieve pack name from file {file_path}, {err=}')
+
+    print(f'{changed_pack_dirs=}')
+
+    packs_support_levels = set()
+
+    for pack_dir in changed_pack_dirs:
+        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
+            print(f'pack support level for pack {pack_dir} is {pack_support_level}')
+            packs_support_levels.add(pack_support_level)
+
+    print(f'{packs_support_levels=}')
+    
+    if packs_support_levels:
         return get_highest_support_label(packs_support_levels)
-    except Exception as e:
-        print(f'Could not retrieve support label, {e}')
-        return ''
+    return ''
 
 
 def get_highest_support_label(packs_support_levels: Set[str]):
