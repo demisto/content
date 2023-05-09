@@ -137,7 +137,7 @@ def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, 
         time_to_check: last request time from last run or first fetch.
     """
 
-    last_fetched_loggings = set(last_run.get('last_fetched_loggings', []))
+    last_fetched_loggings_ids = set(last_run.get('last_fetched_loggings_ids', []))
     demisto.debug(f'Looking for duplicated loggings with requestTime {time_to_check}')
     for logging in activity_loggings.copy():
         logging_id = logging.get('taskId')
@@ -145,13 +145,13 @@ def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, 
         if datetime.strptime(logging_request_time, DATE_FORMAT) > datetime.strptime(time_to_check, DATE_FORMAT):
             demisto.debug(f'Found logging with bigger requestTime, setting {time_to_check=}')
             time_to_check = logging_request_time
-            last_fetched_loggings = {logging_id}
+            last_fetched_loggings_ids = {logging_id}
         else:
-            if logging_id in last_fetched_loggings:
+            if logging_id in last_fetched_loggings_ids:
                 activity_loggings.remove(logging)
             else:
-                last_fetched_loggings.add(logging_id)
-    return activity_loggings, list(last_fetched_loggings)
+                last_fetched_loggings_ids.add(logging_id)
+    return activity_loggings, list(last_fetched_loggings_ids)
 
 
 def remove_milliseconds_from_time_of_loggings(activity_loggings: list):
@@ -164,6 +164,7 @@ def remove_milliseconds_from_time_of_loggings(activity_loggings: list):
         The loggings with the string in the correct format.
 
     """
+    demisto.debug("Changing timestamp of loggings to match date format.")
     date_format_with_milliseconds = '%Y-%m-%dT%H:%M:%S.%fZ'
     if activity_loggings:
         for logging in activity_loggings:
@@ -237,14 +238,14 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
 
     # setting last run object
     remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
-    activity_loggings, last_fetched_loggings = remove_duplicated_activity_logging(
+    activity_loggings, last_fetched_loggings_ids = remove_duplicated_activity_logging(
         activity_loggings=activity_loggings,
         last_run=last_run,
         time_to_check=from_date)
     if activity_loggings:
         last_log_time = activity_loggings[-1].get('requestTime')
         last_run = {'last_fetch_time': last_log_time,
-                    'last_fetched_loggings': last_fetched_loggings}
+                    'last_fetched_loggings_ids': last_fetched_loggings_ids}
 
     return activity_loggings, last_run
 
@@ -263,15 +264,8 @@ def test_module(client: Client) -> str:  # pragma: no cover
     :rtype: ``str``
     """
 
-    try:
-        client.get_access_token()
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure all parameters are correctly set'
-        else:
-            raise e
-    return message
+    client.get_access_token()
+    return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -315,24 +309,14 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
 
-        elif command in ('workday-get-activity-logging', 'fetch-events'):
-
-            if command == 'workday-get-activity-logging':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                activity_loggings, results = get_activity_logging_command(client=client,
-                                                                          from_date=args.get('from_date'),
-                                                                          to_date=args.get('to_date'),
-                                                                          limit=arg_to_number(args.get('limit')),
-                                                                          offset=arg_to_number(args.get('offset')))
-                return_results(results)
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
-                activity_loggings, new_last_run = fetch_activity_logging(client=client,
-                                                                         max_fetch=max_fetch,
-                                                                         first_fetch=first_fetch,  # type: ignore
-                                                                         last_run=last_run)
-
+        elif command == 'workday-get-activity-logging':
+            should_push_events = argToBoolean(args.pop('should_push_events'))
+            activity_loggings, results = get_activity_logging_command(client=client,
+                                                                      from_date=args.get('from_date'),
+                                                                      to_date=args.get('to_date'),
+                                                                      limit=arg_to_number(args.get('limit')),
+                                                                      offset=arg_to_number(args.get('offset')))
+            return_results(results)
             if should_push_events:
                 add_time_to_loggings(activity_loggings=activity_loggings)
                 send_events_to_xsiam(
@@ -340,10 +324,23 @@ def main() -> None:  # pragma: no cover
                     vendor=VENDOR,
                     product=PRODUCT
                 )
-                if new_last_run:
-                    # saves next_run for the time fetch-events is invoked
-                    demisto.info(f'Setting new last_run to {new_last_run}')
-                    demisto.setLastRun(new_last_run)
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            activity_loggings, new_last_run = fetch_activity_logging(client=client,
+                                                                     max_fetch=max_fetch,
+                                                                     first_fetch=first_fetch,  # type: ignore
+                                                                     last_run=last_run)
+
+            add_time_to_loggings(activity_loggings=activity_loggings)
+            send_events_to_xsiam(
+                activity_loggings,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            if new_last_run:
+                # saves next_run for the time fetch-events is invoked
+                demisto.info(f'Setting new last_run to {new_last_run}')
+                demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
     except Exception as e:

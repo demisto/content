@@ -84,7 +84,7 @@ class TestFetchActivity:
 
     DUPLICATED_ACTIVITY_LOGGINGS = [
         (('2023-04-15T07:00:00Z', 5, 2, 0), 2, 5, {}, '2023-04-15T07:00:00Z'),
-        (('2023-04-15T07:00:00Z', 5, 1, 0), 1, 1, {'last_fetched_loggings': {'1', '2', '3', '0'}},
+        (('2023-04-15T07:00:00Z', 5, 1, 0), 1, 1, {'last_fetched_loggings_ids': {'1', '2', '3', '0'}},
          '2023-04-15T07:00:00Z')]
 
     @pytest.mark.parametrize("args, len_of_last_loggings, len_of_activity_loggings, last_run, time_to_check",
@@ -99,8 +99,8 @@ class TestFetchActivity:
         """
         from WorkdayEventCollector import remove_duplicated_activity_logging
         loggings = self.create_response_with_duplicates(*args)
-        activity_loggings, last_fetched_loggings = remove_duplicated_activity_logging(loggings, last_run, time_to_check)
-        assert len(last_fetched_loggings) == len_of_last_loggings
+        activity_loggings, last_fetched_loggings_ids = remove_duplicated_activity_logging(loggings, last_run, time_to_check)
+        assert len(last_fetched_loggings_ids) == len_of_last_loggings
         assert len(activity_loggings) == len_of_activity_loggings
 
     def test_remove_milliseconds_from_string(self):
@@ -179,7 +179,7 @@ class TestFetchActivity:
 
         assert activity_loggings == fetched_events.get('fetched_events')
         assert new_last_run.get('last_fetch_time') == '2023-04-15T07:00:00Z'
-        assert set(new_last_run.get('last_fetched_loggings')) == {'2', '3'}
+        assert set(new_last_run.get('last_fetched_loggings_ids')) == {'2', '3'}
 
         # assert no new results when given the last_run:
         fetched_events = util_load_json('test_data/fetch_activity_loggings.json')
@@ -198,4 +198,4 @@ class TestFetchActivity:
                                                        'to_date': '2023-04-15T08:00:00Z'}
         assert activity_loggings == []
         assert new_last_run.get('last_fetch_time') == '2023-04-15T07:00:00Z'
-        assert set(new_last_run.get('last_fetched_loggings')) == {'2', '3'}
+        assert set(new_last_run.get('last_fetched_loggings_ids')) == {'2', '3'}
