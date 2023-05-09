@@ -7,8 +7,6 @@ type: javascript
 tags:
 - pagerduty
 - communication
-skipPrepare:
-- script-name-incident-to-alert
 comment: Send incident details to pagerduty (useful to include in playbooks)
 enabled: true
 args:
@@ -24,3 +22,5 @@ timeout: 0s
 tests:
 - PagerDuty Test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

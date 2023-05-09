@@ -45,9 +45,9 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-skipPrepare:
-- script-name-incident-to-alert
 dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

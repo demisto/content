@@ -52,9 +52,8 @@ outputs:
   type: String
 script: '-'
 system: false
-tags: [Cherwell]
-skipPrepare:
-- script-name-incident-to-alert
+tags:
+- Cherwell
 timeout: '0'
 type: python
 dependson:
@@ -65,3 +64,5 @@ subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

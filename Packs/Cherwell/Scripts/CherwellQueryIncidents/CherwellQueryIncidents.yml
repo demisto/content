@@ -11,9 +11,8 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellQueryIncidents
-tags: [Cherwell]
-skipPrepare:
-- script-name-incident-to-alert
+tags:
+- Cherwell
 dependson:
   must:
   - Cherwell|||cherwell-query-business-object
@@ -54,3 +53,5 @@ subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

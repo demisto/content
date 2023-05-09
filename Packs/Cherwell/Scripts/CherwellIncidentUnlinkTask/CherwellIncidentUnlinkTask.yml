@@ -23,12 +23,13 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.8.24399
 subtype: python3
-tags: [Cherwell]
-skipPrepare:
-- script-name-incident-to-alert
+tags:
+- Cherwell
 dependson:
   must:
   - Cherwell|||cherwell-unlink-business-objects
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

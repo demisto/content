@@ -16,9 +16,9 @@ scripttarget: 0
 subtype: python3
 tags: 
     - 'post-processing'
-skipPrepare:
-- script-name-incident-to-alert
 type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+skipprepare:
+- script-name-incident-to-alert

@@ -6,8 +6,6 @@ script: ''
 type: python
 tags:
 - dynamic-section
-skipPrepare:
-- script-name-incident-to-alert
 comment: This automation takes several Incident fields from the Threat Vault incident context and displays them as markdown in the layout.
 enabled: true
 scripttarget: 0
@@ -18,3 +16,5 @@ runas: DBotWeakRole
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+skipprepare:
+- script-name-incident-to-alert

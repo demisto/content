@@ -15,9 +15,9 @@ scripttarget: 0
 subtype: python3
 tags:
 - transformer
-skipPrepare:
-- script-name-incident-to-alert
 type: python
 fromversion: 5.5.0
 tests:
 - Microsoft_365_Defender-Test
+skipprepare:
+- script-name-incident-to-alert

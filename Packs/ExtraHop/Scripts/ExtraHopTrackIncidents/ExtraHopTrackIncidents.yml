@@ -8,8 +8,6 @@ tags:
 - incidents
 - ExtraHop
 - field-change-triggered
-skipPrepare:
-- script-name-incident-to-alert
 comment: Links an incident investigation back to the ExtraHop Detection that created it.
 script: '-'
 system: false
@@ -24,3 +22,5 @@ runas: DBotWeakRole
 tests:
 - ExtraHop_v2-Test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

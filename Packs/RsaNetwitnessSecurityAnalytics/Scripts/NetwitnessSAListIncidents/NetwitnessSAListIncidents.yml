@@ -7,8 +7,6 @@ type: python
 subtype: python3
 tags:
 - RSA NetWitness Security Analytics
-skipPrepare:
-- script-name-incident-to-alert
 comment: List NetWitness SA incidents. Filtering and sorting the list is also supported (see optional arguments).
 system: true
 args:
@@ -35,3 +33,5 @@ fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
+skipprepare:
+- script-name-incident-to-alert
