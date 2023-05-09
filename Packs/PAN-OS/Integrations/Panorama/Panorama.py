@@ -13067,6 +13067,7 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
         job_id (str): returns the Job ID associated with the given query
     """
     params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch)
+    demisto.debug(f'{query=}')
     response = http_request(URL, 'GET', params=params)
     return response.get('response', {}).get('result', {}).get('job')
 
@@ -13180,6 +13181,7 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
     """
     new_entries_dict: Dict = {}
     for log_type in entries_dict:
+        demisto.debug(f'Filtering {log_type} type enties, recived {len(entries_dict[log_type])} to filter.')
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
             current_log_id = arg_to_number(log.get("seqno"))
@@ -13190,6 +13192,7 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
                 continue
             if current_log_id > arg_to_number(latest_id_per_device):     # type: ignore
                     new_entries_dict.setdefault(log_type, []).append(log)
+    demisto.debug(f'The sum of filtered entries for all og types is: {len(new_entries_dict)}')
     return new_entries_dict
 
 
