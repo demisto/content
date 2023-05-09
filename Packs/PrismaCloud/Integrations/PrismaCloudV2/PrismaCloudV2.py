@@ -53,6 +53,7 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'open'
+INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = 'Closed by XSOAR'
 INCIDENT_OUTGOING_MIRROR_ARGS = {'status': 'Updated incident status'}  # TODO: not sure about the args names here, also not sure about the dismissal note - it should be a constant string saying - Closed by XSOAR.
 PRISMA_CLOUD_MIRRORED_INCIDENT_TYPES = [
     'AWS CloudTrail Misconfiguration',
@@ -170,7 +171,7 @@ class Client(BaseClient):
 
     def alert_dismiss_request(self, dismissal_note: str, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                               policy_ids: Optional[List[str]] = None, dismissal_time_range: Optional[Dict[str, Any]] = None,
-                              filters: Optional[List[str]] = None):
+                              filters: Optional[List[str]] = None): # TODO: need to a add a return value
         data = remove_empty_values({'alerts': alert_ids,
                                     'policies': policy_ids,
                                     'dismissalNote': dismissal_note,
@@ -180,10 +181,10 @@ class Client(BaseClient):
                                         'filters': handle_filters(filters),
                                     }})
 
-        self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
+        return self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
 
     def alert_reopen_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
-                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None):
+                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None): # TODO: need to a add a return value
         data = remove_empty_values({'alerts': alert_ids,
                                     'policies': policy_ids,
                                     'dismissalTimeRange': time_range,
@@ -192,7 +193,7 @@ class Client(BaseClient):
                                         'filters': handle_filters(filters),
                                     }})
 
-        self._http_request('POST', 'alert/reopen', json_data=data, resp_type='response')
+        return self._http_request('POST', 'alert/reopen', json_data=data, resp_type='response')
 
     def remediation_command_list_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                                          policy_id: Optional[str] = None):
@@ -713,6 +714,101 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
         elif mirrored_status == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
             entry = reopen_incident_in_xsoar(remote_alert_id)
             return entry
+
+
+def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]): # TODO: need to a add a return value
+    """
+
+    Args:
+        client: Demisto client.
+        ids:
+        delta:
+
+    Returns:
+
+    """
+    close_notes = delta.get('closeNotes')
+    close_reason = delta.get('closeReason')
+    dismissal_note = f'{INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE} - Closing Reason: {close_reason}, ' \
+                     f'Closing Notes: {close_notes}.'
+    # TODO: need to understand how to define the time here - consult with Dima.
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
+
+    return client.alert_dismiss_request(dismissal_note=dismissal_note, time_range=time_filter, alert_ids=ids)
+
+
+def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]): # TODO: need to a add a return value
+    """
+
+    Args:
+        client: Demisto client.
+        ids:
+
+    Returns:
+
+    """
+    # TODO: need to understand how to define the time here - consult with Dima.
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
+
+    return client.alert_reopen_request(time_range=time_filter, alert_ids=ids)
+
+
+def whether_to_close_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
+    """
+    Closing in the remote system should happen only when both:
+    1. The user asked for it
+    2. One of the closing fields appears in the delta
+
+    The second condition is mandatory so we will not send a closing request at all of the mirroring requests that happen
+    after closing an incident (in case where the incident is updated so there is a delta, but it is not the status
+    that was changed).
+
+    Args:
+        delta:
+
+    Returns:
+
+    """
+    closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
+    return demisto.params().get('close_ticket') and any(field in delta for field in closing_fields)
+
+
+def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
+    """
+
+    Args:
+        delta:
+
+    Returns:
+
+    """
+    return demisto.params().get('close_ticket') and delta == {'closingUserId': '', 'runStatus': ''}
+
+
+def update_remote_incident_status(client: Client, delta, inc_status: IncidentStatus, incident_id: str): # TODO: need to a add a return value
+    """
+
+    Args:
+        client: Demisto client.
+        delta:
+        inc_status:
+        incident_id:
+
+    Returns:
+
+    """
+    # XSOAR incident was closed - closing the mirrored prisma alert
+    if inc_status == IncidentStatus.DONE and whether_to_close_in_prisma_cloud(delta):
+        demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
+        return close_alert_in_prisma_cloud(client, [incident_id], delta)
+
+    # XSOAR incident was re-opened - re-opening the mirrored prisma alert
+    if inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(delta):
+        demisto.debug(f'Reopening incident with remote ID {incident_id} in remote system.')
+        return reopen_alert_in_prisma_cloud(client, [incident_id])
+
+    # TODO: need to check with Dima - when closing an xsoar incident, one of the possible statuses is Resolved -
+    #  don't think it is possible to resolve an issue through the API.
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
@@ -1781,44 +1877,36 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """
     Mirrors out local changes to the remote system (Prisma Cloud).
     TODO: check why in the yml this command has no arguments but in the py file it seems that it has.
     Args:
+        client: Demisto client.
         args: A dictionary containing the data regarding a modified incident, including: data, entries,
               incident_changed, remote_incident_id, inc_status and delta.
 
     Returns: The remote incident id that was modified.
     """
+    demisto.debug('##### Starting mirror out - in update_remote_system_command') # TODO: remove this line
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
     demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
-    if delta:
-        demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
 
     try:
-        incident_type = find_incident_type(remote_incident_id)
         if parsed_args.incident_changed:
-            if incident_type == IncidentType.INCIDENT:
-                result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
-                if result:
-                    demisto.debug(f'Incident updated successfully. Result: {result}')
-
-            elif incident_type == IncidentType.DETECTION:
-                result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
-                if result:
-                    demisto.debug(f'Detection updated successfully. Result: {result}')
-
+            response = update_remote_incident_status(client, delta, parsed_args.inc_status, remote_incident_id)
+            if response:
+                demisto.debug(f'Remote Incident: {remote_incident_id} was updated successfully.')
             else:
-                raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
-
+                raise Exception(f'Remote Incident: {remote_incident_id} was not updated due to an error.')
+            # TODO: need to some how check if the close in the remote works or not - maybe by the response status.
         else:
-            demisto.debug(f"Skipping updating remote incident or detection {remote_incident_id} as it didn't change.")
+            demisto.debug(f"Skipping the update of remote incident {remote_incident_id} as it has not changed.")
 
     except Exception as e:
-        demisto.error(f'Error in CrowdStrike Falcon outgoing mirror for incident or detection {remote_incident_id}. '
+        demisto.error(f'Error in Prisma Cloud V2 outgoing mirror for incident {remote_incident_id}. '
                       f'Error message: {str(e)}')
 
     return remote_incident_id
@@ -1943,7 +2031,7 @@ def main() -> None:
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(args))
+            return_results(update_remote_system_command(client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
