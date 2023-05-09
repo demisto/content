@@ -380,8 +380,8 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
         last_run={},
         max_fetch=1,
     )
-    expected_count = (random_incidents.getTableResponse.total_number_of_results +
-                      random_alerts_response.getTableResponse.total_number_of_results)
+    expected_count = (random_incidents.getTableResponse.total_number_of_results
+                      + random_alerts_response.getTableResponse.total_number_of_results)
 
     assert (len(fetched_incidents) == expected_count)
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
@@ -409,8 +409,8 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
         last_run={},
         max_fetch=1,
     )
-    expected_count = (random_incidents.getTableResponse.total_number_of_results +
-                      random_alerts_response.getTableResponse.total_number_of_results)
+    expected_count = (random_incidents.getTableResponse.total_number_of_results
+                      + random_alerts_response.getTableResponse.total_number_of_results)
 
     assert (len(fetched_incidents) == expected_count)
     last_run, incidents = fetch_incidents(
@@ -438,8 +438,8 @@ def test_fetch_incidents_without_assets_info(
         reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1
     )
 
-    expected_count = (random_incidents.getTableResponse.total_number_of_results +
-                      random_alerts_response.getTableResponse.total_number_of_results)
+    expected_count = (random_incidents.getTableResponse.total_number_of_results
+                      + random_alerts_response.getTableResponse.total_number_of_results)
 
     assert (len(fetched_incidents) == expected_count)
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
