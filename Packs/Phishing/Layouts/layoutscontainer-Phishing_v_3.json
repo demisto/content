@@ -39,7 +39,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 3
                     },
                     {
                         "description": "",
@@ -180,7 +180,16 @@
                                 "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+							{
+								"endCol": 2,
+								"fieldId": "categories",
+								"height": 22,
+								"id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -219,7 +228,7 @@
                         "type": "invTimeline",
                         "w": 3,
                         "x": 0,
-                        "y": 15
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -302,7 +311,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 5
                     },
                     {
                         "h": 2,
@@ -316,7 +325,7 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 7
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -402,7 +411,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 9
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -436,7 +445,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 13
+                        "y": 12
                     },
                     {
                         "columns": [
@@ -497,13 +506,14 @@
                         "type": "linkedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 19
+                        "y": 18
                     },
                     {
                         "description": "Indicators selected to be blocked.",
                         "h": 2,
                         "i": "swtuqptgvs-1a52c090-c187-11ed-a413-1fc9f082fba8",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -514,32 +524,7 @@
                         "type": "indicators",
                         "w": 1,
                         "x": 2,
-                        "y": 11
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "swtuqptgvs-c871a080-ea70-11ed-9b49-8f7dd2d50994",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "categories",
-                                "height": 22,
-                                "id": "d9e4ca40-ea70-11ed-9b49-8f7dd2d50994",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Email categories",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 3
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -1272,5 +1257,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.1.0",
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }
