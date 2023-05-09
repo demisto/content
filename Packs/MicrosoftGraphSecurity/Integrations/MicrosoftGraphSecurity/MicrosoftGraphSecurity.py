@@ -650,8 +650,8 @@ def create_alert_comment_command(client: MsGraphClient, args):
         str, Dict, Dict: the human readable, parsed outputs and request's response.
     """
     if API_VER == API_V1:
-        raise DemistoException("This command is available only for Alerts v2."
-                               " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.")
+        raise DemistoException("This command is available only for Alerts v2. If you"
+                               " wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.")
     alert_id = args.get('alert_id', '')
     comment = args.get('comment', '')
     params = {"comment": comment}

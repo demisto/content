@@ -41,9 +41,12 @@ def test_get_alert_details_command(mocker, test_case):
         Given:
         - test case that point to the relevant test case in the json test data which include:
           args including alert_id and fields_to_include, response mock, expected hr and ec outputs, and api version.
-        - Case 1: args with all fields to include in fields_to_include, response of a Legacy Alerts alert and, api version Legacy Alerts flag.
-        - Case 2: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and, api version Legacy Alerts flag.
-        - Case 3: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and, api version Alerts v2 flag.
+        - Case 1: args with all fields to include in fields_to_include, response of a Legacy Alerts alert and,
+                  api version Legacy Alerts flag.
+        - Case 2: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and,
+                  api version Legacy Alerts flag.
+        - Case 3: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and,
+                  api version Alerts v2 flag.
 
         When:
         - Running get_alert_details_command.
@@ -144,9 +147,12 @@ def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, a
     """
         Given:
         - args, expected_params results, is_fetch flag, and a api_version flag.
-        - Case 1: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and API version flag is Legacy Alerts.
-        - Case 2: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and API version flag is Alerts v2.
-        - Case 3: args with filter and status (relevant only for Alerts v2) fields, is_fetch is False and API version flag is Legacy Alerts.
+        - Case 1: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and,
+                  API version flag is Legacy Alerts.
+        - Case 2: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and,
+                  API version flag is Alerts v2.
+        - Case 3: args with filter and status (relevant only for Alerts v2) fields, is_fetch is False and,
+                  API version flag is Legacy Alerts.
         - Case 4: args with only page field, is_fetch is False and API version flag is Legacy Alerts.
 
         When:
@@ -240,10 +246,11 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
     """
         Given:
         - args, expected_results, and a api_version flag.
-        - Case 1: args with vendor_information, provider information, and assigned_to fields, and API version flag is Legacy Alerts.
+        - Case 1: args with vendor_information, provider information, and assigned_to fields.
+                  And API version flag is Legacy Alerts.
         - Case 2: args with vendor_information, provider information, and comment (relevant only for Legacy Alerts) fields,
                   and API version flag is Legacy Alerts.
-        - Case 3: args with status ('new' which is supported only by Alerts v2) and comment (relevant only for Legacy Alerts) fields,
+        - Case 3: args with status ('new' which is supported only by Alerts v2) and comment (relevant only for Legacy Alerts),
                   and API version flag is Alerts v2.
 
         When:
