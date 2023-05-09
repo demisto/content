@@ -2276,7 +2276,7 @@ script:
 tests:
 - SentinelOne V2.1 - Test
 - SentinelOne V2.0 - Test
-fromversion: 5.0.0
+fromversion: 6.8.0
 defaultclassifier: SentinelOne Classifier
 defaultmapperin: SentinelOne Incoming Mapper
 defaultmapperout: SentinelOne - Outgoing Mapper
