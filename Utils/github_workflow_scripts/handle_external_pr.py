@@ -33,12 +33,6 @@ CONTRIBUTION_LABEL = 'Contribution'
 
 
 def parse_changed_files_names() -> argparse.Namespace:
-    """
-    Run_doc_review script gets the files that were changed in the PR as a string (default delimiter is ';').
-    This function is in charge of parsing the info and separate the files names.
-
-    Returns: an argparse.Namespace object which includes the changed files names and the delimiter argument.
-    """
     parser = argparse.ArgumentParser(description="Parse the changed files names.")
     parser.add_argument(
         "-c",
