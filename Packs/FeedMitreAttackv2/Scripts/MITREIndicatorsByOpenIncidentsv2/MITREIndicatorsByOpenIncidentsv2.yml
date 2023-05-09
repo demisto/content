@@ -31,5 +31,3 @@ runonce: false
 tests:
 - No test.
 fromversion: 5.5.0
-skipprepare:
-- script-name-incident-to-alert

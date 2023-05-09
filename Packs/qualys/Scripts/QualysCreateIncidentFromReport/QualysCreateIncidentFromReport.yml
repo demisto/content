@@ -38,5 +38,3 @@ tests:
 - No test
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.4.29342
-skipprepare:
-- script-name-incident-to-alert
