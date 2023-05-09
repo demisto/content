@@ -1,15 +1,7 @@
-id: 9b1403fe-84d1-4f68-8360-15f879253da3
-version: 89
-vcShouldKeepItemLegacyProdMachine: false
+id: Test Playbook - Cortex XDR - True Positive Incident Handling
+version: -1
 name: Test Playbook - Cortex XDR - True Positive Incident Handling
-description: "This playbook tests the 'Cortex XDR - Get File Path from alerts by hash'
-  playbook which is part of the 'Malware Investigation and Response' pack.\n\nFollowing
-  are the tests conducted in the playbook:\n1- Verify that the playbook triggers the
-  creation of a new ticket within Jira and ServiceNow.\n2- Ensure that the threat
-  hunting results were marked as evidence.\n3- Review and validate that the proper
-  tags were populated for the incident. \n4- Ensure the threat hunting results are
-  marked as an indicator.\n5- Confirm that threat hunting results were added to XDR-banned
-  Hashes."
+description: "This playbook tests the 'Cortex XDR - Get File Path from alerts by hash' playbook which is part of the 'Malware Investigation and Response' pack.\n\nFollowing are the tests conducted in the playbook:\n1- Verify that the playbook triggers the creation of a new ticket within Jira and ServiceNow.\n2- Ensure that the threat hunting results were marked as evidence.\n3- Review and validate that the proper tags were populated for the incident. \n4- Ensure the threat hunting results are marked as an indicator.\n5- Confirm that threat hunting results were added to XDR-banned Hashes."
 starttaskid: "0"
 tasks:
   "0":
@@ -22,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -49,9 +42,7 @@ tasks:
       id: 00f09562-4eac-4d50-8694-90111ac65350
       version: -1
       name: Delete Context
-      description: The task deletes all of the context data. Having a clean beginning
-        to a test playbook ensures that a test can be sterile and that unrelated issues
-        can be eliminated.
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -89,6 +80,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "263"
@@ -122,6 +114,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -453,6 +446,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "260"
@@ -480,8 +474,7 @@ tasks:
       id: 498a18f5-c244-4fe1-841b-d20422e2b741
       version: -1
       name: Verify Tags
-      description: Verify that the 'Found additional assets' tag was set to the incident
-        'tags' field.
+      description: Verify that the 'Found additional assets' tag was set to the incident 'tags' field.
       type: condition
       iscommand: false
       brand: ""
@@ -542,8 +535,7 @@ tasks:
       filesha256:
         simple: 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4
       name:
-        simple: Test Incident for Cortex XDR - Cortex XDR - True Positive Incident
-          Handling
+        simple: Test Incident for Cortex XDR - Cortex XDR - True Positive Incident Handling
       processpaths:
         simple: C:\Program Files (x86)\Google\Update\Install\{0F536705-DD98-4DF9-AD6D-CF35DB7FBEFB}\CR_5748B.tmp\setup.exe
     separatecontext: false
@@ -690,6 +682,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "266"
@@ -717,11 +710,7 @@ tasks:
       id: 525bb1ee-e686-4553-88d5-4de417c53102
       version: -1
       name: Verify Evidence
-      description: Verify that the threat hunting results have been marked as evidence.
-        Considering that the 'Tag the threat hunting results as Evidence' task is
-        the only one that marks an item as evidence, we can assume that the threat
-        hunting results were classified as evidence if the 'Entry.ID' context key
-        is present.
+      description: Verify that the threat hunting results have been marked as evidence. Considering that the 'Tag the threat hunting results as Evidence' task is the only one that marks an item as evidence, we can assume that the threat hunting results were classified as evidence if the 'Entry.ID' context key is present.
       type: condition
       iscommand: false
       brand: ""
@@ -804,6 +793,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "202"
@@ -868,6 +858,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "271"
@@ -899,6 +890,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "273"
@@ -929,6 +921,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "307"
@@ -1081,8 +1074,7 @@ tasks:
       id: a9dbe427-392e-4209-859e-32ef3360979c
       version: -1
       name: Remove indicators from XDR banned hashes
-      description: This task removes the SHA256 file hash from the Cortex XDR banned
-        hashes list, as it was added for testing purposes.
+      description: This task removes the SHA256 file hash from the Cortex XDR banned hashes list, as it was added for testing purposes.
       script: Cortex XDR - IR|||xdr-remove-blocklist-files
       type: regular
       iscommand: true
@@ -1157,6 +1149,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "202"
@@ -1187,6 +1180,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "285"
@@ -1218,6 +1212,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "202"
@@ -1248,6 +1243,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "297"
@@ -1278,6 +1274,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "296"
@@ -1802,6 +1799,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "202"
@@ -1867,9 +1865,7 @@ tasks:
       id: 52c1be21-5138-4a6c-8078-890729bb95bd
       version: -1
       name: Verify indicator was added to XDR banned Hashes
-      description: Verify that the 'xdr-blocklist-files' command output was populated
-        with the indicator file hash under the 'PaloAltoNetworksXDR.blocklist.added_hashes.fileHash'
-        context key.
+      description: Verify that the 'xdr-blocklist-files' command output was populated with the indicator file hash under the 'PaloAltoNetworksXDR.blocklist.added_hashes.fileHash' context key.
       type: condition
       iscommand: false
       brand: ""
@@ -1916,8 +1912,7 @@ tasks:
       id: b2c1eb1e-06cd-4cb7-8608-905c30499a3a
       version: -1
       name: Remove indicator from XDR banned hashes
-      description: This task removes the SHA256 file hash from the Cortex XDR banned
-        hashes list, as it was added for testing purposes.
+      description: This task removes the SHA256 file hash from the Cortex XDR banned hashes list, as it was added for testing purposes.
       script: Cortex XDR - IR|||xdr-remove-blocklist-files
       type: regular
       iscommand: true
@@ -1965,4 +1960,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Phishing - Core - Test - Incident Starter
+fromversion: 6.5.0
