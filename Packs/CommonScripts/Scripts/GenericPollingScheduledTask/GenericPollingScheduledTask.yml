@@ -44,7 +44,9 @@ args:
   isArray: true
 - name: scheduledEntryGuid
   description: The GUID of the scheduled entry that runs the polling command.
-  type: textArea
+- name: endTime
+  description: The time to end the polling.
+
 scripttarget: 0
 runonce: false
 tests:
