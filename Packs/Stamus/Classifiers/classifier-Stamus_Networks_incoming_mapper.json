@@ -1,88 +1,69 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "9710fb95-fef7-4837-8b3d-67a4edd2e40e",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": {
-		"Stamus Networks": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"StamusFamily": {
-					"simple": "family"
-				},
-				"StamusFamilyDescription": {
-					"simple": "family_description"
-				},
-				"StamusFamilyID": {
-					"simple": "family_id"
-				},
-				"StamusFamilyLink": {
-					"simple": "family_link"
-				},
-				"StamusID": {
-					"simple": "id"
-				},
-				"StamusKillchain": {
-					"simple": "kill_chain"
-				},
-				"StamusTarget": {
-					"simple": "target"
-				},
-				"StamusTargettype": {
-					"simple": "target_type"
-				},
-				"StamusTenant": {
-					"simple": "tenant"
-				},
-				"StamusThreatDescription": {
-					"simple": "threat_description"
-				},
-				"StamusThreatId": {
-					"simple": "threat_id"
-				},
-				"StamusThreatLink": {
-					"simple": "threat_link"
-				},
-				"StamusTimestamp": {
-					"simple": "timestamp"
-				},
-				"Stamusthreat": {
-					"simple": "threat"
-				},
-				"Stamusthreatid": {
-					"simple": "threat_id"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"StamusThreat": {
-					"simple": "threat"
-				}
-			}
-		}
-	},
-	"name": "Stamus Networks incoming mapper",
-	"nameRaw": "Stamus Networks incoming mapper",
-	"packID": "",
-	"packName": "",
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Stamus Networks incoming mapper",
+    "mapping": {
+        "Stamus Networks": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "StamusFamily": {
+                    "simple": "family"
+                },
+                "StamusFamilyDescription": {
+                    "simple": "family_description"
+                },
+                "StamusFamilyID": {
+                    "simple": "family_id"
+                },
+                "StamusFamilyLink": {
+                    "simple": "family_link"
+                },
+                "StamusID": {
+                    "simple": "id"
+                },
+                "StamusKillchain": {
+                    "simple": "kill_chain"
+                },
+                "StamusTarget": {
+                    "simple": "target"
+                },
+                "StamusTargettype": {
+                    "simple": "target_type"
+                },
+                "StamusTenant": {
+                    "simple": "tenant"
+                },
+                "StamusThreatDescription": {
+                    "simple": "threat_description"
+                },
+                "StamusThreatId": {
+                    "simple": "threat_id"
+                },
+                "StamusThreatLink": {
+                    "simple": "threat_link"
+                },
+                "StamusTimestamp": {
+                    "simple": "timestamp"
+                },
+                "Stamusthreat": {
+                    "simple": "threat"
+                },
+                "Stamusthreatid": {
+                    "simple": "threat_id"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "StamusThreat": {
+                    "simple": "threat"
+                }
+            }
+        }
+    },
+    "name": "Stamus Networks incoming mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
 }
