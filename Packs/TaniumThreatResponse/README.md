@@ -23,6 +23,7 @@ More information can be found [here](https://docs.tanium.com/threat_response/thr
 
 <u>**Note:**</u>
 Make sure to send the log in UTC time. 
+Don't modify the value type of the "Timestamp" field. This field is set to UTC by default.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
