@@ -2755,7 +2755,7 @@
         },
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
-            "integrations": "Threat Crowd",
+            "integrations": "VirusTotal (API v3)",
             "fromversion": "4.1.0"
         },
         {
