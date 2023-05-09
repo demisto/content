@@ -59,9 +59,9 @@ class Client(BaseClient):
             if not self.token or not self.cookie:
                 self.login()
 
-    def send_request_new(self, path, method='get', body=None, params=None, headers=None):
+    def send_request_new(self, path, method='get', body={}, params={}, headers=None):
         headers = headers or self.headers
-        return self._http_request(method, url_suffix=path, params=params, data=json.dumps(body))
+        return self._http_request(method, url_suffix=path, params=params, data=json.dumps(body), headers=headers)
 
     def send_request_old(self, path, method='get', body=None, params=None, headers=None, try_number=1):
         body = body if body is not None else {}
@@ -435,7 +435,7 @@ class Client(BaseClient):
         return self.send_request(path, method='post')
 
     def get_vulnerability(self, vuln_id):
-        path = 'plugin/' + vuln_id
+        path = f'plugin/{vuln_id}'
 
         params = {
             'fields': 'name,description,family,type,cpe,riskFactor,solution,synopsis,exploitEase,exploitAvailable,'
@@ -821,7 +821,6 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
 
 def list_zones_command(client: Client, args: Dict[str, Any]):
     res = client.get_zones()
-
     if not res or 'response' not in res:
         return_message('No zones found')
 
@@ -832,17 +831,17 @@ def list_zones_command(client: Client, args: Dict[str, Any]):
             'name': 'All Zones',
             'description': '',
             'ipList': '',
-            'activeScanners': ''
+            'scanners': ''
         }]
 
-    headers = ['ID', 'Name', 'Description', 'IPList', 'ActiveScanners']
+    headers = ['ID', 'Name', 'Description', 'IPList', 'scanners']
 
     mapped_zones = [{
         'ID': z['id'],
         'Name': z['name'],
         'Description': z['description'],
         'IPList': z['ipList'],
-        'ActiveScanners': z['activeScanners']
+        'scanners': z['scanners']
     } for z in zones]
 
     demisto.results({
