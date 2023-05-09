@@ -33,7 +33,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Comment Entry Tag from Jira | Add this tag to an entry to mirror it as a comment from Jira. | False |
     | Fetch comments | Fetch comments for a Jira ticket. | False |
     | Fetch attachments | Fetch attachments for a Jira ticket. | False |
-    | Max incidents per fetch |  | False |
+    | Max incidents per fetch | The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50. | False |
     | Time range for initial data fetch | The time range to consider for the initial data fetch in format: &lt;number&gt; &lt;unit&gt;. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years | False |
 
 5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
@@ -104,9 +104,13 @@ Write
 4. Insert the retrieved authorization code as an argument to the `!jira-oauth-complete` command.
 5. Run the `!jira-oauth-test` to test the connection of the instance.
 
-![Authenticating using custom callback URL](doc_files/jira-oauth-custom-callback-url.gif)
+#### Authenticating using custom callback URL
 
-![Authenticating using the oproxy callback URL](doc_files/jira-oauth-oproxy-callback-url.gif)
+![Custom callback URL](doc_files/jira-oauth-custom-callback-url.gif)
+
+#### Authenticating using the oproxy callback URL
+
+![Oproxy callback URL](doc_files/jira-oauth-oproxy-callback-url.gif)
 
 ## Fetch Incidents
 
@@ -117,10 +121,9 @@ When you enable incidents fetching, you have the option to configure a query whi
 * `updated time` of Jira issues
 
 If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
-
-When you enable incidents fetching, Cortex XSOAR fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Cortex XSOAR fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are fetched for each call. To fetch older Jira issues, use the query to fetch issues option.
-If `Fetch comments` is enabled, The fetched incident will include the comments in the Jira issue.
-If `Fetch attachments` is enabled, The fetched incident will include the attachments in the Jira issue.
+By default, 50 issues are fetched for each call.
+If `Fetch comments` is enabled, The fetched incidents will include the comments in the Jira issue, and preview them in the form of a table in the incident info tab.
+If `Fetch attachments` is enabled, The fetched incidents will include the attachments in the Jira issue.
 
 ## Commands
 

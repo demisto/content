@@ -136,6 +136,8 @@ configuration:
   display: Max incidents per fetch
   name: max_fetch
   required: false
+  additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. 
+    If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
 - defaultvalue: 3 days
   display: Time range for initial data fetch
@@ -376,7 +378,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Please ue start_at.
+      description: Deprecated. Please use start_at.
       isArray: false
       name: startAt
       required: false
