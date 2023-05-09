@@ -2756,7 +2756,8 @@
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "VirusTotal (API v3)",
-            "fromversion": "4.1.0"
+            "instance_names": "virus_total_v3",
+            "fromversion",: "4.1.0"
         },
         {
             "integrations": "Cherwell",
