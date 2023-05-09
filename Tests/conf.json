@@ -21,6 +21,19 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": [
+                "Cortex XDR - IR",
+                "ServiceNow v2",
+                "jira-v2-auth1"
+            ],
+            "instance_names": [
+                "Cortex XDR - IR",
+                "snow_basic_auth",
+                "jira-v2-auth1"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR - True Positive Incident Handling"
+        },
+        {
             "integrations": "Twitter v2",
             "playbookID": "playbook-Test_Twitter_v2",
             "instance_names": "Twitter v2"
