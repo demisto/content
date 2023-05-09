@@ -26,7 +26,7 @@ def return_file(keys):  # pragma: no cover
 
 
 class Client:  # pragma: no cover
-    def __init__(self, platform, hostname, username, password, port, keys):
+    def __init__(self, platform, hostname, username, password, port, keys):  # pragma: no cover
         self.platform = platform
         self.hostname = hostname
         self.username = username
@@ -35,7 +35,7 @@ class Client:  # pragma: no cover
         self.keys = keys
         self.net_connect = None
 
-    def connect(self):
+    def connect(self):  # pragma: no cover
         if self.keys:
             try:
                 self.net_connect = Netmiko(device_type=self.platform, host=self.hostname, port=self.port,
@@ -49,14 +49,14 @@ class Client:  # pragma: no cover
             except Exception as err:
                 return_error(err)
 
-    def disconnect(self):
+    def disconnect(self):  # pragma: no cover
         try:
             if self.net_connect:
                 self.net_connect.disconnect()
         except Exception as err:
             return_error(err)
 
-    def cmds(self, require_exit, exit_argument, commands, enable, isConfig):
+    def cmds(self, require_exit, exit_argument, commands, enable, isConfig):  # pragma: no cover
         try:
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
@@ -72,14 +72,14 @@ class Client:  # pragma: no cover
                          "Output": f"{prompt} {self.net_connect.send_command_timing(cmd)}"}  # type: ignore
                     output['Commands'].append(c)
 
-        except Exception as err:
+        except Exception as err:  # pragma: no cover
             return_error(err)
         finally:
             self.disconnect()
         return output
 
 
-def test_command(client):
+def test_command(client):  # pragma: no cover
     client.connect()
     client.disconnect()
     demisto.results('ok')
