@@ -8,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import uuid
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
-from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor  # TODO, ASN
+from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
 from stix2 import Tool, CourseOfAction
 from typing import Any, Callable
 
