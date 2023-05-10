@@ -130,7 +130,7 @@ configuration:
   section: Collect
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
-  additionalinfo: The maximum number of incidents to fetch per Log Type Query.
+  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
   name: max_fetch
   required: false
   type: 0

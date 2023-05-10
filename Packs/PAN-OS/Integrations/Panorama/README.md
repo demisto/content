@@ -55,7 +55,8 @@ The Panorama integration now supports fetch incidents.
 The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 ##### Max incidents per fetch
-The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- Important note: XSOAR has a limit on the number of incidents created at once. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
 
 ##### Log Type
 The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
