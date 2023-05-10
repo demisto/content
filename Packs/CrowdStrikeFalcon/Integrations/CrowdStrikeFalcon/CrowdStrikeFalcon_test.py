@@ -5157,7 +5157,7 @@ def test_map_malicious_file_resource_to_UI(mocker):
 @pytest.mark.parametrize(
     'args, is_scheduled, expected_result',
     (
-        ({'is_scheduled': True, 'quarantine': 'false', 'schedule_start_timestamp': 'every other week'}, True, {'quarantine': False}),
+        ({'is_scheduled': True, 'quarantine': 'false', 'schedule_interval': 'every other week'}, True, {'quarantine': False}),
         ({'is_scheduled': False, 'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
     )
 )
@@ -5181,7 +5181,7 @@ def test_make_create_scan_request_body(args, is_scheduled, expected_result):
 
     if is_scheduled:
         assert 'hosts' not in output
-        assert type(output['schedule']['start_timestamp']) is int  # function doesn't enforce this
+        assert type(output['schedule']['interval']) is int  # function doesn't enforce this
     else:
         assert 'hosts' in output
         assert 'schedule' not in output
