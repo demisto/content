@@ -27,8 +27,8 @@ alter
 	get_port = arraystring(regextract(anomalyDetail, "\"targetHost\".*\"port\":(\d+)\,"), ""),
 	//response_element_login = arraystring(regextract(responseElements, "\"ConsoleLogin\":\"([^\"]+)\""), ""),
 	additionalEventData_tlscipher = arraystring(regextract(additionalEventData, "\"CipherSuite\":\"([^\"]+)\""), ""),
-	additionalEventData_bytesin = arraystring(regextract(additionalEventData, "\"bytesTransferredIn\":(\d+)"), ""),
-	additionalEventData_bytesout = arraystring(regextract(additionalEventData, "\"bytesTransferredOut\":(\d+)"), ""),
+	additionalEventData_bytesin = arraystring(regextract(additionalEventData, "\"bytesTransferredIn\":\"(\d+)\""), ""),
+	additionalEventData_bytesout = arraystring(regextract(additionalEventData, "\"bytesTransferredOut\":\"(\d+)\""), ""),
 	lowercase_os_platform = lowercase(userAgentOsName),
 	lowercase_role = lowercase(role)
 | alter
