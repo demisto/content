@@ -88,6 +88,7 @@ class GCPConfig(object):
     INDEX_V2_NAME = "index_v2"
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     VERSIONS_METADATA_FILE = 'versions-metadata.json'
+    COREPACKS_OVERRIDE_FILE = 'corepacks_override.json'
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_xsoar_list_file:
@@ -109,6 +110,9 @@ class GCPConfig(object):
     with open(os.path.join(os.path.dirname(__file__), VERSIONS_METADATA_FILE), 'r') as server_versions_metadata:
         VERSIONS_METADATA_CONTENTS = json.load(server_versions_metadata)
         CORE_PACKS_FILE_VERSIONS = VERSIONS_METADATA_CONTENTS.get('version_map')
+
+    with open(os.path.join(os.path.dirname(__file__), COREPACKS_OVERRIDE_FILE), 'r') as corepacks_override_file:
+        COREPACKS_OVERRIDE_CONTENTS = json.load(corepacks_override_file)
 
     @classmethod
     def get_core_packs(cls, marketplace):

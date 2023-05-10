@@ -1,0 +1,46 @@
+{
+  "server_version": "8.2.0",
+  "file_version": "2",
+  "updated_corepacks_content":
+  {
+    "corePacks": [
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/CommonTypes/3.4.66/CommonTypes.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/FeedUnit42v2/1.0.27/FeedUnit42v2.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/CommonScripts/1.11.65/CommonScripts.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/TIM_Processing/1.1.15/TIM_Processing.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/CommonWidgets/1.2.19/CommonWidgets.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/CommonReports/1.0.2/CommonReports.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/Palo_Alto_Networks_WildFire/2.1.21/Palo_Alto_Networks_WildFire.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/CommonPlaybooks/2.3.61/CommonPlaybooks.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/ThreatIntelligenceManagement/1.1.2/ThreatIntelligenceManagement.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/AutoFocus/2.1.7/AutoFocus.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/DemistoRESTAPI/1.3.22/DemistoRESTAPI.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/Base/1.31.93/Base.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/HelloWorld/1.2.19/HelloWorld.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/ThreatIntelReports/1.0.8/ThreatIntelReports.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/Whois/1.4.13/Whois.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/TIM_SIEM/1.1.0/TIM_SIEM.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/PAN-OS/1.16.22/PAN-OS.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/DemistoLocking/1.0.5/DemistoLocking.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/VirusTotal/2.6.0/VirusTotal.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/EDL/3.1.23/EDL.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/rasterize/1.2.20/rasterize.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/FeedMitreAttackv2/1.1.10/FeedMitreAttackv2.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/FiltersAndTransformers/1.2.16/FiltersAndTransformers.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/CommonDashboards/1.3.2/CommonDashboards.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/ImageOCR/1.1.14/ImageOCR.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/DefaultPlaybook/2.0.1/DefaultPlaybook.zip",
+    "https://storage.googleapis.com/marketplace-ci-build/content/builds/versioned_core_packs-upload_test_branch-1683189852/5185287/xsoar/content/packs/Unit42Intel/1.0.5/Unit42Intel.zip"
+  ],
+    "upgradeCorePacks": [
+    "Base",
+    "CommonScripts",
+    "CommonPlaybooks",
+    "CommonTypes",
+    "CommonDashboards",
+    "CommonReports",
+    "CommonWidgets"
+  ],
+    "buildNumber": "5185287"
+  }
+}
