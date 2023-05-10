@@ -92,9 +92,13 @@ function shouldRunWithGuid() {
 
     // Checking if the stopScheduleEntry command is available.
     // If not, we are running on an older version of platform and we need to use the old polling mechanism.
-    if ((buildNumber !== "REPLACE_THIS_WITH_CI_BUILD_NUM") &&
-        ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR))) {
-        return true;
+    try {
+        if  ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR)) {
+            return true;
+        }
+    }
+    catch (err) {
+        return false;
     }
 }
 

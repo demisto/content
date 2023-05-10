@@ -35,10 +35,11 @@ def should_run_with_guid():
     # conditions to add when the feature is supported in XSIAM:
     # (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
     #     build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
-
-    return build_number != "REPLACE_THIS_WITH_CI_BUILD_NUM" and \
-        (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(
+    try:
+        return (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(
             build_number) >= MINIMUM_BUILD_NUMBER_XSOAR)
+    except ValueError:
+        return False
 
 
 def calculate_end_time(timeout):
