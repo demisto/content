@@ -74,7 +74,7 @@ def test_get_subscribed_services(requests_mock):
     :param requests_mock:
     :return:
     """
-    from CybleEventsV2 import Client, fetch_subscribed_services
+    from CybleEventsV2 import Client, fetch_subscribed_services_alert
 
     mock_response_1 = util_load_json("dummy_fetch_subscribed_services.json")
     requests_mock.get('https://test.com/apollo/api/v1/y/services', json=mock_response_1)
@@ -83,7 +83,7 @@ def test_get_subscribed_services(requests_mock):
         base_url='https://test.com',
         verify=False
     )
-    response = fetch_subscribed_services(client, 'GET', 'https://test.com', "some_random_token")
+    response = fetch_subscribed_services_alert(client, 'GET', 'https://test.com', "some_random_token").outputs
     assert isinstance(response, list)
     assert response[0]['name'] == 'name_1'
 
@@ -187,63 +187,9 @@ def test_get_alert(requests_mock):
         'endDate': '2023-04-19T00:00:00+00:00'
     }
 
-    input_params = {
-        "orderBy": [
-            {
-                "created_at": "desc"
-            }
-        ],
-        "select": {
-            "alert_group_id": True,
-            "archive_date": True,
-            "archived": True,
-            "assignee_id": True,
-            "assignment_date": True,
-            "created_at": True,
-            "data_id": True,
-            "deleted_at": True,
-            "description": True,
-            "hash": True,
-            "id": True,
-            "metadata": True,
-            "risk_score": True,
-            "service": True,
-            "severity": True,
-            "status": True,
-            "tags": True,
-            "updated_at": True,
-            "user_severity": True
-        },
-        "skip": 0,
-        "take": 10,
-        "withDataMessage": True,
-        "where": {
-            "created_at": {
-                "gte": "2023-04-18T00:00:00+00:00",
-                "lte": "2023-04-19T00:00:00+00:00",
-            },
-            "severity": {
-                "in": [
-                    "HIGH",
-                    "MEDIUM",
-                    "LOW"
-                ]
-            },
-            "status": {
-                "in": [
-                    "VIEWED",
-                    "UNREVIEWED",
-                    "CONFIRMED_INCIDENT",
-                    "UNDER_REVIEW",
-                    "INFORMATIONAL"
-                ]
-            }
-        }
-    }
-
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response = cyble_events(client, 'POST', "some_random_token", url, input_params, args)
+    response = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -278,7 +224,7 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
     with capfd.disabled():
         with pytest.raises(ValueError,
                            match=f"Limit should a positive number upto 1000, limit: {limit}"):
-            cyble_events(client, 'POST', "some_random_token", url, {}, args)
+            cyble_events(client, 'POST', "some_random_token", url, args, "https://test.com", {}, True)
 
 
 def test_limit_validate_input(capfd):
@@ -389,8 +335,118 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
+    base_url = "https://test.com"
 
     with capfd.disabled():
         with pytest.raises(ValueError,
                            match="Parameter having negative value, from: -1'"):
-            cyble_events(client, 'POST', "some_random_token", url, {}, args)
+            cyble_events(client, 'POST', "some_random_token", url, args, base_url, {}, True)
+
+
+def test_get_alert_fetch(requests_mock):
+    """
+    Test the module fetch details
+    :param requests_mock:
+    :return:
+    """
+    from CybleEventsV2 import Client, cyble_events
+
+    mock_response_1 = util_load_json("dummy_fetch_incidents.json")
+    requests_mock.post('https://test.com/apollo/api/v1/y/alerts', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    url = "https://test.com/apollo/api/v1/y/alerts"
+
+    response = cyble_events(client, 'POST', "some_random_token", url, {}, 'https://test.com', {}, False)
+
+    assert isinstance(response, list)
+    assert len(response) == 1
+
+
+def test_get_alert_output(requests_mock):
+    """
+    Test the module get_event_types
+    :param requests_mock:
+    :return:
+    """
+    from CybleEventsV2 import Client, cyble_events
+
+    mock_response_1 = util_load_json("dummy_fetch_incidents.json")
+    requests_mock.post('https://test.com/apollo/api/v1/y/alerts', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'from': 0,
+        'limit': 1,
+        'startDate': '2023-04-18T00:00:00+00:00',
+        'endDate': '2023-04-19T00:00:00+00:00'
+    }
+
+    url = "https://test.com/apollo/api/v1/y/alerts"
+
+    response = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
+
+    assert isinstance(response, list)
+    assert response[0]['alert_group_id'] == '30196321-745f-5x8a-99ba-4291a9b49a6f'
+    assert response[0]['event_id'] == '15ba6b0e-18f8-5903-bb1f-56ac5cb9ec9c'
+    assert response[0]['keyword'] == 'keyword'
+
+
+def test_data_alert_invalidate_date(capfd):
+    from CybleEventsV2 import validate_input
+
+    args = {
+        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
+        'endDate': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'from': '0',
+        'limit': '1'
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError) as excinfo:
+            validate_input(args=args)
+        assert str("does not match format") in str(excinfo)
+
+
+def test_data_alert_iocs_date(capfd):
+    from CybleEventsV2 import validate_input
+
+    args = {
+        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
+        'endDate': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'from': '0',
+        'limit': '1'
+    }
+
+    with capfd.disabled():
+        with pytest.raises(ValueError) as excinfo:
+            validate_input(args=args, is_iocs=True)
+        assert str("unconverted data remains") in str(excinfo)
+
+
+def test_get_subscribed_services_for_other_alert(requests_mock):
+    """
+    Test the module get_event_types
+    :param requests_mock:
+    :return:
+    """
+    from CybleEventsV2 import Client, fetch_subscribed_services_alert
+
+    mock_response_1 = util_load_json("dummy_fetch_subscribed_services.json")
+    requests_mock.get('https://test.com/apollo/api/v1/y/services', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+    response = fetch_subscribed_services_alert(client, 'GET', 'https://test.com', "some_random_token").outputs
+    assert isinstance(response, list)
+    assert response[0]['name'] == 'name_1'
