@@ -2,14 +2,25 @@
 This pack includes Cortex XSIAM content. 
 
 ## Configuration on Server Side
-You need to configure Bluecat Address Manager to forward Syslog messages to XSIAM.
+You need to configure Bluecat Address Manager to forward Syslog messages to XSIAM in UTC format.
 
-Please proceed with the following steps to configure syslog redirection on the BAM server:
+#### Please proceed with the following steps to configure syslog redirection on the BAM server:
 1. Select the **Administration** tab.
 2. Under **General**, click **Service Configuration**.
 3. From the **Service Type** drop-down menu, select **Syslog**.
 4. Under **General Settings**, set the following parameters: Under Syslog Server — enter the IPv4 address of the BrokerVM and click **Add**. 
 5. Click **Update**.
+
+#### To configure the BAM server to send logs in UTC format, please proceed with the following steps:
+1. Log in to the BlueCat Address Manager web interface using your administrator credentials.
+2. Click on the **Administration** tab located at the top of the page.
+3. In the left-hand navigation pane, click on **System** and then select **System Configuration**.
+4. In the **System Configuration** page, you will see various configuration options. Look for the **Timezone** section.
+5. Click on the **Edit** button next to the timezone field.
+6. A pop-up window or a dropdown menu will appear, depending on the version of BlueCat Address Manager you are using.
+   a. If it's a pop-up window, select the desired timezone from the list provided and click **Save** or **Apply** to save the changes.
+   b. If it's a dropdown menu, click on the dropdown arrow and select the desired timezone from the list. Then click on **Save** or **Apply** to save the changes.
+Once you have saved the changes, the timezone in BlueCat Address Manager will be updated accordingly.
 
 ## Collect Events from Vendor
 
