@@ -7,7 +7,7 @@ You need to configure Bluecat Address Manager to forward Syslog messages to XSIA
 #### Please proceed with the following steps to configure syslog redirection on the BAM server:
 1. Select the **Administration** tab.
 2. Under **General**, click **Service Configuration**.
-3. From the **Service Type** drop-down menu, select **Syslog**.
+3. From the **Service Type** dropdown menu, select **Syslog**.
 4. Under **General Settings** > **Syslog Server** enter the IPv4 address of the BrokerVM and click **Add**. 
 5. Click **Update**.
 
