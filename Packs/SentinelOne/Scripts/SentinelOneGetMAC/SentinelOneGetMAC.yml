@@ -2,7 +2,7 @@ args:
 - description: AgentID of the SentinelOne Agent
   name: agentId
   required: true
-comment: This script returns Network Interface Details for a given Agent ID. This includes MAC address details and interface description.
+comment: This script returns network interface details for a given Agent ID. This includes MAC address details and interface description.
 commonfields:
   id: SentinelOne-Get-MAC
   version: -1
@@ -14,6 +14,7 @@ enabled: true
 name: SentinelOne-Get-MAC
 outputs:
 - contextPath: SentinelOne.MAC
+  description: Contains the Agent network interface details.
 runas: DBotWeakRole
 runonce: false
 script: ''
