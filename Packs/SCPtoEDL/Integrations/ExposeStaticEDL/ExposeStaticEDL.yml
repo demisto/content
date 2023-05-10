@@ -1,0 +1,56 @@
+category: Utilities
+commonfields:
+  id: ExposeStaticEDL
+  version: -1
+configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- defaultvalue: 192.168.1.24
+  display: ""
+  name: remote_host
+  required: true
+  type: 0
+- defaultvalue: /tmp/
+  display: ""
+  name: remote_path
+  required: true
+  type: 0
+- defaultvalue: test.txt
+  display: ""
+  name: remote_filename
+  required: true
+  type: 0
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- defaultvalue: "8067"
+  display: Port mapping (<port> or <host port>:<docker port>)
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Username
+  displaypassword: Password
+  name: credentials
+  required: true
+  type: 9
+description: This integration fetches a static file via SCP from a remote server and exposes the file to a specified port (static EDL, file display, etc)
+display: ExposeStaticEDL
+name: ExposeStaticEDL
+script:
+  commands:
+  - arguments: []
+    name: long-running-execution
+  dockerimage: demisto/scptoedl:latest
+  longRunning: true
+  longRunningPort: true
+  runonce: true
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
