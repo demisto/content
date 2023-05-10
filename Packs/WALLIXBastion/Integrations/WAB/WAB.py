@@ -4139,7 +4139,7 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
 
     try:
-        requests.packages.urllib3.disable_warnings() # type: ignore
+        requests.packages.urllib3.disable_warnings()  # type: ignore
 
         if apiv:
             apiv = validate_api_version(apiv)
