@@ -28,12 +28,22 @@ class Client(BaseClient):
         self.verify = verify
         self.proxy = proxy
 
-    def get_indicators(self) -> str:  # pragma: no cover
+    def get_indicators(self):  # pragma: no cover
         """
         Get indicators from LOLBAS API.
         """
         demisto.debug('Getting indicators from lolbas api.')
         return self._http_request('GET', '/lolbas.json', resp_type='json')
+
+    def get_mitre_data(self) -> List[Dict[str, Any]]:
+        """
+        Get MITRE data from GitHub.
+        """
+        headers = {
+            'Content-Type': 'application/taxii+json',
+            'Accept': 'application/vnd.oasis.taxii+json; version=2.0'
+        }
+        return self._http_request(full_url=MITRE_URL, method='GET', headers=headers, resp_type='json').get('objects', [])
 
 
 ''' COMMAND FUNCTIONS '''
@@ -56,53 +66,34 @@ def test_module(client: Client):  # pragma: no cover
     return_results('ok')
 
 
-def create_relationship_list(indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def create_relationship_list(indicator: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Create relationships between indicators.
     For example, if an indicator has a MITRE ID, create a relationship between the indicator and the MITRE ID.
     """
     relationships = []
-    for indicator in indicators:
-        entity_a = indicator.get('value')
-        for command in indicator.get('fields', {}).get('Commands', []):
-            if mitre_id := command.get('mitrename'):
-                relation_obj = EntityRelationship(
-                    name=EntityRelationship.Relationships.RELATED_TO,
-                    entity_a=entity_a,
-                    entity_a_type=ThreatIntel.ObjectsNames.TOOL,
-                    entity_b=mitre_id,
-                    entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN, )
-                relationships.append(relation_obj.to_indicator())
+    entity_a = indicator.get('value')
+    for command in indicator.get('fields', {}).get('Commands', []):
+        if mitre_id := command.get('mitrename'):
+            relation_obj = EntityRelationship(
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_a=entity_a,
+                entity_a_type=ThreatIntel.ObjectsNames.TOOL,
+                entity_b=mitre_id,
+                entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN, )
+            relationships.append(relation_obj.to_indicator())
     return relationships
 
 
-def get_mitre_data(client: Client) -> List[Dict[str, Any]]:
-    """
-    Get MITRE data from GitHub.
-    """
-    headers = {
-        'Content-Type': 'application/taxii+json',
-        'Accept': 'application/vnd.oasis.taxii+json; version=2.0'
-    }
-    if client.proxy:
-        proxies = handle_proxy()
-    else:
-        proxies = {
-            "http": None,
-            "https": None,
-        }
-    return requests.get(MITRE_URL, headers=headers, verify=client.verify, proxies=proxies).json().get('objects', [])
-
-
-def map_indicator_fields(pre_indicator: Dict[str, Any]) -> Dict[str, Any]:
+def map_indicator_fields(raw_indicator: Dict[str, Any]) -> Dict[str, Any]:
     command_keys = ['Command', 'Description', 'Usecase', 'Category', 'Privileges', 'MitreID', 'OperatingSystem', 'MitreName']
 
     mapped_commands = []
     mapped_detections = []
     mapped_paths = []
-    commands = pre_indicator.get('Commands', [])
-    detections = pre_indicator.get('Detection', [])
-    paths = pre_indicator.get('Full_Path', [])
+    commands = raw_indicator.get('Commands', [])
+    detections = raw_indicator.get('Detection', [])
+    paths = raw_indicator.get('Full_Path', [])
     if commands:
         for command in commands:
             mapped_commands.append({lolbas_field.lower(): command.get(lolbas_field) for lolbas_field in command_keys})
@@ -118,17 +109,17 @@ def map_indicator_fields(pre_indicator: Dict[str, Any]) -> Dict[str, Any]:
         'Commands': mapped_commands,
         'Detections': mapped_detections,
         'Paths': mapped_paths,
-        'description': pre_indicator.get('Description')
+        'description': raw_indicator.get('Description')
     }
 
 
-def map_mitre_id_to_name(client: Client) -> Dict[str, str]:
+def build_indicator_custom_fields(client: Client) -> Dict[str, str]:
     """
     Map MITRE ID to MITRE name.
     """
     result_map = {}
 
-    mitre_data = get_mitre_data(client)
+    mitre_data = client.get_mitre_data()
     # filter only the attack-pattern objects.
     mitre_data = [obj for obj in mitre_data if obj.get('type') == 'attack-pattern']
     # build a dictionary list of mitre_id: mitre_name.
@@ -144,12 +135,12 @@ def map_mitre_id_to_name(client: Client) -> Dict[str, str]:
     return result_map
 
 
-def pre_process_indicator(pre_indicator: Dict[str, Any], mitre_id_to_name) -> List[str]:
+def build_mitre_tags(raw_indicator: Dict[str, Any], mitre_id_to_name: Dict[str, str]) -> List[str]:
     """
-    Pre-process the indicator, map the MitreID with MitreName and build the relevant tag list.
+    Returns an extended MITRE tags list of a single indicator.
     """
     mitre_tags = []
-    for command in pre_indicator.get('Commands', []):
+    for command in raw_indicator.get('Commands', []):
         if mitre_id := command.get('MitreID', ''):
             mitre_name = mitre_id_to_name.get(mitre_id, '')
             command['MitreName'] = mitre_name
@@ -157,46 +148,40 @@ def pre_process_indicator(pre_indicator: Dict[str, Any], mitre_id_to_name) -> Li
     return mitre_tags
 
 
-def create_indicators(client: Client, pre_indicators) -> List[Dict[str, Any]]:
+def build_indicators(client: Client, raw_indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Create indicators from the response.
+    Builds indicators JSON data in XSOAR expected format from the raw response.
     """
-    demisto.debug(f'Creating {len(pre_indicators)} indicators.')
+    demisto.debug(f'Creating {len(raw_indicators)} indicators.')
     indicators: List[Dict[str, Any]] = []
-    mitre_id_to_name = map_mitre_id_to_name(client)
+    mitre_id_to_name = build_indicator_custom_fields(client)
 
-    for pre_indicator in pre_indicators:
-        additional_tags = pre_process_indicator(pre_indicator, mitre_id_to_name)
+    for raw_indicator in raw_indicators:
+        additional_tags = build_mitre_tags(raw_indicator, mitre_id_to_name)
 
         indicator: Dict[str, Any] = {
             'type': ThreatIntel.ObjectsNames.TOOL,
-            'value': pre_indicator.get('Name'),
-            'fields': map_indicator_fields(pre_indicator),
-            'rawJSON': pre_indicator,
+            'value': raw_indicator.get('Name'),
+            'fields': map_indicator_fields(raw_indicator),
+            'rawJSON': raw_indicator,
         }
         if tlp_color := client.tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
         if feed_tags := client.feed_tags:
             indicator['fields']['tags'] = feed_tags + additional_tags
-
+        if client.create_relationships:
+            indicator['relationships'] = create_relationships(indicator)
         indicators.append(indicator)
     return indicators
 
 
-def create_relationships(client: Client, indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def create_relationships(indicator: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Create relationships between indicators.
     """
-    if client.create_relationships:
-        demisto.debug('Creating relationships.')
-        relationships = create_relationship_list(indicators)
-        if relationships:
-            dummy_indicator_for_relations = {
-                'value': '$$DummyIndicator$$',
-                'relationships': relationships
-            }
-            indicators.append(dummy_indicator_for_relations)
-    return indicators
+    demisto.debug('Creating relationships.')
+    relationships = create_relationship_list(indicator)
+    return relationships
 
 
 def fetch_indicators(client: Client, limit: int = None) -> \
@@ -205,8 +190,7 @@ def fetch_indicators(client: Client, limit: int = None) -> \
         Fetch indicators from LOLBAS API and create indicators in XSOAR.
     """
     response = client.get_indicators()
-    indicators = create_indicators(client, response)
-    indicators = create_relationships(client, indicators)
+    indicators = build_indicators(client, response)
     if limit:
         return indicators[:limit], response
     return indicators, response
