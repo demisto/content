@@ -189,7 +189,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
-    logging_setup(3)
+    logging_setup(console_log_threshold=logging.DEBUG)
     lint_manager = LintManager(
         input=str(file_path), git=False, all_packs=False,
         prev_ver='origin/master', json_file_path=json_output_file
@@ -198,7 +198,7 @@ def run_lint(file_path: str, json_output_file: str) -> None:
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
         no_pylint=True, no_coverage=True, coverage_report='', no_vulture=False, no_test=True, no_pwsh_analyze=True,
         no_pwsh_test=True, keep_container=False, test_xml='', failure_report=lint_log_dir, docker_timeout=60,
-        docker_image_flag=None, docker_image_target= None
+        docker_image_flag=None, docker_image_target=None
     )
 
 
