@@ -1058,7 +1058,8 @@ def should_override_locked_corepacks_file():
     """
     override_corepacks_server_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('server_version')
     override_corepacks_file_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('file_version')
-    current_corepacks_file_version = GCPConfig.CORE_PACKS_FILE_VERSIONS.get(override_corepacks_server_version, {}).get('file_version')
+    current_corepacks_file_version = GCPConfig.CORE_PACKS_FILE_VERSIONS.get(
+        override_corepacks_server_version, {}).get('file_version')
     if not current_corepacks_file_version:
         logging.info(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
                      f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
@@ -1099,7 +1100,8 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str):
 
     # Update the file version of the matching corepacks version in the versions-metadta.json file
     override_corepacks_file_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('file_version')
-    GCPConfig.VERSIONS_METADATA_CONTENTS['version_map'][override_corepacks_server_version]['file_version'] = override_corepacks_file_version
+    GCPConfig.VERSIONS_METADATA_CONTENTS['version_map'][override_corepacks_server_version]['file_version'] = \
+        override_corepacks_file_version
 
 
 def upload_server_versions_metadata(artifacts_dir: str):
