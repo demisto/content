@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# poetry is installed in ~/.local/bin
+PATH=~/.local/bin:$PATH
 # check if poetry is installed
 if ! command -v poetry >/dev/null 2>&1; then
     echo "ERROR: poetry is missing. Please run the following command to install poetry:
