@@ -1,7 +1,8 @@
 import pytest
 import json
+import dateparser
 from unittest.mock import MagicMock, patch
-from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main
+from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main, parse_mintime
 
 
 @pytest.fixture
@@ -145,3 +146,20 @@ def test_set_next_run_filter_v2(ret_demisto_params):
     }}
     client.set_next_run_filter_v2(LogType.AUTHENTICATION, metadata)
     assert p.mintime[LogType.AUTHENTICATION] == {'next_offset': metadata.get('next_offset')}
+
+
+def test_parse_mintime():
+    """
+    Given:
+        time a date in epocs
+    When:
+        calculating the first mintime
+    Then:
+        Validate that the v2 version returns as an int with 13 digits and v1 10 digits int
+    """
+    date_string = "May 10th, 2023"
+    datetime_obj = dateparser.parse(date_string)
+    epocs_time = datetime_obj.timestamp()
+    mintime_v1, mintime_v2 = parse_mintime(epocs_time)
+    assert mintime_v1 == 1683666000
+    assert mintime_v2 == 1683666000000

@@ -72,14 +72,17 @@ class Client:
         Uses the V2 version of the API.
         For the first time the logs are retreived will work with mintime parameter.
         All other calls will be made with the next_offset parameter returned from the last fetch.
+        get_authentication_log: If not provided takes mintime to 24 hours and maxtime to time.now - 2 min.
         """
         if not self.params.mintime[LogType.AUTHENTICATION].get('next_offset'):
             response = self.admin_api.get_authentication_log(
-                min_time=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
+                mintime=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
                 api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
         else:
+            next_offset = self.params.mintime[LogType.AUTHENTICATION].get('next_offset')
+            mintime = next_offset[0]
             response = self.admin_api.get_authentication_log(
-                next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'),
+                next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'), mintime=mintime,
                 api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
 
         # The v2 API returns a different object, so we do this to normalize it
@@ -92,14 +95,17 @@ class Client:
         Uses the V2 version of the API.
         For the first time the logs are retreived will work with mintime parameter.
         All other calls will be made with the next_offset parameter returned from the last fetch.
+        get_telephony_log: If not provided takes mintime to 180 days and maxtime to time.now - 2 min.
         """
         if not self.params.mintime[LogType.TELEPHONY].get('next_offset'):
             response = self.admin_api.get_telephony_log(
-                min_time=self.params.mintime[LogType.TELEPHONY].get('min_time'),
+                mintime=self.params.mintime[LogType.TELEPHONY].get('min_time'),
                 api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
         else:
+            next_offset = self.params.mintime[LogType.TELEPHONY].get('next_offset')
+            mintime = next_offset[0]
             response = self.admin_api.get_telephony_log(
-                next_offset=self.params.mintime[LogType.TELEPHONY].get('next_offset'),
+                next_offset=next_offset, mintime=mintime,
                 api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
 
         response_metadata = response.get('metadata', {})
@@ -228,6 +234,13 @@ def parse_events(authentication_evetns: list):
     return authentication_evetns
 
 
+def parse_mintime(last_run) -> tuple:
+    """Returns the last run percision of 10 digits for v1 and 13 digits for v2"""
+    last_run_v1 = int(last_run)
+    last_run_v2 = int(last_run * 1000)
+    return last_run_v1, last_run_v2
+
+
 def main():  # pragma: no cover
     try:
         demisto_params = demisto.params() | demisto.args()
@@ -242,9 +255,10 @@ def main():  # pragma: no cover
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
             last_run = after.timestamp()  # type: ignore
-            last_run = {LogType.AUTHENTICATION.value: {'min_time': last_run, 'next_offset': []},
-                        LogType.ADMINISTRATION.value: last_run,
-                        LogType.TELEPHONY.value: {'min_time': last_run, 'next_offset': []}}
+            v1_mintime, v2_mintime = parse_mintime(last_run)
+            last_run = {LogType.AUTHENTICATION.value: {'min_time': v2_mintime, 'next_offset': []},
+                        LogType.ADMINISTRATION.value: v1_mintime,
+                        LogType.TELEPHONY.value: {'min_time': v2_mintime, 'next_offset': []}}
         else:
             last_run = last_run['after']
 
