@@ -115,20 +115,23 @@ class Client(BaseClient):
             token = login_response['response']['token']
 
         self.token = str(token)
-        demisto.setIntegrationContext({'token': token})
+        demisto.setIntegrationContext({'token': self.token})
 
     def send_login_request(self, login_body):
         url = f'{self.url}/token'
 
-        headers = self.headers
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
         res = self.session.request('post', url, headers=headers, data=json.dumps(login_body), verify=self.verify_ssl)
 
         if res.status_code < 200 or res.status_code >= 300:
             return_error(f'Error: Got status code {str(res.status_code)} with {url=} \
                         with body {res.content} with headers {str(res.headers)}')  # type: ignore
 
-        cookie = res.cookies.get('TNS_SESSIONID', self.cookie)
-        demisto.setIntegrationContext({'cookie': cookie})
+        self.cookie = res.cookies.get('TNS_SESSIONID', self.cookie)
+        demisto.setIntegrationContext({'cookie': self.cookie})
 
         return res.json()
 
