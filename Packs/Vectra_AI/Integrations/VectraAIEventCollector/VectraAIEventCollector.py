@@ -13,7 +13,7 @@ from CommonServerPython import *
 from typing import Dict, Any, Tuple, List
 import pytest
 from datetime import datetime, timedelta
-from urllib.parse import urljoin
+from urllib.parse import urljoin  # type: ignore
 
 
 """ CONSTANTS """
