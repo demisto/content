@@ -500,6 +500,32 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
+    def get_link_to_user_overview_page(self, link_type: str, entity_id: str) -> str:
+        """
+        Get link to user overview page.
+        :param link_type: The link type to get (RM_LINK_TYPE_USER).
+        :param entity_id: The entity id. In case of user, it's the user's email address.
+        :return: dict
+        """
+        demisto.info(f"Getting link to {link_type} overview page for {entity_id}")
+        try:
+            response = self._http_request(
+                method="GET",
+                url_suffix=f"/risk-management/risk-management/link?link_type={link_type}&param={entity_id}",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+            )
+            if response.get("link") is None:
+                demisto.info(f"got bad response, {response}")
+            else:
+                demisto.info(f"got good response, {response}")
+                link = response.get("link", None)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+        demisto.info(f"Got link: {link}")
+        return link
+
     def set_entry_label_relations(
             self, entry_id: str, label_name: str, label_status: str, entry_type: str
     ) -> Any:
@@ -818,6 +844,12 @@ def get_sensitive_assets_by_id(reco_client: RecoClient, asset_id: str) -> Comman
     return assets_to_command_result(assets)
 
 
+def get_link_to_user_overview_page(reco_client: RecoClient, entity: str, link_type: str) -> CommandResults:
+    link = reco_client.get_link_to_user_overview_page(link_type, entity)
+    return CommandResults(outputs_prefix="Reco.Link",
+                          outputs={"link": link}, raw_response=link)
+
+
 def fetch_incidents(
         reco_client: RecoClient,
         last_run: Dict[str, Any],
@@ -991,6 +1023,13 @@ def main() -> None:
             result = get_sensitive_assets_by_id(
                 reco_client,
                 demisto.args()["asset_id"]
+            )
+            return_results(result)
+        elif command == "reco-get-link-to-user-overview-page":
+            result = get_link_to_user_overview_page(
+                reco_client,
+                demisto.args()["entity"],
+                demisto.args()["param_type"],
             )
             return_results(result)
         else:

@@ -17,7 +17,7 @@ from Reco import (
     add_risky_user_label,
     get_assets_user_has_access,
     get_sensitive_assets_by_name,
-    get_sensitive_assets_by_id
+    get_sensitive_assets_by_id, get_link_to_user_overview_page
 )
 
 from test_data.structs import (
@@ -674,3 +674,30 @@ def test_get_sensitive_assets_by_id(requests_mock, reco_client: RecoClient) -> N
     )
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_link_to_user_overview_page(requests_mock, reco_client: RecoClient) -> None:
+    entity_id = f"{uuid.uuid1()}@gmail.com"
+    link_type = "RM_LINK_TYPE_USER"
+    link_res = str(uuid.uuid1())
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/risk-management/link?link_type={link_type}&param={entity_id}",
+        json={"link": link_res}, status_code=200
+    )
+    actual_result = get_link_to_user_overview_page(
+        reco_client=reco_client, entity=entity_id, link_type=link_type
+    )
+    assert actual_result.outputs_prefix == "Reco.Link"
+    assert actual_result.outputs.get("link") == link_res
+
+
+def test_get_link_to_user_overview_page_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    entity_id = f"{uuid.uuid1()}@gmail.com"
+    link_type = "RM_LINK_TYPE_USER"
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/risk-management/link?link_type={link_type}&param={entity_id}",
+        json={}, status_code=200
+    )
+    with capfd.disabled():
+        with pytest.raises(Exception):
+            get_link_to_user_overview_page(reco_client=reco_client, entity=entity_id, link_type=link_type)
