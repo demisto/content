@@ -50,4 +50,6 @@
 !xdr-list-risky-users user_id=dummy
 !xdr-list-risky-hosts host_id=dummy
 !xdr-list-roles role_names="dummy dummy"
-!xdr-list-user-groups
+!xdr-list-user-groups group_names=test
+!xdr-set-user-role role_name=dummy user_emails=email@company.com
+!xdr-remove-user-role user_emails=email@company.com
