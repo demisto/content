@@ -5,11 +5,10 @@ This pack includes Cortex XSIAM content.
 You need to configure Bluecat Address Manager to forward Syslog messages to XSIAM.
 
 Please proceed with the following steps to configure syslog redirection on the BAM server:
-
 1. Select the **Administration** tab.
 2. Under **General**, click **Service Configuration**.
 3. From the **Service Type** drop-down menu, select **Syslog**.
-4. Under **General Settings**, set the following parameters: Syslog Server—enter the IPv4 or IPv6 address of the BrokerVM and click **Add**. 
+4. Under **General Settings**, set the following parameters: Under Syslog Server — enter the IPv4 address of the BrokerVM and click **Add**. 
 5. Click **Update**.
 
 ## Collect Events from Vendor
