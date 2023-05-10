@@ -10,6 +10,7 @@ Please proceed with the following steps to configure syslog redirection on the B
 3. From the **Service Type** drop-down menu, select **Syslog**.
 4. Under **General Settings**, set the following parameters: Under Syslog Server — enter the IPv4 address of the BrokerVM and click **Add**. 
 5. Click **Update**.
+   
 
 ## Collect Events from Vendor
 
