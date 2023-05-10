@@ -227,4 +227,4 @@ outputs:
   type: string
 tests:
 - Retrieve File from Endpoint - Generic V3 Test
-fromversion: 6.8.0
+fromversion: 6.0.0
