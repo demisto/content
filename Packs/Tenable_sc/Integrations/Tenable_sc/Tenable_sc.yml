@@ -1276,6 +1276,151 @@ script:
       description: Group's user's user name.
       type: string
     
+  - arguments:
+    - default: false
+      description: 
+      isArray: false
+      name: first_name
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: last_name
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: user_name
+      required: true
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: address
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: phone
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: city
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 
+      isArray: false
+      name: locked
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: email_notice
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'both'
+      - 'password'
+      - 'id'
+    - default: false
+      description: Tenable (TNS). Lightweight Directory Access Protocol (LDAP). Security Assertion Markup Language (SAML). LDAP server or SAML authentication need to be configured in order to select LDAP or SAML.
+      isArray: false
+      name: auth_type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'tns'
+      predefined:
+      - 'Ldap'
+      - 'legacy'
+      - 'linked'
+      - 'saml'
+      - 'tns'
+    - default: false
+      description: Password must be at least 3 characters.
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: time_zone
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: role_id
+      required: true
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: must_change_password
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: managed_users_groups
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: managed_objects_groups
+      required: false
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: 
+      isArray: false
+      name: responsible_asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new user.
+    execution: false
+    name: tenable-sc-create-user
+    outputs:
+
   isfetch: true
   runonce: false
   script: '-'
