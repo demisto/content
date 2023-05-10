@@ -384,18 +384,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.130"
+version = "1.26.131"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.130-py3-none-any.whl", hash = "sha256:d6f9c6ebf417260ea5fa7a227e7bce9451f1f5010be05ac4075596356f584455"},
-    {file = "boto3-1.26.130.tar.gz", hash = "sha256:3ae2b34921bb08a1d7ce52db9ec1a25159fca779648e596ede37e1049ed77de8"},
+    {file = "boto3-1.26.131-py3-none-any.whl", hash = "sha256:5b2b13d9f3430e3d5e768bf32097d5d6d16f47a4719f2656de67da49dd3e4de1"},
+    {file = "boto3-1.26.131.tar.gz", hash = "sha256:061d3270472b9be09901bb08a45e9871ac8f86a9b1c9c615535ca0223acd7582"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.130,<1.30.0"
+botocore = ">=1.29.131,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -404,14 +404,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.130"
+version = "1.29.131"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.130-py3-none-any.whl", hash = "sha256:56d1f54c3f8e140f965e5300d1cc5b565cb758134d9213fb05e91e1bb160330e"},
-    {file = "botocore-1.29.130.tar.gz", hash = "sha256:3a31293b84ecfe5f5f2c4b7dc85a77d7b890b468a376b593fde15cacc76862dd"},
+    {file = "botocore-1.29.131-py3-none-any.whl", hash = "sha256:d0dea23bccdfd7c2f6d0cd3216cfbd7065bc3e9e7b1ef6fee0952b04f5d2cffd"},
+    {file = "botocore-1.29.131.tar.gz", hash = "sha256:ffbd85915b2624c545438a33c2624a809593720a10648f6e757fe50be4893188"},
 ]
 
 [package.dependencies]
@@ -1255,14 +1255,14 @@ files = [
 
 [[package]]
 name = "docutils"
-version = "0.19"
+version = "0.20"
 description = "Docutils -- Python Documentation Utilities"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "docutils-0.19-py3-none-any.whl", hash = "sha256:5e1de4d849fee02c63b040a4a3fd567f4ab104defd8a5511fbbc24a8a017efbc"},
-    {file = "docutils-0.19.tar.gz", hash = "sha256:33995a6753c30b7f577febfc2c50411fec6aac7f7ffeb7c4cfe5991072dcf9e6"},
+    {file = "docutils-0.20-py3-none-any.whl", hash = "sha256:a428f10de4de4774389734c986a01b4af2d802d26717108b0f1b9356862937c5"},
+    {file = "docutils-0.20.tar.gz", hash = "sha256:f75a5a52fbcacd81b47e42888ad2b380748aaccfb3f13af0fe69deb759f01eb6"},
 ]
 
 [[package]]
@@ -3991,14 +3991,14 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pyjwt"
-version = "2.6.0"
+version = "2.7.0"
 description = "JSON Web Token implementation in Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "PyJWT-2.6.0-py3-none-any.whl", hash = "sha256:d83c3d892a77bbb74d3e1a2cfa90afaadb60945205d1095d9221f04466f64c14"},
-    {file = "PyJWT-2.6.0.tar.gz", hash = "sha256:69285c7e31fc44f68a1feb309e948e0df53259d579295e6cfe2b1792329f05fd"},
+    {file = "PyJWT-2.7.0-py3-none-any.whl", hash = "sha256:ba2b425b15ad5ef12f200dc67dd56af4e26de2331f965c5439994dad075876e1"},
+    {file = "PyJWT-2.7.0.tar.gz", hash = "sha256:bd6ca4a3c4285c1a2d4349e5a035fdf8fb94e04ccd0fcbe6ba289dae9cc3e074"},
 ]
 
 [package.dependencies]
@@ -4795,14 +4795,14 @@ msg-parse = ["extract-msg (>=0.27)"]
 
 [[package]]
 name = "ruamel-yaml"
-version = "0.17.24"
+version = "0.17.26"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
 category = "dev"
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "ruamel.yaml-0.17.24-py3-none-any.whl", hash = "sha256:f251bd9096207af604af69d6495c3c650a3338d0493d27b04bc55477d7a884ed"},
-    {file = "ruamel.yaml-0.17.24.tar.gz", hash = "sha256:90e398ee24524ebe20fc48cd1861cedd25520457b9a36cfb548613e57fde30a0"},
+    {file = "ruamel.yaml-0.17.26-py3-none-any.whl", hash = "sha256:25d0ee82a0a9a6f44683dcf8c282340def4074a4562f3a24f55695bb254c1693"},
+    {file = "ruamel.yaml-0.17.26.tar.gz", hash = "sha256:baa2d0a5aad2034826c439ce61c142c07082b76f4791d54145e131206e998059"},
 ]
 
 [package.dependencies]

@@ -17,14 +17,13 @@ commonfields:
   version: -1
 enabled: false
 name: CherwellIncidentOwnTask
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.57890
 subtype: python3
 script: '-'
 system: false
 timeout: '0'
 type: python
-tags:
-- Cherwell
+tags: [Cherwell]
 dependson:
   must:
   - Cherwell|||cherwell-link-business-objects

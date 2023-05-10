@@ -52,14 +52,13 @@ outputs:
   type: String
 script: '-'
 system: false
-tags:
-- Cherwell
+tags: [Cherwell]
 timeout: '0'
 type: python
 dependson:
   must:
   - Cherwell|||cherwell-create-business-object
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.57890
 subtype: python3
 tests:
 - Cherwell Example Scripts - test
