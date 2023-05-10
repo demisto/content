@@ -11,7 +11,7 @@ Perform the following steps to configure the Socket Receiver:
 3. From the **Source** dropdown, select **Event**.
 4. From the **Event Group** dropdown, select **Tanium Threat Response**.
 5. Select **Match Alerts Raw**.
-6. Select **Socket Receiver** from the dropdown under **Destination**.
+6. From the **Destination** dropdown, select **Socket Receiver**.
 7. Specify a unique name for the **Destination Name**.
 8. Under **Host**, fill in the name or the IP address of the SIEM.
 9. Specify the port number under **Port**.
