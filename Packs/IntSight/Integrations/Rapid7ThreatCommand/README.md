@@ -2481,11 +2481,11 @@ Search for strings in the scrapes database.
                 "date": "2023-05-04T10:16:18",
                 "id": "1234",
                 "insertion_date": "2023-05-04T10:21:44.790150",
-                "short_content": "#include <cassert>\r\n#include <cstddef>\r\n#include <string>\r\n#include <utility>\r\n\r\ntemplate <typename Type>\r\nclass SingleLinkedList {\r\n    // Узел списка\r\n    struct Node {\r\n        Node() = default;\r\n        Node(const Type& val, Node* next)\r\n                : value(val)\r\n                , next_node(",
+                "short_content": "#include <cassert>\r\n#include <cstddef>\r\n#include <string>\r\n#include <utility>\r\n\r\ntemplate <typename Type>\r\nclass test {\r\n    // test\r\n    struct Node {\r\n        Node() = default;\r\n        Node(const Type& val, Node* next)\r\n                : value(val)\r\n                , test(",
                 "source_date": "2023-05-04T10:16:18",
-                "title": "итераторы",
+                "title": "test",
                 "type": "paste",
-                "url": "https://pastebin.com/z2sZCecJ"
+                "url": "https://test.com/z2sZCecJ"
             },
             {
                 "Tags": {
@@ -2504,7 +2504,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:16:08",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/tQ4pR7pi"
+                "url": "https://test.com/tQ4pR7pi"
             },
             {
                 "Tags": {
@@ -2523,7 +2523,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:16:05",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/bQcx0nuj"
+                "url": "https://test.com/bQcx0nuj"
             },
             {
                 "Tags": {
@@ -2563,7 +2563,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:15:56",
                 "title": "basicplayeronesp32",
                 "type": "paste",
-                "url": "https://pastebin.com/qwcJVs8E"
+                "url": "https://test.com/qwcJVs8E"
             },
             {
                 "Tags": {
@@ -2582,7 +2582,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:15:49",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/6Gm6jjGG"
+                "url": "https://test.com/6Gm6jjGG"
             },
             {
                 "Tags": {
@@ -2601,7 +2601,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:15:42",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/0Te6vfhK"
+                "url": "https://test.com/0Te6vfhK"
             },
             {
                 "Tags": {
@@ -2616,11 +2616,11 @@ Search for strings in the scrapes database.
                 "date": "2023-05-04T10:15:32",
                 "id": "f908cce77843dd1f974281d5e5ea67d43114c016",
                 "insertion_date": "2023-05-04T10:21:50.308696",
-                "short_content": "[12:08:46 ERROR]: Could not pass event PlayerVelocityEvent to LibsDisguises v10.0.33\r\njava.lang.NoSuchMethodError: org.bukkit.World.getGameTime()J\r\n        at me.libraryaddict.disguise.utilities.DisguiseUtilities.setPlayerVelocity(DisguiseUtilities.java:556) ~[?:?]\r\n        at me.libraryaddict.disgu",
+                "short_content": "[12:08:46 ERROR]: test v10.0.33\r\njava.lang.NoSuchMethodError: org.bukkit.World.getGameTime()J\r\n        at me.libraryaddict.disguise.utilities.DisguiseUtilities.setPlayerVelocity(DisguiseUtilities.java:556) ~[?:?]\r\n        at me.libraryaddict.disgu",
                 "source_date": "2023-05-04T10:15:32",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/GHNnERD4"
+                "url": "https://test.com/GHNnERD4"
             },
             {
                 "Tags": {
@@ -2639,7 +2639,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:15:18",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/uL32rurg"
+                "url": "https://test.com/uL32rurg"
             },
             {
                 "Tags": {
@@ -2658,7 +2658,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:15:11",
                 "title": "password",
                 "type": "paste",
-                "url": "https://pastebin.com/ypvSpgA8"
+                "url": "https://test.com/ypvSpgA8"
             },
             {
                 "Tags": {
@@ -2677,7 +2677,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:15:06",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/dp4wF6MR"
+                "url": "https://test.com/dp4wF6MR"
             },
             {
                 "Tags": {
@@ -2696,7 +2696,7 @@ Search for strings in the scrapes database.
                 "source_date": "2023-05-04T10:15:02",
                 "title": "untitled",
                 "type": "paste",
-                "url": "https://pastebin.com/pK0YYRsa"
+                "url": "https://test.com/pK0YYRsa"
             },
             {
                 "Tags": {
@@ -2731,18 +2731,18 @@ Search for strings in the scrapes database.
 >|---|---|---|---|---|---|---|---|
 >| jamedoefo | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/page-33 | comment | 1234 | i was here |  | 2023-05-04T10:20:02 |
 >| anon | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/unread | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/page-36 | comment | f15c68c9c4d8a4ccc7efc21373f228a7f9d7826a | brave v1.51.110 (may 3, 2023) <br/>https:<span>//</span>brave.com/latest/<br/><br/>spoiler: release notes v1.51.110 (may 3, 2023)<br/>release notes v1.51.110 (may 3, 2023)<br/>web3<br/><br/>added the ability to set brave wallet permission duration when connecting to dapps. (#28841)<br/>[security] prevent blind cross chain signing as reported o |  | 2023-05-04T10:17:00 |
->| aleksandermachulin |  | https:<span>//</span>pastebin.com/z2sZCecJ | paste | 1234 | #include <cassert><br/>#include <cstddef><br/>#include <string><br/>#include <utility><br/><br/>template <typename Type><br/>class SingleLinkedList {<br/>    // Узел списка<br/>    struct Node {<br/>        Node() = default;<br/>        Node(const Type& val, Node* next)<br/>                : value(val)<br/>                , next_node( | итераторы | 2023-05-04T10:16:18 |
->| no_author |  | https:<span>//</span>pastebin.com/tQ4pR7pi | paste | 01b2a09ab8abab28f48c44aef1d3cce141cc1131 | #include <iostream><br/><br/>using namespace std;<br/><br/>struct nod{<br/>    int info;<br/>    nod * urm;<br/>};<br/><br/>int cmmdc(int a , int b)<br/>{<br/>    int r;<br/>    if(b == 0) return a;<br/>    return cmmdc(b , a % b);<br/>}<br/><br/>int numarare(nod *p)<br/>{<br/>    int perechi = 0;<br/>    for(nod *q  = p ; q -> urm ; q = q -> urm)<br/>       | untitled | 2023-05-04T10:16:08 |
->| no_author |  | https:<span>//</span>pastebin.com/bQcx0nuj | paste | 0b847ec3750cf77211057d978a50226a4a6aba8b | To navigate from a SwiftUI view wrapped in a \`UIHostingController\` to another \`UIViewController\`, you can use a custom \`UIViewControllerRepresentable\`. This approach allows you to create a bridge between SwiftUI and UIKit components. Here's a step-by-step process to achieve this:<br/><br/>1. First, create | untitled | 2023-05-04T10:16:05 |
+>| aleksandermachulin |  | https:<span>//</span>test.com/z2sZCecJ | paste | 1234 | #include <cassert><br/>#include <cstddef><br/>#include <string><br/>#include <utility><br/><br/>template <typename Type><br/>class test <br/>    // test<br/>    struct Node <br/>        Node() = default;<br/>        Node(const Type& val, Node* next)<br/>                : value(val)<br/>                , test | test | 2023-05-04T10:16:18 |
+>| no_author |  | https:<span>//</span>test.com/tQ4pR7pi | paste | 01b2a09ab8abab28f48c44aef1d3cce141cc1131 | #include <iostream><br/><br/>using namespace std;<br/><br/>struct nod{<br/>    int info;<br/>    nod * urm;<br/>};<br/><br/>int cmmdc(int a , int b)<br/>{<br/>    int r;<br/>    if(b == 0) return a;<br/>    return cmmdc(b , a % b);<br/>}<br/><br/>int numarare(nod *p)<br/><br/>    int perechi = 0;<br/>    for(nod *q  = p ; q -> urm ; q = q -> urm)<br/>       | untitled | 2023-05-04T10:16:08 |
+>| no_author |  | https:<span>//</span>test.com/bQcx0nuj | paste | 0b847ec3750cf77211057d978a50226a4a6aba8b | To navigate from a SwiftUI view wrapped in a \`UIHostingController\` to another \`UIViewController\`, you can use a custom \`UIViewControllerRepresentable\`. This approach allows you to create a bridge between SwiftUI and UIKit components. Here's a step-by-step process to achieve this:<br/><br/>1. First, create | untitled | 2023-05-04T10:16:05 |
 >| juanliraz | https:<span>//</span>cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/unread | https:<span>//</span>cybercarders.com/threads/heart-sender-3-0-33-full-clean-all-other-sources-are-fake-contains-malware.233594/page-3 | comment | c61a9a37a18baef534d0cece9cd1e28207e75b5a | checking |  | 2023-05-04T10:16:01 |
->| no_author |  | https:<span>//</span>pastebin.com/qwcJVs8E | paste | 6a6c18dba343a6446070f47a07c68135f0005ee1 | /*************************************************** <br/>  This is an example for the Adafruit VS1053 Codec Breakout<br/><br/>  Designed specifically to work with the Adafruit VS1053 Codec Breakout <br/>  ----> https:<span>//</span>www.adafruit.com/products/1381<br/><br/>  Adafruit invests time and resources providing this open  | basicplayeronesp32 | 2023-05-04T10:15:56 |
->| no_author |  | https:<span>//</span>pastebin.com/6Gm6jjGG | paste | d0a330840ac6908ce40fe7692b6151011a2334e7 | const axios = require('axios');<br/><br/>module.exports = {<br/> config: {<br/> name: "binary",<br/> aliases: ["bin"],<br/> version: "1.0",<br/> author: "shinpei",<br/> countDown: 0,<br/> role: 0,<br/> shortDescription: {<br/> en: "Converts text to binary."<br/> },<br/> longDescription: {<br/> en: "Converts text to binary using an API."<br/> } | untitled | 2023-05-04T10:15:49 |
->| no_author |  | https:<span>//</span>pastebin.com/0Te6vfhK | paste | f0e20e7cf875b7d0d6cc042014ec1a3dcff6e3e6 | ##<br/># Host Database<br/>#<br/># localhost is used to configure the loopback interface<br/># when the system is booting.  Do not change this entry.<br/>##<br/>127.0.0.1    localhost<br/>255.255.255.255    broadcasthost<br/>::1             localhost<br/># Added by Docker Desktop<br/># To allow the same kube context to work on t | untitled | 2023-05-04T10:15:42 |
->| no_author |  | https:<span>//</span>pastebin.com/GHNnERD4 | paste | f908cce77843dd1f974281d5e5ea67d43114c016 | [12:08:46 ERROR]: Could not pass event PlayerVelocityEvent to LibsDisguises v10.0.33<br/>java.lang.NoSuchMethodError: org.bukkit.World.getGameTime()J<br/>        at me.libraryaddict.disguise.utilities.DisguiseUtilities.setPlayerVelocity(DisguiseUtilities.java:556) ~[?:?]<br/>        at me.libraryaddict.disgu | untitled | 2023-05-04T10:15:32 |
->| no_author |  | https:<span>//</span>pastebin.com/uL32rurg | paste | 60e0bdce36800a3539b03ef010345d943d5669c4 | -- logger module started --<br/>main debug: VLC media player - 4.0.0-dev Otto Chriek<br/>main debug: Copyright © 1996-2023 the VideoLAN team<br/>main debug: revision<br/>main debug: configured with /builds/videolan/vlc/extras/package/win32/../../../configure  '--enable-update-check'  | untitled | 2023-05-04T10:15:18 |
->| no_author |  | https:<span>//</span>pastebin.com/ypvSpgA8 | paste | 3fc8bf2c1c67a61c8f35b0dd188ec555a629c6fa | Yeet | password | 2023-05-04T10:15:11 |
->| no_author |  | https:<span>//</span>pastebin.com/dp4wF6MR | paste | f51f0fb266db888d946f8206ac82057e38dde44a | absl-py==1.4.0<br/>aiofiles==23.1.0<br/>aiohttp==3.8.4<br/>aiosignal==1.3.1<br/>altair==4.2.2<br/>anyio @ file:///home/conda/feedstock_root/build_artifacts/anyio_1666191106763/work/dist<br/>appdirs==1.4.4<br/>argon2-cffi @ file:///home/conda/feedstock_root/build_artifacts/argon2-cffi_1640817743617/work<br/>argon2-cffi-bind | untitled | 2023-05-04T10:15:06 |
->| no_author |  | https:<span>//</span>pastebin.com/pK0YYRsa | paste | f55651764e3c6c05376f7e38cf6555f64fc23158 | [10:13:58 WARN]: [org.javacord.core.util.gateway.DiscordWebSocketAdapter] Websocket error!<br/>com.neovisionaries.ws.client.WebSocketException: Flushing frames to the server failed: Connection or outbound has closed<br/>        at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:434)  | untitled | 2023-05-04T10:15:02 |
+>| no_author |  | https:<span>//</span>test.com/qwcJVs8E | paste | 6a6c18dba343a6446070f47a07c68135f0005ee1 | /*************************************************** <br/>  This is an example for the Adafruit VS1053 Codec Breakout<br/><br/>  Designed specifically to work with the Adafruit VS1053 Codec Breakout <br/>  ----> https:<span>//</span>www.adafruit.com/products/1381<br/><br/>  Adafruit invests time and resources providing this open  | basicplayeronesp32 | 2023-05-04T10:15:56 |
+>| no_author |  | https:<span>//</span>test.com/6Gm6jjGG | paste | d0a330840ac6908ce40fe7692b6151011a2334e7 | const axios = require('axios');<br/><br/>module.exports = {<br/> config: {<br/> name: "binary",<br/> aliases: ["bin"],<br/> version: "1.0",<br/> author: "shinpei",<br/> countDown: 0,<br/> role: 0,<br/> shortDescription: {<br/> en: "Converts text to binary."<br/> },<br/> longDescription: {<br/> en: "Converts text to binary using an API."<br/> } | untitled | 2023-05-04T10:15:49 |
+>| no_author |  | https:<span>//</span>test.com/0Te6vfhK | paste | f0e20e7cf875b7d0d6cc042014ec1a3dcff6e3e6 | ##<br/># Host Database<br/>#<br/># localhost is used to configure the loopback interface<br/># when the system is booting.  Do not change this entry.<br/>##<br/>127.0.0.1    localhost<br/>255.255.255.255    broadcasthost<br/>::1             localhost<br/># Added by Docker Desktop<br/># To allow the same kube context to work on t | untitled | 2023-05-04T10:15:42 |
+>| no_author |  | https:<span>//</span>test.com/GHNnERD4 | paste | f908cce77843dd1f974281d5e5ea67d43114c016 | [12:08:46 ERROR]: test v10.0.33<br/>java.lang.NoSuchMethodError: org.bukkit.World.getGameTime()J<br/>        at me.libraryaddict.disguise.utilities.DisguiseUtilities.setPlayerVelocity(DisguiseUtilities.java:556) ~[?:?]<br/>        at me.libraryaddict.disgu | untitled | 2023-05-04T10:15:32 |
+>| no_author |  | https:<span>//</span>test.com/uL32rurg | paste | 60e0bdce36800a3539b03ef010345d943d5669c4 | -- logger module started --<br/>main debug: VLC media player - 4.0.0-dev Otto Chriek<br/>main debug: test<br/>main debug: revision<br/>main debug: configured with /builds/videolan/vlc/extras/package/win32/../../../configure  '--enable-update-check'  | untitled | 2023-05-04T10:15:18 |
+>| no_author |  | https:<span>//</span>test.com/ypvSpgA8 | paste | 3fc8bf2c1c67a61c8f35b0dd188ec555a629c6fa | Yeet | password | 2023-05-04T10:15:11 |
+>| no_author |  | https:<span>//</span>test.com/dp4wF6MR | paste | f51f0fb266db888d946f8206ac82057e38dde44a | absl-py==1.4.0<br/>aiofiles==23.1.0<br/>aiohttp==3.8.4<br/>aiosignal==1.3.1<br/>altair==4.2.2<br/>anyio @ file:///home/conda/feedstock_root/build_artifacts/anyio_1666191106763/work/dist<br/>appdirs==1.4.4<br/>argon2-cffi @ file:///home/conda/feedstock_root/build_artifacts/argon2-cffi_1640817743617/work<br/>argon2-cffi-bind | untitled | 2023-05-04T10:15:06 |
+>| no_author |  | https:<span>//</span>test.com/pK0YYRsa | paste | f55651764e3c6c05376f7e38cf6555f64fc23158 | [10:13:58 WARN]: [org.javacord.core.util.gateway.DiscordWebSocketAdapter] Websocket error!<br/>com.neovisionaries.ws.client.WebSocketException: Flushing frames to the server failed: Connection or outbound has closed<br/>        at com.neovisionaries.ws.client.WritingThread.doFlush(WritingThread.java:434)  | untitled | 2023-05-04T10:15:02 |
 >| bellgamin | https:<span>//</span>www.wilderssecurity.com/threads/laptop-battery-question.451238/unread | https:<span>//</span>www.wilderssecurity.com/threads/laptop-battery-question.451238/page-2 | comment | a6f37b218dad85e7472d11b3332546ad985cd46c | thanks for the comments bill. live long & prosper.<br/><br/>as to "...when you might want to turn off smart charging" -- i quoted that part of the ms article in the comment where i linked to the ms article. ms is stating a few exceptions to ms's implicit rule, and that implicit rule is: "turn on smart charg |  | 2023-05-04T10:15:00 |
 
 
