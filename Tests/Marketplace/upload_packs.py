@@ -1091,7 +1091,7 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str):
     # Update the build number to the current build number:
     corepacks_file_new_content['buildNumber'] = build_number
 
-    # Upload the updated corepacks file to the artifacts folder:
+    # Upload the updated corepacks file to the given artifacts folder:
     override_corepacks_file_name = f'corepacks-{override_corepacks_server_version}.json'
     corepacks_json_path = os.path.join(artifacts_dir, override_corepacks_file_name)
     json_write(corepacks_json_path, corepacks_file_new_content)
