@@ -29,7 +29,8 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
     if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
                                  'get_departments_command', 'get_usergroups_command',
                                  'list_ip_destination_groups', 'create_ip_destination_group',
-                                 'edit_ip_destination_group']:
+                                 'edit_ip_destination_group',
+                                 'list_ip_destination_groups_lite', 'delete_ip_destination_groups']:
         res = command_func(args)
     else:
         res = command_func(**args)
@@ -647,4 +648,24 @@ def test_edit_ip_destination_group(mocker):
                                    + 'edit_ip_destination_group.json',
                      expected_result_path='test_data/results/'
                                           + 'edit_ip_destination_group.json',
+                     mocker=mocker)
+
+
+def test_list_ip_destination_groups_lite(mocker):
+    """zscaler-list-ip-destination-groups-lite"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups_lite,
+                     args={},
+                     response_path='test_data/responses/list_ip_destination_groups_lite.json',
+                     expected_result_path='test_data/results/list_ip_destination_groups_lite.json',
+                     mocker=mocker)
+
+
+def test_delete_ip_destination_groups(mocker):
+    """zscaler-delete-ip-destination-group"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.delete_ip_destination_groups,
+                     args={'ip_group_id': '1964949'},
+                     response_path='test_data/responses/delete_ip_destination_group.json',
+                     expected_result_path='test_data/results/delete_ip_destination_group.json',
                      mocker=mocker)

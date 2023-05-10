@@ -462,7 +462,7 @@ script:
     description: Get Zscaler users
     name: zscaler-get-users
   - arguments:
-    - description: The unique identifer for the user.
+    - description: The unique identifier for the user.
       name: id
       required: true
     - description: 'New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser'
@@ -1140,7 +1140,7 @@ script:
       type: textArea
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
-      description: Unique identifer for the destination IP group
+      description: Unique identifier for the destination IP group
       type: number
     - contextPath: Zscaler.IPDestinationGroup.Name
       description: Destination IP group name
@@ -1813,7 +1813,7 @@ script:
       type: textArea
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
-      description: Unique identifer for the destination IP group
+      description: Unique identifier for the destination IP group
       type: number
     - contextPath: Zscaler.IPDestinationGroup.Name
       description: Destination IP group name
@@ -1837,7 +1837,7 @@ script:
   - name: zscaler-list-ip-destination-groups
     arguments:
     - name: ip_group_id
-      description: The unique identifier for the IP destination group.
+      description: a list of unique identifier for the IP destination groups.
       isArray: true
       type: textArea
     - name: exclude_type
@@ -1871,7 +1871,7 @@ script:
       type: textArea
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
-      description: Unique identifer for the destination IP group
+      description: Unique identifier for the destination IP group
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Name
       description: Destination IP group name
@@ -1892,10 +1892,56 @@ script:
       description: Destination IP address counties. You can identify destinations based on the location of a server.
       type: string
     description: Gets a list of all IP destination groups or the IP destination group information for the specified group ID
+  - name: zscaler-list-ip-destination-groups-lite
+    arguments:
+    - name: exclude_type
+      auto: PREDEFINED
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      description: The IP group type to be excluded from results.
+      type: textArea
+    - name: category_type
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+      description: The IP group type to be filtered from results.
+    - name: include_IPv6
+      auto: PREDEFINED
+      defaultValue: 'false'
+      description: Fetch the ipv6 Destination Groups.
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      description: Limit to results to be showcased, defaulted with the value 50 if nothing given as input
+      defaultValue: "50"
+      type: textArea
+    - name: all_results
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Boolean value for user to choose, if wanted to get all results at once or not
+      defaultValue: "False"
+      type: textArea
+    description: Retrieves name and ID dictionary of IPv4/IPv6 destination groups.
+  - name: zscaler-delete-ip-destination-groups
+    arguments:
+    - name: ip_group_ids
+      description: A list of unique identifier for the IP destination groups.
+      type: textArea
+      isArray: true
+    description: Deletes the IP destination groups for the specified group ID.    
   runonce: false
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.57293
+  dockerimage: demisto/python3:3.10.11.57890
   type: python
 fromversion: 5.0.0
 tests:
