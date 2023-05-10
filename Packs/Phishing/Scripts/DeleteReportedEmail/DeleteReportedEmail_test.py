@@ -265,15 +265,17 @@ def test_search_args(mocker, brand):
     incident_info_copy = deepcopy(INCIDENT_INFO)
     mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
     incident_info_copy['CustomFields'].pop("reportedemailmessageid")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as e:
         get_search_args({})
+    assert str(e.value) == "Message ID ('reportedemailmessageid') of the original email could not be found."
 
     # Test missing user id exception
     incident_info_copy = deepcopy(INCIDENT_INFO)
     mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
     incident_info_copy['CustomFields'].pop("reportedemailto")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as e:
         get_search_args({})
+    assert str(e.value) == "User ID ('reportedemailto') of the original email could not be found."
 
 
 def test_schedule_next_command(mocker):
