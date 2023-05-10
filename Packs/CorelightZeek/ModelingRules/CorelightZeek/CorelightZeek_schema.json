@@ -21,7 +21,7 @@
             "is_array": false
         },
         "rejected": {
-            "type": "string",
+            "type": "boolean",
             "is_array": false
         },
         "query": {
