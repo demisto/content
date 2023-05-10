@@ -37,19 +37,6 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
-  display: Source Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
 - defaultvalue: indicatorType
   display: ""
   name: feedExpirationPolicy
@@ -75,15 +62,27 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  defaultvalue: RED
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
 description: Searches for CVE information using OpenCVE.
-display: OpenCVE
+display: OpenCVE (Community Contribution)
 name: OpenCVE
 script:
   commands:
   - arguments:
     - description: The maximum number of CVEs to display.
       name: limit
-    - name: lastRun
+    - description: Last run
+      name: lastRun
     description: Returns the latest updated CVEs.
     name: cve-latest
     outputs:
@@ -155,19 +154,25 @@ script:
     name: ocve-get-my-vendors
     outputs:
     - contextPath: OpenCVE.Vendors
+      description: Vendors
   - arguments: []
     description: List the products subscriptions of the authenticated user.
     name: ocve-get-my-products
     outputs:
     - contextPath: OpenCVE.Products
+      description: Products
   - arguments:
-    - name: vendor_name
+    - description: Vendor name
+      name: vendor_name
       required: true
+    description: Get vendor info
     name: ocve-get-vendor
     outputs:
     - contextPath: OpenCVE.Vendor
+      description: Vendor info
   - arguments:
-    - name: vendor_name
+    - description: Vendor name
+      name: vendor_name
       required: true
     - description: filter by keyword in summary
       name: search
@@ -187,19 +192,25 @@ script:
     - defaultValue: "1"
       description: the page to start
       name: page
+    description: Get vendor CVEs
     name: ocve-get-vendor-cves
     outputs:
     - contextPath: vendor_cves
   - arguments:
-    - name: vendor_name
+    - description: Vendor name
+      name: vendor_name
       required: true
-    - name: product_name
+    - description: Product name
+      name: product_name
       required: true
+    description: Get product info
     name: ocve-get-product
   - arguments:
-    - name: vendor_name
+    - description: vendor name
+      name: vendor_name
       required: true
-    - name: product_name
+    - description: product name
+      name: product_name
       required: true
     - description: filter by keyword in summary
       name: search
@@ -217,16 +228,20 @@ script:
     - defaultValue: "1"
       description: the page to start
       name: page
+    description: Get product CVEs
     name: ocve-get-product-cves
     outputs:
     - contextPath: product_cves
+      description: Product CVEs
   - arguments: []
+    description: Get reports
     name: ocve-get-reports
     outputs:
     - contextPath: reports
   - arguments:
     - name: report_id
       required: true
+    description: Get a specific report
     name: ocve-get-report
     outputs:
     - contextPath: report
@@ -236,6 +251,7 @@ script:
     - defaultValue: "1"
       description: the page to start
       name: page
+    description: Get alerts
     name: ocve-get-alerts
     outputs:
     - contextPath: alerts
@@ -244,6 +260,7 @@ script:
       required: true
     - name: alert_id
       required: true
+    description: Get a specific alert
     name: ocve-get-alert
     outputs:
     - contextPath: alert
@@ -269,20 +286,25 @@ script:
       name: letter
     - description: the page to start
       name: page
+    description: Get vendors
     name: ocve-get-vendors
     outputs:
     - contextPath: vendors
+      description: vendors
   - arguments:
-    - name: vendor_name
+    - description: vendor name
+      name: vendor_name
       required: true
     - description: filter by keyword
       name: search
     - defaultValue: "1"
       description: the page to start
       name: page
+    description: Get vendor products
     name: ocve-get-products
     outputs:
     - contextPath: products
+      description: products
   dockerimage: demisto/python3:3.10.1.26972
   feed: true
   isFetchSamples: true
