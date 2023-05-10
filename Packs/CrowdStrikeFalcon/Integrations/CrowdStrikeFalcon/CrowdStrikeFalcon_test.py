@@ -5194,7 +5194,7 @@ def test_make_create_scan_request_body(args, is_scheduled, expected_result):
     'args, is_error, expected_error_info',
     (
         ({'is_scheduled': 'False'}, True, 'MUST set hosts OR host_groups.'),
-        ({'hosts': 'john doe', 'is_scheduled': 'False'}, True, 'MUST set file_paths OR scan_exclusions.'),
+        ({'hosts': 'john doe', 'is_scheduled': 'False'}, True, 'MUST set file_paths OR scan_inclusions.'),
         ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'true'}, True,
          'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.'),
         ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'False'}, False, None),
@@ -5273,4 +5273,4 @@ def test_ODS_cancel_scans_request(mocker):
 
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_cancel_scans_request(ids)
-    http_request.assert_called_with('POST', '/ods/entities/scan-control-actions/cancel/v1', data={'ids': ids})
+    http_request.assert_called_with('POST', '/ods/entities/scan-control-actions/cancel/v1', json={'ids': ids})
