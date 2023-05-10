@@ -21,6 +21,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Retrieve_File_by_sha256"
+        },
+        {
             "integrations": "Twitter v2",
             "playbookID": "playbook-Test_Twitter_v2",
             "instance_names": "Twitter v2"
@@ -1368,7 +1372,8 @@
                 "ThreatQ v2",
                 "Demisto REST API"
             ],
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "SCADAfence CNM",
