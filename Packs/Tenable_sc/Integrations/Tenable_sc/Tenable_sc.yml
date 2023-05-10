@@ -819,67 +819,67 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Create an Asset in Tenable.sc with provided IP addresses
+    description: Create an Asset in Tenable.sc with provided IP addresses.
     execution: false
     name: tenable-sc-create-asset
     outputs:
     - contextPath: TenableSC.Asset.Name
-      description: Asset Name
+      description: Asset Name.
       type: string
     - contextPath: TenableSC.Asset.ID
-      description: Asset ID
+      description: Asset ID.
       type: string
     - contextPath: TenableSC.Asset.OwnerName
-      description: Asset owner name
+      description: Asset owner name.
       type: string
     - contextPath: TenableSC.Asset.Tags
-      description: Asset tags
+      description: Asset tags.
       type: string
   - arguments:
     - default: false
-      description: Asset ID that can be retrieved from the list-assets command
+      description: Asset ID that can be retrieved from the list-assets command.
       isArray: false
       name: asset_id
       required: true
       secret: false
     deprecated: false
-    description: Get details for a given asset in Tenable.sc
+    description: Get details for a given asset in Tenable.sc.
     execution: false
     name: tenable-sc-get-asset
     outputs:
     - contextPath: TenableSC.Asset.ID
-      description: Asset ID
+      description: Asset ID.
       type: number
     - contextPath: TenableSC.Asset.Name
-      description: Asset name
+      description: Asset name.
       type: string
     - contextPath: TenableSC.Asset.Description
-      description: Asset description
+      description: Asset description.
       type: string
     - contextPath: TenableSC.Asset.Tag
-      description: Asset tag
+      description: Asset tag.
       type: string
     - contextPath: TenableSC.Asset.Modified
-      description: Asset last modified time
+      description: Asset last modified time.
       type: date
     - contextPath: TenableSC.Asset.Owner
-      description: Asset owner user name
+      description: Asset owner user name.
       type: string
     - contextPath: TenableSC.Asset.Group
-      description: Asset owner group
+      description: Asset owner group.
       type: string
     - contextPath: TenableSC.Asset.IPs
-      description: Asset viewable IPs
+      description: Asset viewable IPs.
       type: unknown
   - arguments:
     - default: false
-      description: Asset ID
+      description: Asset ID.
       isArray: false
       name: asset_id
       required: true
       secret: false
     deprecated: false
-    description: Delete the Asset with the given ID from Tenable.sc
+    description: Delete the Asset with the given ID from Tenable.sc.
     execution: true
     name: tenable-sc-delete-asset
   - arguments:
@@ -895,216 +895,216 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List alerts from Tenable.sc
+    description: List alerts from Tenable.sc.
     execution: false
     name: tenable-sc-list-alerts
     outputs:
     - contextPath: TenableSC.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: TenableSC.Alert.Name
-      description: Alert name
+      description: Alert name.
       type: string
     - contextPath: TenableSC.Alert.Description
-      description: Alert description
+      description: Alert description.
       type: string
     - contextPath: TenableSC.Alert.State
-      description: Alert state
+      description: Alert state.
       type: string
     - contextPath: TenableSC.Alert.Actions
-      description: Alert Actions
+      description: Alert Actions.
       type: string
     - contextPath: TenableSC.Alert.LastTriggered
-      description: Alert last triggered time
+      description: Alert last triggered time.
       type: date
     - contextPath: TenableSC.Alert.LastEvaluated
-      description: Alert last evaluated time
+      description: Alert last evaluated time.
       type: date
     - contextPath: TenableSC.Alert.Group
-      description: Alert owner group name
+      description: Alert owner group name.
       type: string
     - contextPath: TenableSC.Alert.Owner
-      description: Alert owner user name
+      description: Alert owner user name.
       type: string
   - arguments:
     - default: false
-      description: Alert ID, can be retrieved from list-alerts command
+      description: Alert ID, can be retrieved from list-alerts command.
       isArray: false
       name: alert_id
       required: true
       secret: false
     deprecated: false
-    description: Get information about a given alert in Tenable.sc
+    description: Get information about a given alert in Tenable.sc.
     execution: false
     name: tenable-sc-get-alert
     outputs:
     - contextPath: TenableSC.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: TenableSC.Alert.Name
-      description: Alert name
+      description: Alert name.
       type: string
     - contextPath: TenableSC.Alert.Description
-      description: Alert description
+      description: Alert description.
       type: string
     - contextPath: TenableSC.Alert.State
-      description: Alert state
+      description: Alert state.
       type: string
     - contextPath: TenableSC.Alert.Condition.Trigger
-      description: Alert trigger
+      description: Alert trigger.
       type: string
     - contextPath: TenableSC.Alert.LastTriggered
-      description: Alert last triggered time
+      description: Alert last triggered time.
       type: date
     - contextPath: TenableSC.Alert.Condition.Query
-      description: Alert query name
+      description: Alert query name.
       type: string
     - contextPath: TenableSC.Alert.Condition.Filter.Name
-      description: Alert query filter name
+      description: Alert query filter name.
       type: string
     - contextPath: TenableSC.Alert.Condition.Filter.Values
-      description: Alert query filter values
+      description: Alert query filter values.
       type: Unknown
     - contextPath: TenableSC.Alert.Action.Type
-      description: Alert action type
+      description: Alert action type.
       type: string
     - contextPath: TenableSC.Alert.Action.Values
-      description: Alert action values
+      description: Alert action values.
       type: Unknown
   - arguments:
     - default: false
-      description: A valid IP address of a device
+      description: A valid IP address of a device.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: DNS name of a device
+      description: DNS name of a device.
       isArray: false
       name: dns_name
       required: false
       secret: false
     - default: false
-      description: Repository ID to get the device from, can be retrieved from list-repositories command
+      description: Repository ID to get the device from, can be retrieved from list-repositories command.
       isArray: false
       name: repository_id
       required: false
       secret: false
     deprecated: false
-    description: Gets the specified device information
+    description: Gets the specified device information.
     execution: false
     name: tenable-sc-get-device
     outputs:
     - contextPath: TenableSC.Device.IP
-      description: Device IP address
+      description: Device IP address.
       type: string
     - contextPath: TenableSC.Device.UUID
-      description: Device UUID
+      description: Device UUID.
       type: string
     - contextPath: TenableSC.Device.RepositoryID
-      description: Device repository ID
+      description: Device repository ID.
       type: string
     - contextPath: TenableSC.Device.MacAddress
-      description: Device Mac address
+      description: Device Mac address.
       type: string
     - contextPath: TenableSC.Device.NetbiosName
-      description: Device Netbios name
+      description: Device Netbios name.
       type: string
     - contextPath: TenableSC.Device.DNSName
-      description: Device DNS name
+      description: Device DNS name.
       type: string
     - contextPath: TenableSC.Device.OS
-      description: Device Operating System
+      description: Device Operating System.
       type: string
     - contextPath: TenableSC.Device.OsCPE
-      description: Device Common Platform Enumeration
+      description: Device Common Platform Enumeration.
       type: string
     - contextPath: TenableSC.Device.LastScan
-      description: Device's last scan time
+      description: Device's last scan time.
       type: date
     - contextPath: TenableSC.Device.RepositoryName
-      description: Device repository name
+      description: Device repository name.
       type: string
     - contextPath: TenableSC.Device.TotalScore
-      description: Device total threat score
+      description: Device total threat score.
       type: number
     - contextPath: TenableSC.Device.LowSeverity
-      description: Device total threat scores with low severity
+      description: Device total threat scores with low severity.
       type: number
     - contextPath: TenableSC.Device.MediumSeverity
-      description: Device total threat scores with medium severity
+      description: Device total threat scores with medium severity.
       type: number
     - contextPath: TenableSC.Device.HighSeverity
-      description: Device total threat scores with high severity
+      description: Device total threat scores with high severity.
       type: number
     - contextPath: TenableSC.Device.CriticalSeverity
-      description: Device total threat scores with critical severity
+      description: Device total threat scores with critical severity.
       type: number
     - contextPath: Endpoint.IPAddress
-      description: Endpoint IP address
+      description: Endpoint IP address.
       type: string
     - contextPath: Endpoint.Hostname
-      description: Endpoint DNS name
+      description: Endpoint DNS name.
       type: string
     - contextPath: Endpoint.MACAddress
-      description: Endpoint mac address
+      description: Endpoint mac address.
       type: string
     - contextPath: Endpoint.OS
-      description: Endpoint OS
+      description: Endpoint OS.
       type: string
   - arguments:
     - default: false
-      description: Filter by user ID
+      description: Filter by user ID.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: Filter by user username
+      description: Filter by user username.
       isArray: false
       name: username
       required: false
       secret: false
     - default: false
-      description: Filter by user email address
+      description: Filter by user email address.
       isArray: false
       name: email
       required: false
       secret: false
     deprecated: false
-    description: List users in Tenable.sc
+    description: List users in Tenable.sc.
     execution: false
     name: tenable-sc-list-users
     outputs:
     - contextPath: TenableSC.User.ID
-      description: User ID
+      description: User ID.
       type: string
     - contextPath: TenableSC.User.Username
-      description: Username
+      description: Username.
       type: string
     - contextPath: TenableSC.User.FirstName
-      description: User first name
+      description: User first name.
       type: string
     - contextPath: TenableSC.User.LastName
-      description: User last name
+      description: User last name.
       type: string
     - contextPath: TenableSC.User.Title
-      description: User title
+      description: User title.
       type: string
     - contextPath: TenableSC.User.Email
-      description: User email address
+      description: User email address.
       type: string
     - contextPath: TenableSC.User.Created
-      description: The creation time of the user
+      description: The creation time of the user.
       type: date
     - contextPath: TenableSC.User.Modified
-      description: Last modification time of the user
+      description: Last modification time of the user.
       type: date
     - contextPath: TenableSC.User.Login
-      description: User last login
+      description: User last login.
       type: date
     - contextPath: TenableSC.User.Role
-      description: User role name
+      description: User role name.
       type: string
   - deprecated: false
     description: Retrieve licensing information from Tenable.sc
@@ -1118,39 +1118,39 @@ script:
       description: Number of licensed IP addresses
       type: Unknown
     - contextPath: TenableSC.Status.License
-      description: License status
+      description: License status.
       type: Unknown
   - deprecated: false
-    description: Get the system information and diagnostics from Tenable.sc
+    description: Get the system information and diagnostics from Tenable.sc.
     execution: false
     name: tenable-sc-get-system-information
     outputs:
     - contextPath: TenableSC.System.Version
-      description: System version
+      description: System version.
       type: string
     - contextPath: TenableSC.System.BuildID
-      description: System build ID
+      description: System build ID.
       type: string
     - contextPath: TenableSC.System.ReleaseID
-      description: System release ID
+      description: System release ID.
       type: string
     - contextPath: TenableSC.System.License
-      description: System license status
+      description: System license status.
       type: string
     - contextPath: TenableSC.System.JavaStatus
-      description: Server java status
+      description: Server java status.
       type: boolean
     - contextPath: TenableSC.System.RPMStatus
-      description: Server RPM status
+      description: Server RPM status.
       type: boolean
     - contextPath: TenableSC.System.DiskStatus
-      description: Server disk status
+      description: Server disk status.
       type: boolean
     - contextPath: TenableSC.System.DiskThreshold
-      description: System left space on disk
+      description: System left space on disk.
       type: number
     - contextPath: TenableSC.System.LastCheck
-      description: System last check time
+      description: System last check time.
       type: date
   - arguments:
     - auto: PREDEFINED
@@ -1227,6 +1227,55 @@ script:
     - contextPath: TenableSC.ScanResults.RepositoryName
       description: Scan repository name.
       type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Wether to show group member or not. Default is True.
+      isArray: false
+      name: show_users
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of objects to return in one response. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: list all groups.
+    execution: false
+    name: tenable-sc-list-groups
+    outputs:
+    - contextPath: TenableSC.Group.Name
+      description: Group name.
+      type: string
+    - contextPath: TenableSC.Group.ID
+      description: Group ID.
+      type: number
+    - contextPath: TenableSC.Group.Description
+      description: Group description.
+      type: string
+    - contextPath: TenableSC.Group.Users.Firstname
+      description: Group's user's first name.
+      type: string
+    - contextPath: TenableSC.Group.Users.Lastname
+      description: Group's user's last name.
+      type: string
+    - contextPath: TenableSC.Group.Users.ID
+      description: Group's user's id.
+      type: string
+    - contextPath: TenableSC.Group.Users.UUID
+      description: Group's user's uuid.
+      type: string
+    - contextPath: TenableSC.Group.Users.Username
+      description: Group's user's user name.
+      type: string
+    
   isfetch: true
   runonce: false
   script: '-'

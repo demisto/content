@@ -437,6 +437,13 @@ class Client(BaseClient):
 
         return self.send_request(path, method='post')
 
+    def list_groups(self, show_users):
+        params = {}
+        if show_users:
+            params['fields'] = 'users'
+
+        return self.send_request(path='group', method='get', params=params)
+
     def get_vulnerability(self, vuln_id):
         path = f'plugin/{vuln_id}'
 
@@ -1687,6 +1694,49 @@ def fetch_incidents(client: Client, first_fetch: str = '3 days'):
     demisto.setLastRun({'time': max_timestamp})
 
 
+def list_groups_command(client: Client, args: Dict[str, Any]):
+    show_users = argToBoolean(args.get("show_users", True))
+    limit = int(args.get('limit', '50'))
+    res = client.list_groups(show_users)
+    if len(res) > limit:
+        res = res[:limit]
+    if not res or not res.get('response', []):
+        return_message('No groups found')
+    groups = res.get('response', [])
+    mapped_groups = [{
+        'ID': group.get('id'),
+        'Name': group.get('name'),
+        'Description': group.get('description')
+    } for group in groups]
+    headers = ['ID', 'Name', 'Description']
+    hr = tableToMarkdown('Tenable.sc groups', mapped_groups, headers, removeNull=True)
+    if show_users:
+        headers = ['Username', 'Firstname', 'Lastname']
+        users = []
+        for index, group in enumerate(groups):
+            users = [{
+                'Username': user['username'],
+                'Firstname': user['firstname'],
+                'Lastname': user['lastname'],
+                'ID': user['id'],
+                'UUID': user['uuid']
+            } for user in group.get('users')]
+            mapped_groups[index]['Users'] = users
+            group_id = group.get('id')
+            hr += f"{tableToMarkdown(f'Group id:{group_id}', users, headers, removeNull=True)}\n"
+    groups = mapped_groups
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': {
+            'TenableSC.Group(val.ID===obj.ID)': createContext(groups, removeNull=True)
+        }
+    })
+
+
 def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
     res = client.get_all_scan_results()
     get_manageable_results = args.get('manageable', 'false').lower()  # 'true' or 'false'
@@ -1787,7 +1837,8 @@ def main():
         'tenable-sc-get-alert': get_alert_command,
         'tenable-sc-get-system-information': get_system_information_command,
         'tenable-sc-get-system-licensing': get_system_licensing_command,
-        'tenable-sc-get-all-scan-results': get_all_scan_results_command
+        'tenable-sc-get-all-scan-results': get_all_scan_results_command,
+        'tenable-sc-list-groups': list_groups_command
     }
 
     try:
