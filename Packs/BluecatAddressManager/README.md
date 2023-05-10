@@ -8,7 +8,7 @@ You need to configure Bluecat Address Manager to forward Syslog messages to XSIA
 1. Select the **Administration** tab.
 2. Under **General**, click **Service Configuration**.
 3. From the **Service Type** drop-down menu, select **Syslog**.
-4. Under **General Settings**, set the following parameters: Under Syslog Server — enter the IPv4 address of the BrokerVM and click **Add**. 
+4. Under **General Settings** > **Syslog Server** enter the IPv4 address of the BrokerVM and click **Add**. 
 5. Click **Update**.
 
 #### To configure the BAM server to send logs in UTC format, please proceed with the following steps:
