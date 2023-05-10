@@ -1,5 +1,8 @@
 from WAB import Client, main
 import demistomock as demisto
+from CommonServerPython import BaseClient
+from requests import Response
+from unittest.mock import Mock
 
 
 def test_wab_get_device(mocker):
@@ -26,9 +29,15 @@ def test_wab_get_device(mocker):
         assert kwargs["headers"].get("X-Auth-Key") == "key"
         assert kwargs["headers"].get("X-Auth-User") == "user"
 
-        return {"device_name": "my device", "host": "1.2.3.4"}
+        mock = Mock()
 
-    mocker.patch.object(Client, "_http_request", side_effect=mock_http_request)
+        mock.return_value.status_code = 200
+        mock.return_value.headers = {}
+        mock.return_value.json = lambda: {"device_name": "my device", "host": "1.2.3.4"}
+
+        return mock
+
+    mocker.patch.object(BaseClient, "_http_request", side_effect=mock_http_request)
 
     main()
 
