@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# pack version: 3.1.1
+# pack version: 3.2.0
 import io
 import json
 import traceback
@@ -2654,7 +2654,7 @@ def get_status(client: Client, args: dict) -> CommandResults:
     query_id = args.get('query_id')
     status = client.create_status_request(query_id)
 
-    status.get('QueryID') = query_id
+    status['QueryID'] = query_id
 
     return CommandResults(
         readable_output=tableToMarkdown('SentinelOne Query Status', [status]),
