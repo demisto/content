@@ -40,6 +40,19 @@ args:
 - description: Matched remediation path rule (if there is a match).
   isArray: true
   name: asm_remediation_path_rule
+- description: External Service ID for generating Service Summary.
+  name: asm_service_id
+  required: true
+- description: Asset ID related to alert.
+  name: asm_asset_id
+  required: true
+- name: report_type
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - analysis
+  - summary
+  description: Type of report to generate (Analysis report after enrichment or Summary
 comment: Generate an ASM Alert Summary report.
 commonfields:
   id: GenerateASMReport
