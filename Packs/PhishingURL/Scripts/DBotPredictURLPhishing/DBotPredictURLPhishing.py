@@ -765,14 +765,9 @@ def main():
         urls_argument = demisto.args().get('urls', '')
         reliability = demisto.args().get("reliability", DBotScoreReliability.A_PLUS)
 
-        if DBotScoreReliability.is_valid_type(reliability):
-            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-                reliability
-            )
-        else:
-            raise DemistoException(
-                "Please provide a valid value for the Reliability parameter."
-            )
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
+            reliability
+        )
 
         # Update model if necessary and load the model
         model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version,
