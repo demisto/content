@@ -158,7 +158,7 @@ script:
       name: adaptive_card
     - description: The team member to which to send the message.
       name: to
-    - description: The header of an external form hyper link.
+    - description: The header of an external form hyperlink.
       required: false
       defaultValue: "Microsoft Teams Form"
       name: external_form_url_header
