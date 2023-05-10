@@ -25,7 +25,7 @@ def test_wab_get_device(mocker):
     mocker.patch.object(demisto, "results")
     mocker.patch.object(demisto, "command", return_value="wab-get-device")
 
-    mock_result = mocker.patch(WAB, "return_results")
+    mock_result = mocker.patch("WAB.return_results")
 
     def mock_http_request(*args, **kwargs):
         assert args[0] == "get"
@@ -87,7 +87,7 @@ def test_commands(mocker):
 
         mocker.patch.object(Client, "_http_request", return_value={})
 
-        mock_result = mocker.patch(WAB, "return_results")
+        mock_result = mocker.patch("WAB.return_results")
 
         main()
 
