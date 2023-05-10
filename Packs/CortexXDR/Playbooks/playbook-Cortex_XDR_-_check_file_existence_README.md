@@ -45,4 +45,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Cortex XDR - check file existence](../doc_files/Cortex_XDR_-_check_file_existence.png)
+![Cortex XDR - check file existence](../doc_files/Cortex_XDR_-_Check_file_existence.png)

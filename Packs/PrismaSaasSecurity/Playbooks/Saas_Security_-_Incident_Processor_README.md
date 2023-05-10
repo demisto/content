@@ -26,7 +26,6 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| updated_at | This is the incident updated at timestamp. | ${incident.lastupdatetime} | Optional |
 | tenant_admin | This is the tenant admin email. |  | Optional |
 
 ## Playbook Outputs

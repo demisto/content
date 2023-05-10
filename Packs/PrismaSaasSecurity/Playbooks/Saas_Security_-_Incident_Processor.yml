@@ -394,12 +394,6 @@ view: |-
     }
   }
 inputs:
-- key: updated_at
-  value:
-    simple: ${incident.lastupdatetime}
-  required: false
-  description: This is the incident updated at timestamp.
-  playbookInputQuery:
 - key: tenant_admin
   value: {}
   required: false
