@@ -1,4 +1,5 @@
-from WAB import main
+import WAB
+from WAB import main, Client
 import demistomock as demisto
 from CommonServerPython import BaseClient
 from typing import Any
@@ -24,7 +25,7 @@ def test_wab_get_device(mocker):
     mocker.patch.object(demisto, "results")
     mocker.patch.object(demisto, "command", return_value="wab-get-device")
 
-    mock_result = mocker.patch("WAB.return_results")
+    mock_result = mocker.patch(WAB, "return_results")
 
     def mock_http_request(*args, **kwargs):
         assert args[0] == "get"
@@ -57,3 +58,37 @@ def test_wab_get_device(mocker):
 
     assert result.outputs["device_name"] == "my device"
     assert result.outputs["host"] == "1.2.3.4"
+
+
+def test_commands(mocker):
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "1.1.1.1",
+            "verify_certificate": False,
+            "api_version": "v3.12",
+            "auth_key": "key",
+            "auth_user": "user",
+        },
+    )
+
+    for name in WAB.__dict__.keys():
+        if name.startswith("_"):
+            continue
+        if not name.endswith("_command"):
+            continue
+
+        command_name = "wab-" + name.removesuffix("_command").replace("_", "-")
+
+        mocker.patch.object(demisto, "results")
+        mocker.patch.object(demisto, "command", return_value=command_name)
+
+        mocker.patch.object(Client, "_http_request", return_value={})
+
+        mock_result = mocker.patch(WAB, "return_results")
+
+        main()
+
+        assert mock_result.call_count == 1
