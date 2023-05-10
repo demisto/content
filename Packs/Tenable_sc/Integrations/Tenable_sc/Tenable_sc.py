@@ -826,7 +826,6 @@ def list_zones_command(client: Client, args: Dict[str, Any]):
     res = client.get_zones()
     if not res or 'response' not in res:
         return_message('No zones found')
-
     zones = res['response']
     if len(zones) == 0:
         zones = [{
@@ -834,25 +833,42 @@ def list_zones_command(client: Client, args: Dict[str, Any]):
             'name': 'All Zones',
             'description': '',
             'ipList': '',
-            'scanners': ''
+            'activeScanners': ''
         }]
-
-    headers = ['ID', 'Name', 'Description', 'IPList', 'scanners']
+    headers = ['ID', 'Name', 'Description', 'IPList', 'activeScanners']
 
     mapped_zones = [{
         'ID': z['id'],
         'Name': z['name'],
         'Description': z['description'],
         'IPList': z['ipList'],
-        'scanners': z['scanners']
+        'activeScanners': z['activeScanners']
     } for z in zones]
+
+    hr = tableToMarkdown('Tenable.sc Scan Zones', mapped_zones, headers, removeNull=True)
+
+    mapped_scanners_total = []
+    for index, zone in enumerate(zones):
+        if scanners := zone.get('scanners'):
+            mapped_scanners = [{
+                'ID': s['id'],
+                'Name': s['name'],
+                'Description': s['description'],
+                'Status': s['status']
+            } for s in scanners]
+            mapped_zones[index]['Scanner'] = mapped_scanners
+            mapped_scanners_total.extend(mapped_scanners)
+        headers = ['ID', 'Name', 'Description', 'Status']
+
+    if mapped_scanners_total:
+        hr += tableToMarkdown('Tenable.sc Scanners', mapped_scanners_total, headers, removeNull=True)
 
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Scan Zones', mapped_zones, headers, removeNull=True),
+        'HumanReadable': hr,
         'EntryContext': {
             'TenableSC.ScanZone(val.ID===obj.ID)': createContext(mapped_zones, removeNull=True)
         }

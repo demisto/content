@@ -519,6 +519,18 @@ script:
     - contextPath: TenableSC.ScanZone.ActiveScanners
       description: Scan Zone active scanners
       type: number
+    - contextPath: TenableSC.ScanZone.Scanner.Name
+      description: Scanner name
+      type: string
+    - contextPath: TenableSC.ScanZone.Scanner.ID
+      description: Scanner ID
+      type: number
+    - contextPath: TenableSC.ScanZone.Scanner.Description
+      description: Scanner description
+      type: string
+    - contextPath: TenableSC.ScanZone.Scanner.Status
+      description: Scanner status
+      type: number
   - arguments:
     - default: false
       description: Scan name.
