@@ -3,7 +3,21 @@ import json
 from unittest.mock import MagicMock, patch
 from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main
 
-demisto_params = {
+
+@pytest.fixture
+def ret_demisto_params():
+    return {
+        "after": "1 month",
+        "host": "api-a1fdb00d.duosecurity.com",
+        "integration_key": "DI47EXXXXXXXWRYV2",
+        "limit": "5",
+        "proxy": False,
+        "retries": "5",
+        "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
+    }
+
+
+global_demisto_params = {
     "after": "1 month",
     "host": "api-a1fdb00d.duosecurity.com",
     "integration_key": "DI47EXXXXXXXWRYV2",
@@ -12,9 +26,8 @@ demisto_params = {
     "retries": "5",
     "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
 }
-
-
-client = Client(Params(**demisto_params, mintime={}))
+global_demisto_params['params'] = Params(**global_demisto_params, mintime={})
+client = Client(global_demisto_params)     # type: ignore
 
 get_events = GetEvents(
     client=client,
@@ -60,6 +73,13 @@ def test_rotate_request_order():
     ],
 )
 def test_parse_events(event, expected_res):
+    """
+    Giver:
+        A list of events from the api
+    When:
+        We want to prepare them for XSIAM
+    Then:
+        check that the _time field is added to the each event"""
     parse_events(event) == expected_res
 
 
@@ -87,3 +107,41 @@ def test_main():
         # call the main function
         main()
         assert mock_get_events.get_last_run() == 'bla'
+
+
+def test_set_next_run_filter_v1(ret_demisto_params):
+    """
+    Given:
+        a metadata response from the api v1 and authentication log type.
+    When:
+        We need to set the mintime parameter to prepare for the next run.
+    Then:
+        Assert that the min time for next run is correct.
+    """
+    demisto_params = ret_demisto_params
+    p = Params(**demisto_params, mintime={})
+    demisto_params['params'] = p
+    client = Client(demisto_params)
+    client.set_next_run_filter_v1(12345)
+    assert p.mintime[LogType.ADMINISTRATION] == 12346
+
+
+def test_set_next_run_filter_v2(ret_demisto_params):
+    """
+    Given:
+        a metadata response from the api v2 and authentication log type.
+    When:
+        We need to set the next_offset parameter to prepare for the next run.
+    Then:
+        Assert that the min time for next run is correct.
+    """
+    demisto_params = ret_demisto_params
+    p = Params(**demisto_params, mintime={})
+    demisto_params['params'] = p
+    client = Client(demisto_params)
+    metadata = {"metadata": {
+        "next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"],
+        "total_objects": 1
+    }}
+    client.set_next_run_filter_v2(LogType.AUTHENTICATION, metadata)
+    assert p.mintime[LogType.AUTHENTICATION] == {'next_offset': metadata.get('next_offset')}

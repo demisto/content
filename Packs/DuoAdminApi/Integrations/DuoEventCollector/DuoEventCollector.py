@@ -15,7 +15,6 @@ class LogType(str, Enum):
     AUTHENTICATION = 'AUTHENTICATION'
     ADMINISTRATION = 'ADMINISTRATION'
     TELEPHONY = 'TELEPHONY'
-    OFFLINE_ENROLLMENT = 'OFFLINE_ENROLLMENT'
 
 
 class Params(BaseModel):
@@ -26,7 +25,7 @@ class Params(BaseModel):
     limit: str = '1000'
     retries: str = Field(default='5')
 
-    def set_mintime_value(self, mintime, log_type: LogType) -> None:  # pragma: no cover
+    def set_next_offset_value(self, mintime, log_type: LogType) -> None:  # pragma: no cover
         self.mintime[log_type] = mintime
 
 
@@ -36,7 +35,7 @@ class Client:
     """
 
     def __init__(self, params: Params):  # pragma: no cover type: ignore
-        self.params = params
+        self.params = params.get('params')
         self.admin_api = create_api_call(params.get('host'),  # type: ignore[attr-defined]
                                          params.get('integration_key'),  # type: ignore[attr-defined]
                                          (params.get('secret_key')).get('password'))  # type: ignore[attr-defined]
@@ -69,6 +68,11 @@ class Client:
         return ([], [])
 
     def handle_authentication_logs(self) -> tuple:
+        """
+        Uses the V2 version of the API.
+        For the first time the logs are retreived will work with mintime parameter.
+        All other calls will be made with the next_offset parameter returned from the last fetch.
+        """
         if not self.params.mintime[LogType.AUTHENTICATION].get('next_offset'):
             response = self.admin_api.get_authentication_log(
                 min_time=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
@@ -83,7 +87,12 @@ class Client:
         events = response.get('authlogs', [])
         return events, response_metadata
 
-    def handle_telephony_logs(self):
+    def handle_telephony_logs(self) -> tuple:
+        """
+        Uses the V2 version of the API.
+        For the first time the logs are retreived will work with mintime parameter.
+        All other calls will be made with the next_offset parameter returned from the last fetch.
+        """
         if not self.params.mintime[LogType.TELEPHONY].get('next_offset'):
             response = self.admin_api.get_telephony_log(
                 min_time=self.params.mintime[LogType.TELEPHONY].get('min_time'),
@@ -98,17 +107,19 @@ class Client:
 
         return events, response_metadata
 
-    def handle_administration_logs(self):
+    def handle_administration_logs(self) -> list:
         # ADMINISTRATION end point uses the V1 api endpoint.
         events = self.admin_api.get_administrator_log(mintime=self.params.mintime[LogType.ADMINISTRATION])
         events = sorted(events, key=lambda e: e['timestamp'])
         return events
 
-    def set_next_run_filter(self, mintime: int, log_type: LogType, metadata=None):  # pragma: no cover
-        if metadata:
-            self.params.set_mintime_value({'min_time': mintime, 'next_offset': metadata.get('next_offset')}, log_type)
-        else:
-            self.params.set_mintime_value(mintime + 1, log_type)
+    def set_next_run_filter_v1(self, mintime: int):
+        """Set the next_run for the v1 api. works with mintime parameter"""
+        self.params.set_next_offset_value(mintime + 1, LogType.ADMINISTRATION)
+
+    def set_next_run_filter_v2(self, log_type: LogType, metadata: dict):
+        """Set the next_run for the v2 api, works with the next_offset parameter"""
+        self.params.set_next_offset_value({'next_offset': metadata.get('next_offset')}, log_type)
 
 
 class GetEvents:
@@ -138,8 +149,10 @@ class GetEvents:
         events, metadata = self.make_sdk_call()
         while True:
             if events:
-                # @TODO: handle the event[-1]['timestamp'] this is not correct for the telephony also notice we move forward the time for authnetication.
-                self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0], metadata=metadata)
+                if self.request_order[0] == LogType.ADMINISTRATION:
+                    self.client.set_next_run_filter_v1(events[-1]['timestamp'])
+                else:
+                    self.client.set_next_run_filter_v2(self.request_order[0], metadata)
             yield events
             events, metadata = self.make_sdk_call()
             try:
