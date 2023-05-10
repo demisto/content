@@ -114,12 +114,12 @@ class Client(BaseClient):
         self.name = "ThreatVault"
         self.reliability = reliability
 
-    def antivirus_signature_get_request(self, arg: str, value: str) -> dict:
+    def antivirus_signature_get_request(self, arg: str, value: str) -> dict:    # pragma: no cover
 
         suffix = "threats"
         return self._http_request(method="GET", url_suffix=suffix, params={arg: value})
 
-    def release_notes_get_request(self, type_: str, version: str) -> dict:
+    def release_notes_get_request(self, type_: str, version: str) -> dict:  # pragma: no cover
 
         suffix = "release-notes"
         return self._http_request(
