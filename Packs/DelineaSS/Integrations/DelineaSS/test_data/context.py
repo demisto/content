@@ -420,8 +420,8 @@ SECRET_GET_CREDENTIALS_CONTEXT = {
     'Delinea.Secret.Fetch.Credentials(val.credentials && val.credentials == obj.credentials)': [
         {
             'name': '4',
-            'password': 'test00111',
-            'user': 'andy'
+            'password': 'password',
+            'user': 'user'
         }
     ]
 
@@ -434,3 +434,42 @@ SECRET_SEARCH_NAME_CONTEXT = {
         4241
     ]
 }
+
+
+SECRET_SEARCH_CONTEXT = {
+    'Delinea.Secret.Secret(val.search_secret && val.search_secret == obj.search_secret)': [
+        967,
+        966
+    ]
+}
+
+
+FOLDER_SEARCH_CONTEXT = {
+    'Delinea.Folder.Id(val.folder_id && val.folder_id == obj.folder_id)': [
+        145
+    ]
+}
+
+USER_SEARCH_CONTEXT = {
+    'Delinea.User.Search(val.user && val.user == obj.user)': [
+        {
+            "id": 236,
+            "userName": "adil@jim",
+            "displayName": "Adil",
+            "lastLogin": "2023-04-11T23:09:56",
+            "created": "2023-04-11T22:18:05",
+            "enabled": True,
+            "loginFailures": 0,
+            "emailAddress": "adil.laari@delinea.com",
+            "domainId": -1,
+            "domainName": None,
+            "isLockedOut": False,
+            "isApplicationAccount": False,
+            "twoFactorMethod": "None",
+            "externalUserSource": "Platform",
+            "platformIntegrationType": "Native"
+        }
+    ]
+
+}
+

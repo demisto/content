@@ -37,6 +37,7 @@ class Client(BaseClient):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
+
         return "Bearer " + (self._http_request("POST", "/oauth2/token", headers=headers, data=body)).get('access_token')
 
     def getPasswordById(self, secret_id: str) -> str:
@@ -47,8 +48,8 @@ class Client(BaseClient):
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/username"
         return self._http_request("GET", url_suffix)
 
-    def getSecret(self, secret_id: str) -> str:
-        url_suffix = "/api/v1/secrets/" + str(secret_id)
+    def getSecret(self, secret_id: str, autocomment: str = '') -> str:
+        url_suffix = "/api/v1/secrets/" + str(secret_id) + "?autoComment=" + str(autocomment)
 
         return self._http_request("GET", url_suffix)
 
@@ -78,8 +79,8 @@ class Client(BaseClient):
         idSecret = list(map(lambda x: x.get('id'), response))
         return idSecret
 
-    def updateSecretPassword(self, secret_id: str, new_password: str) -> str:
-        url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password"
+    def updateSecretPassword(self, secret_id: str, new_password: str, auto_comment: str) -> str:
+        url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password" + "?autoComment=" + str(auto_comment)
         body = {
             "id": secret_id,
             "value": new_password
@@ -95,12 +96,13 @@ class Client(BaseClient):
 
         return self._http_request("POST", url_suffix)
 
-    def secretChangePassword(self, secret_id: str, newPassword: str) -> str:
+    def secretChangePassword(self, secret_id: str, newPassword: str, autoComment: str) -> str:
         body = {
             "newPassword": newPassword
         }
 
-        return self._http_request("POST", url_suffix="/api/v1/secrets/" + str(secret_id) + "/change-password",
+        return self._http_request("POST", url_suffix="/api/v1/secrets/" + str(
+            secret_id) + "/change-password" + "?autoComment=" + str(autoComment),
                                   json_data=body)
 
     def secretCreate(self, name: str, secret_template_id: str, **kwargs) -> str:
@@ -145,8 +147,9 @@ class Client(BaseClient):
 
         return self._http_request("POST", url_suffix="/api/v1/secrets", json_data=secretjson)
 
-    def secretDelete(self, id: int) -> str:
-        return self._http_request("DELETE", url_suffix="/api/v1/secrets/" + str(id))
+    def secretDelete(self, id: int, auto_comment: str) -> str:
+        return self._http_request("DELETE",
+                                  url_suffix="/api/v1/secrets/" + str(id) + "?autoComment=" + str(auto_comment))
 
     def folderCreate(self, name: str, type: int, parent: int, **kwargs) -> str:
         url_suffix = "/api/v1/folders"
@@ -250,9 +253,8 @@ def secret_username_get_command(client, secret_id: str = ''):
     )
 
 
-def secret_get_command(client, secret_id: str = ''):
-    secret = client.getSecret(secret_id)
-
+def secret_get_command(client, secret_id: str = '', autoComment: str = ''):
+    secret = client.getSecret(secret_id, autoComment)
     markdown = tableToMarkdown('Full secret object', secret)
     markdown += tableToMarkdown('Items for secret', secret['items'])
 
@@ -291,8 +293,8 @@ def secret_search_command(client, **kwargs):
     )
 
 
-def secret_password_update_command(client, secret_id: str = '', newpassword: str = ''):
-    secret_newpassword = client.updateSecretPassword(secret_id, newpassword)
+def secret_password_update_command(client, secret_id: str = '', newpassword: str = '', autoComment: str = ''):
+    secret_newpassword = client.updateSecretPassword(secret_id, newpassword, autoComment)
 
     markdown = tableToMarkdown('Set new password for secret',
                                {'Secret ID': secret_id, 'New password': newpassword})
@@ -346,8 +348,8 @@ def secret_create_command(client, name: str = '', secretTemplateId: int = 0, **k
     )
 
 
-def secret_delete_command(client, id: int = 0):
-    delete = client.secretDelete(id)
+def secret_delete_command(client, id: int = 0, autoComment: str = ''):
+    delete = client.secretDelete(id, autoComment)
     markdown = tableToMarkdown('Deleted secret', delete)
 
     return CommandResults(
@@ -465,8 +467,8 @@ def user_delete_command(client, id: str = ''):
     )
 
 
-def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: str = ''):
-    secret = client.secretChangePassword(secret_id, newpassword)
+def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: str = '', autoComment: str = ''):
+    secret = client.secretChangePassword(secret_id, newpassword, autoComment)
     markdown = tableToMarkdown('Change password for remote machine', secret)
 
     return CommandResults(
@@ -478,8 +480,30 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
     )
 
 
+def get_credentials(client, secret_id):
+    obj = {}
+    secret = client.getSecret(secret_id)
+    items = secret.get('items')
+    username = None
+    password = None
+    for item in items:
+        if item.get('fieldName') == 'Username':
+            username = item.get('itemValue')
+        if item.get('fieldName') == 'Password':
+            password = item.get('itemValue')
+        obj = {
+            "user": username,
+            "password": password,
+            "name": str(secret.get('id'))
+        }
+    return obj
+
+
 def fetch_credentials_command(client, secretids):
     credentials: List[Any] = []
+    args: dict = demisto.args()
+    credentials_name: Any = args.get('identifier')
+
     try:
         secretsid = argToList(secretids)
     except Exception as e:
@@ -492,24 +516,20 @@ def fetch_credentials_command(client, secretids):
 
     if len(secretsid) == 0:
         demisto.credentials(credentials)
-        demisto.debug("Could not fetch credentials:\
-        Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
+        demisto.debug(
+            "Could not fetch credentials: Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
         credentials = []
     else:
-        for secret_id in secretsid:
-            secret = client.getSecret(secret_id)
-            items = secret.get('items')
-            for item in items:
-                if item.get('fieldName') == 'Username':
-                    username = item.get('itemValue')
-                if item.get('fieldName') == 'Password':
-                    password = item.get('itemValue')
-                    obj = {
-                        "user": username,
-                        "password": password,
-                        "name": str(secret.get('id'))
-                    }
-                    credentials.append(obj)
+        if credentials_name:
+            try:
+                credentials = [get_credentials(client, credentials_name)]
+            except Exception as e:
+                demisto.debug(f"Could not fetch credentials: {credentials_name}. Error: {e}")
+                credentials = []
+        else:
+            for secret_id in secretsid:
+                obj = get_credentials(client, secret_id)
+                credentials.append(obj)
 
     demisto.credentials(credentials)
     markdown = tableToMarkdown('Fetched Credentials', credentials)
@@ -525,14 +545,15 @@ def fetch_credentials_command(client, secretids):
 
 def main():
     params = demisto.params()
+    args = demisto.args()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-
     # get the service API url
     url = params.get('url')
     proxy = params.get('proxy', False)
     verify = not params.get('insecure', False)
     secretids = params.get('secrets')
+    autocomment = args.get('comments')
 
     demisto.info(f'Command being called is {demisto.command()}')
 
