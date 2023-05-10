@@ -936,7 +936,7 @@ def create_incident_command(
         CommandResults: The object containing the command results, including the readable output, outputs prefix,
          outputs key field, and outputs data.
     """
-    customer_impacted = argToBoolean(args.get("customer_impacted"))
+    customer_impacted = False
     title = args.get("title")
     content = args.get("content")
     detection_method = args.get("detection_method")
@@ -1043,9 +1043,7 @@ def update_incident_command(
     summary = args.get("summary")
     incident_attributes = {
         "title": args.get("title"),
-        "customer_impacted": argToBoolean(args.get("customer_impacted"))
-        if args.get("customer_impacted", False)
-        else None,
+        "customer_impacted": False,
         "detected": parse(str(args.get("detected")), settings={"TIMEZONE": "UTC"})
         if args.get("detected")
         else None,
