@@ -1286,7 +1286,7 @@ class CoreClient(BaseClient):
     def set_user_role(self, user_emails: list[str], role_name: str) -> None:
         self._http_request(
             method='POST',
-            # url_suffix='/rbac/set_role/',
+            url_suffix='/rbac/set_user_role/',
             json_data={"request_data": {
                 "user_emails": user_emails,
                 "role_name": role_name
@@ -1296,7 +1296,7 @@ class CoreClient(BaseClient):
     def remove_user_role(self, user_emails: list[str]) -> None:
         self._http_request(
             method='POST',
-            # url_suffix='/rbac/set_role/',
+            url_suffix='/rbac/set_user_role/',
             json_data={"request_data": {
                 "user_emails": user_emails,
                 "role_name": ""
@@ -3686,6 +3686,33 @@ def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
     return "Error: "
 
 
+def handle_error(e, type: str | None, custom_msg: str | None) -> None:
+    """
+    Handles an error that may occur during a process.
+
+    Args:
+        e (Exception): The error that occurred.
+        type (str | None): The type of resource associated with the error(Role id or Group), if applicable.
+        custom_msg (str | None): A custom error message to be included in the raised ValueError, if desired.
+
+    Raises:
+        ValueError: If the error message indicates that the resource was not found, a more detailed error message
+            is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
+        ValueError: If the error message indicates that there were no risky users or hosts found, a value error is raised
+            with a specific error message and the original error as the cause.
+    """
+
+    if e.res is not None and e.res.status_code == 500:
+
+        if 'was not found' in str(e):
+            error_msg = find_the_cause_error(str(e), type)
+            raise ValueError(f'{error_msg}, {custom_msg} full error message: {e}') from e
+
+        elif 'No identity module' in str(e):
+            raise ValueError(f'{custom_msg}, full error message: {e}') from e
+    raise
+
+
 def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
     Returns a list of all users using the Core API client.
@@ -3740,15 +3767,18 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
         try:
             outputs: dict[str, Any] = client.get_risk_score_user_or_host(user_id).get('reply', {})
         except DemistoException as e:
-            if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
-                error_msg = find_the_cause_error(str(e), "id")
-                raise ValueError(f'{error_msg}, full error message: {e}') from e
-            raise
+            err_msg = "There were no risky users found."
+            handle_error(e=e, type="id", custom_msg=err_msg)
+
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
 
     else:
         list_limit = int(args.get('limit', 50))
-        outputs: list[dict[str, Any]] = client.get_list_risky_users().get('reply', [])[:list_limit]
+        try:
+            outputs: list[dict[str, Any]] = client.get_list_risky_users().get('reply', [])[:list_limit]
+        except DemistoException as e:
+            err_msg = "There were no risky users found."
+            handle_error(e=e, type=None, custom_msg=err_msg)
 
         table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
 
@@ -3787,15 +3817,18 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
         try:
             outputs: dict[str, Any] = client.get_risk_score_user_or_host(host_id).get('reply', {})
         except DemistoException as e:
-            if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
-                error_msg = find_the_cause_error(str(e), "id")
-                raise ValueError(f'{error_msg}, full error message: {e}') from e
-            raise
+            err_msg = "There were no risky Hosts found."
+            handle_error(e=e, type="id", custom_msg=err_msg)
+
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
     else:
         list_limit = int(args.get('limit', 50))
+        try:
+            outputs: list[dict[str, Any]] = client.get_list_risky_hosts().get('reply', [])[:list_limit]
+        except DemistoException as e:
+            err_msg = "There were no risky Hosts found."
+            handle_error(e=e, type=None, custom_msg=err_msg)
 
-        outputs: list[dict[str, Any]] = client.get_list_risky_hosts().get('reply', [])[:list_limit]
         table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
 
     readable_output = tableToMarkdown(name='Risky Hosts', t=table_for_markdown)
@@ -3827,12 +3860,9 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
     try:
         outputs = client.get_list_user_groups(group_names).get("reply", [])
     except DemistoException as e:
-        if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
-            error_msg = find_the_cause_error(str(e), "Group")
-            raise ValueError(
-                f'{error_msg}, Note: If you sent more than one group name, they may not exist either, full error message: {e}'
-            ) from e
-        raise
+        error_msg = "Note: If you sent more than one group name, they may not exist either"
+        handle_error(e=e, type="Group", custom_msg=error_msg)
+
     table_for_markdown: list[dict[str, str | None]] = []
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
@@ -3866,10 +3896,8 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
     try:
         outputs = client.get_list_roles(role_names).get("reply", [])
     except DemistoException as e:
-        if e.res is not None and e.res.status_code == 500 and 'was not found' in str(e):
-            error_msg = find_the_cause_error(str(e), "Role")
-            raise ValueError(f'{error_msg}, full error message: {e}') from e
-        raise
+        error_msg = "Note: If you sent more than one Role name, they may not exist either."
+        handle_error(e=e, type="Role", custom_msg=error_msg)
 
     if not outputs:
         return CommandResults(readable_output="No entries")
@@ -3915,4 +3943,4 @@ def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
 
     client.remove_user_role(user_emails)
 
-    return CommandResults(readable_output="User Was Removed Successfully")
+    return CommandResults(readable_output="User Role Was Removed Successfully")
