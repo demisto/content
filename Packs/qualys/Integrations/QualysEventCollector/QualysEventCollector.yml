@@ -31,13 +31,7 @@ configuration:
   section: Collect
   display: First fetch time
   name: first_fetch
-  required: false
-  type: 0
-- defaultvalue: '50'
-  display: The maximum amount of incidents to fetch at once
-  name: max_fetch
-  required: false
-  section: Collect
+  required: true
   type: 0
 description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys Event Collector
@@ -60,8 +54,14 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: Date to return results from.
+      isArray: false
+      name: since_datetime
+      required: false
+      secret: false
     deprecated: false
-    description: Gets events from Hello World.
+    description: Gets events from Qualys.
     execution: false
     name: qualys-get-events
   dockerimage: demisto/python3:3.10.10.49934
