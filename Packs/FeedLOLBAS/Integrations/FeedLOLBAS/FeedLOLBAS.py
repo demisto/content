@@ -113,7 +113,7 @@ def map_indicator_fields(raw_indicator: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def build_indicator_custom_fields(client: Client) -> Dict[str, str]:
+def build_indicator_custom_fields(client: Client) -> Dict[str, Any]:
     """
     Map MITRE ID to MITRE name.
     """
@@ -124,7 +124,8 @@ def build_indicator_custom_fields(client: Client) -> Dict[str, str]:
     mitre_data = [obj for obj in mitre_data if obj.get('type') == 'attack-pattern']
     # build a dictionary list of mitre_id: mitre_name.
     for obj in mitre_data:
-        for external_ref in obj.get('external_references'):
+        external_refs = list(obj.get('external_references', []))
+        for external_ref in external_refs:
             mitre_name = obj.get('name')
             if mitre_id := external_ref.get('external_id'):
                 result_map[mitre_id] = mitre_name
