@@ -3833,7 +3833,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
                 f'{error_msg}, Note: If you sent more than one group name, they may not exist either, full error message: {e}'
             ) from e
         raise
-    table_for_markdown: list[dict[str, Optional[str]]]
+    table_for_markdown: list[dict[str, Optional[str]]] = []
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
     readable_output = tableToMarkdown(name='Groups', t=table_for_markdown)
@@ -3908,7 +3908,7 @@ def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
             user_emails (str): A comma-separated list of email addresses for the users to be removed.
 
     Returns:
-        CommandResults: An instance of the CommandResults class, containing a human-readable 
+        CommandResults: An instance of the CommandResults class, containing a human-readable
         message indicating that the users were removed successfully.
     """
     user_emails = argToList(args.get('user_emails'))

@@ -3466,7 +3466,7 @@ def test_get_list_roles_command(
     "func, expected_output",
     [
         (set_user_role_command, "User Role Was Updated Successfully"),
-        (remove_user_role_command, "User Role Was Removed Successfully")
+        (remove_user_role_command, "User Was Removed Successfully")
     ]
 )
 def test_user_role_command(mocker, func, expected_output: str):
