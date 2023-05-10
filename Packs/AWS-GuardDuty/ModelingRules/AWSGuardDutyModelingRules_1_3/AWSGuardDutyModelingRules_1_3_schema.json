@@ -31,7 +31,10 @@
     "Region": {
       "type": "string",
       "is_array": false
+    },
+    "AccountId": {
+      "type": "string",
+      "is_array": false
     }
   }
-
 }
