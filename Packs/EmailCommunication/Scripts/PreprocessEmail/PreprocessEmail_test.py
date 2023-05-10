@@ -503,7 +503,7 @@ def test_get_email_related_incident_id_email_in_context(mocker):
     """
     import PreprocessEmail
     from PreprocessEmail import get_email_related_incident_id
-    mocker.patch.object(PreprocessEmail, 'get_incident_by_query', return_value=[{'emailsubject': '', 'id': '3'}])
+    mocker.patch.object(PreprocessEmail, 'get_incident_by_query', return_value=[{'emailsubject': None, 'id': '3'}])
     mocker.patch.object(demisto, 'executeCommand', return_value=EMAIL_THREADS)
     id = get_email_related_incident_id('69433507', 'Test Email 2')
     assert id == '3'
