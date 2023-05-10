@@ -13,7 +13,7 @@ Perform the following steps to configure the Socket Receiver:
 5. Select **Match Alerts Raw**.
 6. Select **Socket Receiver** from the dropdown under **Destination**.
 7. Specify a unique name for the **Destination Name**.
-8. Under **Host** fill in the name or the ip address of the siem.
+8. Under **Host**, fill in the name or the IP address of the SIEM.
 9. Specify the port number under **Port**.
 10. elect **JSON** from the dropdown under **Format**.
 11. Click the **Listen for this Event** checkbox.
