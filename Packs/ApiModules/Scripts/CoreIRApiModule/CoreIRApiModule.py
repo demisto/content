@@ -3860,7 +3860,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
     try:
         outputs = client.get_list_user_groups(group_names).get("reply", [])
     except DemistoException as e:
-        error_msg = "Note: If you sent more than one group name, they may not exist either"
+        error_msg = "Note: If you sent more than one group name, they may not exist either."
         handle_error(e=e, type="Group", custom_msg=error_msg)
 
     table_for_markdown: list[dict[str, str | None]] = []

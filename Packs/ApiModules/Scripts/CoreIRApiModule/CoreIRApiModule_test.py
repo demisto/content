@@ -3238,14 +3238,14 @@ def test_get_list_risky_users_and_hosts_command(
 
 
 @pytest.mark.parametrize(
-    "command_func, id",
+    "command_func, id, error_msg",
     [
-        (get_list_risky_users_command, "user_id"),
-        (get_list_risky_hosts_command, "host_id"),
+        (get_list_risky_users_command, "user_id", "users"),
+        (get_list_risky_hosts_command, "host_id", "Hosts"),
     ],
 )
 def test_get_list_risky_users_hosts_command_raise_exception(
-    mocker, command_func: Callable, id: str
+    mocker, command_func: Callable, id: str, error_msg: str
 ):
     """
     Tests that the 'get_list_risky_users_command' and 'get_list_risky_hosts_command'
@@ -3282,7 +3282,7 @@ def test_get_list_risky_users_hosts_command_raise_exception(
     )
     with pytest.raises(
         Exception,
-        match="Error: id test was not found, full error message: id 'test' was not found",
+        match=f"Error: id test was not found, There were no risky {error_msg} found. full error message: id 'test' was not found",
     ):
         command_func(client, {id: "test"})
 
@@ -3390,7 +3390,7 @@ def test_get_list_user_groups_command_raise_exception(mocker):
     with pytest.raises(
         Exception,
         match="Error: Group test was not found, Note: If you sent more than one group name, "
-              "they may not exist either, full error message: Group 'test' was not found",
+              "they may not exist either. full error message: Group 'test' was not found",
     ):
         get_list_user_groups_command(client, {"group_names": "test"})
 
