@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # This tool was developed by "https://github.com/ANSSI-FR/bmc-tools" - Thank you for your hardwork!
 
-import argparse
-import os
 import sys
 from struct import pack, unpack
 
@@ -84,10 +82,10 @@ class BMCContainer():
 
     def b_log(self, ltype, verbose, lmsg):
 
-        log_type = {"info"  : demisto.info,
-                    "debug" : demisto.debug,
-                    "error" : demisto.error
-        }
+        log_type = {"info": demisto.info,
+                    "debug": demisto.debug,
+                    "error": demisto.error
+                    }
 
         if not verbose or self.verb:
             log_type[ltype]("lmsg")
@@ -110,7 +108,8 @@ class BMCContainer():
         self.btype = self.BMC_CONTAINER
 
         if self.bdat[:len(self.BIN_FILE_HEADER)] == self.BIN_FILE_HEADER:
-            self.b_log("debug", True, "Subsequent header version: %d." % (unpack("<L", self.bdat[len(self.BIN_FILE_HEADER):len(self.BIN_FILE_HEADER) + 4])[0]))
+            self.b_log("debug", True, "Subsequent header version: %d." %
+                       (unpack("<L", self.bdat[len(self.BIN_FILE_HEADER):len(self.BIN_FILE_HEADER) + 4])[0]))
             self.bdat = self.bdat[len(self.BIN_FILE_HEADER) + 4:]
             self.btype = self.BIN_CONTAINER
 
@@ -127,7 +126,6 @@ class BMCContainer():
             return False
         bl = 0
         while len(self.bdat) > 0:
-            old = False
             o_bmp = ""
             t_hdr = self.bdat[:self.TILE_HEADER_SIZE[self.btype]]
             key1, key2, t_width, t_height = unpack("<LLHH", t_hdr[:0xC])
@@ -162,7 +160,7 @@ class BMCContainer():
                         if len(t_bmp) != t_width * t_height * bl // (64 * 64):
                             self.b_log("error", False,
                                        "Uncompressed tile data seems bogus (uncompressed %d bytes while expecting %d). Discarding tile." % (
-                                       len(t_bmp), t_width * t_height * bl // (64 * 64)))
+                                           len(t_bmp), t_width * t_height * bl // (64 * 64)))
                             t_bmp = b""
                         else:
                             t_bmp = self.b_parse_rgb565(t_bmp)
@@ -171,28 +169,24 @@ class BMCContainer():
                     if cf == 4:
                         t_bmp = self.b_parse_rgb32b(self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height])
                         if t_height != 64:
-                            old = True
                             o_bmp = self.b_parse_rgb32b(
                                 self.bdat[len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64])
                     elif cf == 3:
                         t_bmp = self.b_parse_rgb24b(self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height])
                         if t_height != 64:
-                            old = True
                             o_bmp = self.b_parse_rgb24b(
                                 self.bdat[len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64])
                     elif cf == 2:
                         t_bmp = self.b_parse_rgb565(self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height])
                         if t_height != 64:
-                            old = True
                             o_bmp = self.b_parse_rgb565(
                                 self.bdat[len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64])
                     elif cf == 1:
                         self.pal = True
                         t_bmp = self.PALETTE + self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height]
                         if t_height != 64:
-                            old = True
                             o_bmp = self.PALETTE + self.bdat[
-                                                   len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64]
+                                len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64]
                     else:
                         self.b_log("error", False, f"Unexpected bpp {8*cf} found during processing; aborting.")
                         return False
@@ -325,7 +319,7 @@ class BMCContainer():
                 if cmd in [0xC0, 0xF6]:
                     if len(data) < bbp:
                         self.b_log(sys.stderr, False, 3,
-                                   "Unexpected end of compressed stream. Skipping tile." % (cmd, rl))
+                                   "Unexpected end of compressed stream. Skipping tile. ({1}, {2})" % (cmd, rl))
                         return b""
                     fgc = data[:bbp]
                     data = data[bbp:]
@@ -434,13 +428,11 @@ class BMCContainer():
                 h *= len(self.bmps) // self.STRIPE_WIDTH
             c_bmp = b"" if not self.pal else self.PALETTE
             if self.btype == self.BIN_CONTAINER:
-                collage_builder = (lambda x, a=self, PAD=len(pad), WIDTH=range(w // 64): b''.join([b''.join(
-                    [a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j:64 * PAD * (j + 1)] for k in WIDTH]) for j in
-                                                                                                   range(64)]))
+                def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
+                    return b"".join([b"".join([a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j:64 * PAD * (j + 1)] for k in WIDTH]) for j in range(64)])
             else:
-                collage_builder = (lambda x, a=self, PAD=len(pad), WIDTH=range(w // 64): b''.join(
-                    [b''.join([a.bmps[a.STRIPE_WIDTH * x + k][64 * PAD * j:64 * PAD * (j + 1)] for k in WIDTH]) for j in
-                     range(64)]))
+                def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
+                    return b"".join([b"".join([a.bmps[a.STRIPE_WIDTH * x + k][64 * PAD * j:64 * PAD * (j + 1)] for k in WIDTH]) for j in range(64)])
             c_bmp += b''.join(map(collage_builder, range(h // 64)))
             self.b_write(f"{self.fname}_collage.bmp", self.b_export_bmp(w, h, c_bmp))
             self.b_log("info", False, "Successfully exported collage file.")
@@ -451,7 +443,7 @@ class BMCContainer():
             return b"BM" + pack("<L", len(data) + 122) + b"\x00\x00\x00\x00\x7A\x00\x00\x00\x6C\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x20\x00\x03\x00\x00\x00" + pack("<L",
                                                                                                len(data)) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\x00\x00\xFF\x00\x00\xFF\x00\x00\x00\x00\x00\x00\xFF niW" + (
-                               b"\x00" * 36) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
+                b"\x00" * 36) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
         else:
             return b"BM" + pack("<L", len(data) + 0x36) + b"\x00\x00\x00\x00\x36\x04\x00\x00\x28\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x08\x00\x00\x00\x00\x00" + pack("<L",
@@ -499,7 +491,7 @@ def main(args):
     del bmcc
 
     results = CommandResults(
-        outputs_prefix = 'Collages',
+        outputs_prefix='Collages',
         outputs=sources
     )
 

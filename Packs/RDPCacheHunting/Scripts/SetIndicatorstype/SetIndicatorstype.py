@@ -31,7 +31,6 @@ def parse_data(list_content):
             lists_data.append(list_widget_data)
             list_number += 1
 
-
     return {
         "Type": 17,
         "ContentsFormat": "pie",
@@ -44,8 +43,9 @@ def parse_data(list_content):
         }
     }
 
+
 def main():
-    incident = demisto.incidents()
+    demisto.incidents()
     Indicator_type = demisto.executeCommand("getList", {"listName": "indicatorsTypes"})
     list_content = Indicator_type[0].get('Contents', '').split(",")
 

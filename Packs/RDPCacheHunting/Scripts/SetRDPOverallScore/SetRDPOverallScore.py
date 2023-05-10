@@ -7,6 +7,7 @@ YELLOW_HTML_STYLE = "'color:#e3dc0e;font-size:72px;padding: 60px; text-align:cen
 ORANGE_HTML_STYLE = "'color:#EF9700;font-size:72px;padding: 60px; text-align:center;padding-left: 70px'>"
 RED_HTML_STYLE = "'color:#b81d1d;font-size:72px;padding: 60px; text-align:center;padding-left: 70px'>"
 
+
 def main():
     query = demisto.context().get('OverallScore')
 

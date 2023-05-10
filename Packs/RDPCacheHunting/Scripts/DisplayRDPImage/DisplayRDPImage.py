@@ -3,10 +3,12 @@ from CommonServerPython import *  # noqa: F401
 
 import base64
 
+
 def img2html(image):
     data_uri = base64.b64encode(open(image, 'rb').read()).decode('utf-8')
     html = '<img src="data:image/png;base64,{0}">'.format(data_uri)
     return html
+
 
 def main():
     if not demisto.context().get('RDPImageEntryID'):
@@ -22,6 +24,7 @@ def main():
         'Type': entryTypes['note'],
         'Contents': img_html
     })
+
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
