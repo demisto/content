@@ -702,7 +702,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The account Id of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
+      description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
         command to get the user's account ID.
       isArray: false
       name: assignee_id
