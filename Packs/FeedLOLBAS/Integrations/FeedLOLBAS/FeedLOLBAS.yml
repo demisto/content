@@ -19,7 +19,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   section: Collect
   display: Indicator Reputation
   name: feedReputation
