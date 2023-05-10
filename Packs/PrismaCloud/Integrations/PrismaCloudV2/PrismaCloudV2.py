@@ -171,7 +171,7 @@ class Client(BaseClient):
 
     def alert_dismiss_request(self, dismissal_note: str, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                               policy_ids: Optional[List[str]] = None, dismissal_time_range: Optional[Dict[str, Any]] = None,
-                              filters: Optional[List[str]] = None) -> requests.Response:
+                              filters: Optional[List[str]] = None):
         data = remove_empty_values({'alerts': alert_ids,
                                     'policies': policy_ids,
                                     'dismissalNote': dismissal_note,
@@ -181,10 +181,10 @@ class Client(BaseClient):
                                         'filters': handle_filters(filters),
                                     }})
 
-        return self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
+        self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
 
     def alert_reopen_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
-                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None) -> requests.Response:
+                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None)
         data = remove_empty_values({'alerts': alert_ids,
                                     'policies': policy_ids,
                                     'dismissalTimeRange': time_range,
@@ -193,7 +193,7 @@ class Client(BaseClient):
                                         'filters': handle_filters(filters),
                                     }})
 
-        return self._http_request('POST', 'alert/reopen', json_data=data, resp_type='response')
+        self._http_request('POST', 'alert/reopen', json_data=data, resp_type='response')
 
     def remediation_command_list_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                                          policy_id: Optional[str] = None):
@@ -716,7 +716,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
             return entry
 
 
-def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]) -> requests.Response:
+def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]):
     """
     Close (Dismiss) an alert in Prisma Cloud.
 
@@ -725,7 +725,7 @@ def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str,
         ids: The IDs of the alerts to be dismissed.
         delta: A dictionary of fields that changed from the last update - containing only the changed fields.
 
-    Returns: The response of the dismiss alert API call.
+    Returns: None.
 
     """
     close_notes = delta.get('closeNotes')
@@ -735,10 +735,10 @@ def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str,
     # TODO: need to understand how to define the time here - consult with Dima. Maybe I can find the creation time of the alert and set the time according to it.
     time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
 
-    return client.alert_dismiss_request(dismissal_note=dismissal_note, time_range=time_filter, alert_ids=ids)
+    client.alert_dismiss_request(dismissal_note=dismissal_note, time_range=time_filter, alert_ids=ids)
 
 
-def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]) -> requests.Response:
+def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]):
     """
     Re-open an alert in Prisma Cloud.
 
@@ -746,13 +746,13 @@ def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]) -> requests.Res
         client: Demisto client.
         ids: The IDs of the alerts to be re-opened.
 
-    Returns: The response of the re-open alert API call.
+    Returns: None.
 
     """
     # TODO: need to understand how to define the time here - consult with Dima. Maybe I can find the creation time of the alert and set the time according to it.
     time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
 
-    return client.alert_reopen_request(time_range=time_filter, alert_ids=ids)
+    client.alert_reopen_request(time_range=time_filter, alert_ids=ids)
 
 
 def whether_to_close_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
@@ -792,7 +792,7 @@ def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
 
 
 def update_remote_alert(client: Client, delta: Dict[str, Any],
-                        inc_status: IncidentStatus, incident_id: str) -> requests.Response:
+                        inc_status: IncidentStatus, incident_id: str):
     """
     Updates the remote prisma alert according to changes of the mirrored xsaor incident.
     The possible updates are closing or re-opening the alert.
@@ -803,18 +803,18 @@ def update_remote_alert(client: Client, delta: Dict[str, Any],
         inc_status: The status of the incident.
         incident_id: Contains the value of the dbotMirrorId field, which represents the ID of the alert in prisma.
 
-    Returns: The response of the dismiss or re-open alert API call.
+    Returns: None.
 
     """
     # XSOAR incident was closed - closing the mirrored prisma alert
     if inc_status == IncidentStatus.DONE and whether_to_close_in_prisma_cloud(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
-        return close_alert_in_prisma_cloud(client, [incident_id], delta)
+        close_alert_in_prisma_cloud(client, [incident_id], delta)
 
     # XSOAR incident was re-opened - re-opening the mirrored prisma alert
     if inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(delta):
         demisto.debug(f'Reopening incident with remote ID {incident_id} in remote system.')
-        return reopen_alert_in_prisma_cloud(client, [incident_id])
+        reopen_alert_in_prisma_cloud(client, [incident_id])
 
     # TODO: need to check with Dima - when closing an xsoar incident, one of the possible statuses is Resolved -
     #  don't think it is possible to resolve an issue through the API.
@@ -1906,11 +1906,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     try:
         if parsed_args.incident_changed:
-            response = update_remote_alert(client, delta, parsed_args.inc_status, remote_incident_id)
-            if response:  # TODO: need to check the status code here - or something like that
-                demisto.debug(f'Remote Incident: {remote_incident_id} was updated successfully.')
-            else:
-                raise Exception(f'Remote Incident: {remote_incident_id} was not updated due to an error.')
+            update_remote_alert(client, delta, parsed_args.inc_status, remote_incident_id)
+            demisto.debug(f'Remote Incident: {remote_incident_id} was updated successfully.')
+
         else:
             demisto.debug(f"Skipping the update of remote incident {remote_incident_id} as it has not changed.")
 
