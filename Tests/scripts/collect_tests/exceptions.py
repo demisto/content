@@ -25,7 +25,7 @@ class NonexistentPackException(UnsupportedPackException):
 
 
 class NonXsoarSupportedPackException(UnsupportedPackException):
-    def __init__(self, pack_name: str, support_level: str, content_version_range: Optional[VersionRange] = None):
+    def __init__(self, pack_name: str, support_level: str | None, content_version_range: Optional[VersionRange] = None):
         self.support_level = support_level
         self.content_version_range = content_version_range
         super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
@@ -72,7 +72,7 @@ class NoTestsConfiguredException(Exception):
 
 
 class NotUnderPackException(Exception):
-    def __init__(self, path: Path):
+    def __init__(self, path: Path | str):
         self.message = f'Could not find a pack for {str(path)}'
         super().__init__(self.message)
 
