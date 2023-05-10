@@ -348,7 +348,22 @@ script:
     - contextPath: ReversingLabs.a1000_advanced_search_report
       description: A1000 classification report
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.44887
+  - name: reversinglabs-a1000-url-report
+    description: Get a report for the submitted URL.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: url
+        description: URL string
+        default: true
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.a1000_url_report
+        description: A1000 URL report
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.57674
   feed: false
   isfetch: false
   longRunning: false

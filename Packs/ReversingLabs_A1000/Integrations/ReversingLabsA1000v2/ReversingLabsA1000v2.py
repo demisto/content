@@ -437,6 +437,64 @@ def advanced_search(a1000):
     return [command_result, file_result]
 
 
+def get_url_report(a1000):
+    """
+    Get a report for a submitted URL
+    """
+    url = demisto.getArg("url")
+
+    try:
+        response = a1000.network_url_report(requested_url=url)
+        response_json = response.json()
+    except Exception as e:
+        return_error(str(e))
+
+    results = url_report_output(url=url, response_json=response_json)
+
+    return results
+
+
+def url_report_output(url, response_json):
+    classification = response_json.get("classification")
+    analysis = response_json.get("analysis", {})
+    first_analysis = analysis.get("first_analysis")
+    analysis_statistics = analysis.get("statistics", {})
+
+    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n ### Analysis\n #### Statistics\n **Unknown**: {analysis_statistics.get("unknown")}
+    **Suspicious**: {analysis_statistics.get("suspicious")}
+    **Malicious**: {analysis_statistics.get("malicious")}
+    **Goodware**: {analysis_statistics.get("goodware")}
+    **Total**: {analysis_statistics.get("total")}
+    
+    \n**First analysis**: {first_analysis}
+    """
+
+    d_bot_score = classification_to_score(classification.upper())
+
+    dbot_score = Common.DBotScore(
+        indicator=url,
+        indicator_type=DBotScoreType.URL,
+        integration_name="ReversingLabs A1000 v2",
+        score=d_bot_score,
+        malicious_description=classification,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.URL(
+        url=url,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_url_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
 def main():
 
     try:
@@ -483,6 +541,18 @@ def main():
             return_results(get_classification(a1000))
         elif demisto.command() == 'reversinglabs-a1000-advanced-search':
             return_results(advanced_search(a1000))
+        elif demisto.command() == "reversinglabs-a1000-url-report":
+            return_results(get_url_report(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-domain-report':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-ip-report':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-ip-downloaded-files':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-ip-domain-resolutions':
+            pass
+        elif demisto.command() == 'reversinglabs-a1000-ip-urls':
+            pass
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
 
