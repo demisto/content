@@ -2017,10 +2017,10 @@ script:
   - arguments:
     - name: created_from
       required: true
-      description: 'Greater than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z", "10 days", "2 hours","5 months"..'
+      description: 'Greater than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z", "10 days", "2 hours","5 months".'
     - name: created_until
       required: false
-      description: 'Less than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z", "10 days", "2 hours","5 months"..'
+      description: 'Less than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z", "10 days", "2 hours","5 months".'
     - name: ruleName
       description: 'Free-text filter by rule name. Example: "rule1".'
     - name: incidentStatus
