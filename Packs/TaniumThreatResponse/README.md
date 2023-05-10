@@ -8,7 +8,7 @@ You need to configure a Socket Receiver on the Tanium side.
 Perform the following steps to configure the Socket Receiver:
 1. Go to **Modules** > **Connect**.
 2. Enter a name and description for the connection.
-3. Select **Event** from the dropdown under **Source**.
+3. From the **Source** dropdown, select **Event**.
 4. Select **Tanium Threat Response** from the dropdown under **Event Group**.
 5. Select **Match Alerts Raw**.
 6. Select **Socket Receiver** from the dropdown under **Destination**.
