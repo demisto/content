@@ -3628,17 +3628,6 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     )
 
 
-def parse_list_users(user: dict[str, Any]) -> dict[str, Any]:
-    return {
-        'User email': user.get('user_email'),
-        'First Name': user.get('user_first_name'),
-        'Last Name': user.get('user_last_name'),
-        'Role': user.get('role_name'),
-        'Type': user.get('user_type'),
-        'Groups': user.get('groups'),
-    }
-
-
 def parse_risky_users_or_hosts(user_or_host: dict[str, Any], table_title: str) -> dict[str, Any]:
     return {
         table_title: user_or_host.get('id'),
@@ -3728,12 +3717,23 @@ def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandR
     Raises:
         ValueError: If the API connection failed.
     """
+
+    def parse_user(user: dict[str, Any]) -> dict[str, Any]:
+        return {
+            'User email': user.get('user_email'),
+            'First Name': user.get('user_first_name'),
+            'Last Name': user.get('user_last_name'),
+            'Role': user.get('role_name'),
+            'Type': user.get('user_type'),
+            'Groups': user.get('groups'),
+        }
+
     try:
         list_users: list[dict[str, Any]] = client.get_list_users().get('reply', [])
     except Exception as e:
         raise ValueError(f'API connection failed {e}') from e
 
-    table_for_markdown = [parse_list_users(user) for user in list_users]
+    table_for_markdown = [parse_user(user) for user in list_users]
     readable_output = tableToMarkdown(name='Users', t=table_for_markdown)
 
     return CommandResults(
@@ -3856,6 +3856,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
     Raises:
         ValueError: If the API connection fails or the specified group name(s) is not found.
     """
+
     group_names = argToList(args.get('group_names'))
     try:
         outputs = client.get_list_user_groups(group_names).get("reply", [])
