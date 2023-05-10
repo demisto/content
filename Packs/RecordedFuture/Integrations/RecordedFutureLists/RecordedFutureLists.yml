@@ -139,6 +139,6 @@ script:
     - contextPath: RecordedFuture.List.Entities.action_result
       description: Entity specific result for the action
       type: String
-fromversion: 6.8.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
