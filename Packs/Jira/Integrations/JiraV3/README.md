@@ -1,5 +1,5 @@
 Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both on-prem, and cloud instances.
-This integration was integrated and tested with version xx of Jira V3
+This integration was integrated and tested with: Jira Cloud V3 (for Cloud), Jira Software (for Cloud), Jira Server 9.6.0 (for OnPrem), Jira Agile 9.6.0 (for OnPrem)
 
 Some changes have been made that might affect your existing content.
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-atlassian-jira-v3).
@@ -935,6 +935,8 @@ Fetches an issue from Jira.
 | getAttachments | Deprecated. Please use get_attachments. Possible values are: true, false. Default is false. | Optional |
 | expand_links | If "true", expands the issue links (the linked issues and subtasks). Possible values are: true, false. Default is false. | Optional |
 | expandLinks | Deprecated. Please use expand_links. Possible values are: true, false. Default is false. | Optional |
+
+**Note**: When supplying the `all` value to the `fields` argument, then all the issue fields will be returned, and every issue field that was not parsed by the code, will be parsed in the following format: `{customfield_1: SOME_NESTED_VALUE}` -> `{customfield_1: {issueFieldDisplayName: THE_DISPLAY_NAME_OF_THE_FIELD, rawData: SOME_NESTED_VALUE}}`
 
 #### Context Output
 
@@ -2823,7 +2825,6 @@ Add a new custom field and add it to the incident type&#39;s layout:
 
 ## Breaking changes from the previous version of this integration - Atlassian Jira V3
 
-%%FILL HERE%%
 The following sections list the changes in this version.
 
 ### Commands
@@ -2850,9 +2851,3 @@ In the *jira-create-issue* command:
 In the *jira-edit-issue* command:
 
 * *issueJson* - This argument will override the other arguments supplied to the command.
-
-## Additional Considerations for this version
-
-%%FILL HERE%%
-
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
