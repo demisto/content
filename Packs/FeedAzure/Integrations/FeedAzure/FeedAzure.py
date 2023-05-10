@@ -126,8 +126,9 @@ class Client(BaseClient):
             Dict. Indicators group metadata.
         """
         indicator_metadata = dict()
+        indicator_metadata_id = indicators_group_data.get('id')
 
-        indicator_metadata['id'] = indicators_group_data.get('id')
+        indicator_metadata['id'] = indicator_metadata_id
         indicator_metadata['name'] = indicators_group_data.get('name')
         indicator_properties = indicators_group_data.get('properties')
 
@@ -137,7 +138,7 @@ class Client(BaseClient):
 
         indicator_metadata['region'] = indicator_properties.get('region')
         indicator_metadata['platform'] = indicator_properties.get('platform')
-        indicator_metadata['system_service'] = indicator_properties.get('systemService')
+        indicator_metadata['system_service'] = indicator_properties.get('systemService', indicator_metadata_id.split('.')[0])
         indicator_metadata['address_prefixes'] = indicator_properties.get('addressPrefixes', [])
 
         return indicator_metadata
