@@ -3432,6 +3432,38 @@ Retrieve a list of the current user emails associated with one or more user grou
 | PaloAltoNetworksXDR.UserGroup.user_email | array | List of email addresses belonging to the users associated with the User Group. | 
 | PaloAltoNetworksXDR.UserGroup.source | String | Type of User Group. | 
 
+#### Command example
+```!xdr-list-user-groups group_names=test1```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "UserGroup": {
+            "description": "test1",
+            "group_name": "test1",
+            "insert_time": 1683713586014,
+            "pretty_name": "dummy dummy",
+            "source": "Custom",
+            "update_time": null,
+            "user_email": [
+                "email@company.com",
+                "email@company.com"
+
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Groups
+>|Group Description|Group Name|User email|
+>|---|---|---|
+>| test1 | test1 | email@company.com |
+>| test1 | test1 | email@company.com |
+
+
 ### xdr-set-user-role
 
 ***
@@ -3451,6 +3483,13 @@ Add one or more users to a role.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!xdr-set-user-role role_name="dummy dummy" user_emails=email@company.com```
+#### Human Readable Output
+
+>User Role Was Updated Successfully
+
+
 ### xdr-remove-user-role
 
 ***
@@ -3469,6 +3508,13 @@ Remove one or more users from a role.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!xdr-remove-user-role user_emails=email@company.com```
+#### Human Readable Output
+
+>User Role Was Removed Successfully
+
+
 ## xdr-script-run
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
