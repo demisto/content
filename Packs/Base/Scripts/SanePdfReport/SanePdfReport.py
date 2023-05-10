@@ -178,7 +178,7 @@ def main():
                 f' resourceTimeout="{resourceTimeout}",' \
                 f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
                 f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
-                f' disableHeaders="{disableHeaders}"'
+                f' disableHeaders="{disableHeaders}", forceServerFormattedTimeString="{forceServerFormattedTimeString}"'
 
             if isMDImagesSupported:
                 params += f', markdownArtifactsServerAddress="{mdServerAddress}"'
