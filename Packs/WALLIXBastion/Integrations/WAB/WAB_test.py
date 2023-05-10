@@ -1,8 +1,11 @@
-from WAB import Client, main
+from WAB import main
 import demistomock as demisto
 from CommonServerPython import BaseClient
-from requests import Response
-from unittest.mock import Mock
+from typing import Any
+
+
+class Settable:
+    pass
 
 
 def test_wab_get_device(mocker):
@@ -29,11 +32,11 @@ def test_wab_get_device(mocker):
         assert kwargs["headers"].get("X-Auth-Key") == "key"
         assert kwargs["headers"].get("X-Auth-User") == "user"
 
-        mock = Mock()
+        mock: Any = Settable()
 
-        mock.return_value.status_code = 200
-        mock.return_value.headers = {}
-        mock.return_value.json = lambda: {"device_name": "my device", "host": "1.2.3.4"}
+        mock.status_code = 200
+        mock.headers = {}
+        mock.json = lambda: {"device_name": "my device", "host": "1.2.3.4"}
 
         return mock
 
