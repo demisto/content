@@ -13066,7 +13066,7 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     Returns:
         job_id (str): returns the Job ID associated with the given query
     """
-    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch)
+    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch, dir='forward')
     demisto.debug(f'{query=}')
     response = http_request(URL, 'GET', params=params)
     return response.get('response', {}).get('result', {}).get('job')
