@@ -1,5 +1,3 @@
-
-
 /*****************************************************/
 /* TM (Trend Micro) DS (Deep Security) Utility Rules */
 /*****************************************************/
@@ -8,26 +6,26 @@
 /* Model fields that are common to all of TM DS event types. */
 alter event_tags = regextract(TrendMicroDsTags, "[\w-]+")
 | alter 
+    xdm.observer.type = TrendMicroDsTenant,
+    xdm.observer.unique_identifier = TrendMicroDsTenantId,
+    xdm.observer.version = cefDeviceVersion,
     xdm.event.id  = cefDeviceEventClassId,
     xdm.event.description  = cefName,
     xdm.event.tags  = event_tags, 
     xdm.alert.name = cefName,
     xdm.alert.severity = cefSeverity,
     xdm.source.agent.type = TrendMicroDsTenant, 
-    xdm.source.agent.identifier = TrendMicroDsTenantId,
-    xdm.observer.type = TrendMicroDsTenant,
-    xdm.observer.unique_identifier = TrendMicroDsTenantId,
-    xdm.observer.version = cefDeviceVersion
+    xdm.source.agent.identifier = TrendMicroDsTenantId
 ;
 
 [RULE: tm_ds_agent_common_fields_modeling]
 /* Model fields that are common to all of agent (security) event types. */
 alter 
+    xdm.observer.name = coalesce(dvchost, dvc),
     xdm.source.ipv4 = dvc, /* The IPv4 address of the agent. Does not appear if the source is an IPv6 address or hostname. (Uses dvchost instead.)*/
     xdm.source.ipv6 = if(dvchost ~= ":", dvchost, null), /* The hostname or IPv6 address of the agent. Does not appear if the source is an IPv4 address. (Uses dvc field instead.) */
     xdm.source.host.hostname = if(dvchost != null and dvchost !~= ":", dvchost, null),
-    xdm.source.host.device_id = to_string(cn1), // The agent computers internal unique identifier 
-    xdm.observer.name = coalesce(dvchost, dvc)
+    xdm.source.host.device_id = to_string(cn1) // The agent computers internal unique identifier 
 ;
 
 [RULE: tm_ds_network_common_fields_modeling]
@@ -44,9 +42,9 @@ alter
     xdm.event.outcome = if(outcome ~= "DENY" or outcome ~= "BLOCK" or outcome ~= "DROP", XDM_CONST.OUTCOME_FAILED, outcome ~= "ALLOW" or outcome ~= "ACCEPT", XDM_CONST.OUTCOME_SUCCESS, outcome ~= "LOG" or outcome ~= "DETECT", XDM_CONST.OUTCOME_PARTIAL, to_string(act)),  
     xdm.source.interface = smac,
     xdm.source.port = spt,
-    xdm.source.ipv4 = coalesce(src_ipv4, dvc),
-    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, dvchost ~= ":", dvchost, null),
-    xdm.source.sent_packets = cnt, // The number of times this event was sequentially repeated
+    xdm.source.ipv4 = if(src_ipv4 != null, src_ipv4,  src ~= ":", null, dvc),
+    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, dvchost ~= ":" and src = null, dvchost, null),
+    xdm.source.sent_packets = to_integer(cnt), // The number of times this event was sequentially repeated
     xdm.source.sent_bytes = to_integer(out), // outbound bytes read
     xdm.target.sent_bytes = to_integer(`in`), // inbound bytes read
     xdm.target.ipv4 = dst_ipv4,
@@ -123,7 +121,6 @@ call tm_ds_convert_cef_event_id_to_int
     xdm.network.http.http_header.header = if(xff != null, "X-Forwarded-For", null)
 ;
 
-
 /* Integrity Monitoring Events := cefDeviceEventClassId in ([30], [2000000-2999999]) */
 call tm_ds_convert_cef_event_id_to_int
 | filter (event_id = 30) or (event_id >= 2000000 and event_id < 3000000)
@@ -159,9 +156,9 @@ call tm_ds_convert_cef_event_id_to_int
 | alter 
     xdm.alert.name = cs1, 
     xdm.alert.description = msg, 
-    xdm.source.ipv4 = coalesce(src_ipv4, dvc),
-    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, dvchost ~= ":", dvchost, null),
-    xdm.source.host.hostname = if(shost != null, shost, dvchost !~= ":", dvchost, null),
+    xdm.source.ipv4 = if(src_ipv4 != null, src_ipv4, src_ipv6 != null, null, dvc),
+    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, src_ipv4 != null, null, dvchost ~= ":", dvchost, null),
+    xdm.source.host.hostname = if(shost != null, shost, dvchost !~= ":" and src = null, dvchost, null),
     xdm.target.user.username = duser, 
     xdm.target.resource.value = fname // Rule target entity: a file, directory path, registry key, etc.
 ;
@@ -178,9 +175,10 @@ call tm_ds_convert_cef_event_id_to_int
     process_file_name =  arrayindex(regextract(filePath, "[\/\\]([\w-\.]+)$"), 0),
     cve_list = regextract(TrendMicroDsCve, "[\w-]+"),
     mitre_techniques_list = regextract(TrendMicroDsMitre, "\w+"),
+    malware_target_type = uppercase(TrendMicroDsMalwareTargetType),
     spyware_infected_resource = cs3, /* Spyware item path. This field is only for spyware detection events.  */
     spyware_infected_resource_type = if(cs4="10", "Files and Directories", cs4="11", "System Registry", cs4="12", "Internet Cookies", cs4="13", "Internet URL Shortcut", cs4="14", "Programs in Memory", cs4="15", "Program Startup Areas", cs4="16", "Browser Helper Object", cs4="17", "Layered Service Provider", cs4="18", "Hosts File", cs4="19", "Windows Policy Settings", cs4="20", "Browser", cs4="23", "Windows Shell Setting", cs4="24", "IE Downloaded Program Files", cs4="25", "Add/Remove Programs", cs4="26", "Services", "Other"),
-    spyware_risk_level = if(cs5="0", "Very Low", cs5="24", "Low", cs5="50", "Medium", cs5="75", "High", cs5="100", "Very High")
+    spyware_risk_level = if(cs5="0", "Very Low", cs5="25", "Low", cs5="50", "Medium", cs5="75", "High", cs5="100", "Very High")
 | alter 
     process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
 | alter 
@@ -205,11 +203,10 @@ call tm_ds_convert_cef_event_id_to_int
     xdm.source.process.executable.sha256 = TrendMicroDsFileSHA256, 
     xdm.target.resource.type = coalesce(spyware_infected_resource_type, TrendMicroDsMalwareTargetType), /* The type of system resource that this malware was trying to affect, such as the file system, a process, or Windows registry. */
     xdm.target.resource.value = coalesce(spyware_infected_resource, TrendMicroDsMalwareTarget), /* The file, process, or registry key (if any) that the malware was trying to affect. If the malware was trying to affect more than one, this field will contain the value "Multiple." */
-    xdm.target.file.path = if(TrendMicroDsMalwareTargetType ~= "File", TrendMicroDsMalwareTarget, null),
-    xdm.target.registry.key = if(TrendMicroDsMalwareTargetType ~= "Registry", TrendMicroDsMalwareTarget, null),    
-    xdm.target.process.name = if(TrendMicroDsMalwareTargetType ~= "Process", TrendMicroDsMalwareTarget, null)
+    xdm.target.file.path = if(malware_target_type ~= "FILE", TrendMicroDsMalwareTarget, null),
+    xdm.target.registry.key = if(malware_target_type ~= "REGISTRY", TrendMicroDsMalwareTarget, null),    
+    xdm.target.process.name = if(malware_target_type ~= "PROCESS", TrendMicroDsMalwareTarget, null)
     ;
-
 
 /* Web_Reputation Events := cefDeviceEventClassId in [5000000-5999999] */
 call tm_ds_convert_cef_event_id_to_int
@@ -248,4 +245,41 @@ call tm_ds_convert_cef_event_id_to_int
     xdm.source.process.executable.filename = process_file_name,
     xdm.source.process.executable.extension = process_extension,
     xdm.source.process.executable.size = to_integer(fsize) 
+;
+
+/*  Application Control Events := cefDeviceEventClassId in [6000000-6999999] */
+call tm_ds_convert_cef_event_id_to_int 
+| filter (event_id >= 6000000 and event_id < 7000000)
+| alter xdm.event.type = "ApplicationControl"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| alter
+    outcome = uppercase(act),
+    process_file_name = arrayindex(regextract(filePath, "[\/\\]([\w-\.]+)$"), 0)
+| alter 
+    process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
+| alter 
+    xdm.observer.action = act,
+    xdm.event.outcome = if(outcome ~= "BLOCKED", XDM_CONST.OUTCOME_FAILED, outcome ~= "ALLOWED", XDM_CONST.OUTCOME_SUCCESS,  outcome ~= "DETECT", XDM_CONST.OUTCOME_PARTIAL, to_string(act)),  
+    xdm.event.outcome_reason = cs1, 
+    xdm.source.user.identifier = suid, 
+    xdm.source.user.username = suser, 
+    xdm.source.process.executable.md5 = cs3, 
+    xdm.source.process.executable.sha256 = fileHash, 
+    xdm.source.process.executable.path = filePath, 
+    xdm.source.process.executable.filename = process_file_name,
+    xdm.source.process.executable.extension = process_extension,
+    xdm.source.process.executable.size = to_integer(fsize) 
+;
+
+/* Fallback handling for all other DSA event */
+call tm_ds_convert_cef_event_id_to_int
+| filter (((event_id < 100) 
+        or (event_id >= 400 and event_id < 500) 
+        or (event_id >= 900 and event_id < 1000000)
+        or (event_id >= 7000000))
+    and (event_id not in (10, 20, 21, 30, 40)))
+| alter xdm.event.type = "N/A"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
 ;
