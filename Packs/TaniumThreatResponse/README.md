@@ -3,7 +3,7 @@ This pack includes Cortex XSIAM content.
 
 
 ## Configuration on Server Side
-You need to configure a Socket Receiver on Tanium side. 
+You need to configure a Socket Receiver on the Tanium side. 
 
 Follow the below steps to configure the socket receiver:
 1. Go to **Modules** > **Connect**.
