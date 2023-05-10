@@ -1,6 +1,7 @@
 id: Retrieve File from Endpoint - Generic V3 Test
 version: -1
 name: Retrieve File from Endpoint - Generic V3 Test
+description: This Test Playbook tests the Retrieve File from endpoint V3 playbook with multiple inputs
 starttaskid: "0"
 tasks:
   "0":
@@ -379,4 +380,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.8.0
-description: This Test Plyaook tests the Retrive File from endpoint V3 playbook with multiple inputs
