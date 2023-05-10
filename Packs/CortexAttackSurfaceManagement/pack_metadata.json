@@ -35,6 +35,10 @@
             "mandatory": false,
             "display_name": "GCP Enrichment and Remediation"
         },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud by Palo Alto Networks"
+        },
         "Nmap": {
             "mandatory": false,
             "display_name": "Nmap"
@@ -72,6 +76,7 @@
         "Azure-Enrichment-Remediation",
         "CommonScripts",
         "GCP-Enrichment-Remediation",
+        "PrismaCloud",
         "Nmap",
         "Rapid7_Nexpose",
         "SplunkPy",
