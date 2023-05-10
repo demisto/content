@@ -138,10 +138,6 @@ class Client(BaseClient):
             service_id (str): _description_
             attack_surface_rule_id (str): _description_
 
-        Raises:
-            ProcessingError: Custom error to handling 500 error with an internal error code 100 for having incorrect request values.
-            NotFoundError: Custom error for handling 500 error that is a "The server encountered an unexpected internal server error" error from waitress.
-
         Returns:
             Dict[str, Any]: dictionary containing response information that includes a scan ID.
         """
@@ -163,10 +159,6 @@ class Client(BaseClient):
             alert_internal_id (str): _description_
             service_id (str): _description_
             attack_surface_rule_id (str): _description_
-
-        Raises:
-            ProcessingError: Custom error to handling 500 error with an internal error code 100 for having incorrect request values.
-            NotFoundError: Custom error for handling 500 error that is a "The server encountered an unexpected internal server error" error from waitress.
 
         Returns:
             Dict[str, Any]: dictionary containing response information that includes a scan ID.
