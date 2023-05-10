@@ -956,3 +956,188 @@ Gets a list of groups
 #### Context Output
 
 There is no context output for this command.
+
+### zscaler-list-ip-destination-groups
+***
+Gets a list of all IP destination groups or the IP destination group information for the specified group ID. Use `include_ipv6` argument to retrieve IPv6 destination address groups.
+
+
+#### Base Command
+
+`zscaler-list-ip-destination-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_group_id | The unique identifier for the IP destination group. | Optional | 
+| exclude_type | The IP group type to be excluded from results. | Optional | 
+| include_ipv6 | It's boolean value to Include IPv6 destination groups | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zscaler.IPDestinationGroup.ID | String | Unique identifer for the destination IP group | 
+| Zscaler.IPDestinationGroup.Name | String | Destination IP group name | 
+| Zscaler.IPDestinationGroup.Type | String | Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs) | 
+| Zscaler.IPDestinationGroup.Addresses | [String] | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
+| Zscaler.IPDestinationGroup.Description | String | Additional information about the destination IP group | 
+| Zscaler.IPDestinationGroup.IpCategories | [String] | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | 
+| Zscaler.IPDestinationGroup.Countries | [String] | Destination IP address counties. You can identify destinations based on the location of a server. | 
+
+#### Command Example
+```!zscaler-list-ip-destination-groups exclude_type=DSTN_OTHER```
+
+#### Context example
+```json
+{
+    "Zscaler.IPDestinationGroup": [
+    {
+        "ID": 1997898, 
+        "Name": "Test99", 
+        "Type": "DSTN_IP", 
+        "Addresses": ["127.0.0.2"], 
+        "Description": "Localhost v2", 
+        "IpCategories": [], 
+        "Countries": []
+    },
+    {
+        "ID": 2001335, 
+        "Name": "Test01", 
+        "Type": "DSTN_IP", 
+        "Addresses": ["127.0.0.1"], 
+        "Description": "Localhost v1", 
+        "IpCategories": [], 
+        "Countries": []
+    }      
+    ]
+}
+```
+
+#### Human Readable Output
+IPv4 Destination groups (2)
+|Addresses|Countries|Description|ID|IpCategories|Name|Type|
+|---|---|---|---|---|---|---|
+| 127.0.0.2 |  | Localhost v2 | 1997898 |  | Test99 | DSTN_IP |
+| 127.0.0.1 |  | Localhost v1 | 2001335 |  | Test01 | DSTN_IP |
+
+### zscaler-create-ip-destination-group
+***
+Adds a new IP Destination group.
+
+
+#### Base Command
+
+`zscaler-create-ip-destination-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Destination IP group name | Required | 
+| type | Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs) | Required | 
+| description | Additional information about the destination IP group | Optional | 
+| addresses | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | Optional | 
+| ip_categories | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | Optional | 
+| countries | Destination IP address counties. You can identify destinations based on the location of a server. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zscaler.IPDestinationGroup.ID | String | Unique identifer for the destination IP group | 
+| Zscaler.IPDestinationGroup.Name | String | Destination IP group name | 
+| Zscaler.IPDestinationGroup.Type | String | Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs) | 
+| Zscaler.IPDestinationGroup.Addresses | [String] | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
+| Zscaler.IPDestinationGroup.Description | String | Additional information about the destination IP group | 
+| Zscaler.IPDestinationGroup.IpCategories | [String] | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | 
+| Zscaler.IPDestinationGroup.Countries | [String] | Destination IP address counties. You can identify destinations based on the location of a server. | 
+| Zscaler.IPDestinationGroup.IsNonEditable | Boolean | This field is applicable only to predefined IP address groups, which cannot be modified. | 
+
+#### Command Example
+```!zscaler-create-ip-destination-group addresses="127.0.0.2,127.0.0.1" description=Localhost name=Test99 type=DSTN_IP```
+
+#### Context example
+```json
+{
+    "Zscaler.IPDestinationGroup": {
+        "ID": 2000359, 
+        "Name": "Test99", 
+        "Type": "DSTN_IP", 
+        "Addresses": [
+            "127.0.0.2", 
+            "127.0.0.1"
+        ], 
+        "Description": "Localhost",
+        "IpCategories": [], 
+        "Countries": [], 
+        "IsNonEditable": false
+    }
+}
+```
+
+#### Human Readable Output
+IP Destination group created
+|Addresses|Countries|Description|ID|IpCategories|IsNonEditable|Name|Type|
+|---|---|---|---|---|---|---|---|
+| 127.0.0.2,<br>127.0.0.1 |  | Localhost | 2000359 |  | false | Test99 | DSTN_IP |
+
+### zscaler-edit-ip-destination-group
+***
+Updates the IP destination group information for the specified group ID.
+
+
+#### Base Command
+
+`zscaler-edit-ip-destination-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_group_id | The unique identifier for the IP destination group. | Required | 
+| name | Destination IP group name | Optional | 
+| description | Additional information about the destination IP group | Optional | 
+| addresses | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | Optional | 
+| ip_categories | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | Optional | 
+| countries | Destination IP address counties. You can identify destinations based on the location of a server. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zscaler.IPDestinationGroup.ID | String | Unique identifer for the destination IP group | 
+| Zscaler.IPDestinationGroup.Name | String | Destination IP group name | 
+| Zscaler.IPDestinationGroup.Type | String | Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs) | 
+| Zscaler.IPDestinationGroup.Addresses | [String] | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
+| Zscaler.IPDestinationGroup.Description | String | Additional information about the destination IP group | 
+| Zscaler.IPDestinationGroup.IpCategories | [String] | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | 
+| Zscaler.IPDestinationGroup.Countries | [String] | Destination IP address counties. You can identify destinations based on the location of a server. | 
+
+#### Command Example
+```!zscaler-edit-ip-destination-group ip_group_id=2000359 addresses="127.0.0.2" description="Localhost v2" name=Test01```
+
+#### Context example
+```json
+{
+    "Zscaler.IPDestinationGroup": {
+        "ID": 2000359, 
+        "Name": "Test01", 
+        "Type": "DSTN_IP", 
+        "Description": "Localhost v2",
+        "Addresses": [
+          "127.0.0.2"
+        ],
+        "IpCategories": [], 
+        "Countries": []
+    }
+}
+```
+
+#### Human Readable Output
+IP Destination group updated
+|Addresses|Countries|Description|ID|IpCategories|Name|Type|
+|---|---|---|---|---|---|---|
+| 127.0.0.2 |  | Localhost v2 | 2000359 |  | Test01 | DSTN_IP |

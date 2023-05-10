@@ -61,7 +61,9 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
     'zscaler-category-add-url',
     'zscaler-category-add-ip',
     'zscaler-category-remove-url',
-    'zscaler-category-remove-ip'
+    'zscaler-category-remove-ip',
+    'zscaler-edit-ip-destination-groups',
+    'zscaler-create-ip-destination-group'
 )
 
 ''' HANDLE PROXY '''
@@ -113,8 +115,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                     raise Exception('Your request failed with the following error: {}.\nMessage: {}'.format(
                         res.status_code, res.text))
     except Exception as e:
-        LOG('Zscaler request failed with url={url}\tdata={data}'.format(url=url, data=data))
-        LOG(e)
+        return_error(str(e))
         raise e
     return res
 
@@ -927,7 +928,7 @@ def get_users_command(args):
         cmd_url = '/users?page={}&pageSize={}'.format(pageNo, pageSize)
     response = http_request('GET', cmd_url).json()
 
-    if(len(response) < 10):
+    if len(response) < 10:
         human_readable = tableToMarkdown("Users ({})".format(len(response)), response)
     else:
         human_readable = "Retrieved {} users".format(len(response))
@@ -1016,13 +1017,210 @@ def set_user_command(args):
         return responseJson
 
 
+def create_ip_destination_group(args: dict):
+    headers = ['ID', 'Name', 'Type', 'Description', 'Addresses', 'Countries', 'IpCategories', 'IsNonEditable']
+    payload = {
+        'name': args.get('name', ''),
+        'type': args.get('type', ''),
+        'countries': argToList(args.get('countries', '')),
+        'ipCategories': argToList(args.get('ip_categories', '')),
+        'description': args.get('description', ''),
+        'addresses': argToList(args.get('addresses', '')),
+        'isNonEditable': args.get('is_non_editable', False)
+    }
+    cmd_url = "/ipDestinationGroups"
+    try:
+        response = http_request('POST', cmd_url, data=json.dumps(payload),
+                                headers=DEFAULT_HEADERS).json()
+    except json.decoder.JSONDecodeError as exp:
+        return_error(f'Failed to execute zscaler-create-ip-destination-group command. Error: {str(exp)}')
+    content = {
+        'ID': int(response.get('id', '')),
+        'Name': response.get('name', ''),
+        'Type': response.get('type', ''),
+        'Description': response.get('description', ''),
+        'Addresses': response.get('addresses', []),
+        'IpCategories': response.get('ipCategories', []),
+        'Countries': response.get('countries', []),
+        'IsNonEditable': response.get('isNonEditable', False)
+    }
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': content,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown("IPv4 Destination group created",
+                                         content, headers, removeNull=True),
+        'EntryContext': {'Zscaler.IPDestinationGroup': content},
+    }
+    return entry
+
+
+def list_ip_destination_groups(args: dict):
+    ip_group_ids = argToList(args.get('ip_group_id', ''))
+    exclude_type = str(args.get('exclude_type', '')).strip()
+    include_ipv6 = argToBoolean(args.get('include_ipv6', False))
+    headers = ['ID', 'Name', 'Type', 'Description', 'Addresses', 'Countries', 'IpCategories']
+    limit = arg_to_number(args.get('limit', 50))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    def get_contents(responses):
+        contents = list()
+        for response in responses:
+            content = {
+                'ID': int(response.get('id', '')),
+                'Name': response.get('name', ''),
+                'Type': response.get('type', ''),
+                'Description': response.get('description', ''),
+                'Addresses': response.get('addresses', []),
+                'IpCategories': response.get('ipCategories', []),
+                'Countries': response.get('countries', [])
+            }
+            contents.append(content)
+        return contents
+
+    if len(ip_group_ids) == 0:
+        if include_ipv6:
+            ipv4_cmd_url = "/ipDestinationGroups"
+            ipv6_cmd_url = "/ipDestinationGroups/ipv6DestinationGroups"
+            if exclude_type != '':
+                ipv4_cmd_url += f"?excludeType={exclude_type}"
+                ipv6_cmd_url += f"?excludeType={exclude_type}"
+            try:
+                ipv4_responses = http_request('GET', ipv4_cmd_url).json()
+                ipv6_responses = http_request('GET', ipv6_cmd_url).json()
+            except json.decoder.JSONDecodeError as exp:
+                return_error(f'Failed to execute zscaler-list-ip-destination-group command. Error: {str(exp)}')
+            ipv4_contents = get_contents(ipv4_responses) if all_results else get_contents(ipv4_responses)[:limit]
+            ipv6_contents = get_contents(ipv6_responses) if all_results else get_contents(ipv6_responses)[:limit]
+            hr = tableToMarkdown(f"IPv4 Destination groups ({len(ipv4_contents)})", ipv4_contents, headers,
+                                 removeNull=True)
+            hr += tableToMarkdown(f"IPv6 Destination groups ({len(ipv6_contents)})", ipv6_contents, headers,
+                                  removeNull=True)
+            contents = ipv4_contents + ipv6_contents
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': contents,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr,
+                'EntryContext': {
+                    'Zscaler.IPDestinationGroup(val.ID && val.ID === obj.ID)': contents
+                }
+            }
+        else:
+            cmd_url = "/ipDestinationGroups"
+            if exclude_type != '':
+                cmd_url += f"?excludeType={exclude_type}"
+            try:
+                responses = http_request('GET', cmd_url).json()
+            except json.decoder.JSONDecodeError as exp:
+                return_error(f'Failed to execute zscaler-list-ip-destination-group command. Error: {str(exp)}')
+            contents = get_contents(responses) if all_results else get_contents(responses)[:limit]
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': contents,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(("IPv4 Destination groups"
+                                                  + f" ({len(contents)})"),
+                                                 contents, headers, removeNull=True),
+                'EntryContext': {'Zscaler.IPDestinationGroup(val.ID && val.ID === obj.ID)': contents},
+            }
+    else:
+        responses = list()
+        for ip_group_id in ip_group_ids:
+            cmd_url = f"/ipDestinationGroups/{ip_group_id}"
+            try:
+                responses.append(http_request('GET', cmd_url).json())
+            except json.decoder.JSONDecodeError as exp:
+                return_error(f'Failed to execute zscaler-list-ip-destination-group command. Error: {str(exp)}')
+        contents = get_contents(responses)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(("IP Destination groups"
+                                              + f" ({len(contents)})"),
+                                             contents, headers, removeNull=True),
+            'EntryContext': {'Zscaler.IPDestinationGroup(val.ID && val.ID === obj.ID)': contents},
+        }
+    return entry
+
+
+def edit_ip_destination_group(args: dict):
+    headers = ['ID', 'Name', 'Type', 'Description', 'Addresses', 'Countries', 'IpCategories']
+    payload = dict()
+    ip_group_id = str(args.get('ip_group_id', '')).strip()
+    check_url = f"/ipDestinationGroups/{ip_group_id}"
+    response_data = dict()
+    try:
+        response_data = http_request('GET', check_url).json()
+    except json.decoder.JSONDecodeError as exp:
+        return_error(f'Failed to execute locate ip-destination group with id {ip_group_id} command. Error: {str(exp)}')
+    if response_data.get('id', 0) == 0:
+        return_error(f'RESOURCE NOT FOUND with ip_group_id. {ip_group_id}')
+    for key in response_data.keys():
+        if key in ('name',
+                   'type',
+                   'countries',
+                   'ipCategories',
+                   'addresses',
+                   'description',
+                   'isNonEditable'):
+            payload[key] = response_data[key]
+    name = args.get('name', '')
+    countries = argToList(args.get('countries', ''))
+    ip_categories = argToList(args.get('ip_categories', ''))
+    addresses = argToList(args.get('addresses', ''))
+    description = args.get('description', '')
+    is_non_editable = args.get('is_non_editable', False)
+    if name != '':
+        payload['name'] = name
+    if len(countries) > 0:
+        payload['countries'] = countries
+    if len(ip_categories) > 0:
+        payload['ipCategories'] = ip_categories
+    if len(addresses) > 0:
+        payload['addresses'] = addresses
+    if description != '':
+        payload['description'] = description
+    payload['isNonEditable'] = is_non_editable
+    cmd_url = f"/ipDestinationGroups/{ip_group_id}"
+    json_data = json.dumps(payload)
+    try:
+        response = http_request('PUT', cmd_url, json_data, DEFAULT_HEADERS).json()
+    except json.decoder.JSONDecodeError as exp:
+        return_error(f'Failed to execute zscaler-edit-ip-destination-group command. Error: {str(exp)}')
+    content = {
+        'ID': int(response.get('id', '')),
+        'Name': response.get('name', ''),
+        'Type': response.get('type', ''),
+        'Description': response.get('description', ''),
+        'Addresses': response.get('addresses', []),
+        'IpCategories': response.get('ipCategories', []),
+        'Countries': response.get('countries', [])
+    }
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': content,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown("IPv4 Destination group updated",
+                                         content, headers, removeNull=True),
+        'EntryContext': {'Zscaler.IPDestinationGroup(val.ID && val.ID === obj.ID)': content},
+    }
+    return entry
+
+
 ''' EXECUTION CODE '''
 
 
 def main():  # pragma: no cover
     command = demisto.command()
 
-    LOG('command is %s' % (command,))
+    demisto.debug('command is %s' % (command,))
     args = demisto.args()
     if command == 'zscaler-login':
         return_results(login_command())
@@ -1081,9 +1279,14 @@ def main():  # pragma: no cover
                 return_results(get_departments_command(demisto.args()))
             elif command == 'zscaler-get-usergroups':
                 return_results(get_usergroups_command(demisto.args()))
+            elif command == 'zscaler-list-ip-destination-groups':
+                return_results(list_ip_destination_groups(demisto.args()))
+            elif command == 'zscaler-create-ip-destination-group':
+                return_results(create_ip_destination_group(demisto.args()))
+            elif command == 'zscaler-edit-ip-destination-group':
+                return_results(edit_ip_destination_group(demisto.args()))
         except Exception as e:
-            LOG(str(e))
-            LOG.print_log()
+            return_error(f'Failed to execute {command} command. Error: {str(e)}')
             raise
         finally:
             try:

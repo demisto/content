@@ -1,0 +1,12 @@
+{
+    "id": "1964949", 
+    "name": "Russia-Region", 
+    "type": "DSTN_OTHER", 
+    "addresses": [], 
+    "description": "Russia based destination group", 
+    "creatorContext": "ZIA", 
+    "ipCategories": [], 
+    "countries": ["COUNTRY_RU"], 
+    "urlCategories": [], 
+    "ipAddresses": []
+}
