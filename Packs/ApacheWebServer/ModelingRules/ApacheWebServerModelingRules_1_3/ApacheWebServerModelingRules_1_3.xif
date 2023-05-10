@@ -22,7 +22,7 @@ filter _raw_log contains "[info]" or _raw_log contains "[alert]" or _raw_log con
     message = coalesce(message1 , message2)
 | alter
     xdm.source.process.pid = to_number(pid),
-    xdm.alert.severity = severity,
+    xdm.event.log_level = if(severity in ("core:info","info"), XDM_CONST.LOG_LEVEL_INFORMATIONAL ,severity = "debug",XDM_CONST.LOG_LEVEL_DEBUG, severity = "alert",XDM_CONST.LOG_LEVEL_ALERT,severity = "crit",XDM_CONST.LOG_LEVEL_CRITICAL, severity = "error", XDM_CONST.LOG_LEVEL_ERROR , severity ="warn",XDM_CONST.LOG_LEVEL_WARNING ,severity ="notice", XDM_CONST.LOG_LEVEL_NOTICE ,to_string(severity)),
     xdm.source.process.thread_id = to_number(tid),
     xdm.source.ipv4 = sourceipv4,
     xdm.source.ipv6 = sourceipv6,
