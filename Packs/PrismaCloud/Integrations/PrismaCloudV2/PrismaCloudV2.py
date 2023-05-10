@@ -718,20 +718,21 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
 
 def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]) -> requests.Response:
     """
+    Close (Dismiss) an alert in Prisma Cloud.
 
     Args:
         client: Demisto client.
-        ids:
-        delta:
+        ids: The IDs of the alerts to be dismissed.
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
 
-    Returns:
+    Returns: The response of the dismiss alert API call.
 
     """
     close_notes = delta.get('closeNotes')
     close_reason = delta.get('closeReason')
     dismissal_note = f'{INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE} - Closing Reason: {close_reason}, ' \
                      f'Closing Notes: {close_notes}.'
-    # TODO: need to understand how to define the time here - consult with Dima.
+    # TODO: need to understand how to define the time here - consult with Dima. Maybe I can find the creation time of the alert and set the time according to it.
     time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
 
     return client.alert_dismiss_request(dismissal_note=dismissal_note, time_range=time_filter, alert_ids=ids)
@@ -739,15 +740,16 @@ def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str,
 
 def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]) -> requests.Response:
     """
+    Re-open an alert in Prisma Cloud.
 
     Args:
         client: Demisto client.
-        ids:
+        ids: The IDs of the alerts to be re-opened.
 
-    Returns:
+    Returns: The response of the re-open alert API call.
 
     """
-    # TODO: need to understand how to define the time here - consult with Dima.
+    # TODO: need to understand how to define the time here - consult with Dima. Maybe I can find the creation time of the alert and set the time according to it.
     time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE)
 
     return client.alert_reopen_request(time_range=time_filter, alert_ids=ids)
@@ -756,17 +758,17 @@ def reopen_alert_in_prisma_cloud(client: Client, ids: List[str]) -> requests.Res
 def whether_to_close_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
-    1. The user asked for it
-    2. One of the closing fields appears in the delta
+    1. The user asked for it.
+    2. One of the closing fields appears in the delta.
 
     The second condition is mandatory so we will not send a closing request at all of the mirroring requests that happen
     after closing an incident (in case where the incident is updated so there is a delta, but it is not the status
     that was changed).
 
     Args:
-        delta:
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
 
-    Returns:
+    Returns: True - if closing the prisma alert is needed, False - otherwise.
 
     """
     closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
@@ -775,26 +777,33 @@ def whether_to_close_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
 
 def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     """
+    Re-opening in the remote system should happen only when both:
+    1. The user asked for it.
+    2. The delta equals - {'closingUserId': '', 'runStatus': ''}.
+    # TODO: need to consult with yuval about it.
 
     Args:
-        delta:
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
 
-    Returns:
+    Returns: True - if re-opening the prisma alert is needed, False - otherwise.
 
     """
     return demisto.params().get('close_ticket') and delta == {'closingUserId': '', 'runStatus': ''}
 
 
-def update_remote_incident_status(client: Client, delta, inc_status: IncidentStatus, incident_id: str) -> requests.Response:
+def update_remote_alert(client: Client, delta: Dict[str, Any],
+                        inc_status: IncidentStatus, incident_id: str) -> requests.Response:
     """
+    Updates the remote prisma alert according to changes of the mirrored xsaor incident.
+    The possible updates are closing or re-opening the alert.
 
     Args:
         client: Demisto client.
-        delta:
-        inc_status:
-        incident_id:
+        delta: A dictionary of fields that changed from the last update - containing only the changed fields.
+        inc_status: The status of the incident.
+        incident_id: Contains the value of the dbotMirrorId field, which represents the ID of the alert in prisma.
 
-    Returns:
+    Returns: The response of the dismiss or re-open alert API call.
 
     """
     # XSOAR incident was closed - closing the mirrored prisma alert
@@ -1879,7 +1888,8 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """
-    Mirrors out local changes to the remote system (Prisma Cloud).
+    Mirrors out local changes (closing or reopening of an xsoar incident) to the remote system (Prisma Cloud).
+
     TODO: check why in the yml this command has no arguments but in the py file it seems that it has.
     Args:
         client: Demisto client.
@@ -1896,7 +1906,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     try:
         if parsed_args.incident_changed:
-            response = update_remote_incident_status(client, delta, parsed_args.inc_status, remote_incident_id)
+            response = update_remote_alert(client, delta, parsed_args.inc_status, remote_incident_id)
             if response:  # TODO: need to check the status code here - or something like that
                 demisto.debug(f'Remote Incident: {remote_incident_id} was updated successfully.')
             else:
