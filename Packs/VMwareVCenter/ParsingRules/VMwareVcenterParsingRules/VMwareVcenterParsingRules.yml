@@ -1,0 +1,6 @@
+name: VMware vCenter Parsing Rule
+id: VMware_vCenter Parsing Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

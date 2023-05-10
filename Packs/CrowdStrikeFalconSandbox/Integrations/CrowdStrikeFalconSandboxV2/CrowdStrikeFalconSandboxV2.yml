@@ -2,9 +2,9 @@ commonfields:
   id: CrowdStrike Falcon Sandbox V2
   version: -1
 name: CrowdStrike Falcon Sandbox V2
-display: CrowdStrike Falcon Sandbox v2
+display: CrowdStrike Falcon Sandbox v2 (Hybrid-Analysis)
 category: Forensics & Malware Analysis
-description: Fully automated malware analysis (Hybrid Analysis).
+description: Fully automated malware analysis using Hybrid Analysis API.
 configuration:
   - name: serverUrl
     required: true
@@ -45,7 +45,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.11.56857
   commands:
     - name: cs-falcon-sandbox-scan
       polling: true

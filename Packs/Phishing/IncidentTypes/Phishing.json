@@ -16,7 +16,7 @@
  "system": false,
  "readonly": false,
  "default": false,
- "autorun": false,
+ "autorun": true,
  "disabled": false,
  "reputationCalc": 2,
  "onChangeRepAlg": 2,
@@ -592,6 +592,31 @@
     "extractIndicatorTypesIDs": [
 
     ]
+   },
+   "reportedemailcc": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
+   },
+   "reportedemailfrom": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
+   },
+   "reportedemailmessageid": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": false
+   },
+   "reportedemailsubject": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
+   },
+   "reportedemailto": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
    },
    "reporteremailaddress": {
     "extractAsIsIndicatorTypeId": "",

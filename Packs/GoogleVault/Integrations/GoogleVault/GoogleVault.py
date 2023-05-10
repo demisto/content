@@ -18,8 +18,8 @@ import os
 SCOPES = ['https://www.googleapis.com/auth/ediscovery', 'https://www.googleapis.com/auth/devstorage.full_control']
 DEMISTO_MATTER = 'test_search_phishing'
 
-ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
-PRIVATE_KEY_CONTENT = demisto.params()['auth_json'].encode('utf-8')
+ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier']
+PRIVATE_KEY_CONTENT = demisto.params()['auth_json']
 USE_SSL = not demisto.params().get('insecure', False)
 
 
@@ -172,7 +172,7 @@ def timeframe_to_utc_zulu_range(timeframe_str):
     try:
         parsed_str = dateparser.parse(timeframe_str)
         end_time = datetime.utcnow().isoformat() + 'Z'  # Current time
-        start_time = parsed_str.isoformat() + 'Z'
+        start_time = parsed_str.isoformat() + 'Z'  # type: ignore
         return (start_time, end_time)
     except Exception as ex:
         err_msg = str(ex)
@@ -194,7 +194,7 @@ def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_t
     elif start_time:
         if not end_time:
             end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
-    if isinstance(accounts, unicode):
+    if isinstance(accounts, str):
         accounts = accounts.split(',')
 
     # --- Building Request ---
@@ -248,7 +248,7 @@ def create_mail_export_query(export_name, emails, time_frame, start_time, end_ti
     elif start_time:
         if not end_time:
             end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
-    if isinstance(emails, (str, unicode)):
+    if isinstance(emails, str):
         if ',' in emails:
             emails = emails.split(',')
         else:
@@ -319,12 +319,12 @@ def create_drive_export_query(export_name, emails, team_drives, time_frame, star
     elif start_time:
         if not end_time:
             end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
-    if isinstance(emails, (str, unicode)):  # If emails were specified, making it a list:
+    if isinstance(emails, str):  # If emails were specified, making it a list:
         if ',' in emails:
             emails = emails.split(',')
         else:
             emails = [emails]
-    if isinstance(team_drives, (str, unicode)):  # If team_drives were specified, making it a list:
+    if isinstance(team_drives, str):  # If team_drives were specified, making it a list:
         if ',' in team_drives:
             team_drives = team_drives.split(',')
         else:
@@ -396,7 +396,7 @@ def create_groups_export_query(export_name, emails, time_frame, start_time, end_
     elif start_time:
         if not end_time:
             end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
-    if isinstance(emails, (str, unicode)):
+    if isinstance(emails, str):
         if ',' in emails:
             emails = emails.split(',')
         else:
@@ -553,9 +553,7 @@ def populate_matter_with_export(current_matter, current_export):
         exports = [exports]
 
     # remove duplicate export after new updated exports were entered
-    filtered_export = list(filter(lambda export:
-                                  export['ExportID'] != current_export['ExportID'],
-                                  exports))
+    filtered_export = [export for export in exports if export['ExportID'] != current_export['ExportID']]
     filtered_export.append(current_export)
     current_matter['Export'] = filtered_export
 
@@ -1380,7 +1378,7 @@ def get_drive_results_command():
             return_error(
                 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
 
-        markedown_output = map(lambda document: {
+        markedown_output = [{
             'Title': document.get('Title'),
             'Author': document.get('Author'),
             'Collaborators': document.get('Collaborators'),
@@ -1389,7 +1387,7 @@ def get_drive_results_command():
             'DateModified': document.get('DateModified'),
             'DocType': document.get('DocType'),
             'MD5': document.get('MD5'),
-        }, output)
+        } for document in output]
 
         title = 'Your DRIVE inquiry details\n'
         headers = ['Title', 'Author', 'Collaborators', 'Others', 'Labels', 'Viewers', 'DateCreated', 'DateModified',
@@ -1428,7 +1426,7 @@ def get_mail_and_groups_results_command(inquiryType):
             return_error(
                 'Error displaying results: Corpus of the invoked command and the supplied ViewID does not match')
 
-        markedown_output = map(lambda document: {
+        markedown_output = [{
             'From': document.get('From'),
             'To': document.get('To'),
             'CC': document.get('CC'),
@@ -1436,7 +1434,7 @@ def get_mail_and_groups_results_command(inquiryType):
             'Subject': document.get('Subject'),
             'DateSent': document.get('DateSent'),
             'DateReceived': document.get('DateReceived'),
-        }, output)
+        } for document in output]
 
         title = 'Your {} inquiry details\n'.format(inquiryType)
         headers = ['Subject', 'From', 'To', 'CC', 'BCC', 'DateSent']

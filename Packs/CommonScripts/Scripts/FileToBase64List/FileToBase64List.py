@@ -11,7 +11,7 @@ def get_file_data(file_path, zip=False):
         if zip:
             data = zlib.compress(data)
 
-    return base64.b64encode(data)
+    return base64.b64encode(data).decode('utf-8')
 
 
 def main():
@@ -42,5 +42,5 @@ def main():
     }
 
 
-if __name__ == "__builtin__" or __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     demisto.results(main())

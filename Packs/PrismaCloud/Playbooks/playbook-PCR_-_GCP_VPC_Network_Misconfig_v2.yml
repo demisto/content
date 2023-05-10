@@ -1,0 +1,726 @@
+id: Prisma Cloud Remediation - GCP VPC Network Misconfiguration v2
+version: -1
+fromversion: 6.5.0
+name: Prisma Cloud Remediation - GCP VPC Network Misconfiguration v2
+description: |-
+  This playbook remediates Prisma Cloud GCP VPC Network alerts.  It calls sub-playbooks that perform the actual remediation steps.
+
+  Remediation:
+
+   - GCP project is using the default network
+   - GCP Firewall rule allows internet traffic to FTP port (21)
+   - GCP Firewall rule allows internet traffic to HTTP port (80)
+   - GCP Firewall rule allows internet traffic to MongoDB port (27017)
+   - GCP Firewall rule allows internet traffic to MySQL DB port (3306)
+   - GCP Firewall rule allows internet traffic to Oracle DB port (1521)
+   - GCP Firewall rule allows internet traffic to PostgreSQL port (5432)
+   - GCP Firewall rule allows internet traffic to RDP port (3389)
+   - GCP Firewall rule allows internet traffic to SSH port (22)
+   - GCP Firewall rule allows internet traffic to Telnet port (23)
+   - GCP Firewall rule allows internet traffic to DNS port (53)
+   - GCP Firewall rule allows internet traffic to Microsoft-DS port (445)
+   - GCP Firewall rule allows internet traffic to NetBIOS-SSN port (139)
+   - GCP Firewall rule allows internet traffic to POP3 port (110)
+   - GCP Firewall rule allows internet traffic to SMTP port (25)
+   - GCP Default Firewall rule should not have any rules (except http and https)
+   - GCP Firewall with Inbound rule overly permissive to All Traffic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 53c4500b-668b-4426-8019-3192a44bf9db
+    type: condition
+    task:
+      id: 53c4500b-668b-4426-8019-3192a44bf9db
+      version: -1
+      name: Is Google Cloud Compute integration enabled?
+      description: Checks that Google Cloud Compute integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Google Cloud Compute
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: bc9f2552-58c3-402a-8951-ede4d027509c
+    type: condition
+    task:
+      id: bc9f2552-58c3-402a-8951-ede4d027509c
+      version: -1
+      name: Is there a policy to remediate?
+      description: Checks for a Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 849fdbfd-bae2-46cb-8d86-05e6089c4b7d
+    type: condition
+    task:
+      id: 849fdbfd-bae2-46cb-8d86-05e6089c4b7d
+      version: -1
+      name: Update VPC network automatically?
+      description: Auto remediate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediateVPCNetwork
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 44e51c9f-9a5f-4662-8b97-8160c235893b
+    type: condition
+    task:
+      id: 44e51c9f-9a5f-4662-8b97-8160c235893b
+      version: -1
+      name: Auto remediate?
+      description: Remediate automatically or manually update?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: ${incident.id} Autoremediate?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "7":
+    id: "7"
+    taskid: 5ed221c5-a729-4e5d-8b23-b970b2cf1d90
+    type: condition
+    task:
+      id: 5ed221c5-a729-4e5d-8b23-b970b2cf1d90
+      version: -1
+      name: Execute playbook
+      description: Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      firewall:
+      - "13"
+      project:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: project
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: c2cf4439-9ac2-44b8-a0d2-7076cf82c29a
+    - label: firewall
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: fab6a8ee-dc82-49f0-8c2c-a2a5c7666539
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 9f6d22f9-873a-4a71-91a8-41a82e4c9314
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: b7ad863b-d54c-4b43-a157-010199a37cac
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 1171a9b9-9648-405a-8e03-83e5025e81d3
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 39f48b70-3f22-481d-be71-13211bc87d98
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: b1a3c396-2e03-4050-b7b4-6cf8a7ab5f9b
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 34175634-0e4a-4e9d-9c77-0c75390b8bdc
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 49a154e8-6049-4317-bbb5-0c90cb078f94
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 024045e3-dfa3-4109-9d68-e7fcf3c6c4d1
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: dc3dd864-cff5-4730-84ac-11e212f2c1ff
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 1aa8f0f0-139f-49a2-9c9d-41c71a3c806f
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 7afdb939-4a9a-45b0-ba3b-f81dec86bc76
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 094b6b65-a37a-4f3b-b08f-5d313a6f5051
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: e35ce679-e427-4e00-a9d2-44d808c694bd
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3b814978-44a0-4a5b-9736-492d67ee4994
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ff6a9cca-8bc5-4a72-9235-ec7b65c547d5
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 51d4f303-3ebc-43a6-8950-222410b42a40
+    type: regular
+    task:
+      id: 51d4f303-3ebc-43a6-8950-222410b42a40
+      version: -1
+      name: Manually update VPC network
+      description: Manually update the Google Compute Engine alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: c3d736e6-e9ab-4cfc-8ed0-7276f754c074
+    type: regular
+    task:
+      id: c3d736e6-e9ab-4cfc-8ed0-7276f754c074
+      version: -1
+      name: Close investigation
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      mndadone: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
+    type: condition
+    task:
+      id: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
+      version: -1
+      name: Is Prisma Cloud v2 integration enabled?
+      description: Is Prisma Cloud v2 integration enabled?
+      type: condition
+      iscommand: false
+      brand: PrismaCloud v2
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "14"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 44fe68a6-b793-42a1-8ba9-ae7714993c29
+    type: playbook
+    task:
+      id: 44fe68a6-b793-42a1-8ba9-ae7714993c29
+      version: -1
+      name: Prisma Cloud Remediation - GCP VPC Network Project Misconfiguration
+      description: ""
+      playbookName: Prisma Cloud Remediation - GCP VPC Network Project Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: c550ff09-7443-41a1-8806-79ddde21c484
+    type: playbook
+    task:
+      id: c550ff09-7443-41a1-8806-79ddde21c484
+      version: -1
+      name: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
+      description: ""
+      playbookName: Prisma Cloud Remediation - GCP VPC Network Firewall Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: cdf5e218-c21c-40e0-8a90-ea03bada73ac
+    type: regular
+    task:
+      id: cdf5e218-c21c-40e0-8a90-ea03bada73ac
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      script: PrismaCloud v2|||prisma-cloud-alert-dismiss
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      dismissal_note:
+        simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.3,
+      "2_4_yes": 0.52,
+      "4_5_yes": 0.3,
+      "4_8_#default#": 0.22,
+      "5_6_#default#": 0.55,
+      "5_7_yes": 0.46,
+      "6_7_Yes": 0.46,
+      "6_8_#default#": 0.35,
+      "7_13_firewall": 0.57,
+      "7_8_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1745,
+        "width": 1860,
+        "x": -850,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: AutoRemediateVPCNetwork
+  value:
+    simple: "no"
+  required: false
+  description: Execute GCP Compute Engine remediation automatically?
+- key: policyId
+  value:
+    complex:
+      root: incident
+      accessor: labels.policy
+      transformers:
+      - operator: ParseJSON
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: policyId
+  required: false
+  description: Grab the Prisma Cloud policy ID.
+outputs: []
+tests:
+- No Test

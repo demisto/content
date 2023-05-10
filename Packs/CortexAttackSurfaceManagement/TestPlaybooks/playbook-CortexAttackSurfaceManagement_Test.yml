@@ -1,0 +1,850 @@
+id: CortexAttackSurfaceManagement_Test
+version: -1
+name: CortexAttackSurfaceManagement_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3bda6329-4551-4ab0-8a57-a4fda148ceac
+    type: start
+    task:
+      id: 3bda6329-4551-4ab0-8a57-a4fda148ceac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9a79ff43-d949-4a56-8553-f196e1767363
+    type: regular
+    task:
+      id: 9a79ff43-d949-4a56-8553-f196e1767363
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5b3f3479-2039-48c0-89be-fe48310c1c9c
+    type: regular
+    task:
+      id: 5b3f3479-2039-48c0-89be-fe48310c1c9c
+      version: -1
+      name: asm-list-external-service
+      script: Cortex Attack Surface Management|||asm-list-external-service
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6050cd9b-4c4a-4552-83ed-b71f00bed7df
+    type: condition
+    task:
+      id: 6050cd9b-4c4a-4552-83ed-b71f00bed7df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.service_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.service_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.service_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.externally_detected_providers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.is_active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.first_observed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.last_observed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.inactive_classifications
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.discovery_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.business_units
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService.externally_inferred_vulnerability_score
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8af3914c-9aa7-4dab-877b-ddd7269fe02d
+    type: regular
+    task:
+      id: 8af3914c-9aa7-4dab-877b-ddd7269fe02d
+      version: -1
+      name: asm-get-external-service
+      script: Cortex Attack Surface Management|||asm-get-external-service
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      service_id:
+        simple: 94232f8a-f001-3292-aa65-63fa9d981427
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 48c85ab7-82c2-4cd9-8606-15bda686002d
+    type: condition
+    task:
+      id: 48c85ab7-82c2-4cd9-8606-15bda686002d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 012d1b96-e5a4-4f2b-8a43-1a4d2c7e59c4
+    type: regular
+    task:
+      id: 012d1b96-e5a4-4f2b-8a43-1a4d2c7e59c4
+      version: -1
+      name: asm-list-external-ip-address-range
+      script: Cortex Attack Surface Management|||asm-list-external-ip-address-range
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 28f41a87-92c1-40f4-86e5-f7d920fdbe95
+    type: condition
+    task:
+      id: 28f41a87-92c1-40f4-86e5-f7d920fdbe95
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.range_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.first_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.last_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.ips_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.date_added
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.business_units
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.organization_handles
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 14b82f70-0430-4cdc-8cc8-8128d67f2827
+    type: regular
+    task:
+      id: 14b82f70-0430-4cdc-8cc8-8128d67f2827
+      version: -1
+      name: asm-get-external-ip-address-range
+      script: Cortex Attack Surface Management|||asm-get-external-ip-address-range
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      range_id:
+        simple: 4da29b7f-3086-3b52-981b-aa8ee5da1e60
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7445f71c-715b-45bc-8d95-f0dc05663162
+    type: condition
+    task:
+      id: 7445f71c-715b-45bc-8d95-f0dc05663162
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.range_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.first_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.last_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.ips_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.date_added
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.business_units
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.organization_handles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalIpAddressRange.details
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8d07cf51-ecc3-4906-861d-66ecf380c010
+    type: regular
+    task:
+      id: 8d07cf51-ecc3-4906-861d-66ecf380c010
+      version: -1
+      name: asm-list-asset-internet-exposure
+      script: Cortex Attack Surface Management|||asm-list-asset-internet-exposure
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0fde5143-663e-481d-82c4-d49e231e5935
+    type: condition
+    task:
+      id: 0fde5143-663e-481d-82c4-d49e231e5935
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.AssetInternetExposure
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 6d706f2c-ef65-437a-8aaa-03f7161a92e7
+    type: regular
+    task:
+      id: 6d706f2c-ef65-437a-8aaa-03f7161a92e7
+      version: -1
+      name: asm-get-asset-internet-exposure
+      script: Cortex Attack Surface Management|||asm-get-asset-internet-exposure
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      asm_id:
+        simple: 3c176460-8735-333c-b618-8262e2fb660c
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 3d8f5d79-4a6e-483c-8377-c58c6d8b1c6b
+    type: condition
+    task:
+      id: 3d8f5d79-4a6e-483c-8377-c58c6d8b1c6b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ASM
+                accessor: AssetInternetExposure
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e57e2fc0-e300-4d58-870b-ec4d7de4ea69
+    type: title
+    task:
+      id: e57e2fc0-e300-4d58-870b-ec4d7de4ea69
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 927246df-14c2-4875-8231-7f2900b3afe8
+    type: regular
+    task:
+      id: 927246df-14c2-4875-8231-7f2900b3afe8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 13fd1729-43bd-4c36-8eea-332ec1627a72
+    type: regular
+    task:
+      id: 13fd1729-43bd-4c36-8eea-332ec1627a72
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c2a17860-493e-40a1-8430-9781fa160bee
+    type: regular
+    task:
+      id: c2a17860-493e-40a1-8430-9781fa160bee
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 5ed0a658-1647-4c8b-8bdb-1a902eba648a
+    type: regular
+    task:
+      id: 5ed0a658-1647-4c8b-8bdb-1a902eba648a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1b97a566-b545-44d9-821d-a130c991a1dc
+    type: regular
+    task:
+      id: 1b97a566-b545-44d9-821d-a130c991a1dc
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3875,
+        "width": 390,
+        "x": 40,
+        "y": -480
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: ''

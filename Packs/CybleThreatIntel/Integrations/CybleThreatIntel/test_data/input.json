@@ -1,0 +1,22 @@
+{
+  "params": {
+    "credentials": {
+      "identifier": "user",
+      "password": "pwd"
+    },
+    "feedReputation": "None",
+    "feedReliability": "A - Completely reliable",
+    "tlp_color": "RED",
+    "discovery_service": "https://test.com/test-discovery",
+    "collection": "domain",
+    "initial_interval": 2,
+    "limit": 5
+  },
+  "args": {
+    "limit": 5,
+    "begin": "2022-06-11 00:00:00",
+    "end": "2022-06-13 00:00:00",
+    "collection": "phishing_url1",
+    "override_limit": "True"
+  }
+}

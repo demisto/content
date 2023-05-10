@@ -15,6 +15,7 @@ Given an integration name, returns the instance name.
 | **Argument Name** | **Description** |
 | --- | --- |
 | integration_name | Integration name for which to check its instance name. |
+| return_all_instances | Whether to return a full list of instance names related to the given integation name. |
 
 ## Outputs
 ---

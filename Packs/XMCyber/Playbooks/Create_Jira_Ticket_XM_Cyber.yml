@@ -101,13 +101,13 @@ inputs:
     simple: projectName
   required: true
   description: Name of the project in Jira to add tasks from XM Cyber
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Project Key
   value:
     simple: XM Security Score Trend
   required: false
   description: The key with which to associate this issue
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
-  - No tests
+- No tests

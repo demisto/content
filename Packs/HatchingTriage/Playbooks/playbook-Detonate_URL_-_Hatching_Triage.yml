@@ -1,17 +1,15 @@
 id: Detonate URL - Hatching Triage
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Detonate URL - Hatching Triage
 description: Detonating URL with Hatching Triage.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ac486e14-1500-41db-8579-c2acb8b805ef
+    taskid: bc1fedf4-af24-48ac-89b1-1748107d1329
     type: start
     task:
-      id: ac486e14-1500-41db-8579-c2acb8b805ef
+      id: bc1fedf4-af24-48ac-89b1-1748107d1329
       version: -1
       name: ""
       description: starting test
@@ -19,7 +17,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -37,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6fe76277-78da-4060-80e6-7510e4714e54
+    taskid: 15fb19a6-b9ad-4925-84fc-e6eff859e02a
     type: condition
     task:
-      id: 6fe76277-78da-4060-80e6-7510e4714e54
+      id: 15fb19a6-b9ad-4925-84fc-e6eff859e02a
       version: -1
       name: Is there any active Hatching Triage instance?
       description: Check for active instance
@@ -49,39 +47,39 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-        - "6"
+      - "6"
       yes:
-        - "2"
+      - "2"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  complex:
-                    root: modules
-                    filters:
-                      - - operator: isEqualString
-                          left:
-                            value:
-                              simple: modules.brand
-                            iscontext: true
-                          right:
-                            value:
-                              simple: Hatching Triage
-                      - - operator: isEqualString
-                          left:
-                            value:
-                              simple: modules.state
-                            iscontext: true
-                          right:
-                            value:
-                              simple: active
-                    accessor: brand
-                iscontext: true
-              right:
-                value: {}
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Hatching Triage
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -98,10 +96,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+    taskid: e08b576d-2e34-4f21-88dd-dfe541fd7692
     type: condition
     task:
-      id: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+      id: e08b576d-2e34-4f21-88dd-dfe541fd7692
       version: -1
       name: Is there a URL?
       description: Check for URL
@@ -110,20 +108,20 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-        - "6"
+      - "6"
       yes:
-        - "3"
+      - "3"
     separatecontext: false
     conditions:
-      - label: yes
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: inputs.URL
-                iscontext: true
-              right:
-                value: {}
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -140,10 +138,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ff206737-1a1f-4024-89d7-49c9afcd24fd
+    taskid: 96d46dcd-29e5-4e9c-8541-b7f16a505703
     type: regular
     task:
-      id: ff206737-1a1f-4024-89d7-49c9afcd24fd
+      id: 96d46dcd-29e5-4e9c-8541-b7f16a505703
       version: -1
       name: Send URL to Hatching Triage
       description: Submits a file or URL for analysis
@@ -153,7 +151,7 @@ tasks:
       brand: Hatching Triage
     nexttasks:
       "#none#":
-        - "8"
+      - "8"
     scriptarguments:
       data:
         simple: ${inputs.URL}
@@ -176,10 +174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 49607d61-d347-454e-82d3-3a5222fec11a
+    taskid: 9f8a0368-98b5-4afe-8bfe-b1e5bd25bbb0
     type: playbook
     task:
-      id: 49607d61-d347-454e-82d3-3a5222fec11a
+      id: 9f8a0368-98b5-4afe-8bfe-b1e5bd25bbb0
       version: -1
       name: GenericPolling
       description: |-
@@ -196,7 +194,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "7"
+      - "7"
     scriptarguments:
       Ids:
         simple: ${Triage.submissions.id}
@@ -209,7 +207,7 @@ tasks:
       Timeout:
         simple: ${inputs.timeout}
       dt:
-        simple: Triage.sample-summaries(val.status=='reported')
+        simple: Triage.sample-summaries(val.status!=='reported').sample
     separatecontext: true
     loop:
       iscommand: false
@@ -232,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: bee9857d-c4a9-4e9f-8939-822514c68078
+    taskid: 229f4061-9b02-4089-84e4-734e00a35d1a
     type: title
     task:
-      id: bee9857d-c4a9-4e9f-8939-822514c68078
+      id: 229f4061-9b02-4089-84e4-734e00a35d1a
       version: -1
       name: Done
       description: "-"
@@ -259,10 +257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b76b27db-e95d-4178-827b-7bcbb45bbb4d
+    taskid: b2935177-bc59-4bb4-8274-e5f47f15bd95
     type: regular
     task:
-      id: b76b27db-e95d-4178-827b-7bcbb45bbb4d
+      id: b2935177-bc59-4bb4-8274-e5f47f15bd95
       version: -1
       name: Get task report
       description: Gets a summary report of the sample ID provided
@@ -272,7 +270,7 @@ tasks:
       brand: Hatching Triage
     nexttasks:
       "#none#":
-        - "6"
+      - "6"
     scriptarguments:
       sample_id:
         simple: ${Triage.submissions.id}
@@ -293,10 +291,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 26314852-2b16-4e29-84f7-47fa57ecfe90
+    taskid: 7c8b02ea-b9e8-4054-86ad-d2ffdc319d84
     type: regular
     task:
-      id: 26314852-2b16-4e29-84f7-47fa57ecfe90
+      id: 7c8b02ea-b9e8-4054-86ad-d2ffdc319d84
       version: -1
       name: Sleep (let the sandbox create the task)
       description: sleep
@@ -306,7 +304,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "9"
+      - "9"
     scriptarguments:
       seconds:
         simple: "5"
@@ -327,10 +325,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 63fdd375-6640-48dc-82b0-f9727db684bf
+    taskid: 55574304-9525-46b5-84e7-06c51df3d9e6
     type: regular
     task:
-      id: 63fdd375-6640-48dc-82b0-f9727db684bf
+      id: 55574304-9525-46b5-84e7-06c51df3d9e6
       version: -1
       name: View task
       description: Gets a summary report of the sample ID provided
@@ -340,7 +338,7 @@ tasks:
       brand: Hatching Triage
     nexttasks:
       "#none#":
-        - "4"
+      - "4"
     scriptarguments:
       sample_id:
         simple: ${Triage.submissions.id}
@@ -372,54 +370,54 @@ view: |-
     }
   }
 inputs:
-  - key: URL
-    value:
-      complex:
-        root: URL
-        accessor: Data
-    required: false
-    description: URL to detonate.
-    playbookInputQuery:
-  - key: interval
-    value:
-      simple: "1"
-    required: false
-    description: How often to poll for results.
-    playbookInputQuery:
-  - key: timeout
-    value:
-      simple: "10"
-    required: false
-    description: How long to wait before giving up waiting for results.
-    playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: How often to poll for results.
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: How long to wait before giving up waiting for results.
+  playbookInputQuery:
 outputs:
-  - contextPath: Triage.sample-summaries.completed
-    description: Date the sample analysis was completed.
-  - contextPath: Triage.sample-summaries.created
-    description: Date the analysis report was created.
-  - contextPath: Triage.sample-summaries.custom
-    description: Custom sample analysis.
-  - contextPath: Triage.sample-summaries.owner
-    description: Owner of the sample analysis.
-    type: unknown
-  - contextPath: Triage.sample-summaries.sample
-    description: Unique identifier of the sample,
-    type: unknown
-  - contextPath: Triage.sample-summaries.score
-    description: Score of the sample on a scale of 0 to 10.
-    type: unknown
-  - contextPath: Triage.sample-summaries.sha256
-    description: SHA256 hash of the sample.
-    type: unknown
-  - contextPath: Triage.sample-summaries.status
-    description: Status of the analysis.
-    type: unknown
-  - contextPath: Triage.sample-summaries.target
-    description: Target for the analysis.
-    type: unknown
-  - contextPath: Triage.sample-summaries.tasks
-    description: Tasks performed in the analysis.
-    type: unknown
+- contextPath: Triage.sample-summaries.completed
+  description: Date the sample analysis was completed.
+- contextPath: Triage.sample-summaries.created
+  description: Date the analysis report was created.
+- contextPath: Triage.sample-summaries.custom
+  description: Custom sample analysis.
+- contextPath: Triage.sample-summaries.owner
+  description: Owner of the sample analysis.
+  type: unknown
+- contextPath: Triage.sample-summaries.sample
+  description: Unique identifier of the sample,
+  type: unknown
+- contextPath: Triage.sample-summaries.score
+  description: Score of the sample on a scale of 0 to 10.
+  type: unknown
+- contextPath: Triage.sample-summaries.sha256
+  description: SHA256 hash of the sample.
+  type: unknown
+- contextPath: Triage.sample-summaries.status
+  description: Status of the analysis.
+  type: unknown
+- contextPath: Triage.sample-summaries.target
+  description: Target for the analysis.
+  type: unknown
+- contextPath: Triage.sample-summaries.tasks
+  description: Tasks performed in the analysis.
+  type: unknown
 tests:
-  - No tests (auto formatted)
+- Hatching Triage - Detonate File
 fromversion: 6.2.0

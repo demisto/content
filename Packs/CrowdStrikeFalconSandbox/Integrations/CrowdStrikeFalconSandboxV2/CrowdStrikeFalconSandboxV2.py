@@ -2,11 +2,11 @@ from requests import Response
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-import requests
+import urllib3
 from typing import Dict, Any, Callable
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 SEARCH_TERM_QUERY_ARGS = ('filename', 'filetype', 'filetype_desc', 'env_id', 'country', 'verdict', 'av_detect',
                           'vx_family', 'tag', 'date_from', 'date_to', 'port', 'host', 'domain', 'url', 'similar_to',
                           'context', 'imp_hash', 'ssdeep', 'authentihash')
@@ -239,8 +239,9 @@ def submission_response(client, response, polling) -> List[CommandResults]:
         return [submission_res]
     else:
         return_results(submission_res)  # return early
-    return crowdstrike_scan_command(client, {'file': response.get('sha256'), 'JobID': response.get('job_id'),
-                                             'polling': True})
+    return crowdstrike_scan_command(
+        {'file': response.get('sha256'), 'JobID': response.get('job_id'), 'polling': True}, client
+    )
 
 
 def crowdstrike_submit_url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -317,7 +318,7 @@ def crowdstrike_search_command(client: Client, args: Dict[str, Any]) -> List[Com
 
 
 @polling_function('cs-falcon-sandbox-scan')
-def crowdstrike_scan_command(client: Client, args: Dict[str, Any]):
+def crowdstrike_scan_command(args: Dict[str, Any], client: Client):
     hashes = args['file'].split(',')
     scan_response = client.scan(hashes)
 
@@ -380,7 +381,7 @@ def crowdstrike_analysis_overview_refresh_command(client: Client, args: Dict[str
 
 
 @polling_function('cs-falcon-sandbox-result')
-def crowdstrike_result_command(client: Client, args: Dict[str, Any]):
+def crowdstrike_result_command(args: Dict[str, Any], client: Client):
     key = get_api_id(args)
     report_response = client.get_report(key, args['file-type'])
     demisto.debug(f'get report response code: {report_response.status_code}')
@@ -390,7 +391,7 @@ def crowdstrike_result_command(client: Client, args: Dict[str, Any]):
         ret_list = [fileResult(get_default_file_name(args['file-type']), report_response.content,
                                file_type=EntryType.ENTRY_INFO_FILE)]
         if args.get('file'):
-            ret_list.append(crowdstrike_scan_command(client, args))
+            ret_list.append(crowdstrike_scan_command(args, client))
         return PollResult(ret_list)
 
     else:
@@ -485,13 +486,15 @@ def main() -> None:
         elif demisto_command in ['cs-falcon-sandbox-search', 'crowdstrike-search']:
             command_func = crowdstrike_search_command
         elif demisto_command in ['cs-falcon-sandbox-scan', 'crowdstrike-scan', 'file']:
-            command_func = crowdstrike_scan_command
+            return_results(crowdstrike_scan_command(args, client))
+            return
         elif demisto_command in ['crowdstrike-get-environments', 'cs-falcon-sandbox-get-environments']:
             command_func = crowdstrike_get_environments_command
         elif demisto_command in ['cs-falcon-sandbox-get-screenshots', 'crowdstrike-get-screenshots']:
             command_func = crowdstrike_get_screenshots_command
         elif demisto_command in ['cs-falcon-sandbox-result', 'crowdstrike-result']:
-            command_func = crowdstrike_result_command
+            return_results(crowdstrike_result_command(args, client))
+            return
         elif demisto_command in ['cs-falcon-sandbox-analysis-overview']:
             command_func = crowdstrike_analysis_overview_command
         elif demisto_command in ['cs-falcon-sandbox-analysis-overview-summary']:

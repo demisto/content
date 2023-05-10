@@ -16,7 +16,9 @@
   "Create",
   "Update",
   "Deactivate",
-  "Reactivate"
+  "Reactivate",
+  "Skyhigh Security Alert",
+  "Skyhigh Security Threat"
  ],
  "useAsKpi": true,
  "locked": false,

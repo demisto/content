@@ -1,0 +1,9 @@
+[INGEST:vendor="microsoft", product="dns", target_dataset="microsoft_dns_raw", no_hit=keep]
+// 6/10/2022 5:11:49 AM
+alter tmp_time_String1 = arrayindex(regextract(_raw_log,"\d+\/\d+\/\d+\s\d+\:\d+\:\d+ \w{2}" ),0)
+| alter tmp_event_time1 = parse_timestamp("%m/%d/%Y %I:%M:%S %p",tmp_time_String1)
+// 30/01/2023 13:18:25
+| alter tmp_time_String2 = arrayindex(regextract(_raw_log,"\d+\/\d+\/\d+\s\d+\:\d+\:\d+" ),0)
+| alter tmp_event_time2 = parse_timestamp("%d/%m/%Y %H:%M:%S",tmp_time_String2)
+| alter _time = coalesce(tmp_event_time1,tmp_event_time2)
+| fields - tmp_time_String1, tmp_event_time1,tmp_time_String2, tmp_event_time2;

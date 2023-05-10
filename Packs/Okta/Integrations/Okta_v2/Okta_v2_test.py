@@ -1,10 +1,11 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
     get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
-    create_group_command, assign_group_to_app_command
+    create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command
 import pytest
 import json
 import io
+import requests_mock
 
 
 client = Client(base_url="demisto.com")
@@ -29,7 +30,9 @@ user_data = {
         "displayName": "test1",
         "secondEmail": "test@this.com",
         "login": "test@this.com",
-        "email": "test@this.com"
+        "email": "test@this.com",
+        "manager": "manager",
+        "managerEmail": "manager@test.com"
     },
     "credentials": {
         "provider": {
@@ -617,13 +620,15 @@ def util_load_json(path: str):
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'test@this.com'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'test@this.com'),
         ({"userId": "", "username": "test@this.com", "verbose": 'true'},
          {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'Additional Data'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'Additional Data'),
     ]
 )
 def test_get_user_command(mocker, args, expected_context, expected_readable):
@@ -642,20 +647,74 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'test@this.com'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'test@this.com'),
         ({"userId": "", "username": "test@this.com", "verbose": 'true'},
          {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
           'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
           'Activated': "2020-02-20T11:44:43.000Z",
           'StatusChanged': "2020-02-20T11:45:24.000Z",
-          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'Additional Data'),
+          'PasswordChanged': "2020-02-19T08:18:21.000Z", "Manager": "manager", "ManagerEmail": "manager@test.com"},
+         'Additional Data'),
     ]
 )
 def test_list_user_command(mocker, args, expected_context, expected_readable):
-    mocker.patch.object(client, 'list_users', return_value=user_data)
+    mocker.patch.object(client, 'list_users', return_value=(user_data, "123dasu23c"))
     readable, outputs, _ = list_users_command(client, args)
     assert outputs.get('Account(val.ID && val.ID == obj.ID)')[0] == expected_context
     assert expected_readable in readable
+    assert "tag: 123dasu23c" in readable
+
+
+@pytest.mark.parametrize("args", [({"userId": "TestID", "username": "", "verbose": 'false'})])
+def test_after_key_list_user_command(mocker, args):
+    """
+    Given
+    - args.
+
+    When
+    - Running list_users command.
+
+    Then
+    - Validate that since there's no more results to show, there's no tag key in the readable output.
+    """
+    mocker.patch.object(client, 'list_users', return_value=(user_data, None))
+    readable, _, _ = list_users_command(client, args)
+    assert "tag:" not in readable
+
+
+@pytest.mark.parametrize("url, expected_after_tag",
+                         [("https://dev-725178.oktapreview.com/api/v1/users?limit=10&after=qazwsx123",
+                           "qazwsx123")])
+def test_get_after_tag_function(url, expected_after_tag):
+    """
+    Given
+    - url.
+    When
+    - Running get_after_tag function.
+
+    Then
+    - Validate that tag was extracted correctly.
+    """
+    after_tag = get_after_tag(url)
+    assert expected_after_tag == after_tag
+
+
+@pytest.mark.parametrize("url, expected_url",
+                         [("https://dev-725178.oktapreview.com/api/v1/users?limit=10&after=qazwsx123",
+                           "https://dev-725178.oktapreview.com/api/v1/users?after=qazwsx123")])
+def test_delete_limit_param_function(url, expected_url):
+    """
+    Given
+    - url.
+    When
+    - Running delete_limit_param function.
+
+    Then
+    - Ensure that the limit param was deleted.
+    """
+    modified_url = delete_limit_param(url)
+    assert expected_url == modified_url
 
 
 @pytest.mark.parametrize(
@@ -845,3 +904,27 @@ def test_get_readable_logs():
     result = client.get_readable_logs(logs_raw_response)
     assert len(result) == 2
     assert result == EXPEXTED_LOGS_RESULT
+
+
+def test_set_password_command():
+    client = Client('https://demisto.com')
+    with requests_mock.Mocker() as m:
+        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        mock_request = m.post('https://demisto.com/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
+
+        result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3'})
+
+    assert result[0] == 'test password was last changed on 2020-03-26T13:57:13.000Z'
+    assert mock_request.last_request.text == '{"credentials": {"password": {"value": "a1b2c3"}}}'
+
+
+def test_set_temp_password_command():
+    client = Client('https://demisto.com')
+    with requests_mock.Mocker() as m:
+        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        m.post('https://demisto.com/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
+        m.post('https://demisto.com/users/1234/lifecycle/expire_password', json={})
+
+        result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
+
+    assert result[0] == 'test password was last changed on 2023-03-22T10:15:26.000Z'

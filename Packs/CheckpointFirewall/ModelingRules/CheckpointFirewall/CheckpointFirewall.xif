@@ -1,0 +1,187 @@
+[MODEL: dataset ="check_point_vpn_1_firewall_1_raw", model=Network]
+// Fields Parsing
+alter rt = to_string(rt)
+| alter rt = arrayindex(
+            regextract(rt, "\d{10}"),
+            0)
+| alter time = parse_timestamp("%s", rt)
+| alter application = if(app = null or app="Unknown Protocol", service_id, app)
+| alter ruleName = if(cs2Label = "Rule Name", cs2, null)
+| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
+| alter ipv6src = if(src != null and ipv4src  = null, src, null)
+| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter ipv6dest = if(dst != null and ipv4dest  = null, dst, null)
+| alter duration = to_integer(duration)
+// Fields Modeling
+| alter XDM.Network.event_timestamp = time,
+		XDM.Network.original_event_id = loguid,
+		XDM.Network.original_event_type = cefDeviceEventClassId,
+		XDM.Network.reason = reason,
+		XDM.Network.session_id = session_id_,
+		XDM.Network.ip_protocol = proto,
+		XDM.Network.application_protocol = application, 
+		XDM.Network.rule = ruleName,
+		XDM.Network.duration = duration, 
+		XDM.Network.dns.dns_question.type = dns_type, 
+		XDM.Network.dns.dns_resource_record.type = dns_query,
+		XDM.Network.Observer.vendor = cefDeviceVendor, 
+		XDM.Network.Observer.product = cefDeviceProduct,
+		XDM.Network.Observer.action = act, 
+		XDM.Network.Source.host.hostname = shost, 
+		XDM.Network.Source.user.username = suser, 
+		XDM.Network.Source.ipv4 = ipv4src,  
+		XDM.Network.Source.ipv6 = ipv6src,  
+		XDM.Network.Source.port = spt, 
+		XDM.Network.Source.zone = inzone, 
+		XDM.Network.Destination.host.hostname = dhost, 
+		XDM.Network.Destination.user.username = duser, 
+		XDM.Network.Destination.ipv4 = ipv4src, 
+		XDM.Network.Destination.ipv6 =ipv4dest, 
+		XDM.Network.Destination.port = dpt, 
+		XDM.Network.Destination.zone = outzone;
+
+
+[MODEL: dataset ="check_point_url_filtering_raw", model=Network]     
+// Fields Parsing
+alter rt = to_string(rt)
+| alter rt = arrayindex(
+            regextract(rt, "\d{10}"),
+            0)
+| alter time = parse_timestamp("%s", rt)
+| alter application = if(app = null or app="Unknown Protocol", service_id, app)
+| alter ruleName = if(cs2Label = "Rule Name", cs2, null)
+| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
+| alter ipv6src = if(src != null and ipv4src  = null, src, null)
+| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter ipv6dest = if(dst != null and ipv4dest  = null, dst, null)
+| alter duration = to_integer(duration)
+// Fields Modeling
+| alter XDM.Network.event_timestamp = time,
+		XDM.Network.original_event_id = loguid, 
+		XDM.Network.original_event_type = cefDeviceEventClassId,
+		XDM.Network.ip_protocol = proto, 
+		XDM.Network.application_protocol = application, 
+		XDM.Network.rule = ruleName, 
+		XDM.Network.duration = duration, 
+		XDM.Network.http.url = request, 
+		XDM.Network.http.method = requestMethod, 
+		XDM.Network.threat.severity = cp_severity, 
+		XDM.Network.Observer.vendor = cefDeviceVendor, 
+		XDM.Network.Observer.product = cefDeviceProduct,
+		XDM.Network.Observer.action = act, 
+		XDM.Network.Source.host.hostname = shost, 
+		XDM.Network.Source.user.username = suser, 
+		XDM.Network.Source.ipv4 = ipv4src, 
+		XDM.Network.Source.ipv6 = ipv6src,  
+		XDM.Network.Destination.user.username = duser, 
+		XDM.Network.Destination.ipv4 = ipv4src, 
+		XDM.Network.Destination.ipv6 =ipv4dest, 
+		XDM.Network.Destination.port = dpt; 
+
+
+[MODEL: dataset ="check_point_smartdefense_raw", model=Network]           
+// Fields Parsing
+alter rt = to_string(rt)
+| alter rt = arrayindex(
+            regextract(rt, "\d{10}"),
+            0)
+| alter time = parse_timestamp("%s", rt)
+| alter Threat_Prevention_Rule_Name = if(cs1Label = "Threat Prevention Rule Name", cs1, null)
+| alter protectionName = if(cs4Label = "Protection Name", cs4, null)
+| alter Attack_Information = if(flexString2Label = "Attack Information", flexString2 , null)
+| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
+| alter ipv6src = if(src != null and ipv4src  = null, src, null)
+| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter ipv6dest = if(dst != null and ipv4dest  = null, dst, null)
+// Fields Modeling
+| alter XDM.Network.event_timestamp = time,
+		XDM.Network.original_event_id = loguid, 
+		XDM.Network.original_event_type = cefDeviceEventClassId,
+		XDM.Network.session_id = session_id, 
+		XDM.Network.ip_protocol = proto, 
+		XDM.Network.rule = Threat_Prevention_Rule_Name, 
+		XDM.Network.threat.severity = cefSeverity,  
+		XDM.Network.threat.name = protectionName, 
+		XDM.Network.threat.description = Attack_Information,
+		XDM.Network.Observer.vendor = cefDeviceVendor, 
+		XDM.Network.Observer.product = cefDeviceProduct,
+		XDM.Network.Observer.action = act, 
+		XDM.Network.Source.host.hostname = shost, 
+		XDM.Network.Source.user.username = suser, 
+		XDM.Network.Source.ipv4 = ipv4src,  
+		XDM.Network.Source.ipv6 = ipv6src,  
+		XDM.Network.Source.port = spt, 
+		XDM.Network.Destination.host.hostname = dhost, 
+		XDM.Network.Destination.user.username = duser, 
+		XDM.Network.Destination.ipv4 = ipv4src, 
+		XDM.Network.Destination.ipv6 =ipv4dest, 
+		XDM.Network.Destination.port = dpt;
+
+
+[MODEL: dataset ="check_point_application_control_raw", model=Network]      
+// Fields Parsing
+alter rt = to_string(rt)
+| alter rt = arrayindex(
+            regextract(rt, "\d{10}"),
+            0)
+| alter time = parse_timestamp("%s", rt)
+| alter application = if(app = null or app="Unknown Protocol", service_id, app)
+| alter ruleName = if(cs2Label = "Rule Name", cs2, null)
+| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
+| alter ipv6src = if(src != null and ipv4src  = null, src, null)
+| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter ipv6dest = if(dst != null and ipv4dest  = null, dst, null)
+| alter duration = to_integer(duration)
+// Fields Modeling
+| alter XDM.Network.event_timestamp = time,
+		XDM.Network.original_event_id = loguid, 
+		XDM.Network.original_event_type = cefDeviceEventClassId,
+		XDM.Network.ip_protocol = proto, 
+		XDM.Network.application_protocol = application, 
+		XDM.Network.rule = ruleName, 
+		XDM.Network.duration = duration, 
+		XDM.Network.http.url = request, 
+		XDM.Network.http.method = requestMethod, 
+		XDM.Network.threat.severity = cefSeverity,  
+		XDM.Network.Observer.vendor = cefDeviceVendor, 
+		XDM.Network.Observer.product = cefDeviceProduct,
+		XDM.Network.Observer.action = act, 
+		XDM.Network.Source.host.hostname = shost,
+		XDM.Network.Source.user.username = suser, 
+		XDM.Network.Source.ipv4 = ipv4src,  
+		XDM.Network.Source.ipv6 = ipv6src,  
+		XDM.Network.Destination.host.hostname = dhost, 
+		XDM.Network.Destination.user.username = duser, 
+		XDM.Network.Destination.ipv4 = ipv4src, 
+		XDM.Network.Destination.ipv6 =ipv4dest, 
+		XDM.Network.Destination.port = dpt;
+
+
+[MODEL: dataset ="check_point_identity_awareness_raw", model=Auth]           
+// Fields Parsing
+alter rt = to_string(rt)
+| alter rt = arrayindex(
+            regextract(rt, "\d{10}"),
+            0)
+| alter time = parse_timestamp("%s", rt)
+| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
+| alter ipv6src = if(src != null and ipv4src  = null, src, null)
+| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter ipv6dest = if(dst != null and ipv4dest  = null, dst, null)
+| alter auth_status_temp = if(auth_status = null, act, auth_status)
+// Fields Modeling
+| alter XDM.Auth.event_timestamp = time,
+		XDM.Auth.original_event_id= loguid, 
+		XDM.Auth.original_event_type = cefDeviceEventClassId,
+		XDM.Auth.auth_method = cs5,
+		XDM.Auth.outcome = auth_status_temp,
+		XDM.Auth.reason = reason, 
+		XDM.Auth.Observer.vendor = cefDeviceVendor, 
+		XDM.Auth.Observer.vendor = cefDeviceProduct,
+		XDM.Auth.Client.ipv4 = ipv4src,
+		XDM.Auth.Client.ipv6 = ipv6src,
+		XDM.Auth.Client.user.username = suser, 
+		XDM.Auth.Client.user.user_type = cs3,
+		XDM.Auth.Target.ipv4 = ipv4dest, 
+		XDM.Auth.Target.ipv6 = ipv6dest,
+		XDM.Auth.Target.user.username = duser;

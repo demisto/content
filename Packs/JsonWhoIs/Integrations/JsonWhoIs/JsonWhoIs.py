@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 PARAMS = demisto.params()
 
 # TOKEN
-TOKEN = PARAMS.get('token')
+TOKEN = PARAMS.get('credentials', {}).get('password') or PARAMS.get('token')
 
 # Service base URL
 BASE_URL = 'https://jsonwhois.com'

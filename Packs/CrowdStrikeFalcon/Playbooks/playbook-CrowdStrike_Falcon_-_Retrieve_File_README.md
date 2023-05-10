@@ -1,3 +1,4 @@
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
 
 ## Dependencies

@@ -1,12 +1,13 @@
 import struct
 import dateparser
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from typing import Callable, Dict, List, Any, Union, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'Carbon Black EDR'
@@ -409,6 +410,15 @@ def watchlist_update_command(client: Client, id: str, search_query: str, descrip
     return CommandResults(readable_output=res.get('result'))
 
 
+def watchlist_update_action_command(client: Client, id: str, action_type: str,
+                                    enabled: str) -> CommandResults:
+    enabled_bool = argToBoolean(enabled)
+    params = assign_params(enabled=enabled_bool)
+    res = client.http_request(url=f'/v1/watchlist/{id}/action_type/{action_type}', method='PUT', json_data=params)
+    # res contains whether the task successful.
+    return CommandResults(readable_output=res.get('result'))
+
+
 def watchlist_create_command(client: Client, name: str, search_query: str, index_type: str = 'events',
                              description: str = '') -> CommandResults:
     params = assign_params(name=name, search_query=search_query, description=description, index_type=index_type)
@@ -767,7 +777,7 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
             mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
             os_version=sensor.get('os_environment_display_string'),
             memory=sensor.get('physical_memory_size'),
-            status='Online' if sensor.get('status') else 'Offline',
+            status='Online' if sensor.get('status') == 'Online' else 'Offline',
             is_isolated=is_isolated,
             vendor='Carbon Black Response')
         endpoints.append(endpoint)
@@ -821,7 +831,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     if status:
         for current_status in argToList(status):
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
-            query_params['status'] = current_status
+            query_params['status'] = f'"{current_status}"'
             # we create a new query containing params since we do not allow both query and params.
             res = client.get_alerts(query=_create_query_string(query_params), limit=max_results)
             alerts += res.get('results', [])
@@ -918,6 +928,7 @@ def main() -> None:
                                          'cb-edr-watchlists-list': get_watchlist_list_command,
                                          'cb-edr-watchlist-create': watchlist_create_command,
                                          'cb-edr-watchlist-update': watchlist_update_command,
+                                         'cb-edr-watchlist-update-action': watchlist_update_action_command,
                                          'cb-edr-watchlist-delete': watchlist_delete_command,
                                          'cb-edr-sensors-list': sensors_list_command,
                                          'cb-edr-quarantine-device': quarantine_device_command,

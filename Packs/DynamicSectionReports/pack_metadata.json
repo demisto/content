@@ -1,8 +1,8 @@
 {
-    "name": "Dynamic Section Reports",
-    "description": "Dynamic section automation scripts to display indicator and incident information easily on custom layouts",
+    "name": "Dynamic Section Reports (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Nicholas Ericksen",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
@@ -17,5 +17,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

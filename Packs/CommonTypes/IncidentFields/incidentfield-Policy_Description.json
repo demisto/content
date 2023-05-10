@@ -6,8 +6,11 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-        "Microsoft CAS Alert",
-		"Tripwire File Change"
+		"Microsoft CAS Alert",
+		"Tripwire File Change",
+		"Skyhigh Security Alert",
+		"Skyhigh Security Threat",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -40,7 +43,8 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
         "Microsoft CAS Alert",
-		"Tripwire File Change"
+		"Tripwire File Change",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"threshold": 72,
 	"type": "longText",

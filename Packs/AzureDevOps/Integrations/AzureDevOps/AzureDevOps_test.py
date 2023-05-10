@@ -55,7 +55,8 @@ def test_azure_devops_pipeline_run_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pipeline_run_command(client, {'project': project,
                                            'pipeline_id': pipeline_id,
@@ -101,7 +102,8 @@ def test_azure_devops_user_add_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = user_add_command(client, {'user_email': user_email,
                                        'account_license_type': account_license_type,
@@ -151,7 +153,8 @@ def test_azure_devops_user_remove_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = user_remove_command(client, {'user_id': user_id})
 
@@ -188,7 +191,8 @@ def test_azure_devops_pull_request_create_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pull_request_create_command(client, {'project': project,
                                                   'repository_id': repository_id,
@@ -232,7 +236,8 @@ def test_azure_devops_pull_request_get_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pull_request_get_command(client, {'project': project,
                                                'repository_id': repository_id,
@@ -274,7 +279,8 @@ def test_azure_devops_pull_request_update_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pull_request_update_command(client, {'project': project,
                                                   'repository_id': repository_id,
@@ -323,7 +329,8 @@ def test_azure_devops_pull_request_list_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pull_requests_list_command(client, {'project': project,
                                                  'repository': repository
@@ -367,7 +374,8 @@ def test_azure_devops_project_list_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = project_list_command(client, {})
 
@@ -407,7 +415,8 @@ def test_azure_devops_repository_list_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = repository_list_command(client, {"project": project})
 
@@ -446,7 +455,8 @@ def test_azure_devops_users_query_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = users_query_command(client, {"query": query})
 
@@ -486,7 +496,8 @@ def test_azure_devops_pipeline_run_get_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pipeline_run_get_command(client, {"project": project,
                                                'pipeline_id': pipeline_id,
@@ -530,7 +541,8 @@ def test_azure_devops_pipeline_run_list_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pipeline_run_list_command(client, {"project": project,
                                                 'pipeline_id': pipeline_id})
@@ -577,7 +589,8 @@ def test_azure_devops_pipeline_list_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = pipeline_list_command(client, {"project": project})
 
@@ -620,7 +633,8 @@ def test_azure_devops_branch_list_command(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     result = branch_list_command(client, {"project": project, "repository": repository})
 
@@ -672,7 +686,8 @@ def test_get_last_fetch_incident_index(requests_mock, test_object):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     assert get_last_fetch_incident_index(project, repository, client, test_object['id']) == test_object['result']
 
@@ -704,7 +719,8 @@ def test_get_closest_index(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     assert get_closest_index(project, repository, client, 23) == 0
 
@@ -736,7 +752,8 @@ def test_is_new_pr(requests_mock):
         client_id=CLIENT_ID,
         organization=ORGANIZATION,
         verify=False,
-        proxy=False)
+        proxy=False,
+        auth_type='Device Code')
 
     assert is_new_pr(project, repository, client, 23)
     assert is_new_pr(project, repository, client, 22)
@@ -763,3 +780,45 @@ def test_get_mapping_fields_command():
     res = get_mapping_fields_command()
 
     assert expected_mapping == res.extract_mapping()
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function azure-devops-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from AzureDevOps import main
+    import AzureDevOps
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'organization': 'test_organization',
+        'self_deployed': 'True',
+        'tenant_id': tenant_id,
+        'client_id': client_id,
+        'auth_type': 'Authorization Code',
+        'credentials': {'identifier': client_id, 'password': 'client_secret'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='azure-devops-generate-login-url')
+    mocker.patch.object(AzureDevOps, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   'response_type=code' \
+                   '&scope=offline_access%20499b84ac-1321-427f-aa17-267ca6975798/user_impersonation%20offline_access' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = AzureDevOps.return_results.call_args[0][0].readable_output
+    assert expected_url in res

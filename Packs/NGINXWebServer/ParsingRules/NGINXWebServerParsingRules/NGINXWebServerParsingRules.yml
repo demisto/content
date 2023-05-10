@@ -1,0 +1,6 @@
+name: NGINX Web Server Parsing Rule
+id: NGINXWebServer Parsing Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

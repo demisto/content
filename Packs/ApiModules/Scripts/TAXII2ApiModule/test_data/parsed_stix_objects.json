@@ -14,7 +14,8 @@
       "value": "windows-updates.com"
     },
     "fields": {
-      "tags": ["malicious-activity"]
+      "tags": ["malicious-activity"],
+      "trafficlightprotocol": null
     }
   },
   {
@@ -223,6 +224,7 @@
     {
       "stixid": "report--708d589b-8d99-48fd-bbb6-2d47648f807f",
       "firstseenbysource": "2018-08-03T20:31:05.060Z",
+      "modified": "2020-07-30T16:55:21.569Z",
       "published": "2020-07-30T16:55:21.569Z",
       "description": "Sofacy (also known as Fancy Bear, APT 28, STRONTIUM, Pawn Storm) is a highly active actor with a Russian nexus. They have been active since the mid 2000s, and have been responsible for targeted intrusion campaigns against various industry vertical such as but not limited to Aerospace, Defense, Energy, Government and Media. Extensive observation and research of Sofacy's activities over time indicated a profile closely mirroring the strategic interests of the Russian government. More recently, this group has been attributed to the GRU, Russia's premier military intelligence service as reported by the US intelligence community within several declassified public documents.\n\nSeveral high profile intrusions have been publicly linked to the Sofacy group, such as the German Bundestag, France's TV5Monde TV station, the Democratic National Committee, the World Anti-Doping Agency, and the Ukrainian military.",
       "report_types": [],

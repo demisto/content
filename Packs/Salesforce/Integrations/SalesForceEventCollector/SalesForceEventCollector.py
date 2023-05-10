@@ -8,6 +8,8 @@ import csv
 from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
+VENDOR = "salesforce"
+PRODUCT = 'event-audit'
 
 
 class SalesforceClient(IntegrationEventsClient):
@@ -19,6 +21,7 @@ class SalesforceGetEvents(IntegrationGetEvents):
     """
     A class to handle the flow of the integration
     """
+
     def __init__(self, client: SalesforceClient, options: IntegrationOptions,
                  files_limit: int, query: str, after: str, last_id: str) -> None:
         self.client: SalesforceClient = client
@@ -212,7 +215,7 @@ def main():
             events = get_events.run()
 
             if command == 'fetch-events':
-                send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(get_events.get_last_run_details())
 
             elif command == 'salesforce-get-events':
@@ -222,7 +225,7 @@ def main():
                 )
                 return_results(command_results)
                 if should_push_events:
-                    send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     except Exception as e:
         return_error(str(e))

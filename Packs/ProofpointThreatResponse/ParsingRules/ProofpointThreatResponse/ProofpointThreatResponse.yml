@@ -1,0 +1,6 @@
+id: proofpoint_threat_response
+name: Proofpoint Threat Response
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

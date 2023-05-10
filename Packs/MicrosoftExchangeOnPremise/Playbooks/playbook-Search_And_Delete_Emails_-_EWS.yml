@@ -1,0 +1,414 @@
+id: search_and_delete_emails_-_ews
+version: -1
+name: Search And Delete Emails - EWS
+fromversion: 5.0.0
+description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4c53eeae-7958-4117-8776-d84f5e018bda
+    type: start
+    task:
+      id: 4c53eeae-7958-4117-8776-d84f5e018bda
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: e0bc8761-e7dd-41fa-80a6-516440e7218e
+    type: regular
+    task:
+      id: e0bc8761-e7dd-41fa-80a6-516440e7218e
+      version: -1
+      name: Search EWS for similar emails
+      description: Search all mailboxes in EWS to identify emails with similar attributes of a malicious email.
+      script: EWS v2|||ews-search-mailboxes
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      email_addresses: {}
+      filter:
+        complex:
+          root: EWS
+          accessor: Query
+      limit:
+        complex:
+          root: inputs.Limit
+      mailbox-search-scope: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 835
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 655f4055-484e-4068-8af2-0e4ec6f8de30
+    type: title
+    task:
+      id: 655f4055-484e-4068-8af2-0e4ec6f8de30
+      version: -1
+      name: Build EWS query
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    taskid: a11f4022-156a-4441-86f3-70039fac11c5
+    type: title
+    task:
+      id: a11f4022-156a-4441-86f3-70039fac11c5
+      version: -1
+      name: Search all mailboxes in EWS
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 58c8b53f-8817-4aaa-8231-823b45d96671
+    type: regular
+    task:
+      id: 58c8b53f-8817-4aaa-8231-823b45d96671
+      version: -1
+      name: Build EWS query
+      description: Returns an EWS query according to the malicious email's attributes.
+      scriptName: BuildEWSQuery
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      SearchThisWeek:
+        simple: ${inputs.SearchThisWeek}
+      attachmentName:
+        complex:
+          root: inputs.AttachmentName
+          filters:
+          - - operator: general.isExists
+              left:
+                value:
+                  simple: inputs.AttachmentName
+                iscontext: true
+      body: {}
+      from:
+        complex:
+          root: inputs.From
+          filters:
+          - - operator: general.isExists
+              left:
+                value:
+                  simple: inputs.From
+                iscontext: true
+      searchThisWeek:
+        simple: ${inputs.SearchThisWeek}
+      subject:
+        complex:
+          root: inputs.Subject
+          filters:
+          - - operator: general.isExists
+              left:
+                value:
+                  simple: inputs.Subject
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 8bdae91c-64f9-4c0d-86f8-7aaf06a4a9d0
+    type: title
+    task:
+      id: 8bdae91c-64f9-4c0d-86f8-7aaf06a4a9d0
+      version: -1
+      name: Delete similar emails
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+  "14":
+    id: "14"
+    taskid: c9048666-c30d-4305-8d49-438d141cd770
+    type: condition
+    task:
+      id: c9048666-c30d-4305-8d49-438d141cd770
+      version: -1
+      name: Should the found emails be deleted from EWS?
+      description: |-
+        Review the EWS search results and decide whether to delete all of the emails.
+
+        Note: You cannot delete a subset of the emails.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "15"
+      "yes":
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 24c2be15-9c43-417e-8623-ff007f5e2c64
+    type: title
+    task:
+      id: 24c2be15-9c43-417e-8623-ff007f5e2c64
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1680
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 732d5134-ac55-4a8f-8ffb-1a7c618d82d5
+    type: regular
+    task:
+      id: 732d5134-ac55-4a8f-8ffb-1a7c618d82d5
+      version: -1
+      name: Delete emails from EWS
+      description: Delete all similar emails from all mailboxes in EWS.
+      script: EWS v2|||ews-delete-items
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      delete-type:
+        complex:
+          root: inputs.DeleteType
+      item-ids:
+        complex:
+          root: EWS
+          accessor: Items.itemId
+      target-mailbox:
+        complex:
+          root: EWS
+          accessor: Items.mailbox
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1505
+        }
+      }
+  "17":
+    id: "17"
+    taskid: a34b7b16-4ed8-4c74-8fd9-62ca07a6f6bb
+    type: condition
+    task:
+      id: a34b7b16-4ed8-4c74-8fd9-62ca07a6f6bb
+      version: -1
+      name: Were similar emails found?
+      description: 'Did the EWS search identify emails similar to the malicious email? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: EWS
+                accessor: Items.itemId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1010
+        }
+      }
+  "18":
+    id: "18"
+    taskid: a0a62307-da9a-447a-8d5f-8c63ee4b156a
+    type: condition
+    task:
+      id: a0a62307-da9a-447a-8d5f-8c63ee4b156a
+      version: -1
+      name: Is EWS v2 enabled?
+      description: |
+        Verify that there’s a valid instance of EWS v2 enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS v2
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1695,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: From
+  value:
+    complex:
+      root: incident
+      accessor: emailfrom
+  required: true
+  description: The value of the malicious email's "From" attribute.
+- key: Subject
+  value:
+    complex:
+      root: incident
+      accessor: emailsubject
+  required: false
+  description: The value of the malicious email's "Subject" attribute.
+- key: AttachmentName
+  value:
+    complex:
+      root: incident
+      accessor: attachmentname
+  required: false
+  description: The value of the malicious email's "AttachmentName" attribute.
+- key: SearchThisWeek
+  value:
+    simple: "true"
+  required: true
+  description: Limit the search to the current week (true/false).
+- key: Limit
+  value:
+    simple: "20"
+  required: true
+  description: The maximum number of search results.
+- key: DeleteType
+  value:
+    simple: trash
+  required: true
+  description: The deletion type (trash, soft, or hard).
+outputs: []
+tests:
+- No test

@@ -31,7 +31,6 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | MD5 | The MD5 hash file or an array of hashes to search. |  | Optional |
 | SHA256 | The SHA256 hash file or an array of hashes to search. |  | Optional |
-| Hostname | The hostname of the machine on which the file is located. |  | Optional |
 | SHA1 | The SHA1 hash file or an array of hashes to search. |  | Optional |
 | IPAddress | The source or destination IP address to search. Can be a single address or an array of IP addresses.<br/> |  | Optional |
 | URLDomain | Domain or URL to search. Can be a single domain or URL or an array of domains or URLs to search. By default, the LIKE clause is used. |  | Optional |

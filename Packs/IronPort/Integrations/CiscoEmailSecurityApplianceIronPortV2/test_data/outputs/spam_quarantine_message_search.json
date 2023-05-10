@@ -1,0 +1,58 @@
+{
+    "meta": {
+      "totalCount": 3
+    },
+    "data": [
+      {
+        "attributes": {
+          "envelopeRecipient": [
+            "test@test.com"
+          ],
+          "toAddress": [
+            "test@test.com <test@test.com>, test@test.com <test@test.com>, test@test.com <test@test.com>"
+          ],
+          "subject": "new new",
+          "date": "20 Sep 2022 15:13 (GMT +00:00)",
+          "fromAddress": [
+            "Test Test <test@test.com>"
+          ],
+          "size": "448.90K"
+        },
+        "mid": 783
+      },
+      {
+        "attributes": {
+          "envelopeRecipient": [
+            "test@test.com"
+          ],
+          "toAddress": [
+            "test@test.com <test@test.com>, test@test.com <test@test.com>, test@test.com <test@test.com>"
+          ],
+          "subject": "FW: test123",
+          "date": "20 Sep 2022 15:11 (GMT +00:00)",
+          "fromAddress": [
+            "Test Test <test@test.com>"
+          ],
+          "size": "448.20K"
+        },
+        "mid": 782
+      },
+      {
+        "attributes": {
+          "envelopeRecipient": [
+            "test@test.com"
+          ],
+          "toAddress": [
+            "test@test.com <test@test.com>"
+          ],
+          "subject": "FW: test123",
+          "date": "20 Sep 2022 15:10 (GMT +00:00)",
+          "fromAddress": [
+            "Test Test <test@test.com>"
+          ],
+          "size": "447.10K"
+        },
+        "mid": 781
+      }
+    ]
+  }

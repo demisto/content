@@ -15,13 +15,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 - Detonate URL - JoeSecurity
 - Detonate URL - VMRay
 - Detonate URL - Cuckoo
-- Detonate URL - CrowdStrike Falcon X
+- Detonate URL - CrowdStrike Falcon Intelligence Sandbox
 - Detonate URL - FireEye AX
 - Detonate URL - Hatching Triage
 - Detonate URL - WildFire v2.1
 - Detonate URL - ThreatGrid
 - Detonate URL - Group-IB TDS Polygon
 - Detonate URL - Hybrid Analysis
+- Detonate URL - SecneurX Analysis
 
 ### Integrations
 
@@ -41,7 +42,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description**                            | **Default Value** | **Required** |
 | -------- | ------------------------------------------ | ----------------- | ------------ |
-| URL      | The URL object of the URL to be detonated. | URL.None          | Optional     |
+| URL      | The URL object of the URL to be detonated. | URL          | Optional     |
 
 ## Playbook Outputs
 
@@ -162,6 +163,11 @@ This playbook does not use any commands.
 | URL.Malicious.Vendor                    | The vendor that decides the URL is malicious.                           | String   |
 | URL.Malicious.Description               | The reason the vendor decides the URL is malicious.                     | String   |
 | ANYRUN.Task.Status                      | The task analysis status.                                               | String   |
+| SecneurXAnalysis.Report.SHA256          | SHA256 value of the analyzed sample                                     | String   |
+| SecneurXAnalysis.Report.Verdict         | Summary result of the analyzed sample                                   | String   |
+| SecneurXAnalysis.Report.Tags            | More details of the analyzed sample                                     | String   |
+| SecneurXAnalysis.Report.IOC             | List of IOC's observed in the analyzed sample                           | String   |
+| SecneurXAnalysis.Report.Status          | Analysis queued sample state                                            | String   |
 
 ## Playbook Image
 

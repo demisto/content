@@ -1,2587 +1,1159 @@
 Unique threat intel technology that automatically serves up relevant insights in real time.
-This integration was integrated and tested with version 1.0 of Recorded Future v2
-## Configure Recorded Future v2 on Cortex XSOAR
+This integration was integrated and tested with version 2.4.1 of Recorded Future v2
 
-## Information
-A valid API Token for XSOAR from Recorded Future needed to fetch information.
-[Get help with Recorded Future for Cortex XSOAR](https://www.recordedfuture.com/support/demisto-integration/).
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previo-us-version-of-this-integration-recorded-future-v2).
+
+## Configure Recorded Future v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Recorded Future v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
----
-
-## Configuration
-| Parameter                        | Description                                                       |
-|----------------------------------|-------------------------------------------------------------------|
-| Server URL                       | The URL to the Recorded Future ConnectAPI                         |
-| API Token                        | Valid API Token from Recorded Future                              |
-| File/IP/Domain/URL/CVE Threshold | Minimum risk score from Recorded Future needed to mark IOC as malicious when doing reputation or intelligence lookup |
-| unsecure                         | Trust any certificate \(unsecure\)                                |
-| proxy                            | Use system proxy settings                                         |
-
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/) |  | True |
+    | API Token |  | True |
+    | File Threshold | Minimum risk score from Recorded Future to consider the file malicious. | False |
+    | CVE Threshold | Minimum risk score from Recorded Future to consider the CVE malicious. | False |
+    | IP Threshold | Minimum risk score from RF to consider the IP malicious. | False |
+    | Domain Threshold | Minimum risk score from Recorded Future to consider the domain malicious. | False |
+    | URL Threshold | Minimum risk score from Recorded Future to consider the URL malicious. | False |
+    | Vulnerability Threshold | Minimum risk score from Recorded Future to consider the vulnerability critical. | False |
+    | Collective Insights | The Recorded Future Intelligence Cloud aggregates data related to indicators, driving collective insights to better identify threats. Anonymized data is collected for analytical purposes to identify trends and insights with the Intelligence Cloud. Go to the Recorded Future support site to learn more about Collective Insights. | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Rule names to fetch alerts by | Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched. | False |
+    | Alert Statuses to include in the fetch | Comma-separated alert statuses \(e.g. "unassigned,assigned,pending,actionable,no-action,tuning"\). If empty, the default value of "no-action" will be used. | False |
+    | Update alert status on fetch. | If selected, alerts with a status of 'no-action' will be updated to 'pending' once fetched by the integration. | False |
+    | First fetch time | Format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., "12 hours", "7 days", "3 months", "1 year". | False |
+    | Incident type |  | False |
+    | Maximum number of incidents per fetch |  | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    |  |  | False |
+    | Incidents Fetch Interval |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-Several of the outputs below have been reduced in size to improve readability.
-
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### domain
-***
-Get a quick indicator of the risk associated with a domain.
 
+### domain
+
+***
+Gets a quick indicator of the risk associated with a domain.
 
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to get the reputation of | Required |
-
+| domain | The domain for which to get the reputation. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested |
-| DBotScore.Type | string | Indicator type |
-| DBotScore.Vendor | string | Vendor used to calculate the score |
-| DBotScore.Score | number | The actual score |
-| Domain.Malicious.Vendor | string | For malicious Domains, the vendor that made the decision |
-| Domain.Malicious.Description | string | For malicious Domains, the reason that the vendor made the decision |
-| Domain.Name | string | Domain name |
-| RecordedFuture.Domain.riskScore | number | Recorded Future Domain Risk Score |
-| RecordedFuture.Domain.riskLevel | string | Recorded Future Domain Risk Level |
-| RecordedFuture.Domain.Evidence.rule | string | Recorded Risk Rule Name |
-| RecordedFuture.Domain.Evidence.mitigation | string | Recorded Risk Rule Mitigation |
-| RecordedFuture.Domain.Evidence.description | string | Recorded Risk Rule description |
-| RecordedFuture.Domain.Evidence.timestamp | date | Recorded Risk Rule timestamp |
-| RecordedFuture.Domain.Evidence.level | number | Recorded Risk Rule Level |
-| RecordedFuture.Domain.Evidence.ruleid | string | Recorded Risk Rule ID |
-| RecordedFuture.Domain.name | string | Domain name |
-| RecordedFuture.Domain.maxRules | number | Maximum count of Recorded Future Domain Risk Rules |
-| RecordedFuture.Domain.ruleCount | number | Number of triggered Recorded Future Domain Risk Rules |
-| RecordedFuture.Domain.rules | string | All the rules concatenated by comma |
-
-
-#### Command Example
-```!domain domain="google.com"```
-
-#### Context Example
-```
-{
-    "DBotScore": {
-        "Indicator": "google.com",
-        "Score": 2,
-        "Type": "domain",
-        "Vendor": "Recorded Future"
-    },
-    "Domain": {
-        "Name": "google.com"
-    },
-    "RecordedFuture": {
-        "Domain": {
-            "Evidence": [
-                {
-                    "description": "Previous sightings on 1 source: Recorded Future Analyst Community Trending Indicators. Observed between May 28, 2020, and May 29, 2020.",
-                    "level": 1,
-                    "rule": "Historically Reported in Threat List",
-                    "ruleid": "historicalThreatListMembership",
-                    "timestamp": "2020-06-12 16:23:41"
-                }
-            ],
-            "description": "",
-            "id": "idn:google.com",
-            "maxRules": 40,
-            "name": "google.com",
-            "riskLevel": 1,
-            "riskScore": 24,
-            "ruleCount": 4
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future Domain reputation for google.com
->Risk score: 24
->Risk Summary: 4 out of 40 Risk Rules currently observed
->Criticality: Informational
->
->[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/idn:google.com)
->
->### Risk Rules Triggered
->|Criticality|Rule|Evidence|Timestamp|
->|---|---|---|---|
->| Informational | Historically Reported in Threat List | Previous sightings on 1 source: Recorded Future Analyst Community Trending Indicators. Observed between May 28, 2020, and May 29, 2020. | 2020-06-12 16:23:41 |
-
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| Domain.Malicious.Vendor | string | For malicious domains, the vendor that made the decision. | 
+| Domain.Malicious.Description | string | For malicious Domains, the reason that the vendor made the decision. | 
+| Domain.Name | string | Domain name. | 
+| RecordedFuture.Domain.riskScore | number | Recorded Future domain risk score. | 
+| RecordedFuture.Domain.riskLevel | string | Recorded Future domain risk level. | 
+| RecordedFuture.Domain.Evidence.rule | string | Recorded Future risk rule name. | 
+| RecordedFuture.Domain.Evidence.mitigation | string | Recorded Future risk rule mitigation. | 
+| RecordedFuture.Domain.Evidence.description | string | Recorded Future risk rule description. | 
+| RecordedFuture.Domain.Evidence.timestamp | date | Recorded Future risk rule timestamp. | 
+| RecordedFuture.Domain.Evidence.level | number | Recorded Future risk rule level. | 
+| RecordedFuture.Domain.Evidence.ruleid | string | Recorded Future risk rule ID. | 
+| RecordedFuture.Domain.name | string | Domain name. | 
+| RecordedFuture.Domain.maxRules | number | Maximum number of Recorded Future domain risk rules. | 
+| RecordedFuture.Domain.rules | string | All the rules concatenated by comma. | 
+| RecordedFuture.Domain.ruleCount | number | Number of triggered Recorded Future domain risk rules. | 
 
 ### ip
-***
-Get a quick indicator of the risk associated with an IP.
 
+***
+Gets a quick indicator of the risk associated with an IP address.
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to get the reputation of | Required |
-
+| ip | IP address for which to get the reputation. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested |
-| DBotScore.Type | string | Indicator type |
-| DBotScore.Vendor | string | Vendor used to calculate the score |
-| DBotScore.Score | number | The actual score |
-| IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision |
-| IP.Malicious.Description | string | For malicious IP addresses, the reason that the vendor made the decision |
-| IP.Address | string | IP address |
-| RecordedFuture.IP.riskScore | number | Recorded Future IP Risk Score |
-| RecordedFuture.IP.riskLevel | string | Recorded Future IP Risk Level |
-| RecordedFuture.IP.Evidence.rule | string | Recorded Risk Rule Name |
-| RecordedFuture.IP.Evidence.mitigation | string | Recorded Risk Rule Mitigation |
-| RecordedFuture.IP.Evidence.description | string | Recorded Risk Rule Description |
-| RecordedFuture.IP.Evidence.timestamp | date | Recorded Risk Rule Timestamp |
-| RecordedFuture.IP.Evidence.level | number | Recorded Risk Rule Level |
-| RecordedFuture.IP.Evidence.ruleid | string | Recorded Risk Rule ID |
-| RecordedFuture.IP.name | string | IP Address |
-| RecordedFuture.IP.maxRules | number | Maximum count of Recorded Future IP Risk Rules |
-| RecordedFuture.IP.ruleCount | number | Number of triggered Recorded Future IP Risk Rules |
-| RecordedFuture.IP.rules | string | All the rules concatenated by comma |
-
-
-#### Command Example
-```!ip ip="8.8.8.8"```
-
-#### Context Example
-```
-{
-    "DBotScore": {
-        "Indicator": "8.8.8.8",
-        "Score": 0,
-        "Type": "ip",
-        "Vendor": "Recorded Future"
-    },
-    "IP": {
-        "Address": "8.8.8.8"
-    },
-    "RecordedFuture": {
-        "IP": {
-            "Evidence": [],
-            "description": "",
-            "id": "ip:8.8.8.8",
-            "maxRules": 51,
-            "name": "8.8.8.8",
-            "riskLevel": 0,
-            "riskScore": 0,
-            "ruleCount": 0
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future IP reputation for 8.8.8.8
->Risk score: 0
->Risk Summary: 0 out of 51 Risk Rules currently observed
->Criticality: Unknown
->
->[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/ip:8.8.8.8)
-
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
+| IP.Malicious.Description | string | For malicious IP addresses, the reason that the vendor made the decision. | 
+| IP.Address | string | IP address. | 
+| RecordedFuture.IP.riskScore | number | Recorded Future IP risk score. | 
+| RecordedFuture.IP.riskLevel | string | Recorded Future IP risk level. | 
+| RecordedFuture.IP.Evidence.rule | string | Recorded Future risk rule name. | 
+| RecordedFuture.IP.Evidence.mitigation | string | Recorded Future risk rule mitigation. | 
+| RecordedFuture.IP.Evidence.description | string | Recorded Future risk rule description. | 
+| RecordedFuture.IP.Evidence.timestamp | date | Recorded Future risk rule timestamp. | 
+| RecordedFuture.IP.Evidence.level | number | Recorded Future risk rule level. | 
+| RecordedFuture.IP.Evidence.ruleid | string | Recorded Future risk rule ID. | 
+| RecordedFuture.IP.name | string | IP address. | 
+| RecordedFuture.IP.maxRules | number | Maximum number of Recorded Future IP risk rules. | 
+| RecordedFuture.IP.rules | string | All the rules concatenated by comma. | 
+| RecordedFuture.IP.ruleCount | number | Number of triggered Recorded Future IP risk rules. | 
 
 ### file
-***
-Get a quick indicator of the risk associated with a file.
 
+***
+Gets a quick indicator of the risk associated with a file.
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512, CRC32, CTPH) | Required |
-
+| file | File hash for which to check the reputation. Can be an MD5, SHA1, SHA256, SHA512, CRC32 or CTPH. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA256 | string | File SHA\-256 |
-| File.SHA512 | string | File SHA\-512 |
-| File.SHA1 | string | File SHA\-1 |
-| File.MD5 | string | File MD5 |
-| File.CRC32 | string | File CRC32 |
-| File.CTPH | string | File CTPH |
-| File.Malicious.Vendor | string | For malicious files, the vendor that made the decision |
-| File.Malicious.Description | string | For malicious files, the reason that the vendor made the decision |
-| DBotScore.Indicator | string | The indicator that was tested |
-| DBotScore.Type | string | Indicator type |
-| DBotScore.Vendor | string | Vendor used to calculate the score |
-| DBotScore.Score | number | The actual score |
-| RecordedFuture.File.riskScore | number | Recorded Future Hash Risk Score |
-| RecordedFuture.File.riskLevel | string | Recorded Future Hash Risk Level |
-| RecordedFuture.File.Evidence.rule | string | Recorded Risk Rule Name |
-| RecordedFuture.File.Evidence.mitigation | string | Recorded Risk Rule Mitigation |
-| RecordedFuture.File.Evidence.description | string | Recorded Risk Rule description |
-| RecordedFuture.File.Evidence.timestamp | date | Recorded Risk Rule timestamp |
-| RecordedFuture.File.Evidence.level | number | Recorded Risk Rule Level |
-| RecordedFuture.File.Evidence.ruleid | string | Recorded Risk Rule ID |
-| RecordedFuture.File.name | string | Hash |
-| RecordedFuture.File.maxRules | number | Maximum count of Recorded Future Hash Risk Rules |
-| RecordedFuture.File.ruleCount | number | Number of triggered Recorded Future Hash Risk Rules |
-| RecordedFuture.File.rules | string | All the rules concatenated by comma |
-
-
-#### Command Example
-```!file file="027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745"```
-
-#### Context Example
-```
-{
-    "DBotScore": {
-        "Indicator": "027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745",
-        "Score": 3,
-        "Type": "file",
-        "Vendor": "Recorded Future"
-    },
-    "File": {
-        "Malicious": {
-            "Description": "Score above 65",
-            "Vendor": "Recorded Future"
-        },
-        "SHA256": "027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745"
-    },
-    "RecordedFuture": {
-        "File": {
-            "Evidence": [
-                {
-                    "description": "20 sightings on 1 source: VirusTotal. 3 related cyber vulnerabilities: CVE-2017-0147, ETERNALBLUE, CWE-200. Most recent link (May 3, 2020): https://www.virustotal.com/gui/file/027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745",
-                    "level": 2,
-                    "rule": "Linked to Vulnerability",
-                    "ruleid": "linkedToVuln",
-                    "timestamp": "2020-05-03 14:07:48"
-                }
-            ],
-            "description": "",
-            "id": "hash:027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745",
-            "maxRules": 12,
-            "name": "027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745",
-            "riskLevel": 3,
-            "riskScore": 89,
-            "ruleCount": 6
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future File reputation for 027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745
->Risk score: 89
->Risk Summary: 6 out of 12 Risk Rules currently observed
->Criticality: Malicious
->
->[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/hash:027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745)
->
->### Risk Rules Triggered
->|Criticality|Rule|Evidence|Timestamp|
->|---|---|---|---|
->| Malicious | Positive Malware Verdict | 24 sightings on 4 sources: VirusTotal, Malwr.com, Recorded Future Malware Detonation, ReversingLabs. Most recent link (May 3, 2020): https://www.virustotal.com/gui/file/027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745 | 2020-06-11 17:53:54 |
-
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| File.SHA256 | string | SHA-256 hash of the file. | 
+| File.SHA512 | string | SHA-512 hash of the file. | 
+| File.SHA1 | string | SHA-1 hash of the file. | 
+| File.MD5 | string | MD5 hash of the file. | 
+| File.CRC32 | string | CRC32 hash of the file. | 
+| File.CTPH | string | CTPH hash of the file. | 
+| File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Description | string | For malicious files, the reason that the vendor made the decision. | 
+| RecordedFuture.File.riskScore | number | Recorded Future hash risk score. | 
+| RecordedFuture.File.riskLevel | string | Recorded Future hash risk level. | 
+| RecordedFuture.File.Evidence.rule | string | Recorded Future risk rule name. | 
+| RecordedFuture.File.Evidence.mitigation | string | Recorded Future risk rule mitigation. | 
+| RecordedFuture.File.Evidence.description | string | Recorded Future risk rule description. | 
+| RecordedFuture.File.Evidence.timestamp | date | Recorded Future risk rule timestamp. | 
+| RecordedFuture.File.Evidence.level | number | Recorded Future risk rule level. | 
+| RecordedFuture.File.Evidence.ruleid | string | Recorded Future risk rule ID. | 
+| RecordedFuture.File.name | string | File name. | 
+| RecordedFuture.File.maxRules | number | Maximum number of Recorded Future hash risk rules. | 
+| RecordedFuture.File.rules | string | All the rules concatenated by comma. | 
+| RecordedFuture.File.ruleCount | number | Number of triggered Recorded Future hash risk rules. | 
 
 ### cve
-***
-Get a quick indicator of the risk associated with a CVE.
 
+***
+Gets a quick indicator of the risk associated with a CVE.
 
 #### Base Command
 
 `cve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | CVE to get the reputation of | Required |
-
+| cve | CVE for which to get the reputation. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested |
-| DBotScore.Type | string | Indicator type |
-| DBotScore.Vendor | string | Vendor used to calculate the score |
-| DBotScore.Score | number | The actual score |
-| CVE.ID | string | Vulnerability name |
-| RecordedFuture.CVE.riskScore | number | Recorded Future Vulnerability Risk Score |
-| RecordedFuture.CVE.riskLevel | string | Recorded Future Vulnerability Risk Level |
-| RecordedFuture.CVE.Evidence.rule | string | Recorded Risk Rule Name |
-| RecordedFuture.CVE.Evidence.mitigation | string | Recorded Risk Rule Mitigation |
-| RecordedFuture.CVE.Evidence.description | string | Recorded Risk Rule description |
-| RecordedFuture.CVE.Evidence.timestamp | date | Recorded Risk Rule timestamp |
-| RecordedFuture.CVE.Evidence.level | number | Recorded Risk Rule Level |
-| RecordedFuture.CVE.Evidence.ruleid | string | Recorded Risk Rule ID |
-| RecordedFuture.CVE.name | string | CVE |
-| RecordedFuture.CVE.maxRules | number | Maximum count of Recorded Future Vulnerability Risk Rules |
-| RecordedFuture.CVE.ruleCount | number | Number of triggered Recorded Future Vulnerability Risk Rules |
-| RecordedFuture.CVE.rules | string | All the rules concatenated by comma |
-
-
-#### Command Example
-```!cve cve="CVE-2011-3874"```
-
-#### Context Example
-```
-{
-    "CVE": {
-        "Description": "Stack-based buffer overflow in libsysutils in Android 2.2.x through 2.2.2 and 2.3.x through 2.3.6 allows user-assisted remote attackers to execute arbitrary code via an application that calls the FrameworkListener::dispatchCommand method with the wrong number of arguments, as demonstrated by zergRush to trigger a use-after-free error.",
-        "ID": "CVE-2011-3874"
-    },
-    "DBotScore": {
-        "Indicator": "CVE-2011-3874",
-        "Score": 0,
-        "Type": "cve",
-        "Vendor": null
-    },
-    "RecordedFuture": {
-        "CVE": {
-            "Evidence": [
-                {
-                    "description": "1 sighting on 1 source: Recorded Future Malware Hunting. Activity seen on 1 out of the last 28 days with 24 all-time daily sightings. Exploited in the wild by 1 malware family: DroidRt. Last observed on May 23, 2020. Sample hash: ffd0d7e6ba12ed20bc17f9ea1a1323a04cbf2e03bcaec0fa9ea574d9a7fb4881.",
-                    "level": 5,
-                    "rule": "Exploited in the Wild by Recently Active Malware",
-                    "ruleid": "recentMalwareActivity",
-                    "timestamp": "2020-05-23 00:00:00"
-                }
-            ],
-            "description": "Stack-based buffer overflow in libsysutils in Android 2.2.x through 2.2.2 and 2.3.x through 2.3.6 allows user-assisted remote attackers to execute arbitrary code via an application that calls the FrameworkListener::dispatchCommand method with the wrong number of arguments, as demonstrated by zergRush to trigger a use-after-free error.",
-            "id": "KIHnRI",
-            "maxRules": 22,
-            "name": "CVE-2011-3874",
-            "riskLevel": 5,
-            "riskScore": 99,
-            "ruleCount": 4
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future CVE reputation for CVE-2011-3874
->Risk score: 99
->Risk Summary: 4 out of 22 Risk Rules currently observed
->Criticality: Very Malicious
->
->NVD Vulnerability Description: Stack-based buffer overflow in libsysutils in Android 2.2.x through 2.2.2 and 2.3.x through 2.3.6 allows user-assisted remote attackers to execute arbitrary code via an application that calls the FrameworkListener::dispatchCommand method with the wrong number of arguments, as demonstrated by zergRush to trigger a use-after-free error.
->
->[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/KIHnRI)
->
->### Risk Rules Triggered
->|Criticality|Rule|Evidence|Timestamp|
->|---|---|---|---|
->| Very Malicious | Exploited in the Wild by Recently Active Malware | 1 sighting on 1 source: Recorded Future Malware Hunting. Activity seen on 1 out of the last 28 days with 24 all-time daily sightings. Exploited in the wild by 1 malware family: DroidRt. Last observed on May 23, 2020. Sample hash: ffd0d7e6ba12ed20bc17f9ea1a1323a04cbf2e03bcaec0fa9ea574d9a7fb4881. | 2020-05-23 00:00:00 |
-
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| CVE.ID | string | Vulnerability name. | 
+| RecordedFuture.CVE.riskScore | number | Recorded Future vulnerability risk score. | 
+| RecordedFuture.CVE.riskLevel | string | Recorded Future vulnerability risk level. | 
+| RecordedFuture.CVE.Evidence.rule | string | Recorded Future risk rule name. | 
+| RecordedFuture.CVE.Evidence.mitigation | string | Recorded Future risk rule mitigation. | 
+| RecordedFuture.CVE.Evidence.description | string | Recorded Future risk rule description. | 
+| RecordedFuture.CVE.Evidence.timestamp | date | Recorded Future risk rule timestamp. | 
+| RecordedFuture.CVE.Evidence.level | number | Recorded Future risk rule level. | 
+| RecordedFuture.CVE.Evidence.ruleid | string | Recorded Future risk rule ID. | 
+| RecordedFuture.CVE.name | string | CVE name. | 
+| RecordedFuture.CVE.maxRules | number | Maximum number of Recorded Future vulnerability risk rules. | 
+| RecordedFuture.CVE.rules | string | All the rules concatenated by comma. | 
+| RecordedFuture.CVE.ruleCount | number | Number of triggered Recorded Future vulnerability risk rules. | 
 
 ### url
-***
-Get a quick indicator of the risk associated with a URL.
 
+***
+Gets a quick indicator of the risk associated with a URL.
 
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to get the reputation of | Required |
-
+| url | URL for which to get the reputation. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested |
-| DBotScore.Type | string | Indicator type |
-| DBotScore.Vendor | string | Vendor used to calculate the score |
-| DBotScore.Score | number | The actual score |
-| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision |
-| URL.Malicious.Description | string | For malicious URLs, the reason that the vendor made the decision |
-| URL.Data | string | URL name |
-| RecordedFuture.URL.riskScore | number | Recorded Future URL Risk Score |
-| RecordedFuture.URL.riskLevel | string | Recorded Future URL Risk Level |
-| RecordedFuture.URL.Evidence.rule | string | Recorded Risk Rule Name |
-| RecordedFuture.URL.Evidence.mitigation | string | Recorded Risk Rule Mitigation |
-| RecordedFuture.URL.Evidence.description | string | Recorded Risk Rule description |
-| RecordedFuture.URL.Evidence.timestamp | date | Recorded Risk Rule timestamp |
-| RecordedFuture.URL.Evidence.level | number | Recorded Risk Rule Level |
-| RecordedFuture.URL.Evidence.ruleid | string | Recorded Risk Rule ID |
-| RecordedFuture.URL.name | string | URL |
-| RecordedFuture.URL.maxRules | number | Maximum count of Recorded Future URL Risk Rules |
-| RecordedFuture.URL.ruleCount | number | Number of triggered Recorded Future URL Risk Rules |
-| RecordedFuture.URL.rules | string | All the rules concatenated by comma |
-
-
-#### Command Example
-```!url url="https://google.com"```
-
-#### Context Example
-```
-{
-    "DBotScore": {
-        "Indicator": "https://google.com",
-        "Score": 2,
-        "Type": "url",
-        "Vendor": "Recorded Future"
-    },
-    "RecordedFuture": {
-        "URL": {
-            "Evidence": [
-                {
-                    "description": "13 sightings on 5 sources: Geeks To Go, AbuseIP Database, PasteBin, Malwarebytes Unpacked, PSBDMP Dumps. Most recent link (Dec 16, 2018): https://pastebin.com/2Brry0ZQ",
-                    "level": 1,
-                    "rule": "Historically Reported as a Defanged URL",
-                    "ruleid": "defangedURL",
-                    "timestamp": "2018-12-16 22:31:25"
-                }
-            ],
-            "description": "",
-            "id": "url:https://google.com",
-            "maxRules": 27,
-            "name": "https://google.com",
-            "riskLevel": 1,
-            "riskScore": 24,
-            "ruleCount": 1
-        }
-    },
-    "URL": {
-        "Data": "https://google.com"
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future URL reputation for https://google.com
->Risk score: 24
->Risk Summary: 1 out of 27 Risk Rules currently observed
->Criticality: Informational
->
->[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/url:https://google.com)
->
->### Risk Rules Triggered
->|Criticality|Rule|Evidence|Timestamp|
->|---|---|---|---|
->| Informational | Historically Reported as a Defanged URL | 13 sightings on 5 sources: Geeks To Go, AbuseIP Database, PasteBin, Malwarebytes Unpacked, PSBDMP Dumps. Most recent link (Dec 16, 2018): https://pastebin.com/2Brry0ZQ | 2018-12-16 22:31:25 |
-
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision. | 
+| URL.Malicious.Description | string | For malicious URLs, the reason that the vendor made the decision. | 
+| URL.Data | string | URL name. | 
+| RecordedFuture.URL.riskScore | number | Recorded Future URL risk score. | 
+| RecordedFuture.URL.riskLevel | string | Recorded Future URL risk level. | 
+| RecordedFuture.URL.Evidence.rule | string | Recorded Risk rule name. | 
+| RecordedFuture.URL.Evidence.mitigation | string | Recorded Risk rule mitigation. | 
+| RecordedFuture.URL.Evidence.description | string | Recorded Risk rule description. | 
+| RecordedFuture.URL.Evidence.timestamp | date | Recorded Risk rule timestamp. | 
+| RecordedFuture.URL.Evidence.level | number | Recorded Risk rule level. | 
+| RecordedFuture.URL.Evidence.ruleid | string | Recorded Risk rule ID. | 
+| RecordedFuture.URL.name | string | URL name. | 
+| RecordedFuture.URL.maxRules | number | Maximum number of Recorded Future URL risk rules. | 
+| RecordedFuture.URL.rules | string | All the rules concatenated by comma. | 
+| RecordedFuture.URL.ruleCount | number | Number of triggered Recorded Future URL risk rules. | 
 
 ### recordedfuture-threat-assessment
+
 ***
 Get an indicator of the risk based on context.
-This is not affected by the thresholds configured in the app, instead these are controlled by Recorded Future.
-The verdict output is determined by algorithms inside the API.
 
 #### Base Command
 
 `recordedfuture-threat-assessment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| context | Context to use for verdict | Required |
-| ip | IPs to check if they are related to the selected context. | Optional |
-| domain | Domains to check if they are related to the selected context. | Optional |
-| file | File hashes to check if they are related to the selected context. | Optional |
-| url | URLs to check if they are related to the selected context. | Optional |
-| cve | CVEs to check if they are related to the selected context. | Optional |
-
+| context | Context to use for the assessment. This is used by Recorded Future to calculate the relevant score and verdict. Can be "c2", "malware", or "phishing". Possible values are: c2, malware, phishing. | Required | 
+| ip | IP addresses to check if they are related to the selected context. | Optional | 
+| domain | Domains to check if they are related to the selected context. | Optional | 
+| file | File hashes to check if they are related to the selected context. | Optional | 
+| url | URLs to check if they are related to the selected context. | Optional | 
+| cve | CVEs to check if they are related to the selected context. | Optional | 
+| filter | Will filter out entities that have zero as score. Possible values are: yes, no. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested |
-| DBotScore.Type | string | Indicator type |
-| DBotScore.Vendor | string | Vendor used to calculate the score |
-| DBotScore.Score | number | The actual score |
-| File.SHA256 | string | File SHA\-256 |
-| File.SHA512 | string | File SHA\-512 |
-| File.SHA1 | string | File SHA\-1 |
-| File.MD5 | string | File MD5 |
-| File.CRC32 | string | File CRC32 |
-| File.CTPH | string | File CTPH |
-| IP.Address | string | IP address |
-| IP.Geo.Country | string | IP Geolocation Country |
-| IP.ASN | string | ASN |
-| Domain.Name | string | Domain name |
-| URL.Data | string | URL name |
-| CVE.ID | string | Vulnerability name |
-| RecordedFuture.verdict | boolean | Recorded Future verdict |
-| RecordedFuture.context | string | Threat Assessment Context |
-| RecordedFuture.riskScore | number | Recorded Future Max Score |
-| RecordedFuture.Entities.id | string | Entity ID |
-| RecordedFuture.Entities.name | string | Entity Name |
-| RecordedFuture.Entities.type | string | Entity Type |
-| RecordedFuture.Entities.score | string | Entity Score |
-| RecordedFuture.Entities.context | string | Contains the current context if there is evidence |
-| RecordedFuture.Entities.Evidence.ruleid | string | Recorded Future Risk Rule ID |
-| RecordedFuture.Entities.Evidence.timestamp | date | Recorded Future Evidence Timestamp |
-| RecordedFuture.Entities.Evidence.mitigation | string | Recorded Future Evidence Mitigation |
-| RecordedFuture.Entities.Evidence.description | string | Recorded Future Evidence Description |
-| RecordedFuture.Entities.Evidence.rule | string | Recorded Future Risk Rule |
-| RecordedFuture.Entities.Evidence.level | number | Recorded Future Risk Rule Level |
-
-
-#### Command Example
-```!recordedfuture-threat-assessment context="c2" ip="8.8.8.8"```
-
-#### Context Example
-```
-{
-    "DBotScore": {
-        "Indicator": "8.8.8.8",
-        "Score": 0,
-        "Type": "ip",
-        "Vendor": "Recorded Future"
-    },
-    "IP": {
-        "Address": "8.8.8.8"
-    },
-    "RecordedFuture": {
-        "Entities": [
-            {
-                "Evidence": [],
-                "id": "ip:8.8.8.8",
-                "name": "8.8.8.8",
-                "score": 0,
-                "type": "IpAddress"
-            }
-        ],
-        "context": "c2",
-        "riskScore": 0,
-        "verdict": false
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future Threat Assessment with regards to c2
->Verdict: Non-malicious
->Max/Min Score: 0/0
->
->
->### Entities
->Entity: 8.8.8.8
->Score: 0
->Rule count: 0 out of 2
->### Evidence
->**No entries.**
-
-
-### recordedfuture-alert-rules
-***
-Search for alert rule IDs.
-
-
-#### Base Command
-
-`recordedfuture-alert-rules`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| rule_name | Rule name to search, can be a partial name | Optional |
-| limit | Number of rules to return | Optional |
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RecordedFuture.AlertRule.id | string | Alert rule ID |
-| RecordedFuture.AlertRule.name | string | Alert rule name |
-
-
-#### Command Example
-```!recordedfuture-alert-rules limit=1```
-
-#### Context Example
-```
-{
-    "RecordedFuture": {
-        "AlertRule": {
-            "id": "d55BDp",
-            "name": "Supplier and Partner Trends, Trending Partners in Watch List"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future Alerting Rules
->|id|name|
->|---|---|
->| d55BDp | Supplier and Partner Trends, Trending Partners in Watch List |
-
-
-### recordedfuture-alerts
-***
-Get details on alerts configured and generated by Recorded Future by alert rule ID and/or time range.
-
-
-#### Base Command
-
-`recordedfuture-alerts`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| rule_id | Alert rule ID | Optional |
-| limit | Number of alerts to return | Optional |
-| triggered_time | Alert triggered time, e.g., "1 hour" or "2 days" | Optional |
-| assignee | Alert assignee's email address | Optional |
-| status | Alert review status | Optional |
-| freetext | Free text search | Optional |
-| offset | Alerts from offset | Optional |
-| orderby | Alerts sort order | Optional |
-| direction | Alerts sort direction | Optional |
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RecordedFuture.Alert.id | string | Alert ID |
-| RecordedFuture.Alert.name | string | Alert name |
-| RecordedFuture.Alert.type | string | Alert type |
-| RecordedFuture.Alert.triggered | date | Alert triggered time |
-| RecordedFuture.Alert.status | string | Alert status |
-| RecordedFuture.Alert.assignee | string | Alert assignee |
-| RecordedFuture.Alert.rule | string | Alert rule name |
-
-
-#### Command Example
-```!recordedfuture-alerts limit=1```
-
-#### Context Example
-```
-{
-    "RecordedFuture": {
-        "Alert": {
-            "Alert Title": "Global Trends, Trending Targets - Spike: Enel SPA, Knoxville and Alabama",
-            "assignee": null,
-            "email": null,
-            "id": "eK8voo",
-            "name": "Global Trends, Trending Targets - Spike: Enel SPA, Knoxville and Alabama",
-            "rule": "Global Trends, Trending Targets",
-            "status": "no-action",
-            "triggered": "2020-06-12 14:37:13",
-            "type": "ENTITY"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future Alerts
->|Alert Title|
->|---|
->| Global Trends, Trending Targets - Spike: Enel SPA, Knoxville and Alabama |
-
-
-### recordedfuture-alert-set-status
-***
-Set status for the alert in Recorded Future
-
-
-#### Base Command
-
-`recordedfuture-alert-set-status`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_id | The alert id that should be moved in selected status | Required |
-| status | The status string that represents status of alert in Recorded Future (e.g. unassigned, assigned, pending, dismiss, no-action, actionable, tuning) | Required |
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RecordedFuture.Alerts.id | String | Recorded Future alert id |
-| RecordedFuture.Alerts.status | String | Recorded Future alert status |
-| RecordedFuture.Alerts.note.text | String | Recorded Future alert note text |
-| RecordedFuture.Alerts.note.author | String | Recorded Future alert note author id |
-| RecordedFuture.Alerts.note.date | String | Recorded Future alert note date |
-| RecordedFuture.Alerts.reviewDate | String | Recorded Future alert get date |
-
-
-
-#### Command Example
-```!recordedfuture-alert-set-status alert_id="asdy3l" status="no-action"```
-
-#### Context Example
-```
-{
-    "RecordedFuture": {
-        "Alerts": [{
-            "id": "jrhq5t",
-            "note": {
-                "author": "NUbI50w62k"
-                "date": "2021-08-31T14:04:31Z"
-                "text": "testing"
-            }
-            "reviewDate": "2021-09-01T10:09:32Z"
-            "status": "no-action"
-        }]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Status no-action for Alert jrhrfx was successfully set
-
-
-### recordedfuture-alert-set-note
-***
-Add note to alert in Recorded Future
-
-
-#### Base Command
-
-`recordedfuture-alert-set-note`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_id | The alert id that should be moved in selected status | Required |
-| note | The note string that will be added to alert in Recorded Future | Required |
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| RecordedFuture.Alerts.id | String | Recorded Future alert id |
-| RecordedFuture.Alerts.status | String | Recorded Future alert status |
-| RecordedFuture.Alerts.note.text | String | Recorded Future alert note text |
-| RecordedFuture.Alerts.note.author | String | Recorded Future alert note author id |
-| RecordedFuture.Alerts.note.date | String | Recorded Future alert note date |
-| RecordedFuture.Alerts.reviewDate | String | Recorded Future alert get date |
-
-
-
-#### Command Example
-```!recordedfuture-alert-set-note alert_id="asdy3l" note="This is a note we would like to show you"```
-
-#### Context Example
-```
-{
-    "RecordedFuture": {
-        "Alerts": [{
-            "id": "jrhq5t",
-            "note": {
-                "author": "NUbI50w62k"
-                "date": "2021-08-31T14:04:31Z"
-                "text": "testing"
-            }
-            "reviewDate": "2021-09-01T10:09:32Z"
-            "status": "no-action"
-        }]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Note for Alert jrhrfx was successfully set
-
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | Indicator type. | 
+| DBotScore.Vendor | string | Vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| File.SHA256 | string | SHA-256 hash of the file. | 
+| File.SHA512 | string | SHA-512 hash of the file. | 
+| File.SHA1 | string | SHA-1 hash of the file. | 
+| File.MD5 | string | MD5 hash of the file. | 
+| File.CRC32 | string | CRC32 hash of the file. | 
+| File.CTPH | string | CTPH hash of the file. | 
+| IP.Address | string | IP address. | 
+| IP.ASN | string | ASN. | 
+| IP.Geo.Country | string | IP address geolocation country. | 
+| Domain.Name | string | Domain name. | 
+| URL.Data | string | URL name. | 
+| CVE.ID | string | Vulnerability name. | 
+| RecordedFuture.verdict | boolean | Recorded Future verdict. | 
+| RecordedFuture.context | string | Threat assessment context. | 
+| RecordedFuture.riskScore | number | Recorded Future maximum risk score. | 
+| RecordedFuture.Entities.id | string | Recorded Future entity ID. | 
+| RecordedFuture.Entities.name | string | Recorded Future entity name. | 
+| RecordedFuture.Entities.type | string | Recorded Future entity type. | 
+| RecordedFuture.Entities.score | string | Recorded Future entity score. | 
+| RecordedFuture.Entities.context | string | Contains the current context if there is evidence. | 
+| RecordedFuture.Entities.Evidence.ruleid | string | Recorded Future risk rule ID. | 
+| RecordedFuture.Entities.Evidence.timestamp | date | Recorded Future evidence timestamp. | 
+| RecordedFuture.Entities.Evidence.mitigation | string | Recorded Future evidence mitigation. | 
+| RecordedFuture.Entities.Evidence.description | string | Recorded Future evidence description. | 
+| RecordedFuture.Entities.Evidence.rule | string | Recorded Future risk rule. | 
+| RecordedFuture.Entities.Evidence.level | number | Recorded Future risk rule level. | 
 
 ### recordedfuture-intelligence
-***
-Get threat intelligence for an IP, Domain, CVE, URL or File.
 
+***
+Get threat intelligence for an IP, Domain, CVE, URL, File or Malware.
 
 #### Base Command
 
 `recordedfuture-intelligence`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_type | The type of entity to fetch context for. (Should be provided with its value in entityValue argument) | Required |
-| entity | The value of the entity to fetch context for. (Should be provided with its type in entity_type argument, Hash types supported: MD5, SHA-1, SHA-256, SHA-512, CRC32, CTPH). Vulnerability supports CVEs. | Required |
-
+| profile | Depending on what profile you choose you will get different related entities matching the given profile. Possible values are: All, Threat Hunter, SecOp Analyst, TI Analyst, Vulnerability Analyst. Default is All. | Optional | 
+| entity_type | The type of entity for which to fetch context. Should be provided with its value in entityValue argument. Can be "domain", "ip", "file", "url", "cve", or "malware". Possible values are: domain, ip, file, url, cve, malware. | Required | 
+| entity | The value of the entity for which to fetch context. Should be provided with its type in entity_type argument. Supported hash types: MD5, SHA1, SHA256, SHA512, CRC32, and CTPH. Vulnerability supports CVEs. | Required | 
+| fetch_related_entities | Whether to fetch related entity data. Can be "yes" or "no". Possible values are: yes, no. | Optional | 
+| fetch_analyst_notes | Whether to fetch analyst notes. Can be "yes" or "no". Possible values are: yes, no. Default is no. | Optional | 
+| fetch_riskyCIDRips | Whether risk scores for other IP addresses within the same CIDR should be fetched (only for IP intelligence). Can be "yes" or "no". Possible values are: no, yes. Default is no. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested |
-| DBotScore.Type | string | Indicator type |
-| DBotScore.Vendor | string | Vendor used to calculate the score |
-| DBotScore.Score | number | The actual score |
-| File.SHA256 | string | File SHA\-256 |
-| File.SHA512 | string | File SHA\-512 |
-| File.SHA1 | string | File SHA\-1 |
-| File.MD5 | string | File MD5 |
-| File.CRC32 | string | File CRC32 |
-| File.CTPH | string | File CTPH |
-| IP.Address | string | IP address |
-| IP.ASN | string | ASN |
-| IP.Geo.Country | string | IP Geolocation Country |
-| Domain.Name | string | Domain name |
-| URL.Data | string | URL name |
-| CVE.ID | string | Vulnerability name |
-| RecordedFuture.IP.criticality | number | Risk Criticality |
-| RecordedFuture.IP.criticalityLabel | string | Risk Criticality Label |
-| RecordedFuture.IP.riskString | string | Risk String |
-| RecordedFuture.IP.riskSummary | string | Risk Summary |
-| RecordedFuture.IP.rules | string | Risk Rules |
-| RecordedFuture.IP.concatRules | string | All risk rules concatenated by comma |
-| RecordedFuture.IP.score | number | Risk Score |
-| RecordedFuture.IP.firstSeen | date | Evidence First Seen |
-| RecordedFuture.IP.lastSeen | date | Evidence Last Seen |
-| RecordedFuture.IP.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.IP.type | string | Entity Type |
-| RecordedFuture.IP.name | string | Entity |
-| RecordedFuture.IP.id | string | Recorded Future Entity ID |
-| RecordedFuture.IP.location.asn | String | ASN number |
-| RecordedFuture.IP.location.cidr.id | String | Recorded Future CIDR ID |
-| RecordedFuture.IP.location.cidr.name | String | CIDR |
-| RecordedFuture.IP.location.cidr.type | String | CIDR Type |
-| RecordedFuture.IP.location.location.city | String | IP Geolocation City |
-| RecordedFuture.IP.location.location.continent | String | IP Geolocation Continent |
-| RecordedFuture.IP.location.location.country | String | IP Geolocation Country |
-| RecordedFuture.IP.location.organization | String | IP Geolocation Organization |
-| RecordedFuture.IP.metrics.type | String | Recorded Future Metrics Type |
-| RecordedFuture.IP.metrics.value | Number | Recorded Future Metrics Value |
-| RecordedFuture.IP.threatLists.description | String | Recorded Future Threat List Description |
-| RecordedFuture.IP.threatLists.id | String | Recorded Future Threat List ID |
-| RecordedFuture.IP.threatLists.name | String | Recorded Future Threat List Name |
-| RecordedFuture.IP.threatLists.type | String | Recorded Future Threat List Type |
-| RecordedFuture.IP.relatedEntities.RelatedAttacker.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedAttacker.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedAttacker.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedAttacker.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedTarget.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedTarget.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedTarget.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedTarget.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedThreatActor.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedThreatActor.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedThreatActor.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedThreatActor.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedMalware.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedMalware.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedMalware.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedMalware.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedIpAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedIpAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedIpAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedIpAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedProduct.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedProduct.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedProduct.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedProduct.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedCountries.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedCountries.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedCountries.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedCountries.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedHash.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedHash.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedHash.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedHash.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedTechnology.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedTechnology.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedTechnology.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedTechnology.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedAttackVector.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedAttackVector.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedAttackVector.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedAttackVector.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedOperations.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedOperations.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedOperations.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedOperations.type | String | Recorded Future Related Type |
-| RecordedFuture.IP.relatedEntities.RelatedCompany.count | Number | Recorded Future Related Count |
-| RecordedFuture.IP.relatedEntities.RelatedCompany.id | String | Recorded Future Related ID |
-| RecordedFuture.IP.relatedEntities.RelatedCompany.name | String | Recorded Future Related Name |
-| RecordedFuture.IP.relatedEntities.RelatedCompany.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.criticality | number | Risk Criticality |
-| RecordedFuture.Domain.criticalityLabel | string | Risk Criticality Label |
-| RecordedFuture.Domain.riskString | string | Risk String |
-| RecordedFuture.Domain.riskSummary | string | Risk Summary |
-| RecordedFuture.Domain.rules | string | Risk Rules |
-| RecordedFuture.Domain.concatRules | string | All risk rules concatenated by comma |
-| RecordedFuture.Domain.score | number | Risk Score |
-| RecordedFuture.Domain.firstSeen | date | Evidence First Seen |
-| RecordedFuture.Domain.lastSeen | date | Evidence Last Seen |
-| RecordedFuture.Domain.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.Domain.type | string | Entity Type |
-| RecordedFuture.Domain.name | string | Entity |
-| RecordedFuture.Domain.id | string | Recorded Future Entity ID |
-| RecordedFuture.Domain.location.asn | String | ASN number |
-| RecordedFuture.Domain.location.cidr.id | String | Recorded Future CIDR ID |
-| RecordedFuture.Domain.location.cidr.name | String | CIDR |
-| RecordedFuture.Domain.location.cidr.type | String | CIDR Type |
-| RecordedFuture.Domain.location.location.city | String | IP Geolocation City |
-| RecordedFuture.Domain.location.location.continent | String | IP Geolocation Continent |
-| RecordedFuture.Domain.location.location.country | String | IP Geolocation Country |
-| RecordedFuture.Domain.location.organization | String | IP Geolocation Organization |
-| RecordedFuture.Domain.metrics.type | String | Recorded Future Metrics Type |
-| RecordedFuture.Domain.metrics.value | Number | Recorded Future Metrics Value |
-| RecordedFuture.Domain.threatLists.description | String | Recorded Future Threat List Description |
-| RecordedFuture.Domain.threatLists.id | String | Recorded Future Threat List ID |
-| RecordedFuture.Domain.threatLists.name | String | Recorded Future Threat List Name |
-| RecordedFuture.Domain.threatLists.type | String | Recorded Future Threat List Type |
-| RecordedFuture.Domain.relatedEntities.RelatedAttacker.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedAttacker.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedAttacker.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedAttacker.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedTarget.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedTarget.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedTarget.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedTarget.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedMalware.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedMalware.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedMalware.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedMalware.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedProduct.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedProduct.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedProduct.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedProduct.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedCountries.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedCountries.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedCountries.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedCountries.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedHash.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedHash.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedHash.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedHash.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedTechnology.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedTechnology.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedTechnology.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedTechnology.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedOperations.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedOperations.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedOperations.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedOperations.type | String | Recorded Future Related Type |
-| RecordedFuture.Domain.relatedEntities.RelatedCompany.count | Number | Recorded Future Related Count |
-| RecordedFuture.Domain.relatedEntities.RelatedCompany.id | String | Recorded Future Related ID |
-| RecordedFuture.Domain.relatedEntities.RelatedCompany.name | String | Recorded Future Related Name |
-| RecordedFuture.Domain.relatedEntities.RelatedCompany.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.criticality | number | Risk Criticality |
-| RecordedFuture.CVE.criticalityLabel | string | Risk Criticality Label |
-| RecordedFuture.CVE.riskString | string | Risk String |
-| RecordedFuture.CVE.riskSummary | string | Risk Summary |
-| RecordedFuture.CVE.rules | string | Risk Rules |
-| RecordedFuture.CVE.concatRules | string | All risk rules concatenated by comma |
-| RecordedFuture.CVE.score | number | Risk Score |
-| RecordedFuture.CVE.firstSeen | date | Evidence First Seen |
-| RecordedFuture.CVE.lastSeen | date | Evidence Last Seen |
-| RecordedFuture.CVE.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.CVE.type | string | Entity Type |
-| RecordedFuture.CVE.name | string | Entity |
-| RecordedFuture.CVE.id | string | Recorded Future Entity ID |
-| RecordedFuture.CVE.location.asn | String | ASN number |
-| RecordedFuture.CVE.location.cidr.id | String | Recorded Future CIDR ID |
-| RecordedFuture.CVE.location.cidr.name | String | CIDR |
-| RecordedFuture.CVE.location.cidr.type | String | CIDR Type |
-| RecordedFuture.CVE.location.location.city | String | IP Geolocation City |
-| RecordedFuture.CVE.location.location.continent | String | IP Geolocation Continent |
-| RecordedFuture.CVE.location.location.country | String | IP Geolocation Country |
-| RecordedFuture.CVE.location.organization | String | IP Geolocation Organization |
-| RecordedFuture.CVE.metrics.type | String | Recorded Future Metrics Type |
-| RecordedFuture.CVE.metrics.value | Number | Recorded Future Metrics Value |
-| RecordedFuture.CVE.threatLists.description | String | Recorded Future Threat List Description |
-| RecordedFuture.CVE.threatLists.id | String | Recorded Future Threat List ID |
-| RecordedFuture.CVE.threatLists.name | String | Recorded Future Threat List Name |
-| RecordedFuture.CVE.threatLists.type | String | Recorded Future Threat List Type |
-| RecordedFuture.CVE.relatedEntities.RelatedAttacker.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedAttacker.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedAttacker.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedAttacker.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedTarget.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedTarget.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedTarget.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedTarget.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedMalware.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedMalware.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedMalware.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedMalware.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedProduct.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedProduct.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedProduct.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedProduct.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedCountries.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedCountries.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedCountries.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedCountries.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedHash.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedHash.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedHash.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedHash.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedTechnology.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedTechnology.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedTechnology.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedTechnology.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedOperations.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedOperations.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedOperations.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedOperations.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.relatedEntities.RelatedCompany.count | Number | Recorded Future Related Count |
-| RecordedFuture.CVE.relatedEntities.RelatedCompany.id | String | Recorded Future Related ID |
-| RecordedFuture.CVE.relatedEntities.RelatedCompany.name | String | Recorded Future Related Name |
-| RecordedFuture.CVE.relatedEntities.RelatedCompany.type | String | Recorded Future Related Type |
-| RecordedFuture.CVE.cpe | String | Recorded Future  CPE information |
-| RecordedFuture.CVE.relatedLinks | String | Recorded Future CVE Related Links |
-| RecordedFuture.File.criticality | number | Risk Criticality |
-| RecordedFuture.File.criticalityLabel | string | Risk Criticality Label |
-| RecordedFuture.File.riskString | string | Risk String |
-| RecordedFuture.File.riskSummary | string | Risk Summary |
-| RecordedFuture.File.rules | string | Risk Rules |
-| RecordedFuture.File.concatRules | string | All risk rules concatenated by comma |
-| RecordedFuture.File.score | number | Risk Score |
-| RecordedFuture.File.firstSeen | date | Evidence First Seen |
-| RecordedFuture.File.lastSeen | date | Evidence Last Seen |
-| RecordedFuture.File.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.File.hashAlgorithm | string | Hash Algorithm |
-| RecordedFuture.File.type | string | Entity Type |
-| RecordedFuture.File.name | string | Entity |
-| RecordedFuture.File.id | string | Recorded Future Entity ID |
-| RecordedFuture.File.metrics.type | String | Recorded Future Metrics Type |
-| RecordedFuture.File.metrics.value | Number | Recorded Future Metrics Value |
-| RecordedFuture.File.threatLists.description | String | Recorded Future Threat List Description |
-| RecordedFuture.File.threatLists.id | String | Recorded Future Threat List ID |
-| RecordedFuture.File.threatLists.name | String | Recorded Future Threat List Name |
-| RecordedFuture.File.threatLists.type | String | Recorded Future Threat List Type |
-| RecordedFuture.File.relatedEntities.RelatedAttacker.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedAttacker.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedAttacker.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedAttacker.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedTarget.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedTarget.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedTarget.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedTarget.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedThreatActor.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedThreatActor.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedThreatActor.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedThreatActor.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedMalware.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedMalware.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedMalware.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedMalware.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedIpAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedIpAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedIpAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedIpAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedProduct.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedProduct.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedProduct.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedProduct.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedCountries.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedCountries.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedCountries.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedCountries.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedHash.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedHash.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedHash.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedHash.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedTechnology.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedTechnology.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedTechnology.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedTechnology.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedEmailAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedEmailAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedEmailAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedEmailAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedAttackVector.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedAttackVector.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedAttackVector.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedAttackVector.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedOperations.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedOperations.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedOperations.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedOperations.type | String | Recorded Future Related Type |
-| RecordedFuture.File.relatedEntities.RelatedCompany.count | Number | Recorded Future Related Count |
-| RecordedFuture.File.relatedEntities.RelatedCompany.id | String | Recorded Future Related ID |
-| RecordedFuture.File.relatedEntities.RelatedCompany.name | String | Recorded Future Related Name |
-| RecordedFuture.File.relatedEntities.RelatedCompany.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.criticality | number | Risk Criticality |
-| RecordedFuture.URL.criticalityLabel | string | Risk Criticality Label |
-| RecordedFuture.URL.riskString | string | Risk String |
-| RecordedFuture.URL.riskSummary | string | Risk Summary |
-| RecordedFuture.URL.rules | string | Risk Rules |
-| RecordedFuture.URL.concatRules | string | All risk rules concatenated by comma |
-| RecordedFuture.URL.score | number | Risk Score |
-| RecordedFuture.URL.firstSeen | date | Evidence First Seen |
-| RecordedFuture.URL.lastSeen | date | Evidence Last Seen |
-| RecordedFuture.URL.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.URL.type | string | Entity Type |
-| RecordedFuture.URL.name | string | Entity |
-| RecordedFuture.URL.id | string | Recorded Future Entity ID |
-| RecordedFuture.URL.location.asn | String | ASN number |
-| RecordedFuture.URL.location.cidr.id | String | Recorded Future CIDR ID |
-| RecordedFuture.URL.location.cidr.name | String | CIDR |
-| RecordedFuture.URL.location.cidr.type | String | CIDR Type |
-| RecordedFuture.URL.location.location.city | String | IP Geolocation City |
-| RecordedFuture.URL.location.location.continent | String | IP Geolocation Continent |
-| RecordedFuture.URL.location.location.country | String | IP Geolocation Country |
-| RecordedFuture.URL.location.organization | String | IP Geolocation Organization |
-| RecordedFuture.URL.metrics.type | String | Recorded Future Metrics Type |
-| RecordedFuture.URL.metrics.value | Number | Recorded Future Metrics Value |
-| RecordedFuture.URL.threatLists.description | String | Recorded Future Threat List Description |
-| RecordedFuture.URL.threatLists.id | String | Recorded Future Threat List ID |
-| RecordedFuture.URL.threatLists.name | String | Recorded Future Threat List Name |
-| RecordedFuture.URL.threatLists.type | String | Recorded Future Threat List Type |
-| RecordedFuture.URL.relatedEntities.RelatedAttacker.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedAttacker.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedAttacker.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedAttacker.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedTarget.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedTarget.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedTarget.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedTarget.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedThreatActor.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedThreatActor.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedThreatActor.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedThreatActor.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedMalware.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedMalware.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedMalware.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedMalware.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedIpAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedIpAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedIpAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedIpAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedProduct.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedProduct.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedProduct.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedProduct.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedCountries.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedCountries.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedCountries.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedCountries.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedHash.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedHash.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedHash.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedHash.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedTechnology.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedTechnology.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedTechnology.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedTechnology.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedAttackVector.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedAttackVector.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedAttackVector.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedAttackVector.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedOperations.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedOperations.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedOperations.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedOperations.type | String | Recorded Future Related Type |
-| RecordedFuture.URL.relatedEntities.RelatedCompany.count | Number | Recorded Future Related Count |
-| RecordedFuture.URL.relatedEntities.RelatedCompany.id | String | Recorded Future Related ID |
-| RecordedFuture.URL.relatedEntities.RelatedCompany.name | String | Recorded Future Related Name |
-| RecordedFuture.URL.relatedEntities.RelatedCompany.type | String | Recorded Future Related Type |
-
-
-#### Command Example
-```!recordedfuture-intelligence entity_type="ip" entity="8.8.8.8"```
-
-#### Context Example
-```
-{
-    "DBotScore": [
-        {
-            "Indicator": "8.8.8.8",
-            "Score": 0,
-            "Type": "ip",
-            "Vendor": "Recorded Future"
-        },
-        {
-            "Indicator": "8.8.8.4",
-            "Score": 2,
-            "Type": "ip",
-            "Vendor": "Recorded Future"
-        },
-        {
-            "Indicator": "8.8.8.5",
-            "Score": 2,
-            "Type": "ip",
-            "Vendor": "Recorded Future"
-        }
-    ],
-    "IP": [
-        {
-            "ASN": "AS15169",
-            "Address": "8.8.8.8",
-            "Geo": {
-                "Country": "United States"
-            }
-        },
-        {
-            "Address": "8.8.8.4"
-        },
-        {
-            "Address": "8.8.8.5"
-        }
-    ],
-    "RecordedFuture": {
-        "IP": {
-            "criticality": 0,
-            "criticalityLabel": "None",
-            "evidenceDetails": [],
-            "firstSeen": "2010-04-27T12:46:51.000Z",
-            "id": "ip:8.8.8.8",
-            "intelCard": "https://app.recordedfuture.com/live/sc/entity/ip%3A8.8.8.8",
-            "lastSeen": "2020-06-12T16:25:09.211Z",
-            "location": {
-                "asn": "AS15169",
-                "cidr": {
-                    "id": "ip:8.8.8.0/24",
-                    "name": "8.8.8.0/24",
-                    "type": "IpAddress"
-                },
-                "location": {
-                    "city": "Mountain View",
-                    "continent": "North America",
-                    "country": "United States"
-                },
-                "organization": "GOOGLE"
-            },
-            "metrics": [
-                {
-                    "type": "pasteHits",
-                    "value": 324743
-                },
-                {
-                    "type": "darkWebHits",
-                    "value": 53564
-                },
-                {
-                    "type": "criticality",
-                    "value": 0
-                },
-                {
-                    "type": "publicSubscore",
-                    "value": 0
-                },
-                {
-                    "type": "undergroundForumHits",
-                    "value": 1837
-                },
-                {
-                    "type": "maliciousHits",
-                    "value": 462511
-                },
-                {
-                    "type": "technicalReportingHits",
-                    "value": 9074924
-                },
-                {
-                    "type": "infoSecHits",
-                    "value": 9065751
-                },
-                {
-                    "type": "totalHits",
-                    "value": 9576010
-                },
-                {
-                    "type": "sixtyDaysHits",
-                    "value": 96554
-                },
-                {
-                    "type": "oneDayHits",
-                    "value": 169
-                },
-                {
-                    "type": "c2Subscore",
-                    "value": 0
-                },
-                {
-                    "type": "phishingSubscore",
-                    "value": 0
-                },
-                {
-                    "type": "socialMediaHits",
-                    "value": 71547
-                },
-                {
-                    "type": "sevenDaysHits",
-                    "value": 5819
-                }
-            ],
-            "name": "8.8.8.8",
-            "relatedEntities": [
-                {
-                    "RelatedMalwareCategory": [
-                        {
-                            "count": 143770,
-                            "id": "0efpT",
-                            "name": "Trojan",
-                            "type": "MalwareCategory"
-                        },
-                        {
-                            "count": 100993,
-                            "id": "J31vQ6",
-                            "name": "Banking Trojan",
-                            "type": "MalwareCategory"
-                        }
-                    ]
-                },
-                {
-                    "RelatedCyberVulnerability": [
-                        {
-                            "count": 11,
-                            "id": "LBbHYm",
-                            "name": "CWE-78",
-                            "type": "CyberVulnerability"
-                        },
-                        {
-                            "count": 11,
-                            "id": "LpTCYV",
-                            "name": "CVE-2014-6271",
-                            "type": "CyberVulnerability"
-                        }
-                    ]
-                },
-                {
-                    "RelatedHash": [
-                        {
-                            "count": 573,
-                            "id": "hash:00e9fb5ad26e87ce2abc2a7de0789ebb1a38bf0d28ae175662f67d4b16237b67",
-                            "name": "00e9fb5ad26e87ce2abc2a7de0789ebb1a38bf0d28ae175662f67d4b16237b67",
-                            "type": "Hash"
-                        },
-                        {
-                            "count": 148,
-                            "id": "hash:cef615ee419d513c68e67780a08fd52a6e9c23d189cf4b85d3ba5efbee7a48e6",
-                            "name": "cef615ee419d513c68e67780a08fd52a6e9c23d189cf4b85d3ba5efbee7a48e6",
-                            "type": "Hash"
-                        }
-                    ]
-                },
-                {
-                    "RelatedIpAddress": [
-                        {
-                            "count": 1352680,
-                            "id": "ip:8.8.4.4",
-                            "name": "8.8.4.4",
-                            "type": "IpAddress"
-                        },
-                        {
-                            "count": 158918,
-                            "id": "ip:66.171.248.178",
-                            "name": "66.171.248.178",
-                            "type": "IpAddress"
-                        }
-                    ]
-                },
-                {
-                    "RelatedThreatActor": [
-                        {
-                            "count": 159,
-                            "id": "I2QcS_",
-                            "name": "Anonymous",
-                            "type": "Organization"
-                        }
-                    ]
-                },
-            ],
-            "riskString": "0/51",
-            "riskSummary": "No Risk Rules are currently observed.",
-            "riskyCIDRIPs": [
-                {
-                    "ip": {
-                        "id": "ip:8.8.8.4",
-                        "name": "8.8.8.4",
-                        "type": "IpAddress"
-                    },
-                    "score": 24
-                },
-                {
-                    "ip": {
-                        "id": "ip:8.8.8.5",
-                        "name": "8.8.8.5",
-                        "type": "IpAddress"
-                    },
-                    "score": 24
-                }
-            ],
-            "rules": 0,
-            "score": 0,
-            "threatLists": [
-                {
-                    "description": "This list consists of DNS public or open DNS servers and is an absolute allow list for Risk Scoring.",
-                    "id": "report:Uz6vFG",
-                    "name": "DNS Server List (White List)",
-                    "type": "EntityList"
-                }
-            ],
-            "type": "IpAddress"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Recorded Future IP Intelligence for 8.8.8.8
->Risk Score: 0
->Summary: No Risk Rules are currently observed.
->Criticality label: None
->Total references to this entity: 9576010
->ASN and Geolocation
->AS Number: AS15169
->AS Name: GOOGLE
->CIDR: 8.8.8.0/24
->Geolocation (city): Mountain View
->Geolocation (country): United States
->First reference collected on: 2010-04-27 12:46:51
->Latest reference collected on: 2020-06-12 16:25:09
->[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/ip%3A8.8.8.8)
->
->### Triggered Risk Rules
->**No entries.**
->
->### Threat Lists
->|Threat List Name|Description|
->|---|---|
->| DNS Server List (White List) | This list consists of DNS public or open DNS servers and is an absolute allow list for Risk Scoring. |
-
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | Indicator type. | 
+| DBotScore.Vendor | string | Vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| File.SHA256 | string | SHA-256 hash of the file. | 
+| File.SHA512 | string | SHA-512 hash of the file. | 
+| File.SHA1 | string | SHA-1 hash of the file. | 
+| File.MD5 | string | MD5 hash of the file. | 
+| File.CRC32 | string | CRC32 hash of the file. | 
+| File.CTPH | string | CTPH hash of the file. | 
+| IP.Address | string | IP address. | 
+| IP.ASN | string | ASN. | 
+| IP.Geo.Country | string | IP address geolocation country. | 
+| Domain.Name | string | Domain name. | 
+| URL.Data | string | URL name. | 
+| CVE.ID | string | Vulnerability name. | 
+| RecordedFuture.IP.criticality | number | Risk criticality. | 
+| RecordedFuture.IP.criticalityLabel | string | Risk criticality label. | 
+| RecordedFuture.IP.riskString | string | Risk string. | 
+| RecordedFuture.IP.riskSummary | string | Risk summary. | 
+| RecordedFuture.IP.rules | string | Risk rules. | 
+| RecordedFuture.Ip.concatRules | string | All risk rules concatenated by comma. | 
+| RecordedFuture.IP.score | number | Risk score. | 
+| RecordedFuture.IP.firstSeen | date | Evidence first seen date. | 
+| RecordedFuture.IP.lastSeen | date | Evidence last seen date. | 
+| RecordedFuture.IP.intelCard | string | Recorded Future intelligence card URL. | 
+| RecordedFuture.IP.type | string | Recorded Future entity type. | 
+| RecordedFuture.IP.name | string | Recorded Future entity name. | 
+| RecordedFuture.IP.id | string | Recorded Future entity ID. | 
+| RecordedFuture.IP.location.asn | string | ASN number. | 
+| RecordedFuture.IP.location.cidr.id | string | Recorded Future CIDR ID. | 
+| RecordedFuture.IP.location.cidr.name | string | CIDR name. | 
+| RecordedFuture.IP.location.cidr.type | string | CIDR type. | 
+| RecordedFuture.IP.location.location.city | string | IP address geolocation city. | 
+| RecordedFuture.IP.location.location.continent | string | IP address geolocation continent. | 
+| RecordedFuture.IP.location.location.country | string | IP address geolocation country. | 
+| RecordedFuture.IP.location.organization | string | IP address geolocation organization. | 
+| RecordedFuture.IP.metrics.type | string | Recorded Future metrics type. | 
+| RecordedFuture.IP.metrics.value | number | Recorded Future metrics value. | 
+| RecordedFuture.IP.threatLists.description | string | Recorded Future threat list description. | 
+| RecordedFuture.IP.threatLists.id | string | Recorded Future threat list ID. | 
+| RecordedFuture.IP.threatLists.name | string | Recorded Future threat list name. | 
+| RecordedFuture.IP.threatLists.type | string | Recorded Future threat list type. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttacker.count | number | Recorded Future related attacker count. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttacker.id | string | Recorded Future related attacker ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttacker.name | string | Recorded Future related attacker name. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttacker.type | string | Recorded Future related attacker type. | 
+| RecordedFuture.IP.relatedEntities.RelatedTarget.count | number | Recorded Future related target count. | 
+| RecordedFuture.IP.relatedEntities.RelatedTarget.id | string | Recorded Future related target ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedTarget.name | string | Recorded Future related target name. | 
+| RecordedFuture.IP.relatedEntities.RelatedTarget.type | string | Recorded Future related target type. | 
+| RecordedFuture.IP.relatedEntities.RelatedThreatActor.count | number | Recorded Future related threat actor count. | 
+| RecordedFuture.IP.relatedEntities.RelatedThreatActor.id | string | Recorded Future related threat actor ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedThreatActor.name | string | Recorded Future related threat actor name. | 
+| RecordedFuture.IP.relatedEntities.RelatedThreatActor.type | string | Recorded Future related threat actor type. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalware.count | number | Recorded Future related malware count. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalware.id | string | Recorded Future related malware ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalware.name | string | Recorded Future related malware name. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalware.type | string | Recorded Future related malware type. | 
+| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.count | number | Recorded Future related vulnerability count. | 
+| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.id | string | Recorded Future related vulnerability ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.name | string | Recorded Future related vulnerability name. | 
+| RecordedFuture.IP.relatedEntities.RelatedCyberVulnerability.type | string | Recorded Future related vulnerability type. | 
+| RecordedFuture.IP.relatedEntities.RelatedIpAddress.count | number | Recorded Future related IP address count. | 
+| RecordedFuture.IP.relatedEntities.RelatedIpAddress.id | string | Recorded Future related IP address ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedIpAddress.name | string | Recorded Future related IP address name. | 
+| RecordedFuture.IP.relatedEntities.RelatedIpAddress.type | string | Recorded Future related IP address type. | 
+| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.count | number | Recorded Future related domain name count. | 
+| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.id | string | Recorded Future related domain name ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.name | string | Recorded Future related domain name name. | 
+| RecordedFuture.IP.relatedEntities.RelatedInternetDomainName.type | string | Recorded Future related domain name type. | 
+| RecordedFuture.IP.relatedEntities.RelatedProduct.count | number | Recorded Future related product count. | 
+| RecordedFuture.IP.relatedEntities.RelatedProduct.id | string | Recorded Future related product ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedProduct.name | string | Recorded Future related product name. | 
+| RecordedFuture.IP.relatedEntities.RelatedProduct.type | string | Recorded Future related product type. | 
+| RecordedFuture.IP.relatedEntities.RelatedCountries.count | number | Recorded Future related countries count. | 
+| RecordedFuture.IP.relatedEntities.RelatedCountries.id | string | Recorded Future related countries ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedCountries.name | string | Recorded Future related countries name. | 
+| RecordedFuture.IP.relatedEntities.RelatedCountries.type | string | Recorded Future related countries type. | 
+| RecordedFuture.IP.relatedEntities.RelatedHash.count | number | Recorded Future related hash count. | 
+| RecordedFuture.IP.relatedEntities.RelatedHash.id | string | Recorded Future related hash ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedHash.name | string | Recorded Future related hash name. | 
+| RecordedFuture.IP.relatedEntities.RelatedHash.type | string | Recorded Future related hash type. | 
+| RecordedFuture.IP.relatedEntities.RelatedTechnology.count | number | Recorded Future related technology count. | 
+| RecordedFuture.IP.relatedEntities.RelatedTechnology.id | string | Recorded Future related technology ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedTechnology.name | string | Recorded Future related technology name. | 
+| RecordedFuture.IP.relatedEntities.RelatedTechnology.type | string | Recorded Future related technology type. | 
+| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.count | number | Recorded Future related email address count. | 
+| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.id | string | Recorded Future related email address ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.name | string | Recorded Future related email address name. | 
+| RecordedFuture.IP.relatedEntities.RelatedEmailAddress.type | string | Recorded Future related email address type. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttackVector.count | number | Recorded Future related attack vector count. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttackVector.id | string | Recorded Future related attack vector ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttackVector.name | string | Recorded Future related attack vector name. | 
+| RecordedFuture.IP.relatedEntities.RelatedAttackVector.type | string | Recorded Future related attack vector type. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.count | number | Recorded Future related malware category count. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.id | string | Recorded Future related malware category ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.name | string | Recorded Future related malware category name. | 
+| RecordedFuture.IP.relatedEntities.RelatedMalwareCategory.type | string | Recorded Future related malware category type. | 
+| RecordedFuture.IP.relatedEntities.RelatedOperations.count | number | Recorded Future related operations count. | 
+| RecordedFuture.IP.relatedEntities.RelatedOperations.id | string | Recorded Future related operations ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedOperations.name | string | Recorded Future related operations name. | 
+| RecordedFuture.IP.relatedEntities.RelatedOperations.type | string | Recorded Future related operations type. | 
+| RecordedFuture.IP.relatedEntities.RelatedCompany.count | number | Recorded Future related company count. | 
+| RecordedFuture.IP.relatedEntities.RelatedCompany.id | string | Recorded Future related company ID. | 
+| RecordedFuture.IP.relatedEntities.RelatedCompany.name | string | Recorded Future related company name. | 
+| RecordedFuture.IP.relatedEntities.RelatedCompany.type | string | Recorded Future related company type. | 
+| RecordedFuture.IP.analystNotes.attributes.context_entities.id | string | Recorded Future analyst note context entity ID. | 
+| RecordedFuture.IP.analystNotes.attributes.context_entities.name | string | Recorded Future analyst note context entity name. | 
+| RecordedFuture.IP.analystNotes.attributes.context_entities.type | string | Recorded Future analyst note context entity type. | 
+| RecordedFuture.IP.analystNotes.attributes.note_entities.id | string | Recorded Future analyst note entity ID. | 
+| RecordedFuture.IP.analystNotes.attributes.note_entities.name | string | Recorded Future analyst note entity name. | 
+| RecordedFuture.IP.analystNotes.attributes.note_entities.type | string | Recorded Future analyst note entity type. | 
+| RecordedFuture.IP.analystNotes.attributes.published | date | Recorded Future analyst note publishing time. | 
+| RecordedFuture.IP.analystNotes.attributes.validated_on | date | Recorded Future analyst note validation time. | 
+| RecordedFuture.IP.analystNotes.attributes.text | string | Recorded Future analyst note content. | 
+| RecordedFuture.IP.analystNotes.attributes.title | string | Recorded Future analyst note title. | 
+| RecordedFuture.IP.analystNotes.attributes.topic.description | string | Recorded Future analyst note topic description. | 
+| RecordedFuture.IP.analystNotes.attributes.topic.id | string | Recorded Future analyst note topic ID. | 
+| RecordedFuture.IP.analystNotes.attributes.topic.name | string | Recorded Future analyst note topic name. | 
+| RecordedFuture.IP.analystNotes.attributes.topic.type | string | Recorded Future analyst note topic type. | 
+| RecordedFuture.IP.analystNotes.attributes.validation_urls.id | string | Recorded Future analyst note validation URL ID. | 
+| RecordedFuture.IP.analystNotes.attributes.validation_urls.name | string | Recorded Future analyst note validation URL. | 
+| RecordedFuture.IP.analystNotes.attributes.validation_urls.type | string | Recorded Future analyst note validation URL entity type. | 
+| RecordedFuture.IP.analystNotes.id | string | Recorded Future analyst note ID. | 
+| RecordedFuture.IP.analystNotes.source.id | string | Recorded Future analyst note source ID. | 
+| RecordedFuture.IP.analystNotes.source.name | string | Recorded Future analyst note source name. | 
+| RecordedFuture.IP.analystNotes.source.type | string | Recorded Future analyst note source type. | 
+| RecordedFuture.Domain.criticality | number | Risk criticality. | 
+| RecordedFuture.Domain.criticalityLabel | string | Risk criticality label. | 
+| RecordedFuture.Domain.riskString | string | Risk string. | 
+| RecordedFuture.Domain.riskSummary | string | Risk summary. | 
+| RecordedFuture.Domain.rules | string | Risk rules. | 
+| RecordedFuture.Domain.concatRules | string | All risk rules concatenated by comma. | 
+| RecordedFuture.Domain.score | number | Risk score. | 
+| RecordedFuture.Domain.firstSeen | date | Evidence first seen date. | 
+| RecordedFuture.Domain.lastSeen | date | Evidence last seen. | 
+| RecordedFuture.Domain.intelCard | string | Recorded Future intelligence card URL. | 
+| RecordedFuture.Domain.type | string | Recorded Future entity type. | 
+| RecordedFuture.Domain.name | string | Recorded Future entity name. | 
+| RecordedFuture.Domain.id | string | Recorded Future entity ID. | 
+| RecordedFuture.Domain.metrics.type | string | Recorded Future metrics type. | 
+| RecordedFuture.Domain.metrics.value | number | Recorded Future metrics value. | 
+| RecordedFuture.Domain.threatLists.description | string | Recorded Future threat list description. | 
+| RecordedFuture.Domain.threatLists.id | string | Recorded Future threat list ID. | 
+| RecordedFuture.Domain.threatLists.name | string | Recorded Future threat list name. | 
+| RecordedFuture.Domain.threatLists.type | string | Recorded Future threat list type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttacker.count | number | Recorded Future related attacker count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttacker.id | string | Recorded Future related attacker ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttacker.name | string | Recorded Future related attacker name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttacker.type | string | Recorded Future related attacker type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTarget.count | number | Recorded Future related target count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTarget.id | string | Recorded Future related target ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTarget.name | string | Recorded Future related target name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTarget.type | string | Recorded Future related target type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.count | number | Recorded Future related threat actor count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.id | string | Recorded Future related threat actor ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.name | string | Recorded Future related threat actor name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedThreatActor.type | string | Recorded Future related threat actor type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalware.count | number | Recorded Future related malware count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalware.id | string | Recorded Future related malware ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalware.name | string | Recorded Future related malware name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalware.type | string | Recorded Future related malware type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.count | number | Recorded Future related vulnerability count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.id | string | Recorded Future related vulnerability ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.name | string | Recorded Future related vulnerability name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.type | string | Recorded Future related vulnerability type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.count | number | Recorded Future related IP address count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.id | string | Recorded Future related IP address ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.name | string | Recorded Future related IP address name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedIpAddress.type | string | Recorded Future related IP address type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.count | number | Recorded Future related domain name count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.id | string | Recorded Future related domain name ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.name | string | Recorded Future related domain name name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.type | string | Recorded Future related domain name type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedProduct.count | number | Recorded Future related product count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedProduct.id | string | Recorded Future related product ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedProduct.name | string | Recorded Future related product name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedProduct.type | string | Recorded Future related product type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCountries.count | number | Recorded Future related countries count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCountries.id | string | Recorded Future related countries ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCountries.name | string | Recorded Future related countries name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCountries.type | string | Recorded Future related countries type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedHash.count | number | Recorded Future related hash count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedHash.id | string | Recorded Future related hash ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedHash.name | string | Recorded Future related hash name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedHash.type | string | Recorded Future related hash type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTechnology.count | number | Recorded Future related technology count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTechnology.id | string | Recorded Future related technology ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTechnology.name | string | Recorded Future related technology name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedTechnology.type | string | Recorded Future related technology type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.count | number | Recorded Future related email address count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.id | string | Recorded Future related email address ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.name | string | Recorded Future related email address name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.type | string | Recorded Future related email address type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.count | number | Recorded Future related attack vector count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.id | string | Recorded Future related attack vector ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.name | string | Recorded Future related attack vector name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedAttackVector.type | string | Recorded Future related attack vector type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.count | number | Recorded Future related malware category count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.id | string | Recorded Future related malware category ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.name | string | Recorded Future related malware category name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.type | string | Recorded Future related malware category type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedOperations.count | number | Recorded Future related operations count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedOperations.id | string | Recorded Future related operations ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedOperations.name | string | Recorded Future related operations name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedOperations.type | string | Recorded Future related operations type. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCompany.count | number | Recorded Future related company count. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCompany.id | string | Recorded Future related company ID. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCompany.name | string | Recorded Future related company name. | 
+| RecordedFuture.Domain.relatedEntities.RelatedCompany.type | string | Recorded Future related company type. | 
+| RecordedFuture.Domain.analystNotes.attributes.context_entities.id | string | Recorded Future analyst note context entity ID. | 
+| RecordedFuture.Domain.analystNotes.attributes.context_entities.name | string | Recorded Future analyst note context entity name. | 
+| RecordedFuture.Domain.analystNotes.attributes.context_entities.type | string | Recorded Future analyst note context entity type. | 
+| RecordedFuture.Domain.analystNotes.attributes.note_entities.id | string | Recorded Future analyst note entity ID. | 
+| RecordedFuture.Domain.analystNotes.attributes.note_entities.name | string | Recorded Future analyst note entity name. | 
+| RecordedFuture.Domain.analystNotes.attributes.note_entities.type | string | Recorded Future analyst note entity type. | 
+| RecordedFuture.Domain.analystNotes.attributes.published | date | Recorded Future analyst note publishing time. | 
+| RecordedFuture.Domain.analystNotes.attributes.validated_on | date | Recorded Future analyst note validation time. | 
+| RecordedFuture.Domain.analystNotes.attributes.text | string | Recorded Future analyst note content. | 
+| RecordedFuture.Domain.analystNotes.attributes.title | string | Recorded Future analyst note title. | 
+| RecordedFuture.Domain.analystNotes.attributes.topic.description | string | Recorded Future analyst note topic description. | 
+| RecordedFuture.Domain.analystNotes.attributes.topic.id | string | Recorded Future analyst note topic ID. | 
+| RecordedFuture.Domain.analystNotes.attributes.topic.name | string | Recorded Future analyst note topic name. | 
+| RecordedFuture.Domain.analystNotes.attributes.topic.type | string | Recorded Future analyst note topic type. | 
+| RecordedFuture.Domain.analystNotes.attributes.validation_urls.id | string | Recorded Future analyst note validation URL ID. | 
+| RecordedFuture.Domain.analystNotes.attributes.validation_urls.name | string | Recorded Future analyst note validation URL. | 
+| RecordedFuture.Domain.analystNotes.attributes.validation_urls.type | string | Recorded Future analyst note validation URL entity type. | 
+| RecordedFuture.Domain.analystNotes.id | string | Recorded Future analyst note ID. | 
+| RecordedFuture.Domain.analystNotes.source.id | string | Recorded Future analyst note source ID. | 
+| RecordedFuture.Domain.analystNotes.source.name | string | Recorded Future analyst note source name. | 
+| RecordedFuture.Domain.analystNotes.source.type | string | Recorded Future analyst note source type. | 
+| RecordedFuture.CVE.criticality | number | Risk criticality. | 
+| RecordedFuture.CVE.criticalityLabel | string | Risk criticality label. | 
+| RecordedFuture.CVE.riskString | string | Risk string. | 
+| RecordedFuture.CVE.riskSummary | string | Risk summary. | 
+| RecordedFuture.CVE.rules | string | Risk rules. | 
+| RecordedFuture.CVE.concatRules | string | All risk rules concatenated by comma. | 
+| RecordedFuture.CVE.score | number | Risk score. | 
+| RecordedFuture.CVE.firstSeen | date | Evidence first seen. | 
+| RecordedFuture.CVE.lastSeen | date | Evidence last seen. | 
+| RecordedFuture.CVE.intelCard | string | Recorded Future intelligence card URL. | 
+| RecordedFuture.CVE.hashAlgorithm | string | Hash algorithm. | 
+| RecordedFuture.CVE.type | string | Recorded Future entity type. | 
+| RecordedFuture.CVE.name | string | Recorded Future entity name. | 
+| RecordedFuture.CVE.id | string | Recorded Future entity ID. | 
+| RecordedFuture.CVE.metrics.type | string | Recorded Future metrics type. | 
+| RecordedFuture.CVE.metrics.value | number | Recorded Future metrics value. | 
+| RecordedFuture.CVE.threatLists.description | string | Recorded Future threat list description. | 
+| RecordedFuture.CVE.threatLists.id | string | Recorded Future threat list ID. | 
+| RecordedFuture.CVE.threatLists.name | string | Recorded Future threat list name. | 
+| RecordedFuture.CVE.threatLists.type | string | Recorded Future threat list type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttacker.count | number | Recorded Future related attacker count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttacker.id | string | Recorded Future related attacker ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttacker.name | string | Recorded Future related attacker name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttacker.type | string | Recorded Future related attacker type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTarget.count | number | Recorded Future related target count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTarget.id | string | Recorded Future related target ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTarget.name | string | Recorded Future related target name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTarget.type | string | Recorded Future related target type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.count | number | Recorded Future related threat actor count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.id | string | Recorded Future related threat actor ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.name | string | Recorded Future related threat actor name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedThreatActor.type | string | Recorded Future related threat actor type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalware.count | number | Recorded Future related malware count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalware.id | string | Recorded Future related malware ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalware.name | string | Recorded Future related malware name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalware.type | string | Recorded Future related malware type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.count | number | Recorded Future related vulnerability count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.id | string | Recorded Future related vulnerability ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.name | string | Recorded Future related vulnerability name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.type | string | Recorded Future related vulnerability type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.count | number | Recorded Future related IP address count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.id | string | Recorded Future related IP address ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.name | string | Recorded Future related IP address name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedIpAddress.type | string | Recorded Future related IP address type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.count | number | Recorded Future related domain name count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.id | string | Recorded Future related domain name ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.name | string | Recorded Future related domain name name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.type | string | Recorded Future related domain name type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedProduct.count | number | Recorded Future related product count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedProduct.id | string | Recorded Future related product ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedProduct.name | string | Recorded Future related product name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedProduct.type | string | Recorded Future related product type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCountries.count | number | Recorded Future related countries count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCountries.id | string | Recorded Future related countries ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCountries.name | string | Recorded Future related countries name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCountries.type | string | Recorded Future related countries type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedHash.count | number | Recorded Future related hash count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedHash.id | string | Recorded Future related hash ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedHash.name | string | Recorded Future related hash name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedHash.type | string | Recorded Future related hash type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTechnology.count | number | Recorded Future related technology count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTechnology.id | string | Recorded Future related technology ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTechnology.name | string | Recorded Future related technology name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedTechnology.type | string | Recorded Future related technology type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.count | number | Recorded Future related email address count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.id | string | Recorded Future related email address ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.name | string | Recorded Future related email address name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.type | string | Recorded Future related email address type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.count | number | Recorded Future related attack vector count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.id | string | Recorded Future related attack vector ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.name | string | Recorded Future related attack vector name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedAttackVector.type | string | Recorded Future related attack vector type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.count | number | Recorded Future related malware category count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.id | string | Recorded Future related malware category ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.name | string | Recorded Future related malware category name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.type | string | Recorded Future related malware category type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedOperations.count | number | Recorded Future related operations count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedOperations.id | string | Recorded Future related operations ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedOperations.name | string | Recorded Future related operations name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedOperations.type | string | Recorded Future related operations type. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCompany.count | number | Recorded Future related company count. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCompany.id | string | Recorded Future related company ID. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCompany.name | string | Recorded Future related company name. | 
+| RecordedFuture.CVE.relatedEntities.RelatedCompany.type | string | Recorded Future related company type. | 
+| RecordedFuture.CVE.relatedLinks | string | Recorded Future CVE related links. | 
+| RecordedFuture.CVE.analystNotes.attributes.context_entities.id | string | Recorded Future analyst note context entity ID. | 
+| RecordedFuture.CVE.analystNotes.attributes.context_entities.name | string | Recorded Future analyst note context entity name. | 
+| RecordedFuture.CVE.analystNotes.attributes.context_entities.type | string | Recorded Future analyst note context entity type. | 
+| RecordedFuture.CVE.analystNotes.attributes.note_entities.id | string | Recorded Future analyst note entity ID. | 
+| RecordedFuture.CVE.analystNotes.attributes.note_entities.name | string | Recorded Future analyst note entity name. | 
+| RecordedFuture.CVE.analystNotes.attributes.note_entities.type | string | Recorded Future analyst note entity type. | 
+| RecordedFuture.CVE.analystNotes.attributes.published | date | Recorded Future analyst note publishing time. | 
+| RecordedFuture.CVE.analystNotes.attributes.validated_on | date | Recorded Future analyst note validation time. | 
+| RecordedFuture.CVE.analystNotes.attributes.text | string | Recorded Future analyst note content. | 
+| RecordedFuture.CVE.analystNotes.attributes.title | string | Recorded Future analyst note title. | 
+| RecordedFuture.CVE.analystNotes.attributes.topic.description | string | Recorded Future analyst note topic description. | 
+| RecordedFuture.CVE.analystNotes.attributes.topic.id | string | Recorded Future analyst note topic ID. | 
+| RecordedFuture.CVE.analystNotes.attributes.topic.name | string | Recorded Future analyst note topic name. | 
+| RecordedFuture.CVE.analystNotes.attributes.topic.type | string | Recorded Future analyst note topic type. | 
+| RecordedFuture.CVE.analystNotes.attributes.validation_urls.id | string | Recorded Future analyst note validation URL ID. | 
+| RecordedFuture.CVE.analystNotes.attributes.validation_urls.name | string | Recorded Future analyst note validation URL. | 
+| RecordedFuture.CVE.analystNotes.attributes.validation_urls.type | string | Recorded Future analyst note validation URL entity type. | 
+| RecordedFuture.CVE.analystNotes.id | string | Recorded Future analyst note ID. | 
+| RecordedFuture.CVE.analystNotes.source.id | string | Recorded Future analyst note source ID. | 
+| RecordedFuture.CVE.analystNotes.source.name | string | Recorded Future analyst note source name. | 
+| RecordedFuture.CVE.analystNotes.source.type | string | Recorded Future analyst note source type. | 
+| RecordedFuture.CVE.cpe | string | Recorded Future CPE information. | 
+| RecordedFuture.File.criticality | number | Risk criticality. | 
+| RecordedFuture.File.criticalityLabel | string | Risk criticality label. | 
+| RecordedFuture.File.riskString | string | Risk string. | 
+| RecordedFuture.File.riskSummary | string | Risk summary. | 
+| RecordedFuture.File.rules | string | Risk rules. | 
+| RecordedFuture.File.concatRules | string | All risk rules concatenated by comma. | 
+| RecordedFuture.File.score | number | Risk score. | 
+| RecordedFuture.File.firstSeen | date | Evidence first seen. | 
+| RecordedFuture.File.lastSeen | date | Evidence last seen. | 
+| RecordedFuture.File.intelCard | string | Recorded Future intelligence card URL. | 
+| RecordedFuture.File.hashAlgorithm | string | Hash algorithm. | 
+| RecordedFuture.File.type | string | Recorded Future entity type. | 
+| RecordedFuture.File.name | string | Recorded Future entity name. | 
+| RecordedFuture.File.id | string | Recorded Future entity ID. | 
+| RecordedFuture.File.metrics.type | string | Recorded Future metrics type. | 
+| RecordedFuture.File.metrics.value | number | Recorded Future metrics value. | 
+| RecordedFuture.File.threatLists.description | string | Recorded Future threat list description. | 
+| RecordedFuture.File.threatLists.id | string | Recorded Future threat list ID. | 
+| RecordedFuture.File.threatLists.name | string | Recorded Future threat list name. | 
+| RecordedFuture.File.threatLists.type | string | Recorded Future threat list type. | 
+| RecordedFuture.File.relatedEntities.RelatedAttacker.count | number | Recorded Future related attacker count. | 
+| RecordedFuture.File.relatedEntities.RelatedAttacker.id | string | Recorded Future related attacker ID. | 
+| RecordedFuture.File.relatedEntities.RelatedAttacker.name | string | Recorded Future related attacker name. | 
+| RecordedFuture.File.relatedEntities.RelatedAttacker.type | string | Recorded Future related attacker type. | 
+| RecordedFuture.File.relatedEntities.RelatedTarget.count | number | Recorded Future related target count. | 
+| RecordedFuture.File.relatedEntities.RelatedTarget.id | string | Recorded Future related target ID. | 
+| RecordedFuture.File.relatedEntities.RelatedTarget.name | string | Recorded Future related target name. | 
+| RecordedFuture.File.relatedEntities.RelatedTarget.type | string | Recorded Future related target type. | 
+| RecordedFuture.File.relatedEntities.RelatedThreatActor.count | number | Recorded Future related threat actor count. | 
+| RecordedFuture.File.relatedEntities.RelatedThreatActor.id | string | Recorded Future related threat actor ID. | 
+| RecordedFuture.File.relatedEntities.RelatedThreatActor.name | string | Recorded Future related threat actor name. | 
+| RecordedFuture.File.relatedEntities.RelatedThreatActor.type | string | Recorded Future related threat actor type. | 
+| RecordedFuture.File.relatedEntities.RelatedMalware.count | number | Recorded Future related malware count. | 
+| RecordedFuture.File.relatedEntities.RelatedMalware.id | string | Recorded Future related malware ID. | 
+| RecordedFuture.File.relatedEntities.RelatedMalware.name | string | Recorded Future related malware name. | 
+| RecordedFuture.File.relatedEntities.RelatedMalware.type | string | Recorded Future related malware type. | 
+| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.count | number | Recorded Future related vulnerability count. | 
+| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.id | string | Recorded Future related vulnerability ID. | 
+| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.name | string | Recorded Future related vulnerability name. | 
+| RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.type | string | Recorded Future related vulnerability type. | 
+| RecordedFuture.File.relatedEntities.RelatedIpAddress.count | number | Recorded Future related IP address count. | 
+| RecordedFuture.File.relatedEntities.RelatedIpAddress.id | string | Recorded Future related IP address ID. | 
+| RecordedFuture.File.relatedEntities.RelatedIpAddress.name | string | Recorded Future related IP address name. | 
+| RecordedFuture.File.relatedEntities.RelatedIpAddress.type | string | Recorded Future related IP address type. | 
+| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.count | number | Recorded Future related domain name count. | 
+| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.id | string | Recorded Future related domain name ID. | 
+| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.name | string | Recorded Future related domain name name. | 
+| RecordedFuture.File.relatedEntities.RelatedInternetDomainName.type | string | Recorded Future related domain name type. | 
+| RecordedFuture.File.relatedEntities.RelatedProduct.count | number | Recorded Future related product count. | 
+| RecordedFuture.File.relatedEntities.RelatedProduct.id | string | Recorded Future related product ID. | 
+| RecordedFuture.File.relatedEntities.RelatedProduct.name | string | Recorded Future related product name. | 
+| RecordedFuture.File.relatedEntities.RelatedProduct.type | string | Recorded Future related product type. | 
+| RecordedFuture.File.relatedEntities.RelatedCountries.count | number | Recorded Future related countries count. | 
+| RecordedFuture.File.relatedEntities.RelatedCountries.id | string | Recorded Future related countries ID. | 
+| RecordedFuture.File.relatedEntities.RelatedCountries.name | string | Recorded Future related countries name. | 
+| RecordedFuture.File.relatedEntities.RelatedCountries.type | string | Recorded Future related countries type. | 
+| RecordedFuture.File.relatedEntities.RelatedHash.count | number | Recorded Future related hash count. | 
+| RecordedFuture.File.relatedEntities.RelatedHash.id | string | Recorded Future related hash ID. | 
+| RecordedFuture.File.relatedEntities.RelatedHash.name | string | Recorded Future related hash name. | 
+| RecordedFuture.File.relatedEntities.RelatedHash.type | string | Recorded Future related hash type. | 
+| RecordedFuture.File.relatedEntities.RelatedTechnology.count | number | Recorded Future related technology count. | 
+| RecordedFuture.File.relatedEntities.RelatedTechnology.id | string | Recorded Future related technology ID. | 
+| RecordedFuture.File.relatedEntities.RelatedTechnology.name | string | Recorded Future related technology name. | 
+| RecordedFuture.File.relatedEntities.RelatedTechnology.type | string | Recorded Future related technology type. | 
+| RecordedFuture.File.relatedEntities.RelatedEmailAddress.count | number | Recorded Future related email address count. | 
+| RecordedFuture.File.relatedEntities.RelatedEmailAddress.id | string | Recorded Future related email address ID. | 
+| RecordedFuture.File.relatedEntities.RelatedEmailAddress.name | string | Recorded Future related email address name. | 
+| RecordedFuture.File.relatedEntities.RelatedEmailAddress.type | string | Recorded Future related email address type. | 
+| RecordedFuture.File.relatedEntities.RelatedAttackVector.count | number | Recorded Future related attack vector count. | 
+| RecordedFuture.File.relatedEntities.RelatedAttackVector.id | string | Recorded Future related attack vector ID. | 
+| RecordedFuture.File.relatedEntities.RelatedAttackVector.name | string | Recorded Future related attack vector name. | 
+| RecordedFuture.File.relatedEntities.RelatedAttackVector.type | string | Recorded Future related attack vector type. | 
+| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.count | number | Recorded Future related malware category count. | 
+| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.id | string | Recorded Future related malware category ID. | 
+| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.name | string | Recorded Future related malware category name. | 
+| RecordedFuture.File.relatedEntities.RelatedMalwareCategory.type | string | Recorded Future related malware category type. | 
+| RecordedFuture.File.relatedEntities.RelatedOperations.count | number | Recorded Future related operations count. | 
+| RecordedFuture.File.relatedEntities.RelatedOperations.id | string | Recorded Future related operations ID. | 
+| RecordedFuture.File.relatedEntities.RelatedOperations.name | string | Recorded Future related operations name. | 
+| RecordedFuture.File.relatedEntities.RelatedOperations.type | string | Recorded Future related operations type. | 
+| RecordedFuture.File.relatedEntities.RelatedCompany.count | number | Recorded Future related company count. | 
+| RecordedFuture.File.relatedEntities.RelatedCompany.id | string | Recorded Future related company ID. | 
+| RecordedFuture.File.relatedEntities.RelatedCompany.name | string | Recorded Future related company name. | 
+| RecordedFuture.File.relatedEntities.RelatedCompany.type | string | Recorded Future related company type. | 
+| RecordedFuture.File.analystNotes.attributes.context_entities.id | string | Recorded Future analyst note context entity ID. | 
+| RecordedFuture.File.analystNotes.attributes.context_entities.name | string | Recorded Future analyst note context entity name. | 
+| RecordedFuture.File.analystNotes.attributes.context_entities.type | string | Recorded Future analyst note context entity type. | 
+| RecordedFuture.File.analystNotes.attributes.note_entities.id | string | Recorded Future analyst note entity ID. | 
+| RecordedFuture.File.analystNotes.attributes.note_entities.name | string | Recorded Future analyst note entity name. | 
+| RecordedFuture.File.analystNotes.attributes.note_entities.type | string | Recorded Future analyst note entity type. | 
+| RecordedFuture.File.analystNotes.attributes.published | date | Recorded Future analyst note publishing time. | 
+| RecordedFuture.File.analystNotes.attributes.validated_on | date | Recorded Future analyst note validation time. | 
+| RecordedFuture.File.analystNotes.attributes.text | string | Recorded Future analyst note content. | 
+| RecordedFuture.File.analystNotes.attributes.title | string | Recorded Future analyst note title. | 
+| RecordedFuture.File.analystNotes.attributes.topic.description | string | Recorded Future analyst note topic description. | 
+| RecordedFuture.File.analystNotes.attributes.topic.id | string | Recorded Future analyst note topic ID. | 
+| RecordedFuture.File.analystNotes.attributes.topic.name | string | Recorded Future analyst note topic name. | 
+| RecordedFuture.File.analystNotes.attributes.topic.type | string | Recorded Future analyst note topic type. | 
+| RecordedFuture.File.analystNotes.attributes.validation_urls.id | string | Recorded Future analyst note validation URL ID. | 
+| RecordedFuture.File.analystNotes.attributes.validation_urls.name | string | Recorded Future analyst note validation URL. | 
+| RecordedFuture.File.analystNotes.attributes.validation_urls.type | string | Recorded Future analyst note validation URL entity type. | 
+| RecordedFuture.File.analystNotes.id | string | Recorded Future analyst note ID. | 
+| RecordedFuture.File.analystNotes.source.id | string | Recorded Future analyst note source ID. | 
+| RecordedFuture.File.analystNotes.source.name | string | Recorded Future analyst note source name. | 
+| RecordedFuture.File.analystNotes.source.type | string | Recorded Future analyst note source type. | 
+| RecordedFuture.URL.criticality | number | Risk criticality. | 
+| RecordedFuture.URL.criticalityLabel | string | Risk criticality label. | 
+| RecordedFuture.URL.riskString | string | Risk string. | 
+| RecordedFuture.URL.riskSummary | string | Risk summary. | 
+| RecordedFuture.URL.rules | string | Risk rules. | 
+| RecordedFuture.URL.concatRules | string | All risk rules concatenated by comma. | 
+| RecordedFuture.URL.score | number | Risk score. | 
+| RecordedFuture.URL.firstSeen | date | Evidence first seen. | 
+| RecordedFuture.URL.lastSeen | date | Evidence last seen. | 
+| RecordedFuture.URL.intelCard | string | Recorded Future intelligence card URL. | 
+| RecordedFuture.URL.type | string | Recorded Future entity type. | 
+| RecordedFuture.URL.name | string | Recorded Future entity name. | 
+| RecordedFuture.URL.id | string | Recorded Future entity ID. | 
+| RecordedFuture.URL.metrics.type | string | Recorded Future metrics type. | 
+| RecordedFuture.URL.metrics.value | number | Recorded Future metrics value. | 
+| RecordedFuture.URL.threatLists.description | string | Recorded Future threat list description. | 
+| RecordedFuture.URL.threatLists.id | string | Recorded Future threat list ID. | 
+| RecordedFuture.URL.threatLists.name | string | Recorded Future threat list name. | 
+| RecordedFuture.URL.threatLists.type | string | Recorded Future threat list type. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttacker.count | number | Recorded Future related attacker count. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttacker.id | string | Recorded Future related attacker ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttacker.name | string | Recorded Future related attacker name. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttacker.type | string | Recorded Future related attacker type. | 
+| RecordedFuture.URL.relatedEntities.RelatedTarget.count | number | Recorded Future related target count. | 
+| RecordedFuture.URL.relatedEntities.RelatedTarget.id | string | Recorded Future related target ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedTarget.name | string | Recorded Future related target name. | 
+| RecordedFuture.URL.relatedEntities.RelatedTarget.type | string | Recorded Future related target type. | 
+| RecordedFuture.URL.relatedEntities.RelatedThreatActor.count | number | Recorded Future related threat actor count. | 
+| RecordedFuture.URL.relatedEntities.RelatedThreatActor.id | string | Recorded Future related threat actor ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedThreatActor.name | string | Recorded Future related threat actor name. | 
+| RecordedFuture.URL.relatedEntities.RelatedThreatActor.type | string | Recorded Future related threat actor type. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalware.count | number | Recorded Future related malware count. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalware.id | string | Recorded Future related malware ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalware.name | string | Recorded Future related malware name. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalware.type | string | Recorded Future related malware type. | 
+| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.count | number | Recorded Future related vulnerability count. | 
+| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.id | string | Recorded Future related vulnerability ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.name | string | Recorded Future related vulnerability name. | 
+| RecordedFuture.URL.relatedEntities.RelatedCyberVulnerability.type | string | Recorded Future related vulnerability type. | 
+| RecordedFuture.URL.relatedEntities.RelatedIpAddress.count | number | Recorded Future related IP address count. | 
+| RecordedFuture.URL.relatedEntities.RelatedIpAddress.id | string | Recorded Future related IP address ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedIpAddress.name | string | Recorded Future related IP address name. | 
+| RecordedFuture.URL.relatedEntities.RelatedIpAddress.type | string | Recorded Future related IP address type. | 
+| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.count | number | Recorded Future related domain name count. | 
+| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.id | string | Recorded Future related domain name ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.name | string | Recorded Future related domain name name. | 
+| RecordedFuture.URL.relatedEntities.RelatedInternetDomainName.type | string | Recorded Future related domain name type. | 
+| RecordedFuture.URL.relatedEntities.RelatedProduct.count | number | Recorded Future related product count. | 
+| RecordedFuture.URL.relatedEntities.RelatedProduct.id | string | Recorded Future related product ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedProduct.name | string | Recorded Future related product name. | 
+| RecordedFuture.URL.relatedEntities.RelatedProduct.type | string | Recorded Future related product type. | 
+| RecordedFuture.URL.relatedEntities.RelatedCountries.count | number | Recorded Future related countries count. | 
+| RecordedFuture.URL.relatedEntities.RelatedCountries.id | string | Recorded Future related countries ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedCountries.name | string | Recorded Future related countries name. | 
+| RecordedFuture.URL.relatedEntities.RelatedCountries.type | string | Recorded Future related countries type. | 
+| RecordedFuture.URL.relatedEntities.RelatedHash.count | number | Recorded Future related hash count. | 
+| RecordedFuture.URL.relatedEntities.RelatedHash.id | string | Recorded Future related hash ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedHash.name | string | Recorded Future related hash name. | 
+| RecordedFuture.URL.relatedEntities.RelatedHash.type | string | Recorded Future related hash type. | 
+| RecordedFuture.URL.relatedEntities.RelatedTechnology.count | number | Recorded Future related technology count. | 
+| RecordedFuture.URL.relatedEntities.RelatedTechnology.id | string | Recorded Future related technology ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedTechnology.name | string | Recorded Future related technology name. | 
+| RecordedFuture.URL.relatedEntities.RelatedTechnology.type | string | Recorded Future related technology type. | 
+| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.count | number | Recorded Future related email address count. | 
+| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.id | string | Recorded Future related email address ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.name | string | Recorded Future related email address name. | 
+| RecordedFuture.URL.relatedEntities.RelatedEmailAddress.type | string | Recorded Future related email address type. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttackVector.count | number | Recorded Future related attack vector count. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttackVector.id | string | Recorded Future related attack vector ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttackVector.name | string | Recorded Future related attack vector name. | 
+| RecordedFuture.URL.relatedEntities.RelatedAttackVector.type | string | Recorded Future related attack vector type. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.count | number | Recorded Future related malware category count. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.id | string | Recorded Future related malware category ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.name | string | Recorded Future related malware category name. | 
+| RecordedFuture.URL.relatedEntities.RelatedMalwareCategory.type | string | Recorded Future related malware category type. | 
+| RecordedFuture.URL.relatedEntities.RelatedOperations.count | number | Recorded Future related operations count. | 
+| RecordedFuture.URL.relatedEntities.RelatedOperations.id | string | Recorded Future related operations ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedOperations.name | string | Recorded Future related operations name. | 
+| RecordedFuture.URL.relatedEntities.RelatedOperations.type | string | Recorded Future related operations type. | 
+| RecordedFuture.URL.relatedEntities.RelatedCompany.count | number | Recorded Future related company count. | 
+| RecordedFuture.URL.relatedEntities.RelatedCompany.id | string | Recorded Future related company ID. | 
+| RecordedFuture.URL.relatedEntities.RelatedCompany.name | string | Recorded Future related company name. | 
+| RecordedFuture.URL.relatedEntities.RelatedCompany.type | string | Recorded Future related company type. | 
+| RecordedFuture.URL.analystNotes.attributes.context_entities.id | string | Recorded Future analyst note context entity ID. | 
+| RecordedFuture.URL.analystNotes.attributes.context_entities.name | string | Recorded Future analyst note context entity name. | 
+| RecordedFuture.URL.analystNotes.attributes.context_entities.type | string | Recorded Future analyst note context entity type. | 
+| RecordedFuture.URL.analystNotes.attributes.note_entities.id | string | Recorded Future analyst note entity ID. | 
+| RecordedFuture.URL.analystNotes.attributes.note_entities.name | string | Recorded Future analyst note entity name. | 
+| RecordedFuture.URL.analystNotes.attributes.note_entities.type | string | Recorded Future analyst note entity type. | 
+| RecordedFuture.URL.analystNotes.attributes.published | date | Recorded Future analyst note publishing time. | 
+| RecordedFuture.URL.analystNotes.attributes.validated_on | date | Recorded Future analyst note validation time. | 
+| RecordedFuture.URL.analystNotes.attributes.text | string | Recorded Future analyst note content. | 
+| RecordedFuture.URL.analystNotes.attributes.title | string | Recorded Future analyst note title. | 
+| RecordedFuture.URL.analystNotes.attributes.topic.description | string | Recorded Future analyst note topic description. | 
+| RecordedFuture.URL.analystNotes.attributes.topic.id | string | Recorded Future analyst note topic ID. | 
+| RecordedFuture.URL.analystNotes.attributes.topic.name | string | Recorded Future analyst note topic name. | 
+| RecordedFuture.URL.analystNotes.attributes.topic.type | string | Recorded Future analyst note topic type. | 
+| RecordedFuture.URL.analystNotes.attributes.validation_urls.id | string | Recorded Future analyst note validation URL ID. | 
+| RecordedFuture.URL.analystNotes.attributes.validation_urls.name | string | Recorded Future analyst note validation URL. | 
+| RecordedFuture.URL.analystNotes.attributes.validation_urls.type | string | Recorded Future analyst note validation URL entity type. | 
+| RecordedFuture.URL.analystNotes.id | string | Recorded Future analyst note ID. | 
+| RecordedFuture.URL.analystNotes.source.id | string | Recorded Future analyst note source ID. | 
+| RecordedFuture.URL.analystNotes.source.name | string | Recorded Future analyst note source name. | 
+| RecordedFuture.URL.analystNotes.source.type | string | Recorded Future analyst note source type. | 
+| RecordedFuture.Malware.metrics.type | string | Recorded Future metrics type. | 
+| RecordedFuture.Malware.metrics.value | number | Recorded Future metrics value. | 
+| RecordedFuture.Malware.intelCard | date | Recorded Future intelligence card URL. | 
+| RecordedFuture.Malware.firstSeen | date | Evidence first seen. | 
+| RecordedFuture.Malware.lastSeen | date | Evidence last seen. | 
+| RecordedFuture.Malware.name | date | Recorded Future entity name. | 
+| RecordedFuture.Malware.type | string | Recorded Future entity type \(always = "Malware"\). | 
+| RecordedFuture.Malware.id | string | Recorded Future malware ID. | 
+| RecordedFuture.Malware.categories.id | string | Recorded Future malware category ID. | 
+| RecordedFuture.Malware.categories.name | string | Recorded Future malware category name. | 
+| RecordedFuture.Malware.categories.type | string | Recorded Future malware category type \(always = "MalwareCategory"\). | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttacker.count | number | Recorded Future related attacker count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttacker.id | string | Recorded Future related attacker ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttacker.name | string | Recorded Future related attacker name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttacker.type | string | Recorded Future related attacker type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTarget.count | number | Recorded Future related target count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTarget.id | string | Recorded Future related target ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTarget.name | string | Recorded Future related target name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTarget.type | string | Recorded Future related target type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedThreatActor.count | number | Recorded Future related threat actor count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedThreatActor.id | string | Recorded Future related threat actor ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedThreatActor.name | string | Recorded Future related threat actor name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedThreatActor.type | string | Recorded Future related threat actor type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalware.count | number | Recorded Future related malware count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalware.id | string | Recorded Future related malware ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalware.name | string | Recorded Future related malware name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalware.type | string | Recorded Future related malware type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCyberVulnerability.count | number | Recorded Future related vulnerability count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCyberVulnerability.id | string | Recorded Future related vulnerability ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCyberVulnerability.name | string | Recorded Future related vulnerability name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCyberVulnerability.type | string | Recorded Future related vulnerability type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedIpAddress.count | number | Recorded Future related IP address count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedIpAddress.id | string | Recorded Future related IP address ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedIpAddress.name | string | Recorded Future related IP address name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedIpAddress.type | string | Recorded Future related IP address type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedInternetDomainName.count | number | Recorded Future related domain name count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedInternetDomainName.id | string | Recorded Future related domain name ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedInternetDomainName.name | string | Recorded Future related domain name name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedInternetDomainName.type | string | Recorded Future related domain name type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedProduct.count | number | Recorded Future related product count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedProduct.id | string | Recorded Future related product ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedProduct.name | string | Recorded Future related product name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedProduct.type | string | Recorded Future related product type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCountries.count | number | Recorded Future related countries count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCountries.id | string | Recorded Future related countries ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCountries.name | string | Recorded Future related countries name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCountries.type | string | Recorded Future related countries type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedHash.count | number | Recorded Future related hash count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedHash.id | string | Recorded Future related hash ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedHash.name | string | Recorded Future related hash name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedHash.type | string | Recorded Future related hash type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTechnology.count | number | Recorded Future related technology count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTechnology.id | string | Recorded Future related technology ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTechnology.name | string | Recorded Future related technology name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedTechnology.type | string | Recorded Future related technology type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedEmailAddress.count | number | Recorded Future related email address count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedEmailAddress.id | string | Recorded Future related email address ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedEmailAddress.name | string | Recorded Future related email address name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedEmailAddress.type | string | Recorded Future related email address type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttackVector.count | number | Recorded Future related attack vector count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttackVector.id | string | Recorded Future related attack vector ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttackVector.name | string | Recorded Future related attack vector name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedAttackVector.type | string | Recorded Future related attack vector type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalwareCategory.count | number | Recorded Future related malware category count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalwareCategory.id | string | Recorded Future related malware category ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalwareCategory.name | string | Recorded Future related malware category name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedMalwareCategory.type | string | Recorded Future related malware category type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedOperations.count | number | Recorded Future related operations count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedOperations.id | string | Recorded Future related operations ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedOperations.name | string | Recorded Future related operations name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedOperations.type | string | Recorded Future related operations type. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCompany.count | number | Recorded Future related company count. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCompany.id | string | Recorded Future related company ID. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCompany.name | string | Recorded Future related company name. | 
+| RecordedFuture.Malware.relatedEntities.RelatedCompany.type | string | Recorded Future related company type. | 
+| RecordedFuture.Malware.analystNotes.attributes.context_entities.id | string | Recorded Future analyst note context entity ID. | 
+| RecordedFuture.Malware.analystNotes.attributes.context_entities.name | string | Recorded Future analyst note context entity name. | 
+| RecordedFuture.Malware.analystNotes.attributes.context_entities.type | string | Recorded Future analyst note context entity type. | 
+| RecordedFuture.Malware.analystNotes.attributes.note_entities.id | string | Recorded Future analyst note entity ID. | 
+| RecordedFuture.Malware.analystNotes.attributes.note_entities.name | string | Recorded Future analyst note entity name. | 
+| RecordedFuture.Malware.analystNotes.attributes.note_entities.type | string | Recorded Future analyst note entity type. | 
+| RecordedFuture.Malware.analystNotes.attributes.published | date | Recorded Future analyst note publishing time. | 
+| RecordedFuture.Malware.analystNotes.attributes.validated_on | date | Recorded Future analyst note validation time. | 
+| RecordedFuture.Malware.analystNotes.attributes.text | string | Recorded Future analyst note content. | 
+| RecordedFuture.Malware.analystNotes.attributes.title | string | Recorded Future analyst note title. | 
+| RecordedFuture.Malware.analystNotes.attributes.topic.description | string | Recorded Future analyst note topic description. | 
+| RecordedFuture.Malware.analystNotes.attributes.topic.id | string | Recorded Future analyst note topic ID. | 
+| RecordedFuture.Malware.analystNotes.attributes.topic.name | string | Recorded Future analyst note topic name. | 
+| RecordedFuture.Malware.analystNotes.attributes.topic.type | string | Recorded Future analyst note topic type. | 
+| RecordedFuture.Malware.analystNotes.attributes.validation_urls.id | string | Recorded Future analyst note validation URL ID. | 
+| RecordedFuture.Malware.analystNotes.attributes.validation_urls.name | string | Recorded Future analyst note validation URL. | 
+| RecordedFuture.Malware.analystNotes.attributes.validation_urls.type | string | Recorded Future analyst note validation URL entity type. | 
+| RecordedFuture.Malware.analystNotes.id | string | Recorded Future analyst note ID. | 
+| RecordedFuture.Malware.analystNotes.source.id | string | Recorded Future analyst note source ID. | 
+| RecordedFuture.Malware.analystNotes.source.name | string | Recorded Future analyst note source name. | 
+| RecordedFuture.Malware.analystNotes.source.type | string | Recorded Future analyst note source type. | 
 
 ### recordedfuture-links
-***
-Get Insikt Group Research Links for an IP, Domain, CVE, URL or File.
 
+***
+Get Insikt Group Research Links for an IP, Domain, CVE, URL, File, or Malware.
 
 #### Base Command
 
 `recordedfuture-links`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_type | The type of entity to fetch links for. (Should be provided with its value in entityValue argument) | Required |
-| entity | The value of the entity to fetch links for. (Should be provided with its type in entity_type argument, Hash types supported: MD5, SHA-1, SHA-256, SHA-512, CRC32, CTPH). Vulnerability supports CVEs. | Required |
-
+| entity_type | The type of entity for which to fetch context. Should be provided with its value in entityValue argument. Can be "domain", "ip", "file", "url", "cve", or "malware". Possible values are: domain, ip, file, url, cve, malware. | Required | 
+| entity | The value of the entity for which to fetch context. Should be provided with its type in entity_type argument. Supported hash types: MD5, SHA1, SHA256, SHA512, CRC32, and CTPH. Vulnerability supports CVEs. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RecordedFuture.Links.category | String | Recorded Future Links Category |
-| RecordedFuture.Links.type | String | Recorded Future Links Type |
-| RecordedFuture.Links.lists.entity_type | String | Recorded Future Links Entity Type |
-| RecordedFuture.Links.lists.entities.name | String | Recorded Future Link Entity Name |
-| RecordedFuture.Links.lists.entities.type | String | Recorded Future Link Entity Type |
-| RecordedFuture.Links.lists.entities.score | Number | Recorded Future Link Entity Risk Score |
+| RecordedFuture.Links.category | String | Recorded Future links category. | 
+| RecordedFuture.Links.type | String | Recorded Future links type. | 
+| RecordedFuture.Links.lists.entity_type | String | Recorded Future links entity list type. | 
+| RecordedFuture.Links.lists.entities.type | String | Recorded Future link entity type. | 
+| RecordedFuture.Links.lists.entities.name | String | Recorded Future link entity name. | 
+| RecordedFuture.Links.lists.entities.score | Number | Recorded Future link entity risk score. | 
 
+### recordedfuture-single-alert
 
-#### Command Example
-```!recordedfuture-links entity="152.169.22.67" entity_type="ip"```
+***
+Get detailed information from vulnerability, typosquat and credential alerts.
 
-#### Context Example
-```
-{
-    "RecordedFuture": {
-        "Links": {
-            "Insikt Group Research Links": [
-                {
-                    "category": "Actors, Tools & TTPs",
-                    "lists": [
-                        {
-                            "entities": [
-                                {
-                                    "name": "Zero Day Exploit",
-                                    "score": null,
-                                    "type": "AttackVector",
-                                }
-                            ]
-                            "entity_type": "Attack Vector",
+#### Base Command
 
-                        }
-                    ]
-                },
-                {
-                    "category":"Indicators & Detection Rules",
-                    "lists": [
-                        {
-                            "entity_type":"IP address",
-                            "entities": [
-                                {
-                                    "name": "125.62.192.220",
-                                    "score": 69,
-                                    "type": "IpAddress",
-                                },
-                                {
-                                    "name": "22.33.66.85",
-                                    "score": 33,
-                                    "type": "IpAddress",
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "Technical Links": [
-                {
-                    "category": "Actors, Tools & TTPs",
-                    "lists": [
-                        {
-                            "entities": [
-                                {
-                                    "name": "TA0011",
-                                    "score": null,
-                                    "type": "MitreAttackIdentifier",
-                                }
-                            ]
-                            "entity_type": "MITRE ATT&CK Identifier",
+`recordedfuture-single-alert`
 
-                        },
-                    ]
-                },
-            ]
-        }
-    }
-}
-```
+#### Input
 
-#### Human Readable Output
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Alert ID. | Required | 
 
->### Insikt Group Research Links for: 152.169.22.67
->#### Category Actors, Tools & TTPs
->---
->| Attack Vector |
->|---|
->| Zero Day Exploit |
->
->#### Indicators & Detection Rules
->---
->| IP address |
->|---|
->| 125.62.192.220 |
->| 22.33.66.85 |
+#### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.SingleAlert.id | string | Recorded Future alert ID. | 
+| RecordedFuture.SingleAlert.flat_entities.fragment | string | Recorded Future fragment of the entity. | 
+| RecordedFuture.SingleAlert.flat_entities.name | string | Recorded Future name of the entity. | 
+| RecordedFuture.SingleAlert.flat_entities.type | string | Recorded Future type of the entity. | 
+| RecordedFuture.SingleAlert.flat_entities.id | string | Recorded Future ID of the entity. | 
 
-## Fetch Incidents
-You can fetch Recorded Future Alerts and work with them as XSOAR Incidents. When pulling the alert we set it status to pending and we only pull alerts with status no-acction("New" in UI). There are three parameters that you can specify.
+### recordedfuture-alerts
 
+***
+Gets details on alerts configured and generated by Recorded Future by alert rule ID and/or time range.
 
-| **Argument Name** | **Format** | **Description** | **Required** | **Default value** |
-| --- | --- | --- | --- | --- |
-| First fetch time | [number] [time unit], e.g. 12 hours, 7 days, 3 months, 1 year | First period to fetch alerts from | Not Required | 24 hours |
-| Max number of incident to pull in one call | Number e.g 1 , 3 , 4 | Specify how much alerts to pull in one run  | Not Required | 50 |
-| Incidents Fetch Interval | [number] [time unit][number] [time unit]  e.g. 1 hour 30 minutes  | Specify time interval between every pull  | Required | 1 minute |
+#### Base Command
 
+`recordedfuture-alerts`
 
-### Fetched Incidents Data
-```
-"data": {
-    "rule": {
-      "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?view_opts=%7B%22reportId%22%3A%22Y8d2JN%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22DJIA+Cyber%22%7D&amp;state.bNavbar=false",
-      "name": "DJIA Cyber",
-      "id": "Y8d2JN"
-    },
-    "type": "EVENT",
-    "entities": [
-      {
-        "entity": null,
-        "risk": {},
-        "trend": {},
-        "documents": [
-          {
-            "references": [
-              {
-                "fragment": "This malware can steal passwords, credit card info in Chrome, Safari.",
-                "entities": [
-                  {
-                    "id": "czhXN",
-                    "name": "PT Reliance Securities Tbk",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "B_sMd",
-                    "name": "Apple Safari",
-                    "type": "Product"
-                  },
-                  {
-                    "id": "B_tZO",
-                    "name": "Palo Alto Networks",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "GARXk",
-                    "name": "MSMEs",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "B_LyO",
-                    "name": "Apple",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "B_HE4",
-                    "name": "Google",
-                    "type": "Company"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "KFGeiP",
-              "name": "CanIndia NEWS",
-              "type": "Source"
-            },
-            "url": "http://www.canindia.com/this-malware-can-steal-passwords-credit-card-info-in-chrome-safari/",
-            "title": "This malware can steal passwords, credit card info in Chrome, Safari"
-          },
-          {
-            "references": [
-              {
-                "fragment": "Malicious code hidden in the Windows registry.",
-                "entities": [
-                  {
-                    "id": "B_Hs5",
-                    "name": "F5 Networks",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "B_E-R",
-                    "name": "Twitter",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "J0LOpv",
-                    "name": "Malicious code",
-                    "type": "AttackVector"
-                  },
-                  {
-                    "id": "Y97Q48",
-                    "name": "HTML Signature Solutions",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "CBJSs",
-                    "name": "LinkedIn",
-                    "type": "Company"
-                  },
-                  {
-                    "id": "B_HOS",
-                    "name": "Microsoft Windows",
-                    "type": "Product"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "RrKkHT",
-              "name": "F5 Networks",
-              "type": "Source"
-            },
-            "url": "https://www.f5.com/labs/articles/threat-intelligence/gozi-adds-evasion-techniques-to-its-growing-bag-of-tricks",
-            "title": null
-          },
-          {
-            "references": [
-              {
-                "fragment": "The company noted in a blog post the ransomware had infected more than 100 Windows servers by exploiting several web application vulnerabilities, and the number of victims was rising.",
-                "entities": [
-                  {
-                    "id": "Cq3eF",
-                    "name": "Web application vulnerabilities",
-                    "type": "IndustryTerm"
-                  },
-                  {
-                    "id": "J0Nl-p",
-                    "name": "Ransomware",
-                    "type": "MalwareCategory"
-                  },
-                  {
-                    "id": "B_HOS",
-                    "name": "Microsoft Windows",
-                    "type": "Product"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "The company noted in a blog post the ransomware had infected more than 100 Windows servers by exploiting several web application vulnerabilities, and the number of victims was rising.",
-                "entities": [
-                  {
-                    "id": "Cq3eF",
-                    "name": "Web application vulnerabilities",
-                    "type": "IndustryTerm"
-                  },
-                  {
-                    "id": "J0Nl-p",
-                    "name": "Ransomware",
-                    "type": "MalwareCategory"
-                  },
-                  {
-                    "id": "B_HOS",
-                    "name": "Microsoft Windows",
-                    "type": "Product"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "idn:8btc.com",
-              "name": "8btc.com",
-              "type": "InternetDomainName"
-            },
-            "url": "https://news.8btc.com/an-upgraded-satan-ransomware-infects-hundreds-of-windows-servers-in-china-demanding-a-ransom-of-1-bitcoin-within-3-days",
-            "title": "An Upgraded Satan Ransomware Infects Hundreds of Windows Servers in China, Demanding a Ransom of 1 Bitcoin Within 3 Days | NEWS.8BTC.COM."
-          },
-          {
-            "references": [
-              {
-                "fragment": "example.gmail.com|1qazse4r",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|snapy573",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|ric290888",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|cumicumi49",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|20may1993",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|04041995",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|lk63864551",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|mememesheryl",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|danubrata45",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|miracles7",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|albert",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|14Oktober1998",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|1234qwer",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|dwitamaalfred",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|oliviaagnes",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|5148520362",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|kucit11",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|n1kuailema",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|limajuli",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|tasyakevinrio",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|747474",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|sanurlovers",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|bologe10101994",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|flymuc12",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|donnie",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|g153ll3",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|kolonel8",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|Na11032009",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|gogle05",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|my9snapy",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|bani2005",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|mala2581998",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|961501",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|april322912",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|dalshabet2012",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|vicha1002",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|0811570188",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|amidala7",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|janand",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|cheptie",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|Dealova33",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|jss231094",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|arschgeil00",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|burlgoat97",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|Ahau7296",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|gilaabis",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|123456",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|Tiffani16694",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              },
-              {
-                "fragment": "example.gmail.com|4ndr15ukm4v4r094",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "Jv_xrR",
-              "name": "PasteBin",
-              "type": "Source"
-            },
-            "url": "https://pastebin.com/20WrvAKf",
-            "title": "5K empas Indo + Bonus"
-          },
-          {
-            "references": [
-              {
-                "fragment": "| [+] E-mail Found: example.gmail.com",
-                "entities": [
-                  {
-                    "id": "email:example.gmail.com",
-                    "name": "example.gmail.com",
-                    "type": "EmailAddress"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "Jv_xrR",
-              "name": "PasteBin",
-              "type": "Source"
-            },
-            "url": "https://pastebin.com/Ntk14mse",
-            "title": "Anonymous JTSEC #OpIsis Full Recon #11"
-          },
-          {
-            "references": [
-              {
-                "fragment": "I remember reading that it was made loose on purpose so cords don't bring your Mac down if they're tripped over.",
-                "entities": [
-                  {
-                    "id": "BBh7yv",
-                    "name": "Mac",
-                    "type": "Product"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "TiY1wz",
-              "name": "Apple devices",
-              "type": "Source"
-            },
-            "url": "https://www.reddit.com/r/apple/comments/aljr4z/apple_testing_iphones_with_usbc_port/efi3j06/",
-            "title": "/u/ccrama on Apple testing iPhones with USB-C port"
-          },
-          {
-            "references": [
-              {
-                "fragment": "App Store, iTunes Store, Apple Music been down for several hours now! @AppleSupport.",
-                "entities": [
-                  {
-                    "id": "JZHhWg",
-                    "name": "Apple iTunes",
-                    "type": "Product"
-                  },
-                  {
-                    "id": "QGkOLY",
-                    "name": "@AppleSupport",
-                    "type": "Username"
-                  },
-                  {
-                    "id": "B_LyO",
-                    "name": "Apple",
-                    "type": "Company"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "BV5",
-              "name": "Twitter",
-              "type": "Source"
-            },
-            "url": "https://twitter.com/PRHTH/statuses/1091215388086394880",
-            "title": "App Store, iTunes Store , Apple Music down พร้อมกันหมดเลยจ้า หลายชั่วโมงแล้ว \n\nApp Store, iTunes Store, Apple Music been down for several hours now! @AppleSupport"
-          },
-          {
-            "references": [
-              {
-                "fragment": "An Upgraded Satan Ransomware Infects Hundreds of Windows Servers in China, Demanding a Ransom of 1 Bitcoin Within 3 Days - 8BTC via BTCnews #Bitcoin https://t.co/1YEkzEdO92.",
-                "entities": [
-                  {
-                    "id": "B75KVV",
-                    "name": "via",
-                    "type": "IndustryTerm"
-                  },
-                  {
-                    "id": "url:https://news.8btc.com/an-upgraded-satan-ransomware-infects-hundreds-of-windows-servers-in-china-demanding-a-ransom-of-1-bitcoin-within-3-days",
-                    "name": "https://news.8btc.com/an-upgraded-satan-ransomware-infects-hundreds-of-windows-servers-in-china-demanding-a-ransom-of-1-bitcoin-within-3-days",
-                    "type": "URL"
-                  },
-                  {
-                    "id": "IH6pHd",
-                    "name": "Bitcoin",
-                    "type": "Technology"
-                  },
-                  {
-                    "id": "Kei3LZ",
-                    "name": "#Bitcoin",
-                    "type": "Hashtag"
-                  },
-                  {
-                    "id": "SePISm",
-                    "name": "Satan",
-                    "type": "Malware"
-                  },
-                  {
-                    "id": "B_FNa",
-                    "name": "China",
-                    "type": "Country"
-                  },
-                  {
-                    "id": "J0Nl-p",
-                    "name": "Ransomware",
-                    "type": "MalwareCategory"
-                  },
-                  {
-                    "id": "B_HOS",
-                    "name": "Microsoft Windows",
-                    "type": "Product"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "BV5",
-              "name": "Twitter",
-              "type": "Source"
-            },
-            "url": "https://twitter.com/btcnewsapp/statuses/1091268383180537856",
-            "title": "An Upgraded Satan Ransomware Infects Hundreds of Windows Servers in China, Demanding a Ransom of 1 Bitcoin Within 3 Days - 8BTC via BTCnews #Bitcoin https://t.co/1YEkzEdO92"
-          },
-          {
-            "references": [
-              {
-                "fragment": "@Apple Flaw that allows hacker to access target mic, camera, location, memory.",
-                "entities": [
-                  {
-                    "id": "P_iscR",
-                    "name": "@Apple",
-                    "type": "Username"
-                  }
-                ],
-                "language": "eng"
-              }
-            ],
-            "source": {
-              "id": "BV5",
-              "name": "Twitter",
-              "type": "Source"
-            },
-            "url": "https://twitter.com/ganag92444992/statuses/1091257432662134784",
-            "title": "@Apple Flaw that allows hacker to access target mic, camera, location, memory.\nAny remedy for that? Targetted due to that flaw\nSo not  #iOS #Apple #iphone  #hacker #HackerNews #cybersecurity #privacy #HumanRights #surveillance #DataSecurity #DataProtection"
-          }
-        ]
-      }
-    ],
-    "review": {
-      "noteDate": null,
-      "note": null,
-      "noteAuthor": null,
-      "assignee": null,
-      "status": "no-action"
-    },
-    "url": "https://app.recordedfuture.com/live/sc/notification/?id=Y9-jli",
-    "triggered": "2019-02-01T09:58:13.564Z",
-    "title": "DJIA Cyber - New references in 9 documents",
-    "counts": {
-      "references": 58,
-      "entities": 0,
-      "documents": 9
-    },
-    "id": "Y9-jli"
-  }
-}
-```
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Alert rule ID. | Optional | 
+| limit | Maximum number of alerts to return. Default is 10. Default is 10. | Optional | 
+| triggered_time | Alert triggered time, e.g., "1 hour" or "2 days". | Optional | 
+| assignee | Alert assignee's email address. | Optional | 
+| status | Alert review status. Can be "unassigned", "assigned", "pending", "actionable", "no-action", or "tuning". Possible values are: unassigned, assigned, pending, actionable, no-action, tuning. | Optional | 
+| freetext | Free text search. | Optional | 
+| offset | Alerts from offset. | Optional | 
+| orderby | Alerts sort order. Possible values are: triggered. | Optional | 
+| direction | The direction by which to sort alerts. Can be "asc" or "desc". Possible values are: asc, desc. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.Alert.id | string | Alert ID. | 
+| RecordedFuture.Alert.name | string | Alert name. | 
+| RecordedFuture.Alert.type | string | Alert type. | 
+| RecordedFuture.Alert.triggered | date | Alert triggered time. | 
+| RecordedFuture.Alert.status | string | Alert status. | 
+| RecordedFuture.Alert.assignee | string | Alert assignee. | 
+| RecordedFuture.Alert.rule | string | Alert rule name. | 
+
+### recordedfuture-alert-rules
+
+***
+Search for alert rule IDs.
+
+#### Base Command
+
+`recordedfuture-alert-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_name | Rule name to search. Can be a partial name. | Optional | 
+| limit | Maximum number of rules to return. Default is 10. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.AlertRule.id | string | Alert rule ID. | 
+| RecordedFuture.AlertRule.name | string | Alert rule name. | 
+
+### recordedfuture-alert-set-status
+
+***
+Set alert into predefined status.
+
+#### Base Command
+
+`recordedfuture-alert-set-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert id. | Required | 
+| status | The status we want to set for the alert in Recorded Future. Possible values are: unassigned, assigned, pending, dismiss, no-action, actionable, tuning. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.Alerts.id | String | Recorded Future alert ID. | 
+| RecordedFuture.Alerts.status | String | Recorded Future alert status. | 
+| RecordedFuture.Alerts.note.text | String | Recorded Future alert note text. | 
+| RecordedFuture.Alerts.note.author | String | Recorded Future alert note author. | 
+| RecordedFuture.Alerts.note.date | date | Recorded Future alert note date. | 
+| RecordedFuture.Alerts.reviewDate | date | Recorded Future alert get date. | 
+
+### recordedfuture-alert-set-note
+
+***
+Set a note for the alert in Recorded Future.
+
+#### Base Command
+
+`recordedfuture-alert-set-note`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert ID. | Required | 
+| note | The note of the ID we want to set. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.Alerts.id | String | Recorded Future alert ID. | 
+| RecordedFuture.Alerts.status | String | Recorded Future alert status. | 
+| RecordedFuture.Alerts.note.text | String | Recorded Future alert note text. | 
+| RecordedFuture.Alerts.note.author | String | Recorded Future alert note author. | 
+| RecordedFuture.Alerts.note.date | date | Recorded Future alert note date. | 
+| RecordedFuture.Alerts.reviewDate | date | Recorded Future alert get date. | 
+
+### recordedfuture-malware-search
+
+***
+Search for a malware by specified filters.
+
+#### Base Command
+
+`recordedfuture-malware-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| freetext | Part of malware name or ID to search for. | Optional | 
+| limit | How many records to retrieve (default = 10). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.Malware.id | string | Recorded Future malware ID. | 
+| RecordedFuture.Malware.name | string | Recorded Future entity name. | 
+| RecordedFuture.Malware.type | string | Recorded Future entity type \(always = "Malware"\). | 
+| RecordedFuture.Malware.intelCard | date | Recorded Future intelligence card URL. | 
+
+## Breaking changes from the previous version of this integration - Recorded Future v2
+
+Renamed the integration setting "Incident Sharing" to "Collective Insights", resetting any previous configuration to this setting. 

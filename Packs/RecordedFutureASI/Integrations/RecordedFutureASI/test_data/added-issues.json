@@ -1,0 +1,104 @@
+{
+  "data": [
+    {
+      "added_rules": [
+        {
+          "classification": "high",
+          "description": "WordPress Contact Form 7 before 5.3.2 allows unrestricted file upload and remote code execution because a filename may contain special characters.",
+          "example_entities": {
+            "domains": [
+              {
+                "example": "example3.com",
+                "sort_value": 99,
+                "target": "https://example4.com/wp-content/plugins/contact-form-7/readme.txt"
+              }
+            ],
+            "ips": []
+          },
+          "id": "CVE-2020-35489",
+          "name": "WordPress Contact Form 7 Plugin - Unrestricted File Upload (CVE-2020-35489)",
+          "rule_metadata": {
+            "entity_counts": {
+              "domains": 1,
+              "ips": 0
+            },
+            "references": [
+              "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2020-35489",
+              "https://nvd.nist.gov/vuln/detail/CVE-2020-35489",
+              "https://wordpress.org/plugins/contact-form-7/#developers",
+              "https://www.getastra.com/blog/911/plugin-exploit/contact-form-7-unrestricted-file-upload/",
+              "https://www.jinsonvarghese.com/unrestricted-file-upload-in-contact-form-7/"
+            ]
+          }
+        },
+        {
+          "classification": "moderate",
+          "description": "Searches for the pattern /.git/config and log file on passed URLs.",
+          "example_entities": {
+            "domains": [
+              {
+                "example": "example5.com",
+                "sort_value": 65,
+                "target": "https://example5.com/.git/config"
+              }
+            ],
+            "ips": []
+          },
+          "id": "git-config",
+          "name": "Git Config Disclosure",
+          "rule_metadata": {
+            "entity_counts": {
+              "domains": 1,
+              "ips": 0
+            },
+            "references": []
+          }
+        },
+        {
+          "classification": "informational",
+          "description": "Vulnerability allowing a remote attacker to obtain sensitive information for a misconfigured AEM instance",
+          "example_entities": {
+            "domains": [
+              {
+                "example": "example6.com",
+                "sort_value": 15,
+                "target": "https://example6.com/.json/FNZ.css"
+              }
+            ],
+            "ips": []
+          },
+          "id": "aem-default-get-servlet",
+          "name": "Adobe Experience Manager DefaultGetServlet",
+          "rule_metadata": {
+            "entity_counts": {
+              "domains": 1,
+              "ips": 0
+            },
+            "references": [
+              "https://github.com/thomashartm/burp-aem-scanner/blob/master/src/main/java/burp/actions/dispatcher/GetServletExposed.java",
+              "https://speakerdeck.com/0ang3el/hunting-for-security-bugs-in-aem-webapps?slide=43"
+            ]
+          }
+        }
+      ],
+      "counts": {
+        "added_rules": 3,
+        "removed_rules": 0
+      },
+      "previous_risk_score": 0,
+      "previous_snapshot": null,
+      "removed_rules": [],
+      "risk_score": 99,
+      "snapshot": "2022-07-07 06:08:33"
+    }
+  ],
+  "meta": {
+    "params": {
+      "classification": [],
+      "end": null,
+      "query": null,
+      "rule_action": "added",
+      "start": "2022-07-07 06:08:32"
+    }
+  }
+}

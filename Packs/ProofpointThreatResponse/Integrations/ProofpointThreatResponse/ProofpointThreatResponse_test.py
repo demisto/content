@@ -1,3 +1,5 @@
+import copy
+
 import pytest
 
 from CommonServerPython import *
@@ -10,9 +12,9 @@ from ProofpointThreatResponse import (create_incident_field_context,
                                       pass_sources_list_filter,
                                       prepare_ingest_alert_request_body,
                                       close_incident_command,
-                                      search_quarantine)
+                                      search_quarantine, list_incidents_command, search_indicator_command)
 
-MOCK_INCIDENT = {
+MOCK_INCIDENT_1 = {
     "id": 1,
     "type": "Malware",
     "summary": "Unsolicited Bulk Email",
@@ -99,6 +101,8 @@ MOCK_INCIDENT = {
     "failed_quarantines": 0,
     "pending_quarantines": 0
 }
+MOCK_INCIDENT_2 = copy.deepcopy(MOCK_INCIDENT_1)
+MOCK_INCIDENT_2['events'][0]['emails'][0]['messageDeliveryTime'] = 'messageDeliveryTime'
 
 INCIDENT_FIELD_CONTEXT = {
     "Attack_Vector": "Email",
@@ -108,7 +112,7 @@ INCIDENT_FIELD_CONTEXT = {
 }
 
 INCIDENT_FIELD_INPUT = [
-    (MOCK_INCIDENT, INCIDENT_FIELD_CONTEXT)
+    (MOCK_INCIDENT_1, INCIDENT_FIELD_CONTEXT)
 ]
 
 
@@ -142,7 +146,7 @@ EMAIL_RESULT = [
 ]
 
 EMAILS_CONTEXT_INPUT = [
-    (MOCK_INCIDENT['events'][0], EMAIL_RESULT)
+    (MOCK_INCIDENT_1['events'][0], EMAIL_RESULT)
 ]
 
 
@@ -162,7 +166,7 @@ SOURCE_LIST_INPUT = [
 
 @pytest.mark.parametrize('sources_list, expected_answer', SOURCE_LIST_INPUT)
 def test_pass_sources_list_filter(sources_list, expected_answer):
-    result = pass_sources_list_filter(MOCK_INCIDENT, sources_list)
+    result = pass_sources_list_filter(MOCK_INCIDENT_1, sources_list)
     assert result == expected_answer
 
 
@@ -176,12 +180,12 @@ ABUSE_DISPOSITION_INPUT = [
 
 @pytest.mark.parametrize('abuse_dispotion_values, expected_answer', ABUSE_DISPOSITION_INPUT)
 def test_pass_abuse_disposition_filter(abuse_dispotion_values, expected_answer):
-    result = pass_abuse_disposition_filter(MOCK_INCIDENT, abuse_dispotion_values)
+    result = pass_abuse_disposition_filter(MOCK_INCIDENT_1, abuse_dispotion_values)
     assert result == expected_answer
 
 
 DEMISTO_PARAMS = [({'event_sources': "No such source, Proofpoint TAP", 'abuse_disposition': "No such value, Unknown"},
-                   [MOCK_INCIDENT]), ({'event_sources': "", 'abuse_disposition': ""}, [MOCK_INCIDENT]),
+                   [MOCK_INCIDENT_1]), ({'event_sources': "", 'abuse_disposition': ""}, [MOCK_INCIDENT_1]),
                   ({'event_sources': "No such source", 'abuse_disposition': "No such value, Unknown"}, []),
                   ({'event_sources': "No such source, Proofpoint TAP", 'abuse_disposition': "No such value"}, []),
                   ({'event_sources': "No such source", 'abuse_disposition': "No such value"}, [])]
@@ -190,7 +194,7 @@ DEMISTO_PARAMS = [({'event_sources': "No such source, Proofpoint TAP", 'abuse_di
 @pytest.mark.parametrize('demisto_params, expected_answer', DEMISTO_PARAMS)
 def test_filter_incidents(mocker, demisto_params, expected_answer):
     mocker.patch.object(demisto, 'params', return_value=demisto_params)
-    filtered_incidents = filter_incidents([MOCK_INCIDENT])
+    filtered_incidents = filter_incidents([MOCK_INCIDENT_1])
     assert filtered_incidents == expected_answer
 
 
@@ -443,3 +447,58 @@ def test_search_quarantine_command(mocker, requests_mock):
     res = search_quarantine()
     quarantines_res = [x.get('quarantine').get('status') for x in res.outputs]
     assert 'successful' in quarantines_res
+
+
+def test_list_incidents_command(mocker, requests_mock):
+    """
+    Given:
+    - 2 Incidents in the list, with different 'messageDeliveryTime' fields
+
+    When:
+    - Running list-incidents command
+
+    Then:
+    - Ensure output generated successfully without errors.
+    """
+    base_url = 'https://server_url/'
+    requests_mock.get(f'{base_url}api/incidents', json=[MOCK_INCIDENT_1, MOCK_INCIDENT_2])
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'args', return_value={'limit': 2})
+    results = mocker.patch.object(demisto, 'results')
+    list_incidents_command()
+    incidents = results.call_args[0][0]['Contents']
+    assert len(incidents) == 2
+
+
+@pytest.mark.parametrize('list_id_to_search, filter_to_apply,  indicators_to_return, expected_result', [
+    ('1', '1.1.1.1', [{"host": {"host": "1.1.1.1"}}, {"host": {"host": "2.2.2.2"}}], [{"host": {"host": "1.1.1.1"}}]),
+    ('1', '', [{"host": {"host": "1.1.1.1"}}, {"host": {"host": "2.2.2.2"}}],
+     [{"host": {"host": "1.1.1.1"}}, {"host": {"host": "2.2.2.2"}}]),
+    ('1', '', [{}], []),
+])
+def test_search_indicator_command(mocker, requests_mock, list_id_to_search, filter_to_apply, indicators_to_return,
+                                  expected_result):
+    """
+    Given:
+        - Case A: List id = 1, and filter is 1.1.1.1
+        - Case B: List id = 1, no filter is given.
+        - Case C: List id = 1, no filter is given.
+
+    When:
+        - Case A: 2 indicators [1.1.1.1, 2.2.2.2] are returned from API.
+        - Case B: 2 indicators [1.1.1.1, 2.2.2.2] are returned from API.
+        - Case C: No indicators are returned from API.
+
+    Then:
+        - Case A: Ensure the list is filtered and only the 1.1.1.1 indicator is returned.
+        - Case B: Ensure the list is not filtered and both 1.1.1.1 and 2.2.2.2 are returned.
+        - Case C: Ensure the logic is working, and an empty list is returnd
+    """
+    base_url = 'https://server_url/'
+    requests_mock.get(f'{base_url}api/lists/{list_id_to_search}/members.json', json=indicators_to_return)
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'args', return_value={'list-id': list_id_to_search, 'filter': filter_to_apply})
+    results = mocker.patch.object(demisto, 'results')
+    search_indicator_command()
+    indicators = results.call_args[0][0]['indicators']
+    assert indicators == expected_result

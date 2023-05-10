@@ -1,0 +1,630 @@
+id: Microsoft 365 Defender - Get Email URL Clicks
+version: -1
+name: Microsoft 365 Defender - Get Email URL Clicks
+description: |-
+  This playbook retrieves email data based on the `URLDomain` and `MessageID` inputs. It uses the Microsoft 365 Defender's Advanced Hunting to search only for URL click events based on the playbook inputs and enriches it with the full email data.
+
+  **URLDomain** - If the “URLDomain” value is found as a substring of the URL(s) in the body of the email, the email is retrieved.
+
+  **MessageID** - The message ID of the email from which the URL was clicked. Note that this can be either of the following 2 values:
+  - The value of the header "Message-ID".
+  - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
+
+  Can be a single MessageID or an array of MessageIDs to search.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d1461914-ae1b-4f10-823c-159f52a5e77e
+    type: start
+    task:
+      id: d1461914-ae1b-4f10-823c-159f52a5e77e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e5b1fef1-5ae6-4adc-8325-8598a638ada6
+    type: condition
+    task:
+      id: e5b1fef1-5ae6-4adc-8325-8598a638ada6
+      version: -1
+      name: Check if Microsoft 365 Defender is enabled
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "4"
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: Microsoft 365 Defender
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d7d8f920-b7ae-4d22-8967-697d62f48db1
+    type: title
+    task:
+      id: d7d8f920-b7ae-4d22-8967-697d62f48db1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: af1be599-0f3e-42b0-8fc8-6bae609463fe
+    type: regular
+    task:
+      id: af1be599-0f3e-42b0-8fc8-6bae609463fe
+      version: -1
+      name: Set URLDomain search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: URLDomainParsed
+      value:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '", "'
+              toReplace:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8677b98b-b313-43ed-87b4-59f6c7bcce85
+    type: regular
+    task:
+      id: 8677b98b-b313-43ed-87b4-59f6c7bcce85
+      version: -1
+      name: Set MessageID search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: MessageIDParsed
+      value:
+        complex:
+          root: inputs.MessageID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '", "'
+              toReplace:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f147d341-bb0e-4af5-8504-3b725e484f47
+    type: regular
+    task:
+      id: f147d341-bb0e-4af5-8504-3b725e484f47
+      version: -1
+      name: Retrieve emails data (URLDomain)
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+      query:
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join UrlClickEvents on NetworkMessageId | where Url has_any ("${URLDomainParsed}") |  project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, OrgLevelAction, SenderObjectId, NetworkMessageId1, DetectionMethods1, ThreatTypes1 |  project-rename ClickTimestamp = Timestamp1
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 09df3e7d-c6e7-40b2-8fe7-30834d9ee2d7
+    type: regular
+    task:
+      id: 09df3e7d-c6e7-40b2-8fe7-30834d9ee2d7
+      version: -1
+      name: Retrieve emails data (MessageID)
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+      query:
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where (InternetMessageId in ("${MessageIDParsed}") or NetworkMessageId in ("${MessageIDParsed}")) | join UrlClickEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, OrgLevelAction, SenderObjectId, NetworkMessageId1, DetectionMethods1, ThreatTypes1 |  project-rename ClickTimestamp = Timestamp1
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: afacdf6d-6f79-4824-8ed6-f4c8d7da2c58
+    type: condition
+    task:
+      id: afacdf6d-6f79-4824-8ed6-f4c8d7da2c58
+      version: -1
+      name: Check inputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      MessageID:
+      - "8"
+      MessageID and URLDomain:
+      - "10"
+      URLDomain:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: URLDomain
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MessageID
+            iscontext: true
+    - label: MessageID
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MessageID
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+    - label: MessageID and URLDomain
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MessageID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 91425086-ae2b-4662-84a5-71ce6f06c20a
+    type: regular
+    task:
+      id: 91425086-ae2b-4662-84a5-71ce6f06c20a
+      version: -1
+      name: Retrieve emails data (MessageID and URLDomain)
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      type: regular
+      iscommand: true
+      brand: Microsoft 365 Defender
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+      query:
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join UrlClickEvents on NetworkMessageId | where (InternetMessageId in ("${MessageIDParsed}") or NetworkMessageId in ("${MessageIDParsed}")) and Url has_any ("${URLDomainParsed}")  | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, OrgLevelAction, SenderObjectId, NetworkMessageId1, DetectionMethods1, ThreatTypes1 | project-rename ClickTimestamp = Timestamp1
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 8fabf2a2-8171-4794-85ca-d42d4f78b7eb
+    type: regular
+    task:
+      id: 8fabf2a2-8171-4794-85ca-d42d4f78b7eb
+      version: -1
+      name: Set RetrievedEmails field
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Microsoft365Defender.RetrievedEmails
+      value:
+        complex:
+          root: Microsoft365Defender.Hunt
+          accessor: results
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_no": 0.29,
+      "9_10_MessageID and URLDomain": 0.6,
+      "9_2_#default#": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1540,
+        "x": 50,
+        "y": -20
+      }
+    }
+  }
+inputs:
+- key: URLDomain
+  value: {}
+  required: false
+  description: Represents a domain or URL. Can be a single domain or URL, or an array of domains or URLs to search. The search looks for URLs containing this input that were clicked within emails.
+  playbookInputQuery:
+- key: MessageID
+  value: {}
+  required: false
+  description: |-
+    MessageID of the email from which the URL was clicked. Note that this can be either of the following 2 values:
+    - The value of the header "Message-ID".
+    - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
+
+    Can be a single MessageID or an array of MessageIDs to search.
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "180"
+  required: false
+  description: The time limit in seconds for the HTTP request to run. Default is 180.
+  playbookInputQuery:
+- key: SearchTimeframe
+  value:
+    simple: "7"
+  required: false
+  description: Number of days past to search. Default is 7.
+  playbookInputQuery:
+- key: ResultsLimit
+  value:
+    simple: "50"
+  required: false
+  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
+  playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
+  playbookInputQuery:
+outputs:
+- contextPath: Microsoft365Defender.RetrievedEmails.UrlCount
+  description: Number of embedded URLs in the email.
+  type: number
+- contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
+  description: Public-facing identifier for the email that is set by the sending email system. This is the value of the "Message-ID" header.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromDomain
+  description: Sender domain in the FROM header, which is visible to email recipients on their email clients.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailDirection
+  description: 'Direction of the email relative to your network: Inbound, Outbound, Intra-org.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AccountUpn
+  description: User principal name (UPN) of the account.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.IsClickedThrough
+  description: Indicates whether the user was able to click through to the original URL or not.
+  type: number
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryLocation
+  description: 'Location where the email was delivered: Inbox/Folder, On-premises/External, Junk, Quarantine, Failed, Dropped, Deleted items.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
+  description: List of pass or fail verdicts by email authentication protocols like DMARC, DKIM, SPF or a combination of multiple authentication types (CompAuth).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
+  description: 'Delivery action of the email: Delivered, Junked, Blocked, or Replaced.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.BulkComplaintLevel
+  description: Threshold assigned to emails from bulk mailers. A high bulk complain level (BCL) means the email is more likely to generate complaints, and thus more likely to be spam.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Subject
+  description: Subject of the email.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AttachmentCount
+  description: Number of attachments in the email.
+  type: number
+- contextPath: Microsoft365Defender.RetrievedEmails.IPAddress
+  description: IP address assigned to the device during communication.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DetectionMethods
+  description: Methods used to detect whether the URL contains or leads to malware, phishing, or other threats.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatNames
+  description: Detection name for malware or other threats found.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Url
+  description: URL that was clicked.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ActionType
+  description: Type of activity that triggered the event.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.RecipientEmailAddress
+  description: Email address of the recipient, or email address of the recipient after distribution list expansion.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
+  description: 'Final action taken on the email based on filter verdict, policies, and user actions: Move message to junk mail folder, Add X-header, Modify subject, Redirect message, Delete message, Send to quarantine, No action taken, Bcc message.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.UrlChain
+  description: List of URLs in the redirection chain.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.NetworkMessageId
+  description: Unique identifier for the email, generated by Office 365.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromAddress
+  description: Sender email address in the FROM header, which is visible to email recipients on their email clients.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Timestamp
+  description: Date and time when the record was generated (email event).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DisplayName
+  description: Name of the sender displayed in the address book, typically a combination of a given or first name, a middle initial, and a last name or surname.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv4
+  description: IPv4 address of the last detected mail server that relayed the message.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
+  description: List of confidence levels of any spam or phishing verdicts. For spam, this column shows the spam confidence level (SCL), indicating if the email was skipped (-1), found to be not spam (0,1), found to be spam with moderate confidence (5,6), or found to be spam with high confidence (9). For phishing, this column displays whether the confidence level is "High" or "Low".
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromDomain
+  description: Sender domain in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
+  description: IPv6 address of the last detected mail server that relayed the message.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromAddress
+  description: Sender email address in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
+  description: Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats.
+  type: unknown
+- contextPath: Microsoft365Defender.RetrievedEmails
+  description: Email objects containing relevant fields related to URL click events.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ClickTimestamp
+  description: Date and time when the record was generated (URL click).
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

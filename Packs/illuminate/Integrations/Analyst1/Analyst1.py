@@ -3,12 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import requests
+import urllib3
 import traceback
 from typing import Dict, Optional, List, Any, Callable, Collection
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 # Integration information
@@ -82,7 +82,8 @@ class EnrichmentOutput(object):
                 'Indicator': indicator_value,
                 'Score': 3 if malicious else 1,
                 'Type': indicator_type,
-                'Vendor': INTEGRATION_NAME
+                'Vendor': INTEGRATION_NAME,
+                'Reliability': demisto.params().get('integrationReliability')
             })
 
     def build_all_context(self) -> dict:

@@ -1,0 +1,182 @@
+category: Vulnerability Management
+commonfields:
+  id: 'ThousandEyes'
+  version: -1
+configuration:
+- display: Base API URL
+  name: base_url
+  required: true
+  type: 0
+- display: "API Token"
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: INFO
+  display: Minimum Severity to filter out the fetched alerts (only applicable for
+    incidents)
+  name: severity
+  options:
+  - INFO
+  - MINOR
+  - MAJOR
+  - CRITICAL
+  required: false
+  type: 15
+description: This Integration is used to to fetch-incidents via “Active alerts”, get
+  alert details via “Alert details”, and get the “Agent list”.
+display: 'ThousandEyes'
+name: 'ThousandEyes'
+script:
+  commands:
+  - arguments:
+    - description: AID to fetch Active Alerts from.
+      name: aid
+    - description: Explicit start date to fetch Alerts from.
+      name: from_date
+    - description: Explicit end date to fetch Alerts to.
+      name: to_date
+    description: Fetches all the alerts.
+    name: thousandeyes-get-alerts
+    outputs:
+    - contextPath: ThousandEyes.Alerts.AlertID
+      description: unique ID of the alert; each alert occurrence is assigned a new
+        unique ID
+    - contextPath: ThousandEyes.Alerts.Active
+      description: 0 for inactive, 1 for active, 2 for disabled. Alert is disabled
+        if either alert rule itself has been deleted or the test it is applied to
+        has been disabled, deleted, disabled alerting, or disassociated the alert
+        rule from the test
+    - contextPath: ThousandEyes.Alerts.Agents
+      description: array of monitors where the alert has at some point been active
+        since the point that the alert was triggered. Not shown on BGP alerts.
+    - contextPath: ThousandEyes.Alerts.AID
+      description: Unique identifier of the Group AID
+    - contextPath: ThousandEyes.Alerts.DateStart
+      description: the date/time where an alert rule was triggered, expressed in UTC
+    - contextPath: ThousandEyes.Alerts.ApiLinks
+      description: list of hyperlinks to other areas of the API
+    - contextPath: ThousandEyes.Alerts.PermaLink
+      description: hyperlink to alerts list, with row expanded
+    - contextPath: ThousandEyes.Alerts.RuleExpression
+      description: string expression of alert rule
+    - contextPath: ThousandEyes.Alerts.RuleID
+      description: unique ID of the alert rule
+    - contextPath: ThousandEyes.Alerts.RuleName
+      description: name of the alert rule
+    - contextPath: ThousandEyes.Alerts.TestID
+      description: unique ID of the test
+    - contextPath: ThousandEyes.Alerts.TestName
+      description: name of the test
+    - contextPath: ThousandEyes.Alerts.ViolationCount
+      description: number of sources currently meeting the alert criteria
+    - contextPath: ThousandEyes.Alerts.Type
+      description: type of alert being triggered
+    - contextPath: ThousandEyes.Alerts.Severity
+      description: 'field with one of the following values: INFO, MAJOR, MINOR, CRITICAL
+        for all alert types'
+  - arguments:
+    - description: Alert ID to fetch
+      name: alert_id
+      required: true
+    description: Fetches a given alert.
+    name: thousandeyes-get-alert
+  - arguments: []
+    description: Fetches all agents.
+    name: thousandeyes-get-agents
+    outputs:
+    - contextPath: ThousandEyes.Agents.AgentID
+      description: unique ID of agent
+    - contextPath: ThousandEyes.Agents.AgentName
+      description: display name of the agent
+    - contextPath: ThousandEyes.Agents.AgentType
+      description: Cloud, Enterprise or Enterprise Cluster, shows the type of agent
+    - contextPath: ThousandEyes.Agents.CountryID
+      description: ISO-3166-1 alpha-2 country code of the agent
+    - contextPath: ThousandEyes.Agents.Enabled
+      description: 1 for enabled, 0 for disabled (Enterprise Agents only)
+    - contextPath: ThousandEyes.Agents.KeepBrowserCache
+      description: 1 for enabled, 0 for disabled (Enterprise Agents and Enterprise
+        Clusters only)
+    - contextPath: ThousandEyes.Agents.VerifySslCertificates
+      description: 1 for enabled, 0 for disabled (Enterprise Agents and Enterprise
+        Clusters only)
+    - contextPath: ThousandEyes.Agents.IpAdresses
+      description: array of ipAddress entries
+    - contextPath: ThousandEyes.Agents.LastSeen
+      description: yyyy-MM-dd hh:mm:ss, expressed in UTC (Enterprise Agents only)
+    - contextPath: ThousandEyes.Agents.Location
+      description: location of the agent
+    - contextPath: ThousandEyes.Agents.Network
+      description: name of the autonomous system in which the Agent is found (Enterprise
+        Agents only)
+    - contextPath: ThousandEyes.Agents.Prefix
+      description: Network prefix, expressed in CIDR format (Enterprise Agents only)
+    - contextPath: ThousandEyes.Agents.PublicIpAddresses
+      description: array of ipAddress entries
+    - contextPath: ThousandEyes.Agents.TargetForTests
+      description: target IP address or domain name representing test destination
+        when agent is acting as a test target in an agent-to-agent test (Enterprise
+        Agents only)
+    - contextPath: ThousandEyes.Agents.AgentState
+      description: Online, Offline or Disabled (standalone Enterprise Agents only)
+    - contextPath: ThousandEyes.Agents.Utilization
+      description: shows overall utilization percentage (online Enterprise Agents
+        and Enterprise Clusters only)
+    - contextPath: ThousandEyes.Agents.IPv6Policy
+      description: IP version policy, can be FORCE_IPV4, PREFER_IPV6 or FORCE_IPV6
+        (Enterprise Agents and Enterprise Clusters only)
+    - contextPath: ThousandEyes.Agents.Hostname
+      description: fully qualified domain name of the agent (Enterprise Agents only)
+    - contextPath: ThousandEyes.Agents.CreatedDate
+      description: yyyy-MM-dd hh:mm:ss, expressed in UTC. For Enterprise Clusters,
+        this equals to the createdDate value of the initial cluster member before
+        the conversion to cluster was performed (Enterprise Agents and Enterprise
+        Clusters only)
+    - contextPath: ThousandEyes.Agents.ErrorDetails
+      description: if an enterprise agent or a cluster member presents at least one
+        error, the errors will be shown as an array of entries in the errorDetails
+        field (Enterprise Agents and Enterprise Cluster members only)
+  - arguments:
+    - description: Agent ID to fetch.
+      name: agent_id
+      required: true
+    description: Fetches a given agent.
+    name: thousandeyes-get-agent
+  dockerimage: demisto/python3:3.10.5.31928
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

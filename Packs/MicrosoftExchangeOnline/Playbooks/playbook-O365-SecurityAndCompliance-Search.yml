@@ -1,0 +1,966 @@
+description: |-
+  This playbook performs the following steps:
+  1. Creates a compliance search.
+  2. Starts a compliance search.
+  3. Waits for the compliance search to complete.
+  4. Gets the results of the compliance search as an output.
+  5. Gets the preview results, if specified.
+id: O365 - Security And Compliance - Search
+inputs:
+- key: search_name
+  value: {}
+  required: false
+  description: The name of the compliance search.
+  playbookInputQuery:
+- key: force
+  value:
+    simple: "false"
+  required: true
+  description: 'If false, use the existing search without modifying any search parameters.
+    If true, overwrite the existing search. Possible values are: "true" and "false".'
+  playbookInputQuery:
+- key: preview
+  value:
+    simple: "false"
+  required: true
+  description: 'Whether to preview results using the search action. Possible values
+    are: "true" and "false".'
+  playbookInputQuery:
+- key: case
+  value: {}
+  required: false
+  description: The name of a Core eDiscovery case to associate with the new compliance
+    search.
+  playbookInputQuery:
+- key: kql
+  value: {}
+  required: false
+  description: Text search string or a query that is formatted using the Keyword Query
+    Language (KQL).
+  playbookInputQuery:
+- key: description
+  value: {}
+  required: false
+  description: Description of the compliance search.
+  playbookInputQuery:
+- key: allow_not_found_exchange_locations
+  value:
+    simple: "true"
+  required: false
+  description: 'Whether to include mailboxes other than regular user mailboxes in
+    the compliance search. Possible values are: "true" and "false".'
+  playbookInputQuery:
+- key: exchange_location
+  value:
+    simple: All
+  required: true
+  description: Comma-separated list of mailboxes/distribution groups to include, or
+    use the value "All" to include all.
+  playbookInputQuery:
+- key: ' exchange_location_exclusion'
+  value: {}
+  required: false
+  description: Comma-separated list of mailboxes/distribution groups to exclude when
+    you use the value "All" for the exchange_location parameter.
+  playbookInputQuery:
+- key: public_folder_location
+  value: {}
+  required: false
+  description: Comma-separated list of public folders to include, or use the value
+    "All" to include all.
+  playbookInputQuery:
+- key: share_point_location
+  value: {}
+  required: false
+  description: Comma-separated list of SharePoint online sites to include. You can
+    identify the sites by their URL value, or use the value "All" to include all sites.
+  playbookInputQuery:
+- key: share_point_location_exclusion
+  value: {}
+  required: false
+  description: Comma-separated list of SharePoint online sites to exclude when you
+    use the value "All" for the share_point_location argument. You can identify the
+    sites by their URL value.
+  playbookInputQuery:
+- key: polling_interval
+  value:
+    simple: "3"
+  required: false
+  description: Compliance search polling interval
+  playbookInputQuery:
+- key: polling_timeout
+  value:
+    simple: "45"
+  required: false
+  description: Compliance search polling timeout.
+  playbookInputQuery:
+name: O365 - Security And Compliance - Search
+outputs:
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
+  description: Whether to include mailboxes other than regular user mailboxes in the
+    compliance search.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AzureBatchFrameworkEnabled
+  description: Whether the Azure Batch Framework is enabled for job processing.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseId
+  description: Identity of a Core eDiscovery case which is associated with the compliance
+    search.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CaseName
+  description: Name of a Core eDiscovery case which is associated with the compliance
+    search.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ContentMatchQuery
+  description: Compliance text search string or a query that is formatted using the
+    Keyword Query Language (KQL).
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedBy
+  description: Security and compliance search creator.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.CreatedTime
+  description: Security and compliance search creation time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Description
+  description: Security and compliance search description.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Errors
+  description: Security and compliance search errors.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.ExchangeLocation
+  description: Security and compliance search exchange locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Identity
+  description: Security and compliance search identity.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.IsValid
+  description: Whether the security and compliance search is valid.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Items
+  description: Number of security and compliance search scanned items.
+  type: Number
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobEndTime
+  description: Security and compliance search job end time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobId
+  description: Security and compliance search job ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobRunId
+  description: Security and compliance search job run ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.JobStartTime
+  description: Security and compliance search job run start time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LastModifiedTime
+  description: Security and compliance search last modification time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.LogLevel
+  description: Security and compliance search Azure log level.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Name
+  description: Security and compliance search name.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocation
+  description: Security and compliance search OneDrive locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.OneDriveLocationExclusion
+  description: Security and compliance search OneDrive locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocation
+  description: Security and compliance search public folder locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.PublicFolderLocationExclusion
+  description: Security and compliance search public folder locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunBy
+  description: Security and compliance search last run by UPN (Email representation).
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.RunspaceId
+  description: Security and compliance search run space ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SharePointLocation
+  description: Security and compliance search SharePoint locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Size
+  description: Security and compliance search bytes results size.
+  type: Number
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.Status
+  description: Security and compliance search status.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
+  description: Security and compliance search Tenant ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults
+  description: Security and compliance search results.
+  type: unknown
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
+  description: Security and compliance search action type. Either "Purge" or "Preview".
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
+  description: Whether to include mailboxes other than regular user mailboxes in the
+    compliance search.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AzureBatchFrameworkEnabled
+  description: Whether the Azure Batch Framework is enabled for job processing.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseId
+  description: Identity of a Core eDiscovery case which is associated with the compliance
+    search.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CaseName
+  description: Name of a Core eDiscovery case which is associated with the compliance
+    search.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedBy
+  description: Security and compliance search action creator.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.CreatedTime
+  description: Security and compliance search action creation time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Description
+  description: Security and compliance search action description.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Errors
+  description: Security and compliance search action errors.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchJobId
+  description: Security and compliance search action job ID estimation.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.EstimateSearchRunId
+  description: Security and compliance search action run ID estimation.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocation
+  description: Security and compliance search action exchange locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.ExchangeLocationExclusion
+  description: Security and compliance search action exchange locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Identity
+  description: Security and compliance search action identity.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.IsValid
+  description: Whether the security and compliance search action is valid.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobEndTime
+  description: Security and compliance search action job end time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobId
+  description: Security and compliance search action job ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobRunId
+  description: Security and compliance search action job run ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.JobStartTime
+  description: Security and compliance search action job start time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.LastModifiedTime
+  description: Security and compliance search action last modified time.
+  type: Date
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Name
+  description: Security and compliance search action name.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation
+  description: Security and compliance search action public folder locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
+  description: Security and compliance search action public folder locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results
+  description: Security and compliance search action results.
+  type: unknown
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
+  description: Whether to retry if the search action failed.
+  type: Boolean
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunBy
+  description: Security and compliance search action run by UPN (email address).
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.RunspaceId
+  description: Security and compliance search action run space ID.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SearchName
+  description: Security and compliance search action search name.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocation
+  description: Security and compliance search action SharePoint locations to include.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion
+  description: Security and compliance search action SharePoint locations to exclude.
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Status
+  description: Security and compliance search action status. Either "Started" or "Completed".
+  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
+  description: Security and compliance search action Tenant ID.
+  type: String
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac9cf2d6-503b-4966-8eaf-2415716e3649
+    type: start
+    task:
+      id: ac9cf2d6-503b-4966-8eaf-2415716e3649
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3571cba9-c9d6-4d8c-875a-a5b9186d45e1
+    type: playbook
+    task:
+      id: 3571cba9-c9d6-4d8c-875a-a5b9186d45e1
+      version: -1
+      name: Waiting for the compliance search to complete.
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Ids:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+      Interval:
+        simple: ${inputs.polling_interval}
+      PollingCommandArgName:
+        simple: search_name
+      PollingCommandName:
+        simple: o365-sc-get-search
+      Timeout:
+        simple: ${inputs.polling_timeout}
+      dt:
+        simple: O365.SecurityAndCompliance.ContentSearch.Search(val.Status && val.Status
+          == "InProgress" || val.Status == "Starting").Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 242.5,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: be7464c6-2a91-4e03-81aa-a845d917428a
+    type: title
+    task:
+      id: be7464c6-2a91-4e03-81aa-a845d917428a
+      version: -1
+      name: Search completed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 573f6a25-8084-4627-8065-cc7886ba57c6
+    type: regular
+    task:
+      id: 573f6a25-8084-4627-8065-cc7886ba57c6
+      version: -1
+      name: Start search
+      description: Start a stopped, completed, or not started compliance search in
+        the Security & Compliance Center.
+      script: '|||o365-sc-start-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2ee715d2-81ac-46a4-85d9-18af60f8034e
+    type: regular
+    task:
+      id: 2ee715d2-81ac-46a4-85d9-18af60f8034e
+      version: -1
+      name: Get compliance search
+      description: Get the compliance search by name from the Security & Compliance
+        Center.
+      script: '|||o365-sc-get-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all_results:
+        simple: "false"
+      export:
+        simple: "false"
+      limit:
+        simple: "1"
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: inputs.search_name
+      statistics:
+        simple: "false"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 8b35672e-76c8-44b1-8f2d-24b230129bc4
+    type: condition
+    task:
+      id: 8b35672e-76c8-44b1-8f2d-24b230129bc4
+      version: -1
+      name: Does the compliance search exist?
+      description: Check whether the compliance search exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: O365.SecurityAndCompliance.ContentSearch.Search.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8be45e2b-6012-44ff-851a-5785612c58d4
+    type: regular
+    task:
+      id: 8be45e2b-6012-44ff-851a-5785612c58d4
+      version: -1
+      name: Create compliance search
+      description: Create a compliance search in the Security & Compliance Center.
+      script: '|||o365-sc-new-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      allow_not_found_exchange_locations:
+        complex:
+          root: inputs.allow_not_found_exchange_locations
+      case:
+        complex:
+          root: inputs.case
+      description:
+        complex:
+          root: inputs.description
+      exchange_location:
+        complex:
+          root: inputs.exchange_location
+      exchange_location_exclusion:
+        complex:
+          root: inputs. exchange_location_exclusion
+      kql:
+        complex:
+          root: inputs.kql
+      public_folder_location:
+        complex:
+          root: inputs.public_folder_location
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: inputs.search_name
+      share_point_location:
+        complex:
+          root: inputs.share_point_location
+      share_point_location_exclusion:
+        complex:
+          root: inputs.share_point_location_exclusion
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ae23c225-914f-4cf8-88fa-76bc1b5b02cb
+    type: condition
+    task:
+      id: ae23c225-914f-4cf8-88fa-76bc1b5b02cb
+      version: -1
+      name: Whether to preview the search results.
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.preview
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 877404e3-7a2f-47d2-817e-db477bf4b028
+    type: condition
+    task:
+      id: 877404e3-7a2f-47d2-817e-db477bf4b028
+      version: -1
+      name: Whether to overwrite the existing search.
+      description: If the compliance search exists and force == "true", the existing
+        compliance search will be removed and a new one will be created. If force
+        == "false", the existing search will be used.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      Existing search:
+      - "5"
+      Force:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: Force
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.force
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: "TRUE"
+    - label: Existing search
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.force
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: "FALSE"
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: ff357573-90be-42f2-8617-324b91c1b2f8
+    type: regular
+    task:
+      id: ff357573-90be-42f2-8617-324b91c1b2f8
+      version: -1
+      name: Remove a compliance search.
+      description: Remove a compliance search by name from the Security & Compliance
+        Center.
+      script: '|||o365-sc-remove-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 2f7d696d-8e45-4bbf-88bf-63eb8e11a268
+    type: playbook
+    task:
+      id: 2f7d696d-8e45-4bbf-88bf-63eb8e11a268
+      version: -1
+      name: O365 - Security And Compliance - Search Action - Preview
+      description: |-
+        This playbook performs the following:
+        1. Creates a new compliance search action - Preview (Base on the created compliance search).
+        2. Waits for the preview action to complete.
+        3. Retrieves the preview results.
+      playbookName: O365 - Security And Compliance - Search Action - Preview
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 222.5,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 313cea7f-359a-4b74-8539-8b77ca1e8ca3
+    type: regular
+    task:
+      id: 313cea7f-359a-4b74-8539-8b77ca1e8ca3
+      version: -1
+      name: Error - Invalid force parameter
+      description: Print an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Force parameter isn't valid. Accepted values are true or false.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 885584ce-5a80-474f-8787-ae91b2038671
+    type: regular
+    task:
+      id: 885584ce-5a80-474f-8787-ae91b2038671
+      version: -1
+      name: Get compliance search
+      description: Get a compliance search by name from the Security & Compliance
+        Center.
+      script: '|||o365-sc-get-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      export:
+        simple: "true"
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+      statistics:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 19143fcf-285f-436a-87a5-facc61faf732
+    type: condition
+    task:
+      id: 19143fcf-285f-436a-87a5-facc61faf732
+      version: -1
+      name: Check if search_name is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Determines search_name is defined.
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.search_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 60a9527a-9a63-4b2d-852e-030aeb25cb29
+    type: condition
+    task:
+      id: 60a9527a-9a63-4b2d-852e-030aeb25cb29
+      version: -1
+      name: Is O365 Security And Compliance enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Determines if the O365 Search and Compliance integration is enabled.
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndCompliance
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndComplianceV2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_5_Existing search": 0.36,
+      "16_6_yes": 0.65,
+      "16_8_#default#": 0.24,
+      "7_8_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2905,
+        "width": 1260,
+        "x": -190,
+        "y": -120
+      }
+    }
+  }
+fromversion: 5.5.0
+tests:
+- O365-SecurityAndCompliance-Test
+- O365-SecurityAndCompliance-ContextResults-Test

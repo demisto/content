@@ -1,0 +1,32 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": [
+        {
+            "name": "data[0]_name",
+            "guid": "data[0]_guid",
+            "type": "application_blocking",
+            "links": {
+                "file_list": "data[0]_links_file_list"
+            }
+        },
+        {
+            "name": "data[1]_name",
+            "guid": "data[1]_guid",
+            "type": "application_blocking",
+            "links": {
+                "file_list": "data[1]_links_file_list"
+            }
+        }
+    ]
+}

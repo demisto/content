@@ -1,0 +1,5 @@
+fromversion: 6.10.0
+id: CyberArkIdentityEventCollector
+name: CyberArkIdentityEventCollector
+rules: ''
+schema: ''

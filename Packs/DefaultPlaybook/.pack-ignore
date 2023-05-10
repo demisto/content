@@ -1,5 +1,14 @@
 [file:Default.yml]
 ignore=BA101
 
+[file:Default_8_0.yml]
+ignore=BA101
+
+[file:Default_8_2.yml]
+ignore=BA101
+
 [file:pack_metadata.json]
 ignore=PA125
+
+[known_words]
+Deduplicates

@@ -1,0 +1,76 @@
+ {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('dummy%40email.com')/mailFolders('AAMkADQ0NmFkODFkLWQ4MDELThmZjdsfdefsdfdskxh_ed3JTJPMPXU3wX3aAQCyyVyFtlsUQZfBJebinpkUAABKD')/messages",
+    "value": [
+        {
+            "@odata.etag": "W/\"CQAAABYAAABJebinpkUAABcrjOM\"",
+            "id": "dummy_id_1",
+            "createdDateTime": "2019-11-12T15:00:30Z",
+            "lastModifiedDateTime": "2019-11-12T15:00:30Z",
+            "changeKey": "dummy_change_key_1",
+            "categories": ["Green category"],
+            "receivedDateTime": "2019-11-12T15:00:30Z",
+            "sentDateTime": "22019-11-12T15:00:30Z",
+            "hasAttachments": false,
+            "internetMessageId": "<dummy_message_id_1>",
+            "subject": "First email to fetch",
+            "bodyPreview": "Body 1",
+            "importance": "normal",
+            "parentFolderId": "dummy_parent_id",
+            "conversationId": "dummy_conversation_id_1",
+            "isDeliveryReceiptRequested": null,
+            "isReadReceiptRequested": false,
+            "isRead": false,
+            "isDraft": false,
+            "webLink": "https://outlook.office365.com/owa/?ItemID=dummylink1",
+            "inferenceClassification": "focused",
+            "internetMessageHeaders": [
+                {
+                    "name": "MIME-Version",
+                    "value": "1.0"
+                },
+                {
+                    "name": "Message-ID",
+                    "value": "<dummy_message_id_1>"
+                },
+                {
+                    "name": "Subject",
+                    "value": "First email to fetch"
+                },
+                {
+                    "name": "Content-Type",
+                    "value": "multipart/alternative"
+                }
+            ],
+            "sender": {
+                "emailAddress": {
+                    "name": "Dummy Sender",
+                    "address": "dummysender@works.com"
+                }
+            },
+            "from": {
+                "emailAddress": {
+                    "name": "Dummy Sender",
+                    "address": "dummysender@works.com"
+                }
+            },
+            "toRecipients": [
+                {
+                    "emailAddress": {
+                        "name": "Dummy Recipient",
+                        "address": "recipient@dev.onmicrosoft.com"
+                    }
+                }
+            ],
+            "ccRecipients": [],
+            "bccRecipients": [],
+            "replyTo": [],
+            "uniqueBody": {
+                "contentType": "html",
+                "content": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n"
+            },
+            "flag": {
+                "flagStatus": "notFlagged"
+            }
+        }
+    ]
+}

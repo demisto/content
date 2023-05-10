@@ -2,7 +2,10 @@ import os
 
 import pytest
 import sqlalchemy
+import pyodbc
+import cx_Oracle
 
+from test_data import input_data
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 
 
@@ -250,6 +253,265 @@ def test_mysql_integration():
     ('arg1=value1&arg2=value2', 'MySQL', {'arg1': 'value1', 'arg2': 'value2'}),
     ('arg1=value1&arg2=value2', 'Microsoft SQL Server', {'arg1': 'value1', 'arg2': 'value2', 'driver': 'FreeTDS'}),
     ('arg1=value1&arg2=value2', 'Microsoft SQL Server - MS ODBC Driver',
-     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 17 for SQL Server'})])
+     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 18 for SQL Server', 'TrustServerCertificate': 'yes'})])
 def test_parse_connect_parameters(connect_parameters, dialect, expected_response):
-    assert Client.parse_connect_parameters(connect_parameters, dialect) == expected_response
+    assert Client.parse_connect_parameters(connect_parameters, dialect, False) == expected_response
+
+
+def test_loading_relevant_drivers():
+    assert 'FreeTDS' in pyodbc.drivers()
+    assert 'ODBC Driver 18 for SQL Server' in pyodbc.drivers(), pyodbc.drivers()
+
+    try:
+        # make sure oracle manages to load tns client libraries.
+        # Will fail, but we want to be sure we don't fail on loading the driver
+        cx_Oracle.connect()
+    except Exception as ex:
+        assert 'ORA-12162' in str(ex)
+
+    # freetds test
+    engine = sqlalchemy.create_engine('mssql+pyodbc:///testuser:testpass@127.0.0.1:1433/TEST?driver=FreeTDS')
+    try:
+        engine.execute('select 1 as [Result]')
+    except Exception as ex:
+        assert "Can't open lib" not in str(ex), "Failed because of missing lib: " + str(ex)
+
+
+# case of fetch by simple query based on id -- checking last_run update and incidents
+@pytest.mark.parametrize('table, params, response, headers, expected_incidents, expected_last_run', [
+    (input_data.TABLE_1, input_data.PARAMS_1, input_data.RESPONSE_1, input_data.HEADERS_1,
+     input_data.EXPECTED_INCIDENTS_1, input_data.EXPECTED_LAST_RUN_1)])
+def test_fetch_incident_by_id_simple_query(table, params, response, headers, expected_incidents, expected_last_run,
+                                           mocker):
+    """
+    Given
+    - raw response of the database - 3 records from the database
+    - configuration parameters:
+         - 'fetch_parameters': 'Unique ascending ID'
+         - 'query': 'select * from incidents where incident_id >:incident_id order by incident_id'
+         - 'first_fetch': '-1'
+         - 'max_fetch': '3'
+    - last_run: {} (first fetch cycle)
+    When
+    - running one fetch cycle
+    Then
+    - validate the last_run - 'last_id' should be updated to '1002' as the last record.
+    - validate the number of incidents - As the max_fetch parameter, the number of incidents should be 3.
+    """
+    from GenericSQL import fetch_incidents
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value={})
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    # check last run is updated as expected
+    assert expected_last_run == last_run
+    # check the limit
+    assert len(incidents) == len(expected_incidents)
+
+
+# case of fetch by simple query based on id where first id is bigger than the last one in the DB --
+# checking last_run update - it should be the same when there are no incidents
+@pytest.mark.parametrize('table, params, response, headers, last_run_before_fetch', [
+    (input_data.TABLE_2, input_data.PARAMS_2, input_data.RESPONSE_2, input_data.HEADERS_2,
+     input_data.LAST_RUN_BEFORE_FETCH_2)])
+def test_fetch_incident_without_incidents(table, params, response, headers, last_run_before_fetch, mocker):
+    """
+    Given
+    - raw response of the database - an empty response list
+    - configuration parameters:
+        - 'fetch_parameters': 'Unique ascending ID'
+        - 'query': 'select * from incidents where incident_id >:incident_id order by incident_id'
+        - 'first_fetch': '1012'
+        - 'max_fetch': '3'
+    - last_run: {'last_timestamp': False, 'last_id': '1012', 'ids': []}
+    When
+    - running one fetch cycle
+    Then
+    - validate the last_run:
+        should be the same as given before fetch {'last_timestamp': False, 'last_id': '1012', 'ids': []} - no incidents
+    """
+    from GenericSQL import fetch_incidents
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run_before_fetch)
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    # check last run is not updated, should be the same - We don't have any new incidents
+    assert last_run_before_fetch == last_run
+
+
+# case of fetch by procedure based on timestamp and id -- Verifying there aren't any duplicates
+@pytest.mark.parametrize('table, params, response, headers, last_run_before_second_fetch, expected_incidents', [
+    (input_data.TABLE_3, input_data.PARAMS_3, input_data.RESPONSE_3, input_data.HEADERS_3,
+     input_data.LAST_RUN_BEFORE_SECOND_FETCH_3, input_data.EXPECTED_INCIDENTS_3)])
+def test_fetch_incident_avoiding_duplicates(table, params, response, headers, last_run_before_second_fetch,
+                                            expected_incidents, mocker):
+    """
+    Given
+    - raw response of the database - 2 records from the database
+    - configuration parameters:
+        - 'fetch_parameters': 'ID and timestamp'
+        - 'query': 'call Test_MySQL_6'
+            [CREATE PROCEDURE Test_MySQL_6(IN ts DATETIME, IN l INT)
+            BEGIN
+                SELECT *
+                FROM incidents
+                WHERE timestamp >= ts order by timestamp asc limit l;
+            END]
+        - 'first_fetch': '2022-11-24 13:09:56'
+        - 'max_fetch': '2'
+    - last_run: {'last_timestamp': '2022-11-24 13:09:56', 'last_id': False, 'ids': ['1000']}
+    When
+    - running one fetch cycle
+    Then
+    - validate the incidents - should contain only one incident at the end, after omitting the duplicate incident
+    """
+    from GenericSQL import fetch_incidents
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run_before_second_fetch)
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    # check incidents without duplicates
+    assert len(expected_incidents) == len(incidents)
+    for expected_incident, incident in zip(expected_incidents, incidents):
+        assert expected_incident.get('name') == incident.get('name')
+        assert expected_incident.get('rawJSON') == incident.get('rawJSON')
+
+
+# case of two fetch cycles -- checking twice last_run update as expected
+@pytest.mark.parametrize('table_first_cycle, table_second_cycle, params, response_first_cycle, response_second_cycle, '
+                         'headers, expected_last_run_4_1, expected_last_run_4_2',
+                         [(input_data.TABLE_4_1, input_data.TABLE_4_2, input_data.PARAMS_4, input_data.RESPONSE_4_1,
+                           input_data.RESPONSE_4_2, input_data.HEADERS_4, input_data.EXPECTED_LAST_RUN_4_1,
+                           input_data.EXPECTED_LAST_RUN_4_2)])
+def test_fetch_incident_update_last_run(table_first_cycle, table_second_cycle, params, response_first_cycle,
+                                        response_second_cycle, headers, expected_last_run_4_1, expected_last_run_4_2,
+                                        mocker):
+    """
+    Given
+    - raw responses of the database:
+        2 records from the database for the first cycle and then another 2 records for the second.
+    - configuration parameters:
+        - 'fetch_parameters': 'Unique timestamp'
+        - 'query': 'call Test_MySQL_3'
+            [CREATE PROCEDURE Test_MySQL_3(IN ts VARCHAR(255), IN l INT)
+            BEGIN
+                SELECT *
+                FROM incidents
+                WHERE timestamp > ts limit l;
+            END]
+        - 'first_fetch': '2020-01-01 01:01:01'
+        - 'max_fetch': '2'
+    - first last_run: {}
+    When
+    - running two fetch cycles
+    Then
+    - Validate the last run's update during two cycles of fetch:
+        after first fetch should be {'last_timestamp': '2022-11-24 13:10:12', 'last_id': False, 'ids': []}, as the
+        timestamp in the last (second record).
+        after second fetch should be {'ids': [], 'last_id': False, 'last_timestamp': '2022-11-24 13:10:43'}, as the
+        timestamp in the last (second record).
+    """
+
+    from GenericSQL import fetch_incidents
+    # first fetch cycle
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value={})
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response_first_cycle, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table_first_cycle)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    assert expected_last_run_4_1 == last_run
+
+    # second fetch cycle
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run)
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response_second_cycle, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table_second_cycle)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    assert expected_last_run_4_2 == last_run
+
+
+# case of several records with the same timestamp - when the number is greater than the limit
+# check the de-duplication mechanism
+@pytest.mark.parametrize('table_first_cycle, table_second_cycle, table_third_cycle, params, response_first_cycle, '
+                         'response_second_cycle, response_third_cycle, headers, expected_last_run_5_1, '
+                         'expected_last_run_5_2, expected_last_run_5_3',
+                         [(input_data.TABLE_5_1, input_data.TABLE_5_2, input_data.TABLE_5_3, input_data.PARAMS_5,
+                           input_data.RESPONSE_5_1, input_data.RESPONSE_5_2, input_data.RESPONSE_5_3,
+                           input_data.HEADERS_5, input_data.EXPECTED_LAST_RUN_5_1, input_data.EXPECTED_LAST_RUN_5_2,
+                           input_data.EXPECTED_LAST_RUN_5_3)])
+def test_fetch_incidents_de_duplication(table_first_cycle, table_second_cycle, table_third_cycle, params,
+                                        response_first_cycle, response_second_cycle, response_third_cycle, headers,
+                                        expected_last_run_5_1, expected_last_run_5_2, expected_last_run_5_3,
+                                        mocker):
+    """
+    Given
+    - raw responses of the database:
+        1 record from the database for the first cycle and then another 2 records for the second,
+        then 3 records for the third.
+    - configuration parameters:
+        - 'fetch_parameters': 'ID and timestamp'
+        - 'query': 'call Test_MySQL_6'
+            [CREATE PROCEDURE Test_MySQL_6(IN ts DATETIME, IN l INT)
+            BEGIN
+                SELECT *
+                FROM incidents
+                WHERE timestamp >= ts order by timestamp asc limit l;
+            END]
+        - 'first_fetch': '2020-01-01 01:01:01'
+        - 'max_fetch': '1'
+    - first last_run: {}
+    When
+    - running three fetch cycles
+    Then
+    - Validate the update of the last run during three fetch cycles, focusing on the IDs.
+        Since they have the same timestamp, the last_run should accumulate the ids every cycle,
+         and the 'last_timestamp' field should remain unchanged.
+    - Validate the number of incidents, which should be just one per cycle.
+    """
+
+    from GenericSQL import fetch_incidents
+    # first fetch cycle
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value={})
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response_first_cycle, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table_first_cycle)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    assert expected_last_run_5_1 == last_run
+    assert len(incidents) == 1
+
+    # second fetch cycle
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run)
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response_second_cycle, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table_second_cycle)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    assert expected_last_run_5_2 == last_run
+    assert len(incidents) == 1
+
+    # third fetch cycle
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run)
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response_third_cycle, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table_third_cycle)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    assert expected_last_run_5_3 == last_run
+    assert len(incidents) == 1

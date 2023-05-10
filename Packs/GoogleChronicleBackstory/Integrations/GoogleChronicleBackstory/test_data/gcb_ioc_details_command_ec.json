@@ -23,12 +23,11 @@
       {
         "Address": [
           {
-            "Domain": "puknews.com",
-            "Port": ""
+            "Domain": "puknews.com"
           },
           {
             "IpAddress": "0.0.0.0",
-            "Port": ""
+            "Port": [44902,65178]
           }
         ],
         "Category": "BlockedObject",

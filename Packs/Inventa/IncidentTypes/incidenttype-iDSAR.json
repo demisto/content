@@ -158,5 +158,9 @@
     "version": -1,
     "weeks": 4,
     "weeksR": 0,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

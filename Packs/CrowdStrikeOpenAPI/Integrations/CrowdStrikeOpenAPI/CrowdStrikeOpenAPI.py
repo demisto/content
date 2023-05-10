@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
 
 # flake8: noqa: E501
 
@@ -1006,7 +1007,25 @@ class Client:
 
         headers = self.cs_client._headers
 
-        response = self.cs_client.http_request('get', 'devices/entities/devices/v1', params=params, headers=headers)
+        response = self.cs_client.http_request('get', 'devices/entities/devices/v2', params=params, headers=headers)
+
+        return response
+
+    def get_device_login_history_request(self, ids):
+        data = assign_params(ids=ids)
+
+        headers = self.cs_client._headers
+        response = self.cs_client.http_request('post', 'devices/combined/devices/login-history/v1', json_data=data,
+                                               headers=headers)
+
+        return response
+
+    def get_device_network_history_request(self, ids):
+        data = assign_params(ids=ids)
+
+        headers = self.cs_client._headers
+        response = self.cs_client.http_request('post', 'devices/combined/devices/network-address-history/v1',
+                                               json_data=data, headers=headers)
 
         return response
 
@@ -5259,6 +5278,32 @@ def get_device_details_command(client, args):
     return command_results
 
 
+def get_device_login_history_command(client, args):
+    ids = argToList(args.get('ids', []))
+    response = client.get_device_login_history_request(ids)
+    command_results = CommandResults(
+        outputs_prefix='CrowdStrike.deviceHistoryLogin',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def get_device_network_history_command(client, args):
+    ids = argToList(args.get('ids', []))
+    response = client.get_device_network_history_request(ids)
+    command_results = CommandResults(
+        outputs_prefix='CrowdStrike.deviceNetworkHistory',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def get_firewall_policies_command(client, args):
     ids = argToList(args.get('ids', []))
 
@@ -8516,7 +8561,7 @@ def rtr_execute_active_responder_command_command(client, args):
     domain_commandexecuterequest_base_command = str(args.get('domain_commandexecuterequest_base_command', ''))
     domain_commandexecuterequest_command_string = str(args.get('domain_commandexecuterequest_command_string', ''))
     domain_commandexecuterequest_device_id = str(args.get('domain_commandexecuterequest_device_id', ''))
-    domain_commandexecuterequest_id = args.get('domain_commandexecuterequest_id', None)
+    domain_commandexecuterequest_id = int(args.get('domain_commandexecuterequest_id', None))
     domain_commandexecuterequest_persist = argToBoolean(args.get('domain_commandexecuterequest_persist', False))
     domain_commandexecuterequest_session_id = str(args.get('domain_commandexecuterequest_session_id', ''))
 
@@ -9337,7 +9382,8 @@ def updateml_exclusionsv1_command(client, args):
     requests_svexclusionupdatereqv1_value = str(args.get('requests_svexclusionupdatereqv1_value', ''))
 
     response = client.updateml_exclusionsv1_request(
-        requests_svexclusionupdatereqv1_comment, requests_svexclusionupdatereqv1_groups, requests_svexclusionupdatereqv1_id, requests_svexclusionupdatereqv1_value)
+        requests_svexclusionupdatereqv1_comment, requests_svexclusionupdatereqv1_groups,
+        requests_svexclusionupdatereqv1_id, requests_svexclusionupdatereqv1_value)
     command_results = CommandResults(
         outputs_prefix='CrowdStrike.responsesMlExclusionRespV1',
         outputs_key_field='',
@@ -9530,7 +9576,9 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        # Disable insecure warnings
+        urllib3.disable_warnings()
+
         client = Client(params)
 
         commands = {
@@ -9899,6 +9947,8 @@ def main():
             'cs-upload-samplev3': upload_samplev3_command,
             'cs-validate': validate_command,
             'cs-verifyaws-account-access': verifyaws_account_access_command,
+            'cs-get-device-login-history': get_device_login_history_command,
+            'cs-get-device-network-history': get_device_network_history_command
         }
 
         if command == 'test-module':

@@ -1,13 +1,15 @@
 {
-    "name": "MaxList",
-    "description": "Script proposition to add to Common Scripts collection",
+    "name": "MaxList (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "68zuhKQfKPk",
     "url": "",
     "email": "",
     "created": "2022-04-06T11:23:15Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -17,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

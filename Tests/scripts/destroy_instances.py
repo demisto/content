@@ -1,17 +1,22 @@
 import json
 import logging
 import os
-import subprocess
+import shutil
 import sys
 
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: disable=E0611,E0401
 
 from Tests.scripts.utils.log_util import install_logging
+import demisto_client
+
+# Disable insecure warnings
+import urllib3
+urllib3.disable_warnings()
 
 
 def main():
     install_logging('Destroy_instances.log')
-    circle_aritfact = sys.argv[1]
+    circle_artifact = sys.argv[1]
     env_file = sys.argv[2]
     instance_role = sys.argv[3]
     time_to_live = sys.argv[4]
@@ -21,30 +26,17 @@ def main():
     filtered_results = [env_result for env_result in env_results if env_result["Role"] == instance_role]
     for env in filtered_results:
         logging.info(f'Downloading server log from {env.get("Role", "Unknown role")}')
-        ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                     '"sudo chmod -R 755 /var/log/demisto"'
-        scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
-                     '{}@{}:/var/log/demisto/server.log {} || echo "WARN: Failed downloading server.log"'
-
-        try:
-            logging.debug(f'Changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
-            subprocess.check_output(
-                ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
-
-        except subprocess.CalledProcessError:
-            logging.exception(f'Failed changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
-
         try:
             logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
-            server_ip = env["InstanceDNS"].split('.')[0]
-            subprocess.check_output(
-                scp_string.format(
-                    env["SSHuser"],
-                    env["InstanceDNS"],
-                    "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
-                shell=True)
+            client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}', verify_ssl=False)
+            tmp_file_path, _, _ = client.generic_request('/log/bundle', 'GET', response_type='file')
 
-        except subprocess.CalledProcessError:
+            server_ip = env["InstanceDNS"].split('.')[0]
+            logs_dst = f"{circle_artifact}/server_{env['Role'].replace(' ', '')}_{server_ip}_logs.tar.gz"
+            copy_dst = shutil.copy(tmp_file_path, logs_dst)
+            logging.info(f'Server logs saved in: {copy_dst}')
+
+        except Exception:
             logging.exception(f'Failed downloading server logs from server {env["InstanceDNS"]}')
 
         if time_to_live:
@@ -54,9 +46,9 @@ def main():
                 os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
             logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
                          f'{env["InstanceDNS"]}')
-            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
-            if aws_functions.isError(rminstance):
-                logging.error(rminstance['Message'])
+            removed_instance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
+            if aws_functions.isError(removed_instance):
+                logging.error(removed_instance['Message'])
         else:
             logging.warning(f'Tests for some integration failed on {env.get("Role", "Unknown role")}'
                             f', keeping instance alive')

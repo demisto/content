@@ -2306,3 +2306,2303 @@ De-isolate one or more endpoints.
 #### Human Readable Output
 
 Endpoint(s) de-isolated successfully.
+
+### sophos-central-usergroups-users-add
+***
+Add multiple users to the specified group.
+
+
+#### Base Command
+
+`sophos-central-usergroups-users-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | Unique UUID of Group. | Required | 
+| userIds | Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.UserGroups.id | String | The Group ID. | 
+| SophosCentral.UserGroups.addedUsers.id | String | User ID. | 
+| SophosCentral.UserGroups.addedUsers.name | String | User's full name. | 
+
+#### Command example
+```!sophos-central-usergroups-users-add groupId="733cce06-5ad0-487b-9547-03af02b5722e" userIds="09c515b2-009e-4e78-a83f-a5423e6def9a, f9029e98-311a-4c19-9908-15bafff9f39f, 86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": {
+            "addedUsers": [
+                {
+                    "id": "f9029e98-311a-4c19-9908-15bafff9f39f",
+                    "name": "Domain\\User"
+                },
+                {
+                    "id": "09c515b2-009e-4e78-a83f-a5423e6def9a",
+                    "name": "GREEN\\testUser"
+                },
+                {
+                    "id": "86e0ae0f-77ef-423a-bbbf-d95e49edd468",
+                    "name": "Administrator"
+                }
+            ],
+            "id": "733cce06-5ad0-487b-9547-03af02b5722e"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>User(s) added to the specified group.
+
+### sophos-central-usergroups-user-delete
+***
+Remove a specific User from the group.
+
+
+#### Base Command
+
+`sophos-central-usergroups-user-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | Unique UUID of Group (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
+| userId | Unique UUID of User (You can retrieve the user ID from the sophos-central-users-list). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.UserGroups.id | String | The Group ID. | 
+| SophosCentral.UserGroups.users.removedUser | String | The User ID. | 
+
+#### Command example
+```!sophos-central-usergroups-user-delete groupId="733cce06-5ad0-487b-9547-03af02b5722e" userId="86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": {
+            "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+            "removedUser": "86e0ae0f-77ef-423a-bbbf-d95e49edd468"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>User removed from group.
+
+
+### sophos-central-usergroups-membership-get
+***
+List all users in a specific group.
+
+
+#### Base Command
+
+`sophos-central-usergroups-membership-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | Unique Group UUID (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
+| search | Search for items that match the given terms. | Optional | 
+| searchFields | Search only within the specified comma-separated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only. | Optional | 
+| domain | List the items that match the given domain. | Optional | 
+| sourceType | Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional | 
+| page | The page number to fetch. Default is "1". Default is 1. | Optional | 
+| pageSize | Size of the page requested. Default is "50". Maximum is "100". Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.UserGroups.users.id | String | User ID. | 
+| SophosCentral.UserGroups.users.name | String | User's name. | 
+| SophosCentral.UserGroups.users.firstName | String | User's first name or given name. | 
+| SophosCentral.UserGroups.users.lastName | String | User's last name or surname. | 
+| SophosCentral.UserGroups.users.emailAddress | String | User's email address. | 
+| SophosCentral.UserGroups.users.groups.total | number | Total number of groups. | 
+| SophosCentral.UserGroups.users.groups.itemsCount | number | Item count. | 
+| SophosCentral.UserGroups.users.groups.items.id | String | Group ID. | 
+| SophosCentral.UserGroups.users.groups.items.name | String | Group name. | 
+| SophosCentral.UserGroups.users.groups.items.displayName | String | Group display name. | 
+| SophosCentral.UserGroups.users.groups.tenant.id | String | Tenant ID. | 
+| SophosCentral.UserGroups.users.groups.source.type | String | Types of sources of directory information. | 
+
+#### Command example
+```!sophos-central-usergroups-membership-get groupId="6ed5e258-b427-4fa0-a9cf-568d130796c3"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": {
+            "id": "6ed5e258-b427-4fa0-a9cf-568d130796c3",
+            "users": [
+                {
+                    "createdAt": "2022-03-28T05:09:51.524Z",
+                    "email": "ruqdxvd1g7@lightning.example.com",
+                    "firstName": "Administrator",
+                    "groups": {
+                        "items": [
+                            {
+                                "displayName": "GroupNameTestReadMe",
+                                "id": "03d1fcb2-246e-4307-b570-82dcf9083686",
+                                "name": "GroupNameTestReadMe"
+                            },
+                            {
+                                "displayName": "Group 2-Updated",
+                                "id": "6ed5e258-b427-4fa0-a9cf-568d130796c3",
+                                "name": "Group 2-Updated"
+                            },
+                            {
+                                "displayName": "Group1",
+                                "id": "552f6e04-559e-4225-b6a4-870155de8979",
+                                "name": "Group1"
+                            }
+                        ],
+                        "itemsCount": 3,
+                        "total": 3
+                    },
+                    "id": "86e0ae0f-77ef-423a-bbbf-d95e49edd468",
+                    "lastName": "",
+                    "name": "Administrator",
+                    "source": {
+                        "type": "custom"
+                    },
+                    "tenant": {
+                        "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                    },
+                    "updatedAt": "2022-03-28T12:43:26.994Z"
+                },
+                {
+                    "createdAt": "2022-06-15T06:14:14.832Z",
+                    "groups": {
+                        "items": [
+                            {
+                                "displayName": "Group 2-Updated",
+                                "id": "6ed5e258-b427-4fa0-a9cf-568d130796c3",
+                                "name": "Group 2-Updated"
+                            },
+                            {
+                                "displayName": "TestGroupName-2",
+                                "id": "28fd524c-e7ae-476e-87c6-0f0a2ac47592",
+                                "name": "TestGroupName-2"
+                            },
+                            {
+                                "displayName": "Group&123",
+                                "id": "17d33950-4980-4dfc-83c9-d0b8dce0deaa",
+                                "name": "Group&123"
+                            }
+                        ],
+                        "itemsCount": 3,
+                        "total": 3
+                    },
+                    "id": "c1552a7b-efe9-4a45-8168-72489e44a3f3",
+                    "name": "Lightning-8483qawudl\\Lightning",
+                    "source": {
+                        "type": "custom"
+                    },
+                    "tenant": {
+                        "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                    }
+                },
+                {
+                    "createdAt": "2022-06-15T09:52:37.921Z",
+                    "groups": {
+                        "items": [
+                            {
+                                "displayName": "Group 2-Updated",
+                                "id": "6ed5e258-b427-4fa0-a9cf-568d130796c3",
+                                "name": "Group 2-Updated"
+                            }
+                        ],
+                        "itemsCount": 1,
+                        "total": 1
+                    },
+                    "id": "69d3d421-f4cc-4a24-b093-8b2e5c6d20a4",
+                    "name": "Lightning-gm4vu3jxek\\Lightning",
+                    "source": {
+                        "type": "custom"
+                    },
+                    "tenant": {
+                        "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                    }
+                },
+                {
+                    "createdAt": "2022-07-07T06:18:55.746Z",
+                    "groups": {
+                        "items": [
+                            {
+                                "displayName": "Group 2-Updated",
+                                "id": "6ed5e258-b427-4fa0-a9cf-568d130796c3",
+                                "name": "Group 2-Updated"
+                            }
+                        ],
+                        "itemsCount": 1,
+                        "total": 1
+                    },
+                    "id": "9f59b08a-2cfd-476a-af9e-f1c039284c09",
+                    "name": "Lightning-nlr7f2n6zd\\Lightning",
+                    "source": {
+                        "type": "custom"
+                    },
+                    "tenant": {
+                        "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total Records: 4
+>Page: 1/1
+> 
+>Listed 4 User(s) in Usergroup:
+> 
+>|id|name|email|
+>|---|---|---|
+>| 86e0ae0f-77ef-423a-bbbf-d95e49edd468 | Administrator | ruqdxvd1g7@lightning.example.com |
+>| c1552a7b-efe9-4a45-8168-72489e44a3f3 | Lightning-8483qawudl\Lightning |  |
+>| 69d3d421-f4cc-4a24-b093-8b2e5c6d20a4 | Lightning-gm4vu3jxek\Lightning |  |
+>| 9f59b08a-2cfd-476a-af9e-f1c039284c09 | Lightning-nlr7f2n6zd\Lightning |  |
+
+
+### sophos-central-usergroups-get
+***
+Returns the details of the GroupID specified.
+
+
+#### Base Command
+
+`sophos-central-usergroups-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | Unique ID of the group whose details to be retrieved (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.UserGroups.id | String | Group ID. | 
+| SophosCentral.UserGroups.name | String | Group name. | 
+| SophosCentral.UserGroups.displayName | String | Group display name. | 
+| SophosCentral.UserGroups.description | String | Group description. | 
+| SophosCentral.UserGroups.groups.total | Number | Count of total groups. | 
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.users.id | String | User ID. | 
+| SophosCentral.UserGroups.users.name | String | User Name. | 
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+
+#### Command example
+```!sophos-central-usergroups-get groupId="733cce06-5ad0-487b-9547-03af02b5722e"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": {
+            "createdAt": "2022-10-06T06:19:13.462Z",
+            "description": "NewDescriptionReadMe",
+            "displayName": "NewGroupNameReadMe",
+            "groups": {
+                "items": [],
+                "itemsCount": 0,
+                "total": 0
+            },
+            "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+            "name": "NewGroupNameReadMe",
+            "source": {
+                "type": "custom"
+            },
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "updatedAt": "2022-10-06T06:42:24.713Z",
+            "users": [
+                {
+                    "id": "f9029e98-311a-4c19-9908-15bafff9f39f",
+                    "name": "Domain\\User"
+                },
+                {
+                    "id": "09c515b2-009e-4e78-a83f-a5423e6def9a",
+                    "name": "GREEN\\testUser"
+                },
+                {
+                    "id": "86e0ae0f-77ef-423a-bbbf-d95e49edd468",
+                    "name": "Administrator"
+                },
+                {
+                    "id": "1e6754d7-08a5-46e5-a6c1-006a96d4eb48",
+                    "name": "Group 04/10/22"
+                }
+            ],
+            "usersItemsCount": 4,
+            "usersTotal": 4
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found User Groups
+>|id|name|description|sourceType|
+>|---|---|---|---|
+>| 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe | NewDescriptionReadMe | custom |
+
+
+### sophos-central-usergroups-create
+***
+Creates a new “custom” (Centrally Managed) Group
+
+
+#### Base Command
+
+`sophos-central-usergroups-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | Provide a unique name of the group to create a usergroup in a directory. | Required | 
+| description | Description of the user group. | Optional | 
+| userIds | Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.UserGroups.id | String | Group ID. | 
+| SophosCentral.UserGroups.name | String | Group name. | 
+| SophosCentral.UserGroups.displayName | String | Group display name. | 
+| SophosCentral.UserGroups.description | String | Group description. | 
+| SophosCentral.UserGroups.groups.total | Number | Total count of groups. | 
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.users.id | String | User ID. | 
+| SophosCentral.UserGroups.users.name | String | User Name. | 
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+
+#### Command example
+```!sophos-central-usergroups-create groupName=GroupNameTestReadMe groupDescription=GroupDescriptionReadMe userIds="86e0ae0f-77ef-423a-bbbf-d95e49edd468"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": {
+            "createdAt": "2022-10-06T06:42:22.023Z",
+            "id": "03d1fcb2-246e-4307-b570-82dcf9083686",
+            "name": "GroupNameTestReadMe",
+            "source": {
+                "type": "custom"
+            },
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "updatedAt": "2022-10-06T06:42:22.023Z",
+            "users": [
+                {
+                    "id": "86e0ae0f-77ef-423a-bbbf-d95e49edd468",
+                    "name": "Administrator"
+                }
+            ],
+            "usersItemsCount": 1,
+            "usersTotal": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Successfully created a user group with ID: 03d1fcb2-246e-4307-b570-82dcf9083686.
+
+### sophos-central-usergroups-update
+***
+Allows for the editing of the group name and description for a usergroup.
+
+
+#### Base Command
+
+`sophos-central-usergroups-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | Unique ID of the group whose details to be updated (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
+| groupName | Group Name. | Required | 
+| description | Group Description. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.UserGroups.id | String | Group ID. | 
+| SophosCentral.UserGroups.name | String | Group name. | 
+| SophosCentral.UserGroups.displayName | String | Group display name. | 
+| SophosCentral.UserGroups.description | String | Group description. | 
+| SophosCentral.UserGroups.groups.total | Number | Total count of groups. | 
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.users.id | String | User ID. | 
+| SophosCentral.UserGroups.users.name | String | User Name. | 
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+
+#### Command example
+```!sophos-central-usergroups-update groupId="733cce06-5ad0-487b-9547-03af02b5722e" groupName=NewGroupNameReadMe description=NewDescriptionReadMe```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": {
+            "createdAt": "2022-10-06T06:19:13.462Z",
+            "description": "NewDescriptionReadMe",
+            "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+            "name": "NewGroupNameReadMe",
+            "source": {
+                "type": "custom"
+            },
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "updatedAt": "2022-10-06T06:42:24.713Z",
+            "users": [
+                {
+                    "id": "f9029e98-311a-4c19-9908-15bafff9f39f",
+                    "name": "Domain\\User"
+                },
+                {
+                    "id": "09c515b2-009e-4e78-a83f-a5423e6def9a",
+                    "name": "GREEN\\testUser"
+                },
+                {
+                    "id": "86e0ae0f-77ef-423a-bbbf-d95e49edd468",
+                    "name": "Administrator"
+                },
+                {
+                    "id": "1e6754d7-08a5-46e5-a6c1-006a96d4eb48",
+                    "name": "Group 04/10/22"
+                }
+            ],
+            "usersItemsCount": 4,
+            "usersTotal": 4
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Successfully updated the user group with ID: 733cce06-5ad0-487b-9547-03af02b5722e.
+
+### sophos-central-usergroups-delete
+***
+Deletes the specified group.
+
+
+#### Base Command
+
+`sophos-central-usergroups-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | Unique id of the usergroup to be deleted. Users in the usergroup should be removed first in order to delete the usergroup (You can retrieve the group ID from the sophos-central-usergroups-list). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.DeletedUserGroups.deletedUserGroupId | String | Deleted Group ID. | 
+
+#### Command example
+```!sophos-central-usergroups-delete groupId="0210d539-66ab-46ac-afa2-eb8928856340"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": {
+            "deletedUserGroupId": "0210d539-66ab-46ac-afa2-eb8928856340"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Successfully deleted the user group with ID: 0210d539-66ab-46ac-afa2-eb8928856340.
+
+
+### sophos-central-usergroups-list
+***
+Returns a list of all user groups that match the search criteria (optional).
+
+
+#### Base Command
+
+`sophos-central-usergroups-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupsIds | Comma separated list of group UUIDs. | Optional | 
+| search | Search for items that match the given terms. | Optional | 
+| searchFields | Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched:- name,description. | Optional | 
+| domain | List the items that match the given domain. | Optional | 
+| sourceType | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed:- custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional | 
+| userId | Search groups associated with the given user ID. | Optional | 
+| page | The page number to fetch. Default is "1". Default is 1. | Optional | 
+| pageSize | Size of the page requested. Default is "50". Maximum is "100". Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.UserGroups.id | String | Group ID. | 
+| SophosCentral.UserGroups.name | String | Group name. | 
+| SophosCentral.UserGroups.displayName | String | Group display name. | 
+| SophosCentral.UserGroups.description | String | Group description. | 
+| SophosCentral.UserGroups.groups.total | Number | Total Count of groups. | 
+| SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory | 
+| SophosCentral.UserGroups.usersTotal | Number | Total count of users. | 
+| SophosCentral.UserGroups.usersItemsCount | Number | Count of items. | 
+| SophosCentral.UserGroups.users.id | String | User ID. | 
+| SophosCentral.UserGroups.users.name | String | User Name. | 
+| SophosCentral.UserGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.UserGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.UserGroups.updatedAt | Date | When the group was last updated. | 
+
+#### Command example
+```!sophos-central-usergroups-list groupsIds="733cce06-5ad0-487b-9547-03af02b5722e, 03d1fcb2-246e-4307-b570-82dcf9083686" search=GroupName searchFields=name,description sourceType=custom userId="86e0ae0f-77ef-423a-bbbf-d95e49edd468" page=1 pageSize=10```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "UserGroups": [
+            {
+                "createdAt": "2022-10-06T06:42:22.023Z",
+                "displayName": "GroupNameTestReadMe",
+                "groups": {
+                    "items": [],
+                    "itemsCount": 0,
+                    "total": 0
+                },
+                "id": "03d1fcb2-246e-4307-b570-82dcf9083686",
+                "name": "GroupNameTestReadMe",
+                "source": {
+                    "type": "custom"
+                },
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "updatedAt": "2022-10-06T06:42:22.023Z",
+                "users": [
+                    {
+                        "id": "86e0ae0f-77ef-423a-bbbf-d95e49edd468",
+                        "name": "Administrator"
+                    }
+                ],
+                "usersItemsCount": 1,
+                "usersTotal": 1
+            },
+            {
+                "createdAt": "2022-10-06T06:19:13.462Z",
+                "description": "NewDescriptionReadMe",
+                "displayName": "NewGroupNameReadMe",
+                "groups": {
+                    "items": [],
+                    "itemsCount": 0,
+                    "total": 0
+                },
+                "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+                "name": "NewGroupNameReadMe",
+                "source": {
+                    "type": "custom"
+                },
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "updatedAt": "2022-10-06T06:42:24.713Z",
+                "users": [
+                    {
+                        "id": "f9029e98-311a-4c19-9908-15bafff9f39f",
+                        "name": "Domain\\User"
+                    },
+                    {
+                        "id": "09c515b2-009e-4e78-a83f-a5423e6def9a",
+                        "name": "GREEN\\testUser"
+                    },
+                    {
+                        "id": "86e0ae0f-77ef-423a-bbbf-d95e49edd468",
+                        "name": "Administrator"
+                    },
+                    {
+                        "id": "1e6754d7-08a5-46e5-a6c1-006a96d4eb48",
+                        "name": "Group 04/10/22"
+                    }
+                ],
+                "usersItemsCount": 4,
+                "usersTotal": 4
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total Records: 2
+>Page: 1/1
+> 
+>Listed 2 User Groups:
+> 
+>|id|name|description|sourceType|
+>|---|---|---|---|
+>| 03d1fcb2-246e-4307-b570-82dcf9083686 | GroupNameTestReadMe |  | custom |
+>| 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe | NewDescriptionReadMe | custom |
+
+### sophos-central-group-membership-get
+***
+Get endpoints in a group.
+
+
+#### Base Command
+
+`sophos-central-group-membership-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.id | String | Group ID. | 
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.EndpointGroups.hostname | String | Hostname of the endpoint. | 
+| SophosCentral.EndpointGroups.os.isServer | Boolean | Whether the OS is a server OS. | 
+| SophosCentral.EndpointGroups.os.platform | String | OS platform type. | 
+| SophosCentral.EndpointGroups.os.name | String | OS name as reported by the endpoint. | 
+| SophosCentral.EndpointGroups.os.majorVersion | Number | OS major version. | 
+| SophosCentral.EndpointGroups.os.minorVersion | Number | OS minor version. | 
+| SophosCentral.EndpointGroups.os.build | Number | OS build. | 
+| SophosCentral.EndpointGroups.ipv4Addresses | String | List of IPv4 addresses. | 
+| SophosCentral.EndpointGroups.ipv6Addresses | String | List of IPv6 addresses. | 
+| SophosCentral.EndpointGroups.macAddresses | String | List of MAC addresses. | 
+| SophosCentral.EndpointGroups.group.name | String | Endpoint group name. | 
+| SophosCentral.EndpointGroups.group.id | String | Unique ID for endpoint group. | 
+| SophosCentral.EndpointGroups.associatedPerson.name | String | Person's name. | 
+| SophosCentral.EndpointGroups.associatedPerson.viaLogin | String | Person's login on the endpoint. | 
+| SophosCentral.EndpointGroups.associatedPerson.id | String | Unique ID for endpoint group. | 
+| SophosCentral.EndpointGroups.tamperProtectionEnabled | Boolean | Whether Tamper Protection is turned on. | 
+| SophosCentral.EndpointGroups.lastSeenAt | Date | Date and time \(UTC\) when the endpoint last communicated with Sophos Central. | 
+
+#### Command example
+```!sophos-central-group-membership-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": [
+            {
+                "assignedProducts": [],
+                "associatedPerson": {
+                    "id": "4af78a04-659d-4b68-8ab4-5e1c1bfd7672",
+                    "name": "Lightning-efxqeo9t2w\\Lightning",
+                    "viaLogin": "Lightning-efxqeo9t2w\\Lightning"
+                },
+                "group": {
+                    "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af",
+                    "name": "Name-readme2-update"
+                },
+                "hostname": "Lightning-uz1lwmqwqk",
+                "id": "1abcf612-d426-457b-8088-10d921112f1b",
+                "ipv4Addresses": [
+                    "8.8.8.8"
+                ],
+                "ipv6Addresses": [
+                    "fe80::ad60:91b0:95fb:2c22"
+                ],
+                "lastSeenAt": "2022-07-07T06:35:20.897Z",
+                "macAddresses": [
+                    "00:50:56:83:08:E2"
+                ],
+                "os": {
+                    "build": 19044,
+                    "isServer": false,
+                    "majorVersion": 10,
+                    "minorVersion": 0,
+                    "name": "Windows 10 Enterprise",
+                    "platform": "windows"
+                },
+                "tamperProtectionEnabled": false,
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "type": "computer"
+            },
+            {
+                "assignedProducts": [],
+                "associatedPerson": {
+                    "id": "120ca229-fa0d-4aa7-9dec-206b6099e974",
+                    "name": "Lightning-pa0tcy4opl\\Lightning",
+                    "viaLogin": "Lightning-pa0tcy4opl\\Lightning"
+                },
+                "group": {
+                    "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af",
+                    "name": "Name-readme2-update"
+                },
+                "hostname": "Lightning-r8s9l77e5g",
+                "id": "3413a306-5227-40f1-8b86-53195d927566",
+                "ipv4Addresses": [
+                    "8.8.8.8"
+                ],
+                "ipv6Addresses": [
+                    "fe80::ad60:91b0:95fb:2c22"
+                ],
+                "lastSeenAt": "2022-07-07T06:11:57.505Z",
+                "macAddresses": [
+                    "00:50:56:83:08:E2"
+                ],
+                "os": {
+                    "build": 19044,
+                    "isServer": false,
+                    "majorVersion": 10,
+                    "minorVersion": 0,
+                    "name": "Windows 10 Enterprise",
+                    "platform": "windows"
+                },
+                "tamperProtectionEnabled": false,
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "type": "computer"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Fetched 2 Endpoint(s) Successfully
+>|id|type|hostname|
+>|---|---|---|
+>| 1abcf612-d426-457b-8088-10d921112f1b | computer | Lightning-uz1lwmqwqk |
+>| 3413a306-5227-40f1-8b86-53195d927566 | computer | Lightning-r8s9l77e5g |
+
+### sophos-central-group-create
+***
+Create a new endpoint group.
+
+
+#### Base Command
+
+`sophos-central-group-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Group name. | Required | 
+| description | Group description. | Optional | 
+| type | Group type. The following values are allowed: computer, server. Possible values are: server, computer. | Required | 
+| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.id | String | Group ID. | 
+| SophosCentral.EndpointGroups.name | String | Group name. | 
+| SophosCentral.EndpointGroups.description | String | Group description. | 
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
+
+#### Command example
+```!sophos-central-group-create name="Name-readme2" description=description type=computer endpointIds="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": {
+            "createdAt": "2022-10-06T09:38:16.651Z",
+            "description": "description",
+            "endpoints": {
+                "items": [
+                    {
+                        "hostname": "Lightning-uz1lwmqwqk",
+                        "id": "1abcf612-d426-457b-8088-10d921112f1b"
+                    },
+                    {
+                        "hostname": "Lightning-r8s9l77e5g",
+                        "id": "3413a306-5227-40f1-8b86-53195d927566"
+                    }
+                ],
+                "itemsCount": 2,
+                "total": 2
+            },
+            "id": "3ba49c2c-2c05-4e39-8ff4-ed0488fe0a3d",
+            "name": "Name-readme2",
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "type": "computer"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### EndpointGroup Created Successfully
+>|id|name|type|
+>|---|---|---|
+>| 3ba49c2c-2c05-4e39-8ff4-ed0488fe0a3d | Name-readme2 | computer |
+
+
+
+### sophos-central-group-update
+***
+Update an endpoint group.
+
+
+#### Base Command
+
+`sophos-central-group-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Group name. | Optional | 
+| description | Group description. | Optional | 
+| groupId | UUID of Endpoint group ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.id | String | Group ID. | 
+| SophosCentral.EndpointGroups.name | String | Group name. | 
+| SophosCentral.EndpointGroups.description | String | Group description. | 
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. | 
+
+#### Command example
+```!sophos-central-group-update name="Name-readme2-update" groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": {
+            "createdAt": "2022-10-06T09:16:51.382Z",
+            "description": "description",
+            "endpoints": {
+                "items": [],
+                "itemsCount": 0,
+                "total": 0
+            },
+            "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af",
+            "name": "Name-readme2-update",
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "type": "computer",
+            "updatedAt": "2022-10-06T09:38:19.776Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### EndpointGroup Updated Successfully
+>|id|name|description|
+>|---|---|---|
+>| f1ff9020-f101-42c7-a5eb-06e9ef35e7af | Name-readme2-update | description |
+
+
+### sophos-central-group-get
+***
+Get an endpoint group by ID.
+
+
+#### Base Command
+
+`sophos-central-group-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | UUID of Endpoint group ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.id | String | Group ID. | 
+| SophosCentral.EndpointGroups.name | String | Group name. | 
+| SophosCentral.EndpointGroups.description | String | Group description. | 
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.EndpointGroups.updatedAt | Date | When the group was updated. | 
+
+#### Command example
+```!sophos-central-group-get groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": {
+            "createdAt": "2022-10-06T09:16:51.382Z",
+            "description": "description",
+            "endpoints": {
+                "items": [],
+                "itemsCount": 0,
+                "total": 0
+            },
+            "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af",
+            "name": "Name-readme2-update",
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "type": "computer",
+            "updatedAt": "2022-10-06T09:38:19.776Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Fetched EndpointGroup Successfully
+>|description|name|
+>|---|---|
+>| description | Name-readme2-update |
+
+
+### sophos-central-group-endpoints-add
+***
+Add endpoints in a group.
+
+
+#### Base Command
+
+`sophos-central-group-endpoints-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
+| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.endpoints.id | String | Unique endpoint ID. | 
+| SophosCentral.EndpointGroups.endpoints.hostname | String | Endpoint hostname. | 
+| SophosCentral.EndpointGroups.id | String | Unique group ID. | 
+
+#### Command example
+```!sophos-central-group-endpoints-add groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": {
+            "endpoints": [
+                {
+                    "hostname": "Lightning-r8s9l77e5g",
+                    "id": "3413a306-5227-40f1-8b86-53195d927566"
+                },
+                {
+                    "hostname": "Lightning-uz1lwmqwqk",
+                    "id": "1abcf612-d426-457b-8088-10d921112f1b"
+                }
+            ],
+            "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### 2 Endpoint(s) Added Successfully
+>|id|hostname|
+>|---|---|
+>| 3413a306-5227-40f1-8b86-53195d927566 | Lightning-r8s9l77e5g |
+>| 1abcf612-d426-457b-8088-10d921112f1b | Lightning-uz1lwmqwqk |
+
+
+### sophos-central-group-endpoint-remove
+***
+Remove endpoint from a group.
+
+
+#### Base Command
+
+`sophos-central-group-endpoint-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
+| endpointId | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.removedEndpoint | Boolean | EndpointId of removed endpoint. | 
+| SophosCentral.EndpointGroups.id | String | Group Id. | 
+
+#### Command example
+```!sophos-central-group-endpoint-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" endpointId="3413a306-5227-40f1-8b86-53195d927566"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": {
+            "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af",
+            "removedEndpoint": "3413a306-5227-40f1-8b86-53195d927566"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Endpoint removed successfully
+
+
+### sophos-central-group-endpoints-remove
+***
+Remove endpoints from a group.
+
+
+#### Base Command
+
+`sophos-central-group-endpoints-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
+| endpointIds | Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.endpoints.id | String | Unique endpoint ID. | 
+| SophosCentral.EndpointGroups.endpoints.hostname | String | Endpoint hostname. | 
+| SophosCentral.EndpointGroups.id | String | Unique group ID. | 
+| SophosCentral.EndpointGroups.removedEndpoints | String | List of removed EndpointIds from the group. | 
+
+#### Command example
+```!sophos-central-group-endpoints-remove groupId="f1ff9020-f101-42c7-a5eb-06e9ef35e7af" ids="3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": {
+            "endpoints": [
+                {
+                    "hostname": "Lightning-uz1lwmqwqk",
+                    "id": "1abcf612-d426-457b-8088-10d921112f1b"
+                }
+            ],
+            "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af",
+            "removedEndpoints": "3413a306-5227-40f1-8b86-53195d927566,1abcf612-d426-457b-8088-10d921112f1b"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### 1 EndPoint(s) Removed Successfully
+>|id|hostname|
+>|---|---|
+>| 1abcf612-d426-457b-8088-10d921112f1b | Lightning-uz1lwmqwqk |
+
+
+### sophos-central-group-list
+***
+List endpoint groups.
+
+
+#### Base Command
+
+`sophos-central-group-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "1000". Default is 50. | Optional | 
+| page | Page number to return. Default is "1". Default is 1. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.id | String | Group ID. | 
+| SophosCentral.EndpointGroups.name | String | Group name. | 
+| SophosCentral.EndpointGroups.type | String | Endpoint group types. | 
+| SophosCentral.EndpointGroups.endpoints.total | Number | Total number of endpoints in this group. | 
+| SophosCentral.EndpointGroups.endpoints.itemsCount | Number | Total number of items in the list. | 
+| SophosCentral.EndpointGroups.tenant.id | String | Tenant ID. | 
+| SophosCentral.EndpointGroups.createdAt | Date | When the group was created. | 
+| SophosCentral.EndpointGroups.description | String | Group description. | 
+
+#### Command example
+```!sophos-central-group-list page_size=10```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": [
+            {
+                "createdAt": "2022-10-06T09:06:16.825Z",
+                "description": "description",
+                "endpoints": {
+                    "items": [],
+                    "itemsCount": 0,
+                    "total": 0
+                },
+                "id": "b8c0428e-a422-4db6-a72f-5af4844ed418",
+                "name": "Name-readme",
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "type": "computer"
+            },
+            {
+                "createdAt": "2022-10-06T09:37:33.566Z",
+                "description": "description",
+                "endpoints": {
+                    "items": [],
+                    "itemsCount": 0,
+                    "total": 0
+                },
+                "id": "b3dec702-5d56-4cb9-8961-b0dba3194c94",
+                "name": "Name-readme-temp",
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "type": "computer"
+            },
+            {
+                "createdAt": "2022-10-06T09:38:16.651Z",
+                "description": "description",
+                "endpoints": {
+                    "items": [],
+                    "itemsCount": 0,
+                    "total": 0
+                },
+                "id": "3ba49c2c-2c05-4e39-8ff4-ed0488fe0a3d",
+                "name": "Name-readme2",
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "type": "computer",
+                "updatedAt": "2022-10-06T09:38:27.895Z"
+            },
+            {
+                "createdAt": "2022-10-06T09:16:51.382Z",
+                "description": "description",
+                "endpoints": {
+                    "items": [],
+                    "itemsCount": 0,
+                    "total": 0
+                },
+                "id": "f1ff9020-f101-42c7-a5eb-06e9ef35e7af",
+                "name": "Name-readme2-update",
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "type": "computer",
+                "updatedAt": "2022-10-06T09:38:32.519Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found 4 records 
+> Page : 1/1 
+> 
+> Listed 4 EndpointGroups:
+> 
+>|id|name|type|count|
+>|---|---|---|---|
+>| b8c0428e-a422-4db6-a72f-5af4844ed418 | Name-readme | computer | 0 |
+>| b3dec702-5d56-4cb9-8961-b0dba3194c94 | Name-readme-temp | computer | 0 |
+>| 3ba49c2c-2c05-4e39-8ff4-ed0488fe0a3d | Name-readme2 | computer | 0 |
+>| f1ff9020-f101-42c7-a5eb-06e9ef35e7af | Name-readme2-update | computer | 0 |
+
+
+### sophos-central-group-delete
+***
+Delete an endpoint group by ID.
+
+
+#### Base Command
+
+`sophos-central-group-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupId | UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointGroups.deleted | Boolean | Endpoint group deleted. | 
+| SophosCentral.EndpointGroups.id | String | Group Id. | 
+
+#### Command example
+```!sophos-central-group-delete groupId="b3dec702-5d56-4cb9-8961-b0dba3194c94"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "EndpointGroups": {
+            "deleted": true,
+            "id": "b3dec702-5d56-4cb9-8961-b0dba3194c94"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>EndpointGroup Deleted Successfully
+
+
+### sophos-central-users-list
+***
+List users for the given tenant.
+
+
+#### Base Command
+
+`sophos-central-users-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pageSize | The maximum number of items to return. Default is "50". Maximum is "100". Default is 50. | Optional | 
+| page | Page number to return. Default is "1". Default is 1. | Optional | 
+| search | Search for items that match the given terms. | Optional | 
+| searchFields | Search only within the specified comma-seperated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only. | Optional | 
+| sourceType | Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional | 
+| groupId | Search for users in a group that has this ID (You can get the group ID from sophos-central-usergroups-list command). | Optional | 
+| domain | List the items that match the given domain. | Optional | 
+
+
+#### Context Output
+
+| **Path**                                     | **Type** | **Description** |
+|----------------------------------------------| --- | -- |
+| SophosCentral.Users.id                       | String | User ID. | 
+| SophosCentral.Users.name                     | String | User's name. | 
+| SophosCentral.Users.firstName                | String | User's first name or given name. | 
+| SophosCentral.Users.lastName                 | String | User's last name or surname. | 
+| SophosCentral.Users.email                    | String | User's email address. | 
+| SophosCentral.Users.groups.total             | Number | Total users | 
+| SophosCentral.Users.groups.itemsCount        | Number | Total number of groups in which user is exists. | 
+| SophosCentral.Users.groups.items.id          | string | Group ID. | 
+| SophosCentral.Users.groups.items.name        | string | Group name. | 
+| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
+| SophosCentral.Users.tenant.id                | String | Tenant ID. | 
+| SophosCentral.Users.source.type              | String | SourceType of the user. | 
+| SophosCentral.Users.createdAt                | Date | When the user was created. | 
+
+#### Command example
+```!sophos-central-users-list searchFields="firstname, lastname, email"  search="playbook" pageSize=5```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "Users": [
+            {
+                "createdAt": "2022-10-10T12:30:57.876Z",
+                "email": "updatedemail.forplaybook@playbook.com",
+                "exchangeLogin": "",
+                "firstName": "updatedPlaybook",
+                "groups": {
+                    "items": [
+                        {
+                            "displayName": "NewGroupNameReadMe",
+                            "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+                            "name": "NewGroupNameReadMe"
+                        }
+                    ],
+                    "itemsCount": 1,
+                    "total": 1
+                },
+                "id": "4c994c63-c252-4ac9-8840-bcccb095d5a2",
+                "lastName": "updatedTest",
+                "name": "playbook test",
+                "source": {
+                    "type": "custom"
+                },
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "updatedAt": "2022-10-10T12:41:24.568Z"
+            },
+            {
+                "createdAt": "2022-10-10T12:31:46.606Z",
+                "email": "email.forplaybook1@playbook.com",
+                "exchangeLogin": "",
+                "firstName": "playbook",
+                "groups": {
+                    "items": [
+                        {
+                            "displayName": "NewGroupNameReadMe",
+                            "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+                            "name": "NewGroupNameReadMe"
+                        }
+                    ],
+                    "itemsCount": 1,
+                    "total": 1
+                },
+                "id": "111a4a5c-4c9e-449e-88fb-19a2ce5752c6",
+                "lastName": "test",
+                "name": "playbook test",
+                "source": {
+                    "type": "custom"
+                },
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "updatedAt": "2022-10-10T12:31:46.609Z"
+            },
+            {
+                "createdAt": "2022-10-10T12:48:23.980Z",
+                "email": "email.forplaybook2@playbook.com",
+                "exchangeLogin": "",
+                "firstName": "playbook",
+                "groups": {
+                    "items": [
+                        {
+                            "displayName": "NewGroupNameReadMe",
+                            "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+                            "name": "NewGroupNameReadMe"
+                        }
+                    ],
+                    "itemsCount": 1,
+                    "total": 1
+                },
+                "id": "f6032b13-f001-4bae-adf2-a0fb6f344fbd",
+                "lastName": "test",
+                "name": "playbook test",
+                "source": {
+                    "type": "custom"
+                },
+                "tenant": {
+                    "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+                },
+                "updatedAt": "2022-10-10T12:48:23.982Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total Records: 3
+>Page: 1/1
+> 
+>Listed 3 User(s):
+> 
+>|id|firstName|lastName|email|groupIds|groupNames|
+>|---|---|---|---|---|---|
+>| 4c994c63-c252-4ac9-8840-bcccb095d5a2 | updatedPlaybook | updatedTest | updatedemail.forplaybook@playbook.com | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
+>| 111a4a5c-4c9e-449e-88fb-19a2ce5752c6 | playbook | test | email.forplaybook1@playbook.com | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
+>| f6032b13-f001-4bae-adf2-a0fb6f344fbd | playbook | test | email.forplaybook2@playbook.com | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
+
+
+
+### sophos-central-users-get
+***
+List user with userId for the given tenant.
+
+
+#### Base Command
+
+`sophos-central-users-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userId | Unique User UUID (You can get the user ID from sophos-central-users-list command). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | -- |
+| SophosCentral.Users.id | String | User ID. | 
+| SophosCentral.Users.name | String | User's name. | 
+| SophosCentral.Users.firstName | String | User's first name or given name. | 
+| SophosCentral.Users.lastName | String | User's last name or surname. | 
+| SophosCentral.Users.email | String | User's email address. | 
+| SophosCentral.Users.groups.total | Number | Total users. | 
+| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. | 
+| SophosCentral.Users.groups.items.id | string | Group ID. | 
+| SophosCentral.Users.groups.items.name | string | Group name. | 
+| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
+| SophosCentral.Users.tenant.id | String | Tenant ID. | 
+| SophosCentral.Users.source.type | String | SourceType of the user. | 
+| SophosCentral.Users.createdAt | Date | When the user was created. | 
+| SophosCentral.Users.updatedAt | Date | When the user was updated. | 
+
+#### Command example
+```!sophos-central-users-get userId=4c994c63-c252-4ac9-8840-bcccb095d5a2```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "Users": {
+            "email": "updatedemail.forplaybook@playbook.com",
+            "exchangeLogin": "",
+            "firstName": "updatedPlaybook",
+            "groupIds": [
+                "733cce06-5ad0-487b-9547-03af02b5722e"
+            ],
+            "groupNames": [
+                "NewGroupNameReadMe"
+            ],
+            "id": "4c994c63-c252-4ac9-8840-bcccb095d5a2",
+            "lastName": "updatedTest"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found User:
+>|id|firstName|lastName|email|exchangeLogin|groupIds|groupNames|
+>|---|---|---|---|---|---|---|
+>| 4c994c63-c252-4ac9-8840-bcccb095d5a2 | updatedPlaybook | updatedTest | updatedemail.forplaybook@playbook.com |  | 733cce06-5ad0-487b-9547-03af02b5722e | NewGroupNameReadMe |
+
+
+### sophos-central-users-add
+***
+Add a new user.
+
+
+#### Base Command
+
+`sophos-central-users-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| firstName | First Name of the user. This must not include a space. Maximum length should be 250 characters. | Required | 
+| lastName | Last Name of the user. This must not include a space. Maximum length should be 250 characters. | Required | 
+| email | Email Address of the user. | Required | 
+| exchangeLogin | Exchange Login for the user. | Optional | 
+| groupIds | Comma-separated list of GroupIds to be enrolled in (You can get the list of user IDs from sophos-central-usergroups-list command). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | -- |
+| SophosCentral.Users.id | String | User ID. | 
+| SophosCentral.Users.name | String | User's name. | 
+| SophosCentral.Users.firstName | String | User's first name or given name. | 
+| SophosCentral.Users.lastName | String | User's last name or surname. | 
+| SophosCentral.Users.email | String | User's email address. | 
+| SophosCentral.Users.groups.total | Number | Total users. | 
+| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. | 
+| SophosCentral.Users.groups.items.id | string | Group ID. | 
+| SophosCentral.Users.groups.items.name | string | Group name. | 
+| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
+| SophosCentral.Users.tenant.id | String | Tenant ID. | 
+| SophosCentral.Users.source.type | String | SourceType of the user. | 
+| SophosCentral.Users.createdAt | Date | When the user was created. | 
+| SophosCentral.Users.updatedAt | Date | When the user was updated. | 
+
+#### Command example
+```!sophos-central-users-add firstName=playbook lastName=test email=email.forplaybook2@playbook.com groupIds=733cce06-5ad0-487b-9547-03af02b5722e```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "Users": {
+            "createdAt": "2022-10-10T12:48:23.980Z",
+            "email": "email.forplaybook2@playbook.com",
+            "exchangeLogin": "",
+            "firstName": "playbook",
+            "groups": {
+                "items": [
+                    {
+                        "displayName": "NewGroupNameReadMe",
+                        "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+                        "name": "NewGroupNameReadMe"
+                    }
+                ],
+                "itemsCount": 1,
+                "total": 1
+            },
+            "id": "f6032b13-f001-4bae-adf2-a0fb6f344fbd",
+            "lastName": "test",
+            "name": "playbook test",
+            "source": {
+                "type": "custom"
+            },
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "updatedAt": "2022-10-10T12:48:23.982Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>A new User was added to the Directory.
+
+### sophos-central-users-update
+***
+Update a user.
+
+
+#### Base Command
+
+`sophos-central-users-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userId | Unique User UUID (You can get the user ID from sophos-central-users-list command). | Required | 
+| name | User's fullname. | Optional | 
+| firstName | First Name of the user. This must not include a space. Maximum length should be 250 characters. | Optional | 
+| lastName | Last Name of the user. This must not include a space. Maximum length should be 250 characters. | Optional | 
+| email | Email Address of the user. | Optional | 
+| exchangeLogin | Exchange Login for the user. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | -- |
+| SophosCentral.Users.id | String | User ID. | 
+| SophosCentral.Users.name | String | User's name. | 
+| SophosCentral.Users.firstName | String | User's first name or given name. | 
+| SophosCentral.Users.lastName | String | User's last name or surname. | 
+| SophosCentral.Users.email | String | User's email address. | 
+| SophosCentral.Users.groups.total | Number | Total users. | 
+| SophosCentral.Users.groups.itemsCount | Number | Total number of groups in which user is exists. | 
+| SophosCentral.Users.groups.items.id | string | Group ID. | 
+| SophosCentral.Users.groups.items.name | string | Group name. | 
+| SophosCentral.Users.groups.items.displayName | string | Group display name. | 
+| SophosCentral.Users.tenant.id | String | Tenant ID. | 
+| SophosCentral.Users.source.type | String | SourceType of the user. | 
+| SophosCentral.Users.createdAt | Date | When the user was created. | 
+| SophosCentral.Users.updatedAt | Date | When the user was updated. | 
+
+#### Command example
+```!sophos-central-users-update userId=4c994c63-c252-4ac9-8840-bcccb095d5a2 firstName="updatedPlaybook" lastName="updatedTest" email="updatedemail.forplaybook@playbook.com"```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "Users": {
+            "createdAt": "2022-10-10T12:30:57.876Z",
+            "email": "updatedemail.forplaybook@playbook.com",
+            "exchangeLogin": "",
+            "firstName": "updatedPlaybook",
+            "groups": {
+                "items": [
+                    {
+                        "displayName": "NewGroupNameReadMe",
+                        "id": "733cce06-5ad0-487b-9547-03af02b5722e",
+                        "name": "NewGroupNameReadMe"
+                    }
+                ],
+                "itemsCount": 1,
+                "total": 1
+            },
+            "id": "4c994c63-c252-4ac9-8840-bcccb095d5a2",
+            "lastName": "updatedTest",
+            "name": "playbook test",
+            "source": {
+                "type": "custom"
+            },
+            "tenant": {
+                "id": "7fc4a6ac-0aa1-4c35-8d6d-9c4a0c28ec80"
+            },
+            "updatedAt": "2022-10-10T12:41:24.568Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>User updated.
+
+### sophos-central-users-delete
+***
+Delete a user.
+
+
+#### Base Command
+
+`sophos-central-users-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userId | Unique User UUID (You can get user ID from sophos-central-users-list command). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.DeletedUsers.deletedUserId | String | Deleted User's Id. | 
+
+#### Command example
+```!sophos-central-users-delete userId=9d79e670-3846-45b7-a119-12ca1ee46933```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "DeletedUsers": {
+            "deletedUserId": "9d79e670-3846-45b7-a119-12ca1ee46933"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>User deleted.
+
+
+### sophos-central-endpoint-policy-search
+***
+Get all endpoint policy.
+
+
+#### Base Command
+
+`sophos-central-endpoint-policy-search`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "200". Default is 50. | Optional | 
+| page | Page number to return. Default is "1". Default is 1. | Optional | 
+| policy_type | Fetch the policies based on policy_type value. Possible values are: "threat-protection", "peripheral-control", "application-control", "data-loss-prevention", "device-encryption", "web-control", "agent-updating", "windows-firewall", "server-threat-protection", "server-peripheral-control", "server-application-control", "server-web-control", "server-lockdown", "server-data-loss-prevention", "server-agent-updating", "server-windows-firewall", "server-file-integrity-monitoring". Possible values are: threat-protection, peripheral-control, application-control, data-loss-prevention, device-encryption, web-control, agent-updating, windows-firewall, server-threat-protection, server-peripheral-control, server-application-control, server-web-control, server-lockdown, server-data-loss-prevention, server-agent-updating, server-windows-firewall, server-file-integrity-monitoring. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.PolicyAndEnumeration.id | String | Policy ID | 
+| SophosCentral.PolicyAndEnumeration.feature | String | Feature | 
+| SophosCentral.PolicyAndEnumeration.settings | String | Settings | 
+| SophosCentral.PolicyAndEnumeration.orderPriority | String | Order priority | 
+| SophosCentral.PolicyAndEnumeration.name | String | Name | 
+| SophosCentral.PolicyAndEnumeration.enforced | Boolean | Enforced \(T|F\) | 
+| SophosCentral.PolicyAndEnumeration.typeSingle | String | Type Single | 
+| SophosCentral.PolicyAndEnumeration.typeGroup | String | Type Group | 
+| SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified | 
+
+#### Command example
+```!sophos-central-endpoint-policy-search page_size=10 page=1```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "PolicyAndEnumeration": [
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "67074d6e-ce83-40c2-a7f4-8a94a1beac10",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned 3)",
+                "orderPriority": 9,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "b3715f16-b675-4978-927d-2e0fb206b6e9",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned 3)",
+                "orderPriority": 8,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "e4a9ec1e-a5e3-4072-825f-701b8e1e33fe",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned 3)",
+                "orderPriority": 7,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "df3bdaa7-c156-4580-baa6-30e2bf118502",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned 2)",
+                "orderPriority": 6,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "c4887d95-d099-4ae1-9290-1fe316a24d59",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned)",
+                "orderPriority": 5,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "a18aafe1-eb86-46c0-ba2f-1f64f1e5b16e",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned 2)",
+                "orderPriority": 4,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "694f8591-217c-44a0-99f1-f7331bf1bf33",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "12",
+                "orderPriority": 3,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "09eff4b3-14f1-4a42-a47c-c0382066d094",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned 2)",
+                "orderPriority": 2,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": false,
+                "feature": "agent-updating",
+                "id": "875166af-1848-463a-a853-bed673cad119",
+                "lastModified": "2022-10-11T06:13:07.146Z",
+                "name": "Base Policy (cloned)",
+                "orderPriority": 1,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            },
+            {
+                "enforced": true,
+                "feature": "agent-updating",
+                "id": "3f863d0a-4405-4c6d-a035-4215db53b087",
+                "lastModified": "2022-05-07T01:16:26.767Z",
+                "name": "Base Policy",
+                "orderPriority": 0,
+                "settings": {
+                    "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.fixed-version.mac": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.fixed-version.windows": {
+                        "value": "recommended"
+                    },
+                    "endpoint.agent-updating.scheduled-updates.day": {
+                        "unit": "day",
+                        "value": 3
+                    },
+                    "endpoint.agent-updating.scheduled-updates.enabled": {
+                        "value": false
+                    },
+                    "endpoint.agent-updating.scheduled-updates.time": {
+                        "format": "hourMinute",
+                        "value": "14:00"
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total Record(s): 24 
+>### Current page: 1/3
+>### Listed 10 Endpoint Policies:
+>|id|feature|settings|orderPriority|name|enforced|typeSingle|typeGroup|lastModified|
+>|---|---|---|---|---|---|---|---|---|
+>| 67074d6e-ce83-40c2-a7f4-8a94a1beac10 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 9 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| b3715f16-b675-4978-927d-2e0fb206b6e9 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 8 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| e4a9ec1e-a5e3-4072-825f-701b8e1e33fe | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 7 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| df3bdaa7-c156-4580-baa6-30e2bf118502 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 6 | Base Policy (cloned 2) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| c4887d95-d099-4ae1-9290-1fe316a24d59 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 5 | Base Policy (cloned) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| a18aafe1-eb86-46c0-ba2f-1f64f1e5b16e | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 4 | Base Policy (cloned 2) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| 694f8591-217c-44a0-99f1-f7331bf1bf33 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 3 | 12 | false |  |  | 2022-10-11T06:13:07.146Z |
+>| 09eff4b3-14f1-4a42-a47c-c0382066d094 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 2 | Base Policy (cloned 2) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| 875166af-1848-463a-a853-bed673cad119 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 1 | Base Policy (cloned) | false |  |  | 2022-10-11T06:13:07.146Z |
+>| 3f863d0a-4405-4c6d-a035-4215db53b087 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 0 | Base Policy | true |  |  | 2022-05-07T01:16:26.767Z |
+
+
+### sophos-central-endpoint-policy-get
+***
+Get details of Policy by id.
+
+
+#### Base Command
+
+`sophos-central-endpoint-policy-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.PolicyAndEnumeration.id | String | Policy ID | 
+| SophosCentral.PolicyAndEnumeration.feature | String | Feature | 
+| SophosCentral.PolicyAndEnumeration.settings | String | Settings | 
+| SophosCentral.PolicyAndEnumeration.orderPriority | String | Order priority | 
+| SophosCentral.PolicyAndEnumeration.name | String | Name | 
+| SophosCentral.PolicyAndEnumeration.enforced | Boolean | Enforced \(T|F\) | 
+| SophosCentral.PolicyAndEnumeration.typeSingle | String | Type Single | 
+| SophosCentral.PolicyAndEnumeration.typeGroup | String | Type Group | 
+| SophosCentral.PolicyAndEnumeration.lastModified | String | Last Modified | 
+
+#### Command example
+```!sophos-central-endpoint-policy-get policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "PolicyAndEnumeration": {
+            "enforced": false,
+            "feature": "agent-updating",
+            "id": "67074d6e-ce83-40c2-a7f4-8a94a1beac10",
+            "lastModified": "2022-10-11T06:13:07.146Z",
+            "name": "Base Policy (cloned 3)",
+            "orderPriority": 9,
+            "settings": {
+                "endpoint.agent-updating.dont-use-update-caches.enabled": {
+                    "value": false
+                },
+                "endpoint.agent-updating.fixed-version.mac": {
+                    "value": "recommended"
+                },
+                "endpoint.agent-updating.fixed-version.windows": {
+                    "value": "recommended"
+                },
+                "endpoint.agent-updating.scheduled-updates.day": {
+                    "unit": "day",
+                    "value": 3
+                },
+                "endpoint.agent-updating.scheduled-updates.enabled": {
+                    "value": false
+                },
+                "endpoint.agent-updating.scheduled-updates.time": {
+                    "format": "hourMinute",
+                    "value": "14:00"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### 67074d6e-ce83-40c2-a7f4-8a94a1beac10 Policy Details:
+>|id|feature|settings|orderPriority|name|enforced|typeSingle|typeGroup|lastModified|
+>|---|---|---|---|---|---|---|---|---|
+>| 67074d6e-ce83-40c2-a7f4-8a94a1beac10 | agent-updating | endpoint.agent-updating.dont-use-update-caches.enabled: {"value": false}<br/>endpoint.agent-updating.fixed-version.mac: {"value": "recommended"}<br/>endpoint.agent-updating.fixed-version.windows: {"value": "recommended"}<br/>endpoint.agent-updating.scheduled-updates.day: {"value": 3, "unit": "day"}<br/>endpoint.agent-updating.scheduled-updates.enabled: {"value": false}<br/>endpoint.agent-updating.scheduled-updates.time: {"value": "14:00", "format": "hourMinute"} | 9 | Base Policy (cloned 3) | false |  |  | 2022-10-11T06:13:07.146Z |
+
+### sophos-central-endpoint-policy-reorder
+***
+Update Policy priority for non-base policies.
+
+
+#### Base Command
+
+`sophos-central-endpoint-policy-reorder`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
+| priority | Update Policy Order priority for non-base policies. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.PolicyAndEnumeration.updatedPolicyId | String | The ID of the updated policy. | 
+
+#### Command example
+```!sophos-central-endpoint-policy-reorder policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10 priority=1```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "PolicyAndEnumeration": {
+            "updatedPolicyId": "67074d6e-ce83-40c2-a7f4-8a94a1beac10"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Success updating endpoint policy: 67074d6e-ce83-40c2-a7f4-8a94a1beac10
+
+### sophos-central-endpoint-policy-search-delete
+***
+Delete an existing endpoint policy.
+
+
+#### Base Command
+
+`sophos-central-endpoint-policy-search-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.PolicyAndEnumeration.deletedPolicyId | String | The ID of the deleted policy. | 
+
+#### Command example
+```!sophos-central-endpoint-policy-search-delete policy_id=67074d6e-ce83-40c2-a7f4-8a94a1beac10```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "PolicyAndEnumeration": {
+            "deletedPolicyId": "67074d6e-ce83-40c2-a7f4-8a94a1beac10"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Success deleting endpoint policy: 67074d6e-ce83-40c2-a7f4-8a94a1beac10
+
+### sophos-central-endpoint-policy-clone
+***
+Clone an existing endpoint policy.
+
+
+#### Base Command
+
+`sophos-central-endpoint-policy-clone`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command. | Required | 
+| name | Policy name of the newly cloned policy. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.PolicyAndEnumeration.clonedPolicyId | String | The ID of the cloned policy. | 
+
+#### Command example
+```!sophos-central-endpoint-policy-clone policy_id=b3715f16-b675-4978-927d-2e0fb206b6e9 name=testclonenew```
+#### Context Example
+```json
+{
+    "SophosCentral": {
+        "PolicyAndEnumeration": {
+            "clonedPolicyId": "28d9b869-ba28-420f-87da-98a8e1b1656f"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Success cloning endpoint policy: 28d9b869-ba28-420f-87da-98a8e1b1656f

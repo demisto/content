@@ -5,7 +5,7 @@ from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, 
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics
 
-VERSION = "v2.0.0"
+VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")
@@ -44,7 +44,8 @@ def file_reputation_command():
     mwp = FileReputation(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     hash_value = demisto.getArg("hash")
@@ -129,7 +130,8 @@ def av_scanners_command():
     xref = AVScanners(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
     hash_value = demisto.getArg("hash")
 
@@ -211,7 +213,8 @@ def file_analysis_command():
     rldata = FileAnalysis(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
     hash_value = demisto.getArg("hash")
 
@@ -297,7 +300,8 @@ def functional_similarity_command():
     similarity = RHA1FunctionalSimilarity(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
     hash_value = demisto.getArg("hash")
     limit = demisto.getArg("result_limit")
@@ -325,7 +329,8 @@ def rha1_analytics_command():
     rha_analytics = RHA1Analytics(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
     hash_value = demisto.getArg("hash")
 
@@ -406,7 +411,8 @@ def uri_statistics_command():
     uri_stats = URIStatistics(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
     uri = demisto.getArg("uri")
 
@@ -502,7 +508,8 @@ def uri_index_command():
     uri_index = URIIndex(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     uri = demisto.getArg("uri")
@@ -532,7 +539,8 @@ def advanced_search_command():
     advanced_search = AdvancedSearch(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     query = demisto.getArg("query")
@@ -562,7 +570,8 @@ def expression_search_command():
     expression_search = ExpressionSearch(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     query = demisto.getArg("query")
@@ -598,7 +607,8 @@ def file_download_command():
     file_download = FileDownload(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     hash_value = demisto.getArg("hash")
@@ -619,7 +629,8 @@ def file_upload_command():
     file_upload = FileUpload(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     file_entry = demisto.getFilePath(demisto.getArg("entryId"))
@@ -639,7 +650,8 @@ def url_report_command():
     url_ti = URLThreatIntelligence(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     url = demisto.getArg("url")
@@ -732,7 +744,8 @@ def analyze_url_command():
     analyze_url = AnalyzeURL(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     url = demisto.getArg("url")
@@ -768,7 +781,8 @@ def detonate_sample_command():
     sandbox = DynamicAnalysis(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     sha1 = demisto.getArg("sha1")
@@ -805,7 +819,8 @@ def dynamic_analysis_results_command():
     sandbox = DynamicAnalysis(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     sha1 = demisto.getArg("sha1")
@@ -849,7 +864,8 @@ def certificate_analytics_command():
     cert_analytics = CertificateAnalytics(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        user_agent=USER_AGENT
     )
 
     thumbprint = demisto.getArg("certificate_thumbprint")

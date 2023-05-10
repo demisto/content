@@ -35,7 +35,7 @@ tags:
 - servicenow
 - servicenow v2
 type: python
-subtype: python2
+subtype: python3
 dependson:
   must:
   - servicenow-create-record
@@ -44,4 +44,4 @@ runonce: false
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24398
+dockerimage: demisto/python3:3.10.6.33415

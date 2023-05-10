@@ -43,12 +43,36 @@ from HelloWorldScript import say_hello, say_hello_command
 
 
 def test_say_hello():
+    """
+    Tests the 'say_hello' function.
+
+        Given:
+            - An input string.
+
+        When:
+            - Running the 'say_hello' function.
+
+        Then:
+            - Verify that the output is as expected (an 'Hello' prefix was added to the input string).
+    """
     result = say_hello('Dbot')
 
     assert result == 'Hello Dbot'
 
 
 def test_say_hello_command():
+    """
+    Tests the 'say_hello_command'.
+
+        Given:
+            - Demisto args object with a name argument..
+
+        When:
+            - Running the 'say_hello_command'.
+˚
+        Then:
+            - Verify that the output is as expected (an 'Hello' prefix was added to the name).
+    """
     args = {
         'name': 'Dbot'
     }

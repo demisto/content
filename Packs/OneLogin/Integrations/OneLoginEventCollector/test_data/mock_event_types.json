@@ -1,0 +1,22 @@
+{
+    "status": {
+        "error": false,
+        "code": 200,
+        "type": "success",
+        "message": "Success"
+    },
+    "data": [
+        {
+            "name": "EVENT_TYPE_NUMBER_1",
+            "id": 1
+        },
+        {
+            "name": "EVENT_TYPE_NUMBER_2",
+            "id": 2
+        },
+        {
+            "name": "EVENT_TYPE_NUMBER_3",
+            "id": 3
+        }
+    ]
+}

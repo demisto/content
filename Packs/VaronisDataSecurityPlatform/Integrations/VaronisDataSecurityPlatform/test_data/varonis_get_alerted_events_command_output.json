@@ -1,0 +1,50 @@
+{
+    "Event": [
+        {
+            "ID": "16B36D9C-CF0A-4EAE-ADAD-C2ECE4C1FBBF",
+            "Type": "Client DNS request",
+            "UTCTime": "2022-02-22T12:16:48Z",
+            "Status": "Success",
+            "Description": "The DNS Server has resolved successfully ",
+            "Country": "",
+            "State": "",
+            "ExternalIP": "",
+            "Details": {
+                "IsBlacklist": false,
+                "Operation": "Request"
+            },
+            "ByUser": {
+                "Name": "",
+                "UserType": "",
+                "UserAccountType": "",
+                "SAMAccountName": "",
+                "Domain": "",
+                "DisabledAccount": false,
+                "StaleAccount": false,
+                "LockoutAccounts": false
+            },
+            "SourceIP": "",
+            "IsMaliciousIP": false,
+            "IPReputation": "",
+            "IPThreatType": "",
+            "OnObject": {
+                "Name": "localdb-ip-rtu.brightcloud.com",
+                "ObjectType": "Dns",
+                "Platform": "DNS",
+                "IsSensitive": false,
+                "FileServerOrDomain": "DNS",
+                "IsDisabledAccount": false,
+                "IsLockOutAccount": false,
+                "SAMAccountName": "",
+                "UserAccountType": "",
+                "DestinationIP": "",
+                "DestinationDevice": "",
+                "Path": ""
+            }
+        }
+    ],
+    "Pagination": {
+        "Page": 1,
+        "PageSize": 1
+    }
+}

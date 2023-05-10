@@ -1,4 +1,4 @@
-Fetches all of the files from the endpoints where they were found using Carbon Black Live.
+Deprecated. Use ***CBLiveGetFile_V2*** instead.
 
 ## Script Data
 ---

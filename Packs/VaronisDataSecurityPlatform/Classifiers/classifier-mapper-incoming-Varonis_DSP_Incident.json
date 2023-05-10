@@ -1,0 +1,183 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Varonis DSP Incident - Incoming Mapper",
+    "mapping": {
+        "Varonis DSP Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "Category"
+                },
+                "Alert ID": {
+                    "simple": "Guid"
+                },
+                "Alert Name": {
+                    "simple": "Name"
+                },
+                "Varonis Data Security Platform Alert Status": {
+                    "simple": "Status"
+                },
+                "Threat Name": {
+                    "simple": "IPThreatTypes"
+                },
+                "Incident Link": {
+                    "simple": "Url"
+                },
+                "Varonis Data Security Platform Close Reason": {
+                    "simple": "CloseReason"
+                },
+                "Varonis Data Security Platform Contains Flagged Data": {
+                    "complex": {
+                        "accessor": "ContainsFlaggedData",
+                        "filters": [],
+                        "root": "On",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Contains Malicious External IP": {
+                    "complex": {
+                        "accessor": "ContainMaliciousExternalIP",
+                        "filters": [],
+                        "root": "Device",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Contains Sensitive Data": {
+                    "complex": {
+                        "accessor": "ContainsSensitiveData",
+                        "filters": [],
+                        "root": "On",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Number of Events": {
+                    "simple": "NumOfAlertedEvents"
+                },
+                "Varonis Data Security Platform Devices": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Devices",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Locations": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Locations",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Users": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Users",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Varonis Data Security Platform Sources": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Sources",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "Varonis DSP Incident - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

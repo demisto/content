@@ -18,3 +18,6 @@ ignore=RM106
 
 [file:SetIRProceduresMarkdown.yml]
 ignore=SC106
+
+[file:CoreRESTAPI.yml]
+ignore=IN139

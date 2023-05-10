@@ -1,7 +1,7 @@
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
-VERSION = "v2.0.0"
+VERSION = "v2.0.8"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
@@ -14,7 +14,9 @@ NUM_OF_RETRIES = demisto.params().get('num_of_retries')
 def classification_to_score(classification):
     score_dict = {
         "UNKNOWN": 0,
+        "UNCLASSIFIED": 0,
         "KNOWN": 1,
+        "GOODWARE": 1,
         "SUSPICIOUS": 2,
         "MALICIOUS": 3
     }
@@ -38,7 +40,7 @@ def get_results(a1000):
     """
     try:
         hash_value = demisto.getArg('hash')
-        response_json = a1000.get_results(hash_value).json()
+        response_json = a1000.get_summary_report_v2(hash_value).json()
     except Exception as e:
         return_error(str(e))
 
@@ -58,10 +60,10 @@ def upload_sample_and_get_results(a1000):
 
     try:
         with open(file_entry['path'], 'rb') as f:
-            response_json = a1000.upload_sample_and_get_results(file_source=f,
-                                                                custom_filename=file_entry.get('name'),
-                                                                tags=demisto.getArg('tags'),
-                                                                comment=demisto.getArg('comment')).json()
+            response_json = a1000.upload_sample_and_get_summary_report_v2(file_source=f,
+                                                                          custom_filename=file_entry.get('name'),
+                                                                          tags=demisto.getArg('tags'),
+                                                                          comment=demisto.getArg('comment')).json()
     except Exception as e:
         return_error(str(e))
 
@@ -76,7 +78,7 @@ def upload_sample_and_get_results(a1000):
 def a1000_report_output(response_json):
     results = response_json.get('results')
     result = results[0] if results else {}
-    status = result.get('threat_status', '')
+    status = result.get('classification', '')
     d_bot_score = classification_to_score(status.upper())
 
     md5 = result.get('md5')
@@ -87,7 +89,7 @@ def a1000_report_output(response_json):
     file_subtype = result.get('file_subtype')
     file_size = result.get('file_size')
 
-    markdown = f'''## ReversingLabs A1000 results for: {result.get('sha1')}\n **Type:** {file_type}/{file_subtype}
+    markdown = f'''## ReversingLabs A1000 results for: {sha1}\n **Type:** {file_type}/{file_subtype}
     **Size:** {file_size} bytes \n'''
 
     if md5:
@@ -106,10 +108,9 @@ def a1000_report_output(response_json):
     **First seen:** {demisto.gets(result, 'ticloud.first_seen')}
     **Last seen:** {demisto.gets(result, 'ticloud.last_seen')}
     **DBot score:** {d_bot_score}
-    **Trust factor:** {result.get('trust_factor')} \n'''
+    **Risk score:** {result.get('riskscore')} \n'''
     if status == 'malicious':
-        markdown += f'''**Threat name:** {result.get('threat_name')}
-                **Threat level:** {result.get('threat_level')}'''
+        markdown += f'''**Threat name:** {result.get('classification_result')}'''
     markdown += f'''\n **Category:** {result.get('category')}
     **Classification origin:** {result.get('classification_origin')}
     **Classification reason:** {result.get('classification_reason')}
@@ -124,9 +125,9 @@ def a1000_report_output(response_json):
     dbot_score = Common.DBotScore(
         indicator=sha1,
         indicator_type=DBotScoreType.FILE,
-        integration_name='ReversingLabs A1000',
+        integration_name='ReversingLabs A1000 v2',
         score=d_bot_score,
-        malicious_description=f"{result.get('classification_reason')} - {result.get('threat_name')}",
+        malicious_description=f"{result.get('classification_reason')} - {result.get('classification_result')}",
         reliability=RELIABILITY
     )
 
@@ -143,6 +144,7 @@ def a1000_report_output(response_json):
         readable_output=markdown,
         indicator=common_file
     )
+
     return command_results
 
 
@@ -212,14 +214,27 @@ def reanalyze(a1000):
     """
     hash_value = demisto.getArg('hash')
     try:
-        response_json = a1000.reanalyze_samples(hash_value).json()
+        response_json = a1000.reanalyze_samples_v2(hash_input=hash_value,
+                                                   titanium_core=True,
+                                                   titanium_cloud=True,
+                                                   rl_cloud_sandbox=True,
+                                                   cuckoo_sandbox=True,
+                                                   fireeye=True,
+                                                   joe_sandbox=True,
+                                                   cape=True,
+                                                   rl_cloud_sandbox_platform="windows10").json()
     except Exception as e:
         return_error(str(e))
 
-    markdown = f'''## ReversingLabs A1000 re-analyze sample\n**Message:** {response_json.get('message')}
-    **MD5:** {demisto.get(response_json, 'detail.md5')}
-    **SHA1:** {demisto.get(response_json, 'detail.sha1')}
-    **SHA256:** {demisto.get(response_json, 'detail.sha256')}'''
+    try:
+        result = response_json.get("results")[0]
+    except Exception as e:
+        return_error(str(e))
+
+    markdown = f'''## ReversingLabs A1000 re-analyze sample\n**Message:** Sample is queued for analysis.
+    **MD5:** {demisto.get(result, 'detail.md5')}
+    **SHA1:** {demisto.get(result, 'detail.sha1')}
+    **SHA256:** {demisto.get(result, 'detail.sha256')}'''
 
     command_result = CommandResults(
         outputs_prefix='ReversingLabs',
@@ -240,48 +255,49 @@ def list_extracted_files(a1000):
     hash_value = demisto.getArg('hash')
 
     try:
-        response_json = a1000.get_extracted_files(hash_value).json()
+        response = a1000.list_extracted_files_v2_aggregated(hash_value)
     except Exception as e:
         return_error(str(e))
 
-    command_result = list_extracted_files_output(response_json)
+    command_result = list_extracted_files_output(response)
 
-    file_result = fileResult('List extracted files report file', json.dumps(response_json, indent=4),
+    file_result = fileResult('List extracted files report file', json.dumps(response, indent=4),
                              file_type=EntryType.ENTRY_INFO_FILE)
 
     return [command_result, file_result]
 
 
-def list_extracted_files_output(response_json):
-    results = response_json.get('results')
-
+def list_extracted_files_output(response):
     file_list = []
-    for result in results:
+
+    for result in response:
         sha1 = demisto.get(result, 'sample.sha1')
-        status = demisto.get(result, 'sample.threat_status')
+        status = demisto.get(result, 'sample.classification')
         file_data = {
             'SHA1': sha1,
             'Name': result.get('filename'),
             'Info': demisto.get(result, 'sample.type_display'),
             'Size': demisto.get(result, 'sample.file_size'),
             'Path': result.get('path'),
-            'Local First': demisto.get(result, 'sample.local_first_seen'),
-            'Local Last': demisto.get(result, 'sample.local_last_seen'),
+            'Local First Seen': demisto.get(result, 'sample.local_first_seen'),
+            'Local Last Seen': demisto.get(result, 'sample.local_last_seen'),
             'Malware Status': status,
-            'Trust': demisto.get(result, 'sample.trust_factor'),
-            'Threat Name': demisto.get(result, 'sample.threat_name'),
-            'Threat Level': demisto.get(result, 'sample.threat_level')
+            'Risk Score': demisto.get(result, 'sample.riskscore'),
+            'Identification Name': demisto.get(result, 'sample.identification_name'),
+            'Identification Version': demisto.get(result, 'sample.identification_version'),
+            'Type Display': demisto.get(result, 'sample.type_display')
         }
 
         file_list.append(file_data)
 
     markdown = tableToMarkdown('Extracted files', file_list,
-                               ['SHA1', 'Name', 'Path', 'Info', 'Size', 'Local First', 'Local Last',
-                                'Malware Status', 'Trust', 'Threat Name', 'Threat Level'])
+                               ['SHA1', 'Name', 'Path', 'Info', 'Size', 'Local First Seen', 'Local Last Seen',
+                                'Malware Status', 'Risk Score', 'Identification Name', 'Identification Version',
+                                'Type Display'])
 
     command_results = CommandResults(
         outputs_prefix='ReversingLabs',
-        outputs={'a1000_list_extracted_report': response_json},
+        outputs={'a1000_list_extracted_report': response},
         readable_output=markdown,
     )
 
@@ -332,13 +348,15 @@ def download_sample(a1000):
 
 def get_classification(a1000):
     """
-    Download samples obtained through the unpacking process
+    Get the classification of a selected sample
     """
     hash_value = demisto.getArg('hash')
     local_only = argToBoolean(demisto.getArg('localOnly'))
 
     try:
-        response_json = a1000.get_classification(hash_value, local_only=local_only).json()
+        response_json = a1000.get_classification_v3(hash_value,
+                                                    local_only=local_only,
+                                                    av_scanners=True).json()
     except Exception as e:
         return_error(str(e))
 
@@ -354,13 +372,14 @@ def get_classification_output(response_json):
     for key, value in response_json.items():
         markdown += f'**{str.capitalize(key.replace("_", " "))}:** {value}\n'
 
-    status = response_json.get('threat_status')
+    status = response_json.get('classification')
     if status:
         d_bot_score = classification_to_score(status.upper())
+
         dbot_score = Common.DBotScore(
             indicator=response_json.get('sha1'),
             indicator_type=DBotScoreType.FILE,
-            integration_name='ReversingLabs A1000',
+            integration_name='ReversingLabs A1000 v2',
             score=d_bot_score,
             malicious_description=status,
             reliability=RELIABILITY
@@ -379,6 +398,7 @@ def get_classification_output(response_json):
             indicator=common_file,
             readable_output=markdown
         )
+
         return command_results
 
 
@@ -386,17 +406,22 @@ def advanced_search(a1000):
     """
     Advanced Search by query
     """
-    query = demisto.getArg('query')
+    query = demisto.getArg("query")
+    ticloud = argToBoolean(demisto.getArg("ticloud"))
 
     try:
-        limit = demisto.getArg("result-limit")
+        limit = demisto.getArg("result_limit")
         if not isinstance(limit, int):
             limit = int(limit)
     except KeyError:
         limit = 5000
 
     try:
-        result_list = a1000.advanced_search_aggregated(query_string=query, max_results=limit)
+        result_list = a1000.advanced_search_v2_aggregated(
+            query_string=query,
+            ticloud=ticloud,
+            max_results=limit
+        )
     except Exception as e:
         return_error(str(e))
 

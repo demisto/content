@@ -3,6 +3,8 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 This Feed supports the AutoFocus Custom Feed and the AutoFocus Samples Feed.
 TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
+**Note:** The `Daily Threat Feed` option is deprecated. No available replacement.
+
 ## Configure AutoFocus Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

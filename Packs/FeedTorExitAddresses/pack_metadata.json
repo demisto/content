@@ -10,7 +10,12 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Getting Started",
+        "Threat Intelligence Management",
+        "Free Feed",
+        "Plug & Fetch"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

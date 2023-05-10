@@ -31,6 +31,7 @@ oauth_config:
       - groups:read
       - groups:write
       - im:history
+      - im:write
       - mpim:history
       - mpim:read
       - mpim:write

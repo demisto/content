@@ -1,0 +1,37 @@
+{
+    "id": "incident_cycognitoinvestigationstatus",
+    "version": -1,
+    "modified": "2022-05-27T09:37:47.041987617+05:30",
+    "name": "CyCognito Investigation Status",
+    "ownerOnly": false,
+    "description": "Investigation status of the issue.",
+    "cliName": "cycognitoinvestigationstatus",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "uninvestigated",
+        "investigating",
+        "investigated"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CyCognito Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

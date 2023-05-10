@@ -10,12 +10,12 @@ from CommonServerUserPython import *
 
 import demistomock as demisto
 
-import requests
+import urllib3
 
 
 ''' Module Level Declarations '''
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 CadoResponseCombinedOutput = Union[Dict[str, Any], List[Dict[str, Any]]]
 
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'

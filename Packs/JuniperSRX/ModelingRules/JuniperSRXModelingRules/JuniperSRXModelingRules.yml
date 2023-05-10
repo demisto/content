@@ -1,13 +1,7 @@
-name: Juniper SRX
-id: JuniperSRX
 fromversion: 6.8.0
-tags: JuniperSRX
+id: JuniperSRX
+name: Juniper SRX
 rules: ''
-schema: |-
-  {
-    "Juniper_SRX_Log": {
-      "_raw_log": {
-        "type": "string",
-        "is_array": false
-      },
-  }
+schema: ''
+tags: JuniperSRX
+toversion: 6.9.9

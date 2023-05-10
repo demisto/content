@@ -2040,7 +2040,7 @@ Adds ingress rule to a security group.
 | UserIdGroupPairsUserId | The ID of an AWS account. | Optional | 
 | UserIdGroupPairsVpcId | The ID of the VPC for the referenced security group, if applicable. | Optional | 
 | UserIdGroupPairsVpcPeeringConnectionId | The ID of the VPC peering connection, if applicable. | Optional | 
-
+| IpPermissionsFull | Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). | Optional | 
 
 #### Context Output
 
@@ -2073,6 +2073,7 @@ There is no context output for this command.
 | UserIdGroupPairsUserId | The ID of an AWS account. | Optional | 
 | UserIdGroupPairsVpcId | The ID of the VPC for the referenced security group, if applicable. | Optional | 
 | UserIdGroupPairsVpcPeeringConnectionId | The ID of the VPC peering connection, if applicable. | Optional | 
+| IpPermissionsFull | Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). | Optional | 
 
 
 #### Context Output
@@ -2095,12 +2096,14 @@ Removes egress rule from a security group. To remove a rule, the values that you
 | fromPort | The start of port range for the TCP and UDP protocols. | Optional | 
 | toPort | The end of port range for the TCP and UDP protocols. | Optional | 
 | cidrIp | The CIDR IPv4 address range. | Optional | 
+| cidrIpv6 | The CIDR IPv6 address range. | Optional | 
 | ipProtocol | The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify all protocols. | Optional | 
 | sourceSecurityGroupName | The name of the source security group. The source security group must be in the same VPC. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| IpPermissionsFull | Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). | Optional | 
 
 
 #### Context Output
@@ -2141,6 +2144,7 @@ There is no context output for this command.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| IpPermissionsFull | Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). | Optional | 
 
 
 #### Context Output

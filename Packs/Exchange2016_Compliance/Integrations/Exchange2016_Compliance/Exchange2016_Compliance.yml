@@ -1,10 +1,11 @@
 commonfields:
   id: Exchange 2016 Compliance Search
   version: -1
+deprecated: true
 name: Exchange 2016 Compliance Search
-display: Exchange 2016 Compliance Search
-category: Messaging
-description: Exchange Server 2016 Compliance Search enables you to search for and delete an email message from all mailboxes in your organization.
+display: Exchange 2016 Compliance Search (Deprecated)
+category: Messaging and Conferencing
+description: Deprecated. Use EWS V2 instead.
 configuration:
 - display: DOMAIN\USERNAME (e.g., DEMISTO.INT\admin)
   name: credentials

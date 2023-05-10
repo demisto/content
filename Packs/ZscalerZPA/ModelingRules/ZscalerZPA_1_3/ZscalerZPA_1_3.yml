@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: zscaler_private_access_modeling_rule
+name: Zscaler Private Access Modeling Rule
+rules: ''
+schema: ''
+tags: Zscaler Private Access

@@ -1,0 +1,8 @@
+[INGEST:vendor="manageengine", product="admanager", target_dataset="manageengine_admanager_raw", no_hit=keep]
+filter _raw_log ~= "\<\d+\>"
+|alter current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
+timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
+|alter timestamp = format_string("%s %s", current_year, timestamp)
+|alter _time = parse_timestamp("%Y %b %d %H:%M:%S", timestamp);
+filter _raw_log !~= "\<\d+\>"
+|alter _time=_insert_time;

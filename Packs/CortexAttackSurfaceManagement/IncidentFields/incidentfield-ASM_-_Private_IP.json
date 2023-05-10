@@ -1,0 +1,61 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "asmprivateip",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "IP",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "ip",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Source",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "source",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "Private IP addresses found",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asmprivateip",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ASM - Private IP",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

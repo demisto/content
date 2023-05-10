@@ -1,0 +1,13 @@
+[MODEL: dataset=onelogin_iam_raw]
+alter xdm.event.id = to_string(id),
+    xdm.event.description = notes,
+    xdm.event.type = event_type_name,
+    xdm.target.user.employee_id = to_string(user_id),
+    xdm.target.host.ipv4_addresses = arraycreate(ipaddr),
+    xdm.target.user.username = user_name,
+    xdm.alert.severity = risk_score,
+    xdm.alert.description = risk_reasons,
+    xdm.target.application.name = app_name,
+    xdm.target.user.identifier = to_string(actor_user_id),
+    xdm.target.host.hostname = otp_device_name,
+    xdm.target.host.device_id = otp_device_id;

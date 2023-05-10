@@ -173,7 +173,7 @@ CREATE_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.
     </soapenv:Envelope>"""
 
 
-def http_request(body=''):
+def http_request(body=''):  # pragma: no cover
     ''' Makes an API call with the given arguments '''
     response = requests.post(URL, data=body, headers=HEADERS, verify=VERIFY_CERTIFICATE)
 
@@ -406,4 +406,4 @@ try:
         remedy_update_ticket_command()
 
 except Exception as e:
-    return_error(str(e.message))
+    return_error(str(e))

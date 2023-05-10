@@ -4,3 +4,5 @@
 !demisto-api-download uri=/log/bundle
 !demisto-api-multipart uri=/incident/upload/204 entryID=evnKTiujxaZEkeKRxiBMig@bed9ccda-02ab-49ef-8fc1-c43a36ff38f5 body=test_bark
 !demisto-delete-incidents ids=152 fields=id,occurred
+!demisto-api-install-packs packs_to_install=`[{"AutoFocus": "2.0.8"},{"HelloWorld":"1.0.0"}]`
+!demisto-api-install-packs file_url=https://storage.cloud.google.com/marketplace-dist/content/packs/AutoFocus/2.0.8/AutoFocus.zip

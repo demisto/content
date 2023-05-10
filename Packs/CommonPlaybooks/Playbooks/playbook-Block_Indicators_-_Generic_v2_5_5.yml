@@ -667,3 +667,6 @@ outputs:
 tests:
 - No Test
 fromversion: 5.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

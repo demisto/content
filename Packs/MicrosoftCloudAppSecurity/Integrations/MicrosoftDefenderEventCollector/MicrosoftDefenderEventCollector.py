@@ -4,20 +4,20 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
 from abc import ABC
 from typing import Any, Callable, Optional
 
 from enum import Enum
-from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field  # type: ignore[E0611, E0611, E0611]
+from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field, parse_obj_as, HttpUrl  # type: ignore[E0611, E0611, E0611]
 from requests.auth import HTTPBasicAuth
 import requests
 import dateparser
 
 from MicrosoftApiModule import *
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
@@ -25,6 +25,8 @@ TYPES_TO_RETRIEVE = {'alerts': dict(type='alerts', filters={}),
                      'activities_admin': dict(type='activities', filters={"activity.type": {"eq": True}}),
                      'activities_login': dict(type='activities', filters={
                          "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}})}
+VENDOR = "Microsoft"
+PRODUCT = "defender_cloud_apps"
 
 ''' HELPER CLASSES '''
 
@@ -274,7 +276,7 @@ class DefenderGetEvents(IntegrationGetEvents):
         # TYPES_TO_RETRIEVE dictionary contains the filters and the endpoint according to the event type.
         for event_type_name, endpoint_details in TYPES_TO_RETRIEVE.items():
             self.client.request.params.pop('filters', None)
-            self.client.request.url = f'{base_url}{endpoint_details["type"]}'
+            self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
             # get the filter for this type
             filters = endpoint_details['filters']
@@ -374,8 +376,6 @@ def main(command: str, demisto_params: dict):
     try:
         demisto_params['client_secret'] = demisto_params['credentials']['password']
         push_to_xsiam = argToBoolean(demisto_params.get('should_push_events', 'false'))
-        vendor = demisto_params.get('vendor')
-        product = demisto_params.get('product')
 
         after = demisto_params.get('after')
         if after and not isinstance(after, int):
@@ -398,7 +398,7 @@ def main(command: str, demisto_params: dict):
 
             if command == 'fetch-events':
                 # publishing events to XSIAM
-                send_events_to_xsiam(events, vendor=vendor, product=product)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(DefenderGetEvents.get_last_run(events))
 
             elif command == 'microsoft-defender-cloud-apps-get-events':
@@ -413,7 +413,7 @@ def main(command: str, demisto_params: dict):
                 return_results(command_results)
                 if push_to_xsiam:
                     # publishing events to XSIAM
-                    send_events_to_xsiam(events, vendor=vendor, product=product)
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
     except Exception as e:

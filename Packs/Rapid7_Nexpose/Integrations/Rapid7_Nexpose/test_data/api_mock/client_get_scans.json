@@ -1,0 +1,107 @@
+[
+    {
+        "assets": 0,
+        "duration": "PT51.316S",
+        "endTime": "2019-12-03T20:48:01.368Z",
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "id": 1,
+        "scanName": "Tue 03 Dec 2019 10:47 PM",
+        "scanType": "Manual",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-03T20:47:10.052Z",
+        "startedByUsername": "N/A",
+        "status": "finished",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "assets": 0,
+        "duration": "PT29.91S",
+        "endTime": "2019-12-03T20:53:09.453Z",
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "id": 2,
+        "scanName": "Tue 03 Dec 2019 10:52 PM",
+        "scanType": "Manual",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-03T20:52:39.543Z",
+        "startedByUsername": "N/A",
+        "status": "finished",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "assets": 0,
+        "duration": "PT28.904S",
+        "endTime": "2019-12-03T21:01:33.970Z",
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "id": 3,
+        "scanName": "scan 2019-12-03 19:58:25.961787",
+        "scanType": "Manual",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-03T21:01:05.066Z",
+        "startedByUsername": "N/A",
+        "status": "finished",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "assets": 0,
+        "duration": "PT33.564S",
+        "endTime": "2019-12-04T00:20:55.763Z",
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "id": 4,
+        "scanName": "Wed 04 Dec 2019 02:20 AM",
+        "scanType": "Manual",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-04T00:20:22.199Z",
+        "startedByUsername": "N/A",
+        "status": "finished",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "assets": 0,
+        "duration": "PT30.505S",
+        "endTime": "2019-12-04T00:44:14.576Z",
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "id": 5,
+        "scanName": "Wed 04 Dec 2019 02:43 AM",
+        "scanType": "Manual",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-04T00:43:44.071Z",
+        "startedByUsername": "N/A",
+        "status": "finished",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    }
+]

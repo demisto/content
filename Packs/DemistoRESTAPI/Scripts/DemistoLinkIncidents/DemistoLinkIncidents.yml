@@ -6,7 +6,7 @@ script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Link two or more incidents
+comment: Deprecated. No available replacement.
 enabled: true
 args:
 - name: masterID
@@ -28,5 +28,8 @@ dependson:
   must:
   - demisto-api-post
 fromversion: 5.0.0
+marketplaces:
+- xsoar
 tests:
 - no test
+deprecated: true

@@ -1,0 +1,15 @@
+{
+    "ruleId": "ru_52eea093-acc0-438a-8867-ece16e65fc0c",
+    "versionId": "ru_52eea093-acc0-438a-8867-ece16e65fc0c@v_1653549695_141983000",
+    "ruleName": "demoRuleCreatedFromAPIVersion2",
+    "metadata": {
+        "description": "double event rule that should generate detections",
+        "author": "securityuser2",
+        "severity": "Critical",
+        "reference": "https://example.com"
+    },
+    "ruleText": "rule demoRuleCreatedFromAPIVersion2 {\n        meta:\n        author = \"securityuser2\"\n        description = \"double event rule that should generate detections\"\n\n        events:\n        $e.metadata.event_type = \"NETWORK_DNS\"\n\n        condition:\n        $e\n    }\n",
+    "versionCreateTime": "2022-05-26T07:21:35.141983Z",
+    "compilationState": "SUCCEEDED",
+    "ruleType": "SINGLE_EVENT"
+}

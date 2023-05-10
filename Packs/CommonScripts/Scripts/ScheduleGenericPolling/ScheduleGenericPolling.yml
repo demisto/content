@@ -5,7 +5,7 @@ name: ScheduleGenericPolling
 fromversion: 5.0.0
 script: ''
 type: python
-subtype: python2
+subtype: python3
 tags: []
 comment: Called by the GenericPolling playbook, schedules the polling task.
 enabled: true
@@ -49,5 +49,5 @@ args:
 scripttarget: 0
 runonce: false
 tests:
-- No test
-dockerimage: demisto/python:2.7.18.27799
+- Generic Polling Test
+dockerimage: demisto/python3:3.10.10.48392

@@ -1,43 +1,68 @@
 The Azure WAF (Web Application Firewall) integration provides centralized protection of your web applications from common exploits and vulnerabilities.
 It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies,
 and also to get details of a specific policy or a list of policies.
-## Configure AzureWAF on Cortex XSOAR
 
-In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
-
-#### Cortex XSOAR Azure app
-In order to use the Cortex XSOAR Azure application, use the default application ID (cf22fd73-29f1-4245-8e16-533704926d20) and fill in your subscription ID and default resource group name. 
-
-#### Self Deployed Azure app
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
-The application must have *user_impersonation* permission and must allow public client flows (which can be found under the **Authentication** section of the app).
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AzureWAF.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | app_id | App ID | True |
-    | subscription_id | Subscription ID | True |
-    | resource_group_name | Default Resource Group Name | True |
-    | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
-
-In order to connect to Azure Web Application Firewall using either the Cortex XSOAR Azure or Self Deployed Azure application:
-1. Fill in the required parameters
-2. Run the ***!azure-waf-auth-start*** command.
-3. Follow the instructions that appear.
-4. Run the ***!azure-waf-auth-complete*** command.
-At end of the process, you will see a message that you logged in successfully. 
+# Self-Deployed Application
+To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
 ## Required Permissions:
 1. user_impersonation
 2. offline_access
 3. user.read 
+
+## Authentication Using the  User-Authentication Flow (recommended)
+
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. choose the 'User Auth' option in the ***Authentication Type*** parameter.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+7. Save the instance.
+8. Run the `!azure-waf-generate-login-url` command in the War Room and follow the instruction.
+9. Run the ***!azure-waf-auth-test*** command - a 'Success' message should be printed to the War Room.
+
+#### Cortex XSOAR Azure app
+In order to use the Cortex XSOAR Azure application, use the default application ID (cf22fd73-29f1-4245-8e16-533704926d20) and fill in your subscription ID and default resource group name. 
+
+### Authentication Using the Device Code Flow
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
+to link Azure SQL Management with Cortex XSOAR.
+
+In order to connect to Azure Web Application Firewall using either the Cortex XSOAR Azure or Self Deployed Azure application:
+1. Fill in the required parameters
+2. choose the 'Device' option in the ***user_auth_flow*** parameter.
+4. Run the ***!azure-waf-auth-start*** command.
+4. Follow the instructions that appear.
+5. Run the ***!azure-waf-auth-complete*** command.
+At end of the process, you will see a message that you logged in successfully.
+
+## Configure AzureWAF on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Azure Web Application Firewall.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | App ID |  | False |
+    | Default Subscription ID |  | True |
+    | Default Resource Group Name |  | True |
+    | Authentication Type | Type of authentication - can be Authorization Code Flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
+    | Tenant ID (for authorization code mode) |  | False |
+    | Client Secret (for authorization code mode) |  | False |
+    | Client Secret (for authorization code mode) |  | False |
+    | Application redirect URI (for authorization code mode) |  | False |
+    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+    | Authorization code |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -55,7 +80,8 @@ Retrieves protection policies within a resource group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Optional | 
-| resource_group_name | The name of the resource group. If not provided, the instance's default resource group name will be used. | Optional | 
+| resource_group_names | Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional | 
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
 | verbose | Whether to retrieve full details of the policy. Possible values are: "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of policies to fetch. Default is "10". Default is 10. | Optional | 
 
@@ -163,6 +189,8 @@ Retrieves all the WAF policies in a subscription.
 | --- | --- | --- |
 | verbose | Whether to retrieve the full details of the policy. Possible values are "true" and "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of policies to be shown. (This will only affect visualized data, not context.). Default is 10. | Optional | 
+| subscription_id | Comma-separated list of subscription IDs. Will override the default subscription ID. | Optional | 
+
 
 
 #### Context Output
@@ -267,7 +295,8 @@ Creates or updates a policy with a specified rule set name within a resource gro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Required | 
-| resource_group_name | The name of the resource group. If not provided, the instance's default resource group name will be used. | Optional | 
+| resource_group_names | Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used. | Optional | 
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
 | managed_rules | Describes the managedRules structure. | Required | 
 | resource_id | Resource ID. | Optional | 
 | location | Describes the resource location. | Optional | 
@@ -373,6 +402,7 @@ Deletes a policy.
 | --- | --- | --- |
 | policy_name | The name of a policy. Used to retrieve a protection policy with a specified name within a resource group. If policy_name is not provided, will retrieve all policies. | Required | 
 | resource_group_name | The name of the resource group. If not provided, the instance's default resource group name will be used. | Optional | 
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
 
 
 #### Context Output
@@ -486,3 +516,83 @@ There is no context output for this command.
 #### Human Readable Output
 
 >✅ Great Success!
+
+### azure-waf-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-waf-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-waf-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
+### azure-waf-subscriptions-list
+
+***
+Gets all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-waf-subscriptions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.Subscription.authorizationSource | String | Subscription authorization source. | 
+| AzureWAF.Subscription.displayName | String | Subscription display name. | 
+| AzureWAF.Subscription.id | String | Subscription ID with subscriptions prefix. | 
+| AzureWAF.Subscription.subscriptionId | String | Subscription ID. | 
+| AzureWAF.Subscription.locationPlacementId | String | Placmement ID of subscription. | 
+| AzureWAF.Subscription.tenantId | String | The tenatnt ID of the subscription. | 
+
+### azure-waf-resource-group-list
+
+***
+Gets all the resource groups for a subscription.
+
+#### Base Command
+
+`azure-waf-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. If not provided, the integration default subscription ID will be used. | Optional | 
+| tag | You can filter by tag names and values. For example, to filter for a tag name and value, tagName=tagValue'. | Optional | 
+| limit | Maximum number of resource groups to fetch. Default is "50". Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureWAF.ResourceGroup.id | String | Resource group ID. | 
+| AzureWAF.ResourceGroup.location | String | Resource group location. | 
+| AzureWAF.ResourceGroup.name | String | Resource group name. | 
+| AzureWAF.ResourceGroup.type | String | Resource group type. | 
+| AzureWAF.ResourceGroup.properties | String | Resource group properties. | 
+| AzureWAF.ResourceGroup.tags | String | Resource group tags. | 

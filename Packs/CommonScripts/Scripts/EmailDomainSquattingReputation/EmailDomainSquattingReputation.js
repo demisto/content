@@ -21,7 +21,7 @@ var emailObj = {
 
 domains.forEach(function(domain){
   if(domain) {
-      var resp = executeCommand("GetStringsDistance", {inputString: emailObj.Domain, compareString: domain});
+      var resp = executeCommand("GetStringsDistance", {inputString: emailObj.Domain, compareString: domain.toLowerCase()});
 
       if(isError(resp[0])){
           return resp;

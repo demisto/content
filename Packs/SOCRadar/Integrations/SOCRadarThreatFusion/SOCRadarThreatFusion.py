@@ -4,12 +4,12 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
+import urllib3
 import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
@@ -334,7 +334,8 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             dbot_score = Common.DBotScore(indicator=ip_to_score,
                                           indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
-                                          score=score)
+                                          score=score,
+                                          reliability=demisto.params().get('integrationReliability'))
 
             ip_object = Common.IP(ip=ip_to_score,
                                   dbot_score=dbot_score,
@@ -398,7 +399,8 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             dbot_score = Common.DBotScore(indicator=domain_to_score,
                                           indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME,
-                                          score=score)
+                                          score=score,
+                                          reliability=demisto.params().get('integrationReliability'))
 
             domain_object = Common.Domain(domain=domain_to_score,
                                           dbot_score=dbot_score,
@@ -473,7 +475,8 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             dbot_score = Common.DBotScore(indicator=hash_to_score,
                                           indicator_type=DBotScoreType.FILE,
                                           integration_name=INTEGRATION_NAME,
-                                          score=score)
+                                          score=score,
+                                          reliability=demisto.params().get('integrationReliability'))
 
             file_object = Common.File(dbot_score=dbot_score)
             # hash_type can either be 'sha-1' or 'md5' at this point.

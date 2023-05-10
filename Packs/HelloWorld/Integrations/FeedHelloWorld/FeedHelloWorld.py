@@ -241,7 +241,7 @@ def test_module(client: Client) -> str:
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
 
-    client.build_iterator()
+    fetch_indicators(client, limit=1)
     return 'ok'
 
 
@@ -302,14 +302,15 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         if (relations := item.get('relations')) and create_relationships:
             relationships = []
             for relation in relations:
-                entity_relation = EntityRelationship(
-                    name=relation.get('relationType'),
-                    entity_a=value_,
-                    entity_a_type=type_,
-                    entity_b=relation.get('value'),
-                    entity_b_type=relation.get('type')
-                )
-                relationships.append(entity_relation.to_indicator())
+                if relation:
+                    entity_relation = EntityRelationship(
+                        name=relation.get('relationType'),
+                        entity_a=value_,
+                        entity_a_type=type_,
+                        entity_b=relation.get('value'),
+                        entity_b_type=relation.get('type')
+                    )
+                    relationships.append(entity_relation.to_indicator())
 
             indicator_obj['relationships'] = relationships
 
@@ -419,7 +420,6 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

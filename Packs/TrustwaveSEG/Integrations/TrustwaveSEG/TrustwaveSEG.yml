@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: trustwave secure email gateway
   version: -1
@@ -836,7 +836,7 @@ script:
     description: Forwards a message to Spiderlabs as spam.
     execution: false
     name: trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.8.39276
   feed: false
   isfetch: false
   longRunning: false
@@ -845,4 +845,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests: 
+- TrustwaveSEG-Test
 fromversion: 5.0.0

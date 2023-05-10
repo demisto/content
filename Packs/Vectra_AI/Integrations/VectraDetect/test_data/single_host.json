@@ -1,0 +1,113 @@
+{
+    "_doc_modified_ts": "2022-07-11T07:07:59.203634",
+    "active_traffic": false,
+    "assigned_date": null,
+    "assigned_to": null,
+    "assignment": null,
+    "campaign_summaries": [],
+    "certainty": 45,
+    "detection_profile": "Cloud Services",
+    "detection_summaries": [
+        {
+            "assigned_date": null,
+            "assigned_to": null,
+            "certainty": 20,
+            "detection_category": "COMMAND & CONTROL",
+            "detection_id": 33,
+            "detection_type": "Hidden DNS Tunnel",
+            "filtered_by_ai": false,
+            "filtered_by_rule": false,
+            "filtered_by_user": false,
+            "is_targeting_key_asset": false,
+            "is_triaged": false,
+            "state": "active",
+            "summary": {
+                "bytes_received": 557123,
+                "bytes_sent": 478002,
+                "num_sessions": 3164,
+                "target_domains": [
+                    "snakeoil.biz"
+                ]
+            },
+            "tags": [],
+            "threat": 23
+        },
+        {
+            "assigned_date": null,
+            "assigned_to": null,
+            "certainty": 78,
+            "detection_category": "EXFILTRATION",
+            "detection_id": 31,
+            "detection_type": "Hidden DNS Tunnel",
+            "filtered_by_ai": false,
+            "filtered_by_rule": false,
+            "filtered_by_user": false,
+            "is_targeting_key_asset": false,
+            "is_triaged": false,
+            "state": "active",
+            "summary": {
+                "bytes_received": 483704,
+                "bytes_sent": 414990,
+                "dst_ips": [
+                    "192.168.55.10"
+                ],
+                "num_sessions": 2746
+            },
+            "tags": [],
+            "threat": 40
+        }
+    ],
+    "groups": [],
+    "has_active_traffic": false,
+    "has_custom_model": false,
+    "has_shell_knocker_learnings": false,
+    "host_artifact_set": [
+        {
+            "siem": false,
+            "source": null,
+            "type": "dhcp",
+            "value": "Vectra-Test"
+        },
+        {
+            "siem": false,
+            "source": null,
+            "type": "mac",
+            "value": "00:04:ac:12:a6:19",
+            "vendor": "Ibm Corp"
+        }
+    ],
+    "host_luid": ".Zv2h8pJ",
+    "host_session_luids": [
+        "4jY..77U"
+    ],
+    "id": 472,
+    "ip": "192.168.51.6",
+    "is_key_asset": false,
+    "is_targeting_key_asset": false,
+    "key_asset": false,
+    "last_detection_timestamp": "2022-07-09T14:13:58Z",
+    "last_modified": "2022-07-09T14:03:57Z",
+    "last_seen": "2022-07-09T19:38:34Z",
+    "last_source": "192.168.51.6",
+    "ldap": null,
+    "name": "Vectra-Test",
+    "note": null,
+    "note_modified_by": null,
+    "note_modified_timestamp": null,
+    "previous_ips": [],
+    "privilege_category": null,
+    "privilege_level": null,
+    "probable_owner": null,
+    "sensor": "2x2ir6i9",
+    "sensor_name": "Sensor_A",
+    "severity": "low",
+    "shell_knocker": [],
+    "state": "active",
+    "suspicious_admin_learnings": {
+        "host_manages": [],
+        "managers_of_host": []
+    },
+    "tags": [],
+    "targets_key_asset": false,
+    "threat": 30
+}

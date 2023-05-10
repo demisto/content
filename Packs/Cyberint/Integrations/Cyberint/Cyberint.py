@@ -1,16 +1,13 @@
 # pylint: disable=unsubscriptable-object
-from CommonServerPython import *
-
 ''' IMPORTS '''
+
+import copy
+from CommonServerPython import *
 from requests import Response
 from contextlib import closing
 import json
-import requests
 import dateparser
 from typing import Dict, List, Optional, Tuple, Iterable
-
-requests.packages.urllib3.disable_warnings()
-
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEVERITIES = {'low': 1, 'medium': 2, 'high': 3, 'very_high': 4}
@@ -22,7 +19,8 @@ class Client(BaseClient):
     API Client to communicate with Cyberint API endpoints.
     """
 
-    def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
+    def __init__(self, base_url: str, access_token: str, verify_ssl: bool,
+                 proxy: bool):
         """
         Client for CyberInt RESTful API.
 
@@ -36,10 +34,14 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
     def list_alerts(self, page: Optional[str], page_size: Optional[int],
-                    created_date_from: Optional[str], created_date_to: Optional[str],
-                    modification_date_from: Optional[str], modification_date_to: Optional[str],
-                    environments: Optional[List[str]], statuses: Optional[List[str]],
-                    severities: Optional[List[str]], types: Optional[List[str]]) -> Dict:
+                    created_date_from: Optional[str],
+                    created_date_to: Optional[str],
+                    modification_date_from: Optional[str],
+                    modification_date_to: Optional[str],
+                    environments: Optional[List[str]],
+                    statuses: Optional[List[str]],
+                    severities: Optional[List[str]],
+                    types: Optional[List[str]]) -> Dict:
         """
         Retrieve a list of alerts according to parameters.
 
@@ -58,14 +60,29 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Cyberint.
         """
-        body = {'page': page, 'size': page_size, 'filters': {
-            'created_date': {'from': created_date_from, 'to': created_date_to},
-            'modification_date': {'from': modification_date_from, 'to': modification_date_to},
-            'environments': environments, 'status': statuses, 'severity': severities,
-            'type': types
-        }}
+        body = {
+            'page': page,
+            'size': page_size,
+            'include_csv_attachments_as_json_content': True,
+            'filters': {
+                'created_date': {
+                    'from': created_date_from,
+                    'to': created_date_to
+                },
+                'modification_date': {
+                    'from': modification_date_from,
+                    'to': modification_date_to
+                },
+                'environments': environments,
+                'status': statuses,
+                'severity': severities,
+                'type': types
+            }
+        }
         body = remove_empty_elements(body)
-        response = self._http_request(method='POST', json_data=body, cookies=self._cookies,
+        response = self._http_request(method='POST',
+                                      json_data=body,
+                                      cookies=self._cookies,
                                       url_suffix='api/v1/alerts')
         return response
 
@@ -82,14 +99,23 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Cyberint.
         """
-        body = {'alert_ref_ids': alerts,
-                'data': {'status': status, 'closure_reason': closure_reason}}
+        body = {
+            'alert_ref_ids': alerts,
+            'data': {
+                'status': status,
+                'closure_reason': closure_reason
+            }
+        }
         body = remove_empty_elements(body)
-        response = self._http_request(method='PUT', json_data=body, cookies=self._cookies,
+        response = self._http_request(method='PUT',
+                                      json_data=body,
+                                      cookies=self._cookies,
                                       url_suffix='api/v1/alerts/status')
         return response
 
-    def get_csv_file(self, alert_id: str, attachment_id: str,
+    def get_csv_file(self,
+                     alert_id: str,
+                     attachment_id: str,
                      delimiter: bytes = b'\r\n') -> Iterable[str]:
         """
         Stream a CSV file attachment in order to extract data out of it.
@@ -103,13 +129,17 @@ class Client(BaseClient):
             row (generator(str)): Generator containing each line of the CSV.
         """
         url_suffix = f'api/v1/alerts/{alert_id}/attachments/{attachment_id}'
-        with closing(self._http_request(method='GET', url_suffix=url_suffix,
-                                        cookies=self._cookies, resp_type='all',
-                                        stream=True)) as r:
+        with closing(
+                self._http_request(method='GET',
+                                   url_suffix=url_suffix,
+                                   cookies=self._cookies,
+                                   resp_type='all',
+                                   stream=True)) as r:
             for line in r.iter_lines(delimiter=delimiter):
                 yield line.decode('utf-8').strip('"')
 
-    def get_alert_attachment(self, alert_ref_id: str, attachment_id: str) -> Response:
+    def get_alert_attachment(self, alert_ref_id: str,
+                             attachment_id: str) -> Response:
         """
         Retrieve attachment by alert reference ID and attachment ID.
 
@@ -183,8 +213,9 @@ def verify_input_date_format(date: Optional[str]) -> Optional[str]:
     return date
 
 
-def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
-                  date_range_arg: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
+def set_date_pair(
+        start_date_arg: Optional[str], end_date_arg: Optional[str],
+        date_range_arg: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
     """
     Calculate the date range to send to the API based on the arguments from the user.
 
@@ -199,7 +230,8 @@ def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
     """
     if date_range_arg:
         start_date, end_date = parse_date_range(date_range=date_range_arg,
-                                                date_format=DATE_FORMAT, utc=False)
+                                                date_format=DATE_FORMAT,
+                                                utc=False)
         return start_date, end_date
     min_date = datetime.fromisocalendar(2020, 2, 1)
     start_date_arg = verify_input_date_format(start_date_arg)
@@ -211,8 +243,10 @@ def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
     return start_date_arg, end_date_arg
 
 
-def extract_data_from_csv_stream(client: Client, alert_id: str,
-                                 attachment_id: str, delimiter: bytes = b'\r\n') -> List[dict]:
+def extract_data_from_csv_stream(client: Client,
+                                 alert_id: str,
+                                 attachment_id: str,
+                                 delimiter: bytes = b'\r\n') -> List[dict]:
     """
     Call the attachment download API and parse required fields.
 
@@ -239,8 +273,10 @@ def extract_data_from_csv_stream(client: Client, alert_id: str,
             first_line = False
         else:
             try:
-                extracted_field_data = {field_name.lower(): csv_line_separated[field_index]
-                                        for field_name, field_index in field_indexes.items()}
+                extracted_field_data = {
+                    field_name.lower(): csv_line_separated[field_index]
+                    for field_name, field_index in field_indexes.items()
+                }
                 if extracted_field_data:
                     information_found.append(extracted_field_data)
             except IndexError:
@@ -248,7 +284,8 @@ def extract_data_from_csv_stream(client: Client, alert_id: str,
     return information_found
 
 
-def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
+def cyberint_alerts_fetch_command(client: Client,
+                                  args: dict) -> CommandResults:
     """
     List alerts on cyberint according to parameters.
 
@@ -259,42 +296,57 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    created_date_from, created_date_to = set_date_pair(args.get('created_date_from', None),
-                                                       args.get('created_date_to', None),
-                                                       args.get('created_date_range', None))
-    modify_date_from, modify_date_to = set_date_pair(args.get('modification_date_from', None),
-                                                     args.get('modification_date_to', None),
-                                                     args.get('modification_date_range', None))
-    if int(args.get('page_size', 10)) < 10 or int(args.get('page_size', 10)) > 100:
+    created_date_from, created_date_to = set_date_pair(
+        args.get('created_date_from', None), args.get('created_date_to', None),
+        args.get('created_date_range', None))
+    modify_date_from, modify_date_to = set_date_pair(
+        args.get('modification_date_from', None),
+        args.get('modification_date_to', None),
+        args.get('modification_date_range', None))
+    if int(args.get('page_size', 10)) < 10 or int(args.get('page_size',
+                                                           10)) > 100:
         raise DemistoException('Page size must be between 10 and 100.')
-    result = client.list_alerts(args.get('page'), args.get('page_size'), created_date_from,
-                                created_date_to, modify_date_from, modify_date_to,
+    result = client.list_alerts(args.get('page'), args.get('page_size'),
+                                created_date_from, created_date_to,
+                                modify_date_from, modify_date_to,
                                 argToList(args.get('environments')),
                                 argToList(args.get('statuses')),
-                                argToList(args.get('severities')), argToList(args.get('types')))
+                                argToList(args.get('severities')),
+                                argToList(args.get('types')))
     alerts = result.get('alerts', [])
     outputs = []
     for alert in alerts:
         alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
         if alert_csv_id:
-            alert['csv_data'] = {'csv_id': alert_csv_id,
-                                 'name': dict_safe_get(alert, ['alert_data', 'csv', 'name'])}
-            extracted_csv_data = extract_data_from_csv_stream(client, alert.get('ref_id', ''),
-                                                              alert_csv_id)
+            alert['csv_data'] = {
+                'csv_id': alert_csv_id,
+                'name': dict_safe_get(alert, ['alert_data', 'csv', 'name']),
+                'content': dict_safe_get(alert,
+                                         ['alert_data', 'csv', 'content'])
+            }
+            extracted_csv_data = extract_data_from_csv_stream(
+                client, alert.get('ref_id', ''), alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
         outputs.append(alert)
     total_alerts = result.get('total')
-    table_headers = ['ref_id', 'title', 'status', 'severity', 'created_date', 'type',
-                     'environment']
+    table_headers = [
+        'ref_id', 'title', 'status', 'severity', 'created_date', 'type',
+        'environment'
+    ]
     readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
-    readable_output += tableToMarkdown(name='CyberInt alerts:', t=outputs, headers=table_headers,
+    readable_output += tableToMarkdown(name='CyberInt alerts:',
+                                       t=outputs,
+                                       headers=table_headers,
                                        removeNull=True)
-    return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
-                          readable_output=readable_output, raw_response=result,
+    return CommandResults(outputs_key_field='ref_id',
+                          outputs_prefix='Cyberint.Alert',
+                          readable_output=readable_output,
+                          raw_response=result,
                           outputs=outputs)
 
 
-def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
+def cyberint_alerts_status_update(client: Client,
+                                  args: dict) -> CommandResults:
     """
         Update the status of one or more alerts
 
@@ -309,23 +361,33 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
     status = args.get('status')
     closure_reason = args.get('closure_reason')
     if status == 'closed' and not closure_reason:
-        raise DemistoException('You must supply a closure reason when closing an alert.')
-    response = client.update_alerts(alert_ids, status,
-                                    closure_reason)
+        raise DemistoException(
+            'You must supply a closure reason when closing an alert.')
+    response = client.update_alerts(alert_ids, status, closure_reason)
     table_headers = ['ref_id', 'status', 'closure_reason']
     outputs = []
     for alert_id in alert_ids:
-        outputs.append({'ref_id': alert_id, 'status': status, 'closure_reason': closure_reason})
+        outputs.append({
+            'ref_id': alert_id,
+            'status': status,
+            'closure_reason': closure_reason
+        })
 
-    readable_output = tableToMarkdown(name='CyberInt alerts updated information:', t=outputs,
-                                      headers=table_headers, removeNull=True)
-    return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
-                          readable_output=readable_output, raw_response=response,
+    readable_output = tableToMarkdown(
+        name='CyberInt alerts updated information:',
+        t=outputs,
+        headers=table_headers,
+        removeNull=True)
+    return CommandResults(outputs_key_field='ref_id',
+                          outputs_prefix='Cyberint.Alert',
+                          readable_output=readable_output,
+                          raw_response=response,
                           outputs=outputs)
 
 
 def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
-                                           attachment_id: str, attachment_name: str) -> Dict:
+                                           attachment_id: str,
+                                           attachment_name: str) -> Dict:
     """
     Retrieve attachment by alert reference ID and attachment internal ID.
     Attachments includes: CSV files , Screenshots, and alert attachments files.
@@ -347,7 +409,8 @@ def cyberint_alerts_get_attachment_command(client: Client, alert_ref_id: str,
 
 
 def cyberint_alerts_get_analysis_report_command(client: Client,
-                                                alert_ref_id: str, report_name: str) -> Dict:
+                                                alert_ref_id: str,
+                                                report_name: str) -> Dict:
     """
     Retrieve expert analysis report by alert reference ID and report name.
 
@@ -380,7 +443,8 @@ def get_attachment_name(attachment_name: str) -> str:
     return attachment_name
 
 
-def create_fetch_incident_attachment(raw_response: Response, attachment_file_name: str) -> dict:
+def create_fetch_incident_attachment(raw_response: Response,
+                                     attachment_file_name: str) -> dict:
     """
     Create suitable attachment information dictionary object.
     This dictionary object will be used as an entry in the fetch-incidents attachments list.
@@ -396,7 +460,8 @@ def create_fetch_incident_attachment(raw_response: Response, attachment_file_nam
     """
 
     attachment_name = get_attachment_name(attachment_file_name)
-    file_result = fileResult(filename=attachment_name, data=raw_response.content)
+    file_result = fileResult(filename=attachment_name,
+                             data=raw_response.content)
 
     return {
         "path": file_result["FileID"],
@@ -427,13 +492,13 @@ def get_alert_attachments(client: Client, attachment_list: List,
         if attachment:
             if attachment_type == 'analysis_report':
                 raw_response = client.get_analysis_report(alert_id)
-                incidents_attachment = create_fetch_incident_attachment(raw_response,
-                                                                        attachment.get('name', None))
+                incidents_attachment = create_fetch_incident_attachment(
+                    raw_response, attachment.get('name', None))
             else:
-                raw_response = client.get_alert_attachment(alert_id,
-                                                           attachment.get('id', None))
-                incidents_attachment = create_fetch_incident_attachment(raw_response,
-                                                                        attachment.get('name', None))
+                raw_response = client.get_alert_attachment(
+                    alert_id, attachment.get('id', None))
+                incidents_attachment = create_fetch_incident_attachment(
+                    raw_response, attachment.get('name', None))
 
             if incidents_attachment:
                 incident_attachments.append(incidents_attachment)
@@ -441,11 +506,12 @@ def get_alert_attachments(client: Client, attachment_list: List,
     return incident_attachments
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    first_fetch_time: str, fetch_severity: Optional[List[str]],
-                    fetch_status: Optional[List[str]], fetch_type: Optional[List[str]],
-                    fetch_environment: Optional[List[str]],
-                    max_fetch: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(
+        client: Client, last_run: Dict[str, int], first_fetch_time: str,
+        fetch_severity: Optional[List[str]], fetch_status: Optional[List[str]],
+        fetch_type: Optional[List[str]],
+        fetch_environment: Optional[List[str]], max_fetch: Optional[int],
+        duplicate_alert: bool) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
@@ -472,31 +538,39 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     incidents = []
     next_run = last_fetch
     #  Send the API request to fetch the alerts.
-    alerts = client.list_alerts('1', max_fetch, datetime.strftime(last_fetch, DATE_FORMAT),
-                                datetime.strftime(datetime.now(), DATE_FORMAT), None, None,
-                                fetch_environment, fetch_status, fetch_severity, fetch_type)
+    alerts = client.list_alerts('1', max_fetch,
+                                datetime.strftime(last_fetch, DATE_FORMAT),
+                                datetime.strftime(datetime.now(), DATE_FORMAT),
+                                None, None, fetch_environment, fetch_status,
+                                fetch_severity, fetch_type)
 
     for alert_object in alerts.get('alerts', []):
         alert = dict(alert_object)
         #  Create the XS0AR incident.
-        alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')  # type: ignore
+        alert_created_time = datetime.strptime(
+            alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')  # type: ignore
+
         alert_id = alert.get('ref_id')
         alert_title = alert.get('title')
         attachments = []
         incident_attachments = []
 
-        attachments_keys = {'attachment': [["attachments"], ["alert_data", "screenshot"], ["alert_data", "csv"]],
-                            'analysis_report': [['analysis_report']]}
+        attachments_keys = {
+            'attachment': [["attachments"], ["alert_data", "screenshot"],
+                           ["alert_data", "csv"]],
+            'analysis_report': [['analysis_report']]
+        }
         for attachment_type, attachments_path in attachments_keys.items():
             for path in attachments_path:
-                current_attachments = dict_safe_get(alert, path, default_return_value=[])
-                attachment_list = current_attachments if isinstance(current_attachments, list) else [
-                    current_attachments]
+                current_attachments = dict_safe_get(alert,
+                                                    path,
+                                                    default_return_value=[])
+                attachment_list = current_attachments if isinstance(
+                    current_attachments, list) else [current_attachments]
                 # Retrieve alert Incident attachments files - Attachments, CSV, Screenshot, and Analysis report.
-                current_incident_attachments = get_alert_attachments(client,
-                                                                     attachment_list,
-                                                                     attachment_type,
-                                                                     alert_id)  # type: ignore
+                current_incident_attachments = get_alert_attachments(
+                    client, attachment_list, attachment_type,
+                    alert_id)  # type: ignore
 
                 incident_attachments.extend(current_incident_attachments)
                 for tmp_attachment in attachment_list:
@@ -504,20 +578,45 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                         attachments.append(tmp_attachment)
 
         alert["attachments"] = attachments
-        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+        alert_data = dict_safe_get(alert, ['alert_data', 'csv'], {})
+        incident_csv_records = alert_data.get('content', [])
+
+        alert_csv_id = dict_safe_get(alert, ['alert_data', 'csv', 'id'])
+
         if alert_csv_id:
-            extracted_csv_data = extract_data_from_csv_stream(client, alert_id,  # type: ignore
-                                                              alert_csv_id)
+            extracted_csv_data = extract_data_from_csv_stream(
+                client,
+                alert_id,  # type: ignore
+                alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
 
+        # add alert_name key to alert response
+        alert_name = f'Cyberint alert {alert_id}: {alert_title}'
+        alert.update({'alert_name': alert_name})
+
         incident = {
-            'name': f'Cyberint alert {alert_id}: {alert_title}',
+            'name': alert_name,
             'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
             'rawJSON': json.dumps(alert),
-            'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-            'attachment': incident_attachments
+            'severity': SEVERITIES.get(alert.get('severity', 'low')),
+            'attachment': incident_attachments,
         }
-        incidents.append(incident)
+
+        if duplicate_alert and incident_csv_records:
+            for index, incident_csv_record in enumerate(incident_csv_records):
+                alert_data.update({'content': incident_csv_record})
+                alert.update({'attachments': alert_data})
+
+                alert_name = f'Cyberint alert {alert_id} ({index+1}): {alert_title}'
+                alert.update({'alert_name': alert_name})
+
+                incident.update({
+                    'name': alert_name,
+                    'rawJSON': json.dumps(alert)
+                })
+                incidents.append(copy.deepcopy(incident))
+        else:
+            incidents.append(incident)
 
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.
@@ -543,11 +642,10 @@ def main():
     base_url = f'https://{environment}.cyberint.io/alert/'
     demisto.info(f'Command being called is {command}')
     try:
-        client = Client(
-            base_url=base_url,
-            verify_ssl=verify_certificate,
-            access_token=access_token,
-            proxy=proxy)
+        client = Client(base_url=base_url,
+                        verify_ssl=verify_certificate,
+                        access_token=access_token,
+                        proxy=proxy)
 
         if command == 'test-module':
             result = test_module(client)
@@ -559,23 +657,33 @@ def main():
             fetch_type = params.get('fetch_type', [])
             fetch_severity = params.get('fetch_severity', [])
             max_fetch = int(params.get('max_fetch', '50'))
-            next_run, incidents = fetch_incidents(
-                client, demisto.getLastRun(), first_fetch_time, fetch_severity, fetch_status,
-                fetch_type, fetch_environment, max_fetch)
+            duplicate_alert = params.get('duplicate_alert', False)
+            next_run, incidents = fetch_incidents(client, demisto.getLastRun(),
+                                                  first_fetch_time,
+                                                  fetch_severity, fetch_status,
+                                                  fetch_type,
+                                                  fetch_environment, max_fetch,
+                                                  duplicate_alert)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
         elif command == 'cyberint-alerts-fetch':
-            return_results(cyberint_alerts_fetch_command(client, demisto.args()))
+            return_results(
+                cyberint_alerts_fetch_command(client, demisto.args()))
 
         elif command == 'cyberint-alerts-status-update':
-            return_results(cyberint_alerts_status_update(client, demisto.args()))
+            return_results(
+                cyberint_alerts_status_update(client, demisto.args()))
 
         elif command == 'cyberint-alerts-get-attachment':
-            return_results(cyberint_alerts_get_attachment_command(client, **demisto.args()))
+            return_results(
+                cyberint_alerts_get_attachment_command(client,
+                                                       **demisto.args()))
 
         elif command == 'cyberint-alerts-analysis-report':
-            return_results(cyberint_alerts_get_analysis_report_command(client, **demisto.args()))
+            return_results(
+                cyberint_alerts_get_analysis_report_command(
+                    client, **demisto.args()))
     except Exception as e:
 
         if 'Invalid token or token expired' in str(e):

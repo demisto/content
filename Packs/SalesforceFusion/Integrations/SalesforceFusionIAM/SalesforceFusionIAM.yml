@@ -1,4 +1,4 @@
-category: Identity and Access Management
+category: Authentication & Identity Management
 commonfields:
   id: Salesforce Fusion IAM
   version: -1
@@ -66,8 +66,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integrate with Salesforce Fusion Identity Access Management service to execute CRUD 
-  (create, read, update, and delete) operations for employee lifecycle processes.
+description: Integrate with Salesforce Fusion Identity Access Management service to execute CRUD (create, read, update, and delete) operations for employee lifecycle processes.
 display: Salesforce Fusion IAM
 name: Salesforce Fusion IAM
 script:
@@ -82,8 +81,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'When set to true, after the command executes the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
+      description: 'When set to true, after the command executes the status of the user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -97,8 +95,7 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -137,8 +134,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'When set to true, after the command executes the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
+      description: 'When set to true, after the command executes the status of the user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -147,14 +143,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -196,8 +190,7 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -239,8 +232,7 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -270,11 +262,10 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.10.52956
   isfetch: false
   longRunning: false
   longRunningPort: false

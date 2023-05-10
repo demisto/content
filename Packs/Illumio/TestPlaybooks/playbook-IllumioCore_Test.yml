@@ -1,0 +1,1413 @@
+id: IllumioCore-Test
+version: -1
+name: IllumioCore-Test
+description: Test playbook for IllumioCore Integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6696676d-0137-4653-8625-1fbe5e645d04
+    type: start
+    task:
+      id: 6696676d-0137-4653-8625-1fbe5e645d04
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7fd1dec4-98e7-4c21-8ae0-dc135e3f30f4
+    type: regular
+    task:
+      id: 7fd1dec4-98e7-4c21-8ae0-dc135e3f30f4
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Illumio
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8f5aa310-9d58-4dcd-8423-feb6ccc483ce
+    type: regular
+    task:
+      id: 8f5aa310-9d58-4dcd-8423-feb6ccc483ce
+      version: -1
+      name: illumio-ip-lists-get
+      description: Retrieves the list of IPs based on the query parameters.
+      script: '|||illumio-ip-lists-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      max_results:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d7bb323c-ec01-42ca-8d3d-37abda542e27
+    type: condition
+    task:
+      id: d7bb323c-ec01-42ca-8d3d-37abda542e27
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Illumio.IPLists.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.created_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.updated_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 74243328-8d98-41d4-8d0b-abf892886653
+    type: regular
+    task:
+      id: 74243328-8d98-41d4-8d0b-abf892886653
+      version: -1
+      name: illumio-ip-list-get
+      description: Retrieves the list of IPs based on the name of the IP list.
+      script: '|||illumio-ip-list-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      href:
+        complex:
+          root: Illumio.IPLists
+          accessor: href
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 05039893-ef23-4245-8559-d272b10e67a7
+    type: condition
+    task:
+      id: 05039893-ef23-4245-8559-d272b10e67a7
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Illumio.IPLists.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.created_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.updated_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.IPLists.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 86ea3dcc-6497-4ffd-86e5-c9f234ae6dc5
+    type: regular
+    task:
+      id: 86ea3dcc-6497-4ffd-86e5-c9f234ae6dc5
+      version: -1
+      name: illumio-workloads-list
+      description: Retrieves the list of workloads based on the provided filters.
+      script: '|||illumio-workloads-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      max_results:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 26f2059c-7346-46dd-8a2f-37e3a144e921
+    type: condition
+    task:
+      id: 26f2059c-7346-46dd-8a2f-37e3a144e921
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.enforcement_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.created_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.updated_by.href
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 38f5f808-899b-4b5d-8269-dddc99483e13
+    type: regular
+    task:
+      id: 38f5f808-899b-4b5d-8269-dddc99483e13
+      version: -1
+      name: illumio-workload-get
+      description: Retrieves the details of the workload based on the provided workload's HREF.
+      script: '|||illumio-workload-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      href:
+        complex:
+          root: Illumio.Workloads
+          accessor: href
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7a29ca3b-65fb-47ae-8257-becab47f4ec8
+    type: condition
+    task:
+      id: 7a29ca3b-65fb-47ae-8257-becab47f4ec8
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.enforcement_mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.created_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Workloads.updated_by.href
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 56abed2d-36af-4d2e-8e60-9024a9a70b6c
+    type: regular
+    task:
+      id: 56abed2d-36af-4d2e-8e60-9024a9a70b6c
+      version: -1
+      name: illumio-traffic-analysis
+      description: Retrieves traffic flow of a particular port & protocol within the specified time range based on policy decisions.
+      script: '|||illumio-traffic-analysis'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      port:
+        simple: "8443"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 7b5c155c-099d-4e0c-8f90-0fc75a6632ea
+    type: condition
+    task:
+      id: 7b5c155c-099d-4e0c-8f90-0fc75a6632ea
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.src.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.dst.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.timestamp_range.first_detected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.timestamp_range.last_detected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.service.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.service.proto
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.dst_bi
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.TrafficFlows.dst_bo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8a6dd71f-33f3-464e-880b-67806e98daf2
+    type: regular
+    task:
+      id: 8a6dd71f-33f3-464e-880b-67806e98daf2
+      version: -1
+      name: illumio-virtual-service-create
+      description: Creates a virtual service for a particular port & protocol, which can be further binded to workloads. Until provisioned with the 'illumio-object-provision' command, this object will remain in a draft state.
+      script: '|||illumio-virtual-service-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNow
+      port:
+        simple: "8443"
+      protocol:
+        simple: TCP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: dae5d36e-1309-46c7-8715-dad8276f6e3b
+    type: regular
+    task:
+      id: dae5d36e-1309-46c7-8715-dad8276f6e3b
+      version: -1
+      name: Generate Random Virtual Service Name
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d18009fd-5476-4b8f-80f8-852eba309662
+    type: condition
+    task:
+      id: d18009fd-5476-4b8f-80f8-852eba309662
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.created_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.updated_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.service_ports.port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.VirtualService.service_ports.proto
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 8e609a33-8b14-4fca-8c0e-9fe1641ce68f
+    type: regular
+    task:
+      id: 8e609a33-8b14-4fca-8c0e-9fe1641ce68f
+      version: -1
+      name: illumio-service-binding-create
+      description: Binds the existing or a new virtual service to the workloads.
+      script: '|||illumio-service-binding-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      virtual_service:
+        complex:
+          root: Illumio.PolicyState
+          accessor: provisioned_hrefs
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      workloads:
+        simple: ${Illumio.Workloads.href}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8b78a90e-9b39-4e8e-8ce1-30a4837f0886
+    type: condition
+    task:
+      id: 8b78a90e-9b39-4e8e-8ce1-30a4837f0886
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.ServiceBinding
+                accessor: hrefs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 5a295217-c823-46c1-82a1-20af7a1745b6
+    type: regular
+    task:
+      id: 5a295217-c823-46c1-82a1-20af7a1745b6
+      version: -1
+      name: illumio-object-provision
+      description: A utility method for provisioning policy objects from draft to active state. Policy objects only affect the network once they've been provisioned.
+      script: '|||illumio-object-provision'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      security_policy_objects:
+        simple: ${Illumio.VirtualService.href}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2d8573da-425a-47bd-84ee-fc806cefb71d
+    type: condition
+    task:
+      id: 2d8573da-425a-47bd-84ee-fc806cefb71d
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.PolicyState.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.PolicyState.commit_message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.PolicyState.created_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.PolicyState.workloads_affected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.PolicyState.provisioned_hrefs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1ef1f2e0-e95b-41b1-8be1-d3159ea38adc
+    type: regular
+    task:
+      id: 1ef1f2e0-e95b-41b1-8be1-d3159ea38adc
+      version: -1
+      name: illumio-ruleset-create
+      description: Creates a ruleset with a unique name. Until provisioned with the 'illumio-object-provision' command, this object will remain in a draft state.
+      script: '|||illumio-ruleset-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNow
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8db995d6-ddce-468a-8953-1a69dc143956
+    type: condition
+    task:
+      id: 8db995d6-ddce-468a-8953-1a69dc143956
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.update_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.created_by.href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Ruleset.updated_by.href
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5f6640bd-a0ee-489e-87b3-734c3fffa7a2
+    type: regular
+    task:
+      id: 5f6640bd-a0ee-489e-87b3-734c3fffa7a2
+      version: -1
+      name: illumio-rule-create
+      description: Creates & assigns rules to a particular ruleset. Added or updated Rules will remain in draft state until their containing Rule Set is provisioned using the "illumio-object-provision" command.
+      script: '|||illumio-rule-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      consumers:
+        complex:
+          root: Illumio.IPList
+          accessor: href
+      providers:
+        complex:
+          root: Illumio.VirtualService
+          accessor: href
+      resolve_providers_as:
+        simple: virtual_services
+      ruleset_href:
+        complex:
+          root: Illumio.Ruleset
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 99fcf2af-17c8-4ff6-86df-10207554307f
+    type: condition
+    task:
+      id: 99fcf2af-17c8-4ff6-86df-10207554307f
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule
+                accessor: href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule
+                accessor: created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule
+                accessor: updated_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule
+                accessor: update_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule
+                accessor: enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule.created_by
+                accessor: href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule.updated_by
+                accessor: href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Illumio.Rule.resolve_labels_as.providers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.Rule.resolve_labels_as
+                accessor: consumers
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7a1807db-8785-4a9d-888c-4636d1217fe9
+    type: regular
+    task:
+      id: 7a1807db-8785-4a9d-888c-4636d1217fe9
+      version: -1
+      name: illumio-enforcement-boundary-create
+      description: Creates an enforcement boundary for a particular port/protocol. After completion of this command, provisioning will be done using the "illumio-object-provision" command.
+      script: '|||illumio-enforcement-boundary-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      consumers:
+        simple: ams
+      name:
+        complex:
+          root: TimeNow
+      port:
+        simple: "8443"
+      protocol:
+        simple: TCP
+      providers:
+        complex:
+          root: Illumio.IPList
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d30fae8b-e450-49a7-8100-66248416be75
+    type: condition
+    task:
+      id: d30fae8b-e450-49a7-8100-66248416be75
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.EnforcementBoundary
+                accessor: href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.EnforcementBoundary
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: ee6ee990-8ba1-4b79-8b6c-ebf31a489f20
+    type: regular
+    task:
+      id: ee6ee990-8ba1-4b79-8b6c-ebf31a489f20
+      version: -1
+      name: illumio-enforcement-mode-update
+      description: Update the Enforcement Mode for one or more workloads.
+      script: '|||illumio-enforcement-mode-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      enforcement_mode:
+        simple: Idle
+      workloads:
+        complex:
+          root: Illumio.Workload
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3ac5874e-37a5-4421-8d13-c6b5dda8b735
+    type: condition
+    task:
+      id: 3ac5874e-37a5-4421-8d13-c6b5dda8b735
+      version: -1
+      name: Verify Outputs
+      description: Verify outputs of the command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.UpdateStatuses
+                accessor: href
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.UpdateStatuses
+                accessor: status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 246d99de-3c35-4c7a-8443-b3cfc1aaa5fc
+    type: title
+    task:
+      id: 246d99de-3c35-4c7a-8443-b3cfc1aaa5fc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f83da758-872c-4b11-8cf9-36b4a594a626
+    type: condition
+    task:
+      id: f83da758-872c-4b11-8cf9-36b4a594a626
+      version: -1
+      name: Are workloads available?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.TrafficFlows.dst.workload
+                accessor: href
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4935,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0

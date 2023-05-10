@@ -76,7 +76,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html. This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.
+  description: The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicators This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.
   isArray: false
   name: entity_b_query
   required: false
@@ -129,6 +129,7 @@ args:
   - injects-into
   - investigates
   - is-also
+  - located-at
   - mitigated-by
   - mitigates
   - originated-from
@@ -158,6 +159,8 @@ args:
   - used-on
   - uses
   - variant-of
+  - detects
+  - detected-by
   required: true
   secret: false
 - default: false
@@ -236,6 +239,8 @@ args:
   - used-on
   - uses
   - variant-of
+  - detects
+  - detected-by
   required: false
   secret: false
 - default: false
@@ -289,7 +294,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.10.48392
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

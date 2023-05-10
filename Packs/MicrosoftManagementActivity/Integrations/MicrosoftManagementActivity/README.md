@@ -1,6 +1,6 @@
 The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly, fetch new content records from content types of your choice as Cortex XSOAR incidents.
 
-This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events)
+This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events).
 
 ## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
 To allow Cortex XSOAR access to the Microsoft Management Activity API you will be required to give authorization to access it.
@@ -10,15 +10,6 @@ To allow Cortex XSOAR access to the Microsoft Management Activity API you will b
 3. When prompted, accept the Microsoft authorization request for the required permissions.
 You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instance.
 
-## Self-Deployed Configuration
-1. Enter the following URL
-(**Note**: CLIENT_ID and REDIRECT_URI should be replaced by your own client ID and redirect URI, accordingly):
-`https://login.windows.net/common/oauth2/authorize?response_type=code&resource=https://manage.office.com&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI`
-1. When prompted, accept the Microsoft authorization request for the required permissions.
-2. The URL will change and will have the following structure:
-SOME_PREFIX?code=AUTH_CODE&session_state=SESSION_STATE
-Take the AUTH_CODE (without the “code=” prefix) and enter it to the instance configuration under the “Authentication” code section.
-Moreover, enter your client secret as the “Key” parameter and your client ID as the “ID” parameter. 
 
 ## Configure Microsoft Management Activity API (O365 Azure Events) on Cortex XSOAR
 
@@ -26,27 +17,29 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 2. Search for Microsoft Management Activity API (O365 Azure Events).
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| base_url | Base URL | False |
-| auth_id | ID \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
-| enc_key | Key \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | Falser |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-| refresh_token | Token \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
-| self_deployed | Use a self\-deployed Azure application | False |
-| auth_code | The authentication code you got for the service. For instructions on how to receive it, see Detailed Instructions \(?\) section. | False |
-| timeout | The default timeout (in seconds) for API calls. Can be overridden by providing value to the corresponding argument when calling supported commands. Default is 15 seconds. | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| redirect_uri | Application redirect URI (for self-deployed mode) | False |
-| first_fetch_delta | First fetch time range \(&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes\) | False |
-| content_types_to_fetch | Content types to fetch | False |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| record_types_filter | Record types to fetch \(Comma\-separated list of the record types you wish to fetch. Content records with a record  type that is not specified will not be fetched. If this field is left empty, all record types will be fetched.\) | False |
-| workloads_filter | Workloads to fetch \(Comma\-separated list of the workloads you wish to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched.\) | False |
-| operations_filter | Operations to \(Comma\-separated list of the operations you wish to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched.\) | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Base URL | The host URL. | False |
+    | Application ID or Client ID | The app registration ID. | False |
+    | Key or Client Secret | The app registration secret. | False |
+    | Token or Tenant ID | The tenant ID. | False |
+    | Certificate Thumbprint | Used for certificate authentication as it appears in the "Certificates & secrets" page of the app. | False |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use a self-deployed Azure application | Whether to use a selp-deployed application. | False |
+    | Application redirect URI (for self-deployed mode) | The app registration redirect URI. | False |
+    | The authentication code you got for the service | For instructions on how to receive it, see the Help tab. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+    | Trust any certificate (not secure) | Whether to trust any certificate. If set to True, is not secure. | False |
+    | Use system proxy settings | Whether to use system proxy settings. | False |
+    | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes. | False |
+    | Timeout | The default timeout (in seconds) for API calls. Default is 15 seconds. | False |
+    | Content types to fetch | The content types to fetch. | False |
+    | Fetch incidents | Whether to fetch incidents. | False |
+    | Incident type | The incident type to apply. | False |
+    | Record types to fetch | A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | False |
+    | Workloads to fetch | A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | False |
+    | Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -57,17 +50,17 @@ After you successfully execute a command, a DBot message appears in the War Room
 Starts a subscription to a given content type.
 
 
-##### Base Command
+#### Base Command
 
 `ms-management-activity-start-subscription`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_type | The content type to subscribe to. Possible values are `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.SharePoint`, `Audit.General`, `DLP.All` | Required | 
+| content_type | The content type to subscribe to. Possible values are: Audit.AzureActiveDirectory, Audit.Exchange, Audit.SharePoint, Audit.General, DLP.All. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -94,17 +87,17 @@ Successfully started subscription to content type: Audit.Exchange
 Stops a subscription to a given content type.
 
 
-##### Base Command
+#### Base Command
 
 `ms-management-activity-stop-subscription`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_type | The content type to unsubscribe from. Possible values are `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.SharePoint`, `Audit.General`, `DLP.All` | Required | 
+| content_type | The content type to unsubscribe from. Possible values are: Audit.AzureActiveDirectory, Audit.Exchange, Audit.SharePoint, Audit.General, DLP.All. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -128,17 +121,17 @@ Successfully stopped subscription to content type: Audit.Exchange
 
 ### ms-management-activity-list-subscriptions
 ***
-List the content types you are currently subscribed to
+List the content types you are currently subscribed to.
 
 
-##### Base Command
+#### Base Command
 
 `ms-management-activity-list-subscriptions`
-##### Input
+#### Input
 
 There are no input arguments for this command.
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -189,23 +182,23 @@ There are no input arguments for this command.
 Returns all content of a specific content type.
 
 
-##### Base Command
+#### Base Command
 
 `ms-management-activity-list-content`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_type | The content type for which to receive content. Possible values are `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.SharePoint`, `Audit.General`, `DLP.All` | Required | 
+| content_type | The content type for which to receive content. Possible values are: Audit.AzureActiveDirectory, Audit.Exchange, Audit.SharePoint, Audit.General, DLP.All. | Required | 
 | start_time | The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours ago. | Optional | 
 | end_time | The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, end_time will be now. | Optional | 
-| record_types_filter | A comma-separated list of the record types to fetch. Content records with a record  type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
-| workloads_filter | A comma-separated list of the workloads to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | Optional | 
-| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional |
-| timeout | The timeout for the content requesting http call. The default is configured at the corresponding integration instance parameter. | Optional 
+| record_types_filter | A comma-separated list of the record types to fetch. Content records with a record type that isn't specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
+| workloads_filter | A comma-separated list of the workloads to fetch. Content records with a workload that isn't specified will not be fetched. If this field is left empty, all workloads will be fetched. | Optional | 
+| operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that isn't specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional | 
+| timeout | The timeout (in seconds) for the content requesting HTTP call. Default is the value provided as an integration parameter. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -216,12 +209,12 @@ Returns all content of a specific content type.
 | MicrosoftManagement.ContentRecord.UserType | string | The type of the related user. | 
 | MicrosoftManagement.ContentRecord.OrganizationID | number | The ID of the organization relevant to the record. | 
 | MicrosoftManagement.ContentRecord.UserKey | string | The key of the related user. | 
-| MicrosoftManagement.ContentRecord.ClientIP | string | The IP of the record&\#x27;s client. | 
+| MicrosoftManagement.ContentRecord.ClientIP | string | The IP of the record's client. | 
 | MicrosoftManagement.ContentRecord.Scope | string | The scope of the record. | 
 | MicrosoftManagement.ContentRecord.Workload | string | The workload of the record. | 
 | MicrosoftManagement.ContentRecord.ResultsStatus | string | The results status of the record. | 
-| MicrosoftManagement.ContentRecord.ObjectID | string | The ID of the record&\#x27;s object. | 
-| MicrosoftManagement.ContentRecord.UserID | string | The ID of the record&\#x27;s user. | 
+| MicrosoftManagement.ContentRecord.ObjectID | string | The ID of the record's object. | 
+| MicrosoftManagement.ContentRecord.UserID | string | The ID of the record's user. | 
 
 
 ##### Command Example
@@ -267,6 +260,33 @@ Returns all content of a specific content type.
 | 1111111-aaaa-bbbb | 2020-04-26T10:10:10 | MicrosoftTeams | TeamsSessionStarted |
 | 2222222-vvvv-gggg | 2020-04-26T09:09:09 | MicrosoftTeams | MemberAdded |
 
+
+### ms-management-activity-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`ms-management-activity-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```ms-management-activity-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
 
 ## Additional Information
 Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.

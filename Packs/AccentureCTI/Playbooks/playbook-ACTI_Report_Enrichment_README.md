@@ -22,8 +22,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ia_uuid | The Intelligence Alert uuid. | ${intelligence_alerts}.None | Optional |
-| ir_uuid | The Intelligence Report uuid. | ${intelligence_reports}.None | Optional |
+| ia_uuid | The Intelligence Alert uuid. | ${intelligence_alerts} | Optional |
+| ir_uuid | The Intelligence Report uuid. | ${intelligence_reports} | Optional |
 | Domain | The extarcted Domain. | ${Domain} | Optional |
 | IP | The extracted IP. | ${IP} | Optional |
 | URL | The extracted URL. | ${URL} | Optional |

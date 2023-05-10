@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: Workday
   version: -1
@@ -28,8 +28,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Workday offers enterprise-level software solutions for financial management,
-  human resources, and planning.
+description: Workday offers enterprise-level software solutions for financial management, human resources, and planning.
 display: Workday
 name: Workday
 script:
@@ -128,8 +127,7 @@ script:
       description: The name of the job profile.
       type: String
     - contextPath: Workday.Worker.Work_Shift_Required
-      description: Returns true if a work shift is required on the position where
-        this job profile is used.
+      description: Returns true if a work shift is required on the position where this job profile is used.
       type: String
     - contextPath: Workday.Worker.Critical_Job
       description: Returns true if the job profile is considered a critical job.
@@ -165,8 +163,7 @@ script:
       description: Boolean attribute identifying whether the Worker is Active.
       type: String
     - contextPath: Workday.Worker.Hire_Date
-      description: The most recent hire date for the employee or contract start date
-        for the contingent worker.
+      description: The most recent hire date for the employee or contract start date for the contingent worker.
       type: String
     - contextPath: Workday.Worker.Hire_Reason
       description: Reason for Hire from the most recent Hire event.
@@ -178,8 +175,7 @@ script:
       description: Boolean attribute identifying whether the Worker is currently retired.
       type: String
     - contextPath: Workday.Worker.Days_Unemployed
-      description: Number of days unemployed since the employee first joined the work
-        force. Used only for China.
+      description: Number of days unemployed since the employee first joined the work force. Used only for China.
       type: String
     - contextPath: Workday.Worker.Terminated
       description: Boolean attribute identifying whether the Worker is currently Terminated.
@@ -197,8 +193,7 @@ script:
       description: Indicates if the termination was involuntary.
       type: String
     - contextPath: Workday.Worker.Rehire
-      description: Returns "Yes" if the worker is a rehire based on the most recent
-        hire event.
+      description: Returns "Yes" if the worker is a rehire based on the most recent hire event.
       type: String
     - contextPath: Workday.Worker.Termination_Last_Day_of_Work
       description: Last day worked for the worker's termination event.
@@ -228,8 +223,7 @@ script:
       description: The ID of the region (ISO_3166-2_Code).
       type: String
     - contextPath: Workday.Worker.Addresses.Region_Descriptor
-      description: The region part of the address. Typically this contains the state/province
-        information.
+      description: The region part of the address. Typically this contains the state/province information.
       type: String
     - contextPath: Workday.Worker.Addresses.Postal_Code
       description: The postal code part of the address.
@@ -272,7 +266,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.0.0
 tests:
 - Workday - Test

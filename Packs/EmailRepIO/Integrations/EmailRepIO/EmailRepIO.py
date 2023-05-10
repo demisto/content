@@ -70,7 +70,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Get email address reputation from EmailRepIO and calculate DBotScore.
 
     DBot score:
@@ -82,48 +82,54 @@ def email_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(emails) == 0 or emails is None:
         raise ValueError('Email(s) not specified')
 
-    email = emails[0]
-    email_data = client.get_email_address_reputation(email)
-    description = f'{INTEGRATION_NAME} returned'
-    suspicious = email_data.get('suspicious')
-    malicious_activity_recent = email_data.get('details.malicious_activity_recent')
-    credentials_leaked_recent = email_data.get('details.credentials_leaked_recent')
-    if not suspicious:
-        score = Common.DBotScore.GOOD
-        description = ''
-    elif malicious_activity_recent or credentials_leaked_recent:
-        if malicious_activity_recent:
-            description += ' malicious_activity_recent'
-        if credentials_leaked_recent:
-            description += ' credentials_leaked_recent'
-        score = Common.DBotScore.BAD
-    else:
-        score = Common.DBotScore.SUSPICIOUS
-        description = ''
+    emails_results = []
 
-    dbot_score = Common.DBotScore(
-        indicator=email,
-        indicator_type=DBotScoreType.ACCOUNT,
-        integration_name=INTEGRATION_NAME,
-        score=score,
-        malicious_description=description
-    )
+    for email in emails:
+        email_data = client.get_email_address_reputation(email)
+        description = f'{INTEGRATION_NAME} returned'
+        suspicious = email_data.get('suspicious')
+        malicious_activity_recent = email_data.get('details.malicious_activity_recent')
+        credentials_leaked_recent = email_data.get('details.credentials_leaked_recent')
 
-    account_context = Common.Account(
-        id=email,
-        email_address=email,
-        dbot_score=dbot_score
-    )
+        if not suspicious:
+            score = Common.DBotScore.GOOD
+            description = ''
+        elif malicious_activity_recent or credentials_leaked_recent:
+            if malicious_activity_recent:
+                description += ' malicious_activity_recent'
+            if credentials_leaked_recent:
+                description += ' credentials_leaked_recent'
+            score = Common.DBotScore.BAD
+        else:
+            score = Common.DBotScore.SUSPICIOUS
+            description = ''
 
-    readable_output = tableToMarkdown('Email', email_data)
+        dbot_score = Common.DBotScore(
+            indicator=email,
+            indicator_type=DBotScoreType.ACCOUNT,
+            integration_name=INTEGRATION_NAME,
+            score=score,
+            malicious_description=description
+        )
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.Email',
-        outputs_key_field='id',
-        outputs=email_data,
-        indicator=account_context
-    )
+        account_context = Common.Account(
+            id=email,
+            email_address=email,
+            dbot_score=dbot_score
+        )
+
+        readable_output = tableToMarkdown('Email', email_data)
+
+        result = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f'{INTEGRATION_NAME}.Email',
+            outputs_key_field='id',
+            outputs=email_data,
+            indicator=account_context
+        )
+        emails_results.append(result)
+
+    return emails_results
 
 
 def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -192,7 +198,7 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
 def main() -> None:
     """main function, parses params and runs command functions"""
 
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 
     # get the service API url
     base_url = demisto.params()['url']

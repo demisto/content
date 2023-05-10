@@ -1,0 +1,23 @@
+{
+  "result_count": 2,
+  "total_count": 2,
+  "sort_order": "asc",
+  "limit": 1000,
+  "offset": 0,
+  "network_usage" : [
+      {
+          "account_code": "ice",
+          "percentile_bps": 123,
+          "percentile": 95,
+          "interval": "day",
+          "timestamp": "2020-08-19T18:00:00Z"
+      },
+      {
+          "account_code": "ice",
+          "percentile_bps": 123,
+          "percentile": 95,
+          "interval": "month_to_day",
+          "timestamp": "2020-08-20T20:00:00Z"
+      }
+  ]
+}

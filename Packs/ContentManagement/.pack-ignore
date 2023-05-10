@@ -1,4 +1,3 @@
-
 [file:pack_metadata.json]
 ignore=PA129
 
@@ -28,3 +27,28 @@ ignore=BA116
 
 [file:README.md]
 ignore=RM108
+
+[file:playbook-Configuration_Setup_README.md]
+ignore=RM106
+
+[file:playbook-Configuration_Setup.yml]
+ignore=PB106
+
+[known_words]
+cliname
+cicd
+bitbucket
+gitlab
+
+[file:ListCreator.yml]
+ignore=BA124
+
+[file:ConfigurationSetup.yml]
+ignore=BA124
+
+[file:GetPrBranches.yml]
+ignore=BA124
+
+[file:JobCreator.yml]
+ignore=BA124
+

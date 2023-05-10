@@ -1,0 +1,497 @@
+{
+    "description": "Maps incoming Trend Micro Vision One alerts.",
+    "feed": false,
+    "id": "Trend Micro Vision One V3 XDR - Incoming Mapper",
+    "mapping": {
+        "Trend Micro Vision One XDR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "model",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Detected User": {
+                    "complex": {
+                        "accessor": "entityValue",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "impactScope.entities.entityType"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "account"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "impactScope.entities",
+                        "transformers": []
+                    }
+                },
+                "Event Type": {
+                    "complex": {
+                        "accessor": "[0].matchedFilters.[0].matchedEvents.[0].type",
+                        "filters": [],
+                        "root": "matchedRules",
+                        "transformers": []
+                    }
+                },
+                "Hostnames": {
+                    "complex": {
+                        "accessor": "entityValue.name",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "impactScope.entities.entityType"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "host"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "impactScope.entities",
+                        "transformers": []
+                    }
+                },
+                "MITRE Technique ID": {
+                    "complex": {
+                        "accessor": "[0].matchedFilters.[0].mitreTechniqueIds.[0]",
+                        "filters": [],
+                        "root": "matchedRules",
+                        "transformers": []
+                    }
+                },
+                "Technique ID": {
+                    "complex": {
+                        "accessor": "mitreTechniqueIds",
+                        "filters": [],
+                        "root": "matchedRules.matchedFilters",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Account Count": {
+                    "complex": {
+                        "accessor": "accountCount",
+                        "filters": [],
+                        "root": "impactScope",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Desktop Count": {
+                    "complex": {
+                        "accessor": "desktopCount",
+                        "filters": [],
+                        "root": "impactScope",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Detail": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Trend Micro Vision One XDR Email Address Count": {
+                    "complex": {
+                        "accessor": "emailAddressCount",
+                        "filters": [],
+                        "root": "impactScope",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Impact Scope": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impactScope",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "value": {
+                                            "simple": "accountCount, desktopCount, emailAddressCount, serverCount"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Account Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "accountCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Desktop Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "desktopCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Email Address Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "emailAddressCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Server Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "serverCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Trend Micro Vision One XDR Impacted Entities": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impactScope.entities",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Entity ID"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "entityId"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Type"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "entityType"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Value"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "entityValue"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Related Entities"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "relatedEntities"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Related Indicators"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "relatedIndicators"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Provenance"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "provenance"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Related Indicators"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "relatedIndicatorIds"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Trend Micro Vision One XDR Impacted Entities JSON": {
+                    "complex": {
+                        "accessor": "entities",
+                        "filters": [],
+                        "root": "impactScope",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Indicators": {
+                    "complex": {
+                        "filters": [],
+                        "root": "indicators",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "value": {
+                                            "simple": "id, type, value, relatedEntities"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {}
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Indicator ID"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Type"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "type"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Value"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "value"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Related Entities"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "relatedEntities"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Trend Micro Vision One XDR Indicators JSON": {
+                    "complex": {
+                        "filters": [],
+                        "root": "indicators",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Investigation Status": {
+                    "simple": "investigationStatus"
+                },
+                "Trend Micro Vision One XDR Matched Rules JSON": {
+                    "complex": {
+                        "filters": [],
+                        "root": "matchedRules",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Priority Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Server Count": {
+                    "simple": "impactScope.serverCount"
+                },
+                "Trend Micro Vision One XDR Workbench ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Trend Micro Vision One XDR Workbench Link": {
+                    "simple": "workbenchLink"
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Trend Micro Vision One V3 XDR - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

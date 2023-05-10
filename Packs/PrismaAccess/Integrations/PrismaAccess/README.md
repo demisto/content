@@ -67,6 +67,7 @@ Force logout a specific user from Prisma Access
 | user | Username to logout. (Without domain name - e.g. jsmith) | Required | 
 | domain | Domain name of the user to logout. | Required | 
 | computer | Computer name to logout. | Required | 
+| tenant_name | The tenant name. | Optional | 
 
 
 ##### Context Output
@@ -106,7 +107,7 @@ Run a query via the Prisma Access CLI
 ```!prisma-access-query query="querystring limit=2 action getGPaaSActiveUsers"```
 
 
-### prisma-access-cli-command
+### prisma-access-cli-command (deprecated)
 ***
 Run a custom CLI command on Prisma Access
 
@@ -129,7 +130,7 @@ There is no context output for this command.
 ```!prisma-access-cli-command cmd="show system info | match hostname"```
 
 
-### prisma-access-active-users
+### prisma-access-active-users (deprecated)
 ***
 Query currently active users.
 

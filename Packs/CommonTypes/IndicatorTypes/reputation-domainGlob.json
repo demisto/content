@@ -24,5 +24,6 @@
   "contextValue": "",
   "excludedBrands": [],
   "expiration": 20160,
-  "defaultMapping": {}
+  "defaultMapping": {},
+  "layout": "domainRepUnified"
 }

@@ -1,4 +1,5 @@
-from AzureRiskyUsers import Client
+import pytest
+from AzureRiskyUsers import Client, CLIENT_CREDENTIALS_FLOW, DEVICE_FLOW
 import json
 
 
@@ -19,7 +20,8 @@ def load_mock_response(file_name: str) -> dict:
 def mock_client():
     return Client(client_id='client_id',
                   verify=False,
-                  proxy=False)
+                  proxy=False,
+                  authentication_type=DEVICE_FLOW)
 
 
 def test_risky_users_list_command(requests_mock) -> None:
@@ -150,3 +152,94 @@ def test_get_skip_token() -> None:
     assert result.outputs_prefix == 'AzureRiskyUsers.RiskyUser'
     assert result.outputs_key_field == 'id'
     assert result.readable_output == 'test'
+
+
+@pytest.mark.parametrize('authentication_type, expected_grant, expected_scope, expected_token_retrieval', [
+    (DEVICE_FLOW,
+     'urn:ietf:params:oauth:grant-type:device_code',
+     'https://graph.microsoft.com/IdentityRiskyUser.Read.All IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All'
+     ' IdentityRiskyUser.ReadWrite.All offline_access',
+     'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'),
+    (CLIENT_CREDENTIALS_FLOW,
+     'client_credentials',
+     'https://graph.microsoft.com/.default',
+     'https://login.microsoftonline.com//oauth2/v2.0/token')
+])
+def test_create_client_by_auth_type(authentication_type, expected_grant, expected_scope, expected_token_retrieval):
+    """
+    Test that the client is created according to the authentication type as expected.
+
+    Given:
+     - Authentication type:
+        1. Device
+        2. Client Credentials
+    When:
+     - Running the client's instructor.
+    Then:
+     - Verify that the client's grant type, scope, and token retrieval url are as expected.
+
+    """
+    client = Client(client_id='client_id',
+                    verify=False,
+                    proxy=False,
+                    authentication_type=authentication_type)
+
+    assert client.ms_client.grant_type == expected_grant
+    assert client.ms_client.scope == expected_scope
+    assert client.ms_client.token_retrieval_url == expected_token_retrieval
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the output are as expected
+    """
+    from AzureRiskyUsers import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import AzureRiskyUsers
+    import demistomock as demisto
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'authentication_type': 'Azure Managed Identities',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureRiskyUsers, 'return_results')
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in AzureRiskyUsers.return_results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+@pytest.mark.parametrize('query,filter_name,filter_value,filter_operator,expected_query', [
+    ('', 'riskState', 'dismissed', 'eq', "riskState eq 'dismissed'"),
+    ("riskState eq 'dismissed'", 'detectedDateTime', '2022-06-09T23:00:44.7420905Z', 'le',
+     "riskState eq 'dismissed' and detectedDateTime le 2022-06-09T23:00:44.7420905Z")
+])
+def test_update_query(query, filter_name, filter_value, filter_operator, expected_query):
+    """
+    Scenario: Build query filter for API call.
+    Given:
+     - Provided valid arguments.
+    When:
+     - update_query function is called.
+    Then:
+     - Ensure results are valid.
+    """
+    from AzureRiskyUsers import update_query
+    query = update_query(query, filter_name, filter_value, filter_operator)
+    assert query == expected_query

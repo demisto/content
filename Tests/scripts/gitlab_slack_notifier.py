@@ -16,15 +16,16 @@ DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp
 ROOT_ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar')
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2')
-CONTENT_CHANNEL = 'dmst-content-team'
+CONTENT_CHANNEL = 'dmst-build-test'
+ARTIFACTS_FOLDER_XPANSE = os.getenv('ARTIFACTS_FOLDER_XPANSE', './artifacts/xpanse')
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 CONTENT_NIGHTLY = 'Content Nightly'
 BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
 SDK_NIGHTLY = 'Demisto SDK Nightly'
 PRIVATE_NIGHTLY = 'Private Nightly'
-WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY}
-BUILD_NOTIFICATIONS_CHANNEL = 'dmst-build'
+TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
+WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY, TEST_NATIVE_CANDIDATE}
 SLACK_USERNAME = 'Content GitlabCI'
 
 
@@ -84,7 +85,7 @@ def test_playbooks_results(artifact_folder, title):
     if failed_tests:
         field_failed_tests = {
             "title": f"{title} - Failed Tests - ({len(failed_tests)})",
-            "value": '\n'.join(failed_tests),
+            "value": ', '.join(failed_tests),
             "short": False
         }
         content_team_fields.append(field_failed_tests)
@@ -115,40 +116,40 @@ def unit_tests_results():
         failing_test_list = failing_tests.split('\n')
         slack_results.append({
             "title": f'{"Failed Unit Tests"} - ({len(failing_test_list)})',
-            "value": '\n'.join(failing_test_list),
+            "value": ', '.join(failing_test_list),
             "short": False
         })
     return slack_results
 
 
-def bucket_upload_results(bucket_artifact_folder):
+def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: bool):
     steps_fields = []
-    pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE)
+    pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK)
     marketplace_name = os.path.basename(bucket_artifact_folder).upper()
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
-    successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
+    successful_packs, _, failed_packs, successful_private_packs, _ = get_upload_data(
         pack_results_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:
         steps_fields += [{
             'title': f'Successful {marketplace_name} Packs:',
-            'value': '\n'.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
             'short': False
         }]
 
     if failed_packs:
         steps_fields += [{
             'title': f'Failed {marketplace_name} Packs:',
-            'value': '\n'.join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
             'short': False
         }]
 
-    if successful_private_packs:
+    if successful_private_packs and should_include_private_packs:
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
         steps_fields += [{
             'title': 'Successful Private Packs:',
-            'value': '\n'.join(sorted([pack_name for pack_name in {*successful_private_packs}],
+            'value': ', '.join(sorted([pack_name for pack_name in {*successful_private_packs}],
                                       key=lambda s: s.lower())),
             'short': False
         }]
@@ -178,7 +179,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     # report failing unit-tests
     triggering_workflow_lower = triggering_workflow.lower()
-    check_unittests_substrings = {'lint', 'unit', 'demisto sdk nightly'}
+    check_unittests_substrings = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
     failed_jobs_or_workflow_title = {job_name.lower() for job_name in failed_jobs_names}
     failed_jobs_or_workflow_title.add(triggering_workflow_lower)
     for means_include_unittests_results in failed_jobs_or_workflow_title:
@@ -188,14 +189,24 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     # report pack updates
     if 'upload' in triggering_workflow_lower:
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR, True)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2, False)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE, False)
 
     # report failing test-playbooks
     if 'content nightly' in triggering_workflow_lower:
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, title="XSOAR")
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
+        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XPANSE, title="XPANSE")
         coverage_slack_msg = construct_coverage_slack_msg()
+        missing_packs = get_artifact_data(ARTIFACTS_FOLDER_XSOAR, 'missing_content_packs_test_conf.txt')
+        if missing_packs:
+            missing_packs_lst = missing_packs.split('\n')
+            content_fields.append({
+                "title": f"{title} - Notice - Missing packs - ({len(missing_packs_lst)})",
+                "value": f"The following packs exist in content-test-conf, but not in content: {', '.join(missing_packs_lst)}",
+                "short": False
+            })
 
     slack_msg = [{
         'fallback': title,
@@ -226,9 +237,9 @@ def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> Tuple[str, 
 
 def construct_coverage_slack_msg():
     coverage_today = get_total_coverage(filename=os.path.join(ROOT_ARTIFACTS_FOLDER, 'coverage_report/coverage-min.json'))
-    yasterday = datetime.now() - timedelta(days=1)
-    coverage_yasterday = get_total_coverage(date=yasterday)
-    color = 'good' if coverage_today >= coverage_yasterday else 'danger'
+    yesterday = datetime.now() - timedelta(days=1)
+    coverage_yesterday = get_total_coverage(date=yesterday)
+    color = 'good' if coverage_today >= coverage_yesterday else 'danger'
     title = f'content code coverage: {coverage_today}'
 
     return {
@@ -253,14 +264,8 @@ def main():
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     slack_client = WebClient(token=slack_token)
     slack_client.chat_postMessage(
-        channel=slack_channel, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
+        channel=slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
     )
-
-    if pipeline_failed_jobs and slack_channel == CONTENT_CHANNEL:
-        # Return all failures for investigation to channel dmst-build.
-        slack_client.chat_postMessage(
-            channel=BUILD_NOTIFICATIONS_CHANNEL, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
-        )
 
 
 if __name__ == '__main__':

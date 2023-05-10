@@ -5,6 +5,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 Symantec block Email
+Mimecast - Block Sender Email
 
 ### Integrations
 This playbook does not use any integrations.
@@ -21,6 +22,8 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | EmailToBlock | The email address that will be blocked. |  | Optional |
+| MimecastBlockGroup | The name of the Mimecast block group to add emails to. |  | Optional |
+| MimecastQuerySource | The query source of Mimecast, please input "cloud" or "ldap". |  | Optional |
 
 ## Playbook Outputs
 ---

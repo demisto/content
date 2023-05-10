@@ -19,6 +19,7 @@ def util_load_json(path: str) -> Any:
 
 
 url_command_test = [
+    ('http://gfrewdfsersfsfersfgergre.com', 'no_results', []),
     ('www.test_url.com', 'ok', ['test_tag1', 'test_tag2']),
     ('www.test_url.com', 'ok', []),
     ('www.test_url.com', 'no_results', ['test_tag1', 'test_tag2']),

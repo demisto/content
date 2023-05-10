@@ -21,7 +21,7 @@
  "params": {
   "groupBy": [
    "occurred(d)",
-   "closeReason"
+   "rawCloseReason"
   ]
  },
  "description": "",

@@ -1,30 +1,43 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
 This integration was integrated and tested with API version 2021-09-01 of AKS.
 
-## Authorization
-In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+# Self-Deployed Application
+To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
-In order to connect to the Azure Kubernetes Services using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
-1. Fill in the required parameters.
-2. Run the ***!azure-ks-auth-start*** command. 
-3. Follow the instructions that appear.
-4. Run the ***!azure-ks-auth-complete*** command.
+* The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
+* The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
+* The application must allow public client flows (found under the **Authentication** section of the app) for Device-code based authentications.
 
-At end of the process you'll see a message that you've logged in successfully. 
+In case you want to use Device code flow, you must allow public client flows (can be found under the **Authentication** section of the app).
+
+### Authentication Using the User - Authentication Flow
+
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. choose the user_auth_flow option in the ***Authentication Type*** parameter.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+7. Save the instance.
+8. Run the `!azure-ks-generate-login-url` command in the War Room and follow the instruction.
+9.  Run the ***!azure-ks-auth-test*** command - a 'Success' message should be printed to the War Room.
 
 #### Cortex XSOAR Azure App
 
 In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
 
-You only need to fill in your subscription ID and resource group name. For more details, follow [Azure Integrations Parameters](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+### Authentication Using the Device Code Flow
+Follow these steps for a self-deployed configuration:
 
-#### Self-Deployed Azure App
+1. Fill in the required parameters.
+2. choose the 'Device' option in the ***user_auth_flow*** parameter.
+3. Run the ***!azure-ks-auth-start*** command. 
+4. Follow the instructions that appear.
+5. Run the ***!azure-ks-auth-complete*** command.
 
-To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
-
-* The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
-* The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
-
+At end of the process you'll see a message that you've logged in successfully. 
 
 ## Configure Azure Kubernetes Services on Cortex XSOAR
 
@@ -34,12 +47,19 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | Application ID | True |
+    | app_id | Application ID | False |
     | subscription_id | Subscription ID | True |
     | resource_group_name | Resource Group Name | True |
     | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
+    | Tenant ID (for User Auth mode) | Tenant ID | False |
+    | Client Secret (for User Auth mode) | Encryption key given by the admin | False |
+    | Authentication Type | The request authentication type for the instance | False |
+    | Authorization code | as received from the authorization step | False |
+    | Application redirect URI | the redirect URI entered in the Azure portal | False |
+    | Azure Managed Identities Client ID | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -278,3 +298,33 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The request to update the managed cluster was sent successfully.
+
+
+### azure-ks-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-ks-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-ks-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
+

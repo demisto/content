@@ -8,9 +8,10 @@ import re
 import base64
 import time
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' PREREQUISITES '''
 
@@ -41,7 +42,7 @@ BASE_URL = load_server_url()
 LOGIN_HEADERS = {
     'Accept': 'application/vnd.ve.v1.0+json',
     'Content-Type': 'application/json',
-    'VE-SDK-API': base64.b64encode(USERNAME + ':' + PASSWORD)
+    'VE-SDK-API': base64.b64encode(str(USERNAME + ':' + PASSWORD).encode('utf-8'))
 }
 HEARTBEAT_HEADERS = {
     'Accept': 'application/vnd.ve.v1.0+json',
@@ -68,7 +69,7 @@ def get_headers():
     sess = get_session_credentials()
     return {
         'Accept': 'application/vnd.ve.v1.0+json',
-        'VE-SDK-API': base64.b64encode(sess['session'] + ':' + sess['userId'])
+        'VE-SDK-API': base64.b64encode(str(sess['session'] + ':' + sess['userId']).encode('utf-8'))
     }
 
 
@@ -105,7 +106,7 @@ def http_request(uri, method, headers=None, body=None, params=None, files=None):
         try:
             result = json.loads(result, parse_int=str)
         except ValueError:
-            LOG('result is: %s' % result)
+            LOG('result is: %r' % result)
             return_error('Response Parsing failed')
         if 'success' in result:  # type: ignore
             if result['success'] == 'false':  # type: ignore
@@ -318,7 +319,7 @@ def check_task_status_command():
     human_readable = tableToMarkdown(
         'ATD Sandbox Task Status',
         result['tasks'],
-        (result['tasks'][0]).keys()
+        list((result['tasks'][0]).keys())
     )
 
     demisto.results({
@@ -593,7 +594,7 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
                         'Name': subject['Name'],
                         'Malicious': {
                             'Vendor': 'McAfee Advanced Threat Defense',
-                            'Description': 'Severity: ' + report_summary['Verdict']['Severity']
+                            'Description': 'Severity: ' + str(report_summary['Verdict']['Severity'])
                         }
                     }
                 else:
@@ -606,7 +607,7 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
                         'Name': subject['Name'],
                         'Malicious': {
                             'Vendor': 'McAfee Advanced Threat Defense',
-                            'Description': 'Severity: ' + report_summary['Verdict']['Severity']
+                            'Description': 'Severity: ' + str(report_summary['Verdict']['Severity'])
                         }
                     }
             else:
@@ -681,7 +682,7 @@ def get_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
     json_res_string = json.dumps(json_res)
     if report_type == 'json':
         human_readable = tableToMarkdown(
-            'McAfee ATD Sandbox Report', summary, summary.keys(), None, removeNull=True)
+            'McAfee ATD Sandbox Report', summary, list(summary.keys()), None, removeNull=True)
         return {
             'content': json_res_string,
             'md': human_readable,
@@ -743,7 +744,7 @@ def detonate(submit_type, sample, timeout, report_type, threshold, file_name):
         if status == 'Completed':
             uri_suffix = 'iTaskId=' + str(task_id)
             return_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
-            sys.exit(0)
+            return
         time.sleep(1)
         timeout -= 1
 
@@ -796,7 +797,7 @@ def logout():
 ''' EXECUTION '''
 
 
-def main():
+def main():     # pragma: no cover
     LOG('command is %s' % (demisto.command(),))
     handle_proxy()  # Remove proxy if not set to true in params
     global API_HEADERS
@@ -835,6 +836,7 @@ def main():
                 demisto.args().get('format'), demisto.args().get('threshold'),
                 demisto.args().get('fileName'))
             # submit type for regular file is 0
+            sys.exit(0)
 
         # deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
         elif demisto.command() == 'detonate-url':
@@ -843,6 +845,7 @@ def main():
                 demisto.args().get('format'), demisto.args().get('threshold'),
                 demisto.args().get('fileName'))
             # submit type for url submission is 1
+            sys.exit(0)
 
         # elif demisto.command() == 'detonate-file-remote':
         # return detonate(3, args.url, args.timeout, args.format, args.threshold);

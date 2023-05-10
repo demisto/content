@@ -1,0 +1,28 @@
+commonfields:
+  id: ExtractUsernames
+  version: -1
+name: ExtractUsernames
+script: ''
+type: python
+tags: []
+comment: Extract strings suspected as a user from a given file or text.
+enabled: true
+args:
+- name: entry_id
+  description: File EntryID. If provided will look for the user within the given file.
+- name: text
+  description: If provided will look for the user within the given text.
+- name: user_regex
+  description: Regex format to detect user names.
+outputs:
+- contextPath: DetectedUserName.User
+  description: Value of the extracted user name.
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.5.31928
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

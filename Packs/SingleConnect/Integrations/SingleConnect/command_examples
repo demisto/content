@@ -1,0 +1,4 @@
+!single-connect-sapm-account-list-all
+!single-connect-sapm-account-search-with-secret-name secret_name="abc"
+!single-connect-device-list-sapm-accounts device_ip="10.20.41.201"
+!single-connect-sapm-account-show-password comment="a" password_expiration_in_minute=5 sapm_db_id=1052282

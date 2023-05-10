@@ -1,0 +1,18 @@
+Assigns the current Incident to the Cortex XSOAR user who clicked the button 
+
+## Script Data
+---
+
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Tags | incident-action-button |
+| Cortex XSOAR Version | 5.0.0 |
+
+## Inputs
+---
+There are no inputs for this script.
+
+## Outputs
+---
+There are no outputs for this script.

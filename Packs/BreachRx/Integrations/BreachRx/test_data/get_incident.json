@@ -1,0 +1,22 @@
+{
+  "data": {
+    "incidents": [
+      {
+        "id": 339,
+        "name": "4 My manually set XSOAR Incident name",
+        "severity": {
+          "name": "High"
+        },
+        "types": [
+          {
+            "type": {
+              "name": "Attempted Access"
+            }
+          }
+        ],
+        "description": "An alternative description!",
+        "identifier": "JULIETT000339"
+      }
+    ]
+  }
+}

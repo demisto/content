@@ -1,335 +1,1648 @@
-import os
-import unittest
-import json
-from datetime import datetime
-from pathlib import Path
-from unittest.mock import call
-from RecordedFuture import (
-    Actions,
-    Client,
-)
-
-from CommonServerPython import CommandResults
-import vcr as vcrpy
-import io
-
-CASSETTES = Path(__file__).parent / 'cassettes'
-
-
-def filter_out_whoami(response):
-    body = response['body']['string']
-    try:
-        body.decode('utf-8')
-        json_blob = json.loads(body)
-        json_blob.pop('api_key', None)
-        response['body']['string'] = json.dumps(json_blob).encode('utf-8')
-    except UnicodeDecodeError:
-        pass  # It's not a json string
-    return response
-
-
-vcr = vcrpy.VCR(
-    serializer='yaml',
-    cassette_library_dir=str(CASSETTES),
-    record_mode='once',
-    filter_headers=[('X-RFToken', 'XXXXXX')],
-    before_record_response=filter_out_whoami,
-)
-
-
-class RFTest(unittest.TestCase):
-    def setUp(self) -> None:
-        base_url = "https://api.recordedfuture.com/v2/"
-        verify_ssl = True
-        self.token = os.environ.get("RF_TOKEN")
-        headers = {
-            "X-RFToken": self.token,
-            "X-RF-User-Agent": "Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1",
-        }
-
-        self.client = Client(
-            base_url=base_url, verify=verify_ssl, headers=headers, proxy=None
-        )
-        self.actions = Actions(self.client)
-
-    @vcr.use_cassette()
-    def test_ip_reputation(self) -> None:
-        resp = self.actions.lookup_command("37.48.83.137", "ip")
-        entity = resp[0].to_context()["Contents"]["data"]["results"][0]
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']
-        self.assertIsInstance(resp[0], CommandResults)
-        # there are many rules that are concatenated
-        self.assertIn(',', context["rules"])
-        self.assertEqual("37.48.83.137", entity["entity"]["name"])
-
-    @vcr.use_cassette()
-    def test_intelligence(self) -> None:
-        resp = self.actions.enrich_command("125.63.101.62", "ip", True, True)
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']  # noqa
-
-        self.assertIsInstance(resp[0], CommandResults)
-        # rules are concatenated
-        self.assertIn(',', context['concatRules'])
-        self.assertEqual(
-            "125.63.101.62", resp[0].to_context()["Contents"]["data"]["name"]
-        )
-
-    @vcr.use_cassette()
-    def test_whoami(self) -> None:
-        resp = self.client.whoami()
-        self.assertEqual(isinstance(resp, dict), True)
-
-    @vcr.use_cassette()
-    def test_intelligence_profile(self) -> None:
-        """Will fetch related entities even if related_entities param is false"""  # noqa
-        resp = self.actions.enrich_command("184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
-        self.assertIsInstance(resp[0], CommandResults)
-        data = resp[0].raw_response['data']
-        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']])  # noqa
-        expected = ['RelatedMalwareCategory', 'RelatedMalware', 'RelatedThreatActor']  # noqa
-        self.assertEqual(list_of_lists, sorted(expected))
-
-    @vcr.use_cassette()
-    def test_threat_assessment(self) -> None:
-        context = "phishing"
-        entities = {
-            "ip": ["8.8.8.8", "1.1.1.1"],
-            "domain": ["www.feddoctor.com"],
-            "hash": [
-                "fa964842244e752950fd4ed711759382a"
-                "8950e13cc2794d6f73ab7eb9169e5ee"
-            ],
-            "url": ["https://sites.google.com/site/unblockingnotice/"],
-            "vulnerability": ["CVE-2020-8813", "CVE-2011-3874"],
-        }
-        # mocker.patch.object(DBotScore, 'get_integration_name', return_value='Recorded Future v2')
-        resp = self.actions.triage_command(entities, context)
-        self.assertIsInstance(resp[0], CommandResults)
-        self.assertFalse(resp[0].to_context()["Contents"]["verdict"])
-        self.assertEqual("phishing", resp[0].to_context()["Contents"]["context"])
-
-    @vcr.use_cassette()
-    def test_threat_assessment_empty(self) -> None:
-        """Filters away empty entities"""
-        context = "phishing"
-        entities = {
-            "ip": ["8.8.8.8", "1.1.1.1"],
-            "domain": ["www.feddoctor.com"],
-            "hash": [
-                "fa964842244e752950fd4ed711759382a"
-                "8950e13cc2794d6f73ab7eb9169e5ee"
-            ],
-            "url": ["https://sites.google.com/site/unblockingnotice/"],
-            "vulnerability": ["CVE-2020-8813", "CVE-2011-3874"],
-            "filter": "yes"
-        }
-        resp = self.actions.triage_command(entities, context)
-        context = resp[0].to_context()
-        self.assertIsInstance(resp[0], CommandResults)
-        self.assertFalse(context["Contents"]["verdict"])
-        self.assertEqual("phishing", context["Contents"]["context"])
-        scores = [e for e in context["Contents"]['Entities'] if e['score'] == 0]
-        self.assertEqual(len(scores), 0, "Response contains entities with zero score")  # noqa
-
-    @vcr.use_cassette()
-    def test_get_alerting_rules(self) -> None:
-        resp = self.actions.get_alert_rules_command(rule_name="", limit=10)
-        self.assertTrue(resp)
-        self.assertTrue(resp["Contents"]["data"])
-        self.assertIsInstance(resp, dict)
-        self.assertIsNotNone(resp["Contents"]["data"]["results"])
-
-    @vcr.use_cassette()
-    def test_get_alerts(self) -> None:
-        resp = self.actions.get_alerts_command(params={'limit': 200})
-        self.assertTrue(resp)
-        self.assertTrue(resp["Contents"]["data"])
-        self.assertIsInstance(resp, dict)
-        self.assertIsNotNone(resp["Contents"]["data"]["results"])
-
-    @vcr.use_cassette()
-    def test_single_alert_vulnerability(self) -> None:
-        """Gets data for an alert related to vulnerabilities"""
-        resp = self.actions.get_alert_single_command("f1IGiW")
-        self.assertTrue(resp.get('HumanReadable'))
-
-    @vcr.use_cassette()
-    def test_single_alert_credential_leaks(self):
-        """Alert related to credential leaks"""
-        resp = self.actions.get_alert_single_command("fzpmIG")
-        self.assertTrue(resp.get('HumanReadable'))
-        context = resp['EntryContext']['RecordedFuture.SingleAlert(val.ID === obj.id)']  # noqa
-        entity = context['flat_entities'][0]
-
-        self.assertIn('documents', context.keys())
-        self.assertIn('flat_entities', context.keys())
-        self.assertIn('fragment', entity.keys())
-        self.assertIn('name', entity.keys())
-        self.assertIn('id', entity.keys())
-        self.assertIn('type', entity.keys())
-
-    @vcr.use_cassette()
-    def test_single_alert_typosquat(self):
-        """Alert related to typosquats"""
-        resp = self.actions.get_alert_single_command("fp0_an")
-        self.assertTrue(resp.get('HumanReadable'))
-
-    @vcr.use_cassette()
-    def test_get_links_command(self):
-        """Get Technical Links"""
-        resp = self.actions.get_links_command('152.169.22.67', 'ip')
-        context = resp.to_context()
-        self.assertIsInstance(resp, CommandResults)
-        self.assertTrue(context.get('HumanReadable'))
-        self.assertTrue(context.get('Contents'))
-
-    @vcr.use_cassette()
-    def test_get_alert_set_status_command(self):
-        """Set a status for alert"""
-        alert_status = 'no-action'
-        alert_id = 'jrhrfx'
-        resp = self.actions.alert_set_status(alert_id, alert_status)
-        context = resp.to_context()
-        self.assertIsInstance(resp, CommandResults)
-        self.assertTrue(context.get('HumanReadable'))
-        self.assertTrue(context.get('Contents'))
-        self.assertEqual(context['Contents']['status'], alert_status)
-
-    @vcr.use_cassette()
-    def test_get_alert_set_note(self):
-        """Set a note for alert"""
-        note_text = 'note unittest'
-        alert_id = 'jrhrfx'
-        resp = self.actions.alert_set_note(alert_id, note_text)
-        context = resp.to_context()
-        self.assertIsInstance(resp, CommandResults)
-        self.assertTrue(context.get('HumanReadable'))
-        self.assertTrue(context.get('Contents'))
-        self.assertEqual(context['Contents']['note']['text'], note_text)
-
-
 def create_client():
-    base_url = "https://api.recordedfuture.com/gw/xsoar/"
+    import os
+    from RecordedFuture import Client
+
+    base_url = 'https://api.recordedfuture.com/gw/xsoar/'
     verify_ssl = True
-    token = os.environ.get("RF_TOKEN")
+    token = os.environ.get('RF_TOKEN')
     headers = {
-        "X-RFToken": token,
-        "X-RF-User-Agent": "Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1",
+        'X-RFToken': token,
+        'X-RF-User-Agent': "RecordedFuture.py/2.4 (Linux-5.13.0-1031-aws-x86_64-with) "
+                           "XSOAR/2.4 RFClient/2.4 (Cortex_XSOAR_6.5.0)",
     }
 
     return Client(
-        base_url=base_url, verify=verify_ssl, headers=headers, proxy=None
+        base_url=base_url, verify=verify_ssl, headers=headers, proxy=False
     )
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+class TestHelpers:
+
+    def test_translate_score(self):
+        from RecordedFuture import translate_score
+        from CommonServerPython import Common
+
+        assert translate_score(score=10, threshold=0) == Common.DBotScore.BAD
+        assert translate_score(score=10, threshold=10) == Common.DBotScore.BAD
+        assert translate_score(score=10, threshold=11) == Common.DBotScore.NONE
+        assert translate_score(score=24, threshold=40) == Common.DBotScore.NONE
+        assert translate_score(score=25, threshold=40) == Common.DBotScore.SUSPICIOUS
+        assert translate_score(score=26, threshold=40) == Common.DBotScore.SUSPICIOUS
+        assert translate_score(score=40, threshold=40) == Common.DBotScore.BAD
+        assert translate_score(score=45, threshold=40) == Common.DBotScore.BAD
+        assert translate_score(score=10, threshold=-1) == Common.DBotScore.BAD
+        assert translate_score(score=10, threshold=0) == Common.DBotScore.BAD
+        assert translate_score(score=25, threshold=-1) == Common.DBotScore.BAD
+        assert translate_score(score=25, threshold=0) == Common.DBotScore.BAD
+        assert translate_score(score=26, threshold=-1) == Common.DBotScore.BAD
+        assert translate_score(score=26, threshold=0) == Common.DBotScore.BAD
+
+    def test_determine_hash(self):
+        from RecordedFuture import determine_hash
+
+        assert determine_hash(hash_value='s' * 128) == 'SHA512'
+        assert determine_hash(hash_value='s' * 64) == 'SHA256'
+        assert determine_hash(hash_value='s' * 40) == 'SHA1'
+        assert determine_hash(hash_value='s' * 32) == 'MD5'
+        assert determine_hash(hash_value='s' * 8) == 'CRC32'
+        assert determine_hash(hash_value='s' * 50) == 'CTPH'
+        assert determine_hash(hash_value='s' * 10) == 'CTPH'
+        assert determine_hash(hash_value='s') == 'CTPH'
+
+    def test_create_indicator_ip(self, mocker):
+        from RecordedFuture import create_indicator
+        from CommonServerPython import Common, DBotScoreType
+
+        mock_return_value = mocker.Mock()
+        mocker.patch('CommonServerPython.Common.IP', return_value=mock_return_value)
+        dbot_score_spy = mocker.spy(Common, 'DBotScore')
+
+        entity = '8.8.8.8'
+        entity_type = 'ip'
+        score = 45
+        description = 'test_description'
+        location = {'asn': 'test_asn', 'location': {'country': 'test_country'}}
+
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+            location=location
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_once_with(
+            entity,
+            DBotScoreType.IP,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.IP.mock_calls[0]
+        assert mock_call.args[0] == entity
+        assert mock_call.args[1].indicator == entity
+
+        # mock_call.args[1] - is Common.IP, and we verify it by dbot_score_spy.
+        # We can't assert it with `==` as the Common.IP does not implement `__eq__` method.
+
+        assert mock_call.kwargs == {
+            'asn': 'test_asn',
+            'geo_country': 'test_country',
+        }
+
+    def test_create_indicator_domain(self, mocker):
+        from RecordedFuture import create_indicator
+        from CommonServerPython import Common, DBotScoreType
+
+        mock_return_value = mocker.Mock()
+        mocker.patch('CommonServerPython.Common.Domain', return_value=mock_return_value)
+        dbot_score_spy = mocker.spy(Common, 'DBotScore')
+
+        entity = 'google.com'
+        entity_type = 'domain'
+        score = 45
+        description = 'test_description'
+
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_once_with(
+            entity,
+            DBotScoreType.DOMAIN,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.Domain.mock_calls[0]
+        assert mock_call.args[0] == entity
+        assert mock_call.args[1].indicator == entity
+
+    def test_create_indicator_url(self, mocker):
+        from RecordedFuture import create_indicator
+        from CommonServerPython import Common, DBotScoreType
+
+        mock_return_value = mocker.Mock()
+        mocker.patch('CommonServerPython.Common.URL', return_value=mock_return_value)
+        dbot_score_spy = mocker.spy(Common, 'DBotScore')
+
+        entity = 'https://google.com'
+        entity_type = 'url'
+        score = 45
+        description = 'test_description'
+
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_once_with(
+            entity,
+            DBotScoreType.URL,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.URL.mock_calls[0]
+        assert mock_call.args[0] == entity
+        assert mock_call.args[1].indicator == entity
+
+    def test_create_indicator_cve(self, mocker):
+        from RecordedFuture import create_indicator
+        from CommonServerPython import Common
+
+        mock_return_value = mocker.Mock()
+        mocker.patch('CommonServerPython.Common.CVE', return_value=mock_return_value)
+
+        entity = 'CVE-123'
+        entity_type = 'cve'
+        score = 45
+        description = 'test_description'
+
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        mock_call = Common.CVE.mock_calls[0]
+        assert mock_call.args[0] == entity
+        assert mock_call.args[1] == ''
+        assert mock_call.args[2] == ''
+        assert mock_call.args[3] == ''
+        assert mock_call.args[4] == description
+
+    def test_create_indicator_file(self, mocker):
+        from RecordedFuture import create_indicator
+        from CommonServerPython import Common, DBotScoreType
+
+        mock_return_value = mocker.Mock()
+        mocker.patch('CommonServerPython.Common.File', return_value=mock_return_value)
+        dbot_score_spy = mocker.spy(Common, 'DBotScore')
+
+        entity_type = 'file'
+        score = 45
+        description = 'test_description'
+
+        # MD5.
+        entity = 's' * 32
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_once_with(
+            entity,
+            DBotScoreType.FILE,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.File.mock_calls[0]
+        assert mock_call.args[0].indicator == entity
+        assert mock_call.kwargs.get('md5') == entity
+
+        # SHA1.
+        entity = 's' * 40
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_with(
+            entity,
+            DBotScoreType.FILE,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.File.mock_calls[-1]
+        assert mock_call.args[0].indicator == entity
+        assert mock_call.kwargs.get('sha1') == entity
+
+        # SHA256.
+        entity = 's' * 64
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_with(
+            entity,
+            DBotScoreType.FILE,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.File.mock_calls[-1]
+        assert mock_call.args[0].indicator == entity
+        assert mock_call.kwargs.get('sha256') == entity
+
+        # SHA512.
+        entity = 's' * 128
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_with(
+            entity,
+            DBotScoreType.FILE,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.File.mock_calls[-1]
+        assert mock_call.args[0].indicator == entity
+        assert mock_call.kwargs.get('sha512') == entity
+
+        # CRC32.
+        entity = 's' * 20  # Length different from any previous hashes.
+        result = create_indicator(
+            entity=entity,
+            entity_type=entity_type,
+            score=score,
+            description=description,
+        )
+
+        assert result == mock_return_value
+
+        dbot_score_spy.assert_called_with(
+            entity,
+            DBotScoreType.FILE,
+            'Recorded Future v2',
+            Common.DBotScore.SUSPICIOUS,
+            '',
+            # reliability=DBotScoreReliability.B
+            reliability=None
+        )
+
+        mock_call = Common.File.mock_calls[-1]
+        assert mock_call.args[0].indicator == entity
+        assert mock_call.kwargs == dict()
 
 
-def test_entity_enrich_with_related_entities(mocker):
-    """
+class TestRFClient:
 
-    Given:
-        a request for entity enrichment with the argument fetch_related_entities as True
-    When:
-        requesting the API for entity enrichment
-    Then:
-        The returned data is valid and has the key relatedEntities
+    def test_whoami(self, mocker):
+        client = create_client()
 
-    """
-    client = create_client()
-    raw_response = util_load_json('./cassettes/entity_raw_response_related.json')
-    mocker.patch.object(Client, '_http_request', return_value=raw_response)
-    expected_entity_data = util_load_json('./cassettes/enrich_entity_related.json')
-    returned_data = client.entity_enrich('184.168.221.96', 'ip', True, False, 'Vulnerability Analyst')
-    assert expected_entity_data == returned_data
-    assert 'relatedEntities' in returned_data.get('data').keys()
+        mock_http_request = mocker.patch.object(client, '_http_request')
+
+        client.whoami()
+
+        mock_http_request.assert_called_once_with(
+            method='get',
+            url_suffix='info/whoami',
+            timeout=60,
+        )
+
+    def test_get_writeback_data_writeback_off(self, mocker):
+        """
+        Test _get_writeback_data with writeback turned OFF.
+        """
+
+        import demistomock as demisto
+
+        client = create_client()
+
+        mocker.patch.object(demisto, 'params', return_value={'writeback': False})
+        assert client._get_writeback_data() is None
+
+    def test_get_writeback_data_writeback_on(self, mocker):
+        """
+        Test _get_writeback_data with writeback turned ON.
+        """
+        import demistomock as demisto
+
+        client = create_client()
+
+        mocker.patch.object(demisto, 'params', return_value={'collective_insights': 'On'})
+
+        demisto.callingContext = {
+            'context': {
+                'ExecutionContext': 'to be removed',
+                'other': 'data'
+            },
+            'other': 'data'
+        }
+
+        assert client._get_writeback_data() == {
+            'context': {
+                'other': 'data'
+            },
+            'other': 'data'
+        }
+
+    #
+    def test_call_writeback_on(self, mocker):
+        """
+        Test _call() with writeback turned ON.
+        """
+
+        import os
+        import demistomock as demisto
+
+        STATUS_TO_RETRY = [500, 501, 502, 503, 504]
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        # Mock data for writeback.
+        mocker.patch.object(
+            demisto,
+            'params',
+            return_value={
+                'collective_insights': "On",
+            }
+        )
+
+        mock_calling_context = {
+            'context': {
+                'ExecutionContext': 'to be removed',
+                'other': 'data'
+            },
+            'other': 'data'
+        }
+        demisto.callingContext = mock_calling_context
+
+        client = create_client()
+
+        mock_http_request = mocker.patch.object(client, '_http_request')
+
+        mock_url_suffix = 'mock_url_suffix'
+
+        client._call(url_suffix=mock_url_suffix)
+
+        json_data = {
+            'demisto_command': mock_command_name,
+            'demisto_args': mock_command_args,
+            'callingContext': {
+                'context': {
+                    'other': 'data'
+                },
+                'other': 'data',
+            }
+        }
+
+        mock_http_request.assert_called_once_with(
+            method='post',
+            url_suffix=mock_url_suffix,
+            json_data=json_data,
+            timeout=90,
+            retries=3,
+            status_list_to_retry=STATUS_TO_RETRY
+        )
+
+    def test_call_writeback_off(self, mocker):
+        """
+        Test _call() with writeback turned OFF.
+        """
+
+        import os
+        import demistomock as demisto
+
+        STATUS_TO_RETRY = [500, 501, 502, 503, 504]
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        # Mock data for writeback.
+        mocker.patch.object(
+            demisto,
+            'params',
+            return_value={
+                'collective_insights': "Off",
+            }
+        )
+
+        mock_calling_context = {
+            'context': {
+                'ExecutionContext': 'to be removed',
+                'other': 'data'
+            },
+            'other': 'data'
+        }
+        demisto.callingContext = mock_calling_context
+
+        client = create_client()
+
+        mock_http_request = mocker.patch.object(client, '_http_request')
+
+        mock_url_suffix = 'mock_url_suffix'
+
+        client._call(url_suffix=mock_url_suffix)
+
+        json_data = {
+            'demisto_command': mock_command_name,
+            'demisto_args': mock_command_args,
+        }
+
+        mock_http_request.assert_called_once_with(
+            method='post',
+            url_suffix=mock_url_suffix,
+            json_data=json_data,
+            timeout=90,
+            retries=3,
+            status_list_to_retry=STATUS_TO_RETRY
+        )
+
+    def test_call_with_kwargs(self, mocker):
+        """
+        Test _call() with kwargs.
+        """
+
+        import os
+        import demistomock as demisto
+
+        STATUS_TO_RETRY = [500, 501, 502, 503, 504]
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_http_request = mocker.patch.object(client, '_http_request')
+
+        mock_url_suffix = 'mock_url_suffix'
+
+        client._call(url_suffix=mock_url_suffix, timeout=120, any_other_kwarg=True)
+
+        json_data = {
+            'demisto_command': mock_command_name,
+            'demisto_args': mock_command_args,
+        }
+
+        mock_http_request.assert_called_once_with(
+            method='post',
+            url_suffix=mock_url_suffix,
+            json_data=json_data,
+            timeout=120,
+            retries=3,
+            status_list_to_retry=STATUS_TO_RETRY,
+            any_other_kwarg=True,
+        )
+
+    def test_call_returns_response(self, mocker):
+        """
+        Test _call() returns response.
+        """
+
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_response = {
+            'response': {
+                'data': 'mock data'
+            }
+        }
+
+        mocker.patch.object(
+            client,
+            '_http_request',
+            return_value=mock_response
+        )
+
+        mock_url_suffix = 'mock_url_suffix'
+
+        response = client._call(url_suffix=mock_url_suffix)
+        assert response == mock_response
+
+    def test_call_response_processing_return_error(self, mocker):
+        """
+        Test _call() return_error response processing.
+        """
+
+        import os
+        import demistomock as demisto
+
+        STATUS_TO_RETRY = [500, 501, 502, 503, 504]
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        mock_return_error = mocker.patch('RecordedFuture.return_error')
+
+        client = create_client()
+
+        mock_http_request = mocker.patch.object(
+            client,
+            '_http_request',
+            return_value={
+                'return_error': {
+                    'message': 'mock error'
+                }
+            }
+        )
+
+        mock_url_suffix = 'mock_url_suffix'
+
+        client._call(url_suffix=mock_url_suffix)
+
+        json_data = {
+            'demisto_command': mock_command_name,
+            'demisto_args': mock_command_args,
+        }
+
+        mock_http_request.assert_called_once_with(
+            method='post',
+            url_suffix=mock_url_suffix,
+            json_data=json_data,
+            timeout=90,
+            retries=3,
+            status_list_to_retry=STATUS_TO_RETRY,
+        )
+
+        mock_return_error.assert_called_once_with(
+            message='mock error'
+        )
+
+    def test_call_response_processing_404(self, mocker):
+        """
+        Test _call() response processing.
+        """
+
+        import os
+        import demistomock as demisto
+        from CommonServerPython import DemistoException, CommandResults
+
+        STATUS_TO_RETRY = [500, 501, 502, 503, 504]
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        mocker.patch('RecordedFuture.return_error')
+
+        client = create_client()
+
+        def mock_http_request_method(*args, **kwargs):
+            # Imitate how CommonServerPython handles bad responses (when status code not in ok_codes,
+            # or if ok_codes=None - it uses requests.Response.ok to check whether response is good).
+            raise DemistoException('404')
+
+        mocker.patch.object(
+            client,
+            '_http_request',
+            mock_http_request_method
+        )
+
+        spy_http_request = mocker.spy(client, '_http_request')
+
+        mock_url_suffix = 'mock_url_suffix'
+
+        result = client._call(url_suffix=mock_url_suffix)
+
+        json_data = {
+            'demisto_command': mock_command_name,
+            'demisto_args': mock_command_args,
+        }
+
+        spy_http_request.assert_called_once_with(
+            method='post',
+            url_suffix=mock_url_suffix,
+            json_data=json_data,
+            timeout=90,
+            retries=3,
+            status_list_to_retry=STATUS_TO_RETRY,
+        )
+
+        assert isinstance(result, CommandResults)
+
+        assert result.outputs_prefix == ''
+        assert result.outputs_key_field == ''
+        assert result.outputs == dict()
+        assert result.raw_response == dict()
+        assert result.readable_output == 'No results found.'
+
+    def test_fetch_incidents(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+        mock_params = {'param1': 'param1 value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+        mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+        mock_last_run_dict = {"lastRun": "2022-08-31T12:12:20+00:00"}
+        mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run_dict)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.fetch_incidents()
+
+        mock_call.assert_called_once_with(
+            json_data={
+                'demisto_command': mock_command_name,
+                'demisto_args': mock_command_args,
+                'demisto_last_run': mock_last_run_dict,
+                'demisto_params': mock_params
+            },
+            timeout=120,
+            url_suffix='/v2/alert/fetch_incidents'
+        )
+
+        assert response == mock_call_response
+
+    def test_entity_search(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.entity_search()
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/search'
+        )
+
+        assert response == mock_call_response
+
+    def test_get_intelligence(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.get_intelligence()
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/lookup/intelligence'
+        )
+
+        assert response == mock_call_response
+
+    def test_get_links(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.get_links()
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/lookup/links'
+        )
+
+        assert response == mock_call_response
+
+    def test_get_single_alert(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.get_single_alert()
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/alert/lookup'
+        )
+
+        assert response == mock_call_response
+
+    def test_get_alerts(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.get_alerts()
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/alert/search'
+        )
+
+        assert response == mock_call_response
+
+    def test_get_alert_rules(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.get_alert_rules()
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/alert/rule'
+        )
+
+        assert response == mock_call_response
+
+    def test_alert_set_status(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        alert_data = {
+            'mock': 'data'
+        }
+        response = client.alert_set_status(alert_data)
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/alert/set_status',
+            json_data={
+                'demisto_command': mock_command_name,
+                'demisto_args': mock_command_args,
+                'alerts_update_data': alert_data
+            },
+        )
+
+        assert response == mock_call_response
+
+        response = client.alert_set_status()
+
+        mock_call.assert_called_with(
+            url_suffix='/v2/alert/set_status',
+            json_data={
+                'demisto_command': mock_command_name,
+                'demisto_args': mock_command_args,
+                'alerts_update_data': None
+            },
+        )
+
+        assert response == mock_call_response
+
+    def test_alert_set_note(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        alert_data = {
+            'mock': 'data'
+        }
+        response = client.alert_set_note(alert_data)
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/alert/set_note',
+            json_data={
+                'demisto_command': mock_command_name,
+                'demisto_args': mock_command_args,
+                'alerts_update_data': alert_data
+            },
+        )
+
+        assert response == mock_call_response
+
+        response = client.alert_set_note()
+
+        mock_call.assert_called_with(
+            url_suffix='/v2/alert/set_note',
+            json_data={
+                'demisto_command': mock_command_name,
+                'demisto_args': mock_command_args,
+                'alerts_update_data': None
+            },
+        )
+
+        assert response == mock_call_response
+
+    def test_get_triage(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {
+            'response': {
+                'data': 'mock response'
+            }
+        }
+        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        response = client.get_triage()
+
+        mock_call.assert_called_once_with(
+            url_suffix='/v2/lookup/triage'
+        )
+
+        assert response == mock_call_response
 
 
-def test_entity_enrich_no_related_entities(mocker):
-    """
+class TestActions:
 
-    Given:
-        a request for entity enrichment with the argument fetch_related_entities as False
-    When:
-        requesting the API for entity enrichment
-    Then:
-        The returned data is valid and does not have the key relatedEntities
+    def test_init(self, mocker):
+        from RecordedFuture import Actions
 
-    """
-    client = create_client()
-    raw_response = util_load_json('./cassettes/entity_raw_response_no_related.json')
-    mocker.patch.object(Client, '_http_request', return_value=raw_response)
-    expected_entity_data = util_load_json('./cassettes/enrich_entity_no_related.json')
-    returned_data = client.entity_enrich('184.168.221.96', 'ip', False, False, 'Vulnerability Analyst')
-    assert expected_entity_data == returned_data
-    assert 'relatedEntities' not in returned_data.get('data').keys()
+        mock_client = mocker.Mock()
+        actions = Actions(mock_client)
+        assert actions.client == mock_client
 
+    def test_process_result_actions_404(self, mocker):
+        from RecordedFuture import Actions
+        from CommonServerPython import CommandResults
 
-def test_fetch_incidents(mocker):
-    """Fetch alerts from Recorded Future"""
-    first_fetch = "72 hours"
-    rule_names = "Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers"
-    max_fetch = 3
-    client = create_client()
-    actions = Actions(client)
-    incidents_mock = mocker.patch('demistomock.incidents')
-    set_last_run_mock = mocker.patch('demistomock.setLastRun')
-    get_last_run_mock = mocker.patch(
-        'demistomock.getLastRun',
-        return_value={"time": "2018-10-24T14:13:20.000001Z"}
-    )
+        mock_client = mocker.Mock()
+        actions = Actions(mock_client)
 
-    rules_response = util_load_json('./cassettes/alert_rules_response.json')
-    client.get_alert_rules = mocker.Mock(return_value=rules_response)
-    alerts_response = util_load_json('./cassettes/alerts_response.json')
-    client.get_alerts = mocker.Mock(return_value=alerts_response)
-    client.update_alerts = mocker.Mock()
-    client.get_single_alert = mocker.Mock()
-    single_alerts_responses = util_load_json('./cassettes/responses_for_single_alerts.json')
+        # Test if response is CommandResults
+        # (case when we got 404 on response, and it was processed in self.client._call() method).
+        response = CommandResults(readable_output='Mock')
+        result_actions = actions._process_result_actions(response=response)
+        assert result_actions == [response]
 
-    def get_single_alert_response(alert_id):
-        for alert_response in single_alerts_responses:
-            if alert_response['data']['id'] == alert_id:
-                return alert_response
+    def test_process_result_actions_response_is_not_dict(self, mocker):
+        from RecordedFuture import Actions
 
-    client.get_single_alert.side_effect = lambda alert_id: get_single_alert_response(alert_id)
+        mock_client = mocker.Mock()
+        actions = Actions(mock_client)
 
-    actions.fetch_incidents(rule_names, first_fetch, max_fetch)
-    get_last_run_mock.assert_called_once_with()
-    client.get_alert_rules.assert_has_calls([
-        call("Global Trends, Trending Vulnerabilities"),
-        call("Global Trends, Trending Attackers"),
-    ])
-    client.get_alerts.assert_has_calls([
-        call({
-            'triggered': '[2018-10-24 14:13:20,)', 'orderby': 'triggered',
-            'direction': 'asc', 'status': 'no-action', 'limit': 3, 'alertRule': 'biQXYk'
-        }),
-        call({
-            'triggered': '[2018-10-24 14:13:20,)', 'orderby': 'triggered',
-            'direction': 'asc', 'status': 'no-action', 'limit': 3, 'alertRule': 'biQXYk'
-        }),
-    ])
-    incidents = []
-    for _ in rule_names.split(';'):
-        for alert_data in single_alerts_responses:
-            alert = alert_data['data']
-            alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
-            incidents.append({
-                "name": "Recorded Future Alert - " + alert['title'],
-                "occurred": datetime.strftime(alert_time, "%Y-%m-%dT%H:%M:%SZ"),
-                "rawJSON": json.dumps(alert),
-            })
-    incidents.reverse()
-    incidents_mock.assert_called_once_with(incidents)
-    client.update_alerts.assert_called_once_with([
-        {'id': 'jy5xRA', 'status': 'pending'},
-        {'id': 'jzj0f5', 'status': 'pending'},
-        {'id': 'j0MSf6', 'status': 'pending'},
-        {'id': 'jy5xRA', 'status': 'pending'},
-        {'id': 'jzj0f5', 'status': 'pending'},
-        {'id': 'j0MSf6', 'status': 'pending'}
-    ])
-    set_last_run_mock.assert_called_once_with({'start_time': '2021-09-13T04:04:10.720000Z'})
+        # Test if response is not CommandResults and not Dict.
+        response = 'Mock string - not CommandResults and not dict'
+        result_actions = actions._process_result_actions(response=response)  # type: ignore
+        assert result_actions is None
+
+    def test_process_result_actions_no_or_empty_result_actions_in_response(self, mocker):
+        from RecordedFuture import Actions
+
+        mock_client = mocker.Mock()
+        actions = Actions(mock_client)
+
+        # Test no results_actions in response.
+        response = {
+            'data': 'mock'
+        }
+        result_actions = actions._process_result_actions(response=response)
+        assert result_actions is None
+
+        # Test case when bool(results_actions) in response is False.
+        response = {
+            'data': 'mock',
+            'result_actions': None
+        }
+        result_actions = actions._process_result_actions(response=response)
+        assert result_actions is None
+
+        response = {
+            'data': 'mock',
+            'result_actions': list()
+        }
+        result_actions = actions._process_result_actions(response=response)
+        assert result_actions is None
+
+        response = {
+            'data': 'mock',
+            'result_actions': dict()
+        }
+        result_actions = actions._process_result_actions(response=response)
+        assert result_actions is None
+
+    def test_process_result_actions_command_results_only(self, mocker):
+        from RecordedFuture import Actions, CommandResults
+
+        mock_client = mocker.Mock()
+        actions = Actions(mock_client)
+
+        response = {
+            'data': 'mock',
+            'result_actions': [{
+                'CommandResults': {
+                    'outputs_prefix': 'mock_outputs_prefix',
+                    'outputs': 'mock_outputs',
+                    'raw_response': 'mock_raw_response',
+                    'readable_output': 'mock_readable_output',
+                    'outputs_key_field': 'mock_outputs_key_field'
+                },
+            }]
+        }
+        result_actions = actions._process_result_actions(response=response)
+
+        assert len(result_actions) == 1
+
+        r_a = result_actions[0]
+
+        assert isinstance(r_a, CommandResults)
+
+        assert r_a.outputs_prefix == 'mock_outputs_prefix'
+        assert r_a.outputs == 'mock_outputs'
+        assert r_a.raw_response == 'mock_raw_response'
+        assert r_a.readable_output == 'mock_readable_output'
+        assert r_a.outputs_key_field == 'mock_outputs_key_field'
+
+    def test_process_result_actions_create_indicator_and_default_command_results(self, mocker):
+        import RecordedFuture
+
+        spy_create_indicator = mocker.spy(
+            RecordedFuture, 'create_indicator',
+        )
+
+        mock_client = mocker.Mock()
+        actions = RecordedFuture.Actions(mock_client)
+
+        response = {
+            'data': 'mock',
+            'result_actions': [{
+                'create_indicator': {
+                    'entity': 'mock_entity',
+                    'entity_type': 'ip',
+                    'score': 15,
+                    'description': 'mock_description',
+                    'location': {'country': 'mock_country', 'ans': 'mock_asn'},
+                },
+            }]
+        }
+        result_actions = actions._process_result_actions(response=response)
+
+        spy_create_indicator.assert_called_once_with(
+            entity='mock_entity',
+            entity_type='ip',
+            score=15,
+            description='mock_description',
+            location={'country': 'mock_country', 'ans': 'mock_asn'},
+        )
+
+        assert len(result_actions) == 1
+
+        r_a = result_actions[0]
+
+        assert isinstance(r_a, RecordedFuture.CommandResults)
+
+        assert r_a.readable_output == (
+            '### New indicator was created.\n'
+            '|DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == '
+            'obj.Vendor && val.Type == obj.Type)|IP(val.Address && val.Address == '
+            'obj.Address)|\n'
+            '|---|---|\n'
+            '| Indicator: mock_entity<br>Type: ip<br>Vendor: Recorded Future v2<br>Score: '
+            '0 | Address: mock_entity |\n'
+        )
+
+    def test_process_result_actions_create_indicator_and_command_results(self, mocker):
+        import RecordedFuture
+
+        spy_create_indicator = mocker.spy(
+            RecordedFuture, 'create_indicator',
+        )
+
+        mock_client = mocker.Mock()
+        actions = RecordedFuture.Actions(mock_client)
+
+        response = {
+            'data': 'mock',
+            'result_actions': [{
+                'create_indicator': {
+                    'entity': 'mock_entity',
+                    'entity_type': 'ip',
+                    'score': 15,
+                    'description': 'mock_indicator_description',
+                },
+
+                'CommandResults': {
+                    'outputs_prefix': 'mock_outputs_prefix',
+                    'outputs': 'mock_outputs',
+                    'raw_response': 'mock_raw_response',
+                    'readable_output': 'mock_readable_output',
+                    'outputs_key_field': 'mock_outputs_key_field',
+                    'indicator': 'indicator'
+                }
+            }]
+        }
+        result_actions = actions._process_result_actions(response=response)
+
+        spy_create_indicator.assert_called_once_with(
+            entity='mock_entity',
+            entity_type='ip',
+            score=15,
+            description='mock_indicator_description',
+        )
+
+        assert len(result_actions) == 1
+
+        r_a = result_actions[0]
+
+        assert isinstance(r_a, RecordedFuture.CommandResults)
+
+        assert r_a.outputs_prefix == 'mock_outputs_prefix'
+        assert r_a.outputs == 'mock_outputs'
+        assert r_a.raw_response == 'mock_raw_response'
+        assert r_a.readable_output == 'mock_readable_output'
+        assert r_a.outputs_key_field == 'mock_outputs_key_field'
+
+        assert r_a.indicator.to_context() == {
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': {
+                'Indicator': 'mock_entity',
+                'Score': 0,
+                'Type': 'ip',
+                'Vendor': 'Recorded Future v2'
+            },
+            'IP(val.Address && val.Address == obj.Address)': {'Address': 'mock_entity'}
+        }
+
+    def test_fetch_incidents_with_incidents_present(self, mocker):
+        from RecordedFuture import Actions
+        import demistomock as demisto
+
+        client = create_client()
+
+        mock_incidents_value = [
+            {'mock_incident_key1': 'mock_incident_value1'},
+            {'mock_incident_key2': 'mock_incident_value2'},
+        ]
+
+        mock_demisto_last_run_value = 'mock_demisto_last_run'
+
+        mock_alerts_update_data_value = 'mock_alerts_update_data_value'
+
+        mock_client_fetch_incidents_response = {
+            'incidents': mock_incidents_value,
+            'demisto_last_run': mock_demisto_last_run_value,
+            'data': 'mock',
+            'alerts_update_data': mock_alerts_update_data_value
+        }
+        mock_client_fetch_incidents = mocker.patch.object(
+            client,
+            'fetch_incidents',
+            return_value=mock_client_fetch_incidents_response
+        )
+
+        mock_client_alert_set_status = mocker.patch.object(
+            client,
+            'alert_set_status',
+        )
+
+        mock_demisto_incidents = mocker.patch.object(demisto, 'incidents')
+        mock_demisto_set_last_run = mocker.patch.object(demisto, 'setLastRun')
+
+        actions = Actions(client)
+
+        actions.fetch_incidents()
+
+        mock_client_fetch_incidents.assert_called_once_with()
+
+        mock_demisto_incidents.assert_called_once_with(mock_incidents_value)
+        mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
+
+        # Verify that we update alert status.
+        mock_client_alert_set_status.assert_called_once_with(mock_alerts_update_data_value)
+
+    def test_malware_search_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_entity_search = mocker.patch.object(
+            client,
+            'entity_search',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value,
+        )
+
+        result = actions.malware_search_command()
+
+        mock_client_entity_search.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_lookup_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_entity_lookup = mocker.patch.object(
+            client,
+            'entity_lookup',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value,
+        )
+
+        result = actions.lookup_command()
+
+        mock_client_entity_lookup.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_intelligence_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_get_intelligence = mocker.patch.object(
+            client,
+            'get_intelligence',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
+
+        result = actions.intelligence_command()
+
+        mock_client_get_intelligence.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_get_links_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_get_links = mocker.patch.object(
+            client,
+            'get_links',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
+
+        result = actions.get_links_command()
+
+        mock_client_get_links.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_get_single_alert_command_with_result_actions(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_get_single_alert = mocker.patch.object(
+            client,
+            'get_single_alert',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
+
+        result = actions.get_single_alert_command()
+
+        mock_client_get_single_alert.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        # As there are some result actions - return those result actions.
+        assert result == mock_process_result_actions_return_value
+
+    def test_get_single_alert_command_without_result_actions(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_get_single_alert = mocker.patch.object(
+            client,
+            'get_single_alert',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = None
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
+
+        result = actions.get_single_alert_command()
+
+        mock_client_get_single_alert.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        # As there is no result actions - just return response.
+        assert result == mock_response
+
+    def test_get_alerts_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_get_alerts = mocker.patch.object(
+            client,
+            'get_alerts',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        result = actions.get_alerts_command()
+
+        mock_client_get_alerts.assert_called_once_with()
+
+        assert result == mock_response
+
+    def test_get_alert_rules_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_get_alert_rules = mocker.patch.object(
+            client,
+            'get_alert_rules',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        result = actions.get_alert_rules_command()
+
+        mock_client_get_alert_rules.assert_called_once_with()
+
+        assert result == mock_response
+
+    def test_alert_set_status_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_alert_set_status = mocker.patch.object(
+            client,
+            'alert_set_status',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
+
+        result = actions.alert_set_status_command()
+
+        mock_client_alert_set_status.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_alert_set_note_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_alert_set_note = mocker.patch.object(
+            client,
+            'alert_set_note',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
+
+        result = actions.alert_set_note_command()
+
+        mock_client_alert_set_note.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_triage_command(self, mocker):
+        from RecordedFuture import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_get_triage = mocker.patch.object(
+            client,
+            'get_triage',
+            return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value
+        )
+
+        result = actions.triage_command()
+
+        mock_client_get_triage.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value

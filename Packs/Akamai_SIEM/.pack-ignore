@@ -1,2 +1,6 @@
 [file:Akamai_SIEM.yml]
 ignore=IN126,BA108,BA109,IN145
+
+[known_words]
+Akamai
+WAF

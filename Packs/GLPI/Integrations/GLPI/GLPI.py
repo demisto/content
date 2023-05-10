@@ -138,7 +138,7 @@ class myglpi(GLPI):
                 'Session-Token': self.session.headers['Session-Token'],
                 'App-Token': self.session.headers['App-Token']
             },
-            files={
+            files={  # type:ignore[arg-type]
                 'uploadManifest': (
                     None,
                     UPLOAD_MANIFEST.format(

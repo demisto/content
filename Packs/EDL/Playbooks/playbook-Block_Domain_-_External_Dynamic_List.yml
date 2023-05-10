@@ -1,0 +1,188 @@
+id: Block Domain - External Dynamic List
+version: -1
+name: Block Domain - External Dynamic List
+description: |-
+  This playbook blocks domains using External Dynamic Link.
+  The playbook adds a tag to the inputs domain indicators. the tagged domains can be publish as External Dynamic list that can be added to blocklist using products like Panorama by Palo Alto Networks.
+  For Panorama - You can block the tagged domains by creating EDL(in Panorama) with the XSOAR EDL Url, and assign it to Anti-Spyware profile under "DNS Signature Policies"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b91dfe71-e177-4ca7-895f-1026172f5dea
+    type: start
+    task:
+      id: b91dfe71-e177-4ca7-895f-1026172f5dea
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 609eb07b-eea9-4735-83a6-3376a68b64af
+    type: condition
+    task:
+      id: 609eb07b-eea9-4735-83a6-3376a68b64af
+      version: -1
+      name: Use External Dynamic List?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Tag
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domains
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 17febe84-45d9-41d3-8cfb-76ed203f69b3
+    type: regular
+    task:
+      id: 17febe84-45d9-41d3-8cfb-76ed203f69b3
+      version: -1
+      name: Update Indicator Tag for EDL
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: inputs.Domains
+          transformers:
+          - operator: uniq
+      field:
+        simple: tags
+      fieldValue:
+        complex:
+          root: inputs.Tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bc8d3853-6554-4315-8a49-ebe6496d6160
+    type: title
+    task:
+      id: bc8d3853-6554-4315-8a49-ebe6496d6160
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 555,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domains
+  value: {}
+  required: false
+  description: "The domains to block"
+  playbookInputQuery:
+- key: Tag
+  value: {}
+  required: false
+  description: "Indicator tag to assign"
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

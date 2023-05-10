@@ -1,0 +1,509 @@
+description: Sub-playbook that performs an Nmap scan and compares the results against a regular expression to determine a match. This could be used to look for OpenSSH versions or other OS information found in the banner.
+id: NMAP - Banner Check
+inputs:
+- description: Remote IP address in an incident/alert.
+  key: RemoteIP
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Remote port number in an incident/alert.
+  key: RemotePort
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Regular expression to compare against the banner for a match.
+  key: Regex
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Options to be used for Nmap scan. (We do "--script=banner -p<RemotePort>" by default and recommend using "-Pn" to skip a ping check.)
+  key: NMAPOptions
+  playbookInputQuery:
+  required: false
+  value: {}
+name: NMAP - Banner Check
+outputs:
+- contextPath: ScanResult
+  description: The result of the scan (if done).
+  type: unknown
+- contextPath: ScanDone
+  description: Whether a scan was actually performed (based on subtypes).
+  type: unknown
+- contextPath: NMAP.Scan
+  description: NMAP scan data
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de6300b9-0f6f-4bd8-8be6-a1f2461d605a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: de6300b9-0f6f-4bd8-8be6-a1f2461d605a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      options:
+        complex:
+          root: inputs.NMAPOptions
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' --script=banner -p'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: inputs.RemotePort
+            operator: concat
+      targets:
+        complex:
+          root: inputs.RemoteIP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Nmap scan on a single port that pulls in the banner as well using  "--script=banner -p<inputs.RemotePort>" options and allows the addition of other options as well.
+      id: 48643017-88b9-4fc9-8697-0b5e2ff4e624
+      iscommand: true
+      name: NMAP banner scan
+      script: '|||nmap-scan'
+      type: regular
+      version: -1
+    taskid: 48643017-88b9-4fc9-8697-0b5e2ff4e624
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 660
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanDone
+      value:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanDone to False to be passed back to the parent playbook to notify that no Nmap scan took place.
+      id: 4d8b6cdc-8fde-4c9a-8f70-1d4bf9f0d62e
+      iscommand: false
+      name: No scan done
+      script: Set
+      type: regular
+      version: -1
+    taskid: 4d8b6cdc-8fde-4c9a-8f70-1d4bf9f0d62e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 480
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a48b40b6-dda8-4b90-8a7b-2fdbaf35162d
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+      description: ''
+    taskid: a48b40b6-dda8-4b90-8a7b-2fdbaf35162d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1730
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: nmap
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the NMAP integration instance is configured to continue with scanning.
+      id: bf31adab-ce9b-4641-8800-5d90561bb437
+      iscommand: false
+      name: Is NMAP enabled?
+      type: condition
+      version: -1
+    taskid: bf31adab-ce9b-4641-8800-5d90561bb437
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanDone
+      value:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanDone to True to be passed back to parent playbook to notify that a NMAP scan was attempted.
+      id: 51c22eec-939c-46c6-8632-d27716ff6aaa
+      iscommand: false
+      name: Scan done
+      script: Set
+      type: regular
+      version: -1
+    taskid: 51c22eec-939c-46c6-8632-d27716ff6aaa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 480
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanResult
+      value:
+        simple: Closed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanResult to Closed when the NMAP scan returns the banner but there is no regular expression match.  This value is to be passed back to parent playbook to notify results of NMAP scan.
+      id: df503150-32f9-46e0-8952-75ebef0c53da
+      iscommand: false
+      name: Closed scan result
+      script: Set
+      type: regular
+      version: -1
+    taskid: df503150-32f9-46e0-8952-75ebef0c53da
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanResult
+      value:
+        simple: Open
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanResult to Open when the NMAP scan returns the banner and there is a regular expression match.  This value is to be passed back to parent playbook to notify results of NMAP scan.
+      id: 55e2b320-de7d-493f-8113-ff2eb88491d4
+      iscommand: false
+      name: Open scan result
+      script: Set
+      type: regular
+      version: -1
+    taskid: 55e2b320-de7d-493f-8113-ff2eb88491d4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1420
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanResult
+      value:
+        simple: Undetermined
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 65100f6c-4940-49b5-8351-26afa98bbdf0
+      iscommand: false
+      name: Undetermined scan result
+      script: Set
+      type: regular
+      version: -1
+    taskid: 65100f6c-4940-49b5-8351-26afa98bbdf0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1420
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: NMAP.Scan.Hosts.Services.Banner
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Banner
+                root: NMAP.Scan.Hosts.Services
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks results of the scan to see if a banner was returned or not in order to determine outcome to pass back to parent playbook.
+      id: 170238fe-769e-4e5a-8bac-b40092851e89
+      iscommand: false
+      name: Is there banner in output?
+      type: condition
+      version: -1
+    taskid: 170238fe-769e-4e5a-8bac-b40092851e89
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 830
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Banner
+                root: NMAP.Scan.Hosts.Services
+                transformers:
+                - args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      iscontext: true
+                      value:
+                        simple: inputs.Regex
+                    unpack_matches: {}
+                  operator: RegexExtractAll
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks returned banner in scan vs supplied regular expression to determine outcome to pass back to parent playbook.
+      id: 8239b4e5-e7ed-4ead-856e-6f2fd229d1cb
+      iscommand: false
+      name: Does banner match regex?
+      type: condition
+      version: -1
+    taskid: 8239b4e5-e7ed-4ead-856e-6f2fd229d1cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1080
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1745,
+        "width": 1520,
+        "x": 100,
+        "y": 50
+      }
+    }
+  }
+tests:
+- Nmap - Test
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+  - xpanse

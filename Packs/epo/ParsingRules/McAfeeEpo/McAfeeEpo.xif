@@ -1,0 +1,2 @@
+[INGEST:vendor="McAfee", product="ePO", target_dataset="mcafee_epo_raw" , no_hit=keep]
+alter _time = EventTimeLocal;

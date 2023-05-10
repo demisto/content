@@ -1,0 +1,35 @@
+commonfields:
+  id: IncapScheduleTask
+  version: -1
+name: IncapScheduleTask
+script: ''
+type: python
+subtype: python3
+tags:
+- Incapsula
+comment: |-
+  This script periodically runs the "IncapWhitelistCompliance" script, which queries the Incapsula monitored websites for white-list compliance (see script for further details).
+  The script then saves the new periodic ID into incident context under the "ScheduleTaskID" key for later use.
+system: true
+args:
+- name: SSHValidationServer
+  required: true
+  default: true
+  description: Name of the non-allow listed server RemoteAccess instance
+- name: cron
+  required: true
+  description: The interval between each check (in cron format)
+- name: times
+  description: Number of times to execute the check
+scripttarget: 0
+dependson:
+  must:
+  - scheduleEntry
+  - IncapWhitelistCompliance
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar

@@ -1,8 +1,8 @@
 {
-    "name": "Rapid7 Nexpose",
-    "description": "Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.",
+    "name": "Rapid7 InsightVM",
+    "description": "Vulnerability management solution to help reduce threat exposure.",
     "support": "xsoar",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.2.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,9 +12,12 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "nexpose"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

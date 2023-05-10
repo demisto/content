@@ -14,6 +14,7 @@ Use the abuse.ch SSL Blacklist feed integration to fetch indicators from the fee
     * __Services__: Services of abuse.ch SSL Blacklist to fetch indicators from: 
         * https://sslbl.abuse.ch/blacklist/sslipblacklist.csv.
         * https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv.
+        * https://sslbl.abuse.ch/blacklist/sslblacklist.csv.
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Source Reliability__: Reliability of the feed.  

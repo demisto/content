@@ -14,7 +14,7 @@ DESCRIPTION = [
 ]
 
 RESOLUTION = [
-    'consider to use quite mode in task settings and Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings',
+    'consider to use quiet mode in task settings and Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings',
     "Avoid storing unnecessary data to context",
 
 ]

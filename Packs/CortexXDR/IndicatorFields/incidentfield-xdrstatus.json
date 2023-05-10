@@ -20,7 +20,7 @@
     "isReadOnly": false,
     "selectValues": [
         "enabled",
-        "disabeld"
+        "disabled"
     ],
     "validationRegex": "",
     "useAsKpi": false,

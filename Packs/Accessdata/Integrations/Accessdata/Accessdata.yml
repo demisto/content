@@ -2,9 +2,10 @@ commonfields:
   id: Accessdata
   version: -1
 name: Accessdata
-display: Accessdata
+display: Accessdata (Deprecated)
 category: Forensics & Malware Analysis
-description: Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+description: Deprecated. Use Exterro FTK instead.
+deprecated: true
 configuration:
 - display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)
   name: server_name
@@ -168,7 +169,7 @@ script:
       description: The ID of Quin-C processing case.
       type: string
     description: Returns the ID of the Quin-C processing case.
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: '-'
   type: python

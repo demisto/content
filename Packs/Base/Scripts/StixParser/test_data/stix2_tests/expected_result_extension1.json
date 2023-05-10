@@ -1,0 +1,56 @@
+[
+    {
+        "value": "1.1.1.1",
+        "score": 3,
+        "rawJSON": {
+            "created": "2022-10-18T00:36:30.810380Z",
+            "extensions": {
+                "extension-definition--f8a40fd3-36c4-4676-a908-01ec605b8585": {
+                    "score": 3,
+                    "tags": [
+                        "malicious-activity"
+                    ]
+                }
+            },
+            "id": "ipv4-addr--d1c97fce-6bc2-52aa-a48f-26ed9c4cd496",
+            "modified": "2022-10-18T00:36:44.898686Z",
+            "spec_version": "2.1",
+            "type": "ipv4-addr",
+            "value": "1.1.1.1"
+        },
+        "indicator_type": "IP",
+        "customFields": {
+            "stixid": "ipv4-addr--d1c97fce-6bc2-52aa-a48f-26ed9c4cd496",
+            "tags": [
+                "malicious-activity"
+            ]
+        }
+    },
+    {
+        "value": "2.2.2.2",
+        "score": 3,
+        "rawJSON": {
+            "created": "2022-10-18T00:36:30.810261Z",
+            "extensions": {
+                "extension-definition--15de6acd-766b-42b6-a40d-19d8cbf21fe8": {
+                    "score": 3,
+                    "tags": [
+                        "malicious-activity"
+                    ]
+                }
+            },
+            "id": "ipv4-addr--1fcbdfb3-c3a7-5ac2-9721-0cd9b973f24c",
+            "modified": "2022-10-18T00:36:44.899216Z",
+            "spec_version": "2.1",
+            "type": "ipv4-addr",
+            "value": "2.2.2.2"
+        },
+        "indicator_type": "IP",
+        "customFields": {
+            "stixid": "ipv4-addr--1fcbdfb3-c3a7-5ac2-9721-0cd9b973f24c",
+            "tags": [
+                "malicious-activity"
+            ]
+        }
+    }
+]

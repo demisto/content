@@ -101,11 +101,11 @@ Fetch Incident detail based on event type and event ID
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| event_type | Event Type of the Incident. | Required | 
-| event_id | Event ID of the incident. | Required | 
-| from | The value in the field represents the position of records that are retrieved | Required | 
-| limit | The value in the field represents the number of events that can be returned, maximum allowed is 50 | Required | 
+|-------------------| --- |--------------|
+| event_type        | Event Type of the Incident. | Required     | 
+| event_id          | Event ID of the incident. | Required     | 
+| from              | The value in the field represents the position of records that are retrieved | Required     | 
+| limit             | The value in the field represents the number of events that can be returned, maximum allowed is 1000 | Required     |
 
 #### Context Output
 

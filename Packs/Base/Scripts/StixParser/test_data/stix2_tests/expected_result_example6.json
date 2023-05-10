@@ -1,0 +1,195 @@
+[
+    {
+        "value": "Poison Ivy C2",
+        "indicator_type": "Infrastructure",
+        "score": 2,
+        "rawJSON": {
+            "created": "2016-05-07T11:22:30.000Z",
+            "id": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
+            "infrastructure_types": [
+                "command-and-control"
+            ],
+            "labels": [
+                "command-and-control"
+            ],
+            "modified": "2016-05-07T11:22:30.000Z",
+            "name": "Poison Ivy C2",
+            "type": "infrastructure",
+            "spec_version": "2.1"
+        },
+        "customFields": {
+            "stixid": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",
+            "description": "",
+            "infrastructure_types": [
+                "command-and-control"
+            ],
+            "aliases": [],
+            "kill_chain_phases": [],
+            "firstseenbysource": "2016-05-07T11:22:30.000Z",
+            "modified": "2016-05-07T11:22:30.000Z"
+        },
+        "relationships": [
+            {
+                "name": "controls",
+                "reverseName": "controlled-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "Poison Ivy C2",
+                "entityAFamily": "Indicator",
+                "entityAType": "Infrastructure",
+                "entityB": "Poison Ivy",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {
+                    "lastseenbysource": "2016-05-09T08:17:27.000Z",
+                    "firstseenbysource": "2016-05-09T08:17:27.000Z"
+                }
+            }
+        ]
+    },
+    {
+        "value": "Example target-list-hosting",
+        "indicator_type": "Infrastructure",
+        "score": 2,
+        "rawJSON": {
+            "created": "2016-11-22T09:22:30.000Z",
+            "id": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
+            "infrastructure_types": [
+                "hosting-target-lists"
+            ],
+            "labels": [
+                "target-list-hosting"
+            ],
+            "modified": "2016-11-22T09:22:30.000Z",
+            "name": "Example target-list-hosting",
+            "type": "infrastructure",
+            "spec_version": "2.1"
+        },
+        "customFields": {
+            "stixid": "infrastructure--d09c50cf-5bab-465e-9e2d-543912148b73",
+            "description": "",
+            "infrastructure_types": [
+                "hosting-target-lists"
+            ],
+            "aliases": [],
+            "kill_chain_phases": [],
+            "firstseenbysource": "2016-11-22T09:22:30.000Z",
+            "modified": "2016-11-22T09:22:30.000Z"
+        }
+    },
+    {
+        "value": "Poison Ivy",
+        "indicator_type": "Malware",
+        "score": 3,
+        "rawJSON": {
+            "created": "2016-05-08T14:31:09.000Z",
+            "id": "malware--16f4f3f9-1b68-4abb-bb66-7639d49f1e30",
+            "is_family": true,
+            "labels": [
+                "rat"
+            ],
+            "modified": "2016-05-08T14:31:09.000Z",
+            "name": "Poison Ivy",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "type": "malware",
+            "spec_version": "2.1"
+        },
+        "customFields": {
+            "stixid": "malware--16f4f3f9-1b68-4abb-bb66-7639d49f1e30",
+            "firstseenbysource": "2016-05-08T14:31:09.000Z",
+            "modified": "2016-05-08T14:31:09.000Z",
+            "description": "",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": true,
+            "aliases": [],
+            "kill_chain_phases": [],
+            "os_execution_envs": [],
+            "architecture_execution_envs": [],
+            "capabilities": [],
+            "sample_refs": [],
+            "tags": [
+                "rat"
+            ]
+        }
+    },
+    {
+        "value": "IMDDOS",
+        "indicator_type": "Malware",
+        "score": 3,
+        "rawJSON": {
+            "created": "2016-11-12T14:31:09.000Z",
+            "id": "malware--3a41e552-999b-4ad3-bedc-332b6d9ff80c",
+            "is_family": true,
+            "modified": "2016-11-12T14:31:09.000Z",
+            "name": "IMDDOS",
+            "type": "malware",
+            "malware_types": [
+                "bot"
+            ],
+            "spec_version": "2.1"
+        },
+        "customFields": {
+            "stixid": "malware--3a41e552-999b-4ad3-bedc-332b6d9ff80c",
+            "firstseenbysource": "2016-11-12T14:31:09.000Z",
+            "modified": "2016-11-12T14:31:09.000Z",
+            "description": "",
+            "malware_types": [
+                "bot"
+            ],
+            "is_family": true,
+            "aliases": [],
+            "kill_chain_phases": [],
+            "os_execution_envs": [],
+            "architecture_execution_envs": [],
+            "capabilities": [],
+            "sample_refs": [],
+            "tags": []
+        },
+        "relationships": [
+            {
+                "name": "uses",
+                "reverseName": "used-by",
+                "type": "IndicatorToIndicator",
+                "entityA": "IMDDOS",
+                "entityAFamily": "Indicator",
+                "entityAType": "Malware",
+                "entityB": "Example target-list-hosting",
+                "entityBFamily": "Indicator",
+                "entityBType": "Infrastructure",
+                "fields": {
+                    "lastseenbysource": "2016-11-23T08:17:27.000Z",
+                    "firstseenbysource": "2016-11-23T08:17:27.000Z"
+                }
+            }
+        ]
+    },
+    {
+        "value": "10.10.10.10",
+        "score": 0,
+        "rawJSON": {
+            "id": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956",
+            "type": "ipv4-addr",
+            "value": "10.10.10.10"
+        },
+        "indicator_type": "IP",
+        "customFields": {
+            "stixid": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956"
+        }
+    },
+    {
+        "value": "example.com",
+        "score": 0,
+        "rawJSON": {
+            "id": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b",
+            "type": "domain-name",
+            "value": "example.com"
+        },
+        "indicator_type": "Domain",
+        "customFields": {
+            "stixid": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b"
+        }
+    }
+]

@@ -14,6 +14,12 @@ This integration was integrated and tested with version V1 of AzureDataExplorer.
     | Client Activity Prefix | A customized prefix of the client activity identifier for the query execution. For example, for a prefix value of 'XSOAR-DataExplorer', the client activity ID will be in the format of:  'XSOAR-DataExplorer;&amp;lt;UUID&amp;gt;'. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\) or Device Code Flow | False |
+    | Tenant ID (for Authorization Code mode) |  | False |
+    | Client Secret (for Authorization Code mode) |  | False |
+    | Client Secret (for Authorization Code mode) |  | False |
+    | Application redirect URI (for Authorization Code mode) |  | False |
+    | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -495,3 +501,33 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### azure-data-explorer-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-data-explorer-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-data-explorer-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+>```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
+
+

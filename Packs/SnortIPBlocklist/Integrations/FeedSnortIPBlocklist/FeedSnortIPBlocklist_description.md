@@ -1,0 +1,2 @@
+**Snort IP Block List** is a plain text list of IPs for blocking that is sourced openly (TLP Green) for the community from Snort - [ip-block-list](https://snort.org/downloads/ip-block-list). This integration ingests IP addresses and tags them with the **snort** tag by default.
+The recommendation is to fetch about 1-3 times a day (run once a day or every 8 hours) as the blocklist is only updated 1-2 times a day.

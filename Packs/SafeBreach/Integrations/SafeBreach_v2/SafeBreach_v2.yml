@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Deception & Breach Simulation
 commonfields:
   id: SafeBreach v2
   version: -1
@@ -118,9 +118,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -137,8 +135,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   hidden: true
   name: feedReputation
@@ -154,10 +151,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: SafeBreach automatically executes thousands of breach methods from its
-  extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations
-  are automatically correlated with network, endpoint, and SIEM solutions providing
-  data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
+description: SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
 display: SafeBreach v2
 name: SafeBreach v2
 script:
@@ -181,8 +175,7 @@ script:
       description: Insight unique ID number.
       type: Number
     - contextPath: SafeBreach.Insight.DataType
-      description: Insight data type. Options are Hash, Domain, URI, Command, Port,
-        or Protocol.
+      description: Insight data type. Options are Hash, Domain, URI, Command, Port, or Protocol.
       type: String
     - contextPath: SafeBreach.Insight.Category
       description: Security control category name.
@@ -221,15 +214,13 @@ script:
       description: List of all insight related SafeBreach attack IDs.
       type: Number
     - contextPath: SafeBreach.Insight.AffectedTargets
-      description: List of the affected targets including name, IP and number of the
-        remediation points
+      description: List of the affected targets including name, IP and number of the remediation points
       type: Unknown
     - contextPath: SafeBreach.Insight.RemediationAction
       description: Description of an action to take for the remediation
       type: String
     - contextPath: SafeBreach.Insight.ResultsLink
-      description: Link to the SafeBreach platform Results page filtered for the relevant
-        simulation results
+      description: Link to the SafeBreach platform Results page filtered for the relevant simulation results
       type: String
     - contextPath: SafeBreach.Insight.AttackIds
       description: SafeBreach Attack Ids
@@ -320,8 +311,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Reruns a specific SafeBreach Insight related simulations in your
-      environment.
+    description: Reruns a specific SafeBreach Insight related simulations in your environment.
     execution: false
     name: safebreach-rerun-insight
     outputs:
@@ -381,8 +371,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Fetches SafeBreach Insights from which indicators are extracted,
-      creating new indicators or updating existing indicators.
+    description: Fetches SafeBreach Insights from which indicators are extracted, creating new indicators or updating existing indicators.
     execution: false
     name: safebreach-get-indicators
   - arguments:
@@ -431,8 +420,7 @@ script:
       description: ID of the simulation result.
       type: String
     - contextPath: SafeBreach.Simulation.FinalStatus
-      description: Simulation final status. Options are Missed, Detected, Stopped,
-        Prevented, or Inconsistent.
+      description: Simulation final status. Options are Missed, Detected, Stopped, Prevented, or Inconsistent.
       type: String
     - contextPath: SafeBreach.Simulation.Result
       description: Indicates whether the simulation was blocked.
@@ -462,19 +450,16 @@ script:
       description: Description of the attack flow.
       type: String
     - contextPath: SafeBreach.Simulation.Attack.Phase
-      description: The phase of the attack. Option are Infiltration, Exfiltration
-        ,Lateral Movement, or Host Level.
+      description: The phase of the attack. Option are Infiltration, Exfiltration ,Lateral Movement, or Host Level.
       type: String
     - contextPath: SafeBreach.Simulation.Attack.Type
-      description: The type of the attack. For example, Real C2 Communication, Malware
-        Transfer, or Malware Write to Disk.
+      description: The type of the attack. For example, Real C2 Communication, Malware Transfer, or Malware Write to Disk.
       type: String
     - contextPath: SafeBreach.Simulation.Attack.SecurityControl
       description: Related security control category.
       type: String
     - contextPath: SafeBreach.Simulation.Attack.IndicatorBased
-      description: True if this attack is based on an indicator. False if this is
-        behavioral non-indicator based.
+      description: True if this attack is based on an indicator. False if this is behavioral non-indicator based.
       type: Bool
     - contextPath: SafeBreach.Simulation.Attacker.Name
       description: Name of the attacker simulator.
@@ -578,7 +563,7 @@ script:
     - contextPath: SafeBreach.Test.ScheduledTime
       description: Time when the test was triggered.
       type: Datetime
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: true
   isfetch: false
   longRunning: false

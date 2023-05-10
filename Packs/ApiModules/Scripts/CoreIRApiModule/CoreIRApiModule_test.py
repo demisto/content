@@ -7,20 +7,14 @@ import zipfile
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import Common, tableToMarkdown, pascalToSpace
+from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
+from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
+    isolate_endpoint_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
 )
-
-
-def test_client_update_incident():
-    with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
-        test_client.update_incident(incident_id='1',
-                                    status='new',
-                                    unassign_user="user",
-                                    assigned_user_mail="user")
 
 
 Core_URL = 'https://api.xdrurl.com'
@@ -48,7 +42,8 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 ''' TESTS FUNCTIONS '''
 
 
-# Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
+# Note this test will fail when run locally (in pycharm/vscode)
+# as it assumes the machine (docker image) has UTC timezone set
 
 @pytest.mark.parametrize(argnames='time_to_convert, expected_value',
                          argvalues=[('1322683200000', 1322683200000),
@@ -64,25 +59,6 @@ def return_extra_data_result(*args):
     else:
         incident_from_extra_data_command = load_test_data('./test_data/incident_example_from_extra_data_command.json')
         return {}, {}, {"incident": incident_from_extra_data_command}
-
-
-def test_update_incident(requests_mock):
-    from CoreIRApiModule import update_incident_command, CoreClient
-
-    update_incident_response = load_test_data('./test_data/update_incident.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
-
-    client = CoreClient(
-        base_url=f'{Core_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'incident_id': '1',
-        'status': 'new'
-    }
-    readable_output, outputs, _ = update_incident_command(client, args)
-
-    assert outputs is None
-    assert readable_output == 'Incident 1 has been updated'
 
 
 def test_get_endpoints(requests_mock):
@@ -102,14 +78,25 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
+    """
+    Given:
+        The default arguments for the get endpoints command: limit = 1, page = 0, sort_order = 'asc'.
+    When:
+        Calling the get_endpoints_command function
+    Then:
+        a. Make sure the 'get_endpoints' API is not called (not to be confused with get_endpoint - see last comment
+            here: https://jira-hq.paloaltonetworks.local/browse/XSUP-15995)
+        b. Make sure the returned result as in the expected format.
+    """
     from CoreIRApiModule import get_endpoints_command, CoreClient
 
     get_endpoints_response = load_test_data('./test_data/get_all_endpoints.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+    get_endpoints_mock = requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoints/')
 
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -120,9 +107,10 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'sort_order': 'asc'
     }
     res = get_endpoints_command(client, args)
-    expected_endpoint = get_endpoints_response.get('reply')[0]
+    expected_endpoint = get_endpoints_response.get('reply').get('endpoints')
 
-    assert [expected_endpoint] == res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+    assert not get_endpoints_mock.called
+    assert res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)'] == expected_endpoint
 
 
 def test_endpoint_command(requests_mock):
@@ -368,9 +356,10 @@ def test_get_audit_agent_reports(requests_mock):
     readable_output, outputs, _ = get_audit_agent_reports_command(client, args)
     expected_outputs = get_audit_agent_reports_response.get('reply').get('data')
     assert outputs['CoreApiModule.AuditAgentReports'] == expected_outputs
-    assert outputs['Endpoint(val.ID && val.ID == obj.ID)'] == [{'ID': '1111', 'Hostname': '1111.eu-central-1'},
-                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'},
-                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
+    assert outputs['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [
+        {'ID': '1111', 'Hostname': '1111.eu-central-1'},
+        {'ID': '1111', 'Hostname': '1111.eu-central-1'},
+        {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
 
 
 def test_get_distribution_status(requests_mock):
@@ -471,8 +460,10 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
 
     from CoreIRApiModule import blocklist_files_command, CoreClient
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'CoreApiModule.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data[
-        'multi_command_args']['hash_list']}
+    expected_command_result = {
+        'CoreApiModule.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
+            test_data['multi_command_args']['hash_list']
+    }
 
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -549,8 +540,10 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
 
     from CoreIRApiModule import allowlist_files_command, CoreClient
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data[
-        'multi_command_args']['hash_list']}
+    expected_command_result = {
+        'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
+        test_data['multi_command_args']['hash_list']
+    }
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = CoreClient(
@@ -601,8 +594,9 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
     from CoreIRApiModule import allowlist_files_command, CoreClient
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
-            'hash_list']}
+        'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
+            test_data['no_comment_command_args'][
+                'hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = CoreClient(
@@ -831,7 +825,7 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     assert scan_expected_tesult == res.outputs
 
 
-def test_get_update_args_unassgning_user():
+def test_get_update_args_unassgning_user(mocker):
     """
     Given:
         -  a dict indicating changed fields (delta) with assigned_user_mail set to "None"
@@ -842,8 +836,10 @@ def test_get_update_args_unassgning_user():
         - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
     """
     from CoreIRApiModule import get_update_args
-    delta = {'assigned_user_mail': 'None'}
-    update_args = get_update_args(delta, 1)
+    from CommonServerPython import UpdateRemoteSystemArgs
+    mocker.patch('CoreIRApiModule.handle_outgoing_issue_closure')
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None'}})
+    update_args = get_update_args(remote_args)
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
@@ -852,25 +848,9 @@ def test_get_update_args_unassgning_user():
 def test_get_update_args_close_incident():
     """
     Given:
-        -  a dict indicating changed fields (delta) with a change in owner
-        - the incident status - set to 1 == Active
-    When
-        - running get_update_args
-    Then
-        - update_args assigned_user_mail has the correct associated mail
-    """
-    from CoreIRApiModule import get_update_args
-    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'}
-    update_args = get_update_args(delta, 2)
-    assert update_args.get('status') == 'resolved_other'
-    assert update_args.get('resolve_comment') == 'Not Relevant'
-
-
-def test_get_update_args_owner_sync(mocker):
-    """
-    Given:
         -  a dict indicating changed fields (delta) with closeReason set to Other and a closeNotes
         - the incident status - set to 2 == Closed
+        - the current status of the remote incident are 'new'
     When
         - running get_update_args
     Then
@@ -878,11 +858,37 @@ def test_get_update_args_owner_sync(mocker):
         - the resolve_comment is the same as the closeNotes
     """
     from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
+    assert update_args.get('status') == 'resolved_other'
+    assert update_args.get('resolve_comment') == 'Not Relevant'
+
+
+def test_get_update_args_owner_sync(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta) with a change in owner
+        - the incident status - set to 2 == Close
+    When
+        - running get_update_args
+    Then
+        - update_args assigned_user_mail has the correct associated mail
+    """
+    from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'owner': 'username'},
+        'data': {'status': 'new'}}
+    )
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True, "mirror_direction": "Incoming"})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
-    delta = {'owner': 'username'}
 
-    update_args = get_update_args(delta, 1)
+    update_args = get_update_args(remote_args)
 
     assert update_args.get('assigned_user_mail') == 'moo@demisto.com'
 
@@ -926,7 +932,8 @@ def test_get_endpoint_device_control_violations_command(requests_mock):
         Given:
             - violation_id_list='100'
         When:
-            -Request for list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+            - Request for list of device control violations filtered by selected fields.
+              You can retrieve up to 100 violations.
         Then:
             - Assert the returned markdown, context data and raw response are as expected.
         """
@@ -984,7 +991,8 @@ def test_retrieve_files_command(requests_mock):
     res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
                                           'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
-    assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert res.readable_output == tableToMarkdown(
+        name='Retrieve files', t=result, headerTransform=string_to_table_header)
     assert res.outputs == retrieve_expected_result
     assert res.raw_response == {'action_id': 1773}
 
@@ -1015,7 +1023,8 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
                                           'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
-    assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert res.readable_output == tableToMarkdown(
+        name='Retrieve files', t=result, headerTransform=string_to_table_header)
     assert res.outputs == retrieve_expected_result
     assert res.raw_response == {'action_id': 1773}
 
@@ -1477,8 +1486,8 @@ def test_create_account_context_with_data():
     Given:
         - get_endpoints command
     When
-        - creating the account context from the response succeeds - which means there exists both domain and user in the
-         response.
+        - creating the account context from the response succeeds - which means there exists both domain
+          and user in the response.
     Then
         - verify the context is created successfully.
     """
@@ -1810,14 +1819,14 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
             pass
 
     request.addfinalizer(cleanup)
-    zip_link = 'https://example-link'
+    zip_link = 'https://download/example-link'
     zip_filename = 'file.zip'
     requests_mock.post(
         f'{Core_URL}/public_api/v1/scripts/get_script_execution_results_files',
         json={'reply': {'DATA': zip_link}}
     )
     requests_mock.get(
-        zip_link,
+        f"{Core_URL}/public_api/v1/download/example-link",
         content=b'PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\x00\x00'
                 b'\x00your_file.txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00'
                 b'\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file'
@@ -2251,36 +2260,6 @@ def test_get_endpoint_properties(endpoint, expected):
     assert status == expected
 
 
-def test_get_update_args_when_getting_close_reason():
-    """
-    Given:
-        - closingUserId from update_remote_system
-    When
-        - An incident in XSOAR was closed with "Duplicate" as a close reason.
-    Then
-        - The status that the incident is getting to be mirrored out is "resolved_duplicate"
-    """
-    from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
-                                   'closingUserId': 'Admin'}, 2)
-    assert update_args.get('status') == 'resolved_duplicate'
-    assert update_args.get('closeNote') == 'Closed as Duplicate.'
-
-
-def test_get_update_args_when_not_getting_close_reason():
-    """
-    Given:
-        - delta from update_remote_system
-    When
-        - An incident in XSOAR was closed and update_remote_system has occurred.
-    Then
-        - Because There is no change in the "closeReason" value, the status should not change.
-    """
-    from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'someChange': '1234'}, 2)
-    assert update_args.get('status') is None
-
-
 def test_remove_blocklist_files_command(requests_mock):
     """
     Given:
@@ -2297,7 +2276,9 @@ def test_remove_blocklist_files_command(requests_mock):
     )
 
     remove_blocklist_files_response = load_test_data('./test_data/remove_blocklist_files.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/', json=remove_blocklist_files_response)
+    requests_mock.post(
+        f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/',
+        json=remove_blocklist_files_response)
     hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
                  "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
     res = remove_blocklist_files_command(client=client, args={
@@ -2354,7 +2335,9 @@ def test_remove_allowlist_files_command(requests_mock):
     )
 
     remove_allowlist_files_response = load_test_data('./test_data/remove_blocklist_files.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/remove/', json=remove_allowlist_files_response)
+    requests_mock.post(
+        f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/remove/',
+        json=remove_allowlist_files_response)
     hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
                  "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
     res = remove_allowlist_files_command(client=client, args={
@@ -2660,16 +2643,18 @@ def test_get_dynamic_analysis(requests_mock):
 
 def test_parse_get_script_execution_results():
     from CoreIRApiModule import parse_get_script_execution_results
-    results = [{'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
-                'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
-                'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
-                'retention_date': None, 'command_executed': ['command_output']}]
+    results = [
+        {'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
+         'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
+         'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
+         'retention_date': None, 'command_executed': ['command_output']}]
     res = parse_get_script_execution_results(results)
-    expected_res = [{'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
-                     'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
-                     'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
-                     'retention_date': None, 'command_executed': ['command_output'], 'command': 'command_executed',
-                     'command_output': ['command_output']}]
+    expected_res = [
+        {'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
+         'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
+         'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
+         'retention_date': None, 'command_executed': ['command_output'], 'command': 'command_executed',
+         'command_output': ['command_output']}]
     assert res == expected_res
 
 
@@ -2703,8 +2688,36 @@ class TestGetAlertByFilter:
         response = get_alerts_by_filter_command(client, args)
         assert response.outputs[0].get('internal_id', {}) == 33333
         assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
-               "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', 'SEARCH_VALUE': " \
-               "{'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
+               "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', " \
+               "'SEARCH_VALUE': {'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
+
+    def test_get_alert_by_alert_action_status_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - Alert with action status of SCANNED
+        When
+            - Running get_alerts_by_filter command with alert_action_status="detected (scanned)"
+        Then
+            - Verify the alert in the output contains alert_action_status and alert_action_status_readable
+            - Ensure request filter contains the alert_action_status as SCANNED
+        """
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_action_status': 'detected (scanned)'
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert response.outputs[0].get('alert_action_status', {}) == 'SCANNED'
+        assert response.outputs[0].get('alert_action_status_readable', {}) == 'detected (scanned)'
+        assert "{'SEARCH_FIELD': 'alert_action_status', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': " \
+               "'SCANNED'" in request_data_log.call_args[0][0]
 
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """
@@ -2731,8 +2744,8 @@ class TestGetAlertByFilter:
         assert response.outputs[0].get('internal_id', {}) == 33333
         assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
                "'to': 50}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
-               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
-               "'second'}]}]}}}" in request_data_log.call_args[0][0]
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'second'}]}]}}}" in request_data_log.call_args[0][0]
 
     def test_get_alert_by_filter_command_multiple_args(self, requests_mock, mocker):
         """
@@ -2760,9 +2773,9 @@ class TestGetAlertByFilter:
         response = get_alerts_by_filter_command(client, args)
         assert response.outputs[0].get('internal_id', {}) == 33333
         assert "{'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
-               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
-               "'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', 'SEARCH_TYPE': 'CONTAINS', " \
-               "'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', " \
+               "'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
 
     @freeze_time('2022-05-26T13:00:00Z')
     def test_get_alert_by_filter_complex_custom_filter_and_timeframe(self, requests_mock, mocker):
@@ -2781,13 +2794,15 @@ class TestGetAlertByFilter:
         from datetime import datetime as dt
         from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
 
-        custom_filter = '{"AND": [{"OR": [{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ","SEARCH_VALUE": "CORRELATION"},' \
+        custom_filter = '{"AND": [{"OR": [{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ",' \
+                        '"SEARCH_VALUE": "CORRELATION"},' \
                         '{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ","SEARCH_VALUE": "IOC"}]},' \
                         '{"SEARCH_FIELD": "severity","SEARCH_TYPE": "EQ","SEARCH_VALUE": "SEV_040_HIGH"}]}'
         api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
         request_data_log = mocker.patch.object(demisto, 'debug')
-        mocker.patch.object(dateparser, 'parse', return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        mocker.patch.object(dateparser, 'parse',
+                            return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
@@ -2828,7 +2843,8 @@ class TestGetAlertByFilter:
         api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
         request_data_log = mocker.patch.object(demisto, 'debug')
-        mocker.patch.object(dateparser, 'parse', return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        mocker.patch.object(dateparser, 'parse',
+                            return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
@@ -2843,3 +2859,370 @@ class TestGetAlertByFilter:
                "'SEARCH_VALUE': '172800000'}, " \
                "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ'," \
                " 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]
+
+
+class TestPollingCommands:
+
+    @staticmethod
+    def create_mocked_responses(status_count):
+
+        response_queue = [  # xdr-run-script response
+            {
+                "reply": {
+                    "action_id": 1,
+                    "status": 1,
+                    "endpoints_count": 1
+                }
+            }
+        ]
+
+        for i in range(status_count):
+            if i == status_count - 1:
+                general_status = 'COMPLETED_SUCCESSFULLY'
+            elif i < 2:
+                general_status = 'PENDING'
+            else:
+                general_status = 'IN_PROGRESS'
+
+            response_queue.append(
+                {
+                    "reply": {  # get script status response
+                        "general_status": general_status,
+                        "endpoints_pending": 1 if i < 2 else 0,
+                        "endpoints_in_progress": 0 if i < 2 else 1,
+                    }
+                }
+            )
+            response_queue.append(
+                {
+                    "reply": {  # get script execution result response
+                        "script_name": "snippet script",
+                        "error_message": "",
+                        "results": [
+                            {
+                                "endpoint_name": "test endpoint",
+                                "endpoint_ip_address": [
+                                    "1.1.1.1"
+                                ],
+                                "endpoint_status": "STATUS_010_CONNECTED",
+                                "domain": "aaaa",
+                                "endpoint_id": "1",
+                                "execution_status": "COMPLETED_SUCCESSFULLY",
+                                "failed_files": 0,
+                            }
+                        ]
+                    }
+                }
+            )
+
+        return response_queue
+
+    @pytest.mark.parametrize(argnames='status_count', argvalues=[1, 3, 7, 9, 12, 15])
+    def test_script_run_command(self, mocker, status_count):
+        """
+        Given -
+            xdr-script-run command arguments including polling true where each time a different amount of response
+            is returned.
+
+        When -
+            Running the xdr-script-run
+
+        Then
+            - Make sure the readable output is returned to war-room only once indicating on polling.
+            - Make sure the correct context output is returned once the command finished polling
+            - Make sure context output is returned only at the end of polling.
+            - Make sure the readable output is returned only in the first run.
+            - Make sure the correct output prefix is returned.
+        """
+        from CoreIRApiModule import script_run_polling_command
+        from CommonServerPython import ScheduledCommand
+
+        client = CoreClient(base_url='https://test_api.com/public_api/v1', headers={})
+
+        mocker.patch.object(client, '_http_request', side_effect=self.create_mocked_responses(status_count))
+        mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+        command_result = script_run_polling_command({'endpoint_ids': '1', 'script_uid': '1'}, client)
+
+        assert command_result.readable_output == "Waiting for the script to " \
+                                                 "finish running on the following endpoints: ['1']..."
+        assert not command_result.outputs
+
+        polling_args = {
+            'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
+        }
+
+        command_result = script_run_polling_command(polling_args, client)
+        # if scheduled_command is set, it means that command should still poll
+        while not isinstance(command_result, list) and command_result.scheduled_command:
+            # if command result is a list, it means command execution finished
+            assert not command_result.readable_output  # make sure that indication of polling is printed only once
+            # make sure no context output is being returned to war-room during polling
+            assert not command_result.outputs
+            command_result = script_run_polling_command(polling_args, client)
+
+        assert command_result[0].outputs == {
+            'action_id': 1,
+            'results': [
+                {
+                    'endpoint_name': 'test endpoint',
+                    'endpoint_ip_address': ['1.1.1.1'],
+                    'endpoint_status': 'STATUS_010_CONNECTED',
+                    'domain': 'aaaa',
+                    'endpoint_id': '1',
+                    'execution_status': 'COMPLETED_SUCCESSFULLY',
+                    'failed_files': 0
+                }
+            ]
+        }
+        assert command_result[0].outputs_prefix == 'PaloAltoNetworksXDR.ScriptResult'
+
+
+@pytest.mark.parametrize(
+    'args, expected_filters, func, url_suffix, expected_human_readable',
+    [
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'status': 'disconnected'},
+            [{'field': 'endpoint_status', 'operator': 'IN', 'value': ['disconnected']}],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'hostname': 'hostname', 'group_name': 'test_group'},
+            [
+                {'field': 'group_name', 'operator': 'in', 'value': ['test_group']},
+                {'field': 'hostname', 'operator': 'in', 'value': ['hostname']}
+            ],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'platform': 'linux'},
+            [{'field': 'platform', 'operator': 'in', 'value': ['linux']}],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
+        ),
+        (
+            {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'alias_name': 'alias_name'},
+            [
+                {'field': 'alias', 'operator': 'in', 'value': ['alias_name']},
+                {'field': 'isolate', 'operator': 'in', 'value': ['isolated']}
+            ],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
+        )
+    ]
+)
+def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filters, func,
+                                            url_suffix, expected_human_readable):
+    """
+    Given:
+      - command arguments
+      - expected filters as a body request
+
+    When:
+      - executing the core-add-tag-endpoint command
+
+    Then:
+      - make sure the body request was sent as expected to the api request and that human readable is valid.
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    add_tag_mock = requests_mock.post(f'{Core_URL}/public_api/v1{url_suffix}', json={})
+
+    result = func(client=client, args=args)
+
+    assert result.readable_output == expected_human_readable
+    assert add_tag_mock.last_request.json() == {
+        'context': {
+            'lcaas_id': ['1', '2'],
+        },
+        'request_data': {
+            'filters': expected_filters,
+            'tag': 'test'
+        }
+    }
+
+
+excepted_output_1 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': 'test'}
+excepted_output_2 = {'filters': [{'field': 'endpoint_status',
+                                  'operator': 'IN', 'value': ['connected']}], 'new_alias_name': ""}
+
+
+@pytest.mark.parametrize('input, expected_output', [("test", excepted_output_1),
+                                                    ('""', excepted_output_2)])
+def test_endpoint_alias_change_command__diffrent_alias_new_names(mocker, input, expected_output):
+    """
+    Given:
+    - valid new alias name as string - empty new alias name (due to xsoar limitation,
+    represented by a string of double quote)
+
+    When:
+    - executing the endpoint-alias-change command
+
+    Then:
+    - Makes sure the request body is created correctly.
+
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker_set = mocker.patch.object(client, 'set_endpoints_alias')
+    from CoreIRApiModule import endpoint_alias_change_command
+    endpoint_alias_change_command(client=client, status="connected", new_alias_name=input)
+    assert mocker_set.call_args[1] == expected_output
+
+
+def test_endpoint_alias_change_command__no_filters(mocker):
+    """
+    Given:
+    - command withot endpoint filters
+    when:
+    - executing the endpoint-alias-change command
+    then:
+    - make sure the correct error message wil raise.
+    """
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker.patch.object(client, 'set_endpoints_alias')
+    from CoreIRApiModule import endpoint_alias_change_command
+    with pytest.raises(Exception) as e:
+        endpoint_alias_change_command(client=client, new_alias_name='test')
+    assert e.value.message == "Please provide at least one filter."
+
+
+GRACEFULLY_FAILING = [
+    pytest.param(
+        quarantine_files_command,
+        {
+            "endpoint_id_list": "123",
+            "file_path": "C:\\Users\\test\\Desktop\\test_x64.msi",
+            "file_hash": "123",
+        },
+        {
+            "err_msg": "An error occurred while processing XDR public API - No endpoint "
+            "was found "
+            "for creating the requested action",
+            "status_code": 500,
+        },
+        False,
+        id="Success",
+    ),
+    pytest.param(
+        isolate_endpoint_command,
+        {"endpoint_id": "1111"},
+        {"err_msg": "Other error", "status_code": 401},
+        True,
+        id="Failure",
+    ),
+]
+
+
+@pytest.mark.parametrize("command_to_run, args, error, raises", GRACEFULLY_FAILING)
+def test_core_commands_raise_exception(mocker, command_to_run, args, error, raises):
+    """
+    Given:
+    - XDR API error.
+    when:
+    - executing the isolate-endpoint-command and quarantine-files-command command
+    then:
+    - make sure the correct error message wil raise.
+    """
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1/", headers={})
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=DemistoException(
+            error.get("err_msg"), res=MockException(error.get("status_code"))
+        ),
+    )
+
+    if raises:
+        with pytest.raises(Exception) as e:
+            command_to_run(client, args)
+            assert "Other error" in str(e)
+    else:
+        assert (command_to_run(client, args).readable_output == "The operation executed is not supported on the given "
+                                                                "machine.")
+
+
+def test_endpoint_command_fails(requests_mock):
+    """
+    Given:
+    - no arguments
+    When:
+    - we mock the endpoint command
+    Then:
+    - Validate that there is a correct error
+    """
+    from CoreIRApiModule import endpoint_command, CoreClient
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {}
+    with pytest.raises(DemistoException) as e:
+        endpoint_command(client, args)
+    assert 'In order to run this command, please provide a valid id, ip or hostname' in str(e)
+
+
+def test_generate_files_dict(mocker):
+    """
+    Given:
+    - no arguments
+    When:
+    - we mock the get_endpoints command with mac, linux and windows endpoints
+    Then:
+    - Validate that the dict is generated right
+    """
+
+    mocker.patch.object(test_client, "get_endpoints",
+                        side_effect=[load_test_data('test_data/get_endpoints_mac_response.json'),
+                                     load_test_data('test_data/get_endpoints_linux_response.json'),
+                                     load_test_data('test_data/get_endpoints_windows_response.json')])
+
+    res = test_client.generate_files_dict(endpoint_id_list=['1', '2', '3'],
+                                          file_path_list=['fake\\path1', 'fake\\path2', 'fake\\path3'])
+
+    assert res == {"macos": ['fake\\path1'], "linux": ['fake\\path2'], "windows": ['fake\\path3']}
+
+
+def test_get_script_execution_result_files(mocker):
+    """
+    Given:
+    - no arguments
+    When:
+    - executing the get_script_execution_result_files command
+    Then:
+    - Validate that the url_suffix generated correctly
+    """
+    http_request = mocker.patch.object(test_client, '_http_request',
+                                       return_value={
+                                           "reply": {
+                                               "DATA": "https://test_api/public_api/v1/download/test"
+                                           }
+                                       })
+    test_client.get_script_execution_result_files(action_id="1", endpoint_id="1")
+    http_request.assert_called_with(method='GET', url_suffix="download/test", resp_type="response")

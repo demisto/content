@@ -1,0 +1,52 @@
+[
+  [
+    {
+      "id": "example:Package-12345678-964e-4ca7-5677-3ff31fa7e543",
+      "version": "1.2",
+      "indicators": [
+        {
+          "id": "example:indicator-b74902db-4562-438c-0033-67cd8986aec8",
+          "title": "Phishing Site",
+          "timestamp": "2011-07-11T00:04:05.787541+00:00",
+          "observable": {
+            "id": "example:Observable-f917c28f-3467-4b62-3455-2f187ef2dd44",
+            "object": {
+              "id": "example:URI-45678923-2e96-2de5-8de5-e39507d2da2e",
+              "properties": {
+                "value": "http://kbjunktest.com/path",
+                "type": "URL",
+                "xsi:type": "URIObjectType"
+              }
+            }
+          },
+          "indicator_types": [
+            {
+              "value": "URL Watchlist",
+              "xsi:type": "stixVocabs:IndicatorTypeVocab-1.1"
+            }
+          ],
+          "indicated_ttps": [
+            {
+              "ttp": {
+                "id": "example:ttp-12345677-0e9f-4b7d-a5ba-07da66f5712f",
+                "title": "Victim Targeting: Online Communites",
+                "timestamp": "2011-02-10T12:43:23",
+                "victim_targeting": {
+                  "identity": {
+                    "xsi:type": "stix-ciqidentity:CIQIdentity3.0InstanceType",
+                    "specification": {
+                      "organisation_info": {
+                        "industry_type": "Online Communites"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "2022-06-13 00:00:00"
+]

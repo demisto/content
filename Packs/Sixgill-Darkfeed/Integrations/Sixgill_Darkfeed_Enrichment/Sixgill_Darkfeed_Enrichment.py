@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -12,7 +13,7 @@ from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequ
 from sixgill.sixgill_enrich_client import SixgillEnrichClient
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 hashes: Dict[str, Any] = {}
 
@@ -99,7 +100,8 @@ def ip_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResu
 
         dbot_score = Common.DBotScore(
             indicator=ip, indicator_type=DBotScoreType.IP, integration_name="SixgillDarkfeedEnrichment", score=score,
-            malicious_description="; ".join({ioc.get("description") for ioc in ip_data})
+            malicious_description="; ".join({ioc.get("description") for ioc in ip_data}),
+            reliability=demisto.params().get('integrationReliability')
         )
 
         ip_standard_context = Common.IP(ip=ip, dbot_score=dbot_score)
@@ -139,7 +141,8 @@ def domain_reputation_command(client: SixgillEnrichClient, args) -> List[Command
             indicator_type=DBotScoreType.DOMAIN,
             integration_name="SixgillDarkfeedEnrichment",
             score=score,
-            malicious_description="; ".join({ioc.get("description") for ioc in domain_data})
+            malicious_description="; ".join({ioc.get("description") for ioc in domain_data}),
+            reliability=demisto.params().get('integrationReliability')
         )
 
         domain_standard_context = Common.Domain(domain=domain, dbot_score=dbot_score)
@@ -176,7 +179,8 @@ def url_reputation_command(client: SixgillEnrichClient, args) -> List[CommandRes
 
         dbot_score = Common.DBotScore(
             indicator=url, indicator_type=DBotScoreType.URL, integration_name="SixgillDarkfeedEnrichment", score=score,
-            malicious_description="; ".join({ioc.get("description") for ioc in url_data})
+            malicious_description="; ".join({ioc.get("description") for ioc in url_data}),
+            reliability=demisto.params().get('integrationReliability')
         )
 
         url_standard_context = Common.URL(url=url, dbot_score=dbot_score)
@@ -218,7 +222,8 @@ def file_reputation_command(client: SixgillEnrichClient, args) -> List[CommandRe
             indicator_type=DBotScoreType.FILE,
             integration_name="SixgillDarkfeedEnrichment",
             score=score,
-            malicious_description="; ".join({ioc.get("description") for ioc in file_data})
+            malicious_description="; ".join({ioc.get("description") for ioc in file_data}),
+            reliability=demisto.params().get('integrationReliability')
         )
 
         file_standard_context = Common.File(

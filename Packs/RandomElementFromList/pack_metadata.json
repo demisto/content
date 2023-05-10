@@ -1,13 +1,15 @@
 {
-    "name": "RandomElementFromList",
-    "description": "Automation script that can be used as a transformer, to return a random selection of elements from a list of items.\n\nType: Automation Script\nInputs:\n            1. value - list of items to pick from. Data type - array\n            2. count - number of random items to return. Data type - int\nOutput:\n            1. List of items, randomly selected from the input list. Data type - array. Length = count      ",
+    "name": "RandomElementFromList (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Aneesha More",
     "url": "",
     "email": "",
     "created": "2022-03-31T21:05:15Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -17,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

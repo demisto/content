@@ -1,5 +1,6 @@
 id: Handle Darktrace Model Breach
 version: -1
+deprecated: true
 name: Handle Darktrace Model Breach
 starttaskid: "0"
 tasks:
@@ -38,8 +39,7 @@ tasks:
       id: 0e2abde6-4c43-41dc-8b14-8c46ceb0f0b5
       version: -1
       name: Get Model Breach Details
-      description: Darktrace-get-breach returns a model breach based on its model
-        breach id (pbid)
+      description: Darktrace-get-breach returns a model breach based on its model breach id (pbid)
       script: '|||darktrace-get-breach'
       type: regular
       iscommand: true
@@ -400,9 +400,7 @@ tasks:
       id: 26c44e4c-6b83-4cef-8d84-ff8663334bb2
       version: -1
       name: Get Device Detail
-      description: Gets device identity information based on label, tag, type, hostname,
-        ip, mac, vendor and os. It is recommended to run the command to check the
-        relevant fields in context.
+      description: Gets device identity information based on label, tag, type, hostname, ip, mac, vendor and os. It is recommended to run the command to check the relevant fields in context.
       script: '|||darktrace-get-device-identity-info'
       type: regular
       iscommand: true
@@ -440,8 +438,7 @@ tasks:
       id: 8a65911a-5b0c-4265-8234-c873dfb36976
       version: -1
       name: List Similar Devices
-      description: Returns a list of similar devices to a device specified by Darktrace
-        DID
+      description: Returns a list of similar devices to a device specified by Darktrace DID
       script: '|||darktrace-list-similar-devices'
       type: regular
       iscommand: true
@@ -719,8 +716,7 @@ tasks:
       id: 6ee98514-519f-47db-8f09-3d5ef80d24c3
       version: -1
       name: Check Integration is enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -793,7 +789,4 @@ outputs: []
 tests:
 - Darktrace Test Playbook
 fromversion: 6.0.0
-description: Handles each fetched Darktrace model breach by gathering additional detail
-  about the activity and device, providing enrichment data from Darktrace and XSOAR,
-  linking similar incidents, and giving the ability to acknowledge the model breach
-  and close the incident.
+description: Deprecated. Use Darktrace Basic Model Breach Handler and Darktrace Basic AI Analyst Event Handler instead.

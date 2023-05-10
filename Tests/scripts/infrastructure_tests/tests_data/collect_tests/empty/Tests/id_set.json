@@ -1,0 +1,47 @@
+{
+  "scripts": [],
+  "integrations": [],
+  "TestPlaybooks": [
+    {
+      "Sanity Test - Playbook with Unmockable Whois Integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/TestPlaybooks/Sanity Test - Playbook with Unmockable Whois Integration.yml",
+        "pack": "Whois",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
+        ]
+      }
+    },
+    {
+      "Sanity Test - Playbook with no integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/TestPlaybooks/Sanity Test - Playbook with no integration",
+        "pack": "Whois",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
+        ]
+      },
+      "Sanity Test - Playbook with mocked integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/TestPlaybooks/Sanity Test - Playbook with mocked integration",
+        "pack": "Whois",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
+        ]
+      },
+      "Sanity Test - Playbook with integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/TestPlaybooks/Sanity Test - Playbook with integration",
+        "pack": "Whois",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
+        ]
+      }
+    }
+  ],
+  "Packs": {}
+}

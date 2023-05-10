@@ -14,8 +14,6 @@ Microsoft Defender for Cloud Apps Event Collector integration.
     | Tenant ID |  | True |
     | Scope |  | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Vendor | The vendor name to be used in the dataset name, in this format &amp;lt;vendor&amp;gt;_&amp;lt;product&amp;gt;_raw. | False |
-    | Product |  | False |
     | Number of alerts for each fetch. | Due to API limitations, the maximum is 10,000. | False |
     | Fetch events |  | False |
     | Verify SSL Certificate |  | False |

@@ -3,9 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import json
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 BASE_URL = demisto.getParam('url')
@@ -26,14 +26,13 @@ def http_request(method, url):
     )
 
     if response.status_code != 200:
-        return_error('Error in API call: [%d] - %s' % (response.status_code, response.reason))
-
+        return_error(f'Error in API call: [{response.status_code}] - {response.reason}')
     return response
 
 
 def validate_sha1(sha1):
     if len(sha1) != 40:
-        return_error('Invalid SHA-1, expected 40 characters: %s' % (sha1))
+        return_error(f'Invalid SHA-1, expected 40 characters: {sha1}')
 
 
 def validate_ip_of_cidr(ip):
@@ -42,7 +41,7 @@ def validate_ip_of_cidr(ip):
     match = re.search(regex, ip)
 
     if match is None:
-        return_error('Invalid IP or CIDR: %s' % (ip))
+        return_error(f'Invalid IP or CIDR: {ip}')
 
 
 def timestamp_to_string(timestamp):
@@ -55,7 +54,7 @@ def timestamp_to_string(timestamp):
 def dns_get_command(url):
     response = http_dns_get(url)
 
-    results = list(map(lambda line: json.loads(line), response.text.splitlines()))
+    results = list([json.loads(line) for line in response.text.splitlines()])
     results = merge_by_rdata(results)
 
     records = []
@@ -67,7 +66,7 @@ def dns_get_command(url):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': response.text,
-        'HumanReadable': tableToMarkdown("CIRCL Dns - " + url, records),
+        'HumanReadable': tableToMarkdown(f'CIRCL Dns - {url}', records),
         'EntryContext': {
             'CIRCLdns.Query(val.Value===obj.Value)': {
                 'Value': url,
@@ -78,7 +77,7 @@ def dns_get_command(url):
 
 
 def http_dns_get(url):
-    query_url = BASE_URL + '/pdns/query/' + url
+    query_url = f'{BASE_URL}/pdns/query/{url}'
 
     return http_request('GET', query_url)
 
@@ -117,14 +116,14 @@ def list_certificates(queryValue):
     data = response.json()
     records = []
 
-    for ip, ip_data in data.items():
+    for ip, ip_data in list(data.items()):
         records.append(create_ip_context(ip, ip_data))
 
     result = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': data,
-        'HumanReadable': tableToMarkdown('List certificates for ' + queryValue, records),
+        'HumanReadable': tableToMarkdown(f'List certificates for {queryValue}', records),
         'EntryContext': {
             'CIRCLssl.IPAddress(val.Value===obj.Value)': records
         }
@@ -134,7 +133,7 @@ def list_certificates(queryValue):
 
 
 def http_list_certificates(queryValue):
-    query_url = BASE_URL + '/v2pssl/query/' + queryValue
+    query_url = f'{BASE_URL}/v2pssl/query/{queryValue}'
 
     return http_request('GET', query_url)
 
@@ -170,7 +169,7 @@ def list_certificate_seen_ips(sha1, limit):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': data,
-        'HumanReadable': 'Hits: ' + str(certificate['Hits']),
+        'HumanReadable': f'Hits: {str(certificate["Hits"])}',
         'EntryContext': {
             'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
         }
@@ -180,7 +179,7 @@ def list_certificate_seen_ips(sha1, limit):
 
 
 def http_list_certificate_seen_ips(sha1):
-    query_url = BASE_URL + '/v2pssl/cquery/' + sha1
+    query_url = f'{BASE_URL}/v2pssl/cquery/{sha1}'
 
     return http_request('GET', query_url)
 
@@ -204,7 +203,7 @@ def get_certificate_details(sha1):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': data,
-        'HumanReadable': tableToMarkdown("CIRCL ssl certificate - " + sha1, certificate),
+        'HumanReadable': tableToMarkdown(f'CIRCL ssl certificate - {sha1}', certificate),
         'EntryContext': {
             'CIRCLssl.Certificate(val.SHA1===obj.SHA1)': certificate,
         }
@@ -214,8 +213,7 @@ def get_certificate_details(sha1):
 
 
 def http_get_certificate_details(sha1):
-    query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
-
+    query_url = f'{BASE_URL}/v2pssl/cfetch/{sha1}'
     return http_request('GET', query_url)
 
 

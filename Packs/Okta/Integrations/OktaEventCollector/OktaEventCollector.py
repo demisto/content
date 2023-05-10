@@ -2,6 +2,9 @@ from enum import Enum
 from pydantic import BaseModel, AnyUrl, Json  # pylint: disable=no-name-in-module
 from CommonServerPython import *
 
+VENDOR = "okta"
+PRODUCT = "okta"
+
 
 class Method(str, Enum):
     """
@@ -160,20 +163,23 @@ def main():  # pragma: no cover
         if command == 'test-module':
             get_events.aggregated_results()
             demisto.results('ok')
-        elif command in ('okta-get-events', 'fetch-events'):
+
+        if command == 'okta-get-events':
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
-            if command == 'okta-get-events':
-                command_results = CommandResults(
-                    readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
-                    raw_response=events,
-                )
-                return_results(command_results)
-            else:
-                demisto.setLastRun(GetEvents.get_last_run(events))
-                should_push_events = True
+            command_results = CommandResults(
+                readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
+                raw_response=events,
+            )
+            return_results(command_results)
+
             if should_push_events:
-                send_events_to_xsiam(events[:events_limit], demisto_params.get('vendor', 'okta'),
-                                     demisto_params.get('product', 'okta'))
+                send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
+
+        elif command == 'fetch-events':
+            events = get_events.aggregated_results(last_object_ids=last_object_ids)
+            send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(GetEvents.get_last_run(events))
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

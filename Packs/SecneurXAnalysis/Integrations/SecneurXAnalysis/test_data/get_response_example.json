@@ -1,0 +1,177 @@
+{
+    "completed_response": {
+        "success": 1,
+        "data": [
+            {
+                "task_uuid": "97f2a81ca560590ff040fb843ffca9675a39c9634d009dfa1833a9acf7f41355-2022-05-21-05-08-15",
+                "sha256": "97f2a81ca560590ff040fb843ffca9675a39c9634d009dfa1833a9acf7f41335",
+                "file_name": "camera_app.apk",
+                "verdict": "Clean",
+                "tags": [],
+                "status": "Completed",
+                "submission_time": "2022-05-21 05:08:15",
+                "analysis_startTime": "2022-05-21 05:09:12",
+                "analysis_endTime": "2022-05-21 05:15:14",
+                "report_endTime": "2022-05-21 05:23:29",
+                "report_available": true
+            },
+            {
+                "task_uuid": "add43488f6a32dd08443b2263733da3bf6572af9d74d222b7903a86bd11c2709-2022-05-11-09-56-46",
+                "sha256": "add43488f6a32dd08443b2263733da3bf6572af9d74d222b7903a86bd11c2709",
+                "file_name": "add43488f6a32dd08443b2263733da3bf6572af9d74d222b7903a86bd11c2709.apk",
+                "verdict": "Clean",
+                "tags": [],
+                "status": "Completed",
+                "submission_time": "2022-05-11 09:56:46",
+                "analysis_startTime": "2022-05-11 09:57:05",
+                "analysis_endTime": "2022-05-11 09:59:39",
+                "report_endTime": "2022-05-11 10:00:37",
+                "report_available": true
+            }
+        ]
+    },
+    "error_response": {
+        "metadata_error_res": {
+            "success": 0,
+            "error_code": 400,
+            "error_msg": "ANALYSIS_API_INVALID_METADATA"
+        },
+        "invalid_error_res": {
+            "success": 0,
+            "error_code": 404,
+            "error_msg": "ANALYSIS_API_INVALID_UUID"
+        },
+        "submit_failed_res": {
+            "success": 0,
+            "error_code": 500,
+            "error_msg": "ANALYSIS_API_SUBMISSION_FAILED"
+        },
+        "empty_error_res": {
+            "success": 1,
+            "data": "NULL"
+        },
+        "completed_cmd_res": {
+            "msg": "No samples to display"
+        },
+        "pending_cmd_res": {
+            "msg": "No samples to display"
+        },
+        "status_cmd_res": {
+            "msg": "No samples to display"
+        }
+    },
+    "pending_response": {
+        "success": 1,
+        "data": [
+            {
+                "task_uuid": "e94e76882b30f4050d456d126ec76713b8e997a193ac80269f090f394290086b-2022-07-05-06-59-01",
+                "sha256": "e94e76882b30f4050d456d126ec76713b8e997a193ac80269f090f394290086b",
+                "file_name": "test_file",
+                "status": "Analyzing",
+                "submission_time": "2022-07-05 06:59:01"
+            },
+            {
+                "task_uuid": "e94e76882b30f4050d456d126ec76713b8e997a193ac80269f090f394290086b-2022-07-05-06-41-27",
+                "sha256": "e94e76882b30f4050d456d126ec76713b8e997a193ac80269f090f394290086b",
+                "file_name": "test_file",
+                "status": "Analyzing",
+                "submission_time": "2022-07-05 06:41:27"
+            }
+        ]
+    },
+    "report_response": {
+        "version": "1.0.0",
+        "analysisSubjectSha256": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+        "analysisTimestampS": "1656409465",
+        "ArtifactsVerdict": "Malware",
+        "ArtifactsTags": [
+            "UNKNOWN_BEHAVIOUR",
+            "DETECT_DEBUG_ENVIRONMENT"
+        ],
+        "dnsLookups": [],
+        "httpConversations": [],
+        "ja3Digests": [],
+        "processesTree": [],
+        "processesCreated": [],
+        "registryKeysSet": [],
+        "registryKeysDeleted": [],
+        "filesWritten": [],
+        "filesDropped": [],
+        "filesDeleted": [],
+        "analysisSubjectType": "file",
+        "analysisSubjectName": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+        "IOC": {
+            "data": {
+                "type": "bundle",
+                "id": "bundle--2dd1a1e0-71bf-4106-ad59-5edf6cf5da11",
+                "objects": [
+                    {
+                        "type": "indicator",
+                        "specVersion": "2.1",
+                        "id": "indicator--ad20e4c1-83df-45fc-9952-0309a90e8000",
+                        "created": "2022-07-29T22:14:00.644627Z",
+                        "modified": "2022-07-29T22:14:00.644627Z",
+                        "pattern": "[ipv4-addr:value = '8.8.8.8']",
+                        "patternType": "stix",
+                        "patternVersion": "2.1",
+                        "validFrom": "2022-07-29T22:14:00.644627Z"
+                    }
+                ]
+            }
+        }
+    },
+    "status_response": {
+        "success": 1,
+        "data": [
+            {
+                "task_uuid": "cf80cd8aed482d5d1527d7dc72fceff84e6326592848447d2dc0b0e87dfc9a90-2022-07-05-07-15-01",
+                "sha256": "cf80cd8aed482d5d1527d7dc72fceff84e6326592848447d2dc0b0e87dfc9a90",
+                "file_name": "test_file",
+                "status": "Processing",
+                "submission_time": "2022-07-05 07:15:01"
+            },
+            {
+                "task_uuid": "cf80cd8aed482d5d1527d7dc72fceff84e6326592848447d2dc0b0e87dfc9a90-2022-07-05-07-07-27",
+                "sha256": "cf80cd8aed482d5d1527d7dc72fceff84e6326592848447d2dc0b0e87dfc9a90",
+                "file_name": "test_file",
+                "status": "Completed",
+                "submission_time": "2022-07-05 07:07:27"
+            }
+        ]
+    },
+    "verdict_response": {
+        "success": 1,
+        "data": {
+            "task_uuid": "13bd267ca3d7af495f8cd8f72daf3ea997312671eafe9992a88768e4f3ecc601-2022-06-07-14-40-46",
+            "verdict": "Clean",
+            "sha256": "13bd267ca3d7af495f8cd8f72daf3ea997312671eafe9992a88768e4f3ecc601",
+            "file_name": "13bd267ca3d7af495f8cd8f72daf3ea997312671eafe9992a88768e4f3ecc601",
+            "status": "Completed",
+            "submission_time": "2022-06-07 14:40:46"
+        }
+    },
+    "submit_file_response": {
+        "success": 1,
+        "data": {
+            "task_uuid": "0c46f01e9b816ab81b01e7e674b7e41157904834b2428516edec03091186ae85-2022-07-06-05-09-13",
+            "submission_time": "2022-07-06 05:09:13"
+        }
+    },
+    "submit_url_response": {
+        "success": 1,
+        "data": {
+            "task_uuid": "05046f26c83e8c88b3ddab2eab63d0d16224ac1e564535fc75cdceee47a0938d-2022-07-06-05-08-07",
+            "submission_time": "2022-07-06 05:08:07"
+        }
+    },
+    "quota_response": {
+        "success": 1,
+        "data": {
+            "start_time": "01 Sep 2022 00:00:00 UTC",
+            "used": 250,
+            "allowed": 500,
+            "scale": "MONTH",
+            "unused": 250
+        }
+    }
+}

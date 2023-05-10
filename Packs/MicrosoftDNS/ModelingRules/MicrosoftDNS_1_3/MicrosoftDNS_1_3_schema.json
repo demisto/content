@@ -1,0 +1,36 @@
+{
+    "microsoft_dns_raw": {
+    "_raw_log": {
+        "type": "string",
+        "is_array": false
+    },
+    "sourcePort": {
+        "type": "string",
+        "is_array": false
+    },
+    "sourceIp": {
+        "type": "string",
+        "is_array": false
+    },
+    "responseCode": {
+        "type": "string",
+        "is_array": false
+    },
+    "questionName": {
+        "type": "string",
+        "is_array": false
+    },
+    "questionType": {
+        "type": "string",
+        "is_array": false
+    },
+    "dstPort": {
+        "type": "string",
+        "is_array": false
+    },
+    "protocol": {
+        "type": "string",
+        "is_array": false
+    }
+  }
+}

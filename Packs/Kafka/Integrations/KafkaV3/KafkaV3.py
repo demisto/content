@@ -6,12 +6,12 @@ from io import StringIO
 
 ''' IMPORTS '''
 import tempfile
-import requests
+import urllib3
 import traceback
 import logging
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'latest', 'end', 'error']
 

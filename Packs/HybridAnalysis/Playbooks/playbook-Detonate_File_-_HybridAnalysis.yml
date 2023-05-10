@@ -3,9 +3,7 @@ version: -1
 name: Detonate File - HybridAnalysis
 fromversion: 5.0.0
 description: |-
-  Detonates one or more files using the Hybrid Analysis integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
-  All file types are supported.
+  Deprecated. Use cs-falcon-sandbox-submit-sample with polling=true instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -370,4 +368,5 @@ outputs:
   description: The environmentID of the submission
   type: unknown
 tests:
-- "Detonate File - HybridAnalysis - Test"
+- "No tests (deprecated)"
+deprecated: true

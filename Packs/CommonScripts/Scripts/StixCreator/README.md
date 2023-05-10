@@ -14,8 +14,8 @@ Gets a list of indicators from the indicators argument, and generates a JSON fil
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| indicators | The JSON object of all indicators and their fields, indicator index mapped to the Cortex XSOAR indicator fields. |
-| doubleBackslash | Adds a second backslash to all existing backslashes in the value field. |
+| indicators | A JSON object of all indicators and their fields, indicator index mapped to XSOAR common indicator fields. Indicator keys that don't match the XSOAR common indicator names are also supported, if their key contains a common indicator name (e.g. "special-ip" will be mapped to **ip**), or their value matches the expected indicator value (e.g. 8.8.8.8 for ip). |
+| doubleBackslash | Adds a second backslash to all existing backslashes in the value field.                                                                                                                                                                                                                                                                                            |
 
 ## Outputs
 ---

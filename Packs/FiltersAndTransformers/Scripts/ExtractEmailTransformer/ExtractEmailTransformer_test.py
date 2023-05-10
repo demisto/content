@@ -1,18 +1,34 @@
-from ExtractEmailTransformer import *
+from ExtractEmailTransformer import extract
 import pytest
 
+TEST_EXTRACT__ARGUMENTS = (
+    (['example@example.com'], ['example@example.com']),
+    (['example@example.com', 'foo'], ['example@example.com']),
+    (['example@example.com', 'notanem@il'], ['example@example.com']),
+    (['Example@example.com'], ['example@example.com']),
+    (['EXAMPLE@example.com'], ['example@example.com']),
+    (['example1@example.com'], ['example1@example.com']),
+    (['example1@example.com', 'example2@example.com'], ['example1@example.com', 'example2@example.com']),
+    (['EXAMPLE1@example.com', 'example2@example.com'], ['example1@example.com', 'example2@example.com']),
+)
 
-data_test_main = [
-    ({'value': 'test'}, []),
-    ({'value': 'test@test.com'}, ['test@test.com']),
-    ({'value': 'test@test.com,test?test@test.com'}, ['test@test.com', 'test@test.com']),
-]
+
+@pytest.mark.parametrize('inputs, expected', TEST_EXTRACT__ARGUMENTS)
+def test_extract_email_transformer(inputs: list[str], expected: list[str]):
+    assert extract(inputs) == expected
 
 
-@pytest.mark.parametrize('args, command_outputs', data_test_main)
-def test_main(args, command_outputs, mocker):
-    mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch('ExtractEmailTransformer.execute_command', return_value=command_outputs)
-    results_mocker = mocker.patch('ExtractEmailTransformer.return_results')
-    main()
-    results_mocker.args[0] == command_outputs
+@pytest.mark.parametrize('inputs', ([''],
+                                    [],
+                                    [None],
+                                    ['hello'],
+                                    ['hello', 'world'],
+                                    ['hello@world'],
+                                    ['hello@'],
+                                    ['hello@example'],
+                                    ['hello@example.'],
+                                    ['😎@example.com'],
+                                    ['😎@example.com'],
+                                    ))
+def test_extract_email_transformer__no_email(inputs):
+    assert extract(inputs) == []

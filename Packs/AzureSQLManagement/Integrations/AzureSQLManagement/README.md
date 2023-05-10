@@ -2,6 +2,43 @@ Microsoft Azure SQL Management Integration manages the Auditing and Threat Polic
 
 > <i>Note:</i> The integration is in ***beta*** as it uses a preview version of the Azure SQL Database API. The stable Azure SQL Database API version does not contain all required endpoints used in some of the integration commands.
 
+# Self-Deployed Application
+To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
+
+The application must have *user_impersonation* permission and must allow public client flows (found under the **Authentication** section of the app). And must allow public client flows (found under the **Authentication** section of the app) for Device-code based authentications.
+
+## Authentication Using the  User-Authentication Flow (recommended)
+
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. choose the 'User Auth' option in the ***Authentication Type*** parameter.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+7. Save the instance.
+8. Run the `!azure-sql-generate-login-url` command in the War Room and follow the instruction.
+9. Run the ***!azure-sql-auth-test*** command - a 'Success' message should be printed to the War Room.
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
+
+You only need to fill in your subscription ID and resource group name. You can find your resource group and 
+subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+
+### Authentication Using the Device Code Flow
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
+to link Azure SQL Management with Cortex XSOAR.
+
+Follow these steps for a self-deployed configuration:
+1. Fill in the required parameters.
+2. choose the 'Device' option in the ***user_auth_flow*** parameter.
+3. Run the ***!azure-sql-auth-start*** command. 
+4. Follow the instructions that appear.
+5. Run the ***!azure-sql-auth-complete*** command.
+
 ## Configure Azure SQL Management on Cortex XSOAR
 
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
@@ -11,31 +48,20 @@ In order to connect to the Azure SQL Management using either Cortex XSOAR Azure 
    
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
+    | Application ID |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Subscription ID |  | True |
     | Resource Group Name |  | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-   
-2. Run the ***!azure-sql-auth-start*** command. 
-3. Follow the instructions that appear.
-4. Run the ***!azure-sql-auth-complete*** command.
+    | Tenant ID (for User Auth mode) | Tenant ID | False |
+    | Client Secret (for User Auth mode) | Encryption key given by the admin | False |
+    | Authentication Type | The request authentication type for the instance | False |
+    | Authorization code | as received from the authorization step | False |
+    | Application redirect URI | the redirect URI entered in the Azure portal | False |
 
-At the end of the process you'll see a message that you've logged in successfully. 
-
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
-
-You only need to fill in your subscription ID and resource group name. You can find your resource group and 
-subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
-
-#### Self-Deployed Azure App
-
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
-
-The application must have *user_impersonation* permission and must allow public client flows (found under the **Authentication** section of the app).
+At the end of the process you'll see a message that you've logged in successfully.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -645,4 +671,34 @@ Creates or updates the database's threat detection policy.
 >|Creation Time|Database Name|Disabled Alerts|Email Account Admins|Id|Name|Retention Days|Server Name|State|Type|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0001-01-01T00:00:00Z | sql-integration-db | Sql_Injection,<br/>Sql_Injection_Vulnerability | false | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default | Default | 5 | sqlintegration | Enabled | Microsoft.Sql/servers/databases/securityAlertPolicies |
+
+
+
+### azure-sql-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-sql-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-sql-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
 

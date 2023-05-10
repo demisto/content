@@ -1,0 +1,20 @@
+{
+    "data": {
+      "attributes": {
+        "envelopeRecipient": [
+          "test@test.com"
+        ],
+        "toAddress": [
+          "test@test.com <test@test.com>, test@test.com <test@test.com>, test@test.com <test@test.com>"
+        ],
+        "attachments": [],
+        "messageBody": "X-MGA-submission: MDHTEMaXiw5S1sGLpHiZuknQgY9yfOYqHCZrZRH+volYPXVDYNHSoSYtn+y92K4gFKFG6sF+MCeTBl1yKgdw4gz2Cs62UzVdh8L0mFnyMCiicQXJeG0LxIvlAzFR+47whtduvrkCl9cpTsFqWDi62pyTlFKY6gWx2iDgkd3cIuGSyw==",
+        "date": "20 Sep 2022 15:13 (GMT +00:00)",
+        "fromAddress": [
+          "Test Test <test@test.com>"
+        ],
+        "subject": "test"
+      },
+      "mid": 620
+    }
+  }

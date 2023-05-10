@@ -1,0 +1,220 @@
+[
+  {
+    "CaseId": "1cafcc01-a58f-4d57-88d0-f2bd230e9d57",
+    "UpdatedDate": "2022-10-04T14:57:56+00:00",
+    "IOCs": [
+      {
+        "IocId": "5219985e-8098-4fb7-9de4-ecdcebaa6583",
+        "Value": "9deeb131d86a2d2936b624253d4228af7b23cee1",
+        "Type": "SHA1",
+        "Risk": "Suspicious",
+        "TLP": "white",
+        "CreationDate": "2022-10-03T05:52:14+00:00",
+        "ExternalLinks": [
+          {
+            "source_name": "Bazaar Abuse.ch",
+            "url": "https://bazaar.abuse.ch/sample/3356c03ee1365035d8013a95c00572e545c67812d182a8667b53602c831dbc18/"
+          },
+          {
+            "source_name": "CapeSandbox:2022-03-12 04:00:37.779414",
+            "url": "http://3.23.155.57:8000/apiv2/tasks/view/404"
+          },
+          {
+            "source_name": "CAPEv23",
+            "url": "https://143.215.130.170/api/tasks/view/315909"
+          }
+        ],
+        "Description": "'9deeb131d86a2d2936b624253d4228af7b23cee1' is a Suspicious SHA1. It is linked to a PE32 executable (GUI) Intel 80386, for MS Windows file.\nThis SHA1 is linked to a malware attack.\nThe related TTPs are: T1083, T1129, T1059, T1082.\nWe advised to use this IoC in detection mode.",
+        "Relations": [
+          "7385dfaf-6886-4229-9ecd-6fd678040830",
+          "3df2a46a-064e-4279-a1d5-a394b419e0fc",
+          "0e3cc27b-7999-48ce-8484-dc12b325a355",
+          "7bc57495-ea59-4380-be31-a64af124ef18",
+          "354a7f88-63fb-41b5-a801-ce3b377b36f1",
+          "0a5231ec-41af-4a35-83d0-6bdf11f28c65"
+        ],
+        "Tags": [
+          "uds:dangerousobject.multi.generic",
+          "high entropy : potentially packed",
+          "trojan-ransom.stopcrypt",
+          "w32/kryptik.gtl.gen!eldorado",
+          "malware-cryptor.2la.gen",
+          "unknown/multi",
+          "function(s) oftenly used by malware is present : 1 function(s)"
+        ],
+        "TTP": [
+          "T1083",
+          "T1129",
+          "T1059",
+          "T1082"
+        ],
+        "Families": [],
+        "Campaigns": [],
+        "Categories": [
+          "malware"
+        ],
+        "ThreatActor": [],
+        "TargetedSectors": [],
+        "TargetedOrganizations": [],
+        "TargetedPlatforms": [
+          "windows"
+        ],
+        "TargetedCountries": [],
+        "Vulnerabilities": [],
+        "KillChainPhases": [
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Execution"
+          },
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Discovery"
+          }
+        ],
+        "MetaData": {
+          "cwe": [],
+          "descriptions": [],
+          "filetype": "PE32 executable (GUI) Intel 80386, for MS Windows",
+          "imphash": "48:jZ74fKpWxN917LvBu9dOmtf739+cC07r+:eqSr/vBAd/tf7N+cC07S",
+          "ssdeep": "3072:/2sdJORTppwg1GQqA2HVOabG+0RRlHN2A66JIzD:B+w/QqAyVOaatnuz",
+          "tslh": "T16FD3E02138D3E473C05660319D7AD6A2AB7EA9101BA04E973B8517BE4F313C29EB7347",
+          "usageMode": "detection"
+        },
+        "UsageMode": "detection"
+      },
+      {
+        "IocId": "3df2a46a-064e-4279-a1d5-a394b419e0fc",
+        "Value": "3356c03ee1365035d8013a95c00572e545c67812d182a8667b53602c831dbc18",
+        "Type": "SHA256",
+        "Risk": "Suspicious",
+        "TLP": "white",
+        "CreationDate": "2022-10-03T05:52:14+00:00",
+        "ExternalLinks": [
+          {
+            "source_name": "Bazaar Abuse.ch",
+            "url": "https://bazaar.abuse.ch/sample/3356c03ee1365035d8013a95c00572e545c67812d182a8667b53602c831dbc18/"
+          },
+          {
+            "source_name": "CapeSandbox:2022-03-12 04:00:37.779414",
+            "url": "http://3.23.155.57:8000/apiv2/tasks/view/404"
+          },
+          {
+            "source_name": "CAPEv23",
+            "url": "https://143.215.130.170/api/tasks/view/315909"
+          }
+        ],
+        "Description": "'3356c03ee1365035d8013a95c00572e545c67812d182a8667b53602c831dbc18' is a Suspicious SHA256. It is linked to a PE32 executable (GUI) Intel 80386, for MS Windows file.\nThis SHA256 is linked to a malware attack.\nThe related TTPs are: T1083, T1129, T1059, T1082.\nWe advised to use this IoC in detection mode.",
+        "Relations": [
+          "0a5231ec-41af-4a35-83d0-6bdf11f28c65",
+          "7bc57495-ea59-4380-be31-a64af124ef18",
+          "7385dfaf-6886-4229-9ecd-6fd678040830",
+          "354a7f88-63fb-41b5-a801-ce3b377b36f1",
+          "0e3cc27b-7999-48ce-8484-dc12b325a355"
+        ],
+        "Tags": [
+          "uds:dangerousobject.multi.generic",
+          "high entropy : potentially packed",
+          "trojan-ransom.stopcrypt",
+          "w32/kryptik.gtl.gen!eldorado",
+          "malware-cryptor.2la.gen",
+          "unknown/multi",
+          "function(s) oftenly used by malware is present : 1 function(s)"
+        ],
+        "TTP": [
+          "T1083",
+          "T1129",
+          "T1059",
+          "T1082"
+        ],
+        "Families": [],
+        "Campaigns": [],
+        "Categories": [
+          "malware"
+        ],
+        "ThreatActor": [],
+        "TargetedSectors": [],
+        "TargetedOrganizations": [],
+        "TargetedPlatforms": [
+          "windows"
+        ],
+        "TargetedCountries": [],
+        "Vulnerabilities": [],
+        "KillChainPhases": [
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Execution"
+          },
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Discovery"
+          }
+        ],
+        "MetaData": {
+          "cwe": [],
+          "descriptions": [],
+          "filetype": "PE32 executable (GUI) Intel 80386, for MS Windows",
+          "imphash": "48:jZ74fKpWxN917LvBu9dOmtf739+cC07r+:eqSr/vBAd/tf7N+cC07S",
+          "ssdeep": "3072:/2sdJORTppwg1GQqA2HVOabG+0RRlHN2A66JIzD:B+w/QqAyVOaatnuz",
+          "tslh": "T16FD3E02138D3E473C05660319D7AD6A2AB7EA9101BA04E973B8517BE4F313C29EB7347",
+          "usageMode": "detection"
+        },
+        "UsageMode": "detection"
+      }
+    ],
+    "RelatedData": [
+      {
+        "Value": "T1083",
+        "Type": "attack-pattern",
+        "RelatedDataId": "7bc57495-ea59-4380-be31-a64af124ef18",
+        "Description": "Adversaries may enumerate files and directories or may search in specific locations of a host or network share for certain information within a file system. Adversaries may use the information from [File and Directory Discovery](https://attack.mitre.org/techniques/T1083) during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.  Many command shell utilities can be used to obtain this information. Examples include <code>dir</code>, <code>tree</code>, <code>ls</code>, <code>find</code>, and <code>locate</code>.(Citation: Windows Commands JPCERT) Custom tools may also be used to gather file and directory information and interact with the [Native API](https://attack.mitre.org/techniques/T1106). Adversaries may also leverage a [Network Device CLI](https://attack.mitre.org/techniques/T1059/008) on network devices to gather file and directory information.(Citation: US-CERT-TA18-106A)",
+        "LongValue": "File and Directory Discovery",
+        "KillChainPhases": [
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Discovery"
+          }
+        ]
+      },
+      {
+        "Value": "T1059",
+        "Type": "attack-pattern",
+        "RelatedDataId": "7385dfaf-6886-4229-9ecd-6fd678040830",
+        "Description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, macOS and Linux distributions include some flavor of [Unix Shell](https://attack.mitre.org/techniques/T1059/004) while Windows installations include the [Windows Command Shell](https://attack.mitre.org/techniques/T1059/003) and [PowerShell](https://attack.mitre.org/techniques/T1059/001).  There are also cross-platform interpreters such as [Python](https://attack.mitre.org/techniques/T1059/006), as well as those commonly associated with client applications such as [JavaScript](https://attack.mitre.org/techniques/T1059/007) and [Visual Basic](https://attack.mitre.org/techniques/T1059/005).  Adversaries may abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in [Initial Access](https://attack.mitre.org/tactics/TA0001) payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. Adversaries may also execute commands through interactive terminals/shells, as well as utilize various [Remote Services](https://attack.mitre.org/techniques/T1021) in order to achieve remote Execution.(Citation: Powershell Remote Commands)(Citation: Cisco IOS Software Integrity Assurance - Command History)(Citation: Remote Shell Execution in Python)",
+        "LongValue": "Command and Scripting Interpreter",
+        "KillChainPhases": [
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Execution"
+          }
+        ]
+      },
+      {
+        "Value": "T1129",
+        "Type": "attack-pattern",
+        "RelatedDataId": "0a5231ec-41af-4a35-83d0-6bdf11f28c65",
+        "Description": "Adversaries may execute malicious payloads via loading shared modules. The Windows module loader can be instructed to load DLLs from arbitrary local paths and arbitrary Universal Naming Convention (UNC) network paths. This functionality resides in NTDLL.dll and is part of the Windows [Native API](https://attack.mitre.org/techniques/T1106) which is called from functions like <code>CreateProcess</code>, <code>LoadLibrary</code>, etc. of the Win32 API.(Citation: Wikipedia Windows Library Files)  The module loader can load DLLs:  * via specification of the (fully-qualified or relative) DLL pathname in the IMPORT directory;      * via EXPORT forwarded to another DLL, specified with (fully-qualified or relative) pathname (but without extension);      * via an NTFS junction or symlink program.exe.local with the fully-qualified or relative pathname of a directory containing the DLLs specified in the IMPORT directory or forwarded EXPORTs;      * via <code>&#x3c;file name=filename.extension loadFrom=fully-qualified or relative pathname&#x3e;</code> in an embedded or external application manifest. The file name refers to an entry in the IMPORT directory or a forwarded EXPORT.  Adversaries may use this functionality as a way to execute arbitrary payloads on a victim system. For example, malware may execute share modules to load additional components or features.",
+        "LongValue": "Shared Modules",
+        "KillChainPhases": [
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Execution"
+          }
+        ]
+      },
+      {
+        "Value": "T1082",
+        "Type": "attack-pattern",
+        "RelatedDataId": "354a7f88-63fb-41b5-a801-ce3b377b36f1",
+        "Description": "An adversary may attempt to get detailed information about the operating system and hardware, including version, patches, hotfixes, service packs, and architecture. Adversaries may use the information from [System Information Discovery](https://attack.mitre.org/techniques/T1082) during automated discovery to shape follow-on behaviors, including whether or not the adversary fully infects the target and/or attempts specific actions.  Tools such as [Systeminfo](https://attack.mitre.org/software/S0096) can be used to gather detailed system information. If running with privileged access, a breakdown of system data can be gathered through the <code>systemsetup</code> configuration tool on macOS. As an example, adversaries with user-level access can execute the <code>df -aH</code> command to obtain currently mounted disks and associated freely available space. Adversaries may also leverage a [Network Device CLI](https://attack.mitre.org/techniques/T1059/008) on network devices to gather detailed system information.(Citation: US-CERT-TA18-106A) [System Information Discovery](https://attack.mitre.org/techniques/T1082) combined with information gathered from other forms of discovery and reconnaissance can drive payload development and concealment.(Citation: OSX.FairyTale)(Citation: 20 macOS Common Tools and Techniques)  Infrastructure as a Service (IaaS) cloud providers such as AWS, GCP, and Azure allow access to instance and virtual machine information via APIs. Successful authenticated API calls can return data such as the operating system platform and status of a particular instance or the model view of a virtual machine.(Citation: Amazon Describe Instance)(Citation: Google Instances Resource)(Citation: Microsoft Virutal Machine API)",
+        "LongValue": "System Information Discovery",
+        "KillChainPhases": [
+          {
+            "kill_chain_name": "mitre-attack",
+            "phase_name": "Discovery"
+          }
+        ]
+      }
+    ],
+    "Description": "The threat report contains 2 indicators with a medium confidence average. The category of the threat is malware. The TTP included in this report are T1083, T1082, T1059, T1129. "
+  }
+]

@@ -1,9 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-from IAMApiModule import *
-import jwt
-import urllib3
 
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *
+from IAMApiModule import *      # noqa: E402
+from ZoomApiModule import *     # noqa: E402
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -13,19 +13,12 @@ DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
 ERROR_CODES_TO_SKIP = [
     404
 ]
-BASE_URL = 'https://api.zoom.us/v2/'
 
 '''CLIENT CLASS'''
 
 
-class Client(BaseClient):
+class Client(Zoom_Client):
     """ A client class that implements logic to authenticate with Zoom application. """
-
-    def __init__(self, base_url, api_key, api_secret, verify=True, proxy=False):
-        super().__init__(base_url, verify, proxy)
-        self.api_key = api_key
-        self.api_secret = api_secret
-        self.access_token = get_jwt(api_key, api_secret)
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -36,7 +29,7 @@ class Client(BaseClient):
     def get_user(self, _, filter_value: str) -> Optional[IAMUserAppData]:
         uri = f'/users/{filter_value}'
 
-        res = self._http_request(
+        res = self.error_handled_http_request(
             method='GET',
             url_suffix=uri,
             headers={'authorization': f'Bearer {self.access_token}',
@@ -68,7 +61,7 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'/users/{user_id}/status'
-        self._http_request(
+        self.error_handled_http_request(
             method='PUT',
             url_suffix=uri,
             json_data=user_data,
@@ -98,6 +91,19 @@ class Client(BaseClient):
         """
 
         user_data = {'action': 'deactivate'}
+        return self.update_user(user_id, user_data)
+
+    def enable_user(self, user_id: str) -> IAMUserAppData:
+        """ Enables a user in the application using REST API.
+
+        :type user_id: ``str``
+        :param user_id: ID of the user in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+
+        user_data = {'action': 'activate'}
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self):
@@ -161,20 +167,6 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def get_jwt(api_key: str, api_secret: str) -> str:
-    """
-    Encode the JWT token given the api ket and secret
-    """
-    now = time.time()
-    expire_time = int(now) + 5000
-    payload = {
-        'iss': api_key,
-        'exp': expire_time
-    }
-    encoded = jwt.encode(payload, api_secret, algorithm='HS256')
-    return str(encoded)
-
-
 def get_error_details(res: Dict[str, Any]) -> str:
     """ Parses the error details retrieved from the application and outputs the resulted string.
 
@@ -193,16 +185,21 @@ def get_error_details(res: Dict[str, Any]) -> str:
 
 
 def test_module(client: Client):
-    """ Tests connectivity with the client. """
+    """Tests connectivity with the client.
+    Takes as an argument all client arguments to create a new client
+    """
     try:
         client.test()
-    except Exception as e:
-        error_message_index = str(e).find('"message":')
-        error_message = str(e)[error_message_index:]
+    except DemistoException as e:
+        error_message = e.message
         if 'Invalid access token' in error_message:
-            error_message = 'Invalid API Key. Please verify that your API key is valid.'
-        if "The Token's Signature resulted invalid" in error_message:
-            error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
+            error_message = INVALID_CREDENTIALS
+        elif "The Token's Signature resulted invalid" in error_message:
+            error_message = INVALID_API_SECRET
+        elif 'Invalid client_id or client_secret' in error_message:
+            error_message = INVALID_ID_OR_SECRET
+        else:
+            error_message = f'Problem reaching Zoom API, check your credentials. Error message: {error_message}'
         return error_message
     return 'ok'
 
@@ -213,22 +210,34 @@ def get_mapping_fields(client: Client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def main():
+def check_authentication_type_arguments(api_key: str, api_secret: str,
+                                        account_id: str, client_id: str, client_secret: str):
+    if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
+        raise DemistoException("""Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
+
+
+def main():  # pragma: no cover
     user_profile = None
     params = demisto.params()
-    api_key = params.get('api_key')
-    api_secret = params.get('api_secret')
+    base_url = params.get('url')
+    api_key = params.get('creds_api_key', {}).get('password') or params.get('api_key')
+    api_secret = params.get('creds_api_secret', {}).get('password') or params.get('api_secret')
+    account_id = params.get('account_id')
+    client_id = params.get('credentials', {}).get('identifier')
+    client_secret = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
-    # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
 
-    is_disable_enabled = params.get('disable-user-enabled')
+    is_disable_enabled = argToBoolean(params.get('disable-user-enabled'))
+    is_enable_enabled = argToBoolean(params.get('enable-user-enabled'))
 
     iam_command = IAMCommand(is_create_enabled=False,
-                             is_enable_enabled=False,
+                             is_enable_enabled=is_enable_enabled,
                              is_disable_enabled=is_disable_enabled,
                              is_update_enabled=False,
                              create_if_not_exists=False,
@@ -237,32 +246,41 @@ def main():
                              mapper_out=None,
                              get_user_iam_attrs=['id', 'username', 'email']
                              )
-    client = Client(
-        base_url=BASE_URL,
-        verify=verify_certificate,
-        proxy=proxy,
-        api_key=api_key,
-        api_secret=api_secret,
-    )
-
-    demisto.debug(f'Command being called is {command}')
-
-    '''CRUD commands'''
-    if command == 'iam-disable-user':
-        user_profile = iam_command.disable_user(client, args)
-    elif command == 'iam-get-user':
-        user_profile = iam_command.get_user(client, args)
-
-    if user_profile:
-        return_results(user_profile)
-
-    '''non-CRUD commands'''
-
     try:
+        check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
+
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            api_key=api_key,
+            api_secret=api_secret,
+            account_id=account_id,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
+
         if command == 'test-module':
-            return_results(test_module(client))
-        elif command == 'get-mapping-fields':
+            return_results(test_module(client=client))
+
+        demisto.debug(f'Command being called is {command}')
+
+        '''CRUD commands'''
+        if command == 'iam-disable-user':
+            user_profile = iam_command.disable_user(client, args)
+        if command == 'iam-enable-user':
+            user_profile = iam_command.enable_user(client, args)
+        if command == 'iam-get-user':
+            user_profile = iam_command.get_user(client, args)
+
+        if user_profile:
+            return_results(user_profile)
+
+        '''non-CRUD commands'''
+
+        if command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
+
     except Exception as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')

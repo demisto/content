@@ -11,7 +11,7 @@ Investigate the executed process image and verify if it is malicious using:
 
 **Response Actions**
 
-The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
+The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
 
 * Auto block indicators
 * Auto file quarantine
@@ -33,14 +33,16 @@ And the following eradication actions:
 
 External resources:
 
-[Malware Protection Flow](https://docs.paloaltonetworks.com/traps/4-2/traps-endpoint-security-manager-admin/malware-protection/malware-protection-flow)
+[Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Recovery Plan
+
 * Containment Plan
+* Recovery Plan
 * Endpoint Investigation Plan
 * Wildfire Detonate and Analyze File
 * Handle False Positive Alerts
@@ -48,19 +50,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Eradication Plan
 
 ### Integrations
+
 * CortexCoreIR
 
 ### Scripts
-* GetTime
+
 * UnzipFile
+* GetTime
 
 ### Commands
-* core-retrieve-files
+
 * closeInvestigation
-* core-retrieve-file-details
+* internal-wildfire-get-report
 * core-report-incorrect-wildfire
+* core-retrieve-files
+* core-retrieve-file-details
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -72,11 +79,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoRecovery | Whether to execute the Recovery playbook. | False | Optional |
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | ShouldRescanBenign | Whether to rescan \(Using WildFire detonate file\) benign files. | True | Optional |
+| ShouldManualReviewFP | Whether to ask for a manual review before false positive handling. Should be True or False | False | Optional |
+| SHA256 | The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256. | alert | Optional |
+| Path | The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path. | alert | Optional |
+| Query | The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file. | alert | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Local Analysis alert Investigation](../doc_files/Local_Analysis_alert_Investigation.png)

@@ -1,0 +1,2413 @@
+id: Test-GitLab-v2
+version: -1
+name: Test-GitLab-v2
+fromversion: 6.5.0
+description: A playbook for GitLabv2 integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d5b8274e-2c84-4fa5-834f-67096a4ee6aa
+    type: start
+    task:
+      id: d5b8274e-2c84-4fa5-834f-67096a4ee6aa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1a968267-9b38-465e-8b94-23aa08e1d504
+    type: regular
+    task:
+      id: 1a968267-9b38-465e-8b94-23aa08e1d504
+      version: -1
+      name: gitlab-issue-list
+      description: Get a list of a project's issues.
+      script: '|||gitlab-issue-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5c8a119b-4cbe-487c-8eac-5a5f22658b02
+    type: regular
+    task:
+      id: 5c8a119b-4cbe-487c-8eac-5a5f22658b02
+      version: -1
+      name: issue-update
+      description: Updates an existing project issue. This call is also used to mark an issue as closed. The ID can be taken from gitlab-issue-list.
+      script: GitLabv2|||gitlab-issue-update
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      add_labels:
+        simple: GitlabLabel5
+      description:
+        simple: description changed by playbook
+      issue_iid:
+        simple: ${GitLab.Issue.iid}
+      partial_response:
+        simple: "false"
+      title:
+        simple: whatnu
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 946242b9-2220-48f9-823b-d267a73057a7
+    type: condition
+    task:
+      id: 946242b9-2220-48f9-823b-d267a73057a7
+      version: -1
+      name: VERIFY list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Issue.iid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2455c0f8-a45f-4680-878c-f92af8da6d30
+    type: condition
+    task:
+      id: 2455c0f8-a45f-4680-878c-f92af8da6d30
+      version: -1
+      name: VERIFY issue update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Issue.labels
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d294e81a-6bd8-4833-8410-bbb8cd43ae2d
+    type: regular
+    task:
+      id: d294e81a-6bd8-4833-8410-bbb8cd43ae2d
+      version: -1
+      name: issue-note-create
+      description: Creates a new note for a single project issue.
+      script: GitLabv2|||gitlab-issue-note-create
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      body:
+        simple: I'm a body
+      issue_iid:
+        simple: ${GitLab.Issue.iid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8e8884df-3214-4814-8dc7-80c0d6f6e63a
+    type: condition
+    task:
+      id: 8e8884df-3214-4814-8dc7-80c0d6f6e63a
+      version: -1
+      name: VERIFY issue note create
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.IssueNote.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0a96ead1-aca7-4232-895b-41e89aedbb22
+    type: condition
+    task:
+      id: 0a96ead1-aca7-4232-895b-41e89aedbb22
+      version: -1
+      name: VERIFY note update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Issue.updated_at
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 04e1998b-088e-4927-88af-ae4ea2a1cff7
+    type: regular
+    task:
+      id: 04e1998b-088e-4927-88af-ae4ea2a1cff7
+      version: -1
+      name: issue-note-list
+      description: Gets a list of all notes for a single issue.
+      script: '|||gitlab-issue-note-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      issue_iid:
+        simple: ${GitLab.Issue.iid}
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 853e3aa0-f4e4-431a-8e49-119e4888adfa
+    type: condition
+    task:
+      id: 853e3aa0-f4e4-431a-8e49-119e4888adfa
+      version: -1
+      name: VERIFY issue note list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.IssueNote.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 84ce7e36-652b-4d49-8bc4-e9adbb1b22ca
+    type: regular
+    task:
+      id: 84ce7e36-652b-4d49-8bc4-e9adbb1b22ca
+      version: -1
+      name: Get Version
+      description: Retrieve version information for this GitLab instance.
+      script: GitLabv2|||gitlab-version-get
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 746d26f9-ae21-44f4-80d2-212c3d3321ae
+    type: condition
+    task:
+      id: 746d26f9-ae21-44f4-80d2-212c3d3321ae
+      version: -1
+      name: VERIFY version
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Version.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Version.revision
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f837ba85-dcdb-41f3-8630-0b1cbb495216
+    type: regular
+    task:
+      id: f837ba85-dcdb-41f3-8630-0b1cbb495216
+      version: -1
+      name: list commit
+      description: Get a list of repository commits in a project.
+      script: GitLabv2|||gitlab-commit-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b1ad58bb-b8a3-4b85-856b-02d556161dda
+    type: condition
+    task:
+      id: b1ad58bb-b8a3-4b85-856b-02d556161dda
+      version: -1
+      name: VERIFY commit list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Commit.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 13a12556-8fac-4e67-86fb-2a91bbf7fe63
+    type: regular
+    task:
+      id: 13a12556-8fac-4e67-86fb-2a91bbf7fe63
+      version: -1
+      name: 'get commit '
+      description: Get a list of repository commits in a project.
+      script: GitLabv2|||gitlab-commit-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      commit_id:
+        simple: 7d584f46
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 69424286-1d20-4034-8126-57a560cadcf3
+    type: condition
+    task:
+      id: 69424286-1d20-4034-8126-57a560cadcf3
+      version: -1
+      name: VERIFY get commit
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Commit.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: fb7153bb-6471-446a-80eb-fcc4effb691e
+    type: regular
+    task:
+      id: fb7153bb-6471-446a-80eb-fcc4effb691e
+      version: -1
+      name: delete issue-note
+      description: Deletes an existing note of an issue.
+      script: GitLabv2|||gitlab-issue-note-delete
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      issue_iid:
+        simple: ${GitLab.Issue.iid}
+      note_id:
+        simple: ${GitLab.IssueNote.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: d8fd9516-9e76-45d4-85c8-f0a640508731
+    type: regular
+    task:
+      id: d8fd9516-9e76-45d4-85c8-f0a640508731
+      version: -1
+      name: branch create
+      description: Creates a new branch in the repository.
+      script: GitLabv2|||gitlab-branch-create
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      branch:
+        simple: branchToPlaybook
+      ref:
+        simple: main
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4345c2cf-4bc0-476b-8a1d-d72fdb376ba4
+    type: regular
+    task:
+      id: 4345c2cf-4bc0-476b-8a1d-d72fdb376ba4
+      version: -1
+      name: ' get branch'
+      description: Get a list of repository branches from a project, alphabetically sorted by name.
+      script: GitLabv2|||gitlab-branch-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      branch_name:
+        simple: ${GitLab.Branch.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 486d073e-5886-4030-894c-7e6fe05e6e93
+    type: condition
+    task:
+      id: 486d073e-5886-4030-894c-7e6fe05e6e93
+      version: -1
+      name: VERIFY create-branch
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Branch.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 3b3b1b1c-d259-4182-8166-f568bf00ebe7
+    type: condition
+    task:
+      id: 3b3b1b1c-d259-4182-8166-f568bf00ebe7
+      version: -1
+      name: VERIFY get branch
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Branch.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 1d6f05ff-925d-45f0-8a68-e05c60b54123
+    type: regular
+    task:
+      id: 1d6f05ff-925d-45f0-8a68-e05c60b54123
+      version: -1
+      name: branch delete
+      description: Deletes a branch from the repository.
+      script: GitLabv2|||gitlab-branch-delete
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      branch:
+        simple: ${GitLab.Branch.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 25f63449-3268-433c-8e0c-655f000d3688
+    type: regular
+    task:
+      id: 25f63449-3268-433c-8e0c-655f000d3688
+      version: -1
+      name: merge request create
+      description: Creates a new merge request.
+      script: GitLabv2|||gitlab-merge-request-create
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      labels:
+        simple: hey
+      source_branch:
+        simple: ${RandomString}
+      target_branch:
+        simple: main
+      title:
+        simple: playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 42a46bf7-31b5-42c3-880c-6d9041228756
+    type: condition
+    task:
+      id: 42a46bf7-31b5-42c3-880c-6d9041228756
+      version: -1
+      name: Verify Create
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.MergeRequest.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 74540ec9-ac47-4068-809e-85832396b203
+    type: regular
+    task:
+      id: 74540ec9-ac47-4068-809e-85832396b203
+      version: -1
+      name: merge update
+      description: Updates an existing merge request. You can change the target branch, title, or even close the merge request.
+      script: GitLabv2|||gitlab-merge-request-update
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      add_labels:
+        simple: label1
+      description:
+        simple: descc
+      merge_request_id:
+        simple: ${GitLab.MergeRequest.iid}
+      target_branch:
+        simple: main
+      title:
+        simple: title update
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: f861cbaa-0cd6-4aa6-8f48-cf7898be422d
+    type: condition
+    task:
+      id: f861cbaa-0cd6-4aa6-8f48-cf7898be422d
+      version: -1
+      name: VERIFY merge update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.MergeRequest.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 036425ad-8354-4e50-86c2-b0ace98ffe6b
+    type: regular
+    task:
+      id: 036425ad-8354-4e50-86c2-b0ace98ffe6b
+      version: -1
+      name: issue-create
+      description: Create an issue.
+      script: GitLabv2|||gitlab-issue-create
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      description:
+        simple: very issue
+      partial_response:
+        simple: "false"
+      title:
+        simple: I'm a issue
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 86a99c64-9348-4ead-88ab-43e01a6543bf
+    type: condition
+    task:
+      id: 86a99c64-9348-4ead-88ab-43e01a6543bf
+      version: -1
+      name: verify issue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Issue.iid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2af662fc-ae76-45af-87c7-20e89db3dbfe
+    type: regular
+    task:
+      id: 2af662fc-ae76-45af-87c7-20e89db3dbfe
+      version: -1
+      name: group list
+      description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated.
+      script: GitLabv2|||gitlab-group-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: a9d3a317-19e7-4424-8fe3-23b82d431e67
+    type: condition
+    task:
+      id: a9d3a317-19e7-4424-8fe3-23b82d431e67
+      version: -1
+      name: VERIFY group list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Group.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 1ed9bac7-c979-46f4-8568-7299b053a7e4
+    type: regular
+    task:
+      id: 1ed9bac7-c979-46f4-8568-7299b053a7e4
+      version: -1
+      name: group member
+      description: Gets a list of group or project members viewable by the authenticated user.
+      script: GitLabv2|||gitlab-group-member-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      group_id:
+        simple: "58584155"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 1948bf4f-e11f-4d9d-8dfe-b0c54079befc
+    type: condition
+    task:
+      id: 1948bf4f-e11f-4d9d-8dfe-b0c54079befc
+      version: -1
+      name: VERIFY group member list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Group.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 2fd392cb-3434-4950-8fe4-0f21f9680635
+    type: regular
+    task:
+      id: 2fd392cb-3434-4950-8fe4-0f21f9680635
+      version: -1
+      name: project list
+      description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
+      script: GitLabv2|||gitlab-project-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: c1db00c0-df4a-484e-8287-87c4a78277a1
+    type: condition
+    task:
+      id: c1db00c0-df4a-484e-8287-87c4a78277a1
+      version: -1
+      name: VERIFY project list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Project.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 0cdf9350-36ac-457f-81ce-49ea45c90cbe
+    type: regular
+    task:
+      id: 0cdf9350-36ac-457f-81ce-49ea45c90cbe
+      version: -1
+      name: group project list
+      description: Get the list of projects of a given group.
+      script: GitLabv2|||gitlab-group-project-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      group_id:
+        simple: "58584155"
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: c7a68dfa-57a3-493d-8a05-ad6aa41b1664
+    type: regular
+    task:
+      id: c7a68dfa-57a3-493d-8a05-ad6aa41b1664
+      version: -1
+      name: generate string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "5"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 93bc5e0e-41be-45cb-81de-41f16ff09e58
+    type: condition
+    task:
+      id: 93bc5e0e-41be-45cb-81de-41f16ff09e58
+      version: -1
+      name: VERIFY group project
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.GroupProject.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 891554c8-b61f-4ab2-8a09-fdf4551ab8fc
+    type: regular
+    task:
+      id: 891554c8-b61f-4ab2-8a09-fdf4551ab8fc
+      version: -1
+      name: File get
+      description: Gets information about a file in the repository, such as name, size, content.
+      script: GitLabv2|||gitlab-file-get
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      file_path:
+        simple: ./CheckFileCommand
+      ref:
+        simple: main
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: f164f54e-6d88-463b-8760-afd88b65e450
+    type: regular
+    task:
+      id: f164f54e-6d88-463b-8760-afd88b65e450
+      version: -1
+      name: Get raw file
+      description: Get the file in a raw format.
+      script: GitLabv2|||gitlab-raw-file-get
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      file_path:
+        simple: ./CheckFileCommand
+      ref:
+        simple: main
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 7d23a4e4-8c77-4bf8-825c-7d9a661b8e52
+    type: regular
+    task:
+      id: 7d23a4e4-8c77-4bf8-825c-7d9a661b8e52
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 53dbd739-bda8-45a5-8fc3-d00f42db075b
+    type: regular
+    task:
+      id: 53dbd739-bda8-45a5-8fc3-d00f42db075b
+      version: -1
+      name: merge request note create
+      description: Creates a new note for a single merge request.
+      script: GitLabv2|||gitlab-merge-request-note-create
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      body:
+        simple: ${RandomString}
+      merge_request_iid:
+        simple: ${GitLab.MergeRequest.iid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 9bde24e4-66b8-426e-82d2-30e790144ca5
+    type: condition
+    task:
+      id: 9bde24e4-66b8-426e-82d2-30e790144ca5
+      version: -1
+      name: 'VERIFY merge request note create '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.MergeRequestNote.id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 1da2d523-a9dd-444a-8592-5cc5114a3741
+    type: regular
+    task:
+      id: 1da2d523-a9dd-444a-8592-5cc5114a3741
+      version: -1
+      name: merge request note list
+      description: Gets a list of all notes for a single merge request.
+      script: GitLabv2|||gitlab-merge-request-note-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      limit:
+        simple: "2"
+      merge_request_iid:
+        simple: ${GitLab.MergeRequest.iid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 1ff68755-54f9-423f-8a48-c8c70302736f
+    type: condition
+    task:
+      id: 1ff68755-54f9-423f-8a48-c8c70302736f
+      version: -1
+      name: VERIFY merge request note list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.MergeRequestNote.id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 2ab0bb20-c264-4721-8c68-000e4b5d5b8c
+    type: condition
+    task:
+      id: 2ab0bb20-c264-4721-8c68-000e4b5d5b8c
+      version: -1
+      name: VERIFY update file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.File.file_path
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 74fc0f57-84c3-4a66-87a8-f45e059d8c5b
+    type: condition
+    task:
+      id: 74fc0f57-84c3-4a66-87a8-f45e059d8c5b
+      version: -1
+      name: VERIFY file get
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.File.file_path
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 9b8d611b-e6be-4326-8143-dced385ffda7
+    type: regular
+    task:
+      id: 9b8d611b-e6be-4326-8143-dced385ffda7
+      version: -1
+      name: file-create
+      description: Allows you to create a single file. file-path or entry_id must be specified.
+      script: GitLabv2|||gitlab-file-create
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      author_name:
+        simple: playbook
+      branch:
+        simple: TestFileCommandsForPlaybook
+      commit_message:
+        simple: addingFileViaplaybook
+      file_content:
+        simple: IAmContent
+      file_path:
+        simple: ${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 27baf39a-203a-4fb7-8b42-3bd8bfa79c29
+    type: condition
+    task:
+      id: 27baf39a-203a-4fb7-8b42-3bd8bfa79c29
+      version: -1
+      name: VERIFY  file create
+      description: This allows you to create a single file. File path or entry_id must be specified.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.File.file_path
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.File.branch
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 11c8c80d-f6b3-40e0-8187-18d0d3b95f47
+    type: regular
+    task:
+      id: 11c8c80d-f6b3-40e0-8187-18d0d3b95f47
+      version: -1
+      name: file delete
+      description: Delete a file in the repository.
+      script: GitLabv2|||gitlab-file-delete
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      branch:
+        simple: TestFileCommandsForPlaybook
+      commit_message:
+        simple: delete file via playbook
+      file_path:
+        simple: ${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: b1d210f1-685c-44d1-80c2-1558bf97ec33
+    type: regular
+    task:
+      id: b1d210f1-685c-44d1-80c2-1558bf97ec33
+      version: -1
+      name: issue note update
+      description: Modify an existing note of an issue.
+      script: GitLabv2|||gitlab-issue-note-update
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      body:
+        simple: changeed
+      issue_iid:
+        simple: ${GitLab.Issue.iid}
+      note_id:
+        simple: ${GitLab.IssueNote.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 161e6bd6-bf9c-4087-8cc3-82ee27d6edd9
+    type: regular
+    task:
+      id: 161e6bd6-bf9c-4087-8cc3-82ee27d6edd9
+      version: -1
+      name: Code search
+      description: Using Scope blobs. Blob searches are performed on both filenames and contents.
+      script: GitLabv2|||gitlab-code-search
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      search:
+        simple: Friends
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 26bf100d-b516-4d20-852f-f16b06d75a18
+    type: condition
+    task:
+      id: 26bf100d-b516-4d20-852f-f16b06d75a18
+      version: -1
+      name: VERIFY code search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.Code.ref
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 2ddb2f55-e497-4d09-80ea-a8a4e39a5a7b
+    type: regular
+    task:
+      id: 2ddb2f55-e497-4d09-80ea-a8a4e39a5a7b
+      version: -1
+      name: list users
+      description: Get the users list of a project.
+      script: GitLabv2|||gitlab-project-user-list
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 479f1a99-6aab-463f-85a3-1298edc6fc6f
+    type: condition
+    task:
+      id: 479f1a99-6aab-463f-85a3-1298edc6fc6f
+      version: -1
+      name: VERIFY project user
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.User.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: b5cd94f8-519b-437e-83a0-f4ffb80928ab
+    type: condition
+    task:
+      id: b5cd94f8-519b-437e-83a0-f4ffb80928ab
+      version: -1
+      name: VERIFY raw file get
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.File.content
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 8b865f78-6183-431c-82fa-ca373c32d4ab
+    type: regular
+    task:
+      id: 8b865f78-6183-431c-82fa-ca373c32d4ab
+      version: -1
+      name: file  update
+      description: Edit an existing file in the repository.
+      script: GitLabv2|||gitlab-file-update
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      branch:
+        simple: ${GitLab.File.branch}
+      commit_message:
+        simple: commit update
+      file_content:
+        simple: hello
+      file_path:
+        simple: ${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 794aa0a8-baeb-42e8-860f-b1c90020b336
+    type: regular
+    task:
+      id: 794aa0a8-baeb-42e8-860f-b1c90020b336
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: b22417af-eca5-4a02-8e16-d76dbf4ed7ef
+    type: regular
+    task:
+      id: b22417af-eca5-4a02-8e16-d76dbf4ed7ef
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: b25b2481-f493-4d7f-8579-e20b61856e0b
+    type: title
+    task:
+      id: b25b2481-f493-4d7f-8579-e20b61856e0b
+      version: -1
+      name: FIN
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: f46b709c-5760-40f7-8be5-9c6fdffa82bf
+    type: regular
+    task:
+      id: f46b709c-5760-40f7-8be5-9c6fdffa82bf
+      version: -1
+      name: 'Merge Request note update '
+      description: Modify existing note of a merge request.
+      script: GitLabv2|||gitlab-merge-request-note-update
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      body:
+        simple: body updated
+      merge_request_iid:
+        simple: ${GitLab.MergeRequest.iid}
+      note_id:
+        simple: ${GitLab.MergeRequestNote.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: affddf1a-e18a-48b5-856a-6735695be9d4
+    type: regular
+    task:
+      id: affddf1a-e18a-48b5-856a-6735695be9d4
+      version: -1
+      name: generate string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "5"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: fdc87a62-ee80-4054-8fb8-46cd420febd8
+    type: condition
+    task:
+      id: fdc87a62-ee80-4054-8fb8-46cd420febd8
+      version: -1
+      name: VERIFY merge request note update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "97"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.MergeRequestNote.body
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 5bd0d705-0d75-40b1-84e1-b8f7e7c46a63
+    type: regular
+    task:
+      id: 5bd0d705-0d75-40b1-84e1-b8f7e7c46a63
+      version: -1
+      name: merge request note delete
+      description: Deletes an existing note of a merge request.
+      script: GitLabv2|||gitlab-merge-request-note-delete
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      merge_request_iid:
+        simple: ${GitLab.MergeRequest.iid}
+      note_id:
+        simple: ${GitLab.MergeRequestNote.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "9_11_yes": 0.73
+    },
+    "paper": {
+      "dimensions": {
+        "height": 10885,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+marketplaces:
+- xsoar

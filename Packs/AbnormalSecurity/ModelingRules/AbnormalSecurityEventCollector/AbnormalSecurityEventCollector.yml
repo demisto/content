@@ -1,0 +1,7 @@
+fromversion: 3.3.0
+name: Abnormal Security Event Collector
+id: ModelingAbnormalSecurityEventCollector
+tags:
+rules: ''
+schema: ''
+toversion: 6.9.9

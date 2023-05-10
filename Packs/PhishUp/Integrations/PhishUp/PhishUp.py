@@ -3,12 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-import requests
+import urllib3
 # import dateparser
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -67,7 +67,8 @@ def investigate_url_command(client: Client, args, apikey):
             indicator=url,
             integration_name="PhishUp",
             indicator_type=DBotScoreType.URL,
-            score=score
+            score=score,
+            reliability=demisto.params().get('integrationReliability')
         )
 
         url_standard_context = Common.URL(

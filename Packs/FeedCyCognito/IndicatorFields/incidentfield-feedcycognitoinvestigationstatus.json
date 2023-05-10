@@ -1,0 +1,38 @@
+{
+    "id": "indicator_feedcycognitoinvestigationstatus",
+    "version": -1,
+    "modified": "2022-05-28T16:49:14.958932521+05:30",
+    "name": "FeedCyCognito Investigation Status",
+    "ownerOnly": false,
+    "cliName": "feedcycognitoinvestigationstatus",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "uninvestigated",
+        "investigating",
+        "investigated"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "IP",
+        "Domain",
+        "CyCognito Asset"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

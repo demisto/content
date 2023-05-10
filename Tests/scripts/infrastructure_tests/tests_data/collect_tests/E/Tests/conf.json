@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "playbookID": "myOtherTestPlaybook"
+    },
+    {
+      "playbookID": "myTestPlaybook"
+    },
+    {
+      "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration"
+    }
+  ],
+  "skipped_tests": {},
+  "skipped_integrations": {},
+  "nightly_packs": [],
+  "unmockable_integrations": {},
+  "parallel_integrations": [],
+  "private_tests": [],
+  "test_marketplacev2": ["Sanity Test - Playbook with Unmockable Whois Integration"]
+}

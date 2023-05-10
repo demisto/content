@@ -1,0 +1,4 @@
+This package contains the integration of XSOAR and Delinea DevOps Secrets Vault.
+
+Delinea’s DevOps Secrets Vault is a high velocity vault that centralizes secrets management, enforces access, and provides automated logging trails. This cloud-based solution is platform agnostic and designed to replace hard-coded credentials in applications, micro-services, DevOps tools, and robotic process automation. Palo Alto Networks and Delinea integrations allow you to manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.This integration pack helps you retrieve the data stored in the Delinea DevOps Storage Vault and use it in other integrations. It allows fetch updated data from secret for usage in owner automate process and get the contents of the secret data from the storage.
+

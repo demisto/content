@@ -1,0 +1,422 @@
+[
+  {
+    "affected_asset": "ip/127.0.0.1",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Information Disclosure",
+    "tags": [
+      "Vulnerable Software",
+      "Pulse Secure"
+    ],
+    "id": "issue/127.0.0.1-test-1",
+    "organizations": [
+      "Acme Interior Design",
+      "Acme Corporation"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-1",
+    "first_detected": "2021-07-25T16:57:01.565Z",
+    "summary": "| The Pulse Secure VPN has been confirmed to be vulnerable to an arbitrary file reading vulnerability. | Unauthenticated remote attackers can send the asset a specially crafted URI and thereby access arbitrary sensitive files. | Attackers can leverage the harvested information to perform further attacks.",
+    "resolved_at": null,
+    "investigation_status": "investigating",
+    "severity_score": 10.0,
+    "locations": [
+      "IND"
+    ],
+    "detection_complexity": "Service Detection",
+    "exploitation_method": "Metasploit",
+    "title": "Pulse Secure Arbitrary File Reading",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the Pulse Secure VPN to the latest version."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Data compromise"
+    ]
+  },
+  {
+    "affected_asset": "ip/127.0.0.2",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Remote Code Execution",
+    "tags": [],
+    "id": "issue/127.0.0.2-test-2",
+    "organizations": [
+      "ACME Ticketing",
+      "ACME Cleantech Solutions",
+      "Acme Holdings"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-2",
+    "first_detected": "2021-07-26T08:25:39.724Z",
+    "summary": "| The NetScaler has been confirmed to be vulnerable to CVE-2019-19781 (first made public in December 2019). | Due to improper handling of the path names, CVE-2019-19781 enables attackers to perform directory traversal and unauthenticated, remote arbitrary code execution via specially crafted HTTP requests. | As NetScalers serve as entry-points to organization networks, attackers can exploit this vulnerability to breach organization networks and leverage the NetScaler for further attacks. | This vulnerability has been exploited \"in the wild\" by unknown attackers.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "USA"
+    ],
+    "detection_complexity": "Service Detection",
+    "exploitation_method": "Metasploit",
+    "title": "CVE-2019-19781 (Unauthenticated Remote Directory Traversal & Code Execution)",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the NetScaler to the latest version.",
+      "If a patch is not feasible, perform \"work-around\" mitigations per Citrix's instructions."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Loss of availability",
+      "Data compromise",
+      "Network breach"
+    ]
+  },
+  {
+    "affected_asset": "ip/127.0.0.3",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Exposed Asset",
+    "tags": [],
+    "id": "issue/127.0.0.3-test-3",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-3",
+    "first_detected": "2021-07-25T16:57:01.565Z",
+    "summary": "| Memcached is an in-memory data structure project implementing a distributed, in-memory key-value database. | Typical installations of Memcached implement no authentication requiring administrators to implement access control themselves | Due to the nature of the database design, typical use cases are session caching, full page cache, message queue applications, leaderboards, and counting, among others. | The Memcached service is accessible to remote users and therefore exposes internal data to external attackers, without necessitating any exploitation. Furthermore it is possible to modify data, which might allow system compromise.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "HKG"
+    ],
+    "detection_complexity": "Dedicated Detection Module",
+    "exploitation_method": "Access",
+    "title": "Exposed Memcached Service",
+    "exploitation_score": 2,
+    "issue_type": "Unsafe Authentication",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Disallow access to memcached for untrusted sources with firewall",
+      "If possible, enable SASL authentication in memcached (https://github.com/memcached/memcached/wiki/SASLHowto)"
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Loss of availability",
+      "Data compromise",
+      "Credential theft",
+      "Reputation damage"
+    ]
+  },
+  {
+    "affected_asset": "iprange/0.0.0.1-1.0.0.0",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Vulnerable Software",
+    "tags": [],
+    "id": "issue/127.0.0.4-test-4",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-4",
+    "first_detected": "2021-10-28T02:12:27.761Z",
+    "summary": "A remote code execution vulnerability exists in Microsoft Exchange software when the software fails to properly handle objects in memory.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "HKG"
+    ],
+    "detection_complexity": "HTTP Request",
+    "exploitation_method": "Public PoC",
+    "title": "Vulnerable Microsoft Exchange Server CVE-2020-0688",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the server to a fixed/latest version. Investigate possible past breaches on and through that asset."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Data Compromise",
+      "Network Breach",
+      "Loss of confidentiality",
+      "Loss of availability"
+    ]
+  },
+  {
+    "affected_asset": "cert/test_signature",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Information Disclosure",
+    "tags": [],
+    "id": "issue/127.0.0.5-test-5",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-5",
+    "first_detected": "2021-07-25T16:57:01.565Z",
+    "summary": "| The Pulse Secure VPN has been confirmed to be vulnerable to an arbitrary file reading vulnerability. | Unauthenticated remote attackers can send the asset a specially crafted URI and thereby access arbitrary sensitive files. | Attackers can leverage the harvested information to perform further attacks.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "USA"
+    ],
+    "detection_complexity": "Service Detection",
+    "exploitation_method": "Metasploit",
+    "title": "Pulse Secure Arbitrary File Reading",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the Pulse Secure VPN to the latest version."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Data compromise"
+    ]
+  },
+  {
+    "affected_asset": "cert/test_signature1",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Remote Code Execution",
+    "tags": [],
+    "id": "issue/127.0.0.6-test-6",
+    "organizations": [
+      "Unattributed"
+    ],
+    "issue_status": "new",
+    "issue_id": "test-6",
+    "first_detected": "2022-03-24T04:26:03.296Z",
+    "summary": "Apache Log4j2 2.0-beta9 through 2.15.0 (excluding security releases 2.12.2, 2.12.3, and 2.3.1) JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints. An attacker who can control log messages or log message parameters can execute arbitrary code loaded from LDAP servers when message lookup substitution is enabled. From log4j 2.15.0, this behavior has been disabled by default. From version 2.16.0 (along with 2.12.2, 2.12.3, and 2.3.1), this functionality has been completely removed. Note that this vulnerability is specific to log4j-core and does not affect log4net, log4cxx, or other Apache Logging Services projects.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "USA"
+    ],
+    "detection_complexity": "Dedicated Detection Module",
+    "exploitation_method": "Public PoC",
+    "title": "Apache Log4jShell Remote Code Execution Vulnerability",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": {
+      "content": "",
+      "last_update": "2022-03-23T16:34:41.021Z"
+    },
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the application per the vendor's instructions."
+    ],
+    "potential_impact": [
+      "Data Compromise",
+      "Network Breach",
+      "Loss of confidentiality"
+    ]
+  },
+  {
+    "affected_asset": "cert/test_signature2",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Vulnerable Software",
+    "tags": [],
+    "id": "issue/127.0.0.7-test-7",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-7",
+    "first_detected": "2021-07-22T02:59:07.592Z",
+    "summary": "The Windows asset has an exposed RDP service and is missing critical security updates. | Therefore, it is exposed to BlueKeep (CVE-2019-0708). First made public on May 14, 2019, BlueKeep is an RDP vulnerability which enables attackers to perform unauthenticated, arbitrary remote code execution. | There are several public exploits for this vulnerability, significantly reducing its exploitation complexity. | As the vulnerability enables remote code execution and requires no authentication, it has been compared to \"EternalBlue\", which enabled the 2017 WannaCry attack.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "MYS"
+    ],
+    "detection_complexity": "Service Detection",
+    "exploitation_method": "Metasploit",
+    "title": "BlueKeep (Remote Code Execution via RDP)",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Disable the RDP service incase it is no longer needed.",
+      "Patch the Windows machine per Microsoft's instructions.",
+      "Do not directly expose RDP services to the Internet.",
+      "Enable only remote connections via VPN or other more secure methods.",
+      "Configure the RDP service to require Network Level Authentication."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Loss of availability",
+      "Network Breach"
+    ]
+  },
+  {
+    "affected_asset": "domain/www.example.com",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Vulnerable Software",
+    "tags": [],
+    "id": "issue/127.0.0.8-test-8",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-8",
+    "first_detected": "2021-12-07T11:21:23.000Z",
+    "summary": "| WebDAV is an HTTP extension that enables remote web content authoring. | The WebDAV extension in Microsoft IIS 5.1 and 6.0 is vulnerable to authentication bypass and remote code execution.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "MYS"
+    ],
+    "detection_complexity": "Service Detection",
+    "exploitation_method": "Metasploit",
+    "title": "Vulnerable WebDAV Extension",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the IIS application to the latest version.",
+      "Disable the WebDAV extension."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Loss of availability"
+    ]
+  },
+  {
+    "affected_asset": "domain/www.example1.com",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Vulnerable Software",
+    "tags": [],
+    "id": "issue/127.0.0.9-test-9",
+    "organizations": [
+      "ACME Studio"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-9",
+    "first_detected": "2021-07-25T16:57:01.565Z",
+    "summary": "The Windows asset has an exposed RDP service and is missing critical security updates. | Therefore, it is exposed to BlueKeep (CVE-2019-0708). First made public on May 14, 2019, BlueKeep is an RDP vulnerability which enables attackers to perform unauthenticated, arbitrary remote code execution. | There are several public exploits for this vulnerability, significantly reducing its exploitation complexity. | As the vulnerability enables remote code execution and requires no authentication, it has been compared to \"EternalBlue\", which enabled the 2017 WannaCry attack.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "FRA"
+    ],
+    "detection_complexity": "Service Detection",
+    "exploitation_method": "Metasploit",
+    "title": "BlueKeep (Remote Code Execution via RDP)",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Disable the RDP service incase it is no longer needed.",
+      "Patch the Windows machine per Microsoft's instructions.",
+      "Do not directly expose RDP services to the Internet.",
+      "Enable only remote connections via VPN or other more secure methods.",
+      "Configure the RDP service to require Network Level Authentication."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Loss of availability",
+      "Network Breach"
+    ]
+  },
+  {
+    "affected_asset": "webapp/www.example2.com",
+    "last_detected": "2022-03-24T04:26:03.296Z",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Vulnerable Software",
+    "tags": [],
+    "id": "issue/127.0.0.10-test-10",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "issue_status": "normal",
+    "issue_id": "test-10",
+    "first_detected": "2021-07-25T16:57:01.565Z",
+    "summary": "Exim is a message transfer agent system (MTA). Exim versions under 4.92.2 are prone to remote code execution, which allows remote unauthenticated to execute arbitrary commands as root via a trailing backslash.",
+    "resolved_at": null,
+    "investigation_status": "uninvestigated",
+    "severity_score": 10.0,
+    "locations": [
+      "MYS"
+    ],
+    "detection_complexity": "Service Detection",
+    "exploitation_method": "No PoC",
+    "title": "Vulnerable EXIM version < 4.92.2 Remote Code Execution",
+    "exploitation_score": 5,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the application to the latest version.",
+      "Verify that no unauthorized system modifications have occurred on the system before applying the patch."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Loss of availability"
+    ]
+  }
+]

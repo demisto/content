@@ -6,7 +6,7 @@ script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Send invitation to join Demisto
+comment: Deprecated. No available replacement.
 enabled: true
 args:
 - name: email
@@ -24,3 +24,4 @@ dependson:
 fromversion: 5.0.0
 tests:
 - no test
+deprecated: true

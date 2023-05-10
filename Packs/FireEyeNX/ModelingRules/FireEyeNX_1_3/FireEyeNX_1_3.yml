@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+name: FireEye NX Modeling Rule
+id: fireeye_nx_modeling_rule
+rules: ''
+schema: ''
+tags: FireEyeNX

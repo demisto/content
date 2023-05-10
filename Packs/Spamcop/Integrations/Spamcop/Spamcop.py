@@ -24,7 +24,8 @@ def results_return(command, thingtoreturn):
             indicator_type=DBotScoreType.IP,
             integration_name='Spamcop',
             malicious_description=description,
-            score=score
+            score=score,
+            reliability=demisto.params().get('integrationReliability')
         )
         ip = Common.IP(
             ip=item['Address'],

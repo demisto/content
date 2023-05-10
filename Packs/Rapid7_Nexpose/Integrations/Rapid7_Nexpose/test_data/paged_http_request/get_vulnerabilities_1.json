@@ -1,0 +1,187 @@
+{
+    "resources": [
+        {
+            "added": "2018-05-16",
+            "categories": [
+                "7-Zip",
+                "Denial of Service"
+            ],
+            "cves": [
+                "CVE-2016-9296"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "L",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "N",
+                    "exploitScore": 9.9968,
+                    "impactScore": 2.8627,
+                    "integrityImpact": "N",
+                    "score": 5.0,
+                    "vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "N",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "N",
+                    "exploitScore": 3.887,
+                    "impactScore": 3.5952,
+                    "integrityImpact": "N",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 7.5,
+                    "userInteraction": "N",
+                    "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+                }
+            },
+            "denialOfService": true,
+            "description": {
+                "html": "<p>A null pointer dereference bug affects the 16.02 and many old versions of p7zip. A lack of null pointer check for the variable folders.PackPositions in function CInArchive::ReadAndDecodePackedStreams in CPP/7zip/Archive/7z/7zIn.cpp, as used in the 7z.so library and in 7z applications, will cause a crash and a denial of service when decoding malformed 7z files.</p>",
+                "text": "A null pointer dereference bug affects the 16.02 and many old versions of p7zip. A lack of null pointer check for the variable folders.PackPositions in function CInArchive::ReadAndDecodePackedStreams in CPP/7zip/Archive/7z/7zIn.cpp, as used in the 7z.so library and in 7z applications, will cause a crash and a denial of service when decoding malformed 7z files."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2016-9296",
+            "malwareKits": 0,
+            "modified": "2018-06-08",
+            "pci": {
+                "adjustedCVSSScore": 5,
+                "adjustedSeverityScore": 2,
+                "fail": false,
+                "specialNotes": "Denial-of-Service-only vulnerability marked as compliant. ",
+                "status": "Pass"
+            },
+            "published": "2016-11-11",
+            "riskScore": 180.86,
+            "severity": "Severe",
+            "severityScore": 5,
+            "title": "7-Zip: CVE-2016-9296: Null pointer dereference bug"
+        },
+        {
+            "added": "2018-05-16",
+            "categories": [
+                "7-Zip",
+                "Denial of Service",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2017-17969"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "P",
+                    "exploitScore": 8.5888,
+                    "impactScore": 6.443,
+                    "integrityImpact": "P",
+                    "score": 6.8,
+                    "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "L",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 1.8346,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 7.8,
+                    "userInteraction": "R",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Heap-based buffer overflow in the NCompress::NShrink::CDecoder::CodeReal method in 7-Zip before 18.00 and p7zip allows remote attackers to cause a denial of service (out-of-bounds write) or potentially execute arbitrary code via a crafted ZIP archive.</p>",
+                "text": "Heap-based buffer overflow in the NCompress::NShrink::CDecoder::CodeReal method in 7-Zip before 18.00 and p7zip allows remote attackers to cause a denial of service (out-of-bounds write) or potentially execute arbitrary code via a crafted ZIP archive."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2017-17969",
+            "malwareKits": 0,
+            "modified": "2018-06-08",
+            "pci": {
+                "adjustedCVSSScore": 6,
+                "adjustedSeverityScore": 4,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2018-01-30",
+            "riskScore": 551.91,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "7-Zip: CVE-2017-17969: Heap-based buffer overflow vulnerability"
+        },
+        {
+            "added": "2018-05-16",
+            "categories": [
+                "7-Zip",
+                "Denial of Service",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2018-10115"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "P",
+                    "exploitScore": 8.5888,
+                    "impactScore": 6.443,
+                    "integrityImpact": "P",
+                    "score": 6.8,
+                    "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "L",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 1.8346,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 7.8,
+                    "userInteraction": "R",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Incorrect initialization logic of RAR decoder objects in 7-Zip 18.03 and before can lead to usage of uninitialized memory, allowing remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive.</p>",
+                "text": "Incorrect initialization logic of RAR decoder objects in 7-Zip 18.03 and before can lead to usage of uninitialized memory, allowing remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2018-10115",
+            "malwareKits": 0,
+            "modified": "2018-06-14",
+            "pci": {
+                "adjustedCVSSScore": 6,
+                "adjustedSeverityScore": 4,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2018-05-13",
+            "riskScore": 540.28,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "7-Zip: CVE-2018-10115: Denial of Service and Remote Code Execution vuln via crafted RAR archive"
+        }
+    ],
+    "page": {
+        "number": 1,
+        "size": 3,
+        "totalResources": 189102,
+        "totalPages": 63034
+    }
+}

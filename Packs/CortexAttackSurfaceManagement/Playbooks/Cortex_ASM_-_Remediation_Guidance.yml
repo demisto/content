@@ -1,0 +1,321 @@
+id: Cortex ASM - Remediation Guidance
+version: -1
+name: Cortex ASM - Remediation Guidance
+description: This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c048592f-3edc-4540-8ca4-410163f33534
+    type: start
+    task:
+      id: c048592f-3edc-4540-8ca4-410163f33534
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f97d9b9b-f8a8-4a03-8c79-45905245b61f
+    type: regular
+    task:
+      id: f97d9b9b-f8a8-4a03-8c79-45905245b61f
+      version: -1
+      name: Set guidance in context
+      description: Sets temporary context based on list and ASM RuleID matching (continues on errors in case the list isn't there or renamed).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: temp
+      value:
+        complex:
+          root: lists
+          accessor: RemediationGuidance
+          transformers:
+          - operator: ParseJSON
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: inputs.IssueTypeID
+                iscontext: true
+              field:
+                value:
+                  simple: issueTypeId
+              getField:
+                value:
+                  simple: remediationGuidance
+              stringify: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9985fb4c-84ef-442c-8ebe-c78f91dc1712
+    type: condition
+    task:
+      id: 9985fb4c-84ef-442c-8ebe-c78f91dc1712
+      version: -1
+      name: Was remediation information obtained?
+      description: Checks if guidance information was pulled from the list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: temp
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fcdbfcbe-3e7b-42bd-841c-d39cdb54c044
+    type: regular
+    task:
+      id: fcdbfcbe-3e7b-42bd-841c-d39cdb54c044
+      version: -1
+      name: Set default guidance
+      description: Set default value for remediation guidance to be passed back to the parent playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: RemediationGuidance
+      value:
+        simple: Get in touch with your Infosec team to define proper remediation access.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d4ad7c4d-c0e9-4dfd-8d2f-8d5f050dfcd2
+    type: regular
+    task:
+      id: d4ad7c4d-c0e9-4dfd-8d2f-8d5f050dfcd2
+      version: -1
+      name: Update guidance
+      description: Append information to remediation guidance to be passed back to the parent playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: RemediationGuidance
+      value:
+        complex:
+          root: temp
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Remediation guidance: '
+              suffix:
+                value:
+                  simple: |2-
+
+
+                    Get in touch with your Infosec team to define proper remediation access.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ac8f15e8-467f-4fc0-8212-2892353a0ed7
+    type: title
+    task:
+      id: ac8f15e8-467f-4fc0-8212-2892353a0ed7
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 97271bf4-765c-463a-89ba-285d01c62408
+    type: condition
+    task:
+      id: 97271bf4-765c-463a-89ba-285d01c62408
+      version: -1
+      name: Does remediation guidance list exist?
+      description: Checks if a remediation guidance list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: lists.RemediationGuidance
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 800,
+        "x": 450,
+        "y": -130
+      }
+    }
+  }
+inputs:
+- key: IssueTypeID
+  value:
+    complex:
+      root: alert
+      accessor: asmattacksurfaceruleid
+  required: true
+  description: Attack surface management issue rule ID.
+  playbookInputQuery:
+outputs:
+- contextPath: RemediationGuidance
+  description: Remediation guidance to be sent to the service owner via notification (email or ticketing system).
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

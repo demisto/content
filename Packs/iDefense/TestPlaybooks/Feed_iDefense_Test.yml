@@ -159,4 +159,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
-description: Test playbook for iDefense feed
+deprecated: true
+description: Deprecated. No available replacement.

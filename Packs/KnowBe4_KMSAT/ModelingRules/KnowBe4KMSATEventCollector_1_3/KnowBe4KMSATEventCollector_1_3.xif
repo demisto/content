@@ -1,0 +1,11 @@
+[MODEL: dataset="knowbe4_kmsat_raw"]
+alter xdm.alert.severity=json_extract_scalar(risk, "$.level"),
+xdm.source.user.identifier=json_extract(user, "$.id"),
+xdm.target.resource.id=external_id,
+xdm.alert.original_alert_id=json_extract(event_type, "$.id"),
+xdm.alert.name=event_type -> name,
+xdm.alert.description=event_type -> description,
+xdm.target.resource.parent_id=to_string(account_id),
+xdm.event.description=description,
+xdm.source.cloud.project=source,
+xdm.source.user.username=arrayindex(regextract(json_extract(user, "$.email"),"([\d\w\.]+)\@"),0);

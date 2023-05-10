@@ -1,0 +1,79 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "DeCYFIR - Incoming Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Categories": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "External Category Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "External Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk_score",
+                        "transformers": []
+                    }
+                },
+                "External Sub Category Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sub_category",
+                        "transformers": []
+                    }
+                },
+                "Sub Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sub_category",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "uid",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alert_created_date",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "DeCYFIR - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

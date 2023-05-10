@@ -1,0 +1,69 @@
+{
+  "scripts": [],
+  "integrations": [
+    {
+      "myIntegration": {
+        "name": "myIntegration",
+        "file_path": "Packs/myPack/Integrations/myIntegration/myIntegration.yml",
+        "pack": "myPack",
+        "tests": [
+          "myTestPlaybook"
+        ]
+      }
+    },
+    {
+      "myOtherIntegration": {
+        "name": "myOtherIntegration",
+        "file_path": "Packs/myOtherPack/Integrations/myOtherIntegration/myOtherIntegration.yml",
+        "pack": "myOtherPack",
+        "tests": [
+          "myOtherTestPlaybook"
+        ]
+      }
+    }
+  ],
+  "TestPlaybooks": [
+    {
+      "myTestPlaybook": {
+        "name": "myTestPlaybook",
+        "file_path": "Packs/myPack/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myPack",
+        "fromversion": "6.5.0",
+        "toversion": "6.5.0",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
+        ]
+      }
+    },
+    {
+      "myOtherTestPlaybook": {
+        "name": "myOtherTestPlaybook",
+        "file_path": "Packs/myOtherPack/TestPlaybooks/myOtherTestPlaybook.yml",
+        "pack": "myOtherPack",
+        "fromversion": "6.5.0",
+        "toversion": "6.5.0",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
+        ]
+      }
+    }
+  ],
+  "Packs": {
+    "myPack": {
+      "name": "myPack",
+      "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+      ]
+    },
+    "myOtherPack": {
+      "name": "myOtherPack",
+      "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+      ]
+    }
+  }
+}

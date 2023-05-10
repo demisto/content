@@ -1,0 +1,32 @@
+{
+    "id": "incident_cycognitopotentialimpact",
+    "version": -1,
+    "modified": "2022-05-30T18:02:22.660389052+05:30",
+    "name": "CyCognito Potential Impact",
+    "ownerOnly": false,
+    "description": "The threat that the issue might cause.",
+    "cliName": "cycognitopotentialimpact",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CyCognito Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

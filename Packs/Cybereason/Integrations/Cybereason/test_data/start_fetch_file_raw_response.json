@@ -1,0 +1,14 @@
+{
+  "data": "true",
+  "status": "SUCCESS",
+  "hidePartialSuccess": "false",
+  "message": "",
+  "expectedResults": 1,
+  "failures": 0,
+  "failedServersInfo": {
+    "onlineFailedServers": [],
+    "offlineServers": [],
+    "onlineFailedServersPercentage": 0.0,
+    "totalFailedServersPercentage": 0.0
+  }
+}

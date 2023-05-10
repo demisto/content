@@ -2,7 +2,9 @@ id: CrowdStrike Falcon - Get Detections by Incident
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Get Detections by Incident
-description: This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
 starttaskid: '0'
 tasks:
   '0':
@@ -88,7 +90,11 @@ tasks:
       extended_data:
         simple: Yes
       ids:
-        simple: ${CrowdStrike.IncidentDetection.detection_ids}
+        complex:
+          root: CrowdStrike.IncidentDetection
+          accessor: detection_ids
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -128,6 +134,9 @@ tasks:
     - incidentfield: Technique ID
       output:
         simple: ${CrowdStrike.Detection.Behavior.TechniqueId}
+    - incidentfield: File SHA256
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.SHA256}
     skipunavailable: false
     quietmode: 0
     isoversize: false

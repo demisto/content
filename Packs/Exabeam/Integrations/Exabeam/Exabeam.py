@@ -4,31 +4,40 @@ from CommonServerUserPython import *
 from typing import Tuple, Dict, List, Any, Optional, Union
 import requests
 import dateparser
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 TOKEN_INPUT_IDENTIFIER = '__token'
+DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
+DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
 
 class Client(BaseClient):
     """
     Client to use in the Exabeam integration. Overrides BaseClient
     """
+
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers):
+                 proxy: bool, headers, api_key: str = '', is_fetch: bool = None):
+        self.validate_authentication_params(username=username, password=password, api_key=api_key, is_fetch=is_fetch)
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
+        self.api_key = api_key
         self.session = requests.Session()
         self.session.headers = headers
         if not proxy:
             self.session.trust_env = False
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+        if self.is_token_auth():
+            self.session.headers['ExaAuthToken'] = self.password or self.api_key
+        else:
             self._login()
 
     def __del__(self):
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+        if not self.is_token_auth():
             self._logout()
         super().__del__()
 
@@ -49,6 +58,44 @@ class Client(BaseClient):
             self._http_request('GET', full_url=f'{self._base_url}/api/auth/logout')
         except Exception as err:
             demisto.debug(f'An error occurred during the logout.\n{str(err)}')
+
+    def validate_authentication_params(self, username: str = None,
+                                       password: str = None,
+                                       api_key: str = None,
+                                       is_fetch: bool = None):
+        if username == TOKEN_INPUT_IDENTIFIER:
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+            if api_key:
+                raise ValueError(f'When specifying {username=}, the API Token must be provieded using in the password field'
+                                 ' please empty the other field')
+            if not password:
+                raise ValueError('Please insert API Token in the password field'
+                                 ' or see documentation `Authentication Methods` for another authentication methods')
+        elif not username:
+            if not api_key:
+                raise ValueError('If an API token is not provided, it is mandatory to insert username and password.')
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+        else:
+            if not password and not api_key:
+                raise ValueError('Please insert password or API token.')
+            if password and api_key:
+                raise ValueError('Please insert API token OR password and not both.')
+
+    def is_token_auth(self) -> bool:
+
+        if not self.username:
+            return True
+        if self.username == TOKEN_INPUT_IDENTIFIER:
+            return True
+        if self.api_key:
+            return True
+        return False
 
     def test_module_request(self):
         """
@@ -691,8 +738,49 @@ class Client(BaseClient):
                                       params=params)
         return response
 
+    def get_list_incidents(self, query_params: dict):
+
+        return self._http_request('GET', url_suffix='/ir/api/incident/list',
+                                  params=query_params)
+
+    def get_single_incident(self, incident_id: str, username: str = None):
+        headers = self._headers | {'EXA_USERNAME': username or self.username}
+        return self._http_request('GET', url_suffix=f'/ir/api/incident/{incident_id}',
+                                  headers=headers)
+
+    def get_incidents(self, query: dict[str, Any]):
+        headers = self._headers
+        if not self.password:
+            headers = headers | {'EXA_USERNAME': self.username}
+        return self._http_request(
+            'POST',
+            url_suffix='/ir/api/incidents/search',
+            headers=headers,
+            json_data=query,
+        )
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def format_single_incident(incident: dict[str, Any]) -> dict[str, Any]:
+    incident_fields = incident.get('fields', {})
+    formatted_incident = {'incidentId': incident.get('incidentId'),
+                          'name': incident.get('name'),
+                          'fields': {
+        'startedDate': convert_unix_to_date(incident_fields.get('startedDate')),
+        'closedDate': convert_unix_to_date(incident_fields.get('closedDate')),
+        'createdAt': convert_unix_to_date(incident_fields.get('createdAt')),
+        'owner': incident_fields.get('owner'),
+        'status': incident_fields.get('status'),
+        'incidentType': incident_fields.get('incidentType'),
+        'source': incident_fields.get('source'),
+        'priority': incident_fields.get('priority'),
+        'queue': incident_fields.get('queue'),
+        'description': incident_fields.get('description')
+    }}
+
+    return formatted_incident
 
 
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
@@ -1075,10 +1163,66 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
     return human_readable, entry_context
 
 
+def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> Tuple[str, str]:
+
+    start = datetime.strptime(start_time, DATETIME_FORMAT_MILISECONDS)
+    end = datetime.strptime(end_time, DATETIME_FORMAT_MILISECONDS)
+
+    start_unix = convert_date_to_unix(start.strftime(DATETIME_FORMAT_MILISECONDS))
+    end_unix = convert_date_to_unix(end.strftime(DATETIME_FORMAT_MILISECONDS))
+
+    return str(start_unix), str(end_unix)
+
+
+def convert_all_unix_keys_to_date(incident: dict) -> dict:
+    keys = ['createdAt', 'startedDate', 'closedDate', 'updatedAt']
+    if 'baseFields' in incident:
+        for key in keys:
+            if key in incident['baseFields']:
+                incident['baseFields'][key] = convert_unix_to_date(incident['baseFields'][key]).split('.')[0] + 'Z'
+    return incident
+
+
+def build_incident_response_query_params(query: str | None,
+                                         incident_type: str | None,
+                                         priority: str | None,
+                                         status: str | None,
+                                         limit: int | None,
+                                         page_size: int | None,
+                                         page_number: int | None,
+                                         ) -> dict:
+
+    params: dict[str, Any] = {}
+    if not query:
+        q = ''
+        if incident_type:
+            q += f'incidentType:{incident_type} AND '
+        if priority:
+            q += f'priority:{priority} AND '
+        if status:
+            q += f'status:{status}'
+
+        if q.strip().split(' ')[-1] == 'AND':
+            q = q[:-(len(' AND '))]
+
+        if q:
+            params['query'] = q
+    else:
+        params['query'] = query
+
+    if page_size and page_number:
+        params['offset'] = page_size * page_number
+
+    if limit:
+        params['length'] = limit
+
+    return params
+
+
 ''' COMMANDS '''
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
     """test function
 
     Args:
@@ -1089,7 +1233,6 @@ def test_module(client: Client, *_):
     """
     client.test_module_request()
     demisto.results('ok')
-    return '', None, None
 
 
 def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1800,8 +1943,8 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
     contents: list = []
     users: list = []
     executive_user_flags: list = []
-
-    for session in session_details_raw_data.get('sessions', {}):
+    sessions = session_details_raw_data.get('sessions', {})
+    for session in sessions:
         contents.append(contents_append_notable_session_details(session))
 
     users_response = session_details_raw_data.get('users', {})
@@ -1816,10 +1959,11 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
         })
 
     contents_entry = {'sessions': contents, 'users': users, 'executiveUserFlags': executive_user_flags}
-
     entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
-
-    human_readable = tableToMarkdown('Notable Session details:', session, removeNull=True)
+    if sessions:
+        human_readable = tableToMarkdown('Notable Sessions details:', sessions, removeNull=True)
+    else:
+        human_readable = 'No results found.'
 
     return human_readable, entry_context, session_details_raw_data
 
@@ -1895,21 +2039,143 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     return human_readable, entry_context, sequence_event_types_raw_data
 
 
+def list_incidents(client: Client, args: dict[str, str]):
+    incident_ids = argToList(args.get('incident_id'))
+    query = args.get('query')
+    incident_type = args.get('incident_type')
+    priority = args.get('priority')
+    status = args.get('status')
+    limit = arg_to_number(args.get('limit', 50))
+    page_size = arg_to_number(args.get('page_size', 25))
+    page_number = arg_to_number(args.get('page_number', 0))
+    username = args.get('username')
+
+    if incident_ids and client.is_token_auth() and not username and not client.username:
+        raise ValueError('The username argument is necessary be for this command if the instance configured by api key')
+
+    incidents = []
+
+    if incident_ids:
+        for incident_id in incident_ids:
+            raw_response = client.get_single_incident(incident_id, username)
+            incidents.append(format_single_incident(raw_response))
+
+    else:
+        if any((query, incident_type, priority, status)):
+            query_params = build_incident_response_query_params(query,
+                                                                incident_type,
+                                                                priority,
+                                                                status,
+                                                                limit,
+                                                                page_size,
+                                                                page_number,
+                                                                )
+            raw_response = client.get_list_incidents(query_params)
+            for incident in raw_response['incidents']:
+                incidents.append(format_single_incident(incident))
+        else:
+            return_error('One of the following params is a must: query, incident_type, priority, status')
+
+    entry_context = {'Exabeam.Incident(val.incidentId && val.incidentId === obj.incidentId)': incidents}
+
+    human_readable = tableToMarkdown('Incidents list:', incidents)
+
+    return human_readable, entry_context, raw_response
+
+
+def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
+
+    last_run = demisto.getLastRun()
+    demisto.debug(f"Last run before the fetch run: {last_run}")
+    start_time, end_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=args.get('first_fetch', '3 days'),
+        look_back=1,
+        date_format=DATETIME_FORMAT_MILISECONDS,
+    )
+
+    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
+    start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
+
+    demisto.debug(f'fetching incidents between {start_time_as_milisecound=}, {end_time_as_milisecound=}')
+
+    incident_type = argToList(args.get('incident_type'))
+    priority = argToList(args.get('priority'))
+    status = argToList(args.get('status'))
+    limit = arg_to_number(args.get('max_fetch', 50))
+    q = {
+        "queryMap": {
+            "status": status,
+            "incidentType": incident_type,
+            "priority": priority,
+            "createdAt": [
+                start_time_as_milisecound,
+                end_time_as_milisecound
+            ],
+        },
+        "sortBy": "createdAt",
+        "sortOrder": "asc",
+        "idOnly": False,
+        "offset": 0,
+        "length": last_run.get('limit') or limit
+    }
+    demisto.debug(f'The query for fetch: {q}')
+
+    resp = client.get_incidents(q)
+    incidents_res: List[dict] = resp.get('incidents', [])
+    demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
+
+    incidents_filtered = filter_incidents_by_duplicates_and_limit(
+        incidents_res=incidents_res,
+        last_run=last_run,
+        fetch_limit=limit,
+        id_field='incidentId'
+    )
+    demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
+
+    incidents: List[dict] = []
+    for incident in incidents_filtered:
+        incident['createdAt'] = datetime.fromtimestamp(
+            incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
+        incident = convert_all_unix_keys_to_date(incident)
+        incidents.append({
+            'Name': incident.get('name'),
+            'occurred': incident.get('baseFields', {}).get('createdAt'),
+            'rawJSON': json.dumps(incident)
+        })
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=incidents_filtered,
+        fetch_limit=limit,
+        start_fetch_time=start_time,
+        end_fetch_time=end_time,
+        look_back=1,
+        created_time_field='createdAt',
+        id_field='incidentId',
+        date_format=DATETIME_FORMAT_MILISECONDS,
+        increase_last_run_time=True
+    )
+    demisto.debug(f"Last run after the fetch run: {last_run}")
+    return incidents, last_run
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
-    base_url = demisto.params().get('url')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    args = demisto.args()
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+    api_key = params.get('api_token', {}).get('password')
+    base_url = params.get('url')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    is_fetch = argToBoolean(params.get('isFetch'))
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-    if username == TOKEN_INPUT_IDENTIFIER:
-        headers['ExaAuthToken'] = password
 
     commands = {
-        'test-module': test_module,
         'get-notable-users': get_notable_users,
         'exabeam-get-notable-users': get_notable_users,
         'get-peer-groups': get_peer_groups,
@@ -1946,16 +2212,23 @@ def main():
         'exabeam-get-notable-assets': get_notable_assets,
         'exabeam-get-notable-sequence-details': get_notable_sequence_details,
         'exabeam-get-notable-session-details': get_notable_session_details,
-        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types
+        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
+        'exabeam-list-incident': list_incidents,
     }
 
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                        password=password, proxy=proxy, headers=headers)
+                        password=password, proxy=proxy, headers=headers, api_key=api_key, is_fetch=is_fetch)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
-        if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+        if command == 'fetch-incidents':
+            incidents, next_run = fetch_incidents(client, params)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+        elif command == 'test-module':
+            test_module(client, args, params)
+        elif command in commands:
+            return_outputs(*commands[command](client, args))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

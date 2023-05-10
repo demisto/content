@@ -5,7 +5,7 @@
   "incidentName": "Automated investigation started manually on one endpoint",
   "createdTime": "2021-03-22T12:34:34.0466667Z",
   "lastUpdateTime": "2021-04-27T08:30:46.7466667Z",
-  "assignedTo": "assignedTo",
+  "assignedTo": "Unassigned",
   "classification": "Unknown",
   "determination": "NotAvailable",
   "status": "Active",

@@ -1,0 +1,134 @@
+{
+    "dataType": "metrics",
+    "params": {
+        "customGroupBy": [
+            null,
+            {
+                "Quota Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "QuotaError",
+                                "type": "string"
+                            }
+                        ],
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isNotEqualCaseString",
+                                "right": "",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Quota Error"
+                },
+                "Success": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "Successful",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Success"
+                }
+            }
+        ],
+        "groupBy": [
+            "modified(h)",
+            "apiResponseType"
+        ],
+        "keys": [
+            "sum|totalAPICalls"
+        ],
+        "referenceLine": {},
+        "timeFrame": "hours",
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "Time",
+        "yAxisLabel": "Request Count",
+        "legend": [
+            {
+                "name": "2022-05-19 10:00 UTC",
+                "color": "#989898"
+            },
+            {
+                "name": "2022-05-19 11:00 UTC",
+                "color": "#AA00FF"
+            },
+            {
+                "name": "2022-05-19 12:00 UTC",
+                "color": "#FED22C"
+            },
+            {
+                "name": "2022-05-19 14:00 UTC",
+                "color": "#FF8411"
+            },
+            {
+                "name": "2022-05-19 15:00 UTC",
+                "color": "#FD5BDE"
+            },
+            {
+                "name": "2022-05-19 16:00 UTC",
+                "color": "#F50057"
+            },
+            {
+                "name": "2022-05-19 17:00 UTC",
+                "color": "#229D80"
+            },
+            {
+                "name": "2022-05-19 18:00 UTC",
+                "color": "#01A2EC"
+            },
+            {
+                "name": "2022-05-22 09:00 UTC",
+                "color": "#D1FC40"
+            },
+            {
+                "name": "2022-05-22 10:00 UTC",
+                "color": "#C2ACF2"
+            },
+            {
+                "name": "2022-05-22 11:00 UTC",
+                "color": "#C5EDFF"
+            },
+            {
+                "name": "2022-05-22 12:00 UTC",
+                "color": "#FFC4C6"
+            },
+            {
+                "name": "2022-05-22 13:00 UTC",
+                "color": "#AED581"
+            },
+            {
+                "name": "Success",
+                "color": "#229D80"
+            },
+            {
+                "name": "Quota Error",
+                "color": "#F50057"
+            }
+        ]
+    },
+    "query": "type:integration and integration:\"urlscan.io\"",
+    "modified": "2022-04-27T10:13:53.614162862Z",
+    "name": "API Call Results for UrlScan",
+    "dateRange": {
+        "period": {
+            "byFrom": "days",
+            "fromValue": 7
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "0821903b-1099-4f3d-8c30-27decd8c5c08",
+    "widgetType": "line",
+    "fromVersion": "7.0.0",
+    "description": ""
+}

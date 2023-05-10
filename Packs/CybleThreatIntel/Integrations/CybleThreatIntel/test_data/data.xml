@@ -1,0 +1,27 @@
+<stix:STIX_Package xmlns:URIObj="http://cybox.mitre.org/objects#URIObject-2" xmlns:stix-ciqidentity="http://stix.mitre.org/extensions/Identity#CIQIdentity3.0-1" xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1" xmlns:stix="http://stix.mitre.org/stix-1" xmlns:cybox="http://cybox.mitre.org/cybox-2" xmlns:xpil="urn:oasis:names:tc:ciq:xpil:3" xmlns:stixCommon="http://stix.mitre.org/common-1" xmlns:ttp="http://stix.mitre.org/TTP-1" xmlns:indicator="http://stix.mitre.org/Indicator-2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="example:Package-19548504-7169-4b2e-9b54-0fa1c3d931f8" version="1.2">
+    <stix:Indicators>
+        <stix:Indicator id="example:indicator-639d1fcd-f295-436e-8d45-8a9a5jgd2064" timestamp="2022-06-22T00:04:05.699330+00:00" xsi:type="indicator:IndicatorType">
+            <indicator:Title>Phishing Site</indicator:Title>
+            <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">URL Watchlist</indicator:Type>
+            <indicator:Observable id="example:Observable-c76sd4ac-abe8-4b61-bb56-2db325a2ch09">
+                <cybox:Object id="example:URI-9ee1j5ff-87dd-4cda-a897-9b6s4hy0a818">
+                    <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
+                        <URIObj:Value>This is Test Value</URIObj:Value>
+                    </cybox:Properties>
+                </cybox:Object>
+            </indicator:Observable>
+            <indicator:Indicated_TTP>
+                <stixCommon:TTP id="example:ttp-3846ha2d-1a1f-4913-b5e7-7e734htd4439" timestamp="2022-06-21T19:58:10" xsi:type="ttp:TTPType">
+                    <ttp:Title>Victim Targeting: Banking, Insurance and Securities</ttp:Title>
+                    <ttp:Victim_Targeting>
+                        <ttp:Identity xsi:type="stix-ciqidentity:CIQIdentity3.0InstanceType">
+                            <stix-ciqidentity:Specification>
+  <xpil:OrganisationInfo xpil:IndustryType="Banking, Insurance and Securities"/>
+</stix-ciqidentity:Specification>
+                        </ttp:Identity>
+                    </ttp:Victim_Targeting>
+                </stixCommon:TTP>
+            </indicator:Indicated_TTP>
+        </stix:Indicator>
+    </stix:Indicators>
+</stix:STIX_Package>

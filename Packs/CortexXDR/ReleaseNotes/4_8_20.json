@@ -1,0 +1,1 @@
+{"breakingChanges": true, "breakingChangesNotes": "The ***xdr-get-endpoints*** command outputs were aligned to the 'endpoint_' prefix instead of the 'agent' prefix, and are now fully aligned with the integration official documentation."}

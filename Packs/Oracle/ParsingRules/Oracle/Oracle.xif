@@ -1,0 +1,2 @@
+[INGEST:vendor="oracle", product="db", target_dataset="oracle_db_raw", no_hit=keep]
+alter _time = EVENT_TIMESTAMP_UTC;

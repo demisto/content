@@ -1,4 +1,5 @@
 Advanced protection capabilities from Symantec
+This integration was integrated and tested with Symantec Advanced Threat Protection v3.0.
 
 ## Configure Symantec Advanced Threat Protection on Cortex XSOAR
 

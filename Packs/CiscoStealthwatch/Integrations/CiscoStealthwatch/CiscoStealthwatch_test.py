@@ -10,12 +10,13 @@ def util_load_json(path) -> dict:
 def test_cisco_stealthwatch_query_flows_initialize_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_initialize_command
     mock_response = util_load_json('test_data/query_flow_initialize.json')
-    requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
-    requests_mock.post('https://sw-reporting/v2/tenants//flows/queries', json=mock_response)
+    requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar', 'XSRF-TOKEN': 'some token'})
+    req_mock = requests_mock.post('https://sw-reporting/v2/tenants//flows/queries', json=mock_response,
+                                  headers={'X-XSRF-TOKEN': 'some token'})
     client = Client(base_url='https://', auth=('', ''), verify=False, proxy=False)
     response = cisco_stealthwatch_query_flows_initialize_command(client, '', time_range='1 week')
     outputs = response.raw_response['data']['query']
-
+    assert req_mock.last_request.headers['X-XSRF-TOKEN']
     assert response.outputs_prefix == 'CiscoStealthwatch.FlowStatus'
     assert response.outputs_key_field == 'id'
     assert response.outputs == outputs
@@ -26,7 +27,7 @@ def test_cisco_stealthwatch_query_flows_status_command(requests_mock):
     mock_response = util_load_json('test_data/query_flow_status.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v2/tenants//flows/queries/602a96e7e4b0d6d2a200ea94',
-                      json=mock_response)
+                      json=mock_response, headers={'X-XSRF-TOKEN': 'some token'})
     client = Client(base_url='https://', auth=('', ''), verify=False, proxy=False)
     response = cisco_stealthwatch_query_flows_status_command(client, '', '602a96e7e4b0d6d2a200ea94')
 

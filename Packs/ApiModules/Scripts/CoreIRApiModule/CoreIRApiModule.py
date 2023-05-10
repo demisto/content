@@ -1,19 +1,30 @@
+from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 import urllib3
 import copy
 from operator import itemgetter
-from CommonServerPython import *  # noqa: F401
+
 from typing import Tuple, Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-XSOAR_RESOLVED_STATUS = {
+XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
+}
+
+XDR_RESOLVED_STATUS_TO_XSOAR = {
+    'resolved_known_issue': 'Other',
+    'resolved_duplicate': 'Duplicate',
+    'resolved_false_positive': 'False Positive',
+    'resolved_true_positive': 'Resolved',
+    'resolved_security_testing': 'Other',
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
 }
 
 ALERT_GENERAL_FIELDS = {
@@ -136,42 +147,6 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
 
-    def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
-                        resolve_comment=None, unassign_user=None):
-        update_data = {}
-
-        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
-            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
-        if unassign_user:
-            update_data['assigned_user_mail'] = 'none'
-
-        if assigned_user_mail:
-            update_data['assigned_user_mail'] = assigned_user_mail
-
-        if assigned_user_pretty_name:
-            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
-
-        if status:
-            update_data['status'] = status
-
-        if severity:
-            update_data['manual_severity'] = severity
-
-        if resolve_comment:
-            update_data['resolve_comment'] = resolve_comment
-
-        request_data = {
-            'incident_id': incident_id,
-            'update_data': update_data,
-        }
-
-        self._http_request(
-            method='POST',
-            url_suffix='/incidents/update_incident/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
     def get_endpoints(self,
                       endpoint_id_list=None,
                       dist_name=None,
@@ -190,8 +165,7 @@ class CoreClient(BaseClient):
                       sort_by_first_seen=None,
                       sort_by_last_seen=None,
                       status=None,
-                      username=None,
-                      no_filter=False
+                      username=None
                       ):
 
         search_from = page_number * limit
@@ -202,147 +176,62 @@ class CoreClient(BaseClient):
             'search_to': search_to,
         }
 
-        if no_filter:
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoints/',
-                json_data={},
-                timeout=self.timeout
-            )
-            endpoints = reply.get('reply')[search_from:search_to]
-            for endpoint in endpoints:
-                if not endpoint.get('endpoint_id'):
-                    endpoint['endpoint_id'] = endpoint.get('agent_id')
+        filters = create_request_filters(
+            status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+            ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+            hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+        )
 
-        else:
-            filters = []
+        if search_from:
+            request_data['search_from'] = search_from
 
-            if status:
-                filters.append({
-                    'field': 'endpoint_status',
-                    'operator': 'IN',
-                    'value': [status]
-                })
+        if search_to:
+            request_data['search_to'] = search_to
 
-            if username:
-                filters.append({
-                    'field': 'username',
-                    'operator': 'IN',
-                    'value': username
-                })
+        if sort_by_first_seen:
+            request_data['sort'] = {
+                'field': 'first_seen',
+                'keyword': sort_by_first_seen
+            }
+        elif sort_by_last_seen:
+            request_data['sort'] = {
+                'field': 'last_seen',
+                'keyword': sort_by_last_seen
+            }
 
-            if endpoint_id_list:
-                filters.append({
-                    'field': 'endpoint_id_list',
-                    'operator': 'in',
-                    'value': endpoint_id_list
-                })
+        request_data['filters'] = filters
 
-            if dist_name:
-                filters.append({
-                    'field': 'dist_name',
-                    'operator': 'in',
-                    'value': dist_name
-                })
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_endpoint/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        demisto.debug(f"get_endpoints response = {reply}")
 
-            if ip_list:
-                filters.append({
-                    'field': 'ip_list',
-                    'operator': 'in',
-                    'value': ip_list
-                })
-
-            if group_name:
-                filters.append({
-                    'field': 'group_name',
-                    'operator': 'in',
-                    'value': group_name
-                })
-
-            if platform:
-                filters.append({
-                    'field': 'platform',
-                    'operator': 'in',
-                    'value': platform
-                })
-
-            if alias_name:
-                filters.append({
-                    'field': 'alias',
-                    'operator': 'in',
-                    'value': alias_name
-                })
-
-            if isolate:
-                filters.append({
-                    'field': 'isolate',
-                    'operator': 'in',
-                    'value': [isolate]
-                })
-
-            if hostname:
-                filters.append({
-                    'field': 'hostname',
-                    'operator': 'in',
-                    'value': hostname
-                })
-
-            if first_seen_gte:
-                filters.append({
-                    'field': 'first_seen',
-                    'operator': 'gte',
-                    'value': first_seen_gte
-                })
-
-            if first_seen_lte:
-                filters.append({
-                    'field': 'first_seen',
-                    'operator': 'lte',
-                    'value': first_seen_lte
-                })
-
-            if last_seen_gte:
-                filters.append({
-                    'field': 'last_seen',
-                    'operator': 'gte',
-                    'value': last_seen_gte
-                })
-
-            if last_seen_lte:
-                filters.append({
-                    'field': 'last_seen',
-                    'operator': 'lte',
-                    'value': last_seen_lte
-                })
-
-            if search_from:
-                request_data['search_from'] = search_from
-
-            if search_to:
-                request_data['search_to'] = search_to
-
-            if sort_by_first_seen:
-                request_data['sort'] = {
-                    'field': 'first_seen',
-                    'keyword': sort_by_first_seen
-                }
-            elif sort_by_last_seen:
-                request_data['sort'] = {
-                    'field': 'last_seen',
-                    'keyword': sort_by_last_seen
-                }
-
-            request_data['filters'] = filters
-
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoint/',
-                json_data={'request_data': request_data},
-                timeout=self.timeout
-            )
-
-            endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
+
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
+        """
+        This func is used to set the alias name of an endpoint.
+
+        args:
+            filters: list of filters to get the endpoints
+            new_alias_name: the new alias name to set
+
+        returns: dict of the response(True if success else error message)
+        """
+
+        request_data = {'filters': filters, 'alias': new_alias_name}
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/endpoints/update_agent_name/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout,
+        )
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
@@ -1003,6 +892,8 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file = {reply}")
+
         return reply.get('reply')
 
     def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
@@ -1024,7 +915,7 @@ class CoreClient(BaseClient):
                 files['windows'].append(file_path)
             elif 'linux' in endpoint_os_type.lower():
                 files['linux'].append(file_path)
-            elif 'macos' in endpoint_os_type.lower():
+            elif 'mac' in endpoint_os_type.lower():
                 files['macos'].append(file_path)
 
         # remove keys with no value
@@ -1043,9 +934,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file_details = {reply}")
 
         return reply.get('reply').get('data')
 
+    @logger
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk) -> Dict[str, Any]:
 
@@ -1190,9 +1083,13 @@ class CoreClient(BaseClient):
             timeout=self.timeout,
         )
         link = response.get('reply', {}).get('DATA')
+        demisto.debug(f"From the previous API call, this link was returned {link=}")
+        # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
+        if not link:
+            raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
-            full_url=link,
+            url_suffix=re.findall('download.*', link)[0],
             resp_type='response',
         )
 
@@ -1207,8 +1104,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"action_status_get = {reply}")
+
         return reply.get('reply').get('data')
 
+    @logger
     def get_file(self, file_link):
         reply = self._http_request(
             method='GET',
@@ -1227,13 +1127,17 @@ class CoreClient(BaseClient):
         )
         return reply
 
+    @logger
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
         filters = []
+
+        if not isinstance(status, list):
+            status = [status]
 
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status
         })
 
         if last_seen_gte:
@@ -1303,6 +1207,41 @@ class CoreClient(BaseClient):
         reply = res.get("reply")
         return reply[:limit]
 
+    def add_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Add tag to an endpoint
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/assign/')
+
+    def remove_tag_endpoint(self, endpoint_ids, tag, args):
+        """
+        Remove tag from an endpoint.
+        """
+        return self.call_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args, url_suffix='/tags/agents/remove/')
+
+    def call_tag_endpoint(self, endpoint_ids, tag, args, url_suffix):
+        """
+        Add or remove a tag from an endpoint.
+        """
+        filters = args_to_request_filters(args)
+
+        body_request = {
+            'context': {
+                'lcaas_id': endpoint_ids,
+            },
+            'request_data': {
+                'filters': filters,
+                'tag': tag
+            },
+        }
+
+        return self._http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=body_request,
+            timeout=self.timeout
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -1310,6 +1249,21 @@ class AlertFilterArg:
         self.search_type = search_type
         self.arg_type = arg_type
         self.option_mapper = option_mapper
+
+
+def catch_and_exit_gracefully(e):
+    """
+
+    Args:
+        e: DemistoException caught while running a command.
+
+    Returns:
+        CommandResult if the error is internal XDR error, else, the exception.
+    """
+    if e.res.status_code == 500 and 'no endpoint was found for creating the requested action' in str(e).lower():
+        return CommandResults(readable_output="The operation executed is not supported on the given machine.")
+    else:
+        raise e
 
 
 def init_filter_args_options():
@@ -1329,6 +1283,7 @@ def init_filter_args_options():
             'False': False,
         }),
         'Identity_type': AlertFilterArg('Identity_type', 'EQ', dropdown),
+        'alert_action_status': AlertFilterArg('alert_action_status', 'EQ', dropdown, ALERT_STATUS_TYPES_REVERSE_DICT),
         'agent_id': AlertFilterArg('agent_id', 'EQ', array),
         'action_external_hostname': AlertFilterArg('action_external_hostname', 'CONTAINS', array),
         'rule_id': AlertFilterArg('matching_service_rule_id', 'EQ', array),
@@ -1368,14 +1323,20 @@ def run_polling_command(client: CoreClient,
                         polling_value: List,
                         stop_polling: bool = False) -> CommandResults:
     """
-    args: demito args
-    cmd: the command to schedule by after the current command
-    command_function: the function which is runs the actual command
-    command_decision_field: the field in the response based on it what the command status and if the command occurred
-    results_function: the function which we are polling on and retrieves the status of the command_function
-    polling_field: the field which from the result of the results_function which we are interested in its value
-    polling_value: list of values of the polling_field we want to check
-    stop_polling: yes - polling_value is stopping, not - polling_value not stopping
+    Arguments:
+    args: args
+    cmd: the scheduled command's name (as appears in the yml file) to run in the following polling.
+    command_function: the pythonic function that executes the command.
+    command_decision_field: the field that is retrieved from the command_function's response that indicates
+    the command_function status.
+    results_function: the pythonic result function which we want to poll on.
+    polling_field: the field that is retrieved from the results_function's response and indicates the polling status.
+    polling_value: list of values of the polling_field we want to check. The list can contain values to stop or
+    continue polling on, not both.
+    stop_polling: True - polling_value stops the polling. False - polling_value does not stop the polling.
+
+    Return:
+    command_results(CommandResults)
     """
 
     ScheduledCommand.raise_error_if_not_supported()
@@ -1559,11 +1520,10 @@ def validate_args_scan_commands(args):
         if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
                 or ip_list or group_name or platform or alias or hostname:
             raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
+    elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+            and not alias and not hostname:
+        raise Exception(err_msg)
 
 
 def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
@@ -1672,14 +1632,17 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
-    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+    try:
+        result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
 
-    return CommandResults(
-        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        raw_response=result
-    )
+        return CommandResults(
+            readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+            raw_response=result
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
@@ -1735,7 +1698,7 @@ def convert_os_to_standard(endpoint_os):
         os_type = "Windows"
     elif 'linux' in endpoint_os:
         os_type = "Linux"
-    elif 'macos' in endpoint_os:
+    elif 'mac' in endpoint_os:
         os_type = "Macos"
     elif 'android' in endpoint_os:
         os_type = "Android"
@@ -1767,6 +1730,8 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
 
 
 def get_endpoints_command(client, args):
+    integration_context_brand = args.pop('integration_context_brand', 'CoreApiModule')
+    integration_name = args.pop("integration_name", "CoreApiModule")
     page_number = arg_to_int(
         arg=args.get('page', '0'),
         arg_name='Failed to parse "page". Must be a number.',
@@ -1779,66 +1744,62 @@ def get_endpoints_command(client, args):
         required=True
     )
 
-    if list(args.keys()) == ['limit', 'page', 'sort_order']:
-        endpoints = client.get_endpoints(page_number=page_number, limit=limit, no_filter=True)
-    else:
-        endpoint_id_list = argToList(args.get('endpoint_id_list'))
-        dist_name = argToList(args.get('dist_name'))
-        ip_list = argToList(args.get('ip_list'))
-        group_name = argToList(args.get('group_name'))
-        platform = argToList(args.get('platform'))
-        alias_name = argToList(args.get('alias_name'))
-        isolate = args.get('isolate')
-        hostname = argToList(args.get('hostname'))
-        status = args.get('status')
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias_name = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+    status = args.get('status')
 
-        first_seen_gte = arg_to_timestamp(
-            arg=args.get('first_seen_gte'),
-            arg_name='first_seen_gte'
-        )
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
 
-        first_seen_lte = arg_to_timestamp(
-            arg=args.get('first_seen_lte'),
-            arg_name='first_seen_lte'
-        )
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
 
-        last_seen_gte = arg_to_timestamp(
-            arg=args.get('last_seen_gte'),
-            arg_name='last_seen_gte'
-        )
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
 
-        last_seen_lte = arg_to_timestamp(
-            arg=args.get('last_seen_lte'),
-            arg_name='last_seen_lte'
-        )
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
 
-        sort_by_first_seen = args.get('sort_by_first_seen')
-        sort_by_last_seen = args.get('sort_by_last_seen')
+    sort_by_first_seen = args.get('sort_by_first_seen')
+    sort_by_last_seen = args.get('sort_by_last_seen')
 
-        username = argToList(args.get('username'))
+    username = argToList(args.get('username'))
 
-        endpoints = client.get_endpoints(
-            endpoint_id_list=endpoint_id_list,
-            dist_name=dist_name,
-            ip_list=ip_list,
-            group_name=group_name,
-            platform=platform,
-            alias_name=alias_name,
-            isolate=isolate,
-            hostname=hostname,
-            page_number=page_number,
-            limit=limit,
-            first_seen_gte=first_seen_gte,
-            first_seen_lte=first_seen_lte,
-            last_seen_gte=last_seen_gte,
-            last_seen_lte=last_seen_lte,
-            sort_by_first_seen=sort_by_first_seen,
-            sort_by_last_seen=sort_by_last_seen,
-            status=status,
-            username=username
-        )
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        dist_name=dist_name,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias_name=alias_name,
+        isolate=isolate,
+        hostname=hostname,
+        page_number=page_number,
+        limit=limit,
+        first_seen_gte=first_seen_gte,
+        first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte,
+        last_seen_lte=last_seen_lte,
+        sort_by_first_seen=sort_by_first_seen,
+        sort_by_last_seen=sort_by_last_seen,
+        status=status,
+        username=username
+    )
 
-    integration_name = args.get("integration_name", "CoreApiModule")
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
     for endpoint in standard_endpoints:
@@ -1846,9 +1807,9 @@ def get_endpoints_command(client, args):
         endpoint_context_list.append(endpoint_context)
 
     context = {
-        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+        f'{integration_context_brand}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
         Common.Endpoint.CONTEXT_PATH: endpoint_context_list,
-        f'{args.get("integration_context_brand", "CoreApiModule")}.Endpoint.count': len(standard_endpoints)
+        f'{integration_context_brand}.Endpoint.count': len(standard_endpoints)
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -1859,6 +1820,63 @@ def get_endpoints_command(client, args):
         outputs=context,
         raw_response=endpoints
     )
+
+
+def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
+    # get arguments
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name_list = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name_list = argToList(args.get('group_name'))
+    platform_list = argToList(args.get('platform'))
+    alias_name_list = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname_list = argToList(args.get('hostname'))
+    status = args.get('status')
+    scan_status = args.get('scan_status')
+    username_list = argToList(args.get('username'))
+    new_alias_name = args.get('new_alias_name')
+
+    # This is a workaround that is needed because of a specific behaviour of the system
+    # that converts an empty string to a string with double quotes.
+    if new_alias_name == '""':
+        new_alias_name = ""
+
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
+
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
+
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
+
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
+
+    # create filters
+    filters: list[dict[str, str]] = create_request_filters(
+        status=status, username=username_list, endpoint_id_list=endpoint_id_list, dist_name=dist_name_list,
+        ip_list=ip_list, group_name=group_name_list, platform=platform_list, alias_name=alias_name_list, isolate=isolate,
+        hostname=hostname_list, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
+    )
+    if not filters:
+        raise DemistoException('Please provide at least one filter.')
+    # importent: the API will return True even if the endpoint does not exist, so its a good idea to check
+    # the results by a get_endpoints command
+    client.set_endpoints_alias(filters=filters, new_alias_name=new_alias_name)
+
+    return CommandResults(
+        readable_output="The endpoint alias was changed successfully.")
 
 
 def unisolate_endpoint_command(client, args):
@@ -2034,25 +2052,29 @@ def quarantine_files_command(client, args):
     file_hash = args.get("file_hash")
     incident_id = arg_to_number(args.get('incident_id'))
 
-    reply = client.quarantine_files(
-        endpoint_id_list=endpoint_id_list,
-        file_path=file_path,
-        file_hash=file_hash,
-        incident_id=incident_id
-    )
-    output = {
-        'endpointIdList': endpoint_id_list,
-        'filePath': file_path,
-        'fileHash': file_hash,
-        'actionId': reply.get("action_id")
-    }
+    try:
+        reply = client.quarantine_files(
+            endpoint_id_list=endpoint_id_list,
+            file_path=file_path,
+            file_hash=file_hash,
+            incident_id=incident_id
+        )
+        output = {
+            'endpointIdList': endpoint_id_list,
+            'filePath': file_path,
+            'fileHash': file_hash,
+            'actionId': reply.get("action_id")
+        }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
-        raw_response=reply
-    )
+        return CommandResults(
+            readable_output=tableToMarkdown('Quarantine files', output, headers=[*output],
+                                            headerTransform=pascalToSpace),
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
+            raw_response=reply
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def restore_file_command(client, args):
@@ -2102,7 +2124,7 @@ def blocklist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "blocklist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -2139,7 +2161,7 @@ def allowlist_files_command(client, args):
     if detailed_response:
         return CommandResults(
             readable_output=tableToMarkdown('Allowlist Files', res),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.blocklist',
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.allowlist',
             outputs=res,
             raw_response=res
         )
@@ -2152,7 +2174,7 @@ def allowlist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "allowlist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -2391,32 +2413,14 @@ def get_indicators_context(incident):
     return file_context, process_context, domain_context, ip_context
 
 
-def update_incident_command(client, args):
-    incident_id = args.get('incident_id')
-    assigned_user_mail = args.get('assigned_user_mail')
-    assigned_user_pretty_name = args.get('assigned_user_pretty_name')
-    status = args.get('status')
-    severity = args.get('manual_severity')
-    unassign_user = args.get('unassign_user') == 'true'
-    resolve_comment = args.get('resolve_comment')
-
-    client.update_incident(
-        incident_id=incident_id,
-        assigned_user_mail=assigned_user_mail,
-        assigned_user_pretty_name=assigned_user_pretty_name,
-        unassign_user=unassign_user,
-        status=status,
-        severity=severity,
-        resolve_comment=resolve_comment
-    )
-
-    return f'Incident {incident_id} has been updated', None, None
-
-
 def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
+
+    if not any((endpoint_id_list, endpoint_ip_list, endpoint_hostname_list)):
+        raise DemistoException(f'{args.get("integration_name", "CoreApiModule")} -'
+                               f' In order to run this command, please provide a valid id, ip or hostname')
 
     endpoints = client.get_endpoints(
         endpoint_id_list=endpoint_id_list,
@@ -2643,48 +2647,28 @@ def handle_user_unassignment(update_args):
         update_args['assigned_user_pretty_name'] = None
 
 
-def handle_outgoing_issue_closure(update_args, inc_status):
-    if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
+def handle_outgoing_issue_closure(remote_args):
+    update_args = remote_args.delta
+    current_remote_status = remote_args.data.get('status') if remote_args.data else None
+    # force closing remote incident only if:
+    #   The XSOAR incident is closed
+    #   and the remote incident isn't already closed
+    if remote_args.inc_status == 2 and \
+       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+
+        if close_notes := update_args.get('closeNotes'):
+            update_args['resolve_comment'] = close_notes
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes', '')
 
 
-def get_update_args(delta, inc_status):
+def get_update_args(remote_args):
     """Change the updated field names to fit the update command"""
-    update_args = delta
-    handle_outgoing_incident_owner_sync(update_args)
-    handle_user_unassignment(update_args)
-    if update_args.get('closingUserId'):
-        handle_outgoing_issue_closure(update_args, inc_status)
-    return update_args
 
-
-def update_remote_system_command(client, args):
-    remote_args = UpdateRemoteSystemArgs(args)
-
-    if remote_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
-                      f'incident {remote_args.remote_incident_id}')
-    try:
-        if remote_args.incident_changed:
-            update_args = get_update_args(remote_args.delta, remote_args.inc_status)
-
-            update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            update_incident_command(client, update_args)
-
-        else:
-            demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-                          f'as it is not new nor changed')
-
-        return remote_args.remote_incident_id
-
-    except Exception as e:
-        demisto.debug(f"Error in outgoing mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
-
-        return remote_args.remote_incident_id
+    handle_outgoing_issue_closure(remote_args)
+    handle_outgoing_incident_owner_sync(remote_args.delta)
+    handle_user_unassignment(remote_args.delta)
+    return remote_args.delta
 
 
 def get_distribution_versions_command(client, args):
@@ -2942,7 +2926,45 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     )
 
 
-def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
+    requires_polling_arg=False  # means it will always be default to poll, poll=true
+)
+def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
+
+    if action_id := args.get('action_id'):
+        response = client.get_script_execution_status(action_id)
+        general_status = response.get('reply', {}).get('general_status') or ''
+
+        return PollResult(
+            response=get_script_execution_results_command(
+                client, {'action_id': action_id, 'integration_context_brand': 'PaloAltoNetworksXDR'}
+            ),
+            continue_to_poll=general_status.upper() in ('PENDING', 'IN_PROGRESS')
+        )
+
+    else:
+        endpoint_ids = argToList(args.get('endpoint_ids'))
+        response = get_run_script_execution_response(client, args)
+        reply = response.get('reply')
+        action_id = reply.get('action_id')
+
+        args['action_id'] = action_id
+
+        return PollResult(
+            response=None,  # since polling defaults to true, no need to deliver response here
+            continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
+            partial_result=CommandResults(
+                readable_output=f'Waiting for the script to finish running '
+                                f'on the following endpoints: {endpoint_ids}...'
+            ),
+            args_for_next_run=args
+        )
+
+
+def get_run_script_execution_response(client: CoreClient, args: Dict):
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
@@ -2954,7 +2976,11 @@ def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
             raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
     else:
         parameters = {}
-    response = client.run_script(script_uid, endpoint_ids, parameters, timeout, incident_id=incident_id)
+    return client.run_script(script_uid, endpoint_ids, parameters, timeout, incident_id=incident_id)
+
+
+def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
+    response = get_run_script_execution_response(client, args)
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Script', reply),
@@ -3192,6 +3218,49 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     )
 
 
+ALERT_STATUS_TYPES = {
+    'DETECTED': 'detected',
+    'DETECTED_0': 'detected (allowed the session)',
+    'DOWNLOAD': 'detected (download)',
+    'DETECTED_19': 'detected (forward)',
+    'POST_DETECTED': 'detected (post detected)',
+    'PROMPT_ALLOW': 'detected (prompt allow)',
+    'DETECTED_4': 'detected (raised an alert)',
+    'REPORTED': 'detected (reported)',
+    'REPORTED_TRIGGER_4': 'detected (on write)',
+    'SCANNED': 'detected (scanned)',
+    'DETECTED_23': 'detected (sinkhole)',
+    'DETECTED_18': 'detected (syncookie sent)',
+    'DETECTED_21': 'detected (wildfire upload failure)',
+    'DETECTED_20': 'detected (wildfire upload success)',
+    'DETECTED_22': 'detected (wildfire upload skip)',
+    'DETECTED_MTH': 'detected (xdr managed threat hunting)',
+    'BLOCKED_25': 'prevented (block)',
+    'BLOCKED': 'prevented (blocked)',
+    'BLOCKED_14': 'prevented (block-override)',
+    'BLOCKED_5': 'prevented (blocked the url)',
+    'BLOCKED_6': 'prevented (blocked the ip)',
+    'BLOCKED_13': 'prevented (continue)',
+    'BLOCKED_1': 'prevented (denied the session)',
+    'BLOCKED_8': 'prevented (dropped all packets)',
+    'BLOCKED_2': 'prevented (dropped the session)',
+    'BLOCKED_3': 'prevented (dropped the session and sent a tcp reset)',
+    'BLOCKED_7': 'prevented (dropped the packet)',
+    'BLOCKED_16': 'prevented (override)',
+    'BLOCKED_15': 'prevented (override-lockout)',
+    'BLOCKED_26': 'prevented (post detected)',
+    'PROMPT_BLOCK': 'prevented (prompt block)',
+    'BLOCKED_17': 'prevented (random-drop)',
+    'BLOCKED_24': 'prevented (silently dropped the session with an icmp unreachable message to the host or application)',
+    'BLOCKED_9': 'prevented (terminated the session and sent a tcp reset to both sides of the connection)',
+    'BLOCKED_10': 'prevented (terminated the session and sent a tcp reset to the client)',
+    'BLOCKED_11': 'prevented (terminated the session and sent a tcp reset to the server)',
+    'BLOCKED_TRIGGER_4': 'prevented (on write)',
+}
+
+ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
+
+
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
     # get arguments
     request_data: dict = {'filter_data': {}}
@@ -3239,7 +3308,15 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     demisto.debug(f'sending the following request data: {request_data}')
     raw_response = client.get_alerts_by_filter_data(request_data)
 
-    context = [alert.get('alert_fields') for alert in raw_response.get('alerts', [])]
+    context = []
+    for alert in raw_response.get('alerts', []):
+        alert = alert.get('alert_fields')
+        if 'alert_action_status' in alert:
+            # convert the status, if failed take the original status
+            action_status = alert.get('alert_action_status')
+            alert['alert_action_status_readable'] = ALERT_STATUS_TYPES.get(action_status, action_status)
+
+        context.append(alert)
 
     human_readable = [{
         'Alert ID': alert.get('internal_id'),
@@ -3247,7 +3324,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         'Name': alert.get('alert_name'),
         'Severity': alert.get('severity'),
         'Category': alert.get('alert_category'),
-        'Action': alert.get('alert_action_status'),
+        'Action': alert.get('alert_action_status_readable'),
         'Description': alert.get('alert_description'),
         'Host IP': alert.get('agent_ip_addresses'),
         'Host Name': alert.get('agent_hostname'),
@@ -3290,4 +3367,201 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.DynamicAnalysis',
         outputs=filtered_alerts,
         raw_response=raw_response,
+    )
+
+
+def create_request_filters(
+    status: Optional[str] = None,
+    username: Optional[List] = None,
+    endpoint_id_list: Optional[List] = None,
+    dist_name: Optional[List] = None,
+    ip_list: Optional[List] = None,
+    group_name: Optional[List] = None,
+    platform: Optional[List] = None,
+    alias_name: Optional[List] = None,
+    isolate: Optional[str] = None,
+    hostname: Optional[List] = None,
+    first_seen_gte=None,
+    first_seen_lte=None,
+    last_seen_gte=None,
+    last_seen_lte=None,
+    scan_status=None,
+):
+    filters = []
+
+    if status:
+        filters.append({
+            'field': 'endpoint_status',
+            'operator': 'IN',
+            'value': [status]
+        })
+
+    if username:
+        filters.append({
+            'field': 'username',
+            'operator': 'IN',
+            'value': username
+        })
+
+    if endpoint_id_list:
+        filters.append({
+            'field': 'endpoint_id_list',
+            'operator': 'in',
+            'value': endpoint_id_list
+        })
+
+    if dist_name:
+        filters.append({
+            'field': 'dist_name',
+            'operator': 'in',
+            'value': dist_name
+        })
+
+    if ip_list:
+        filters.append({
+            'field': 'ip_list',
+            'operator': 'in',
+            'value': ip_list
+        })
+
+    if group_name:
+        filters.append({
+            'field': 'group_name',
+            'operator': 'in',
+            'value': group_name
+        })
+
+    if platform:
+        filters.append({
+            'field': 'platform',
+            'operator': 'in',
+            'value': platform
+        })
+
+    if alias_name:
+        filters.append({
+            'field': 'alias',
+            'operator': 'in',
+            'value': alias_name
+        })
+
+    if isolate:
+        filters.append({
+            'field': 'isolate',
+            'operator': 'in',
+            'value': [isolate]
+        })
+
+    if hostname:
+        filters.append({
+            'field': 'hostname',
+            'operator': 'in',
+            'value': hostname
+        })
+
+    if first_seen_gte:
+        filters.append({
+            'field': 'first_seen',
+            'operator': 'gte',
+            'value': first_seen_gte
+        })
+
+    if first_seen_lte:
+        filters.append({
+            'field': 'first_seen',
+            'operator': 'lte',
+            'value': first_seen_lte
+        })
+
+    if last_seen_gte:
+        filters.append({
+            'field': 'last_seen',
+            'operator': 'gte',
+            'value': last_seen_gte
+        })
+
+    if last_seen_lte:
+        filters.append({
+            'field': 'last_seen',
+            'operator': 'lte',
+            'value': last_seen_lte
+        })
+
+    if scan_status:
+        filters.append({
+            'field': 'scan_status',
+            'operator': 'IN',
+            'value': [scan_status]
+        })
+
+    return filters
+
+
+def args_to_request_filters(args):
+
+    if set(args.keys()) & {  # check if any filter argument was provided
+        'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
+        'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte', 'last_seen_lte'
+    }:
+        endpoint_id_list = argToList(args.get('endpoint_id_list'))
+        dist_name = argToList(args.get('dist_name'))
+        ip_list = argToList(args.get('ip_list'))
+        group_name = argToList(args.get('group_name'))
+        platform = argToList(args.get('platform'))
+        alias_name = argToList(args.get('alias_name'))
+        isolate = args.get('isolate')
+        hostname = argToList(args.get('hostname'))
+        status = args.get('status')
+
+        first_seen_gte = arg_to_timestamp(
+            arg=args.get('first_seen_gte'),
+            arg_name='first_seen_gte'
+        )
+
+        first_seen_lte = arg_to_timestamp(
+            arg=args.get('first_seen_lte'),
+            arg_name='first_seen_lte'
+        )
+
+        last_seen_gte = arg_to_timestamp(
+            arg=args.get('last_seen_gte'),
+            arg_name='last_seen_gte'
+        )
+
+        last_seen_lte = arg_to_timestamp(
+            arg=args.get('last_seen_lte'),
+            arg_name='last_seen_lte'
+        )
+
+        return create_request_filters(
+            endpoint_id_list=endpoint_id_list, dist_name=dist_name, ip_list=ip_list,
+            group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate, hostname=hostname,
+            first_seen_lte=first_seen_lte, first_seen_gte=first_seen_gte,
+            last_seen_lte=last_seen_lte, last_seen_gte=last_seen_gte, status=status
+        )
+    # a request must be sent with at least one filter parameter, so by default we will send the endpoint_id_list filter
+    return create_request_filters(endpoint_id_list=argToList(args.get('endpoint_ids')))
+
+
+def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tag = args.get('tag')
+    raw_response = {}
+    for b in batch(endpoint_ids, 1000):
+        raw_response.update(client.add_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
+
+    return CommandResults(
+        readable_output=f'Successfully added tag {tag} to endpoint(s) {endpoint_ids}', raw_response=raw_response
+    )
+
+
+def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
+    endpoint_ids = argToList(args.get('endpoint_ids', []))
+    tag = args.get('tag')
+    raw_response = {}
+    for b in batch(endpoint_ids, 1000):
+        raw_response.update(client.remove_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
+
+    return CommandResults(
+        readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
     )

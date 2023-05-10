@@ -1,7 +1,6 @@
 # type: ignore
 
 from CommonServerPython import *
-import collections
 from dateutil import parser  # type: ignore[import]
 
 EXACT_MATCH = 0
@@ -54,12 +53,12 @@ def parse_datetime(datetime_str):
 def nested_dict_flatted(d, parent_key='', sep='.'):
     if d:
         items = []  # type: ignore
-        for k, v in d.items():
+        for k, v in list(d.items()):
             new_key = parent_key + sep + k if parent_key else k
             if isinstance(v, list) and len(v) > 0:
                 v = v[0]
-            if isinstance(v, collections.MutableMapping) and len(v) > 0:
-                items.extend(nested_dict_flatted(v, new_key, sep=sep).items())
+            if isinstance(v, dict) and len(v) > 0:
+                items.extend(list(nested_dict_flatted(v, new_key, sep=sep).items()))
             else:
                 items.append((new_key, v))
         return dict(items)
@@ -99,7 +98,7 @@ def get_incident_labels_map(labels):
         else:
             labels_map[label_type] = label_value
 
-    for label_key, label_value in labels_map.items():
+    for label_key, label_value in list(labels_map.items()):
         if isinstance(label_value, list):
             label_value.sort()
             labels_map[label_key] = label_value
@@ -109,8 +108,8 @@ def get_incident_labels_map(labels):
 
 def handle_str_field(key, value):
     value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r").replace(r'\\"', r'\\\"')
-    query = '{}="{}"'.format(key, value.encode('utf-8'))
-    return query.decode('utf-8')
+    query = f'{key}="{value}"'
+    return query
 
 
 def handle_int_field(key, value):
@@ -130,16 +129,15 @@ def handle_list_field(key, value):
 handle_field = {
     int: handle_int_field,
     str: handle_str_field,
-    unicode: handle_str_field,
     list: handle_list_field
 }
 
 
 def build_incident_fields_query(incident_data):
     similar_keys_list = []
-    for key, value in incident_data.items():
+    for key, value in list(incident_data.items()):
         result = handle_field[type(value)](key, value)
-        similar_keys_list.extend(result) if isinstance(result, list) else\
+        similar_keys_list.extend(result) if isinstance(result, list) else \
             similar_keys_list.append(result)  # type: ignore
 
     return similar_keys_list
@@ -180,7 +178,7 @@ def get_context(incident_id):
 
 
 def camel_case_to_space(s):
-    return ''.join(map(lambda x: x if x.islower() else " " + x, s)).strip().capitalize()
+    return ''.join([x if x.islower() else " " + x for x in s]).strip().capitalize()
 
 
 def incident_to_record(incident, time_field):
@@ -204,9 +202,9 @@ def incident_to_record(incident, time_field):
 
 
 def is_text_equal_by_x_different_words(text1, text2, number_of_different_words, separator=' '):
-    if not isinstance(text1, basestring):
+    if not isinstance(text1, str):
         text1 = str(text1)
-    if not isinstance(text2, basestring):
+    if not isinstance(text2, str):
         text2 = str(text2)
     text1 = text1.lower()
     text2 = text2.lower()
@@ -215,8 +213,8 @@ def is_text_equal_by_x_different_words(text1, text2, number_of_different_words, 
     elif number_of_different_words == CONTAINS:
         return text1.find(text2) >= 0 or text2.find(text1) >= 0
     else:
-        words_set1 = set([x for x in map(lambda x: x.strip(), text1.replace("\\n", separator).split(separator)) if x])
-        words_set2 = set([x for x in map(lambda x: x.strip(), text2.replace("\\n", separator).split(separator)) if x])
+        words_set1 = set([x for x in [x.strip() for x in text1.replace("\\n", separator).split(separator)] if x])
+        words_set2 = set([x for x in [x.strip() for x in text2.replace("\\n", separator).split(separator)] if x])
         return len(words_set1.difference(words_set2)) <= number_of_different_words and len(
             words_set2.difference(words_set1)) <= number_of_different_words
 
@@ -235,7 +233,7 @@ def verify_map_equals(values_map1, values_map2, equality_map):
         value1 = values_map1[key]
         value2 = values_map2[key]
 
-        if isinstance(value1, basestring) and isinstance(value2, basestring):
+        if isinstance(value1, str) and isinstance(value2, str):
             is_values_equals = is_text_equal_by_x_different_words(values_map1[key], values_map2[key], equality_map[key])
 
             if not is_values_equals:
@@ -265,7 +263,7 @@ def did_not_found_duplicates():
 
 def merge_incident_fields(incident):
     custom_fields = incident.get('CustomFields', {}) or {}
-    for k, v in custom_fields.items():
+    for k, v in list(custom_fields.items()):
         incident[k] = v
     incident['severity'] = SEVERITY_MAP.get(str(incident['severity']))
     incident['status'] = STATUS_MAP.get(str(incident['status']))
@@ -298,7 +296,7 @@ def main():
         return_error('If using similarIncidentFields do not use deprecated similarCustomFields\\similarIncidentKeys')
     else:
         SIMILAR_INCIDENTS_FIELDS_MAP.update(SIMILAR_CUSTOMS_FIELDS_MAP)
-        for k in map(lambda x: remove_prefix('incident.', x), SIMILAR_INCIDENT_KEYS):
+        for k in [remove_prefix('incident.', x) for x in SIMILAR_INCIDENT_KEYS]:
             if k and len(k) > 0:
                 SIMILAR_INCIDENTS_FIELDS_MAP[k] = EXACT_MATCH
 
@@ -318,19 +316,20 @@ def main():
 
     # validate fields
     exact_match_incident_fields = get_map_from_nested_dict(incident,
-                                                           {k: v for k, v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if
+                                                           {k: v for k, v in list(SIMILAR_INCIDENTS_FIELDS_MAP.items())
+                                                            if
                                                             v == EXACT_MATCH}, raise_error=RAISE_ERROR_MISSING_VALUES)
-    SIMILAR_INCIDENTS_FIELDS_MAP = {k: v for k, v in SIMILAR_INCIDENTS_FIELDS_MAP.items() if v != EXACT_MATCH}
-    similar_incident_fields = get_map_from_nested_dict(incident, SIMILAR_INCIDENTS_FIELDS_MAP.keys(),
+    SIMILAR_INCIDENTS_FIELDS_MAP = {k: v for k, v in list(SIMILAR_INCIDENTS_FIELDS_MAP.items()) if v != EXACT_MATCH}
+    similar_incident_fields = get_map_from_nested_dict(incident, list(SIMILAR_INCIDENTS_FIELDS_MAP.keys()),
                                                        raise_error=RAISE_ERROR_MISSING_VALUES)
     labels_map = get_incident_labels_map(incident.get('labels', []))
-    incident_similar_labels = get_map_from_nested_dict(labels_map, SIMILAR_LABELS_MAP.keys(),
+    incident_similar_labels = get_map_from_nested_dict(labels_map, list(SIMILAR_LABELS_MAP.keys()),
                                                        raise_error=RAISE_ERROR_MISSING_VALUES)
     incident_similar_context = demisto.context()
     original_context_map = {}
 
     if incident_similar_context:
-        for key in SIMILAR_CONTEXT_MAP.keys():
+        for key in list(SIMILAR_CONTEXT_MAP.keys()):
             response = demisto.dt(incident_similar_context, key)
             original_context_map[key] = response
             if not response and RAISE_ERROR_MISSING_VALUES:
@@ -358,7 +357,7 @@ def main():
 
     if len(duplicate_incidents) == 0:
         did_not_found_duplicates()
-    duplicate_incidents = map(merge_incident_fields, duplicate_incidents)
+    duplicate_incidents = list(map(merge_incident_fields, duplicate_incidents))
 
     # filter by labels
     if len(incident_similar_labels or {}) > 0:
@@ -374,7 +373,7 @@ def main():
         duplicate_incidents = [c for c in duplicate_incidents
                                if verify_map_equals(similar_incident_fields,
                                                     get_map_from_nested_dict(c,
-                                                                             SIMILAR_INCIDENTS_FIELDS_MAP.keys(),
+                                                                             list(SIMILAR_INCIDENTS_FIELDS_MAP.keys()),
                                                                              raise_error=False),
                                                     SIMILAR_INCIDENTS_FIELDS_MAP)
                                ]
@@ -386,7 +385,7 @@ def main():
             if other_incident_context:
                 other_incident_context_map = {}
 
-                for key in SIMILAR_CONTEXT_MAP.keys():
+                for key in list(SIMILAR_CONTEXT_MAP.keys()):
                     response = demisto.dt(other_incident_context, key)
                     if response:
                         other_incident_context_map[key] = response
@@ -396,7 +395,7 @@ def main():
 
     # update context
     if len(duplicate_incidents or []) > 0:
-        duplicate_incidents_rows = map(lambda x: incident_to_record(x, TIME_FIELD), duplicate_incidents)
+        duplicate_incidents_rows = [incident_to_record(x, TIME_FIELD) for x in duplicate_incidents]
 
         duplicate_incidents_rows = list(sorted(duplicate_incidents_rows, key=lambda x: (x['time'], x['id'])))
 
@@ -407,7 +406,8 @@ def main():
         }
 
         duplicate_incidents_rows = duplicate_incidents_rows[:MAX_CANDIDATES_IN_LIST]
-        hr_result = map(lambda row: dict((camel_case_to_space(k), v) for k, v in row.items()), duplicate_incidents_rows)
+        hr_result = [dict((camel_case_to_space(k), v) for k, v in list(row.items())) for row in
+                     duplicate_incidents_rows]
         markdown_result = tableToMarkdown("Duplicate incidents",
                                           hr_result,
                                           headers=['Id', 'Name', 'Closed time', 'Time'])

@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def get_mitre_results(items):
@@ -12,7 +12,6 @@ def get_mitre_results(items):
 
 
 def is_valid_attack_pattern(items) -> list:
-
     try:
         results = get_mitre_results(items)
         values = [content.get('value') for content in results]

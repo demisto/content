@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: JuniperSRX
+name: Juniper SRX
+rules: ''
+schema: ''
+tags: JuniperSRX

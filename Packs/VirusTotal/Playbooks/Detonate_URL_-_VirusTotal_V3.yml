@@ -192,7 +192,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: VirusTotal.Analysis.data.attributes(val.status != 'completed')
+        simple: VirusTotal.Analysis.data(val.attributes.status != 'completed').id
     separatecontext: true
     loop:
       iscommand: false

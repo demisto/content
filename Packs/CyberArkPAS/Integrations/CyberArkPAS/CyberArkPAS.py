@@ -763,12 +763,13 @@ def get_list_safes_command(
     :return: CommandResults
     """
     response = client.get_list_safes()
-    total_safes = response.get("Total")
+    # from 12.1 version the response's structure was changed (Total -> count, Safes -> value)
+    total_safes = response.get("Total", response.get("count"))
     headline = f"There are {total_safes} safes"
-    safes = response.get("Safes")
+    safes = response.get("Safes", response.get("value"))
     results = CommandResults(
         raw_response=response,
-        readable_output=tableToMarkdown(headline, safes),
+        readable_output=tableToMarkdown(name=headline, t=safes),
         outputs_prefix='CyberArkPAS.Safes',
         outputs_key_field='SafeName',
         outputs=safes
@@ -891,12 +892,13 @@ def list_safe_members_command(
     :return: CommandResults
     """
     response = client.list_safe_members(safe_name)
-    total_safe_members = response.get("Total")
+    # from 12.1 version the response's structure was changed (Total -> count, SafeMembers -> value)
+    total_safe_members = response.get("Total", response.get("count"))
     headline = f"There are {total_safe_members} safe members for {safe_name}"
-    members = response.get("SafeMembers")
+    members = response.get("SafeMembers", response.get("value"))
     results = CommandResults(
         raw_response=response,
-        readable_output=tableToMarkdown(headline, members),
+        readable_output=tableToMarkdown(name=headline, t=members),
         outputs_prefix='CyberArkPAS.Safes.Members',
         outputs_key_field='MemberName',
         outputs=members

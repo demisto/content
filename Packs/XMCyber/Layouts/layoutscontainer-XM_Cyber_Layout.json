@@ -1,13 +1,13 @@
 {
-	"description": "Contains a tab XMCyber with fields for XM Cyber Incident",
-	"fromVersion": "6.0.0",
-	"group": "incident",
-	"id": "XM_Cyber_Layout",
-	"name": "XM Cyber Layout",
-	"system": false,
-	"version": -1,
-	"detailsV2": {
-		"tabs": [
+    "description": "Contains a tab XMCyber with fields for XM Cyber Incident",
+    "fromVersion": "6.0.0",
+    "group": "incident",
+    "id": "XM_Cyber_Layout",
+    "name": "XM Cyber Layout",
+    "system": false,
+    "version": -1,
+    "detailsV2": {
+        "tabs": [
 			{
 				"id": "summary",
 				"name": "Legacy Summary",
@@ -20,7 +20,7 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [
 							{
@@ -88,9 +88,8 @@
 							}
 						],
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Case Details",
 						"static": false,
@@ -100,11 +99,10 @@
 					},
 					{
 						"h": 2,
-						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Notes",
 						"static": false,
@@ -116,11 +114,10 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Work Plan",
 						"static": false,
@@ -132,12 +129,11 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Linked Incidents",
 						"static": false,
@@ -149,11 +145,10 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Child Incidents",
 						"static": false,
@@ -165,11 +160,10 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Evidence",
 						"static": false,
@@ -182,11 +176,10 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Team Members",
 						"static": false,
@@ -198,11 +191,10 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
 						"maxH": null,
-						"maxW": 2,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 2,
 						"moved": false,
 						"name": "Indicators",
 						"query": "",
@@ -216,7 +208,7 @@
 					{
 						"displayType": "CARD",
 						"h": 2,
-						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
 						"items": [
 							{
 								"endCol": 1,
@@ -265,9 +257,8 @@
 							}
 						],
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Timeline Information",
 						"static": false,
@@ -278,7 +269,7 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
 							{
@@ -310,9 +301,8 @@
 							}
 						],
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Closing Information",
 						"static": false,
@@ -323,7 +313,7 @@
 					{
 						"displayType": "CARD",
 						"h": 2,
-						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
 							{
@@ -337,9 +327,8 @@
 							}
 						],
 						"maxH": null,
-						"maxW": 1,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 1,
 						"moved": false,
 						"name": "Investigation Data",
 						"static": false,
@@ -381,115 +370,40 @@
 				"name": "XM Cyber",
 				"sections": [
 					{
+						"description": "Below are attack techniques that an attacker could use to compromise the entity.",
 						"displayType": "ROW",
-						"h": 2,
+						"h": 6,
 						"hideName": false,
-						"i": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-6a7d6a50-08cf-11ed-aa39-c3aebd42cfee",
 						"items": [
 							{
 								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "entityreport",
-								"height": 22,
-								"id": "6be4bf80-1473-11eb-8e98-c1f918d6dfb0",
+								"endCol": 2,
+								"fieldId": "compromisingtechniques",
+								"height": 106,
+								"id": "d88f0ee0-08cf-11ed-aa39-c3aebd42cfee",
 								"index": 0,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
+								"listId": "sqsw8wv4hm-6a7d6a50-08cf-11ed-aa39-c3aebd42cfee",
 								"sectionItemType": "field",
 								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "entityname",
-								"height": 22,
-								"id": "2bd10050-1880-11eb-b34a-395d056e24a8",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "criticalasset",
-								"height": 22,
-								"id": "89960d20-1317-11eb-8677-ed095e9aa5f3",
-								"index": 2,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "averagecomplexity",
-								"height": 22,
-								"id": "eb262400-0f14-11eb-acc7-97278328b66f",
-								"index": 3,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "criticalassetsatrisklevel",
-								"height": 22,
-								"id": "fac55110-0f14-11eb-acc7-97278328b66f",
-								"index": 4,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "entityid",
-								"height": 22,
-								"id": "4928f760-1313-11eb-8c4e-19d649fb0001",
-								"index": 0,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "entitytype",
-								"height": 22,
-								"id": "1e324220-1325-11eb-8c8a-31e6f7de4330",
-								"index": 1,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "averagecomplexitylevel",
-								"height": 22,
-								"id": "bfe26560-0f14-11eb-acc7-97278328b66f",
-								"index": 2,
-								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
-								"sectionItemType": "field",
-								"startCol": 2
 							}
 						],
 						"maxH": null,
-						"maxW": 2,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 2,
 						"moved": false,
-						"name": "Summary",
+						"name": "Inbound",
 						"static": false,
-						"w": 2,
+						"w": 1,
 						"x": 0,
-						"y": 0
+						"y": 2
 					},
 					{
-						"description": "Critical assets directly or indirectly compromised from this entity, with the average and minimum attack complexity over the given time period (default 7 days)",
+						"description": "Below are the critical assets that the entity puts at risk in future steps, and the complexity of the attack paths to each critical asset.",
 						"displayType": "ROW",
-						"h": 2,
+						"h": 6,
 						"hideName": false,
-						"i": "sqsw8wv4hm-e0760930-187e-11eb-b34a-395d056e24a8",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-1d56f010-08d0-11ed-aa39-c3aebd42cfee",
 						"items": [
 							{
 								"dropEffect": "move",
@@ -498,37 +412,126 @@
 								"height": 22,
 								"id": "f7e8be00-0f14-11eb-acc7-97278328b66f",
 								"index": 0,
+								"listId": "sqsw8wv4hm-1d56f010-08d0-11ed-aa39-c3aebd42cfee",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "criticalassetsatrisklist",
+								"height": 106,
+								"id": "24ed8070-187f-11eb-b34a-395d056e24a8",
+								"index": 2,
+								"listId": "sqsw8wv4hm-1d56f010-08d0-11ed-aa39-c3aebd42cfee",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Outbound: Critical assets",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-a7877530-0b13-11ed-bfde-f9c2149a144c",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "entitytype",
+								"height": 22,
+								"id": "1e324220-1325-11eb-8c8a-31e6f7de4330",
+								"index": 0,
+								"listId": "sqsw8wv4hm-1f08b430-08cf-11ed-aa39-c3aebd42cfee",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "entityreport",
+								"height": 22,
+								"id": "6be4bf80-1473-11eb-8e98-c1f918d6dfb0",
+								"index": 1,
+								"listId": "sqsw8wv4hm-1f08b430-08cf-11ed-aa39-c3aebd42cfee",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "entityname",
+								"height": 22,
+								"id": "2bd10050-1880-11eb-b34a-395d056e24a8",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "entityid",
+								"height": 22,
+								"id": "4928f760-1313-11eb-8c4e-19d649fb0001",
+								"index": 3,
+								"listId": "sqsw8wv4hm-1f08b430-08cf-11ed-aa39-c3aebd42cfee",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "entityisacriticalasset",
+								"height": 22,
+								"id": "89960d20-1317-11eb-8677-ed095e9aa5f3",
+								"index": 4,
 								"listId": "sqsw8wv4hm-77acfbc0-0f14-11eb-acc7-97278328b66f",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 4,
-								"fieldId": "criticalassetsatrisklist",
-								"height": 106,
-								"id": "24ed8070-187f-11eb-b34a-395d056e24a8",
+								"fieldId": "xmcyberavgcomplexitylevel",
+								"height": 22,
+								"id": "edbe5870-325f-11ed-9f3b-1919f4cc0d55",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "xmcyberavgcomplexityscore",
+								"height": 22,
+								"id": "eeb4ed70-325f-11ed-9f3b-1919f4cc0d55",
 								"index": 1,
 								"sectionItemType": "field",
-								"startCol": 0
+								"startCol": 2
 							}
 						],
 						"maxH": null,
-						"maxW": 2,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 2,
 						"moved": false,
-						"name": "Affected Critical Assets",
+						"name": "Summary",
 						"static": false,
-						"w": 2,
+						"w": 3,
 						"x": 0,
-						"y": 2
+						"y": 0
 					},
 					{
-						"description": "Entities directly compromised by this entity and the relevant attack technique used",
+						"description": "Below are the entities, including critical assets, that the entity compromises in the next step, as well as which attack technique the attacker would use to compromise each entity.",
 						"displayType": "ROW",
-						"h": 2,
+						"h": 6,
 						"hideName": false,
-						"i": "sqsw8wv4hm-54b89bf0-187f-11eb-b34a-395d056e24a8",
+						"i": "caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-caseinfoid-sqsw8wv4hm-c82908d0-0b13-11ed-bfde-f9c2149a144c",
 						"items": [
 							{
 								"endCol": 2,
@@ -540,7 +543,7 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 4,
+								"endCol": 2,
 								"fieldId": "affectedentitieslist",
 								"height": 106,
 								"id": "64f6c820-187f-11eb-b34a-395d056e24a8",
@@ -550,48 +553,19 @@
 							}
 						],
 						"maxH": null,
-						"maxW": 2,
+						"maxW": 3,
 						"minH": 1,
-						"minW": 2,
 						"moved": false,
-						"name": "Affected Entities",
+						"name": "Outbound: Affected entities",
 						"static": false,
-						"w": 2,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"description": "Name of each attack technique that has compromised the entity and the count such attack vectors from the time period",
-						"displayType": "ROW",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "sqsw8wv4hm-fabd40c0-1896-11eb-8949-bb6927d39d5d",
-						"items": [
-							{
-								"endCol": 4,
-								"fieldId": "compromisingtechniques",
-								"height": 106,
-								"id": "094aafb0-1897-11eb-8949-bb6927d39d5d",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 2,
-						"minH": 1,
-						"minW": 2,
-						"moved": false,
-						"name": "Compromising Techniques",
-						"static": false,
-						"w": 2,
-						"x": 0,
-						"y": 4
+						"w": 1,
+						"x": 2,
+						"y": 2
 					}
 				],
 				"type": "custom"
 			}
 		]
-	}
+    },
+    "marketplaces": ["xsoar"]
 }

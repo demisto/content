@@ -1,0 +1,380 @@
+[
+  {
+    "comments": "null(prefix) + null(value) + null(suffix) = empty array",
+    "args": {
+      "value": null,
+      "prefix": null,
+      "suffix": null,
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": []
+  },
+  {
+    "comments": "bool:false(prefix) + str(value) + null(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": false,
+      "suffix": null,
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "falsexxx"
+  },
+  {
+    "comments": "bool:true(prefix) + str(value) + null(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": true,
+      "suffix": null,
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "truexxx"
+  },
+  {
+    "comments": "str(prefix) + null(value) + str(suffix)",
+    "args": {
+      "value": null,
+      "prefix": "yyy",
+      "suffix": "zzz",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyzzz"
+  },
+  {
+    "comments": "str(prefix) + str(value) + str(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": "zzz",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxxzzz"
+  },
+  {
+    "comments": "str(prefix) + str(value) + null(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": null,
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx"
+  },
+  {
+    "comments": "str(prefix) + str(value) + int:0(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": 0,
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx0"
+  },
+  {
+    "comments": "str(prefix) + str(value) + dict:empty(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": {},
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx"
+  },
+  {
+    "comments": "str(prefix) + str(value) + array:empty(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": "yyy",
+      "suffix": [],
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "yyyxxx"
+  },
+  {
+    "comments": "null(prefix) + str(value) + str(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": null,
+      "suffix": "zzz",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "xxxzzz"
+  },
+  {
+    "comments": "int:0(prefix) + str(value) + str(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": 0,
+      "suffix": "zzz",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "0xxxzzz"
+  },
+  {
+    "comments": "dict:empty(prefix) + str(value) + str(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": {},
+      "suffix": "zzz",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "xxxzzz"
+  },
+  {
+    "comments": "array:empty(prefix) + str(value) + str(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": [],
+      "suffix": "zzz",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "xxxzzz"
+  },
+  {
+    "comments": "null(prefix) + str(value) + str(suffix)",
+    "args": {
+      "value": 123,
+      "prefix": null,
+      "suffix": null,
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": 123
+  },
+  {
+    "comments": "DT:single(prefix) + str(value) + DT:single(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": "${name1}",
+      "suffix": "${name2}",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "value1xxxvalue2"
+  },
+  {
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix)",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
+      "suffix": "ccc ${name2} ${inputs.name2} ${incident.name2} ddd",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix), variable_markers={}",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa {name1} {inputs.name1} {incident.name1} bbb",
+      "suffix": "ccc {name2} {inputs.name2} {incident.name2} ddd",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": "{,}",
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value1 inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix), DT value is missing",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
+      "suffix": "ccc ${name2} ${inputs.name2} ${incident.name2} ddd",
+      "ctx_data": {
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa  inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "DT:embed(prefix) + str(value) + DT:embed(suffix), DT value is missing (keep_symbol_to_null=true)",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name1} ${inputs.name1} ${incident.name1} bbb",
+      "suffix": "ccc ${name2} ${inputs.name2} ${incident.name2} ddd",
+      "ctx_data": {
+        "name2": "value2"
+      },
+      "ctx_inputs": {
+        "name1": "inputs-value1",
+        "name2": "inputs-value2"
+      },
+      "ctx_inc": {
+        "name1": "incident-value1",
+        "name2": "incident-value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": true
+    },
+    "results": "aaa ${name1} inputs-value1 incident-value1 bbbxxxccc value2 inputs-value2 incident-value2 ddd"
+  },
+  {
+    "comments": "Nested DT",
+    "args": {
+      "value": "xxx",
+      "prefix": "aaa ${name${name1}} bbb",
+      "suffix": "ccc",
+      "ctx_data": {
+        "name1": "2",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "aaa value2 bbbxxxccc"
+  },
+  {
+    "comments": "DT within a bracket",
+    "args": {
+      "value": "xxx",
+      "prefix": "{${name}}",
+      "suffix": "zzz",
+      "ctx_data": {
+        "name": "value"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": "{value}xxxzzz"
+  }
+]

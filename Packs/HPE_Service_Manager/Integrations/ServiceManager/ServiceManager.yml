@@ -623,4 +623,31 @@ script:
       description: Device status.
     - contextPath: HPSM.Devices.UpdatedBy
       description: The last user who updated the device.
+  - name: hpsm-create-request
+    arguments:
+    - name: title
+      required: true
+      description: The title of the request.
+    - name: purpose
+      required: true
+      description: The purpose of the request.
+    - name: callbackcontactname
+      description: Who created/opened the service request.
+    - name: contactname
+      required: true
+      description: Incident contact details.
+    - name: resourceName
+      required: true
+      description: 'The resource name (API URI) that will be used. For example: "incidents".'
+    outputs:
+    - contextPath: HPSM.ServiceRequest.ContactName
+      description: Who created/opened the service request
+    - contextPath: HPSM.ServiceRequest.ID
+      description: The id of the service request
+    - contextPath: HPSM.ServiceRequest.CallbackContactName
+      description: Incident contact details
+    - contextPath: HPSM.ServiceRequest.Title
+      description: Incident title
+    description: Creates a new service request
+  runonce: false
 fromversion: 5.0.0

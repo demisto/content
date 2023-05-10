@@ -1,0 +1,68 @@
+{
+    "msft_exchange_raw": {
+        "date_time": {
+            "type": "string",
+            "is_array": false
+        },
+        "client_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "client_hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "server_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "server_hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "internal_message_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "message_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "network_message_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "recipient_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "message_subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "sender_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "return_path": {
+            "type": "string",
+            "is_array": false
+        },
+        "message_info": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenant_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "schema_version": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

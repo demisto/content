@@ -1,0 +1,26 @@
+[
+  {
+    "_key": "4607",
+    "_id": "Things/4607",
+    "_rev": "_eo0Kode--B",
+    "category": "Interface",
+    "firstSeen": 1644553231785,
+    "identity": {
+      "company": "appnovi",
+      "type": "mac",
+      "value": "48:16:76:47:40:1e",
+      "datacenter": "global",
+      "domain": "global"
+    },
+    "lastSeen": 1660769051306,
+    "name": "48:16:76:47:40:1e",
+    "source": {
+      "vcenter": {
+        "lastSeen": 1647194901435.92
+      }
+    },
+    "userProperties": {
+      "owner": "Barney Gumble"
+    }
+  }
+]

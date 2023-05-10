@@ -74,7 +74,11 @@ def test_update_incident_command(mocker):
 
     update_incident_command(MockClient, args)
 
-    assert mock_result.call_args.args[2] == expected_result
+    no_order_list_equals(mock_result.call_args.args[2]['changes'], expected_result['changes'])
+
+
+def no_order_list_equals(l1: list, l2: list):
+    assert len(l1) == len(l2) and all(item in l2 for item in l1)
 
 
 def test_update_incident_command_with_invalid_json(mocker):

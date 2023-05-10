@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: Netskope_Modeling_Rule
+name: Netskope Modeling Rule
+rules: ''
+schema: ''
+tags: netskope
