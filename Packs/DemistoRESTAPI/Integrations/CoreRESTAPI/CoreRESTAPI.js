@@ -120,7 +120,7 @@ sendMultipart = function (uri, entryID, body) {
 
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = getRequestURL(uri)
-    log(requestUrl);
+    
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
@@ -318,6 +318,9 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
     }
 };
 
+
+
+
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID, target ) {
     /**
      * Upload a new file
@@ -337,35 +340,42 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
         throw 'Either file_name or entry_id argument must be provided.';
     }
     var service = (target == 'Incident Attachment') ? 'incident' : 'entry';
+    fileId = saveFile(file_content)
     var body = {
-        files : {
-            file: {
+            file: 
+            {
                 value: file_content,
                 options: {
                     filename: file_name,
                     contentType: 'application/octet-stream'
                 }
-            }
-        }
+            },
+        
     };
-    var res = sendRequest('POST', `/${service}/upload/${incident_id}/attachment`, JSON.stringify(body));
+    
+    var investigationId= 1;
+    var url_suffix= `entry/upload/${investigationId}`
+    var old_but_gold = `/${service}/upload/${incident_id}`
+    var res = sendRequest('POST', url_suffix, JSON.stringify(body));
     if (isError(res[0])) {
         throw res[0].Contents;
     }
-
+    var response = res['response'];
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
     // in case the file uploaded as war room entry
     if (target === 'war room entry') {
-        md += ` Entry ID is ${res['response'].entries[0].id}`;
+        md += ` Entry ID is ${response.entries[0].id}`;
     }
+    
     return {
         Type: entryTypes.file,
-        FileID: saveFile(file_content),
+        FileID: fileId,
         File: file_name,
         Contents: file_content,
         HumanReadable: md
     };
 };
+
 
 var get_incident_id = function (entry_id) {
     const res = entry_id.match(/(\d+)@(\d+)/);
@@ -374,89 +384,89 @@ var get_incident_id = function (entry_id) {
     }
     return res[0][1];
 };
+       
 
-var fileDelete = function(entryId) {
+function deleteContext( incidentId, keyToDelete) {
+    const body = {
+      data: `!DeleteContext key=${keyToDelete}`,
+
+    };
+    var res =  executeCommand("DeleteContext", {'key': 'File'});
+    //const response =  sendRequest( 'POST', '/entry', JSON.stringify(body));
+  
+    return response;
+  }
+  
+function deleteFile(entryId, deleteArtifact = true) {
+    body = {
+        "id": entryId,
+        "deleteArtifact": 'File'
+    }
+    var response =  sendRequest('POST', '/entry/delete/v2', JSON.stringify(body) );
+    return response;
+  }
+  
+
+function fileDeleteCommand(entryId) {
     /**
-     * Upload a new file
+     * Deletes a specific file.
     Arguments:
         @param {String} entryId  -- entry ID of the file
     Returns:
         Message that the file was deleted successfully + entry_id
     """
-     */
-    //let files = demisto.context().File || [];
-    //files = Array.isArray(files) ? files : [files];
-    logDebug('mm-whta')
+     */ 
+    files =  sendRequest('GET', 'entry/File' );
     
-    try { 
-        var body = {
-            id: entryId
-        };
-        logDebug('mm-whta')
-        const response = sendRequest('POST',`/Indicators/delete/v2/${entryId}`, JSON.stringify(body));
-    } catch (e) {
+    files = (files instanceof Array)? files:[files];
+    try{
+        deleteFile(entryId);
+
+    }
+    catch (e) {
         throw new Error(`File already deleted or not found!\n${e}`);
     }
-    logDebug('mm-whta')
-    const incident_id = get_incident_id(entryId);
-    bodyContent = {
-        id: "",
-        version: 0,
-        investigationId: incident_id,
-        data: `!DeleteContext key=${'File'}`,
-        args: null,
-        markdown: false
-    };
-    sendRequest('DELETE','/entry', JSON.stringify(bodyContent));
-    //sleep(1000); // To let the API execute the request
-    
-    //const new_files = files.filter(file => file.EntryID !== entryId);
-    return "new_files";
-
-};
-
-function fileDeleteCommand(entryId) {
-    const new_files = fileDelete(entryId);
-    logDebug('mm-the fuck')
-    console.log('mm- nuuu')
+    incident_id = get_incident_id(entryId)
+    deleteContext(incident_id, "File")
+    var new_files = []
+    for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
+        if (files[i].entryId != entryId) {
+            new_files.push(files[i]);
+        }
+      }
+    var response =  sendRequest('POST', '/entry//v2', JSON.stringify(body) );
     return {
-        readable_output: `File ${entryId} deleted!`,
-        outputs: new_files,
-        outputs_prefix: "File"
+        HumanReadable: `File ${entryId} was deleted successfully`,
+        outputs: new_files
     };
 }
 
 
 
 function coreApiFileCheckCommand(entryId) {
-    
-    if (Object.keys(output_content).length > 0) {
-        //client.delete_context(demisto.incident.id, 'IsFileExists');
-        sleep(1000); // To let the API execute the request
-    }
-    
-    try {
-        //const path_res = demisto.getFilePath(entryId);
-        const file_name = path_res.name;
-        
-        const output_tmp = { [entryId]: true };
-        //output_content = { ...output_content, ...output_tmp };
-        
+    /**
+     Get the content of the file
+        Arguments:
+            @param {String} entryId  -- entry ID of the file
+        Returns:
+            json -- return of the API
+    */
+    response = sendRequest('GET',`/entry/download/${entryId}`)
+    console.log(JSON.stringify(response));
+
+    if (Object.keys(response).length > 0) {
         return {
-            readable_output: `File ${entryId} exists under the name ${file_name}!`,
+            HumanReadable: `File ${entryId} exists`,
             outputs_prefix: 'IsFileExists',
-            outputs: output_content
-        };
-    } catch (err) {
-        const output_tmp = { [entryId]: false };
-        //output_content = { ...output_content, ...output_tmp };
-        
-        return {
-            readable_output: `File ${entryId} does not exist! ${err}`,
-            outputs_prefix: 'IsFileExists',
-            outputs: output_content
+            outputs: response
         };
     }
+    else{
+        return {
+            HumanReadable: `File ${entryId}  isn't exists`,
+        }; 
+    }
+
 }
 
 switch (command) {
@@ -509,7 +519,6 @@ switch (command) {
     case 'core-api-file-upload':
         return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entryID, args.target)
     case 'core-api-file-delete':
-        logDebug('mm-whta')
         return fileDeleteCommand(args.entry_id);
     case 'core-api-file-attachment-delete':
         return null
