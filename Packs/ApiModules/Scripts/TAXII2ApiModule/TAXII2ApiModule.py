@@ -473,20 +473,33 @@ class Taxii2FeedClient:
         return tlp_color
 
     def set_default_fields(self, obj_to_parse):
-        fields = {
-            'stixid': obj_to_parse.get('id', ''),
-            'firstseenbysource': obj_to_parse.get('created', ''),
-            'modified': obj_to_parse.get('modified', ''),
-            'description': obj_to_parse.get('description', ''),
-        }
+        fields = self.parse_custom_fields(obj_to_parse.get('extensions', {}))
+
+        if not fields.get('stixid'):
+            fields['stixid'] = obj_to_parse.get('id', '')
+        if not fields.get('firstseenbysource'):
+            fields['firstseenbysource'] = obj_to_parse.get('created', '')
+        if not fields.get('modified'):
+            fields['modified'] = obj_to_parse.get('modified', '')
+        if not fields.get('description'):
+            fields['description'] = obj_to_parse.get('description', '')
 
         tlp_from_marking_refs = self.get_tlp(obj_to_parse)
         tlp_color = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
-        if tlp_color:
+        if tlp_color and not fields.get('trafficlightprotocol'):
             fields['trafficlightprotocol'] = tlp_color
 
         return fields
+
+    @staticmethod
+    def parse_custom_fields(extensions):
+        custom_fields = {}
+        for key, value in extensions.items():
+            if key.startswith('extension-definition--'):
+                custom_fields = value.get('CustomFields', {})
+                break
+        return custom_fields
 
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
@@ -746,11 +759,13 @@ class Taxii2FeedClient:
         }
 
         fields = self.set_default_fields(campaign_obj)
-        fields.update({
-            "aliases": campaign_obj.get('aliases', []),
-            "objective": campaign_obj.get('objective', ''),
-            "tags": [tag for tag in self.tags],
-        })
+        if not fields.get('aliases'):
+            fields['aliases'] = campaign_obj.get('aliases', '')
+        if not fields.get('objective'):
+            fields['objective'] = campaign_obj.get('objective', '')
+        if not fields.get('tags'):
+            fields['tags'] = [tag for tag in self.tags]
+
         campaign["fields"] = fields
 
         return [campaign]
