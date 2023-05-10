@@ -3387,7 +3387,7 @@ tasks:
     task:
       id: 8b370acf-362f-45b2-81f6-10f886fb4d58
       version: -1
-      name: Engage with user?
+      name: Engage with the user?
       description: Checks whether to inform the user about the verdict of the incident.
       type: condition
       iscommand: false
@@ -3440,7 +3440,7 @@ tasks:
     task:
       id: 04046165-90c9-4bcc-8aad-fdf13f03568c
       version: -1
-      name: Stop to manually perform additional actions?
+      name: Pause to manually perform additional actions?
       type: condition
       iscommand: false
       brand: ""
@@ -3487,7 +3487,7 @@ tasks:
       id: 29be8530-7a2a-4454-81cf-90f3478b7c8b
       version: -1
       name: Take manual actions
-      description: ' Take notes and additional necessary manual actions before continuing. Once this task will be completed, the incident will be closed.'
+      description: 'Take notes and additional necessary manual actions before continuing. Once this task will be completed, the incident will be closed.'
       type: regular
       iscommand: false
       brand: ""
@@ -3727,7 +3727,7 @@ inputs:
   playbookInputQuery:
 - key: UserEngagement
   value:
-    simple: "false"
+    simple: "True"
   required: false
   description: |-
     Specify whether to engage with the user via email for investigation updates.
@@ -3735,7 +3735,7 @@ inputs:
   playbookInputQuery:
 - key: TakeManualActions
   value:
-    simple: "false"
+    simple: "False"
   required: false
   description: |-
     Specify whether to stop the playbook to take additional action before closing the incident.
