@@ -109,21 +109,23 @@ else
   if [ -f "$ARTIFACTS_FOLDER/index.json" ]; then
     gsutil cp -z json "$ARTIFACTS_FOLDER/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
   else
-    echo "No corepacks files were found, skipping uploading."
+    echo "Skipping uploading index.json file."
   fi
 
   corepacks_files_count=$(find $ARTIFACTS_FOLDER -name "corepacks*.json" | wc -l)
   if [ $corepacks_files_count -eq 0 ]; then
-    echo "Skipping uploading corepacks.json files."
+    echo "No corepacks files were found, skipping uploading."
   else
     echo "Uploading corepacks files."
     # Copy corepacks files from the artifacts folder to the build bucket:
     find $ARTIFACTS_FOLDER -name "corepacks*.json" -exec gsutil cp -z json {} "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH" \;
+    echo "Successfully uploaded corepacks files."
   fi
 
   if [ -f "$ARTIFACTS_FOLDER/versions-metadata.json" ]; then
     echo "Uploading versions-metadata.json."
     gsutil cp -z json "$ARTIFACTS_FOLDER/versions-metadata.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+    echo "Successfully uploaded versions-metadata.json."
   else
     echo "No versions-metadata.json file, skipping uploading."
   fi
