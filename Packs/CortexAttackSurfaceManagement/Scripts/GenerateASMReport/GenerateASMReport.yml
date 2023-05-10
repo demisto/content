@@ -52,7 +52,7 @@ args:
   predefined:
   - analysis
   - summary
-  description: Type of report to generate (Analysis report after enrichment or Summary
+  description: Type of report to generate (Analysis report after enrichment or Summary).
 comment: Generate an ASM Alert Summary report.
 commonfields:
   id: GenerateASMReport

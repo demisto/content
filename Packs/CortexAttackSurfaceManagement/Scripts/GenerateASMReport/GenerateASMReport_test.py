@@ -8,31 +8,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_get_asm_args(mocker):
-    """Tests get_asm_args helper function.
-
-        Given:
-            - Mock JSON that mimics Demisto.args() object.
-        When:
-            - Sending JSON to get_asm_args helper function.
-        Then:
-            - Checks the output of the helper function with the expected output.
-    """
-    from GenerateASMReport import get_asm_args
-
-    args = util_load_json("test_data/args.json")
-    result = get_asm_args(args)
-    assert isinstance(result, dict)
-    assert result["asmdatacollection"] == [
-        {
-            "Answerer": "fake_user@domain.com",
-            "Options": "NoAutomatedRemediation",
-            "Selected": "File a ServiceNow Ticket",
-            "Timestamp": "1666033665586",
-        }
-    ]
-
-
 def test_color_for_severity(mocker):
     """Tests color_for_severity helper function.
 
@@ -76,7 +51,7 @@ def test_build_template(mocker):
         "type": "header",
         "data": "ASM Investigation Summary Report",
         "layout": {
-            "rowPos": 1,
+            "rowPos": 2,
             "columnPos": 2,
             "style": {
                 "textAlign": "center",
@@ -103,7 +78,7 @@ def test_build_report(mocker):
     template = util_load_json("test_data/template.json")
     sanepdf_raw = util_load_json("test_data/sanepdf_raw.json")
     mocker.patch.object(demisto, "executeCommand", return_value=sanepdf_raw)
-    result = build_report(template, 1234)
+    result = build_report(template, "1234", "asm_alert_investigation_summary")
     assert isinstance(result, dict)
     assert result["Type"] == EntryType.ENTRY_INFO_FILE
 
@@ -122,3 +97,95 @@ def test_RPR_criteria(mocker):
 
     result = RPR_criteria("""[{"field": "provider", "value": "amazon web services", "operator": "eq"}]""")
     assert result == "(provider = amazon web services)"
+
+
+def test_service_format(mocker):
+    """Tests service_format helper function.
+
+        Given:
+            - Mock service API (Dict).
+        When:
+            - Sending service API (Dict) to service_format helper function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
+    from GenerateASMReport import service_format
+
+    result = service_format({"service_type": "test", "service_name": "name",
+                             "first_observed": 1680850320000, "last_observed": 1683306120000})
+    assert result == [
+        {
+            "Field": "Service Type",
+            "Value": "test"
+        },
+        {
+            "Field": "Service Name",
+            "Value": "name"
+        },
+        {
+            "Field": "Active Classifications",
+            "Value": "N/A"
+        },
+        {
+            "Field": "Business Units",
+            "Value": "N/A"
+        },
+        {
+            "Field": "Provider",
+            "Value": "N/A"
+        },
+        {
+            "Field": "IP Addresses",
+            "Value": "N/A"
+        },
+        {
+            "Field": "Port",
+            "Value": "N/A"
+        },
+        {
+            "Field": "Protocol",
+            "Value": "N/A"
+        },
+        {
+            "Field": "First Observed",
+            "Value": "2023-04-07"
+        },
+        {
+            "Field": "Last Observed",
+            "Value": "2023-05-05"
+        }
+
+    ]
+
+
+def test_asset_format(mocker):
+    """Tests asset_format helper function.
+
+        Given:
+            - Mock asset API (Dict).
+        When:
+            - Sending asset API (Dict) to asset_format helper function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
+    from GenerateASMReport import asset_format
+
+    result = asset_format({"name": "name", "type": "type"})
+    assert result == [
+        {
+            "Field": "Asset Name",
+            "Value": "name"
+        },
+        {
+            "Field": "Business Units",
+            "Value": "n/a"
+        },
+        {
+            "Field": "Asset Type",
+            "Value": "type"
+        },
+        {
+            "Field": "Detected Services on Asset",
+            "Value": "n/a"
+        }
+    ]
