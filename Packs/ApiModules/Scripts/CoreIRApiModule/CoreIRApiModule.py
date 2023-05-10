@@ -3647,7 +3647,7 @@ def parse_risky_users_or_hosts(user_or_host: dict[str, Any], table_title: str) -
     }
 
 
-def parse_user_groups(group: dict[str, Any]) -> list[dict[str, Optional[str]]]:
+def parse_user_groups(group: dict[str, Any]) -> list[dict[str, str | None]]:
     return [
         {
             'User email': user,
@@ -3833,7 +3833,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
                 f'{error_msg}, Note: If you sent more than one group name, they may not exist either, full error message: {e}'
             ) from e
         raise
-    table_for_markdown: list[dict[str, Optional[str]]] = []
+    table_for_markdown: list[dict[str, str | None]] = []
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
     readable_output = tableToMarkdown(name='Groups', t=table_for_markdown)
