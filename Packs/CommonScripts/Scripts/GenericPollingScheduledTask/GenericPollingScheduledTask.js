@@ -55,7 +55,7 @@ function finish(playbookId, tag, err, entryGUID) {
     if (playbookId) {
         params.parentPlaybookID = playbookId;
     }
-    if (entryGUID) {
+    if ((entryGUID !== undefined) && (entryGUID)) {
         var res = executeCommand("stopScheduleEntry", {'scheduledEntryGuid': entryGUID});
         if (isError(res[0])) {
             logError('Failed to stop scheduled entry: ' + res[0]);
@@ -80,143 +80,6 @@ function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pend
         'times': 1
     });
 }
-function genericPollingScheduledTaskWithoutGuid() {
-    try {
-        if (args.timeout <= 0) {
-            return finish(args.playbookId, args.tag);
-        }
-
-        // Get ids that have not finished yet
-        var ids = argToList(args.ids);
-        for (var i = 0; i < ids.length; i++) {
-            ids[i] = ids[i].replace(/[\\]*"/g, '');
-        }
-
-
-        // Set the context of the scheduled task to the local playbook context
-        var idsToPoll = ids;
-        var pendingPath = args.pendingIds;
-
-        if ('playbookId' in args) {
-            playbookContext = 'subplaybook-' + args.playbookId;
-            pendingPath = playbookContext + "." + args.pendingIds;
-        }
-        var pendings = dq(invContext, pendingPath);
-
-        if (pendings === null) {
-            return finish(args.playbookId, args.tag);
-        }
-
-        var idsStrArr = listOfStrings(ids);
-        var pendingsStrArr = listOfStrings(pendings);
-        idsToPoll = intersect(idsStrArr, pendingsStrArr);
-        if (idsToPoll.length === 0) {
-            return finish(args.playbookId, args.tag);
-        }
-
-        // Run the polling command for each id
-        var pollingCommandArgs = {};
-        var names = argToList(args.additionalPollingCommandArgNames);
-        var values = argToList(args.additionalPollingCommandArgValues);
-
-        for (var index = 0; index < names.length; index++)
-            pollingCommandArgs[names[index]] = values[index];
-
-        pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
-        var res = executeCommand(args.pollingCommand, pollingCommandArgs);
-
-        // Change the context output of the polling results to the local playbook context
-        if ('playbookId' in args) {
-            for (var i = 0; i < res.length; i++) {
-                if ('EntryContext' in res[i]) {
-                    for (var k in res[i].EntryContext) {
-                        res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
-                        delete res[i].EntryContext[k];
-                    }
-                }
-            }
-        }
-
-        // Schedule the next iteration
-        var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues);
-        if (isError(scheduleTaskRes[0])) {
-            res.push(scheduleTaskRes);
-        }
-
-        return res;
-    }
-    catch (err) {
-        finish(args.playbookId, args.tag, err);
-        throw err;
-    }
-}
-
-function genericPollingScheduledTaskWithGuid() {
-    try {
-        var guid = args.scheduledEntryGuid;
-        var endTime = stringToDate(args.endTime, "%Y-%m-%d %H:%M:%S");
-        var currentTime = new Date();
-        if (currentTime >= endTime) {
-            return finish(args.playbookId, args.tag, undefined, guid);
-        }
-
-        // Get ids that have not finished yet
-        var ids = argToList(args.ids);
-        for (var i = 0; i < ids.length; i++) {
-            ids[i] = ids[i].replace(/[\\]*"/g, '');
-        }
-
-
-        // Set the context of the scheduled task to the local playbook context
-        var idsToPoll = ids;
-        var pendingPath = args.pendingIds;
-        if ('playbookId' in args) {
-            playbookContext = 'subplaybook-' + args.playbookId;
-            pendingPath = playbookContext + "." + args.pendingIds;
-        }
-        var pendings = dq(invContext, pendingPath);
-
-        if (pendings === null) {
-            return finish(args.playbookId, args.tag, undefined, guid);
-        }
-
-        var idsStrArr = listOfStrings(ids);
-        var pendingsStrArr = listOfStrings(pendings);
-        idsToPoll = intersect(idsStrArr, pendingsStrArr);
-        if (idsToPoll.length === 0) {
-            return finish(args.playbookId, args.tag, undefined, guid);
-        }
-
-        // Run the polling command for each id
-        var pollingCommandArgs = {};
-        var names = argToList(args.additionalPollingCommandArgNames);
-        var values = argToList(args.additionalPollingCommandArgValues);
-
-        for (var index = 0; index < names.length; index++)
-            pollingCommandArgs[names[index]] = values[index];
-
-        pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
-        var res = executeCommand(args.pollingCommand, pollingCommandArgs);
-
-        // Change the context output of the polling results to the local playbook context
-        if ('playbookId' in args) {
-            for (var i = 0; i < res.length; i++) {
-                if ('EntryContext' in res[i]) {
-                    for (var k in res[i].EntryContext) {
-                        res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
-                        delete res[i].EntryContext[k];
-                    }
-                }
-            }
-        }
-
-        return res;
-    }
-    catch (err) {
-        finish(args.playbookId, args.tag, err, guid);
-        throw err;
-    }
-}
 
 function shouldRunWithGuid() {
     res = getDemistoVersion();
@@ -235,12 +98,90 @@ function shouldRunWithGuid() {
     }
 }
 
+function genericPollingScheduled(){
+    try {
+        shouldRunWithGuid = shouldRunWithGuid();
+        if (shouldRunWithGuid) {
+            var endTime = stringToDate(args.endTime, "%Y-%m-%d %H:%M:%S");
+            var currentTime = new Date();
 
-function main() {
-    if (shouldRunWithGuid()) {
-        return genericPollingScheduledTaskWithGuid();
+            if (currentTime >= endTime) {
+                return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+            }
+        }
+        else {
+            if (args.timeout <= 0) {
+                return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+            }
+        }
+
+        // Get ids that have not finished yet
+        var ids = argToList(args.ids);
+        for (var i = 0; i < ids.length; i++) {
+            ids[i] = ids[i].replace(/[\\]*"/g, '');
+        }
+
+0
+        // Set the context of the scheduled task to the local playbook context
+        var idsToPoll = ids;
+        var pendingPath = args.pendingIds;
+
+        if ('playbookId' in args) {
+            playbookContext = 'subplaybook-' + args.playbookId;
+            pendingPath = playbookContext + "." + args.pendingIds;
+        }
+        var pendings = dq(invContext, pendingPath);
+
+        if (pendings === null) {
+            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+        }
+
+        var idsStrArr = listOfStrings(ids);
+        var pendingsStrArr = listOfStrings(pendings);
+        idsToPoll = intersect(idsStrArr, pendingsStrArr);
+        if (idsToPoll.length === 0) {
+            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+        }
+
+        // Run the polling command for each id
+        var pollingCommandArgs = {};
+        var names = argToList(args.additionalPollingCommandArgNames);
+        var values = argToList(args.additionalPollingCommandArgValues);
+
+        for (var index = 0; index < names.length; index++)
+            pollingCommandArgs[names[index]] = values[index];
+
+        pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
+        var res = executeCommand(args.pollingCommand, pollingCommandArgs);
+
+        // Change the context output of the polling results to the local playbook context
+        if ('playbookId' in args) {
+            for (var i = 0; i < res.length; i++) {
+                if ('EntryContext' in res[i]) {
+                    for (var k in res[i].EntryContext) {
+                        res[i].EntryContext[playbookContext + "." + k] = res[i].EntryContext[k];
+                        delete res[i].EntryContext[k];
+                    }
+                }
+            }
+        }
+
+        if (!shouldRunWithGuid) {
+            // Schedule the next iteration, old version.
+            var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues);
+            if (isError(scheduleTaskRes[0])) {
+                res.push(scheduleTaskRes);
+            }
+        }
+        return res;
     }
-    return genericPollingScheduledTaskWithoutGuid();
+    catch (err) {
+        finish(args.playbookId, args.tag, err, args.scheduledEntryGuid);
+        throw err;
+    }
 }
 
+function main() {
+    return genericPollingScheduled();
+}
 return main();

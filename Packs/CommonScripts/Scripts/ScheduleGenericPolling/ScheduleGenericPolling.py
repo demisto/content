@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import uuid
 
-# Constant to verify the minimum build number and XSIAM version for the new polling command (stopScheduleEntry feature).
+# Constant to verify the minimum build number and version for the new polling feature (stopScheduleEntry feature).
 # MINIMUM_XSIAM_VERSION = '8.3.0'
 # MINIMUM_BUILD_NUMBER_XSIAM = 313276
 MINIMUM_XSOAR_VERSION = '8.2.0'
@@ -43,9 +43,9 @@ def should_run_with_guid():
 
 def calculate_end_time(timeout):
     now = get_current_time()
-    new_time = now + timedelta(minutes=timeout)
+    end_time = now + timedelta(minutes=timeout)
     short_format = "%Y-%m-%d %H:%M:%S"
-    return new_time.strftime(short_format)
+    return end_time.strftime(short_format)
 
 
 def main():
