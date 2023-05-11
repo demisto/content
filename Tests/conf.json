@@ -5383,7 +5383,7 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-            "integrations": ["FeedLOLBas_test", "Demisto REST API"],
+            "integrations": ["LOLBAS Feed", "Demisto REST API"],
             "playbookID": "FeedLOLBas_test"
         }
     ],
