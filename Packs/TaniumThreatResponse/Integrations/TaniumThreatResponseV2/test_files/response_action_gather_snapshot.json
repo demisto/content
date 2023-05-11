@@ -1,0 +1,15 @@
+{
+    "data": {
+        "type": "gatherSnapshot",
+        "computerName": "1",
+        "options": {},
+        "status": "QUEUED",
+        "userId": 1,
+        "userName": "administrator",
+        "results": {},
+        "expirationTime": "2023-05-18T16:56:16.502Z",
+        "createdAt": "2023-05-11T16:56:16.503Z",
+        "updatedAt": "2023-05-11T16:56:16.503Z",
+        "id": 11
+    }
+}

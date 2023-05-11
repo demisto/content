@@ -1550,3 +1550,48 @@ def test_fetch_new_incidents(requests_mock):
     assert next_run.get('id') == "4"
     assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:04:59.000Z"),
                                                      TaniumThreatResponseV2.DATE_FORMAT)
+
+
+def test_get_response_actions(requests_mock):
+    """
+    Given - Nothing
+
+    When -
+        Running get_response_actions function.
+
+    Then -
+        The response actions should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/response_action_raw_response.json')
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/response-actions',
+                      json=api_raw_response)
+
+    args = {'limit': 2, 'offset': 0}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_response_actions(MOCK_CLIENT, args)
+    assert 'Response Actions' in human_readable
+    assert outputs.get('Tanium.ResponseActions(val.id === obj.id)', {})['data'][0].get('id') == 10
+
+
+def test_response_action_gather_snapshot(requests_mock):
+    """
+    Given - Nothing
+
+    When -
+        Running get_response_actions function.
+
+    Then -
+        The response actions should be returned.
+    """
+
+    api_raw_response = util_load_json('test_files/response_action_gather_snapshot.json')
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/response-actions',
+                      json=api_raw_response)
+
+    args = {'computer_name': 1}
+    human_readable, outputs, _ = TaniumThreatResponseV2.response_action_gather_snapshot(MOCK_CLIENT, args)
+    assert 'Response Actions' in human_readable
+    assert outputs.get('Tanium.ResponseActions(val.id === obj.id)', {})['data'].get('id') == 11
+    assert outputs.get('Tanium.ResponseActions(val.id === obj.id)', {})['data'].get('type') == 'gatherSnapshot'

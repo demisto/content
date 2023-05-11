@@ -1,5 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import ast
 import copy
 import json
@@ -9,9 +7,9 @@ import urllib.parse
 from typing import Any, List, Tuple
 from datetime import datetime
 
-
+import demistomock as demisto  # noqa: F401
 import urllib3
-
+from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 from lxml import etree
 
@@ -2165,35 +2163,16 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     ipaddrs_server = argToList(arg=command_args.get('ip_server'))
     port = arg_to_number(arg=command_args.get('port'))
 
-    # is_resp_filtering_required = statuses or hostnames or ipaddrs_client or ipaddrs_client or ipaddrs_server or port
-    is_resp_filtering_required = statuses or ipaddrs_client or ipaddrs_client or ipaddrs_server or port
-
+    is_resp_filtering_required = statuses or hostnames or ipaddrs_client or ipaddrs_client or ipaddrs_server or port
     filter_arguments = [
         (statuses, 'status'),
+        (hostnames, 'host_name'),
         (ipaddrs_client, 'ipaddress_client'),
         (ipaddrs_server, 'ipaddress_server'),
         ([port], 'port_number')
     ]
 
-    cache_filters = []
-    if hostnames:
-        for hostname in hostnames:
-            cache_filters.append({
-                "field": "host_name",
-                "value": f"^{hostname}[A-Za-z.]*$",
-                "operator": "RegexMatch"
-            })
-
-    if cache_filters:
-        headers = {
-            "tanium-options": json.dumps({
-                "cache_filters": cache_filters
-            })
-        }
-        raw_response = client.do_request('GET', '/api/v2/system_status', headers=headers)
-    else:
-        raw_response = client.do_request('GET', '/api/v2/system_status')
-
+    raw_response = client.do_request('GET', '/api/v2/system_status')
     data = raw_response.get('data', [{}])
     active_computers = []
     assert offset is not None
@@ -2212,8 +2191,8 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     context = createContext(active_computers, removeNull=True,
                             keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.SystemStatus(val.clientId === obj.clientId)': context}
-    markdown_headers = ['hostName', 'clientId', 'ipaddressClient', 'ipaddressServer', 'portNumber']
-    human_readable = tableToMarkdown('Reporting clients', context, headers=markdown_headers,
+    headers = ['hostName', 'clientId', 'ipaddressClient', 'ipaddressServer', 'portNumber']
+    human_readable = tableToMarkdown('Reporting clients', context, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
