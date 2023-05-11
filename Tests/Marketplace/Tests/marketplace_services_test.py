@@ -3341,7 +3341,10 @@ class TestVersionsMetadataFile:
 
     def test_version_map(self):
         version_map_content = GCPConfig.VERSIONS_METADATA_CONTENTS.get('version_map')
+        valid_keys = {'core_packs_file', 'core_packs_file_is_locked', 'file_version'}
         for version, core_packs_info in version_map_content.items():
+            assert core_packs_info.keys() == valid_keys, f'Found an invalid key in version {version}. Keys should be ' \
+                                                         f'{valid_keys}, but found {core_packs_info.keys()} '
             assert 'core_packs_file' in core_packs_info, \
                 f'Version {version} in version_map does not include the required `core_packs_file` key.'
             assert core_packs_info.get('core_packs_file') == f'corepacks-{version}.json', \
