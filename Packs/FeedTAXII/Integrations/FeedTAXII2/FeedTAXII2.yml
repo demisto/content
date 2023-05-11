@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXII 2 Feed
+  id: TAXII 2 Feed copy
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -165,10 +165,8 @@ configuration:
   - Skip indicators with more than a single observation
   required: false
   type: 15
-update_custom_fields
 - display: Update custom fields
   name: update_custom_fields
-  defaultvalue: false
   required: false
   type: 8
 - display: Trust any certificate (not secure)
@@ -190,8 +188,8 @@ update_custom_fields
   required: false
   type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
-display: TAXII 2 Feed
-name: TAXII 2 Feed
+display: TAXII 2 Feed copy
+name: TAXII 2 Feed copy
 script:
   commands:
   - arguments:
