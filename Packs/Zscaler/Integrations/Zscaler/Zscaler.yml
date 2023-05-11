@@ -880,7 +880,7 @@ script:
       - VEHICLES
       - VIOLENCE
       - WEAPONS_AND_BOMBS
-      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post
       isArray: true
       type: textArea
     - name: countries
@@ -1135,7 +1135,7 @@ script:
       - COUNTRY_JE
       - COUNTRY_BL
       - COUNTRY_MF
-      description: Destination IP address counties. You can identify destinations based on the location of a server.
+      description: Destination IP address counties. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post
       isArray: true
       type: textArea
     outputs:
@@ -1545,7 +1545,7 @@ script:
       - VEHICLES
       - VIOLENCE
       - WEAPONS_AND_BOMBS
-      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
       isArray: true
       type: textArea
     - name: countries
@@ -1800,7 +1800,7 @@ script:
       - COUNTRY_JE
       - COUNTRY_BL
       - COUNTRY_MF
-      description: Destination IP address counties. You can identify destinations based on the location of a server.
+      description: Destination IP address counties. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
       isArray: true
       type: textArea
     - name: is_non_editable
@@ -1937,7 +1937,7 @@ script:
       description: A list of unique identifier for the IP destination groups.
       type: textArea
       isArray: true
-    description: Deletes the IP destination groups for the specified group ID.    
+    description: Deletes the IP destination groups for the specified group ID.
   runonce: false
   script: ''
   subtype: python3

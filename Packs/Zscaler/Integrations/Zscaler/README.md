@@ -14,7 +14,7 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Cloud Name (i.e., https://admin.zscalertwo.net) |  | True |
+    | Cloud Name (i.e., <https://admin.zscalertwo.net>) |  | True |
     | Username |  | True |
     | Password |  | True |
     | API Key |  | True |
@@ -24,10 +24,14 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### zscaler-blacklist-url
+
 ***
 Adds the specified URLs to the block list.
 
@@ -35,6 +39,7 @@ Adds the specified URLs to the block list.
 #### Base Command
 
 `zscaler-blacklist-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,14 +52,17 @@ Adds the specified URLs to the block list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-blacklist-url url=phishing.com,malware.net```
 
 #### Human Readable Output
+
 Added the following URLs to the block list successfully:
 phishing.com
 malware.net
 
 ### url
+
 ***
 Looks up the classification for the each of the specified URLs.
 
@@ -62,6 +70,7 @@ Looks up the classification for the each of the specified URLs.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -87,9 +96,11 @@ Looks up the classification for the each of the specified URLs.
 
 
 #### Command Example
+
 ```!url url=facebook.com```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -111,12 +122,14 @@ Looks up the classification for the each of the specified URLs.
 #### Human Readable Output
 
 >### Zscaler URL Lookup
+
 >|url|urlClassifications|
 >|---|---|
 >| facebook.com | SOCIAL_NETWORKING |
 
 
 ### ip
+
 ***
 Looks up the classification for each of the specified IP addresses.
 
@@ -124,6 +137,7 @@ Looks up the classification for each of the specified IP addresses.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,9 +163,11 @@ Looks up the classification for each of the specified IP addresses.
 
 
 #### Command Example
+
 ```!ip ip=8.8.8.8```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -172,12 +188,14 @@ Looks up the classification for each of the specified IP addresses.
 #### Human Readable Output
 
 >### Zscaler IP Lookup
+
 >|ip|ipClassifications|
 >|---|---|
 >| 8.8.8.8 | WEB_SEARCH |
 
 
 ### zscaler-undo-blacklist-url
+
 ***
 Removes the specified URLs from the block list.
 
@@ -185,6 +203,7 @@ Removes the specified URLs from the block list.
 #### Base Command
 
 `zscaler-undo-blacklist-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -198,6 +217,7 @@ There is no context output for this command.
 
 
 ### zscaler-whitelist-url
+
 ***
 Adds the specified URLs to the allow list.
 
@@ -205,6 +225,7 @@ Adds the specified URLs to the allow list.
 #### Base Command
 
 `zscaler-whitelist-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -217,15 +238,18 @@ Adds the specified URLs to the allow list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-whitelist-url url=phising.com,malware.net```
 
 #### Human Readable Output
+
 Added the following URLs to the allow list successfully:
 phishing.com
 malware.net
 
 
 ### zscaler-undo-whitelist-url
+
 ***
 Removes the specified URLs from the allow list.
 
@@ -233,6 +257,7 @@ Removes the specified URLs from the allow list.
 #### Base Command
 
 `zscaler-undo-whitelist-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -245,15 +270,18 @@ Removes the specified URLs from the allow list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-undo-whitelist-url url=phising.com,malware.net```
 
 #### Human Readable Output
+
 Removed the following URLs from the allow list successfully:
 phishing.com
 malware.net
 
 
 ### zscaler-undo-whitelist-ip
+
 ***
 Removes the specified IP addresses from the allow list.
 
@@ -261,6 +289,7 @@ Removes the specified IP addresses from the allow list.
 #### Base Command
 
 `zscaler-undo-whitelist-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -273,15 +302,18 @@ Removes the specified IP addresses from the allow list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-undo-whitelist-ip ip=2.2.2.2,3.3.3.3```
 
 #### Human Readable Output
+
 Removed the following IP addresses from the allow list successfully:
 2.2.2.2
 3.3.3.3
 
 
 ### zscaler-whitelist-ip
+
 ***
 Adds the specified IP address to the allow list.
 
@@ -289,6 +321,7 @@ Adds the specified IP address to the allow list.
 #### Base Command
 
 `zscaler-whitelist-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -301,14 +334,17 @@ Adds the specified IP address to the allow list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-whitelist-ip ip=2.2.2.2,3.3.3.3```
 
 #### Human Readable Output
+
 Added the following IP addresses to the allow list successfully:
 2.2.2.2
 3.3.3.3
 
 ### zscaler-undo-blacklist-ip
+
 ***
 Removes the specified IP addresses from the block list.
 
@@ -316,6 +352,7 @@ Removes the specified IP addresses from the block list.
 #### Base Command
 
 `zscaler-undo-blacklist-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -328,16 +365,19 @@ Removes the specified IP addresses from the block list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-undo-blacklist-ip ip=2.2.2.2,3.3.3.3```
 
 
 #### Human Readable Output
+
 Removed the following IP addresses from the block list successfully:
 2.2.2.2
 3.3.3.3
 
 
 ### zscaler-blacklist-ip
+
 ***
 Adds the specified IP addresses to the block list.
 
@@ -345,6 +385,7 @@ Adds the specified IP addresses to the block list.
 #### Base Command
 
 `zscaler-blacklist-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -357,16 +398,19 @@ Adds the specified IP addresses to the block list.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-blacklist-ip ip=2.2.2.2,3.3.3.3```
 
 
 #### Human Readable Output
+
 Added the following IP addresses to the block list successfully:
 2.2.2.2
 3.3.3.3
 
 
 ### zscaler-category-add-url
+
 ***
 Adds URLs to the specified category.
 
@@ -374,6 +418,7 @@ Adds URLs to the specified category.
 #### Base Command
 
 `zscaler-category-add-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -393,9 +438,11 @@ Adds URLs to the specified category.
 
 
 #### Command Example
+
 ```!zscaler-category-add-url category-id=MUSIC url=demisto.com,apple.com```
 
 #### Context example
+
 ```json
 {
     "Zscaler": {
@@ -414,6 +461,7 @@ Adds URLs to the specified category.
 
 
 #### Human Readable Output
+
 Added the following URL addresses to category MUSIC:
 
 *   demisto.com
@@ -421,6 +469,7 @@ Added the following URL addresses to category MUSIC:
 
 
 ### zscaler-category-add-ip
+
 ***
 Adds IP address to the specified category.
 
@@ -428,6 +477,7 @@ Adds IP address to the specified category.
 #### Base Command
 
 `zscaler-category-add-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -449,6 +499,7 @@ Adds IP address to the specified category.
 `!zscaler-category-add-ip category-id=REFERENCE_SITES ip=1.2.3.4,8.8.8.8`
 
 #### Context Example
+
 ```json
 {
     "Zscaler": {
@@ -473,6 +524,7 @@ Added the following IP addresses to category REFERENCE_SITES:
 *   8.8.8.8
 
 ### zscaler-category-remove-url
+
 ***
 Removes URLs from the specified category.
 
@@ -480,6 +532,7 @@ Removes URLs from the specified category.
 #### Base Command
 
 `zscaler-category-remove-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -498,9 +551,11 @@ Removes URLs from the specified category.
 | Zscaler.Category.URL | string | The URL of the category. | 
 
 #### Command Example
+
 `!zscaler-category-remove-url category-id=MUSIC url=apple.com`
 
 #### Context Example
+
 ```json
 {
     "Zscaler": {
@@ -523,6 +578,7 @@ Removed the following URL addresses to category MUSIC:
 *   apple.com
 
 ### zscaler-category-remove-ip
+
 ***
 Removes IP address from the specified category.
 
@@ -530,6 +586,7 @@ Removes IP address from the specified category.
 #### Base Command
 
 `zscaler-category-remove-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -549,9 +606,11 @@ Removes IP address from the specified category.
 
 
 #### Command Example
+
 `!zscaler-category-remove-ip category-id=REFERENCE_SITES ip=1.2.3.4`
 
 ##### Context Example
+
 ```json
 {
     "Zscaler": {
@@ -574,6 +633,7 @@ Removed the following IP addresses to category REFERENCE\_SITES:
 *   1.2.3.4
 
 ### zscaler-get-categories
+
 ***
 Retrieves a list of all categories.
 
@@ -581,6 +641,7 @@ Retrieves a list of all categories.
 #### Base Command
 
 `zscaler-get-categories`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -602,9 +663,11 @@ Retrieves a list of all categories.
 
 
 #### Command Example
+
 ```!zscaler-get-categories```
 
 #### Context Example
+
 ```json
 {  
    "Zscaler":{  
@@ -629,6 +692,7 @@ Retrieves a list of all categories.
 ```
 
 #### Human Readable Output
+
 |CustomCategory|Description|ID|Name|URL|
 |--- |--- |--- |--- |--- |
 |false|INTERNET_SERVICES_DESC|INTERNET_SERVICES||google.com,facebook.com|
@@ -636,6 +700,7 @@ Retrieves a list of all categories.
 
 
 ### zscaler-get-blacklist
+
 ***
 Retrieves the Zscaler default block list.
 
@@ -643,6 +708,7 @@ Retrieves the Zscaler default block list.
 #### Base Command
 
 `zscaler-get-blacklist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -659,9 +725,11 @@ Retrieves the Zscaler default block list.
 
 
 #### Command Example
+
 ```!zscaler-get-blacklist```
 
 #### Context Example
+
 ```json
 {
     "Zscaler": {
@@ -674,12 +742,14 @@ Retrieves the Zscaler default block list.
 ```
 
 #### Human Readable Output
+
 Zscaler block list
 
 *   malicious.com
 *   bad.net
 
 ### zscaler-get-whitelist
+
 ***
 Retrieves the Zscaler default allow list.
 
@@ -687,6 +757,7 @@ Retrieves the Zscaler default allow list.
 #### Base Command
 
 `zscaler-get-whitelist`
+
 #### Input
 
 There are no input arguments for this command.
@@ -699,9 +770,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ````!zscaler-get-whitelist````
 
 #### Context Example
+
 ```json
 {
     "Zscaler": {
@@ -714,6 +787,7 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
+
 Zscaler whitelist
 
 *   demisto.com
@@ -721,6 +795,7 @@ Zscaler whitelist
 
 
 ### zscaler-sandbox-report
+
 ***
 Retrieves a full or summary report of the file that was analyzed by Sandbox. The file is represented by the specified MD5 hash.
 
@@ -728,6 +803,7 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 #### Base Command
 
 `zscaler-sandbox-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -752,9 +828,11 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 
 
 #### Command Example
+
 `!zscaler-sandbox-report md5=3FD0EA0AE759D58274310C022FB0CBBA details=summary`
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -776,18 +854,23 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
     }
 }
 ```
+
 #### Human Readable Output
+
 ##### Full Sandbox Report
+
 |Category|Indicator|Vendor|Score|Zscaler Score|Type|
 |--- |--- |--- |--- |--- |--- |
 |MALWARE_BOTNET|3FD0EA0AE759D58274310C022FB0CBBA|Zscaler|3|100|file|
 
 #### Additional Information
+
 [![image](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)](https://user-images.githubusercontent.com/44546251/56854828-8a921480-6945-11e9-8784-cb55e6c7d83e.png)
 
 [![image](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)](https://user-images.githubusercontent.com/44546251/56854735-291d7600-6944-11e9-8c05-b917cc25e322.png)
 
 ### zscaler-login
+
 ***
 Manually create a Zscaler login session. This command will also try to log out of the previous session.
 
@@ -795,6 +878,7 @@ Manually create a Zscaler login session. This command will also try to log out o
 #### Base Command
 
 `zscaler-login`
+
 #### Input
 
 There are no input arguments for this command.
@@ -804,6 +888,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-login```
 
 
@@ -812,6 +897,7 @@ There is no context output for this command.
 >Zscaler session created successfully.
 
 ### zscaler-logout
+
 ***
 Logs out of the current Zscaler session.
 
@@ -819,6 +905,7 @@ Logs out of the current Zscaler session.
 #### Base Command
 
 `zscaler-logout`
+
 #### Input
 
 There are no input arguments for this command.
@@ -828,6 +915,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-logout```
 
 
@@ -836,6 +924,7 @@ There is no context output for this command.
 >API session logged out of Zscaler successfully.
 
 ### zscaler-activate-changes
+
 ***
 Activates the changes executed by other Zscaler commands in this session.
 
@@ -843,6 +932,7 @@ Activates the changes executed by other Zscaler commands in this session.
 #### Base Command
 
 `zscaler-activate-changes`
+
 #### Input
 
 There are no input arguments for this command.
@@ -852,6 +942,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zscaler-activate-changes```
 
 #### Human Readable Output
@@ -859,6 +950,7 @@ There is no context output for this command.
 >Changes have been activated successfully.
 
 ### zscaler-url-quota
+
 ***
 Gets information on the number of unique URLs that are currently provisioned for your organization as well as how many URLs you can add before reaching that number.
 
@@ -866,6 +958,7 @@ Gets information on the number of unique URLs that are currently provisioned for
 #### Base Command
 
 `zscaler-url-quota`
+
 #### Input
 
 There are no input arguments for this command.
@@ -878,6 +971,7 @@ There are no input arguments for this command.
 | Zscaler.uniqueUrlsProvisioned | Number | The number of unique URLs that are currently provisioned for your organization. | 
 
 ### zscaler-get-users
+
 ***
 Get Zscaler users
 
@@ -885,6 +979,7 @@ Get Zscaler users
 #### Base Command
 
 `zscaler-get-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -897,7 +992,9 @@ Get Zscaler users
 #### Context Output
 
 There is no context output for this command.
+
 ### zscaler-update-user
+
 ***
 Updates the user information for the specified ID.
 
@@ -905,18 +1002,21 @@ Updates the user information for the specified ID.
 #### Base Command
 
 `zscaler-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The unique identifer for the user. | Required | 
-| user | New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser. | Required | 
+| id | The unique identifier for the user. | Required | 
+| user | New user information. Docs: <https://help.zscaler.com/zia/api#/User%20Management/updateUser>. | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
+
 ### zscaler-get-departments
+
 ***
 Get a list of departments. It can be searched by name.
 
@@ -924,6 +1024,7 @@ Get a list of departments. It can be searched by name.
 #### Base Command
 
 `zscaler-get-departments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -936,7 +1037,9 @@ Get a list of departments. It can be searched by name.
 #### Context Output
 
 There is no context output for this command.
+
 ### zscaler-get-usergroups
+
 ***
 Gets a list of groups
 
@@ -944,6 +1047,7 @@ Gets a list of groups
 #### Base Command
 
 `zscaler-get-usergroups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -958,6 +1062,7 @@ Gets a list of groups
 There is no context output for this command.
 
 ### zscaler-list-ip-destination-groups
+
 ***
 Gets a list of all IP destination groups or the IP destination group information for the specified group ID. Use `include_ipv6` argument to retrieve IPv6 destination address groups.
 
@@ -965,11 +1070,12 @@ Gets a list of all IP destination groups or the IP destination group information
 #### Base Command
 
 `zscaler-list-ip-destination-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_group_id | The unique identifier for the IP destination group. | Optional | 
+| ip_group_id | A list of unique identifier for the IP destination groups. | Optional | 
 | exclude_type | The IP group type to be excluded from results. | Optional | 
 | include_ipv6 | It's boolean value to Include IPv6 destination groups | Optional | 
 
@@ -978,7 +1084,7 @@ Gets a list of all IP destination groups or the IP destination group information
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.IPDestinationGroup.ID | String | Unique identifer for the destination IP group | 
+| Zscaler.IPDestinationGroup.ID | String | Unique identifier for the destination IP group | 
 | Zscaler.IPDestinationGroup.Name | String | Destination IP group name | 
 | Zscaler.IPDestinationGroup.Type | String | Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs) | 
 | Zscaler.IPDestinationGroup.Addresses | [String] | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
@@ -987,9 +1093,11 @@ Gets a list of all IP destination groups or the IP destination group information
 | Zscaler.IPDestinationGroup.Countries | [String] | Destination IP address counties. You can identify destinations based on the location of a server. | 
 
 #### Command Example
+
 ```!zscaler-list-ip-destination-groups exclude_type=DSTN_OTHER```
 
 #### Context example
+
 ```json
 {
     "Zscaler.IPDestinationGroup": [
@@ -1016,6 +1124,7 @@ Gets a list of all IP destination groups or the IP destination group information
 ```
 
 #### Human Readable Output
+
 IPv4 Destination groups (2)
 |Addresses|Countries|Description|ID|IpCategories|Name|Type|
 |---|---|---|---|---|---|---|
@@ -1023,8 +1132,9 @@ IPv4 Destination groups (2)
 | 127.0.0.1 |  | Localhost v1 | 2001335 |  | Test01 | DSTN_IP |
 
 ### zscaler-create-ip-destination-group
+
 ***
-Adds a new IP Destination group.
+Adds a new IPv4 Destination group.
 
 
 #### Base Command
@@ -1047,7 +1157,7 @@ Adds a new IP Destination group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.IPDestinationGroup.ID | String | Unique identifer for the destination IP group | 
+| Zscaler.IPDestinationGroup.ID | String | Unique identifier for the destination IP group | 
 | Zscaler.IPDestinationGroup.Name | String | Destination IP group name | 
 | Zscaler.IPDestinationGroup.Type | String | Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs) | 
 | Zscaler.IPDestinationGroup.Addresses | [String] | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
@@ -1057,9 +1167,11 @@ Adds a new IP Destination group.
 | Zscaler.IPDestinationGroup.IsNonEditable | Boolean | This field is applicable only to predefined IP address groups, which cannot be modified. | 
 
 #### Command Example
+
 ```!zscaler-create-ip-destination-group addresses="127.0.0.2,127.0.0.1" description=Localhost name=Test99 type=DSTN_IP```
 
 #### Context example
+
 ```json
 {
     "Zscaler.IPDestinationGroup": {
@@ -1079,14 +1191,16 @@ Adds a new IP Destination group.
 ```
 
 #### Human Readable Output
+
 IP Destination group created
 |Addresses|Countries|Description|ID|IpCategories|IsNonEditable|Name|Type|
 |---|---|---|---|---|---|---|---|
 | 127.0.0.2,<br>127.0.0.1 |  | Localhost | 2000359 |  | false | Test99 | DSTN_IP |
 
 ### zscaler-edit-ip-destination-group
+
 ***
-Updates the IP destination group information for the specified group ID.
+Updates the IPv4 destination group information for the specified group ID.
 
 
 #### Base Command
@@ -1108,7 +1222,7 @@ Updates the IP destination group information for the specified group ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.IPDestinationGroup.ID | String | Unique identifer for the destination IP group | 
+| Zscaler.IPDestinationGroup.ID | String | Unique identifier for the destination IP group | 
 | Zscaler.IPDestinationGroup.Name | String | Destination IP group name | 
 | Zscaler.IPDestinationGroup.Type | String | Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs) | 
 | Zscaler.IPDestinationGroup.Addresses | [String] | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
@@ -1117,9 +1231,11 @@ Updates the IP destination group information for the specified group ID.
 | Zscaler.IPDestinationGroup.Countries | [String] | Destination IP address counties. You can identify destinations based on the location of a server. | 
 
 #### Command Example
+
 ```!zscaler-edit-ip-destination-group ip_group_id=2000359 addresses="127.0.0.2" description="Localhost v2" name=Test01```
 
 #### Context example
+
 ```json
 {
     "Zscaler.IPDestinationGroup": {
@@ -1137,37 +1253,42 @@ Updates the IP destination group information for the specified group ID.
 ```
 
 #### Human Readable Output
+
 IP Destination group updated
 |Addresses|Countries|Description|ID|IpCategories|Name|Type|
 |---|---|---|---|---|---|---|
 | 127.0.0.2 |  | Localhost v2 | 2000359 |  | Test01 | DSTN_IP |
 
 
+### zscaler-list-ip-destination-groups-lite
+
+***
+List the IP destination group information with limited fields.
+
 #### Base Command
 
 `zscaler-list-ip-destination-groups-lite`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | exclude_type | The IP group type to be excluded from results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN. | Optional | 
-| categpry_type | The IP group type to be filtered from results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional | 
+| category_type | The IP group type to be filtered from results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional | 
 | include_ipv6 | Fetch the ipv6 Destination Groups. | Optional | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Zscaler.IPDestinationGroup.ID | number | The ID of the IP destination group. | 
-| Zscaler.IPDestinationGroup.Name | string | The name of the IP destination group. | 
-| Zscaler.IPDestinationGroup.Extensions | json | Type of IP destination group. | 
+There is no context output for this command.
 
 
 #### Command Example
+
 ```!zscaler-list-ip-destination-groups-lite```
 
 #### Context Example
+
 ```json
 [
     {
@@ -1178,14 +1299,21 @@ IP Destination group updated
 ]
 ```
 
+### zscaler-delete-ip-destination-groups
+
+***
+Delete the IP destination groups for the specified group IDs.
+
 #### Base Command
 
-`zscaler-delete-ip-destination-group`
+`zscaler-delete-ip-destination-groups`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_group_id | The unique identifier for the IP destination group. | Required | 
+| ip_group_id | A list of unique identifier for the IP destination group. | Required | 
 
 #### Context Output
+
 There is no context output for this command.

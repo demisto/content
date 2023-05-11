@@ -1220,7 +1220,7 @@ def list_ip_destination_groups_lite(args):
     include_ipv6 = argToBoolean(args.get('include_IPv6', False))
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
-    
+
     def get_contents_lite(responses):
         contents = list()
         for response in responses:
@@ -1235,7 +1235,7 @@ def list_ip_destination_groups_lite(args):
                     content[key.capitalize()] = value
             contents.append(content)
         return contents
-    
+
     if include_ipv6:
         ipv4_cmd_url = "/ipDestinationGroups/lite"
         ipv6_cmd_url = "/ipDestinationGroups/ipv6DestinationGroups/lite"
