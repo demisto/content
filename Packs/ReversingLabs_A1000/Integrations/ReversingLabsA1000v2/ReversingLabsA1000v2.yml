@@ -363,6 +363,21 @@ script:
       - contextPath: ReversingLabs.a1000_url_report
         description: A1000 URL report
         type: Unknown
+  - name: reversinglabs-a1000-domain-report
+    description: Get a report for the submitted domain.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: domain
+        description: Domain string
+        default: true
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.a1000_domain_report
+        description: A1000 domain report
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.57674
   feed: false
   isfetch: false

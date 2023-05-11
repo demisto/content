@@ -457,17 +457,30 @@ def get_url_report(a1000):
 def url_report_output(url, response_json):
     classification = response_json.get("classification")
     analysis = response_json.get("analysis", {})
-    first_analysis = analysis.get("first_analysis")
     analysis_statistics = analysis.get("statistics", {})
+    last_analysis = tableToMarkdown("Last analysis", analysis.get("last_analysis"))
+    analysis_history = tableToMarkdown("Analysis history", analysis.get("analysis_history"))
+    reputations = response_json.get("third_party_reputations")
+    reputation_statistics = reputations.get("statistics")
+    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
 
-    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n ### Analysis\n #### Statistics\n **Unknown**: {analysis_statistics.get("unknown")}
+    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n ## Analysis\n ### Statistics\n **Unknown**: {analysis_statistics.get("unknown")}
     **Suspicious**: {analysis_statistics.get("suspicious")}
     **Malicious**: {analysis_statistics.get("malicious")}
     **Goodware**: {analysis_statistics.get("goodware")}
     **Total**: {analysis_statistics.get("total")}
     
-    \n**First analysis**: {first_analysis}
+    \n**First analysis**: {analysis.get("first_analysis")}
+    **Analysis count**: {analysis.get("analysis_count")}
     """
+    markdown = f"{markdown}\n {last_analysis}"
+    markdown = f"{markdown}\n {analysis_history}"
+    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Total**: {reputation_statistics.get("total")}
+    **Malicious**: {reputation_statistics.get("malicious")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    """
+    markdown = f"{markdown}\n {reputation_sources}"
 
     d_bot_score = classification_to_score(classification.upper())
 
@@ -488,6 +501,65 @@ def url_report_output(url, response_json):
     results = CommandResults(
         outputs_prefix="ReversingLabs",
         outputs={"a1000_url_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_domain_report(a1000):
+    """
+    Get a report for a submitted domain
+    """
+    domain = demisto.getArg("domain")
+
+    try:
+        response = a1000.network_domain_report(domain=domain)
+        response_json = response.json()
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_report_output(domain=domain, response_json=response_json)
+
+    return results
+
+
+def domain_report_output(domain, response_json):
+    top_threats = tableToMarkdown("Top threats", response_json.get("top_threats"))
+    file_statistics = response_json.get("downloaded_files_statistics")
+
+    last_dns_records = tableToMarkdown("Last DNS records", response_json.get("last_dns_records"))
+
+    reputations = response_json.get("third_party_reputations")
+    reputation_statistics = reputations.get("statistics")
+    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
+
+    markdown = f"""## ReversingLabs A1000 Domain Report for {domain}\n **Modified time**: {response_json.get("modified_time")}"""
+    markdown = f"{markdown}\n {top_threats}"
+    markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
+    **Suspicious**: {file_statistics.get("suspicious")}
+    **Malicious**: {file_statistics.get("malicious")}
+    **Goodware**: {file_statistics.get("goodware")}
+    **Total**: {file_statistics.get("total")}
+    \n**Last DNS records time**: {response_json.get("last_dns_records_time")}
+    """
+    markdown = f"{markdown}\n {last_dns_records}"
+    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+    markdown = f"{markdown}\n {reputation_sources}"
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=0
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_domain_report": response_json},
         readable_output=markdown,
         indicator=indicator
     )
@@ -544,7 +616,7 @@ def main():
         elif demisto.command() == "reversinglabs-a1000-url-report":
             return_results(get_url_report(a1000))
         elif demisto.command() == 'reversinglabs-a1000-domain-report':
-            pass
+            return_results(get_domain_report(a1000))
         elif demisto.command() == 'reversinglabs-a1000-ip-report':
             pass
         elif demisto.command() == 'reversinglabs-a1000-ip-downloaded-files':
