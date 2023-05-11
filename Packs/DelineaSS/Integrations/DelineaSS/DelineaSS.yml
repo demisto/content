@@ -92,7 +92,7 @@ script:
       required: true
       secret: true
     - default: false
-      description: Secret comment
+      description: Comment to update the password
       isArray: false
       name: autoComment
       required: false
@@ -229,7 +229,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Secret comment
+      description: Comment to get a secret
       isArray: false
       name: autoComment
       required: false
@@ -709,7 +709,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Secret comment
+      description: Delete the secret with comment
       isArray: false
       name: autoComment
       required: false
@@ -1105,7 +1105,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Secret comment
+      description: Comment to change the password
       isArray: false
       name: autoComment
       required: false

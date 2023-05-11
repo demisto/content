@@ -48,10 +48,12 @@ class Client(BaseClient):
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/username"
         return self._http_request("GET", url_suffix)
 
-    def getSecret(self, secret_id: str, autocomment: str = '') -> str:
-        url_suffix = "/api/v1/secrets/" + str(secret_id) + "?autoComment=" + str(autocomment)
-
-        return self._http_request("GET", url_suffix)
+    def getSecret(self, secret_id: str, autocommit: str = '') -> str:
+        params = {
+            "autocomment": autocommit
+        }
+        url_suffix = "/api/v1/secrets/" + str(secret_id)
+        return self._http_request("GET", url_suffix, params=params)
 
     def searchSecretIdByName(self, search_name: str) -> list:
         url_suffix = "/api/v1/secrets/lookup?filter.searchText=" + search_name
@@ -80,12 +82,15 @@ class Client(BaseClient):
         return idSecret
 
     def updateSecretPassword(self, secret_id: str, new_password: str, auto_comment: str) -> str:
-        url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password" + "?autoComment=" + str(auto_comment)
+        url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password"
         body = {
             "id": secret_id,
             "value": new_password
         }
-        return self._http_request("PUT", url_suffix, json_data=body)
+        params = {
+            "autoComment": auto_comment
+        }
+        return self._http_request("PUT", url_suffix, params=params, json_data=body)
 
     def secret_checkout(self, secret_id: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/check-out"
@@ -100,10 +105,12 @@ class Client(BaseClient):
         body = {
             "newPassword": newPassword
         }
+        params = {
+            "autoComment": autoComment
+        }
 
         return self._http_request("POST", url_suffix="/api/v1/secrets/" + str(
-            secret_id) + "/change-password" + "?autoComment=" + str(autoComment),
-                                  json_data=body)
+            secret_id) + "/change-password", params=params, json_data=body)
 
     def secretCreate(self, name: str, secret_template_id: str, **kwargs) -> str:
         secretjson = {'name': name, 'secretTemplateId': secret_template_id, 'items': []}  # type: Dict[str, Any]
@@ -148,8 +155,11 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix="/api/v1/secrets", json_data=secretjson)
 
     def secretDelete(self, id: int, auto_comment: str) -> str:
-        return self._http_request("DELETE",
-                                  url_suffix="/api/v1/secrets/" + str(id) + "?autoComment=" + str(auto_comment))
+        params = {
+            "autoComment": auto_comment
+        }
+
+        return self._http_request("DELETE",  url_suffix="/api/v1/secrets/" + str(id), params=params)
 
     def folderCreate(self, name: str, type: int, parent: int, **kwargs) -> str:
         url_suffix = "/api/v1/folders"
