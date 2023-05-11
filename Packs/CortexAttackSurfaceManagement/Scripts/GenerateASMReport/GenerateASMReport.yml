@@ -42,10 +42,8 @@ args:
   name: asm_remediation_path_rule
 - description: External Service ID for generating Service Summary.
   name: asm_service_id
-  required: true
 - description: Asset ID related to alert.
   name: asm_asset_id
-  required: true
 - name: report_type
   required: true
   auto: PREDEFINED
