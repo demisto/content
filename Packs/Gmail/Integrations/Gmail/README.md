@@ -30,7 +30,7 @@ You need to do the following in Google before configuring your integration insta
 
 ### Enable APIs
 
-Both the **GMail API** and the **Admin SDK API** are required to use this integration.
+Both the **Gmail API** and the **Admin SDK API** are required to use this integration.
 
 1. From the main **Navigation Menu** hamburger icon, navigate to **APIs & Services** -> **Library**.
 2. In **Search for APIs & Services**, search for **gmail**.
