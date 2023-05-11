@@ -1,15 +1,7 @@
 id: Prisma SASE - Block URL
-version: 4
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: PrismaAccess
-    packName: Prisma SASE by Palo Alto Networks
-    itemVersion: 2.1.0
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Prisma SASE - Block URL
 description: |-
   The playbook will handle the operation of blocking a URL within the organization.
@@ -27,6 +19,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -100,6 +93,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -218,6 +212,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -245,6 +240,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -536,8 +532,7 @@ tasks:
       id: ae2421c9-7bef-47f5-806b-149e3bef1a61
       version: -1
       name: Prisma SASE - Create or Edit Security Policy Rule
-      description: "This playbook handles the creation or editing of the Security
-        Policy Rule for Pisma SASE integration. \n"
+      description: "This playbook handles the creation or editing of the Security Policy Rule for Pisma SASE integration. \n"
       playbookName: Prisma SASE - Create or Edit Security Policy Rule
       type: playbook
       iscommand: false
@@ -616,12 +611,12 @@ inputs:
   value: {}
   required: false
   description: List of URLs that are needed to be blocked.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CategoryName
   value: {}
   required: false
   description: The name of the predefined custom URL category.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Folder
   value:
     simple: Shared
@@ -630,13 +625,12 @@ inputs:
     Specify the scope for a newly created security rule to be applied.
     Remember, this input will only be used when there is no input to the CategoryName.
     Default: Shared
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
-  playbookInputQuery: null
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  playbookInputQuery:
 - key: AutoCommit
   value: {}
   required: false
@@ -645,7 +639,7 @@ inputs:
     True -> Will Commit and Push Configuration
     False -> Manual Push will be required.
     Else --> Will ignore the push section and continue the playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: PrismaSase
   description: The root context key for Prisma SASE integration output.
@@ -709,3 +703,6 @@ outputs:
   description: The URL category match list.
 - contextPath: PrismaSase.CustomURLCategory.description
   description: The URL category description.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

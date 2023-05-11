@@ -1,18 +1,9 @@
 id: Prisma SASE - Create or Edit Security Policy Rule
-version: 6
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: PrismaAccess
-    packName: Prisma SASE by Palo Alto Networks
-    itemVersion: 2.1.0
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Prisma SASE - Create or Edit Security Policy Rule
-description: "This playbook handles the creation or editing of the Security Policy
-  Rule for Prisma SASE integration. \n"
+description: "This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration. \n"
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -235,6 +227,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -496,13 +489,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -630,9 +623,8 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
-  playbookInputQuery: null
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  playbookInputQuery:
 - key: Folder
   value:
     simple: Shared
@@ -640,14 +632,14 @@ inputs:
   description: |-
     The configuration folder group setting.
     The default value is 'Shared'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Action
   value: {}
   required: false
   description: |-
     Possible values:
     allow,deny,drop,reset-both,reset-client,reset-server.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Position
   value:
     simple: pre
@@ -655,7 +647,7 @@ inputs:
   description: |-
     Rule position.
     The default value is 'pre'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Source
   value:
     simple: any
@@ -663,7 +655,7 @@ inputs:
   description: |-
     A comma-separated list of source networks.
     The default value is 'any'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Destination
   value:
     simple: any
@@ -671,7 +663,7 @@ inputs:
   description: |-
     A comma-separated list of destination networks.
     The default value is 'any'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Service
   value:
     simple: any
@@ -679,7 +671,7 @@ inputs:
   description: |-
     Services the rule applies to.
     Default value is 'any'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Application
   value:
     simple: any
@@ -687,12 +679,12 @@ inputs:
   description: |-
     A comma-separated list of applications.
     Default value is 'any'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RuleName
   value: {}
   required: true
   description: The name of the security rule.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoCommit
   value: {}
   required: false
@@ -701,7 +693,7 @@ inputs:
     True -> Will commit and push configuration.
     False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Overwrite
   value:
     simple: "False"
@@ -709,7 +701,7 @@ inputs:
   description: |-
     Whether to overwrite the original rule values.
     The default value is 'false'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Category
   value:
     simple: any
@@ -717,7 +709,7 @@ inputs:
   description: |-
     A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
     Default value is 'any'.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: PrismaSase.CandidateConfig
   description: Configuration job object.
@@ -772,3 +764,6 @@ outputs:
   type: unknown
 - contextPath: PrismaSase.SecurityRule.profile_setting.group
   description: Security rule group.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

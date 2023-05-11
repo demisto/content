@@ -1,15 +1,7 @@
 id: Prisma SASE - Block IP
-version: 11
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: PrismaAccess
-    packName: Prisma SASE by Palo Alto Networks
-    itemVersion: 2.1.0
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Prisma SASE - Block IP
 description: |-
   This playbook assists in blocking communication with the provided IPs in the Prisma SASE policy.
@@ -27,6 +19,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -143,6 +136,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -520,6 +514,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -590,13 +585,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -627,14 +622,13 @@ inputs:
 - key: TSGID
   value: {}
   required: false
-  description: Tenant services group ID. If not provided, the tsg_id integration parameter
-    will be used as the default.
-  playbookInputQuery: null
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  playbookInputQuery:
 - key: IP
   value: {}
   required: false
   description: The address value (should match the type).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Folder
   value:
     simple: Shared
@@ -642,12 +636,12 @@ inputs:
   description: |-
     The configuration folder group setting.
     The default value is 'Shared'.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: StaticAddressGroupName
   value: {}
   required: false
   description: The static address group name will be appended with IP indicators.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoCommit
   value: {}
   required: false
@@ -656,7 +650,7 @@ inputs:
     True -> Will commit and push configuration.
     False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: PrismaSase.AddressGroup
   description: The Prisma Access Address group object.
@@ -734,3 +728,6 @@ outputs:
   description: Address value.
 - contextPath: PrismaSase.Address.name
   description: Address name.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
