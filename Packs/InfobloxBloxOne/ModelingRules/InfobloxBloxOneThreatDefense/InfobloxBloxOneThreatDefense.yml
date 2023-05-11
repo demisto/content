@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: infoblox_blox_one_threat_defense
+name: Infoblox Blox One Threat Defense Modeling Rule
+rules: ""
+schema: ""
+tags: Infoblox

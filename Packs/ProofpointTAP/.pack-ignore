@@ -2,7 +2,14 @@
 ignore=IN126,BA108,BA109
 
 [known_words]
-CampaignID
-ThreatID
-SetContext
-SetAndHandleEmpty
+campaignid
+threatid
+setcontext
+setandhandleempty
+
+[file:ProofpointTapTopClickers.yml]
+ignore=BA124
+
+[file:ProofpointTAPMostAttackedUsers.yml]
+ignore=BA124
+

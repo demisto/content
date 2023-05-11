@@ -32,4 +32,8 @@ ignore=BA114
 ignore=PB118
 
 [known_words]
-Powershell
+powershell
+
+[file:GetEWSFolder.yml]
+ignore=BA124
+

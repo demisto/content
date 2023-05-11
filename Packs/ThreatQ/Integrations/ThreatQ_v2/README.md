@@ -1,5 +1,6 @@
 <!-- HTML_DOC -->
 <p>A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.</p>
+<p>This integration was integrated and tested with API versions 4 and 5 of ThreatQ.</p>
 <h2>Configure ThreatQ v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>

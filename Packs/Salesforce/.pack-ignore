@@ -10,9 +10,18 @@ ignore=MP106
 [file:Salesforce_IAM.yml]
 ignore=BA108,BA109,IN145
 
-
 [file:Salesforce_image.png]
 ignore=IM111
 
 [file:Salesforce_IAM_image.png]
 ignore=IM111
+
+[file:SalesForceEventCollector.yml]
+ignore=BA124
+
+[file:GenerateProfileId.yml]
+ignore=BA124
+
+[file:GenerateTimeZone.yml]
+ignore=BA124
+

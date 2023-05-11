@@ -1,6 +1,0 @@
-[file:RansomwareHostWidget.yml]
-ignore=BA124
-
-[file:RansomwareDataEncryptionStatus.yml]
-ignore=BA124
-
