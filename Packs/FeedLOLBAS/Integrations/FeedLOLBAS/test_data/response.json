@@ -11,7 +11,7 @@
         "Usecase": "Download file from Internet",
         "Category": "Download",
         "Privileges": "User",
-        "MitreID": "T1105",
+        "MitreID": "T1113",
         "OperatingSystem": "Windows 10, Windows 11"
       }
     ],
@@ -44,7 +44,7 @@
         "Usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
         "Category": "AWL Bypass",
         "Privileges": "User",
-        "MitreID": "T1127",
+        "MitreID": "T2223",
         "OperatingSystem": "Windows 10, Windows 11"
       }
     ],

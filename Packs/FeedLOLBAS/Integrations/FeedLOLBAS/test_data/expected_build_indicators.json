@@ -10,8 +10,9 @@
           "usecase": "Download file from Internet",
           "category": "Download",
           "privileges": "User",
-          "mitreid": "Test Mitre Name 1",
-          "operatingsystem": "Windows 10, Windows 11"
+          "mitreid": "T1113",
+          "operatingsystem": "Windows 10, Windows 11",
+          "mitrename": "Test Mitre Name 1"
         }
       ],
       "Detections": [
@@ -30,7 +31,9 @@
       "tags": [
         "tag1",
         "tag2",
-        "Test Mitre Name 1"
+        "Test Mitre Name 1",
+        "T1113",
+        "Download"
       ]
     },
     "rawJSON": {
@@ -45,8 +48,9 @@
           "Usecase": "Download file from Internet",
           "Category": "Download",
           "Privileges": "User",
-          "MitreID": "Test Mitre Name 1",
-          "OperatingSystem": "Windows 10, Windows 11"
+          "MitreID": "T1113",
+          "OperatingSystem": "Windows 10, Windows 11",
+          "MitreName": "Test Mitre Name 1"
         }
       ],
       "Full_Path": [
@@ -65,7 +69,21 @@
         }
       ],
       "url": "https://lolbas-project.github.io/lolbas/Binaries/AppInstaller/"
-    }
+    },
+    "relationships": [
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "AppInstaller.exe",
+        "entityAFamily": "Indicator",
+        "entityAType": "Tool",
+        "entityB": "Test Mitre Name 1",
+        "entityBFamily": "Indicator",
+        "entityBType": "Attack Pattern",
+        "fields": {}
+      }
+    ]
   },
   {
     "type": "Tool",
@@ -78,8 +96,9 @@
           "usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
           "category": "AWL Bypass",
           "privileges": "User",
-          "mitreid": "Test Mitre Name 2",
-          "operatingsystem": "Windows 10, Windows 11"
+          "mitreid": "T2223",
+          "operatingsystem": "Windows 10, Windows 11",
+          "mitrename": "Test Mitre Name 2"
         }
       ],
       "Detections": [
@@ -105,7 +124,9 @@
       "tags": [
         "tag1",
         "tag2",
-        "Test Mitre Name 2"
+        "Test Mitre Name 2",
+        "T2223",
+        "AWL Bypass"
       ]
     },
     "rawJSON": {
@@ -120,8 +141,9 @@
           "Usecase": "Execute proxied payload with Microsoft signed binary to bypass application control solutions",
           "Category": "AWL Bypass",
           "Privileges": "User",
-          "MitreID": "Test Mitre Name 2",
-          "OperatingSystem": "Windows 10, Windows 11"
+          "MitreID": "T2223",
+          "OperatingSystem": "Windows 10, Windows 11",
+          "MitreName": "Test Mitre Name 2"
         }
       ],
       "Full_Path": [
@@ -149,6 +171,20 @@
         }
       ],
       "url": "https://lolbas-project.github.io/lolbas/Binaries/Aspnet_Compiler/"
-    }
+    },
+    "relationships": [
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "Aspnet_Compiler.exe",
+        "entityAFamily": "Indicator",
+        "entityAType": "Tool",
+        "entityB": "Test Mitre Name 2",
+        "entityBFamily": "Indicator",
+        "entityBType": "Attack Pattern",
+        "fields": {}
+      }
+    ]
   }
 ]

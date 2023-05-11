@@ -171,7 +171,7 @@ def build_indicators(client: Client, raw_indicators: List[Dict[str, Any]]) -> Li
         if feed_tags := client.feed_tags:
             indicator['fields']['tags'] = feed_tags + additional_tags
         if client.create_relationships:
-            indicator['relationships'] = create_relationships(indicator)
+            indicator['relationships'] = create_relationship_list(indicator)
         indicators.append(indicator)
     return indicators
 
@@ -181,8 +181,7 @@ def create_relationships(indicator: Dict[str, Any]) -> List[Dict[str, Any]]:
     Create relationships between indicators.
     """
     demisto.debug('Creating relationships.')
-    relationships = create_relationship_list(indicator)
-    return relationships
+    return create_relationship_list(indicator)
 
 
 def fetch_indicators(client: Client, limit: int = None) -> \

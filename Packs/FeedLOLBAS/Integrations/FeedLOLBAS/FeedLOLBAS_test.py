@@ -24,21 +24,21 @@ def mock_client():
     )
 
 
-def test_create_indicators(mocker):
+def test_build_indicators(mocker):
     """
         Given: A list of parsed indicators.
         When: Creating XSOAR indicators from the list.
         Then: Ensure the indicators are created correctly.
     """
-    from FeedLOLBAS import create_indicators
+    from FeedLOLBAS import build_indicators
 
     client = mock_client()
     mock_pre_indicators = util_load_json('test_data/response.json')
-    expected_response = util_load_json('test_data/expected_create_indicators.json')
+    expected_response = util_load_json('test_data/expected_build_indicators.json')
     mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
-    mocker.patch('FeedLOLBAS.get_mitre_data', return_value=mocked_mitre_data)
+    mocker.patch.object(client, 'get_mitre_data', return_value=mocked_mitre_data)
 
-    response = create_indicators(client, mock_pre_indicators)
+    response = build_indicators(client, mock_pre_indicators)
     assert response == expected_response
 
 
@@ -49,35 +49,14 @@ def test_create_relationship_list(mocker):
         Then: Ensure the relationships are created correctly.
     """
     from FeedLOLBAS import create_relationship_list
-    mock_indicators = util_load_json('test_data/expected_create_indicators.json')
+    mock_indicators = util_load_json('test_data/expected_build_indicators.json')
     expected_response = util_load_json('test_data/expected_create_relationships.json')
     mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
-    mocker.patch('FeedLOLBAS.get_mitre_data', return_value=mocked_mitre_data)
-
-    response = create_relationship_list(mock_indicators)
-    assert response == expected_response
-
-
-def test_create_relationships():
-    """
-        Given: A list of XSOAR indicators.
-        When: create_relationships enabled.
-        Then: Ensure the relationship list are added correctly to the indicator list.
-    """
-    from FeedLOLBAS import create_relationships
-    client = mock_client()
-    mock_indicators = util_load_json('test_data/expected_create_indicators.json')
-    expected_response = {'value': '$$DummyIndicator$$', 'relationships': [
-        {'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': 'AppInstaller.exe',
-         'entityAFamily': 'Indicator', 'entityAType': 'Tool', 'entityB': 'Test Mitre Name 1', 'entityBFamily': 'Indicator',
-         'entityBType': 'Attack Pattern', 'fields': {}},
-        {'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': 'Aspnet_Compiler.exe',
-         'entityAFamily': 'Indicator', 'entityAType': 'Tool', 'entityB': 'Test Mitre Name 2', 'entityBFamily': 'Indicator',
-         'entityBType': 'Attack Pattern', 'fields': {}}]}
-
-    response = create_relationships(client, mock_indicators)
-    relationship_indicator = response[2]
-    assert relationship_indicator == expected_response
+    mocker.patch('FeedLOLBAS.build_mitre_tags', return_value=mocked_mitre_data)
+    res = []
+    for indicator in mock_indicators:
+        res.append(create_relationship_list(indicator))
+    assert res == expected_response
 
 
 def test_fetch_indicators(mocker):
@@ -90,6 +69,8 @@ def test_fetch_indicators(mocker):
     client = mock_client()
     mocked_response = util_load_json('test_data/response.json')
     mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
+    mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
+    mocker.patch.object(client, 'get_mitre_data', return_value=mocked_mitre_data)
     expected_response = util_load_json('test_data/expected_fetch_indicators.json')
 
     response, _ = fetch_indicators(client)
@@ -104,9 +85,12 @@ def test_create_relationship_list_no_mitre_id():
     """
     from FeedLOLBAS import create_relationship_list
     mock_indicators = [{'value': 'test_indicator'}, {'value': 'test_indicator2', 'fields': {}}]
-
-    response = create_relationship_list(mock_indicators)
-    assert response == []
+    result = []
+    for indicator in mock_indicators:
+        response = create_relationship_list(indicator)
+        if response:
+            result.append(response)
+    assert result == []
 
 
 def test_negative_limit():
@@ -134,13 +118,12 @@ def test_get_indicators(mocker):
     mocked_response = util_load_json('test_data/response.json')
     mocker.patch.object(client, 'get_indicators', return_value=mocked_response)
     mocked_mitre_data = util_load_json('test_data/mocked_mitre_data.json')
-    mocker.patch('FeedLOLBAS.get_mitre_data', return_value=mocked_mitre_data)
+    mocker.patch.object(client, 'get_mitre_data', return_value=mocked_mitre_data)
     expected_outputs = util_load_json('test_data/expected_get_indicators_outputs.json')
-    expected_hr = '### LOLBAS indicators\n|Name|Description|' \
-                  '\n|---|---|\n| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |\n'
-
+    expected_hr = '### LOLBAS indicators\n|Name|Description|\n|---|---|\n' \
+                  '| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |\n'
     res = get_indicators(client, limit)
 
     assert len(res.outputs) == 1
-    assert res.outputs == [expected_outputs]
+    assert res.outputs == expected_outputs
     assert res.readable_output == expected_hr

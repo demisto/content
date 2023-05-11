@@ -6,14 +6,14 @@
     "x_mitre_domains": [
       "enterprise-attack"
     ],
-    "id": "attack-pattern--1",
+    "id": "T1111",
     "type": "attack-pattern",
     "created": "2020-01-14T17:18:32.126Z",
     "created_by_ref": "identity--1",
     "external_references": [
       {
         "source_name": "mitre-attack",
-        "external_id": "T1105",
+        "external_id": "T1113",
         "url": "test_mitre_url1"
       }
     ],
@@ -27,14 +27,14 @@
     "x_mitre_domains": [
       "enterprise-attack"
     ],
-    "id": "attack-pattern--2",
+    "id": "T2222",
     "type": "attack-pattern",
     "created": "2020-01-14T17:18:32.126Z",
     "created_by_ref": "identity--2",
     "external_references": [
       {
         "source_name": "mitre-attack",
-        "external_id": "T1127",
+        "external_id": "T2223",
         "url": "test_mitre_url2"
       }
     ],
