@@ -75,7 +75,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: RdpServer,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,MysqlServer, MongoServer, PostgresServer,ElasticsearchServer
+              simple: RdpServer,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer
           ignorecase: true
     - label: Banner Check
       condition:
@@ -955,7 +955,7 @@ inputs:
   description: Scan number in case there are multiple IDs in the parent playbook.
   playbookInputQuery:
 outputs: []
-fromversion: 6.8.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

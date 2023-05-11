@@ -256,7 +256,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer, MysqlServer, MongoServer, PostgresServer,ElasticsearchServer
+              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer
       - - operator: inList
           left:
             value:
