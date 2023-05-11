@@ -6,7 +6,7 @@ commonfields:
   id: Zscaler
   version: -1
 configuration:
-- display: Cloud Name (i.e., https://admin.zscalertwo.net)
+- display: Cloud Name (i.e. https://zsapi.zscalertwo.net)
   name: cloud
   required: true
   type: 0
