@@ -2229,7 +2229,7 @@
             "nightly": true
         },
         {
-            "integrations": "McAfee Threat Intelligence Exchange V2",
+            "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 500
         },
