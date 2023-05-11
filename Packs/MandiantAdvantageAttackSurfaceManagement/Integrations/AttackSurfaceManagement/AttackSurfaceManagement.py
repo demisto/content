@@ -62,9 +62,6 @@ class Client(BaseClient):
         self.project_id: Optional[int] = project_id
         self.collection_ids: typing.List[str] = collection_ids or []
 
-    def make_request(self, method: str, endpoint: str, **kwargs) -> typing.Union[str, dict, bytes]:
-        raise Exception('DO NOT USE')
-
     def get_projects_list(self) -> typing.List:
         endpoint = 'projects'
         response = self._http_request('GET', endpoint)
@@ -131,7 +128,7 @@ class Client(BaseClient):
             raise DemistoException('The ASM API was unable to return details for'
                                    f'issue {issue_id} in project {self.project_id}')
 
-        return response['result']
+        return response.get('result') or {}
 
     def get_notes(self,
                   resource_type: str,
@@ -158,18 +155,18 @@ def helper_create_incident(issue: dict, project_id: int) -> dict:
     raw_json['mirror_instance'] = demisto.integrationInstance()
 
     issue = {
-        'name': issue['summary']['pretty_name'],
+        'name': issue.get('summary', {}).get('pretty_name'),
         'details': json.dumps(issue, indent=4),
-        'occurred': parser.parse(issue['first_seen']).isoformat(),
-        'severity': severity_map.get(issue['summary']['severity']),
+        'occurred': parser.parse(issue.get('first_seen')).isoformat(),
+        'severity': severity_map.get(issue.get('summary', {}).get('severity'),),
         'rawJSON': json.dumps(raw_json),
         'dbotMirrorId': issue.get('id', issue.get('uid')),
         'CustomFields': {
-            'masmcollection': issue['collection'],
+            'masmcollection': issue.get('collection'),
             'masmproject': str(project_id),
-            'masmconfirmed': issue['summary']['confidence'] == 'confirmed',
-            'masmentityname': issue['entity_name'],
-            'masmcategory': issue['summary']['category']
+            'masmconfirmed': issue.get('summary', {}).get('confidence') == 'confirmed',
+            'masmentityname': issue.get('entity_name'),
+            'masmcategory': issue.get('summary', {}).get('category')
         }
     }
 
@@ -203,14 +200,12 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
         new_incident['lastupdatetime'] = new_incident['dbotMirrorLastSync']
 
         parsed_issues.append(new_incident)
-        most_recent_update = issue['last_seen']
-
-        if len(parsed_issues) >= client.limit:
-            break
 
     parsed_issues = filter_incidents_by_duplicates_and_limit(
         incidents_res=parsed_issues, last_run=last_run, fetch_limit=client.limit, id_field='dbotMirrorId'
     )
+
+    most_recent_update = parsed_issues[-1]['last_seen']
 
     new_issues = [json.loads(i['rawJSON'])['uid'] for i in parsed_issues]
 
@@ -259,9 +254,9 @@ def get_projects(client: Client, args: dict = None) -> CommandResults:
 
     response = client.get_projects_list()
 
-    output = [{'Name': proj['name'],
-               'ID': proj['id'],
-               'Owner': proj['owner_email']} for proj in response]
+    output = [{'Name': proj.get('name'),
+               'ID': proj.get('id'),
+               'Owner': proj.get('owner_email')} for proj in response]
 
     return CommandResults(
         outputs_prefix='MandiantAdvantageASM.Projects',
@@ -277,9 +272,9 @@ def get_collections(client: Client, args: dict = None) -> CommandResults:
 
     response = client.get_collections_list(project_id)
 
-    output = [{'Name': collection['printable_name'],
-               'ID': collection['name'],
-               'Owner': collection['owner_name']} for collection in response]
+    output = [{'Name': collection.get('printable_name'),
+               'ID': collection.get('name'),
+               'Owner': collection.get('owner_name')} for collection in response]
 
     return CommandResults(
         outputs_prefix='MandiantAdvantageASM.Collections',
@@ -313,8 +308,6 @@ def get_remote_data_command(client: Client, args: dict):
         masm_id = parsed_args.remote_incident_id
 
         new_incident_data = helper_create_incident(client.get_issue_details(masm_id), client.project_id)
-        new_incident_data['dbotMirrorLastSync'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-        new_incident_data['lastupdatedtime'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
         notes = client.get_notes('issue', masm_id)
         notes_entries = []
@@ -449,9 +442,6 @@ def main() -> None:
             results = fetch_incidents(client)
             demisto.incidents(results)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
         # TODO: ADD command cases for the commands you will implement
         else:
             raise NotImplementedError('The command you tried to run doens\'t exist')
