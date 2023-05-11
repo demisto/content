@@ -13191,8 +13191,9 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
                 demisto.debug(f'Could not parse seqno or device name from log: {log}, skipping.')
                 continue
             if current_log_id > arg_to_number(latest_id_per_device):     # type: ignore
-                    new_entries_dict.setdefault(log_type, []).append(log)
-    demisto.debug(f'The sum of filtered entries for all og types is: {len(new_entries_dict)}')
+                    new_entries_dict.setdefault(log_type, []).append(log)         
+        demisto.debug(f'Filtered {log_type} type enties, left with {len(new_entries_dict.get(log_type,[]))} entries.')
+    
     return new_entries_dict
 
 
