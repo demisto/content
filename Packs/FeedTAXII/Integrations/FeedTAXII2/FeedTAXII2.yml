@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXII 2 Feed copy
+  id: TAXII 2 Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -188,8 +188,8 @@ configuration:
   required: false
   type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
-display: TAXII 2 Feed copy
-name: TAXII 2 Feed copy
+display: TAXII 2 Feed
+name: TAXII 2 Feed
 script:
   commands:
   - arguments:
@@ -246,7 +246,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.52421
+  dockerimage: demisto/taxii2:1.0.0.58250
   feed: true
   isfetch: false
   longRunning: false
