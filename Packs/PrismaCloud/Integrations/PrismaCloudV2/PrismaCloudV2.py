@@ -193,7 +193,11 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'search/config', json_data=data)
 
-    def event_search_request(self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None, sort_by: Optional[List[Dict[str, str]]] = None):
+    def event_search_request(self,
+                             time_range: Dict[str, Any],
+                             query: str,
+                             limit: Optional[int] = None,
+                             sort_by: Optional[List[Dict[str, str]]] = None):
         data = remove_empty_values({'limit': limit,
                                     'query': query,
                                     'timeRange': time_range,
@@ -937,9 +941,11 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
                                      amount_value=arg_to_number(args.get('time_range_value')),
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
-    sort_by = [f'{sort_field}:{args.get("sort_direction")}']\
-              if (sort_field := args.get('sort_field'))\
-              else None
+    sort_by = (
+        [f'{sort_field}:{args.get("sort_direction")}']
+        if (sort_field := args.get('sort_field'))
+        else None
+    )
 
     response = client.alert_search_request(time_filter, filters, limit, detailed, next_token, sort_by)
     response_items = response.get('items', [])
