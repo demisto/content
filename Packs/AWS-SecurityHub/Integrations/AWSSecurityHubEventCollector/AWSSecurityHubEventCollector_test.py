@@ -85,8 +85,8 @@ def test_fetch(client, page_size: int, limit: int, expected_api_calls_count: int
     expected_output = load_test_data("expected_results", expected_output_file)
 
     first_fetch_time = dt.datetime(2021, 1, 1)
-    events, _ = fetch_events(client=client, last_run={},
-                             first_fetch_time=first_fetch_time, page_size=page_size, limit=limit)
+    events, _, _ = fetch_events(client=client, last_run={},
+                                first_fetch_time=first_fetch_time, page_size=page_size, limit=limit)
 
     assert client.calls_count == expected_api_calls_count
     assert len(events) == len(expected_output)
