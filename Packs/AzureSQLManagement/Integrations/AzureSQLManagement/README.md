@@ -1,6 +1,6 @@
 Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
 
-> <i>Note:</i> The integration is in ***beta*** as it uses a preview version of the Azure SQL Database API. The stable Azure SQL Database API version does not contain all required endpoints used in some of the integration commands.
+This integration was integrated and tested with version 2021-11-01 of Azure SQL.
 
 # Self-Deployed Application
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
