@@ -8,7 +8,7 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: always
 
-twistlock-scan:run-lint-with-native-candidate:
+twistlock-scan:hello-world:
   extends:
     - .twistlock-scan-rule
   script:
