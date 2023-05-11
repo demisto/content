@@ -680,10 +680,10 @@ def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -
                     },
                 },
             })
-            if not isinstance(args.get(field), list):
-                data = [args.get(field)]
-            else:
-                data = args.get(field)
+            data = args.get(field)
+
+            if data is not None and not isinstance(data, list):
+                data = [data]
             extend_template.append({
                 "type": "table",
                 "data": data,
