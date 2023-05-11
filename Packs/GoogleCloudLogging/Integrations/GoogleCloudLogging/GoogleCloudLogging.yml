@@ -29,10 +29,28 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'A comma-separated list of names of parent resources from which to retrieve log entries. Acceptable values are: projects/[PROJECT_ID], organizations/[ORGANIZATION_ID], billingAccounts/[BILLING_ACCOUNT_ID], folders/[FOLDER_ID]. A maximum of 100 resources may be specified.'
+      description: 'A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       isArray: false
-      name: resource_names
-      required: true
+      name: resource_project_name
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
+      isArray: false
+      name: resource_organization_name
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
+      isArray: false
+      name: resource_billing_account_name
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
+      isArray: false
+      name: resource_folders_names
+      required: false
       secret: false
     - default: false
       description: When specified, the results returned limited to log entries that match the filter. An empty filter matches all log entries in the resources listed in resourceNames. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters.
@@ -40,11 +58,14 @@ script:
       name: filter
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
       defaultValue: timestamp asc
-      description: How the results should be sorted. Presently, the only permitted values are "timestamp asc" (default) and "timestamp desc". The first option returns entries in order of increasing values of LogEntry.timestamp (oldest first), and the second option returns entries in order of decreasing timestamps (newest first). Entries with equal timestamps are returned in order of their insertId values.
+      description: How the results should be sorted.
       isArray: false
       name: order_by
+      predefined:
+        - timestamp asc
+        - timestamp desc
       required: false
       secret: false
     - default: false

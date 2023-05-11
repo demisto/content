@@ -203,9 +203,24 @@ def log_entries_list_command(client: GoogleCloudLoggingClient, args: Dict[str, A
     Returns:
         CommandResults containing the lists log entries.
     """
+    resource_project_name = argToList(args.get('resource_project_name', []))
+    resource_organization_name = argToList(args.get('resource_organization_name', []))
+    resource_billing_account_name = argToList(args.get('resource_billing_account_name', []))
+    resource_folders_names = argToList(args.get('resource_folders_names', []))
+    if not (resource_project_name or resource_organization_name or resource_billing_account_name or resource_folders_names):
+        raise DemistoException('At least one resource is required.')
+    resources = []
+    for project_name in resource_project_name:
+        resources.append(f'projects/{project_name}')
+    for organization_name in resource_organization_name:
+        resources.append(f'organizations/{organization_name}')
+    for billing_account_name in resource_billing_account_name:
+        resources.append(f'billingAccounts/{billing_account_name}')
+    for folders_names in resource_folders_names:
+        resources.append(f'folders/{folders_names}')
     limit = arg_to_number(args.get('limit')) or 50
     page_size = arg_to_number(args.get('page_size')) or limit
-    request_body = {'resourceNames': argToList(args.get('resource_names', [])),
+    request_body = {'resourceNames': resources,
                     'filter': args.get('filter'),
                     'orderBy': args.get('order_by'),
                     'pageSize': page_size if page_size else limit,
@@ -225,7 +240,7 @@ def log_entries_list_command(client: GoogleCloudLoggingClient, args: Dict[str, A
         outputs={'GoogleCloudLogging(true)': {'nextPageToken': response.get('nextPageToken')},
                  'GoogleCloudLogging.LogsEntry(val.insertId === obj.insertId)': response.get('entries')},
         readable_output=create_readable_output(response.get('entries', []))
-        + tableToMarkdown('Next page token', t={'nextPageToken': response.get('nextPageToken')},
+        + tableToMarkdown('Next page token', t={'nextPageToken': response.get('nextPageToken', '').replace('--', '\--')},
                           headers=['nextPageToken'],
                           removeNull=True))
 

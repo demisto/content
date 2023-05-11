@@ -1,5 +1,4 @@
-
-This integration was integrated and tested with version xx of GoogleCloudLogging
+With Google Cloud Logging, users can centralize all their logs in a single location, making it easier to troubleshoot issues and gain insights from their data.
 
 ## Configure Google Cloud Logging on Cortex XSOAR
 
@@ -33,9 +32,12 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_names | A comma-separated list of names of parent resources from which to retrieve log entries. Acceptable values are: projects/[PROJECT_ID], organizations/[ORGANIZATION_ID], billingAccounts/[BILLING_ACCOUNT_ID], folders/[FOLDER_ID]. A maximum of 100 resources may be specified. | Required | 
+| resource_project_name | A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
+| resource_organization_name | A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
+| resource_billing_account_name | A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
+| resource_folders_names | A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
 | filter | When specified, the results returned limited to log entries that match the filter. An empty filter matches all log entries in the resources listed in resourceNames. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. | Optional | 
-| order_by | How the results should be sorted. Presently, the only permitted values are "timestamp asc" (default) and "timestamp desc". The first option returns entries in order of increasing values of LogEntry.timestamp (oldest first), and the second option returns entries in order of decreasing timestamps (newest first). Entries with equal timestamps are returned in order of their insertId values. Default is timestamp asc. | Optional | 
+| order_by | How the results should be sorted. Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Required | 
 | limit | The maximum number of objects to return. Default is 50. | Optional | 
 | page_size | The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected. | Optional | 
 | next_token | If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. | Optional | 
@@ -89,7 +91,7 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 | GoogleCloudLogging.nextPageToken | String | If there might be more results than those appearing in this response, then nextPageToken is included. | 
 
 #### Command example
-```!gcp-logging-log-entries-list resource_names="projects/project_id"```
+```!gcp-logging-log-entries-list resource_project_name="project_id"```
 #### Context Example
 ```json
 {
