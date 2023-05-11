@@ -1,6 +1,6 @@
 {
     "name": "AWS WAF",
-    "description": "empty",
+    "description": "Amazon Web Services Web Application Firewall (WAF)",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

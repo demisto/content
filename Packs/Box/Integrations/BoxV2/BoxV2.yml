@@ -3,11 +3,17 @@ commonfields:
   id: Box v2
   version: -1
 configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  defaultvalue: 'https://api.box.com'
+  additionalinfo: "The url of the box api"
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
+  hidden: false
 - display: Credentials JSON
   name: credentials_json
   required: true
@@ -20,6 +26,8 @@ configuration:
 - display: Types of Events to Ingest as Incidents
   hidden: false
   name: event_type
+  required: false
+  type: 16
   options:
   - ACCESS_GRANTED
   - ACCESS_REVOKED
@@ -114,23 +122,19 @@ configuration:
   - USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
   - WATERMARK_LABEL_CREATE
   - WATERMARK_LABEL_DELETE
-  required: false
-  type: 16
-- additionalinfo: When the as-user argument is not provided, the command will be executed
-    using this user ID.
+- additionalinfo: 'When the as-user argument is not provided, the command will be executed using this user ID.'
   display: Default User
   hidden: false
   name: default_user
   required: false
   type: 0
-- additionalinfo: 'Note: If more than one user exists for the email address, the commands
-    will fail.'
-  defaultvalue: 'true'
-  display: Auto-detect user IDs based on their email address.
-  hidden: false
+- display: Auto-detect user IDs based on their email address.
   name: search_user_id
   required: false
   type: 8
+  additionalinfo: 'Note: If more than one user exists for the email address, the commands will fail.'
+  defaultvalue: 'true'
+  hidden: false
 - display: Incident type
   name: incidentType
   required: false
@@ -139,7 +143,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: 7 days
+- defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
@@ -157,9 +161,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Limits the search results to any items of this type. This parameter
-        only takes one value. By default, the API returns items that match any of
-        these types. Possible values are: "file", "folder", "web_link".'
+      description: 'Limits the search results to any items of this type. This parameter only takes one value. By default, the API returns items that match any of these types. Possible values are: "file", "folder", "web_link".'
       isArray: false
       name: type
       predefined:
@@ -169,8 +171,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated lists of folder IDs that limits the search results
-        to items within the given list of folders.
+      description: A comma-separated lists of folder IDs that limits the search results to items within the given list of folders.
       isArray: false
       name: ancestor_folder_ids
       required: false
@@ -200,38 +201,33 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the time frame of when the item was created.
-        Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days).
+      description: A comma-separated list of the time frame of when the item was created. Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days).
       isArray: false
       name: created_range
       required: false
       secret: false
     - default: false
-      description: Limits the search results to any files that match any of the provided
-        file extensions.
+      description: Limits the search results to any files that match any of the provided file extensions.
       isArray: false
       name: file_extensions
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of items to return as part of a page of results.
-        Default is "100".
+      description: The maximum number of items to return as part of a page of results. Default is "100".
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default
-        is "0".
+      description: The offset of the item at which to begin the response. Default is "0".
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of user IDs used to limit the search results
-        to any items that are owned by the given list of owners.
+      description: A comma-separated list of user IDs used to limit the search results to any items that are owned by the given list of owners.
       isArray: false
       name: owner_uids
       required: false
@@ -243,8 +239,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limits the search results to any items updated within a given date
-        range.
+      description: Limits the search results to any items updated within a given date range.
       isArray: false
       name: updated_at_range
       required: false
@@ -261,8 +256,7 @@ script:
       name: as_user
       required: false
       secret: false
-    description: Searches for files, folders, web links, and shared files across the
-      users' content or across the entire enterprise.
+    description: Searches for files, folders, web links, and shared files across the users' content or across the entire enterprise.
     execution: false
     name: box-search-content
     outputs:
@@ -276,8 +270,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.Query.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Query.name
       description: The name of the item.
@@ -313,8 +306,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.Query.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Query.path_collection.entries.name
       description: The name of the item.
@@ -332,12 +324,10 @@ script:
       description: The time at which the item is expected to be purged from the trash.
       type: Date
     - contextPath: Box.Query.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
+      description: The date and time at which the item was originally created, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Query.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
+      description: The date and time at which the item was last updated, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Query.created_by.id
       description: The unique identifier for the user who created the item.
@@ -424,8 +414,7 @@ script:
       description: The type for the parent of the item found.
       type: String
     - contextPath: Box.Query.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the parent of the item.
       type: Number
     - contextPath: Box.Query.parent.name
       description: The name of the parent of the item.
@@ -461,8 +450,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.ShareLink.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.ShareLink.name
       description: The name of the item.
@@ -498,8 +486,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.ShareLink.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.ShareLink.path_collection.entries.name
       description: The name of the item.
@@ -517,12 +504,10 @@ script:
       description: The time at which the item is expected to be purged from the trash.
       type: Date
     - contextPath: Box.ShareLink.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
+      description: The date and time at which the item was originally created, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.ShareLink.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
+      description: The date and time at which the item was last updated, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.ShareLink.created_by.id
       description: The unique identifier for the user who created the item.
@@ -609,8 +594,7 @@ script:
       description: The type for the parent of the item found.
       type: String
     - contextPath: Box.ShareLink.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the parent of the item.
       type: Number
     - contextPath: Box.ShareLink.parent.name
       description: The name of the parent of the item.
@@ -693,8 +677,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are:
-        "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -717,8 +700,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of files. Possible values
-        are: "true" and "false".'
+      description: 'If the shared link allows for downloading of files. Possible values are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -788,8 +770,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are:
-        "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -812,8 +793,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of files. Possible values
-        are: "true" and "false".'
+      description: 'If the shared link allows for downloading of files. Possible values are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -982,8 +962,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are:
-        "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -1006,8 +985,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of folders. Possible
-        values are: "true" and "false".'
+      description: 'If the shared link allows for downloading of folders. Possible values are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -1095,8 +1073,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The level of access for the shared link. Possible values are:
-        "open", "company", and "collaborators".'
+      description: 'The level of access for the shared link. Possible values are: "open", "company", and "collaborators".'
       isArray: false
       name: access
       predefined:
@@ -1119,8 +1096,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'If the shared link allows for downloading of folders. Possible
-        values are: "true" and "false".'
+      description: 'If the shared link allows for downloading of folders. Possible values are: "true" and "false".'
       isArray: false
       name: can_download
       predefined:
@@ -1222,8 +1198,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves details for a folder, including the first 100 entries in
-      the folder.
+    description: Retrieves details for a folder, including the first 100 entries in the folder.
     execution: false
     name: box-get-folder
     outputs:
@@ -1237,8 +1212,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.ShareLink.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.ShareLink.name
       description: The name of the item.
@@ -1274,8 +1248,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.ShareLink.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.ShareLink.path_collection.entries.name
       description: The name of the item.
@@ -1293,12 +1266,10 @@ script:
       description: The time at which the item is expected to be purged from the trash.
       type: Date
     - contextPath: Box.ShareLink.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
+      description: The date and time at which the item was originally created, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.ShareLink.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
+      description: The date and time at which the item was last updated, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.ShareLink.created_by.id
       description: The unique identifier for the user who created the item.
@@ -1385,8 +1356,7 @@ script:
       description: The type for the parent of the item found.
       type: String
     - contextPath: Box.ShareLink.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the parent of the item.
       type: Number
     - contextPath: Box.ShareLink.parent.name
       description: The name of the parent of the item.
@@ -1416,8 +1386,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default
-        is "0".
+      description: The offset of the item at which to begin the response. Default is "0".
       isArray: false
       name: offset
       required: false
@@ -1425,8 +1394,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: name
-      description: 'The field the results should be sorted by. Possible values are:
-        "id", "name", "date", and "size".'
+      description: 'The field the results should be sorted by. Possible values are: "id", "name", "date", and "size".'
       isArray: false
       name: sort
       predefined:
@@ -1451,8 +1419,7 @@ script:
       description: Value is always `folder`.
       type: String
     - contextPath: Box.Folder.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Folder.name
       description: The name of the folder.
@@ -1504,8 +1471,7 @@ script:
       description: The type of folder.
       type: String
     - contextPath: Box.Folder.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the folder.
+      description: The numeric identifier that represents the most recent user event that has been applied to the folder.
       type: Number
     - contextPath: Box.Folder.name
       description: The name of the folder.
@@ -1541,8 +1507,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.Folder.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Folder.path_collection.entries.name
       description: The name of the item.
@@ -1560,12 +1525,10 @@ script:
       description: The time at which the item is expected to be purged from the trash.
       type: Date
     - contextPath: Box.Folder.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
+      description: The date and time at which the item was originally created, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Folder.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
+      description: The date and time at which the item was last updated, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Folder.created_by.id
       description: The unique identifier for the user who created the item.
@@ -1652,8 +1615,7 @@ script:
       description: The type for the parent of the item found.
       type: String
     - contextPath: Box.Folder.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the parent of the item.
       type: Number
     - contextPath: Box.Folder.parent.name
       description: The name of the parent of the item.
@@ -1681,8 +1643,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Attributes to include in the response. Possible values are: "id",
-        "type", and "name".'
+      description: 'Attributes to include in the response. Possible values are: "id", "type", and "name".'
       isArray: false
       name: fields
       predefined:
@@ -1692,8 +1653,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limits the results to only users who's name or login start with
-        the search term.
+      description: Limits the results to only users who's name or login start with the search term.
       isArray: false
       name: filter_term
       required: false
@@ -1707,15 +1667,13 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default
-        is "0".
+      description: The offset of the item at which to begin the response. Default is "0".
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all users for the Enterprise along with their user_id,
-      public_name, and login.
+    description: Returns a list of all users for the Enterprise along with their user_id, public_name, and login.
     execution: false
     name: box-list-users
     outputs:
@@ -1738,8 +1696,7 @@ script:
       description: When the user object was last modified.
       type: Date
     - contextPath: Box.User.language
-      description: The language of the user, formatted in a modified version of the
-        ISO 639-1 format.
+      description: The language of the user, formatted in a modified version of the ISO 639-1 format.
       type: String
     - contextPath: Box.User.timezone
       description: The users timezone.
@@ -1794,8 +1751,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the folder the file is being uploaded to. Default is
-        "0/root".
+      description: The ID of the folder the file is being uploaded to. Default is "0/root".
       isArray: false
       name: folder_id
       required: true
@@ -1815,8 +1771,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.File.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.File.name
       description: The name of the item.
@@ -1852,8 +1807,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.File.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.File.path_collection.entries.name
       description: The name of the item.
@@ -1871,12 +1825,10 @@ script:
       description: The time at which the item is expected to be purged from the trash.
       type: Date
     - contextPath: Box.File.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
+      description: The date and time at which the item was originally created, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.File.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
+      description: The date and time at which the item was last updated, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.File.created_by.id
       description: The unique identifier for the user who created the item.
@@ -1963,8 +1915,7 @@ script:
       description: The type for the parent of the item found.
       type: String
     - contextPath: Box.File.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the parent of the item.
       type: Number
     - contextPath: Box.File.parent.name
       description: The name of the parent of the item.
@@ -1988,8 +1939,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The offset of the item at which to begin the response. Default
-        is "0".
+      description: The offset of the item at which to begin the response. Default is "0".
       isArray: false
       name: offset
       required: false
@@ -2009,8 +1959,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.Trash.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Trash.name
       description: The name of the item.
@@ -2065,8 +2014,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.Item.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Item.name
       description: The name of the item.
@@ -2102,8 +2050,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.Item.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Item.path_collection.entries.name
       description: The name of the item.
@@ -2121,12 +2068,10 @@ script:
       description: The time at which the item is expected to be purged from the trash.
       type: Date
     - contextPath: Box.Item.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
+      description: The date and time at which the item was originally created, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Item.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
+      description: The date and time at which the item was last updated, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Item.created_by.id
       description: The unique identifier for the user who created the item.
@@ -2213,8 +2158,7 @@ script:
       description: The type for the parent of the item found.
       type: String
     - contextPath: Box.Item.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the parent of the item.
       type: Number
     - contextPath: Box.Item.parent.name
       description: The name of the parent of the item.
@@ -2231,8 +2175,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the item to delete. Possible values are: "file" and
-        "folder".'
+      description: 'The type of the item to delete. Possible values are: "file" and "folder".'
       isArray: false
       name: type
       predefined:
@@ -2247,8 +2190,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Permanently deletes a file or folder that is in the trash. This action
-      cannot be undone.
+    description: Permanently deletes a file or folder that is in the trash. This action cannot be undone.
     execution: true
     name: box-trashed-item-delete-permanently
   - arguments:
@@ -2282,8 +2224,7 @@ script:
       description: When the user object was last modified.
       type: Date
     - contextPath: Box.User.language
-      description: The language of the user, formatted in a modified version of the
-        ISO 639-1 format.
+      description: The language of the user, formatted in a modified version of the ISO 639-1 format.
       type: String
     - contextPath: Box.User.timezone
       description: The user's timezone.
@@ -2342,8 +2283,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The language of the user, formatted in a modified version of the
-        ISO 639-1 format.
+      description: The language of the user, formatted in a modified version of the ISO 639-1 format.
       isArray: false
       name: language
       required: false
@@ -2367,16 +2307,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user’s total available space in bytes. Set this to -1 to indicate
-        unlimited storage.
+      description: The user’s total available space in bytes. Set this to -1 to indicate unlimited storage.
       isArray: false
       name: space_amount
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The user's account status. Possible values are "active", "inactive",
-        "cannot_delete_edit", and "cannot_delete_edit_upload".
+      description: The user's account status. Possible values are "active", "inactive", "cannot_delete_edit", and "cannot_delete_edit_upload".
       isArray: false
       name: status
       predefined:
@@ -2394,8 +2332,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user can use Box Sync. Possible values are: "true"
-        and "false".'
+      description: 'Whether the user can use Box Sync. Possible values are: "true" and "false".'
       isArray: false
       name: is_sync_enabled
       predefined:
@@ -2405,8 +2342,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to exempt the user from enterprise device limits. Possible
-        values are: "true" and "false".'
+      description: 'Whether to exempt the user from enterprise device limits. Possible values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_device_limits
       predefined:
@@ -2416,8 +2352,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user is allowed to collaborate with users outside
-        their enterprise. Possible values are: "true" and "false".'
+      description: 'Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: "true" and "false".'
       isArray: false
       name: is_external_collab_restricted
       predefined:
@@ -2427,8 +2362,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user must use two-factor authentication. Possible
-        values are: "true" and "false".'
+      description: 'Whether the user must use two-factor authentication. Possible values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_login_verification
       predefined:
@@ -2438,8 +2372,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user can see other enterprise users in their contact
-        list. Possible values are: "true" and "false".'
+      description: 'Whether the user can see other enterprise users in their contact list. Possible values are: "true" and "false".'
       isArray: false
       name: can_see_managed_users
       predefined:
@@ -2448,10 +2381,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A tracking code that allows an admin to generate reports from the
-        admin console and assign an attribute to a specific group of users. The expected
-        format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
-        used when using the `;` separator.
+      description: A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be used when using the `;` separator.
       isArray: false
       name: tracking_codes
       required: false
@@ -2469,8 +2399,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates a managed user in an enterprise. This endpoint is only available
-      to users and applications with the right admin permissions.
+    description: Updates a managed user in an enterprise. This endpoint is only available to users and applications with the right admin permissions.
     execution: false
     name: box-update-user
     outputs:
@@ -2493,8 +2422,7 @@ script:
       description: When the user object was last modified.
       type: Date
     - contextPath: Box.User.language
-      description: The language of the user, formatted in a modified version of the
-        ISO 639-1 format.
+      description: The language of the user, formatted in a modified version of the ISO 639-1 format.
       type: String
     - contextPath: Box.User.timezone
       description: The user's timezone.
@@ -2550,8 +2478,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The user’s enterprise role. Possible values are: "coadmin" and
-        "user".'
+      description: 'The user’s enterprise role. Possible values are: "coadmin" and "user".'
       isArray: false
       name: role
       predefined:
@@ -2560,16 +2487,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The language of the user, formatted in a modified version of the
-        ISO 639-1 format.
+      description: The language of the user, formatted in a modified version of the ISO 639-1 format.
       isArray: false
       name: language
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user can use Box Sync. Possible values are: "true"
-        and "false".'
+      description: 'Whether the user can use Box Sync. Possible values are: "true" and "false".'
       isArray: false
       name: is_sync_enabled
       predefined:
@@ -2596,25 +2521,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user’s total available space in bytes. Set this to -1 to indicate
-        unlimited storage.
+      description: The user’s total available space in bytes. Set this to -1 to indicate unlimited storage.
       isArray: false
       name: space_amount
       required: false
       secret: false
     - default: false
-      description: A tracking code that allows an admin to generate reports from the
-        admin console and assign an attribute to a specific group of users. The expected
-        format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be
-        used when using the `;` separator.
+      description: A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key=FirstKey,value=FirstValue`. Multiple key value pairs may be used when using the `;` separator.
       isArray: false
       name: tracking_codes
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user can see other enterprise users in their contact
-        list. Possible values are: "true" and "false".'
+      description: 'Whether the user can see other enterprise users in their contact list. Possible values are: "true" and "false".'
       isArray: false
       name: can_see_managed_users
       predefined:
@@ -2630,8 +2550,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to exempt the user from enterprise device limits. Possible
-        values are: "true" and "false".'
+      description: 'Whether to exempt the user from enterprise device limits. Possible values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_device_limits
       predefined:
@@ -2641,8 +2560,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user must use two-factor authentication. Possible
-        values are: "true" and "false".'
+      description: 'Whether the user must use two-factor authentication. Possible values are: "true" and "false".'
       isArray: false
       name: is_exempt_from_login_verification
       predefined:
@@ -2652,8 +2570,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user is allowed to collaborate with users outside
-        their enterprise. Possible values are: "true" and "false".'
+      description: 'Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: "true" and "false".'
       isArray: false
       name: is_external_collab_restricted
       predefined:
@@ -2663,8 +2580,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user is an app user. Possible values are: "true" and
-        "false".'
+      description: 'Whether the user is an app user. Possible values are: "true" and "false".'
       isArray: false
       name: is_platform_access_only
       predefined:
@@ -2674,8 +2590,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The account status of the user. Possible values are: "active",
-        "inactive", "cannot_delete_edit", and "cannot_delete_edit_upload".'
+      description: 'The account status of the user. Possible values are: "active", "inactive", "cannot_delete_edit", and "cannot_delete_edit_upload".'
       isArray: false
       name: status
       predefined:
@@ -2686,8 +2601,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new managed user in an enterprise. This endpoint is only
-      available to users and applications with the correct admin permissions.
+    description: Creates a new managed user in an enterprise. This endpoint is only available to users and applications with the correct admin permissions.
     execution: false
     name: box-create-user
     outputs:
@@ -2710,8 +2624,7 @@ script:
       description: When the user object was last modified.
       type: Date
     - contextPath: Box.User.language
-      description: The language of the user, formatted in a modified version of the
-        ISO 639-1 format.
+      description: The language of the user, formatted in a modified version of the ISO 639-1 format.
       type: String
     - contextPath: Box.User.timezone
       description: The user's timezone.
@@ -2761,8 +2674,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the user should be deleted even if this user still owns
-        files. Possible values are: "true" and "false".'
+      description: 'Whether the user should be deleted even if this user still owns files. Possible values are: "true" and "false".'
       isArray: false
       name: force
       predefined:
@@ -2771,9 +2683,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Deletes a user. By default this will fail if the user still owns
-      any content. Move their owned content before proceeding, or use the force field
-      to delete the user and their files.
+    description: Deletes a user. By default this will fail if the user still owns any content. Move their owned content before proceeding, or use the force field to delete the user and their files.
     execution: true
     name: box-delete-user
   - arguments:
@@ -2785,8 +2695,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of stream to retrieve. Possible values are: "all", "changes",
-        and "sync".'
+      description: 'The type of stream to retrieve. Possible values are: "all", "changes", and "sync".'
       isArray: false
       name: stream_type
       predefined:
@@ -2811,8 +2720,7 @@ script:
       description: The type of the event.
       type: String
     - contextPath: Box.Events.event_id
-      description: The ID of the event object. You can use this to detect duplicate
-        events.
+      description: The ID of the event object. You can use this to detect duplicate events.
       type: String
     - contextPath: Box.Events.created_by.type
       description: Value is always user.
@@ -2836,8 +2744,7 @@ script:
       description: The event type that triggered this event.
       type: String
     - contextPath: Box.Events.session_id
-      description: The session of the user who performed the action. Not all events
-        will populate this attribute.
+      description: The session of the user who performed the action. Not all events will populate this attribute.
       type: String
   - arguments:
     - default: false
@@ -2910,8 +2817,7 @@ script:
       description: Time which the event was created.
       type: Date
     - contextPath: Box.Events.event_id
-      description: The ID of the event object. You can use this to detect duplicate
-        events.
+      description: The ID of the event object. You can use this to detect duplicate events.
       type: String
     - contextPath: Box.Events.event_type
       description: The event type that triggered this event.
@@ -2955,8 +2861,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Determines if users should receive email notification for the action
-        performed.
+      description: Determines if users should receive email notification for the action performed.
       isArray: false
       name: notify
       predefined:
@@ -2965,8 +2870,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Move all of the items (files, folders and workflows) owned by a user
-      into another user's account.
+    description: Move all of the items (files, folders and workflows) owned by a user into another user's account.
     execution: false
     name: box-move-folder
     outputs:
@@ -2980,8 +2884,7 @@ script:
       description: The type of folder.
       type: String
     - contextPath: Box.Folder.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the folder.
+      description: The numeric identifier that represents the most recent user event that has been applied to the folder.
       type: Number
     - contextPath: Box.Folder.name
       description: The name of the folder.
@@ -3017,8 +2920,7 @@ script:
       description: The type of the item found.
       type: String
     - contextPath: Box.Folder.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the item.
       type: Number
     - contextPath: Box.Folder.path_collection.entries.name
       description: The name of the item.
@@ -3036,12 +2938,10 @@ script:
       description: The time at which the item is expected to be purged from the trash.
       type: Date
     - contextPath: Box.Folder.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
+      description: The date and time at which the item was originally created, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Folder.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
+      description: The date and time at which the item was last updated, which might be before it was uploaded to Box.
       type: Date
     - contextPath: Box.Folder.created_by.id
       description: The unique identifier for the user who created the item.
@@ -3128,8 +3028,7 @@ script:
       description: The type for the parent of the item found.
       type: String
     - contextPath: Box.Folder.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
+      description: The numeric identifier that represents the most recent user event that has been applied to the parent of the item.
       type: Number
     - contextPath: Box.Folder.parent.name
       description: The name of the parent of the item.
@@ -3137,7 +3036,7 @@ script:
     - contextPath: Box.Folder.item_status
       description: The status of the parent of the item.
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.43045
+  dockerimage: demisto/pyjwt3:1.0.0.53491
   feed: false
   isfetch: true
   longRunning: false

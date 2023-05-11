@@ -265,7 +265,7 @@ tasks:
     task:
       id: 253e9206-6499-4698-81bc-4f6b405723e9
       version: -1
-      name: SailPointt
+      name: SailPoint
       type: title
       iscommand: false
       brand: ""

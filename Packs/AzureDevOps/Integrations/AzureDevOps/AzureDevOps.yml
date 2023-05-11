@@ -1010,7 +1010,7 @@ script:
     execution: false
     name: azure-devops-generate-login-url
     arguments: [] 
-  dockerimage: demisto/crypto:1.0.0.47970
+  dockerimage: demisto/crypto:1.0.0.52480
   isremotesyncout: true
   ismappable: true
   feed: false

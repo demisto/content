@@ -77,10 +77,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      attachment-ids: {}
       item-id:
-        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAAHclB6AAA=
-      target-mailbox: {}
+        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAK/iXNUAADj9X3Q04QOTYf/bBd1+UDZAAK/j6FuAAA=
     separatecontext: false
     view: |-
       {
@@ -154,6 +152,9 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+    scriptarguments:
+      execution-timeout:
+        simple: "300"
     separatecontext: false
     view: |-
       {
@@ -233,14 +234,12 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      folder-path: {}
-      is-public: {}
-      limit: {}
-      message-id: {}
+      execution-timeout:
+        simple: "300"
+      folder-path:
+        simple: test_playbooks_emails
       query:
-        simple: move me
-      selected-fields: {}
-      target-mailbox: {}
+        simple: this is a test
     separatecontext: false
     view: |-
       {
@@ -279,7 +278,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAEWkiaFAAA=
+              simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAK/iXNUAADj9X3Q04QOTYf/bBd1+UDZAAK/j6FuAAA=
     view: |-
       {
         "position": {
@@ -495,11 +494,8 @@ tasks:
     scriptarguments:
       folder-path:
         simple: AllItems
-      get-internal-item: {}
-      is-public: {}
       limit:
         simple: "5"
-      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -530,8 +526,7 @@ tasks:
       - "29"
     scriptarguments:
       item-ids:
-        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAAHclB6AAA=
-      target-mailbox: {}
+        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAK/iXNUAADj9X3Q04QOTYf/bBd1+UDZAAK/j6FuAAA=
     separatecontext: false
     view: |-
       {
@@ -716,7 +711,6 @@ tasks:
     scriptarguments:
       email-address:
         simple: testgroup-1@demistodev.onmicrosoft.com
-      recursive-expansion: {}
     separatecontext: false
     view: |-
       {
@@ -773,8 +767,7 @@ tasks:
       - "41"
     scriptarguments:
       item-id:
-        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAAAAAEMAADj9X3Q04QOTYf/bBd1+UDZAAAHclB6AAA=
-      target-mailbox: {}
+        simple: AAMkAGZiODc1MGY3LTBiODEtNDQ3ZC05YzdjLWVkYjhiMjFlMTk1MABGAAAAAAB4Hvam6Pd3Sqro7SBw8T0oBwDj9X3Q04QOTYf/bBd1+UDZAAK/iXNUAADj9X3Q04QOTYf/bBd1+UDZAAK/j6FuAAA=
     separatecontext: false
     view: |-
       {
@@ -809,7 +802,6 @@ tasks:
         simple: test_p
       is-public:
         simple: "True"
-      target-mailbox: {}
     separatecontext: false
     view: |-
       {
