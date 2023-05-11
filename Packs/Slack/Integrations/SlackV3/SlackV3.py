@@ -12,6 +12,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2561,7 +2563,6 @@ def list_channels():
     # Multiple values can be passed for this argument as a comma separated list
     if channel_types == None:
         channel_types = 'public_channel'
-
     # By default archived channels are NOT included by the SDK. Explicitly set this if not set from the CLI or set to False
     exclude_archived = demisto.args().get('exclude_archived')
     if exclude_archived == None:
@@ -2590,7 +2591,7 @@ def list_channels():
         channels = None
         for channel in raw_response['channels']:
             if channel['name'] == name_filter:
-                channels = channel
+                channels = [channel]
                 break
             else:
                 continue
@@ -2598,41 +2599,26 @@ def list_channels():
             return_error(f"No channel found with name: {name_filter}")
     else:
         channels = raw_response['channels']
-
+    # Force list for consistent parsing
     if type(channels) == dict:
-        channel = channels
+        channels = [channels]
+    context = []
+    for channel in channels:
         creator = channel['creator']
         body = {
             'user':creator
         }
         creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
-        creator_details = creator_details_response['user']['name']    
-        context = {
+        creator_details = creator_details_response['user']['name']
+        entry = {
             'ID': channel['id'],
             'Name': channel['name'],
             'Created': channel['created'],
             'Creator': creator_details,
             'Purpose': channel['purpose']['value']
         }
-        readable_output= tableToMarkdown(f'Channel details for {name_filter}', context)
-    if type(channels) == list:
-        context = []
-        for channel in channels:
-            creator = channel['creator']
-            body = {
-                'user':creator
-            }
-            creator_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
-            creator_details = creator_details_response['user']['name']  
-            entry = {
-                'ID': channel['id'],
-                'Name': channel['name'],
-                'Created': channel['created'],
-                'Creator': creator_details,
-                'Purpose': channel['purpose']['value']
-            }
-            context.append(entry)
-        readable_output= tableToMarkdown(f'List of channel details for {channel_types}', context)
+        context.append(entry)
+    readable_output= tableToMarkdown(f'Channels list for {channel_types} with filter {name_filter}', context)
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': channels,
@@ -3112,6 +3098,7 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
 
