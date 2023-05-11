@@ -1,0 +1,29 @@
+.twistlock-scan-rule:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && &TWISTLOCK_SCAN == "true"'
+
+# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
+.twistlock-scan-rule-always:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: always
+
+twistlock-scan:run-lint-with-native-candidate:
+  extends:
+    - .twistlock-scan-rule
+  script:
+    - section_start "Versions"
+    - |
+      echo "hello world"
+    - section_end "Run Lint with Native Candidate"
+    - job-done
+
+
+#twistlock-scan:fan-in:
+#  tags:
+#    - gke
+#  stage: fan-in
+#  extends:
+#    - .test-native-candidate-rule-always
+#  script:
+#    - echo "fan in"
