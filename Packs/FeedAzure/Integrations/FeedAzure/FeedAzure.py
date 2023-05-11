@@ -137,10 +137,10 @@ class Client(BaseClient):
 
         indicator_metadata['region'] = indicator_properties.get('region')
         indicator_metadata['platform'] = indicator_properties.get('platform')
-        # By default, the first part of hte ID is the service name. For example {ID: a.b, serviceName: a}.
+        # The first part of the ID is the service name by default. For example {ID: "a.b", serviceName: "a"}.
         indicator_metadata['system_service'] = (
-                indicator_properties.get('systemService')
-                or str(indicator_metadata.get('id', '.')).split('.')[0]
+            indicator_properties.get('systemService')
+            or str(indicator_metadata.get('id', '.')).split('.')[0]
         )
         indicator_metadata['address_prefixes'] = indicator_properties.get('addressPrefixes', [])
 
