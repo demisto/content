@@ -952,6 +952,28 @@ script:
     - contextPath: Code42.WatchlistUsers.AddedTime
       description: The datetime the user was added to the watchlist.
       type: datetime
+  - name: code42-user-get-risk-profile
+    description: Get the risk profile details for a given user
+    arguments:
+      - name: username
+        description: The user to get risk profile for.
+        required: true
+        secret: false
+        isArray: false
+        default: false
+    outputs:
+      - contextPath: Code42.UserRiskProfiles.Username
+        description: The username.
+        type: string
+      - contextPath: Code42.UserRiskProfiles.StartDate
+        description: The startDate value of the UserRiskProfile.
+        type: date
+      - contextPath: Code42.UserRiskProfiles.EndDate
+        description: The startDate value of the UserRiskProfile.
+        type: date
+      - contextPath: Code42.UserRiskProfiles.Notes
+        description: The notes value of the UserRiskProfile.
+        type: string
   - name: code42-user-update-risk-profile
     description: Update a user's risk profile.
     arguments:
@@ -1013,7 +1035,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.56463
+  dockerimage: demisto/py42:1.0.0.58221
   feed: false
   isfetch: true
   longRunning: false
