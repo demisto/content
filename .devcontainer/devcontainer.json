@@ -72,7 +72,8 @@
 				"KevinRose.vsc-python-indent",
 				"rangav.vscode-thunder-client",
 				"ms-python.black-formatter",
-				"LittleFoxTeam.vscode-python-test-adapter"
+				"LittleFoxTeam.vscode-python-test-adapter",
+				"ryanluker.vscode-coverage-gutters"
 			]
 		},
 		"codespaces": {
