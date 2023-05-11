@@ -325,7 +325,6 @@ def get_remote_data_command(client: Client, args: dict):
                 notes_entries.append(new_note)
 
         new_incident_data['id'] = masm_id
-        new_incident_data['in_mirror_error'] = ''
 
         return GetRemoteDataResponse(new_incident_data, notes_entries)
     except Exception as e:
