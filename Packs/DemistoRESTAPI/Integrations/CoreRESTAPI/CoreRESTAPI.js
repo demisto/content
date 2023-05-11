@@ -445,11 +445,11 @@ function fileDeleteCommand(entryId) {
 
 function coreApiFileCheckCommand(entryId) {
     /**
-     Get the content of the file
+     This command checks if the file is existing.
         Arguments:
             @param {String} entryId  -- entry ID of the file
         Returns:
-            json -- return of the API
+            Dictionary with EntryID as key and boolean if the file exists as value.
     */
     response = sendRequest('GET',`/entry/download/${entryId}`)
     console.log(JSON.stringify(response));
@@ -468,6 +468,51 @@ function coreApiFileCheckCommand(entryId) {
     }
 
 }
+
+
+var fileDeleteAttachmentCommand = function (file_path, incident_id, field_name){
+    /**
+     This command checks if the file is existing.
+        Arguments:
+            @param {String} incident_id  -- incident id to upload the file to
+            @param {String} file_path -- the file path
+            @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
+        Returns:
+            Show a message that the file was deleted successfully
+    */
+    body =  {
+        "fieldName": field_name,
+        "files": {
+            attachment_path: {
+                // "description": "",
+                // "name": attachment_name,
+                "path": attachment_path,
+                // "showMediaFile": attachment_media_file,
+                // "type": attachment_type
+            }
+        },
+        "originalAttachments": [
+            {
+                // "description": attachment_description,
+                // "name": attachment_name,
+                "path": attachment_path,
+                // "showMediaFile": attachment_media_file,
+                // "type": attachment_type
+            }
+        ]};
+    try{
+        sendRequest('POST', `/incident/remove/${incident_id}`, JSON.stringify(body));
+    }
+    catch (e) {
+        throw new Error(`File already deleted or not found.\n${e}`);
+    }
+    return {
+        HumanReadable: `Attachment ${file_path} deleted !`,
+    };
+
+
+}
+
 
 switch (command) {
     case 'test-module':
@@ -521,7 +566,7 @@ switch (command) {
     case 'core-api-file-delete':
         return fileDeleteCommand(args.entry_id);
     case 'core-api-file-attachment-delete':
-        return null
+        return fileDeleteAttachmentCommand(args.file_path, args.incident_id, args.field_name);
     case 'core-api-file-check':
         return coreApiFileCheckCommand(args.entry_id);
     default:
