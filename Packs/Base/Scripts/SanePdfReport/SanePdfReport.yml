@@ -60,7 +60,10 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: false
+  defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
   description: use server preformatted time string in time section
   isArray: false
   name: forceServerFormattedTimeString
@@ -81,7 +84,7 @@ tags:
 - pdf
 timeout: '0'
 type: python
-dockerimage: demisto/sane-pdf-reports:1.0.0.!!!
+dockerimage: demisto/sane-pdf-reports:1.0.0.58358
 runas: DBotWeakRole
 runonce: false
 tests:
