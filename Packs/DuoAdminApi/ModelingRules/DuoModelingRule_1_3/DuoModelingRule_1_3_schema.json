@@ -1,5 +1,5 @@
 {
-  "duo_duo_raw": {
+  "duo_custom_duo_custom_raw": {
     "access_device": {
       "type": "string",
       "is_array": false

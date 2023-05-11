@@ -4,8 +4,8 @@ import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 from CommonServerPython import *
 
-VENDOR = "duo_test"
-PRODUCT = "duo_test"
+VENDOR = "duo_custom"
+PRODUCT = "duo_custom"
 
 
 class LogType(str, Enum):
