@@ -1,5 +1,6 @@
 {
   "core_packs_list": [
+    "SplunkPy",
     "AutoFocus",
     "Base",
     "CommonDashboards",
