@@ -18,8 +18,8 @@ You need to configure Bluecat Address Manager to forward Syslog messages to XSIA
 4. In the **System Configuration** page, you will see various configuration options. Look for the **Timezone** section.
 5. Click on the **Edit** button next to the timezone field.
 6. A pop-up window or a dropdown menu will appear, depending on the version of BlueCat Address Manager you are using.
-   a. If it's a pop-up window, select the desired timezone from the list provided and click **Save** or **Apply** to save the changes.
-   b. If it's a dropdown menu, click on the dropdown arrow and select the desired timezone from the list. Then click on **Save** or **Apply** to save the changes.
+  - If it's a pop-up window, select the desired timezone from the list provided and click **Save** or **Apply** to save the changes.
+  -  If it's a dropdown menu, click on the dropdown arrow and select the desired timezone from the list. Then click on **Save** or **Apply** to save the changes.
 Once you have saved the changes, the timezone in BlueCat Address Manager will be updated accordingly.
 
 ## Collect Events from Vendor
