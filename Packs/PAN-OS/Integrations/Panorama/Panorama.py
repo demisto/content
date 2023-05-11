@@ -13388,7 +13388,9 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
             if updated_last_fetch:
                 last_fetch_dict[log_type] = str(updated_last_fetch)
             if updated_last_id:
-                last_id_dict[log_type] = updated_last_id
+                # upsert last_id_dict with the latest ID for each device for each log type, without removing devices that were not fetched in this fetch cycle.
+                last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(log_type) else last_id_dict.update({log_type: updated_last_id})
+                
             demisto.debug(f'{log_type} log type: incidents parsing has completed with total of {len(incidents)} incidents. Updated last run is: {last_fetch_dict.get(log_type)}. Updated last ID is: {last_id_dict.get(log_type)}')
             demisto.debug(f'incidents ID list: {[incident.get("name") for incident in incidents]}')
     return parsed_incident_entries_dict
