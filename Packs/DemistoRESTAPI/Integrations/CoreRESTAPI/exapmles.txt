@@ -1,3 +1,0 @@
-!core-api-file-check entry_id=111
-!core-api-file-attachment-delete file_path=2@1 incident_id=1
-!core-api-file-delete entry_id=192@1 

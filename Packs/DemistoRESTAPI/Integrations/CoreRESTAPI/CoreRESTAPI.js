@@ -340,7 +340,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
         throw 'Either file_name or entry_id argument must be provided.';
     }
     var service = (target == 'Incident Attachment') ? 'incident' : 'entry';
-    fileId = saveFile(file_content)
+    fileId = file_name ? saveFile(file_content) : entryID;
     var body = {
             file: 
             {
@@ -353,10 +353,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
         
     };
     
-    var investigationId= 1;
-    var url_suffix= `entry/upload/${investigationId}`
-    var old_but_gold = `/${service}/upload/${incident_id}`
-    var res = sendRequest('POST', url_suffix, JSON.stringify(body));
+    var res = sendRequest('POST', `/${service}/upload/${incident_id}`, JSON.stringify(body));
     if (isError(res[0])) {
         throw res[0].Contents;
     }
