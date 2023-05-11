@@ -55,7 +55,8 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     # Service Summary
     try:
-        service_raw = execute_command('asm-get-external-service', {'service_id': args.get("asm_service_id", "Asset ID")})["reply"]["details"][0]
+        service_raw = execute_command('asm-get-external-service',
+                                      {'service_id': args.get("asm_service_id", "Asset ID")})["reply"]["details"][0]
     except Exception:
         service_raw = {}
     # If response is list, only use the first entry.
@@ -64,7 +65,8 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     # Asset details
     try:
-        asset_raw = execute_command('asm-get-asset-internet-exposure', {'asm_id': args.get("asm_asset_id", "Asset ID")})["reply"]["details"][0]
+        asset_raw = execute_command('asm-get-asset-internet-exposure',
+                                    {'asm_id': args.get("asm_asset_id", "Asset ID")})["reply"]["details"][0]
     except Exception:
         asset_raw = {}
     # If response is list, only use the first entry.
