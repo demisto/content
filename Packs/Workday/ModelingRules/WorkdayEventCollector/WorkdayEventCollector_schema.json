@@ -1,54 +1,38 @@
 {
     "workday_workday_raw": {
-      "xsiam_type": {
+      "systemAccount": {
         "type": "string",
         "is_array": false
       },
-      "username": {
+      "activityAction": {
         "type": "string",
         "is_array": false
       },
-      "action": {
+      "userAgent": {
         "type": "string",
         "is_array": false
       },
-      "user_agent": {
+      "taskId": {
         "type": "string",
         "is_array": false
       },
-      "id": {
+      "deviceType": {
         "type": "string",
         "is_array": false
       },
-      "device_category": {
+      "ipAddress": {
         "type": "string",
         "is_array": false
       },
-      "ipv4": {
+      "sessionId": {
         "type": "string",
         "is_array": false
       },
-      "ipv6": {
-        "type": "string",
-        "is_array": true
-      },
-      "session_context_id": {
+      "taskDisplayName": {
         "type": "string",
         "is_array": false
       },
-      "outcome_reason": {
-        "type": "string",
-        "is_array": false
-      },
-      "identifier": {
-        "type": "string",
-        "is_array": false
-      },
-      "device_category": {
-        "type": "string",
-        "is_array": false
-      },
-      "url": {
+      "target": {
         "type": "string",
         "is_array": false
       }
