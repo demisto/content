@@ -849,6 +849,13 @@ Retrieve information about a File Hash from Mandiant
 | MANDIANTTI.FILE.fields.md5 | String | The MD5 Hash associated with the File indicator | 
 | MANDIANTTI.FILE.fields.sha256 | String | The SHA256 Hash associated with the File indicator | 
 | MANDIANTTI.FILE.fields.sha1 | String | The SHA1 Hash associated with the File indicator | 
+| File.MD5 | String | MD5 hash of the file submitted for analysis. | 
+| File.SHA1 | String | SHA1 hash of the file submitted for analysis. | 
+| File.SHA256 | String | SHA256 hash of the file submitted for analysis. | 
+| DBotScore.Score | number | The actual score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 
 #### Command example
 ```!file file=9c944bd7a0af0ebd8a52f16d2e09f4ae```
@@ -950,7 +957,7 @@ Retrieve information about an IP Address from Mandiant
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Optional | 
+| ip | List of IPs. | Optional |
 
 #### Context Output
 
@@ -958,6 +965,11 @@ Retrieve information about an IP Address from Mandiant
 | --- | --- | --- |
 | MANDIANTTI.IP.score | Number | The Severity Score of the IP indicator | 
 | MANDIANTTI.IP.fields.ip | String | The IP address of the IP indicator | 
+| DBotScore.Score | number | The actual score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| IP.Address | string | IP address | 
 
 #### Command example
 ```!ip ip=124.248.207.50```
@@ -1532,6 +1544,11 @@ Retrieve information about a URL from Mandiant
 | --- | --- | --- |
 | MANDIANTTI.URL.score | Number | The Severity Score of the URL indicator | 
 | MANDIANTTI.URL.fields.url | String | The URL value for the Domain indicator | 
+| URL.Data | String | URL data. | 
+| DBotScore.Score | number | The actual score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 
 #### Command example
 ```!url url=http://67.205.132.162/a.txt```
@@ -1643,6 +1660,11 @@ Retrieve information about an FQDN from Mandiant
 | MANDIANTTI.DOMAIN.score | Number | The Severity Score of the Domain indicator | 
 | MANDIANTTI.DOMAIN.fields.dns | String | The DNS record value for the Domain indicator | 
 | MANDIANTTI.DOMAIN.fields.domain | String | The domain name for the Domain indicator | 
+| DBotScore.Score | number | The actual score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| Domain.Name | string | The Domain being checked |
 
 #### Command example
 ```!domain domain=2011.my03.com```
@@ -1738,6 +1760,10 @@ Retrieve information about a Vulnerability (by CVE) from Mandiant
 | MANDIANTTI.CVE.fields.cvssvector | String | The CVSS vector string for the CVE | 
 | MANDIANTTI.CVE.fields.cvss2.metric | String | The name of the CVSS metric | 
 | MANDIANTTI.CVE.fields.cvss2.values | String | The values of the CVSS metric | 
+| DBotScore.Score | number | The actual score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 
 #### Command example
 ```!cve cve=CVE-2018-8120```
