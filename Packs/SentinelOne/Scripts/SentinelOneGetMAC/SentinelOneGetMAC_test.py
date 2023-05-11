@@ -21,7 +21,7 @@ def test_command(mocker):
     assert output.get('mac') == 'mac_test'
 
 
-def executeCommand(command, args):
+def executeCommand(command, args=None):
     if command == 'sentinelone-get-agent':
         return [{'Contents': [{'computerName': 'computerName_test', 'networkInterfaces': [{
             'int_name': 'int_name_test',
