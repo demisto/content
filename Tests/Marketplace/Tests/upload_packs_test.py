@@ -509,14 +509,9 @@ class TestCleanPacks:
 
 
 class TestCorepacksFiles:
-    @staticmethod
-    def get_index_folder_path():
-        index_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
-        return index_json_path
-
     def test_corepacks_files_upload(self, mocker):
         """
-        Test the upload flow of the corepacks files in the private bucket.
+        Test the upload flow of the corepacks files in the build bucket.
         """
         from Tests.Marketplace.upload_packs import create_corepacks_config
         from Tests.Marketplace.marketplace_constants import GCPConfig
@@ -525,7 +520,7 @@ class TestCorepacksFiles:
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.CI_BUILD_BUCKET
-        index_folder_path = self.get_index_folder_path()
+        index_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
 
         build_number = '123456'
         corepacks_version = 'corepacks-8.3.0.json'
@@ -743,7 +738,7 @@ class TestUpdatedPrivatePacks:
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
         assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
-               updated_private_packs[0] != "second_non_updated_pack"
+            updated_private_packs[0] != "second_non_updated_pack"
 
     def test_is_private_packs_updated(self, mocker):
         """
