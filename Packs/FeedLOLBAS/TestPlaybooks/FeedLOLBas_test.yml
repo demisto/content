@@ -213,7 +213,7 @@ tasks:
       - "8"
     scriptarguments:
       searchfield:
-        simple: value, score, id
+        simple: value, id
       sourcebrand:
         simple: LOLBAS Feed
     separatecontext: true
