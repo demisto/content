@@ -17,7 +17,7 @@ jobs:
 
       - name: Install SDK
         run: |
-          echo $BLAH
+          echo ${{ vars.PYTHONPATH }}
           python3 -m pip install demisto-sdk
       
   
