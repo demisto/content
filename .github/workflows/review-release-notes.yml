@@ -17,8 +17,7 @@ jobs:
 
       - name: Install SDK
         run: |
-          echo ${{ vars.PYTHONPATH }}
-          python3 -m pip install demisto-sdk
+          poetry install
       
   
       - name: Review Release Notes
