@@ -178,7 +178,6 @@ call tm_ds_convert_cef_event_id_to_int
     malware_target_type = uppercase(TrendMicroDsMalwareTargetType),
     spyware_infected_resource = cs3, /* Spyware item path. This field is only for spyware detection events.  */
     spyware_infected_resource_type = if(cs4="10", "Files and Directories", cs4="11", "System Registry", cs4="12", "Internet Cookies", cs4="13", "Internet URL Shortcut", cs4="14", "Programs in Memory", cs4="15", "Program Startup Areas", cs4="16", "Browser Helper Object", cs4="17", "Layered Service Provider", cs4="18", "Hosts File", cs4="19", "Windows Policy Settings", cs4="20", "Browser", cs4="23", "Windows Shell Setting", cs4="24", "IE Downloaded Program Files", cs4="25", "Add/Remove Programs", cs4="26", "Services", "Other"),
-    spyware_risk_level = if(cs5="0", "Very Low", cs5="25", "Low", cs5="50", "Medium", cs5="75", "High", cs5="100", "Very High")
 | alter 
     process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
 | alter 
@@ -189,7 +188,6 @@ call tm_ds_convert_cef_event_id_to_int
     xdm.alert.name = coalesce(TrendMicroDsRelevantDetectionNames, cefName), /* Indicates the most likely type of threat contained in the file after Predictive ML compared the analysis to other known threats(separated by ";" ) */ 
     xdm.alert.original_threat_id = TrendMicroDsBehaviorRuleID, /* The behavior monitoring rule ID for internal malware case tracking. */ 
     xdm.alert.category = TrendMicroDsBehaviorType, /* The type of behavior monitoring event detected. */ 
-    xdm.alert.severity = coalesce(spyware_risk_level, cefSeverity),
     xdm.alert.mitre_techniques = mitre_techniques_list,
     xdm.source.user.username = suser,
     xdm.source.process.container_id = container_id,
