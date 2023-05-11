@@ -1,11 +1,11 @@
 .twistlock-scan-rule:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && &TWISTLOCK_SCAN == "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $TWISTLOCK_SCAN == "true"'
 
 # used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
 .twistlock-scan-rule-always:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && &TWISTLOCK_SCAN == "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $TWISTLOCK_SCAN == "true"'
       when: always
 
 twistlock-scan:hello-world:
