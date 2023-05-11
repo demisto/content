@@ -17,11 +17,11 @@ jobs:
 
       - name: Install SDK
         run: |
+          echo $PYTHONPATH
           python3 -m pip install demisto-sdk
       
   
       - name: Review Release Notes
-        if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           release_notes="Packs/QRadar/ReleaseNotes/1.0.3.md"
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
