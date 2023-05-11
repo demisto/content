@@ -126,9 +126,8 @@ class Client(BaseClient):
             Dict. Indicators group metadata.
         """
         indicator_metadata = dict()
-        indicator_metadata_id = indicators_group_data.get('id')
 
-        indicator_metadata['id'] = indicator_metadata_id
+        indicator_metadata['id'] = indicators_group_data.get('id')
         indicator_metadata['name'] = indicators_group_data.get('name')
         indicator_properties = indicators_group_data.get('properties')
 
@@ -138,7 +137,9 @@ class Client(BaseClient):
 
         indicator_metadata['region'] = indicator_properties.get('region')
         indicator_metadata['platform'] = indicator_properties.get('platform')
-        indicator_metadata['system_service'] = indicator_properties.get('systemService', indicator_metadata_id.split('.')[0])
+        # By default, the first part of hte ID is the service name. For example {ID: a.b, serviceName: a}.
+        indicator_metadata['system_service'] = indicator_properties.get('systemService') or \
+                                               indicator_metadata.get('id', '').split('.')[0]
         indicator_metadata['address_prefixes'] = indicator_properties.get('addressPrefixes', [])
 
         return indicator_metadata
@@ -174,6 +175,7 @@ class Client(BaseClient):
             list. All indicators that match the filtering options.
         """
         results = []
+        indicators_metadata = []
 
         if values_from_file is None:
             LOG(F'{INTEGRATION_NAME} - No values in JSON response')
@@ -186,6 +188,10 @@ class Client(BaseClient):
             if not indicator_metadata:
                 continue
 
+            # list(filter(lambda value: (value.get('properties').get('systemService') or value.get('id').split('.')[
+            #     0]) in self.services_list if self.services_list != ['All'] else ... and value.get('properties').get(
+            #     'region') in self.regions_list if self.regions_list != ['All'] else ..., values_from_file))
+
             is_region_not_in_filter = 'All' not in self.regions_list and \
                                       indicator_metadata['region'] not in self.regions_list
             is_service_not_in_filter = 'All' not in self.services_list and \
@@ -194,6 +200,7 @@ class Client(BaseClient):
             if is_region_not_in_filter or is_service_not_in_filter:
                 continue
 
+            indicators_metadata.append(indicator_metadata)
             for address in indicator_metadata['address_prefixes']:
                 results.append(
                     self.build_ip_indicator(address,
