@@ -304,7 +304,7 @@ class Client(BaseClient):
             raise ValueError('Either id or number must be specified to update incident.')
 
         if incident_id:
-            attachments = self.get_list(f"/incident/id/{incident_id}/attachments")
+            attachments = self.get_list(f"/incidents/id/{incident_id}/attachments")
 
         else:
             attachments = self.get_list(f"/incidents/number/{incident_number}/attachments")

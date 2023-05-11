@@ -383,19 +383,30 @@ var get_incident_id = function (entry_id) {
 };
        
 
-function deleteContext( incidentId, keyToDelete) {
+function deleteContext(keyToDelete) {
+    /**
+     * Deletes a Files from context data.
+    Arguments:
+        @param {String} keyToDelete  -- the kew from context data to delete.
+    """
+     */
     const body = {
       data: `!DeleteContext key=${keyToDelete}`,
 
     };
-    var res =  executeCommand("DeleteContext", {'key': 'File'});
-    var result = executeCommand("cb-command-info",{session: args.sessionid, command: id.toString()});
-    //const response =  sendRequest( 'POST', '/entry', JSON.stringify(body));
-  
+    var res =  executeCommand("DeleteContext", {key: 'File'});  
     return res;
   }
 
-function deleteFile(entryId, deleteArtifact = true) {
+function deleteFile(entryId) {
+    /**
+     * Deletes a specific file.
+    Arguments:
+        @param {String} entryId  -- entry ID of the file
+    Returns:
+        response from the API.
+    """
+     */
     body = {
         "id": entryId,
         "deleteArtifact": 'File'
