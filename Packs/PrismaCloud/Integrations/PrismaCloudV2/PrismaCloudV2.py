@@ -184,7 +184,7 @@ class Client(BaseClient):
         self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
 
     def alert_reopen_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
-                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None)
+                             policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None):
         data = remove_empty_values({'alerts': alert_ids,
                                     'policies': policy_ids,
                                     'dismissalTimeRange': time_range,
