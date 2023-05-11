@@ -1,0 +1,53 @@
+{
+    "description": "Maps incoming Recorded Future ASI Risk Alerts",
+    "feed": false,
+    "id": "Recorded Future ASI - Incoming Mapper",
+    "mapping": {
+        "Recorded Future ASI Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Recorded Future Attack Surface Intelligence Affected Hosts": {
+                    "complex": {
+                        "filters": [],
+                        "root": "affected_hosts",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Alert Name": {
+                    "simple": "name"
+                },
+                "Recorded Future Attack Surface Intelligence Attack Surface Rule": {
+                    "simple": "triggered_rule"
+                },
+                "Source Hostname": {
+                    "simple": "host"
+                },
+                "Recorded Future Attack Surface Intelligence Triggered Rules": {
+                    "complex": {
+                        "filters": [],
+                        "root": "rules",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "details": {
+                    "simple": "details"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Recorded Future ASI - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}
