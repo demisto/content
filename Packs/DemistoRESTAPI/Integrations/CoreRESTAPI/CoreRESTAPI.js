@@ -320,7 +320,7 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 
 
 
-
+// note to shelly for cr: after a talk with Moishy (when available) this function would be change 
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID, target ) {
     /**
      * Upload a new file
@@ -375,6 +375,14 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
 
 
 var get_incident_id = function (entry_id) {
+    /**
+     * gets the incident id of entry_id.
+    Arguments:
+        @param {String} entry_id  -- the entry_id of the file which it's incident id needs to be returned.
+    Returns:
+            incident id   
+    """
+     */
     const res = entry_id.match(/(\d+)@(\d+)/);
     if (!res) {
         throw new Error("EntryID unknown or malformatted!");
