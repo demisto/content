@@ -235,7 +235,6 @@ def test_module(client) -> str:
 
 def secret_password_get_command(client, secret_id: str = ''):
     secret_password = client.getPasswordById(secret_id)
-
     markdown = tableToMarkdown('Password for secret',
                                {'Secret ID': secret_id, 'Password': secret_password})
 
@@ -250,7 +249,6 @@ def secret_password_get_command(client, secret_id: str = ''):
 
 def secret_username_get_command(client, secret_id: str = ''):
     secret_username = client.getUsernameById(secret_id)
-
     markdown = tableToMarkdown('Username for secret',
                                {'Secret ID': secret_id, 'Password': secret_username})
 
@@ -305,7 +303,6 @@ def secret_search_command(client, **kwargs):
 
 def secret_password_update_command(client, secret_id: str = '', newpassword: str = '', autoComment: str = ''):
     secret_newpassword = client.updateSecretPassword(secret_id, newpassword, autoComment)
-
     markdown = tableToMarkdown('Set new password for secret',
                                {'Secret ID': secret_id, 'New password': newpassword})
 
@@ -373,7 +370,6 @@ def secret_delete_command(client, id: int = 0, autoComment: str = ''):
 
 def folder_create_command(client, foldername: str = '', foldertypeid: int = 1, parentfolderid: int = 1, **kwargs):
     folder = client.folderCreate(foldername, foldertypeid, parentfolderid, **kwargs)
-
     markdown = tableToMarkdown('Created new folder', folder)
 
     return CommandResults(
@@ -426,7 +422,6 @@ def folder_delete_command(client, folder_id: str = ''):
 
 def user_create_command(client, **kwargs):
     user = client.userCreate(**kwargs)
-
     markdown = tableToMarkdown('Created new user', user)
 
     return CommandResults(
@@ -555,7 +550,7 @@ def fetch_credentials_command(client, secretids):
 
 def main():
     params = demisto.params()
-    args = demisto.args()
+
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     # get the service API url
@@ -563,7 +558,6 @@ def main():
     proxy = params.get('proxy', False)
     verify = not params.get('insecure', False)
     secretids = params.get('secrets')
-
 
     demisto.info(f'Command being called is {demisto.command()}')
 
