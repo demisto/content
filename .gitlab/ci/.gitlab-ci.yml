@@ -13,6 +13,7 @@ stages:
   - prepare-testing-bucket
   - run-instances
   - upload-to-marketplace
+  - misc
   - are-jobs-realy-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
