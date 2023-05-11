@@ -1,83 +1,36 @@
+id: Prisma SASE - Create a security pre-rule for EDL
+version: 7
 contentitemexportablefields:
   contentitemfields:
-    propagationLabels:
-    - all
-description: This playbook helps to create a security rule to block indicators from an EDL. This playbook should run only once to setup the EDL object and its rule.
-id: Prisma SASE - Create a security pre-rule for EDL
-inputs:
-- description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
-  key: TSGID
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: |-
-    The configuration folder group setting.
-    The default value is 'Shared'.
-  key: Folder
-  playbookInputQuery:
-  required: false
-  value:
-    simple: Shared
-- description: The source URL. If the type is ip, url or domain, a value must be provided.
-  key: URL
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The external dynamic list object name.
-  key: EDLObjectName
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The Security Policy Rule name will be created for blocking the indicators.
-  key: RuleName
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 'Block Indicators using EDL - XSOAR incident #${incident.id}'
-- description: |-
-    Possible values:
-    domain,ip,url,predefined_ip,predefined_url
-  key: EDLObjectType
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: |-
-    Possible Values:
-    True -> Will commit and push configuration.
-    False -> Manual push will be required.
-    Else --> Will ignore the push section and continue the playbook.
-  key: AutoCommit
-  playbookInputQuery:
-  required: false
-  value: {}
+    packID: PrismaAccess
+    packName: Prisma SASE by Palo Alto Networks
+    itemVersion: 2.1.0
+    fromServerVersion: 6.8.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Prisma SASE - Create a security pre-rule for EDL
-outputs: []
+description: This playbook helps to create a security rule to block indicators from
+  an EDL. This playbook should run only once to setup the EDL object and its rule.
 starttaskid: "0"
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: eb5cd09b-3329-4dbc-802b-f1a9afc79ff7
+    type: start
+    task:
+      id: eb5cd09b-3329-4dbc-802b-f1a9afc79ff7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
       - "5"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: eb5cd09b-3329-4dbc-802b-f1a9afc79ff7
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: eb5cd09b-3329-4dbc-802b-f1a9afc79ff7
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -85,17 +38,29 @@ tasks:
           "y": -350
         }
       }
-  "1":
-    continueonerrortype: ""
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 50979076-2ea6-4044-869f-88005420a756
+    type: regular
+    task:
+      id: 50979076-2ea6-4044-869f-88005420a756
+      version: -1
+      name: Push Config
+      description: Push the candidate configuration.
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       folders:
         simple: Remote Networks, Mobile Users, Service Connections
@@ -103,19 +68,7 @@ tasks:
         complex:
           root: inputs.TSGID
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Push the candidate configuration.
-      id: 50979076-2ea6-4044-869f-88005420a756
-      iscommand: true
-      name: Push Config
-      script: '|||prisma-sase-candidate-config-push'
-      type: regular
-      version: -1
-    taskid: 50979076-2ea6-4044-869f-88005420a756
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -123,34 +76,25 @@ tasks:
           "y": 1085
         }
       }
-  "2":
-    conditions:
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: inputs.AutoCommit
-          operator: isEqualString
-          right:
-            value:
-              simple: "True"
-      label: Auto Commit
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.AutoCommit
-          operator: isEqualString
-          right:
-            value:
-              simple: "False"
-      label: Manual
-    continueonerrortype: ""
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 82cd0fe9-c86d-4e10-8554-8589bd90ff44
+    type: condition
+    task:
+      id: 82cd0fe9-c86d-4e10-8554-8589bd90ff44
+      version: -1
+      name: Commit and push configuration to folders?
+      description: Commit and push configuration to folders?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "4"
@@ -158,21 +102,30 @@ tasks:
       - "1"
       Manual:
       - "13"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Commit and push configuration to folders?
-      id: 82cd0fe9-c86d-4e10-8554-8589bd90ff44
-      iscommand: false
-      name: Commit and push configuration to folders?
-      type: condition
-      version: -1
-    taskid: 82cd0fe9-c86d-4e10-8554-8589bd90ff44
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Auto Commit
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -180,27 +133,26 @@ tasks:
           "y": 730
         }
       }
-  "4":
-    continueonerrortype: ""
-    id: "4"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 622df06d-75c2-4f69-851e-3e467611fff5
+    type: title
     task:
-      brand: ""
       id: 622df06d-75c2-4f69-851e-3e467611fff5
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
-      description: ''
-    taskid: 622df06d-75c2-4f69-851e-3e467611fff5
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -208,29 +160,25 @@ tasks:
           "y": 1260
         }
       }
-  "5":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: EDLObjectName
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: EDL Object Exist
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.URL
-          operator: isNotEmpty
-      label: Create New Object
-    continueonerrortype: ""
-    id: "5"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 869ba2b6-659c-4c6b-8236-9d288efaf33f
+    type: condition
+    task:
+      id: 869ba2b6-659c-4c6b-8236-9d288efaf33f
+      version: -1
+      name: Check if the source URL was provided
+      description: Check if the source URL was provided.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "4"
@@ -238,21 +186,25 @@ tasks:
       - "9"
       EDL Object Exist:
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check if the source URL was provided.
-      id: 869ba2b6-659c-4c6b-8236-9d288efaf33f
-      iscommand: false
-      name: Check if the source URL was provided
-      type: condition
-      version: -1
-    taskid: 869ba2b6-659c-4c6b-8236-9d288efaf33f
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: EDL Object Exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EDLObjectName
+            iscontext: true
+          right:
+            value: {}
+    - label: Create New Object
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -260,31 +212,41 @@ tasks:
           "y": -210
         }
       }
-  "6":
-    continueonerrortype: ""
-    id: "6"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 961d0261-a4e6-4ebf-8685-2191b876bc49
+    type: regular
+    task:
+      id: 961d0261-a4e6-4ebf-8685-2191b876bc49
+      version: -1
+      name: 'Get EDL object '
+      description: Lists all external dynamic lists.
+      script: '|||prisma-sase-external-dynamic-list-list'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
+    scriptarguments:
+      folder:
+        complex:
+          root: inputs.Folder
+      name:
+        complex:
+          root: inputs.EDLObjectName
+      tsg_id:
+        complex:
+          root: inputs.TSGID
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Lists all external dynamic lists.
-      id: 307ad24d-4198-4a7b-8d08-94d76444d687
-      iscommand: true
-      name: 'Get EDL object '
-      script: '|||prisma-sase-external-dynamic-list-list'
-      type: regular
-      version: -1
-    taskid: 307ad24d-4198-4a7b-8d08-94d76444d687
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -292,51 +254,51 @@ tasks:
           "y": -40
         }
       }
-  "7":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaSase.ExternalDynamicList.id
-          operator: isNotEmpty
-          right:
-            value: {}
-      - - left:
-            iscontext: true
-            value:
-              simple: PrismaSase.ExternalDynamicList.source
-          operator: isEqualString
-          right:
-            iscontext: true
-            value:
-              simple: inputs.EDLObjectName
-      label: "yes"
-    continueonerrortype: ""
-    id: "7"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
+    type: condition
+    task:
+      id: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
+      version: -1
+      name: Was there a returned object?
+      description: Was there a returned object?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "10"
       "yes":
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Was there a returned object?
-      id: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
-      iscommand: false
-      name: Was there a returned object?
-      type: condition
-      version: -1
-    taskid: e9cff0a1-05a2-47b0-8643-1b58f6a0e912
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.source
+            iscontext: true
+          right:
+            value:
+              simple: inputs.EDLObjectName
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -344,22 +306,28 @@ tasks:
           "y": 130
         }
       }
-  "9":
-    continueonerrortype: ""
-    id: "9"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    loop:
-      exitCondition: ""
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5b777876-447c-4a3c-8d28-204661342395
+    type: playbook
+    task:
+      id: 5b777876-447c-4a3c-8d28-204661342395
+      version: -1
+      name: Prisma SASE - Create or Edit EDL object
+      playbookName: Prisma SASE - Create or Edit EDL object
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     scriptarguments:
       AutoCommit:
         simple: Else
@@ -378,19 +346,12 @@ tasks:
         complex:
           root: inputs.TSGID
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 5b777876-447c-4a3c-8d28-204661342395
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: Prisma SASE - Create or Edit EDL object
-      playbookId: Prisma SASE - Create or Edit EDL object
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 5b777876-447c-4a3c-8d28-204661342395
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -398,56 +359,67 @@ tasks:
           "y": 345
         }
       }
-  "10":
-    continueonerrortype: ""
-    id: "10"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    loop:
-      exitCondition: ""
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 63ef938f-658c-4730-8518-5139aee82af9
+    type: playbook
+    task:
+      id: 63ef938f-658c-4730-8518-5139aee82af9
+      version: -1
+      name: Prisma SASE - Create or Edit Security Policy Rule
+      description: "This playbook handles the creation or editing of the Security
+        Policy Rule for Prisma SASE integration. \n"
+      playbookName: Prisma SASE - Create or Edit Security Policy Rule
+      type: playbook
       iscommand: false
-      max: 0
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       Action:
         simple: deny
+      Application:
+        simple: any
+      AutoCommit:
+        simple: Else
+      Category:
+        simple: any
       Destination:
         complex:
-          accessor: name
           root: PrismaSase.ExternalDynamicList
+          accessor: name
       Folder:
         complex:
           root: inputs.Folder
       Overwrite:
         simple: "False"
-      Possition:
-        simple: Pre
+      Position:
+        simple: pre
       RuleName:
         complex:
           root: inputs.RuleName
+      Service:
+        simple: any
+      Source:
+        simple: any
       TSGID:
         complex:
           root: inputs.TSGID
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This playbook handles the creation or editing of the Security Policy Rule for Prisma SASE integration.
-      id: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: Prisma SASE - Create or Edit Security Policy Rule
-      playbookId: Prisma SASE - Create or Edit Security Policy Rule
-      type: playbook
-      version: -1
-    taskid: 77c0f310-d4a2-4fd6-8145-42a5d7e0bd5d
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -455,49 +427,32 @@ tasks:
           "y": 550
         }
       }
-  "13":
-    continueonerrortype: ""
-    id: "13"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc:
-      body:
-      cc:
-      format: ""
-      methods: []
-      replyOptions:
-      - Push
-      - "No"
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 166e379f-9232-48ec-81ed-e1570c467865
+    type: condition
+    task:
+      id: 166e379f-9232-48ec-81ed-e1570c467865
+      version: -1
+      name: Complete this task to push the configuration.
+      description: Complete this task to push the configuration.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "4"
       Push:
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Complete this task to push the configuration.
-      id: 166e379f-9232-48ec-81ed-e1570c467865
-      iscommand: false
-      name: Complete this task to push the configuration.
-      type: condition
-      version: -1
-    taskid: 166e379f-9232-48ec-81ed-e1570c467865
-    timertriggers: []
-    type: condition
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -505,7 +460,31 @@ tasks:
           "y": 910
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Push
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -518,6 +497,133 @@ view: |-
       }
     }
   }
-tests:
-- No tests (auto formatted)
-fromversion: 6.8.0
+inputs:
+- key: TSGID
+  value: {}
+  required: false
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter
+    will be used as the default.
+  playbookInputQuery: null
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    The configuration folder group setting.
+    The default value is 'Shared'.
+  playbookInputQuery: null
+- key: URL
+  value: {}
+  required: false
+  description: The source URL. If the type is ip, url or domain, a value must be provided.
+  playbookInputQuery: null
+- key: EDLObjectName
+  value: {}
+  required: false
+  description: The external dynamic list object name.
+  playbookInputQuery: null
+- key: RuleName
+  value:
+    simple: 'Block Indicators using EDL - XSOAR incident #${incident.id}'
+  required: false
+  description: The Security Policy Rule name will be created for blocking the indicators.
+  playbookInputQuery: null
+- key: EDLObjectType
+  value: {}
+  required: false
+  description: |-
+    Possible values:
+    domain,ip,url,predefined_ip,predefined_url
+  playbookInputQuery: null
+- key: AutoCommit
+  value: {}
+  required: false
+  description: |-
+    Possible Values:
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  playbookInputQuery: null
+outputs:
+- contextPath: incident
+  type: unknown
+- contextPath: incident.id
+  type: unknown
+- contextPath: incident.status
+  type: unknown
+- contextPath: incident.created
+  type: unknown
+- contextPath: incident.modified
+  type: unknown
+- contextPath: incident.dueDate
+  type: unknown
+- contextPath: incident.openDuration
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig
+  description: Configuration job object.
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig.job_id
+  description: Configuration job ID.
+- contextPath: PrismaSase.CandidateConfig.result
+  description: The configuration push result, e.g. OK, FAIL.
+- contextPath: PrismaSase.CandidateConfig.details
+  description: The configuration push details.
+- contextPath: PrismaSase.ExternalDynamicList
+  description: The external dynamic list object.
+  type: unknown
+- contextPath: PrismaSase.ExternalDynamicList.id
+  description: The external dynamic list ID.
+- contextPath: PrismaSase.ExternalDynamicList.name
+  description: The external dynamic list name.
+- contextPath: PrismaSase.ExternalDynamicList.folder
+  description: The external dynamic list folder.
+- contextPath: PrismaSase.ExternalDynamicList.description
+  description: The external dynamic list description.
+- contextPath: PrismaSase.ExternalDynamicList.type
+  description: The external dynamic list type.
+- contextPath: PrismaSase.ExternalDynamicList.source
+  description: The external dynamic list source.
+- contextPath: PrismaSase.ExternalDynamicList.frequency
+  description: The external dynamic list frequency.
+- contextPath: PrismaSase
+  description: The root context key for Prisma SASE integration output.
+  type: unknown
+- contextPath: PrismaSase.SecurityRule
+  description: Found security rule.
+- contextPath: PrismaSase.SecurityRule.action
+  description: Security rule action.
+- contextPath: PrismaSase.SecurityRule.application
+  description: Security rule application.
+- contextPath: PrismaSase.SecurityRule.category
+  description: Security rule category.
+- contextPath: PrismaSase.SecurityRule.description
+  description: Security rule description.
+- contextPath: PrismaSase.SecurityRule.destination
+  description: Security rule destination.
+- contextPath: PrismaSase.SecurityRule.folder
+  description: Security rule folder.
+- contextPath: PrismaSase.SecurityRule.from
+  description: Security rule from field (source zone(s)).
+- contextPath: PrismaSase.SecurityRule.id
+  description: Security rule ID.
+- contextPath: PrismaSase.SecurityRule.log_setting
+  description: Security rule log setting.
+- contextPath: PrismaSase.SecurityRule.name
+  description: Security rule name.
+- contextPath: PrismaSase.SecurityRule.position
+  description: Security rule position.
+- contextPath: PrismaSase.SecurityRule.service
+  description: Security rule service.
+- contextPath: PrismaSase.SecurityRule.source
+  description: Security rule source.
+- contextPath: PrismaSase.SecurityRule.source_user
+  description: Security rule source user.
+- contextPath: PrismaSase.SecurityRule.to
+  description: Security rule to field (destination zone(s)).
+- contextPath: PrismaSase.SecurityRule.negate_destination
+  description: Security rule negate destination.
+- contextPath: PrismaSase.SecurityRule.profile_setting
+  description: The Security rule group object in the rule.
+  type: unknown
+- contextPath: PrismaSase.SecurityRule.profile_setting.group
+  description: Security rule group.
