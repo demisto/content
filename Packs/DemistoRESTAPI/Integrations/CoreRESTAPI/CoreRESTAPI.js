@@ -392,11 +392,12 @@ function deleteContext( incidentId, keyToDelete) {
 
     };
     var res =  executeCommand("DeleteContext", {'key': 'File'});
+    var result = executeCommand("cb-command-info",{session: args.sessionid, command: id.toString()});
     //const response =  sendRequest( 'POST', '/entry', JSON.stringify(body));
   
-    return response;
+    return res;
   }
-  
+
 function deleteFile(entryId, deleteArtifact = true) {
     body = {
         "id": entryId,
@@ -470,12 +471,12 @@ function coreApiFileCheckCommand(entryId) {
 }
 
 
-var fileDeleteAttachmentCommand = function (file_path, incident_id, field_name){
+var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
     /**
      This command checks if the file is existing.
         Arguments:
             @param {String} incident_id  -- incident id to upload the file to
-            @param {String} file_path -- the file path
+            @param {String} attachment_path -- the file path
             @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
         Returns:
             Show a message that the file was deleted successfully
@@ -484,31 +485,22 @@ var fileDeleteAttachmentCommand = function (file_path, incident_id, field_name){
         "fieldName": field_name,
         "files": {
             attachment_path: {
-                // "description": "",
-                // "name": attachment_name,
-                "path": attachment_path,
-                // "showMediaFile": attachment_media_file,
-                // "type": attachment_type
+                "id": attachment_path,
+                "path": attachment_path
             }
         },
         "originalAttachments": [
             {
-                // "description": attachment_description,
-                // "name": attachment_name,
-                "path": attachment_path,
-                // "showMediaFile": attachment_media_file,
-                // "type": attachment_type
+                "path": attachment_path
             }
         ]};
     try{
-        sendRequest('POST', `/incident/remove/${incident_id}`, JSON.stringify(body));
+        sendRequest('DELETE', `/entry/File`, JSON.stringify(body));
     }
     catch (e) {
         throw new Error(`File already deleted or not found.\n${e}`);
     }
-    return {
-        HumanReadable: `Attachment ${file_path} deleted !`,
-    };
+    return `Attachment ${attachment_path} deleted !`;
 
 
 }
