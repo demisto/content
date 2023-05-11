@@ -2,27 +2,64 @@
 
 This pack includes Cortex XSIAM content. 
 
+<~XSOAR>
+
 ## What does this pack do?
 This pack enables you to:
 - Configure policies and protect computers.
 - Discover vulnerabilities and patch them.
 - Perform routine maintenance tasks.
 
-## Configuration on Trend Micro Deep Security management console
+To use the Trend Deep Security APIs, you will need to create an API key in the Trend Deep Security console.
 
-### Create API key for XSOAR
-To use the Trend Deep Security APIs via XSOAR, you will need to create an API key in the Trend Deep Security console.
+</~XSOAR>
 
-### Forward Syslog events to XSIAM
-In order to send the Deep Security events to XSIAM,
-Define a syslog configuration for forwarding events to a XSIAM broker VM in CEF format, 
-and configure forwarding for the requested events - system events, security events, or both. 
+<~XSIAM>
+## Configuration on Server Side
+Browse to the Trend Micro DSM (Deep Security Manager) Web Console, and perform the steps below. 
 
-#### Define a syslog configuration
-On the Deep Security Manager Web Console, go to Policies --> Common Objects > Syslog Configuration. 
-1. Set the Syslog port to 514 or your agent port.
-2. Replace the "name" and "\<target-server IP address\>" in the CLI with the broker VM name and IP address.
-Set the format to CEF.
+### Define a Syslog Configuration 
+1. Navigate to _Policies_ &rarr; _Common Objects_ &rarr; _Syslog Configurations_.
+2. Click _New_ &rarr; _New Configurations_.
+3. Configure the following parameters on the _General_ tab:
+
+   | Parameter                       | Description    
+   | :---                            | :---                    
+   | `Name`                          | Unique name that identifies the configuration.   
+   | `Server Name`                   | Hostname or IP address of the XSIAM Broker VM Syslog Server.  
+   | `Server Port`                   | The target syslog port of the XSIAM Broker VM Syslog Server.  
+   | `Event Format`                  | Select **Common Event Format** (CEF).
+   | `Transport`                     | Select the transport protocol.
+   | `Include time zone in events`   | Whether to include year and time zone in the event timestamp (Recommended) or not.  
+   | `Facility`                      | Type of process that events will be associated with. see [_Syslog Facilities and Levels_](https://success.trendmicro.com/dcx/s/solution/TP000086250?language=en_US).
+   | `Agents should forward logs`    | Whether security events from the DSA (Deep Security Agents) should be sent to the target XSIAM VM Broker directly, or via the DSM. 
+
+Please note: 
+- Some logging functions are supported only for configurations which are defined to forward the DSA events indirectly via the DSM (and not directly to the syslog server).  
+- Traffic should be enabled from the DSM (Deep Security Manager) tenant to the XSIAM Syslog Server for the requested port & protocol. If the (DSA) Deep Security Agents are configured to forwared the events directly to the XSIAM server (and not via the DSM), then traffic should be enabled from the agent tenants as well, see [_Allow event forwarding network traffic_](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Network) for additional details. 
+
+For full documentation see [_Forward Deep Security events to a Syslog or SIEM server_](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html) on the Deep Security Help Center page.  
+
+### Define Event Forwarding 
+After defining a syslog configuration, we can define event forwarding for the system and/or security events, using the syslog configuration defined in the previous section.  The system events are audit trail event and system alerts that are generated on the DSM, whereas the security events are alerts and notification events that are generated on the DSA from the various Deep Security protection modules. Define forwarding for the requested type of events: system events, security events, or both. 
+
+#### Forward System Events
+1. Navigate to _Administration_ &rarr; _System Settings_ &rarr;
+2. Go to the _Event Forwarding_ tab. On the _SIEM_ section, On the _Forward System Events to a remote computer (via Syslog) using configuration_ select option, selexr the relevant syslog configuration that was defined for forwarding the events to the XSIAM Broker VM. 
+3. Click Save. 
+
+For additional details see the following page: [Forward system events](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Configur).
+
+#### Forward Security Events
+1. Navigate to _Policies_ and double-click the relevant policy which is applied to the monitored agents. 
+2. Select _Settings_ on the left navigation pane, and open the _Event Forwarding_ tab. 
+3. Under the _Event Forwarding Frequency (from the Agent/Appliance)_ section, select the requested forwarding frequency for the given policy under _Period between sending of events_. 
+4. Under the _Event Forwarding Configuration (from the Agent/Appliance)_ section, for each protection module, select the relevant syslog configuartion for forwarding that module alerts to XSIAM. 
+5. Click Save. 
+
+For additional details see the following page: [Forward security events](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Configur2).
+
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
@@ -32,8 +69,10 @@ To create or configure the Broker VM, use the information described [here](https
 
 You can configure the specific vendor and product for this instance.
 
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
+1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
-   - vendor as vendor - Trend Micro
-   - product as product - Deep Security
+   - vendor as vendor &rarr; Trend Micro
+   - product as product &rarr; Deep Security
+
+</~XSIAM>
