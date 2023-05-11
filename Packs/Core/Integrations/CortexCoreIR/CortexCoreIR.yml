@@ -3658,7 +3658,7 @@ script:
       name: limit
       defaultValue: 50
     name: core-list-risky-users
-    description: Retrieve the risk score of a specific user or list of users with the highest risk score in your environment along with the reason affecting each score.
+    description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
     - contextPath: Core.RiskyUser.type
       description: Form of identification element.
@@ -3670,7 +3670,7 @@ script:
       description: The score assigned to the user.
       type: Integer
     - contextPath: Core.RiskyUser.reasons.date created
-      description: Date the incident created.
+      description: Date when the incident was created.
       type: String
     - contextPath: Core.RiskyUser.reasons.description
       description: Description of the incident.
@@ -3679,7 +3679,7 @@ script:
       description: The severity of the incident
       type: String
     - contextPath: Core.RiskyUser.reasons.status
-      description: Incident status
+      description: The incident status
       type: String
     - contextPath: Core.RiskyUser.reasons.points
       description: Points the incident get
@@ -3692,7 +3692,7 @@ script:
       name: limit
       defaultValue: 50
     name: core-list-risky-hosts
-    description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in your environment along with the reason affecting each score.
+    description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
     - contextPath: Core.RiskyHost.type
       description: Form of identification element.
@@ -3704,7 +3704,7 @@ script:
       description: The score assigned to the host.
       type: Integer
     - contextPath: Core.RiskyHost.reasons.date created
-      description: Date the incident created.
+      description: Date when the incident was created.
       type: String
     - contextPath: Core.RiskyHost.reasons.description
       description: Description of the incident.
@@ -3713,7 +3713,7 @@ script:
       description: The severity of the incident.
       type: String
     - contextPath: Core.RiskyHost.reasons.status
-      description: Incident status.
+      description: The incident status.
       type: String
     - contextPath: Core.RiskyHost.reasons.points
       description: Points the incident get.

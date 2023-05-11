@@ -3285,7 +3285,7 @@ script:
     arguments: []
     description: Provides information about the tenant.
   - name: xdr-list-users
-    description: Retrieve a list of the current users in your environment.
+    description: Retrieve a list of the current users in the environment.
     arguments: []
     outputs:
     - contextPath: PaloAltoNetworksXDR.User.user_email
@@ -3317,11 +3317,11 @@ script:
         Unique ID of a specific user.
         User ID could be in the following format: dummy/dummy
       name: user_id
-    - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user)
+    - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when don't asking for specific user)
       name: limit
       defaultValue: 50
     name: xdr-list-risky-users
-    description: Retrieve the risk score of a specific user or list of users with the highest risk score in your environment along with the reason affecting each score.
+    description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
     outputs:
     - contextPath: PaloAltoNetworksXDR.RiskyUser.type
       description: Form of identification element.
@@ -3333,7 +3333,7 @@ script:
       description: The score assigned to the user.
       type: Integer
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.date created
-      description: Date the incident created.
+      description: Date when the incident was created.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.description
       description: Description of the incident.
@@ -3342,7 +3342,7 @@ script:
       description: The severity of the incident
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
-      description: Incident status
+      description: The incident status
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
       description: Points the incident get
@@ -3367,7 +3367,7 @@ script:
       description: The score assigned to the host.
       type: Integer
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
-      description: Date the incident created.
+      description: Date when the incident was created.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description
       description: Description of the incident.
@@ -3376,7 +3376,7 @@ script:
       description: The severity of the incident
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
-      description: Incident status
+      description: The incident status
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
       description: Points the incident get.
