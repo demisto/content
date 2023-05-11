@@ -72,7 +72,12 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
-   - vendor as vendor &rarr; Trend Micro
-   - product as product &rarr; Deep Security
+   | Parameter     | Value    
+   | :---          | :---                    
+   | `Protocol`    | The protocol that was defined in the syslog configuration on the Trend Micro Deep Security Manager Web Console.   
+   | `Port`        | The port that was defined in the syslog configuration on the Trend Micro Deep Security Manager Web Console.   
+   | `Format`      | Select **_CEF_**. 
+   | `Vendor`      | Enter **_TrendMicro_**. 
+   | `Product`     | Enter **_DeepSecurity_**. 
 
 </~XSIAM>
