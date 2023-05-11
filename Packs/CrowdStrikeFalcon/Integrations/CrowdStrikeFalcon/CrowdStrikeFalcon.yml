@@ -154,6 +154,12 @@ name: CrowdstrikeFalcon
 script:
   commands:
   - arguments:
+    - name: extended_data
+      predefined:
+      - Yes
+      - No
+      description: Whether or not to get additional data about the device.
+      auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
     - description: A comma-separated list of device IDs to limit the results.
@@ -3595,7 +3601,7 @@ script:
       required: true
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.56082
   isfetch: true
   ismappable: true
   isremotesyncin: true
