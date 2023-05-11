@@ -110,7 +110,9 @@ def test_negative_limit():
 
 def test_get_indicators(mocker):
     """
-        Given:
+        Given: response from LOLBas api.
+        When: Calling get_indicators.
+        Then: Verify that the returned indicators are limited and that the output/hr is the expected one.
     """
     from FeedLOLBAS import get_indicators
     client = mock_client()
