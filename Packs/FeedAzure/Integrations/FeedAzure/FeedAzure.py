@@ -177,7 +177,6 @@ class Client(BaseClient):
             list. All indicators that match the filtering options.
         """
         results = []
-        indicators_metadata = []
 
         if values_from_file is None:
             LOG(F'{INTEGRATION_NAME} - No values in JSON response')
@@ -190,10 +189,6 @@ class Client(BaseClient):
             if not indicator_metadata:
                 continue
 
-            # list(filter(lambda value: (value.get('properties').get('systemService') or value.get('id').split('.')[
-            #     0]) in self.services_list if self.services_list != ['All'] else ... and value.get('properties').get(
-            #     'region') in self.regions_list if self.regions_list != ['All'] else ..., values_from_file))
-
             is_region_not_in_filter = 'All' not in self.regions_list and \
                                       indicator_metadata['region'] not in self.regions_list
             is_service_not_in_filter = 'All' not in self.services_list and \
@@ -202,7 +197,6 @@ class Client(BaseClient):
             if is_region_not_in_filter or is_service_not_in_filter:
                 continue
 
-            indicators_metadata.append(indicator_metadata)
             for address in indicator_metadata['address_prefixes']:
                 results.append(
                     self.build_ip_indicator(address,
