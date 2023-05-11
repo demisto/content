@@ -559,7 +559,8 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -> list:
-    """Gets last report positional value, order of optional fields and Demisto.args() to determine what to append to report template.
+    """Gets last report positional value, order of optional fields and Demisto.args()
+    to determine what to append to report template.
     Args:
         placeholder (int): integer of the last
         optional_order (list): list of optional fields (inputs)
