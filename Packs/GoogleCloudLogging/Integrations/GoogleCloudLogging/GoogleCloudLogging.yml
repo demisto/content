@@ -64,8 +64,8 @@ script:
       isArray: false
       name: order_by
       predefined:
-        - timestamp asc
-        - timestamp desc
+      - timestamp asc
+      - timestamp desc
       required: false
       secret: false
     - default: false
