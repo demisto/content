@@ -18,6 +18,7 @@
         "marketplacev2"
     ],
     "itemPrefix": [
-        "Rapid7ThreatCommand"
+        "ThreatCommand",
+         "Rapid7 ThreatCommand"
     ]
 }
