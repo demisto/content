@@ -1283,8 +1283,8 @@ class CoreClient(BaseClient):
             json_data={"request_data": {"role_names": role_names}},
         )
 
-    def set_user_role(self, user_emails: list[str], role_name: str) -> None:
-        self._http_request(
+    def set_user_role(self, user_emails: list[str], role_name: str) -> dict[str, dict[str, str]]:
+        return self._http_request(
             method='POST',
             url_suffix='/rbac/set_user_role/',
             json_data={"request_data": {
@@ -1293,8 +1293,8 @@ class CoreClient(BaseClient):
             }},
         )
 
-    def remove_user_role(self, user_emails: list[str]) -> None:
-        self._http_request(
+    def remove_user_role(self, user_emails: list[str]) -> dict[str, dict[str, str]]:
+        return self._http_request(
             method='POST',
             url_suffix='/rbac/set_user_role/',
             json_data={"request_data": {
@@ -3670,13 +3670,13 @@ def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
         A string describing the cause of the error message.
 
     """
-    pattern = fr"{id_or_group_or_role} \\?'([\(\)\[\]A-Za-z 0-9]+)\\?'"
+    pattern = fr"{id_or_group_or_role} \\?'([/A-Za-z 0-9]+)\\?'"
     if match := re.search(pattern, err):
         return f'Error: {id_or_group_or_role} {match[1]} was not found'
     return "Error: "
 
 
-def handle_error(e, type: str | None, custom_msg: str | None) -> None:
+def handle_error(e, type_: str | None, custom_msg: str | None) -> None:
     """
     Handles an error that may occur during a process.
 
@@ -3695,11 +3695,13 @@ def handle_error(e, type: str | None, custom_msg: str | None) -> None:
     if e.res is not None and e.res.status_code == 500:
 
         if 'was not found' in str(e):
-            error_msg = find_the_cause_error(str(e), type)
-            raise ValueError(f'{error_msg}, {custom_msg} full error message: {e}') from e
+            error_msg = find_the_cause_error(str(e), type_)
+            raise ValueError(
+                f'{error_msg}{custom_msg if type_ == ("Group" or "Role") else ""}. Full error message: {e}'
+            ) from e
 
         elif 'No identity module' in str(e):
-            raise ValueError(f'{custom_msg}, full error message: {e}') from e
+            raise ValueError(f'{custom_msg}. Full error message: {e}') from e
     raise
 
 
@@ -3730,18 +3732,18 @@ def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandR
         }
 
     try:
-        list_users: list[dict[str, Any]] = client.get_list_users().get('reply', [])
+        listed_users: list[dict[str, Any]] = client.get_list_users().get('reply', [])
     except Exception as e:
-        raise ValueError(f'API connection failed {e}') from e
+        raise ValueError(f'API connection failed: {e}') from e
 
-    table_for_markdown = [parse_user(user) for user in list_users]
+    table_for_markdown = [parse_user(user) for user in listed_users]
     readable_output = tableToMarkdown(name='Users', t=table_for_markdown)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.User',
         outputs_key_field='user_email',
-        outputs=list_users,
+        outputs=listed_users,
     )
 
 
@@ -3768,8 +3770,8 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
         try:
             outputs: dict[str, Any] = client.get_risk_score_user_or_host(user_id).get('reply', {})
         except DemistoException as e:
-            err_msg = "There were no risky users found."
-            handle_error(e=e, type="id", custom_msg=err_msg)
+            err_msg = "No risky users were found."
+            handle_error(e=e, type_="id", custom_msg=err_msg)
 
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
 
@@ -3778,8 +3780,8 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
         try:
             outputs: list[dict[str, Any]] = client.get_list_risky_users().get('reply', [])[:list_limit]
         except DemistoException as e:
-            err_msg = "There were no risky users found."
-            handle_error(e=e, type=None, custom_msg=err_msg)
+            err_msg = "No risky users were found."
+            handle_error(e=e, type_=None, custom_msg=err_msg)
 
         table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
 
@@ -3818,8 +3820,8 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
         try:
             outputs: dict[str, Any] = client.get_risk_score_user_or_host(host_id).get('reply', {})
         except DemistoException as e:
-            err_msg = "There were no risky Hosts found."
-            handle_error(e=e, type="id", custom_msg=err_msg)
+            err_msg = "No risky hosts were found."
+            handle_error(e=e, type_="id", custom_msg=err_msg)
 
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
     else:
@@ -3827,8 +3829,8 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
         try:
             outputs: list[dict[str, Any]] = client.get_list_risky_hosts().get('reply', [])[:list_limit]
         except DemistoException as e:
-            err_msg = "There were no risky Hosts found."
-            handle_error(e=e, type=None, custom_msg=err_msg)
+            err_msg = "No risky hosts were found."
+            handle_error(e=e, type_=None, custom_msg=err_msg)
 
         table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
 
@@ -3858,12 +3860,12 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
         ValueError: If the API connection fails or the specified group name(s) is not found.
     """
 
-    group_names = argToList(args.get('group_names'))
+    group_names = argToList(args['group_names'])
     try:
         outputs = client.get_list_user_groups(group_names).get("reply", [])
     except DemistoException as e:
-        error_msg = "Note: If you sent more than one group name, they may not exist either."
-        handle_error(e=e, type="Group", custom_msg=error_msg)
+        error_msg = ", Note: If you sent more than one group name, they may not exist either"
+        handle_error(e=e, type_="Group", custom_msg=error_msg)
 
     table_for_markdown: list[dict[str, str | None]] = []
     for group in outputs:
@@ -3894,12 +3896,12 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
         ValueError: If the input argument is not valid.
 
     """
-    role_names = argToList(args.get("role_names"))
+    role_names = argToList(args["role_names"])
     try:
         outputs = client.get_list_roles(role_names).get("reply", [])
     except DemistoException as e:
-        error_msg = "Note: If you sent more than one Role name, they may not exist either."
-        handle_error(e=e, type="Role", custom_msg=error_msg)
+        error_msg = ", Note: If you sent more than one Role name, they may not exist either"
+        handle_error(e=e, type_="Role", custom_msg=error_msg)
 
     if not outputs:
         return CommandResults(readable_output="No entries")
@@ -3920,12 +3922,17 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
 
 
 def set_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
-    user_emails = argToList(args.get('user_emails'))
+    user_emails = argToList(args['user_emails'])
+    role_name = args['role_name']
 
-    if role_name := args.get('role_name'):
-        client.set_user_role(user_emails, role_name)
+    res = client.set_user_role(user_emails, role_name).get("reply")
+    amount_users_update = res.get("update_count")
+    if amount_users_update != len(user_emails):
+        return CommandResults(
+            readable_output=f"{amount_users_update} users role have been updated successfully. Some users have not been found."
+        )
 
-    return CommandResults(readable_output="User Role Was Updated Successfully")
+    return CommandResults(readable_output="User Role Was Updated Successfully.")
 
 
 def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
@@ -3941,8 +3948,12 @@ def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
         CommandResults: An instance of the CommandResults class, containing a human-readable
         message indicating that the users were removed successfully.
     """
-    user_emails = argToList(args.get('user_emails'))
+    user_emails = argToList(args['user_emails'])
 
-    client.remove_user_role(user_emails)
-
-    return CommandResults(readable_output="User Role Was Removed Successfully")
+    res = client.remove_user_role(user_emails).get("reply")
+    amount_users_update = res.get("update_count")
+    if amount_users_update != len(user_emails):
+        return CommandResults(
+            readable_output=f"{amount_users_update} users role have been removed successfully. Some users have not been found."
+        )
+    return CommandResults(readable_output="User Role Was Removed Successfully.")
