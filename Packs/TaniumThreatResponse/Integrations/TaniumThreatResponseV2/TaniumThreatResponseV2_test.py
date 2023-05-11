@@ -1,11 +1,9 @@
 import io
 import json
-from CommonServerPython import DemistoException
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
 from dateparser import parse
-from freezegun import freeze_time
 
 import TaniumThreatResponseV2
 
