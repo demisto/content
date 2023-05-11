@@ -33,6 +33,3 @@ def get_agent_details(args):
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     return_results(get_agent_details(demisto.args()))
-
-
-register_module_line('SentinelOne-Get-MAC', 'start', __line__())

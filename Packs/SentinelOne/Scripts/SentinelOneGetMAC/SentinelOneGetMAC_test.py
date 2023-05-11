@@ -1,12 +1,9 @@
-import io
-import json
-import pytest
 import demistomock as demisto
-from importlib import import_module
 
 from SentinelOneGetMAC import get_agent_details
 
-def test_command(mocker, requests_mock):
+
+def test_command(mocker):
     """
     Given
         - arguments - agentID
@@ -24,8 +21,10 @@ def test_command(mocker, requests_mock):
     assert output.get('mac') == 'mac_test'
 
 
-def executeCommand(command):
+def executeCommand(command, args):
     if command == 'sentinelone-get-agent':
-        return [{'Contents': [{'computerName': 'computerName_test', 'networkInterfaces': [{'int_name': 'int_name_test',
-                                                                                           'inet': 'ip_test',
-                                                                                           'physical': 'mac_test'}]}]}]
+        return [{'Contents': [{'computerName': 'computerName_test', 'networkInterfaces': [{
+            'int_name': 'int_name_test',
+            'inet': 'ip_test',
+            'physical': 'mac_test'
+        }]}], 'Type': 'note'}]
