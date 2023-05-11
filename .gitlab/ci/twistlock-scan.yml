@@ -5,7 +5,7 @@
 # used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
 .twistlock-scan-rule-always:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && &TWISTLOCK_SCAN == "true"'
       when: always
 
 twistlock-scan:hello-world:
