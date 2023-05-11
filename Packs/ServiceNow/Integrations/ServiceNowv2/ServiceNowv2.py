@@ -521,10 +521,8 @@ def split_notes(raw_notes, note_type, time_info):
                 notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
         note_info, note_value = note.split('\n', 1)
-        demisto.debug(f'{note_info=}')
         created_on, _, created_by = note_info.partition(" - ")
-        if created_by:
-            created_by = created_by.split(' (')[0]
+        created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
             raise Exception(f'Failed to extract the required information from the following note: {note}')
 
