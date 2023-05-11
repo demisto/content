@@ -159,7 +159,7 @@ class Client(BaseClient):
             "autoComment": auto_comment
         }
 
-        return self._http_request("DELETE",  url_suffix="/api/v1/secrets/" + str(id), params=params)
+        return self._http_request("DELETE", url_suffix="/api/v1/secrets/" + str(id), params=params)
 
     def folderCreate(self, name: str, type: int, parent: int, **kwargs) -> str:
         url_suffix = "/api/v1/folders"
@@ -563,7 +563,7 @@ def main():
     proxy = params.get('proxy', False)
     verify = not params.get('insecure', False)
     secretids = params.get('secrets')
-    autocomment = args.get('comments')
+
 
     demisto.info(f'Command being called is {demisto.command()}')
 
