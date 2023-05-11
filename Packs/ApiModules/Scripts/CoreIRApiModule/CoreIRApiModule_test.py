@@ -3238,14 +3238,14 @@ def test_get_list_risky_users_and_hosts_command(
 
 
 @pytest.mark.parametrize(
-    "command_func, id, error_msg",
+    "command_func, id",
     [
-        (get_list_risky_users_command, "user_id", "users"),
-        (get_list_risky_hosts_command, "host_id", "Hosts"),
+        (get_list_risky_users_command, "user_id"),
+        (get_list_risky_hosts_command, "host_id"),
     ],
 )
 def test_get_list_risky_users_hosts_command_raise_exception(
-    mocker, command_func: Callable, id: str, error_msg: str
+    mocker, command_func: Callable, id: str
 ):
     """
     Tests that the 'get_list_risky_users_command' and 'get_list_risky_hosts_command'
@@ -3282,7 +3282,7 @@ def test_get_list_risky_users_hosts_command_raise_exception(
     )
     with pytest.raises(
         Exception,
-        match=f"Error: id test was not found, There were no risky {error_msg} found. full error message: id 'test' was not found",
+        match="Error: id test was not found. Full error message: id 'test' was not found"
     ):
         command_func(client, {id: "test"})
 
@@ -3291,7 +3291,7 @@ def test_get_list_risky_users_hosts_command_raise_exception(
     "args",
     [
         ({"group_names": "test"}),
-        ({}),
+        ({"group_names": ""}),
     ],
 )
 def test_get_list_user_groups_command(mocker, args: dict):
@@ -3313,7 +3313,7 @@ def test_get_list_user_groups_command(mocker, args: dict):
     mocker.patch.object(CoreClient, "get_list_user_groups", return_value=test_data)
 
     results = get_list_user_groups_command(client=client, args=args)
-    assert "dummy1@gmail.com" in results.readable_output
+    assert "dummy1@gmail.com" in results.outputs[0]["user_email"]
 
 
 @pytest.mark.parametrize(
@@ -3390,7 +3390,7 @@ def test_get_list_user_groups_command_raise_exception(mocker):
     with pytest.raises(
         Exception,
         match="Error: Group test was not found, Note: If you sent more than one group name, "
-              "they may not exist either. full error message: Group 'test' was not found",
+              "they may not exist either. Full error message: Group 'test' was not found",
     ):
         get_list_user_groups_command(client, {"group_names": "test"})
 
@@ -3456,26 +3456,28 @@ def test_get_list_roles_command(
 
     mocker.patch.object(CoreClient, "get_list_roles", return_value=role_data)
 
-    results = get_list_roles_command(client=client, args=role_data)
+    results = get_list_roles_command(client=client, args={"role_names": "test"})
 
     if results.readable_output:
         assert expected_output in results.readable_output
 
 
 @pytest.mark.parametrize(
-    "func, expected_output",
+    "func, expected_output, args",
     [
-        (set_user_role_command, "User Role Was Updated Successfully"),
-        (remove_user_role_command, "User Role Was Removed Successfully")
+        (set_user_role_command, "User Role Was Updated Successfully", {"user_emails": "test@test.com", "role_name": "test"}),
+        (remove_user_role_command, "User Role Was Removed Successfully", {"user_emails": "test@test.com"})
     ]
 )
-def test_user_role_command(mocker, func, expected_output: str):
+def test_user_role_command(mocker, func, expected_output: str, args: dict[str, str]):
     client = CoreClient("test", {})
 
-    mocker.patch.object(CoreClient, "set_user_role", return_value=None)
-    mocker.patch.object(CoreClient, "remove_user_role", return_value=None)
+    mock_res = {"reply": {"update_count": 1}}
 
-    results = func(client=client, args={})
+    mocker.patch.object(CoreClient, "set_user_role", return_value=mock_res)
+    mocker.patch.object(CoreClient, "remove_user_role", return_value=mock_res)
+
+    results = func(client=client, args=args)
 
     assert expected_output in results.readable_output
 
