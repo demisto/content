@@ -460,7 +460,7 @@ USER_SEARCH_CONTEXT = {
             "created": "2023-04-11T22:18:05",
             "enabled": True,
             "loginFailures": 0,
-            "emailAddress": "adil.laari@delinea.com",
+            "emailAddress": "dummyemail",
             "domainId": -1,
             "domainName": None,
             "isLockedOut": False,
