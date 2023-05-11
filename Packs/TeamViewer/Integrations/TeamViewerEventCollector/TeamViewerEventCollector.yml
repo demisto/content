@@ -27,6 +27,7 @@ configuration:
   type: 8
   section: Connect
 - defaultvalue: 3 days
+  description: recommended to fetch from the last 3 days. Notice that TeamViewer provide data only from the last 12 months. 
   display: First fetch time
   name: first_fetch
   required: false

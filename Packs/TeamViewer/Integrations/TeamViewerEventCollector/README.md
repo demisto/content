@@ -2,6 +2,7 @@ TeamViewer event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 15.40 of TeamViewer.
 User access token scope: Event logging - Allow requesting all event logs.
 A Tensor license is required.
+It is recommended to fetch from the last 3 days. Notice that TeamViewer provide data only from the last 12 months. 
 
 ## Configure TeamViewer Event Collector on Cortex XSIAM
 
