@@ -106,7 +106,7 @@ def test_get_all_results(mocker, client, limit, request_page_size, expected_resu
 
 @pytest.mark.parametrize('limit, page_size, expected_call_count, expected_request_body',
                          [(2, None, 1, {'filter': None, 'orderBy': None, 'pageSize': 2,
-                                        'pageToken': [''], 'resourceNames': ['projects/some_resource']})])
+                                        'resourceNames': ['projects/some_resource']})])
 def test_log_entries_list_command(mocker, client, limit, page_size, expected_call_count, expected_request_body):
     """
     Given:
@@ -125,7 +125,7 @@ def test_log_entries_list_command(mocker, client, limit, page_size, expected_cal
                                              return_value=DATA.get('api_response'))
     command_result = log_entries_list_command(client, {'next_token': [''],
                                                        'filter': None,
-                                                       'resource_project_name': 'some_resource',
+                                                       'project_name': 'some_resource',
                                                        'order_by': None,
                                                        'limit': limit,
                                                        'page_size': page_size})

@@ -31,29 +31,29 @@ script:
     - default: false
       description: 'A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       isArray: false
-      name: resource_project_name
+      name: project_name
       required: false
       secret: false
     - default: false
       description: 'A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       isArray: false
-      name: resource_organization_name
+      name: organization_name
       required: false
       secret: false
     - default: false
       description: 'A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       isArray: false
-      name: resource_billing_account_name
+      name: billing_account_name
       required: false
       secret: false
     - default: false
       description: 'A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       isArray: false
-      name: resource_folders_names
+      name: folder_name
       required: false
       secret: false
     - default: false
-      description: When specified, the results returned limited to log entries that match the filter. An empty filter matches all log entries in the resources listed in resourceNames. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters.
+      description: When specified, the results returned limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. e.g "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name"
       isArray: false
       name: filter
       required: false
@@ -71,7 +71,6 @@ script:
     - default: false
       description: The maximum number of objects to return.
       isArray: false
-      defaultValue: 50
       name: limit
       required: false
       secret: false

@@ -1,4 +1,5 @@
 With Google Cloud Logging, users can centralize all their logs in a single location, making it easier to troubleshoot issues and gain insights from their data.
+This integration was integrated and tested with version xx of GoogleCloudLogging
 
 ## Configure Google Cloud Logging on Cortex XSOAR
 
@@ -32,13 +33,13 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_project_name | A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
-| resource_organization_name | A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
-| resource_billing_account_name | A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
-| resource_folders_names | A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
-| filter | When specified, the results returned limited to log entries that match the filter. An empty filter matches all log entries in the resources listed in resourceNames. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. | Optional | 
-| order_by | How the results should be sorted. Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Required | 
-| limit | The maximum number of objects to return. Default is 50. | Optional | 
+| project_name | A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
+| organization_name | A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
+| billing_account_name | A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
+| folder_name | A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
+| filter | When specified, the results returned limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. e.g "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name". | Optional | 
+| order_by | How the results should be sorted. Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Optional | 
+| limit | The maximum number of objects to return. | Optional | 
 | page_size | The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected. | Optional | 
 | next_token | If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. | Optional | 
 
@@ -91,7 +92,7 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 | GoogleCloudLogging.nextPageToken | String | If there might be more results than those appearing in this response, then nextPageToken is included. | 
 
 #### Command example
-```!gcp-logging-log-entries-list resource_project_name="project_id"```
+```!gcp-logging-log-entries-list project_name="project_id"```
 #### Context Example
 ```json
 {
@@ -208,3 +209,6 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 >|nextPageToken|
 >|---|
 >| xxx-xxx |
+
+## Troubleshooting
+1. If you encounter the following error message: 'invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'}, please ensure that your Service Account JSON, permissions and service account scopes are correct.

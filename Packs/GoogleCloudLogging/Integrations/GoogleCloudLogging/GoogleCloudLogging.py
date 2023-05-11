@@ -15,11 +15,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-SCOPES = ['https://www.googleapis.com/auth/logging.read',
-          'https://www.googleapis.com/auth/logging.admin',
-          'https://www.googleapis.com/auth/cloud-platform.read-only',
-          'https://www.googleapis.com/auth/cloud-platform',
-          ]
+SCOPES = ['https://www.googleapis.com/auth/logging.read']
 
 ''' CLIENT CLASS '''
 
@@ -203,12 +199,14 @@ def log_entries_list_command(client: GoogleCloudLoggingClient, args: Dict[str, A
     Returns:
         CommandResults containing the lists log entries.
     """
-    resource_project_name = argToList(args.get('resource_project_name', []))
-    resource_organization_name = argToList(args.get('resource_organization_name', []))
-    resource_billing_account_name = argToList(args.get('resource_billing_account_name', []))
-    resource_folders_names = argToList(args.get('resource_folders_names', []))
+    resource_project_name = argToList(args.get('project_name', []))
+    resource_organization_name = argToList(args.get('organization_name', []))
+    resource_billing_account_name = argToList(args.get('billing_account_name', []))
+    resource_folders_names = argToList(args.get('folders_names', []))
+
     if not (resource_project_name or resource_organization_name or resource_billing_account_name or resource_folders_names):
-        raise DemistoException('At least one resource is required.')
+        raise DemistoException('At least one resource from project_name, organization_name, billing_account_name, '
+                               'folder_name is required.')
     resources = []
     for project_name in resource_project_name:
         resources.append(f'projects/{project_name}')
@@ -218,23 +216,28 @@ def log_entries_list_command(client: GoogleCloudLoggingClient, args: Dict[str, A
         resources.append(f'billingAccounts/{billing_account_name}')
     for folders_names in resource_folders_names:
         resources.append(f'folders/{folders_names}')
-    limit = arg_to_number(args.get('limit')) or 50
-    page_size = arg_to_number(args.get('page_size')) or limit
+
+    limit = arg_to_number(args.get('limit'))
+    page_size = arg_to_number(args.get('page_size')) or 50
     request_body = {'resourceNames': resources,
                     'filter': args.get('filter'),
-                    'orderBy': args.get('order_by'),
-                    'pageSize': page_size if page_size else limit,
-                    'pageToken': args.get('next_token')}
+                    'orderBy': args.get('order_by')}
+    if page_size and args.get('next_token') and not arg_to_number(args.get('limit')):
+        request_body['pageSize'] = page_size
+        request_body['pageToken'] = args.get('next_token')
+    else:
+        request_body['pageSize'] = limit or 50
     response = {}
     try:
-        if limit > 1000:
+        if limit and limit > 1000:
             # If the pageSize value is negative or exceeds 1000, the request is rejected.
             request_body['pageSize'] = 1000
             response = get_all_results(client, limit, request_body)
         else:
+            demisto.debug(f'Request body: {request_body}')
             response = client.get_entries_request(request_body)
     except ValueError as e:
-        raise ValueError(e)
+        raise ValueError(e) from e
     return CommandResults(
         outputs_key_field='insertId',
         outputs={'GoogleCloudLogging(true)': {'nextPageToken': response.get('nextPageToken')},
@@ -256,7 +259,12 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        credentials_json = json.loads(credentials_json)
+        try:
+            credentials_json = json.loads(credentials_json)
+        except json.JSONDecodeError:
+            return_error(
+                f'Failed to execute {demisto.command()} command.\nError:\n Unable to parse Service Account JSON. '
+                'Invalid JSON string.')
         client = GoogleCloudLoggingClient(credentials_json, proxy, verify_certificate)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
