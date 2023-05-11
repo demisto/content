@@ -22,7 +22,7 @@ filter _raw_log ~= "\s(WF)\s"
     xdm.intermediate.ipv4 = inter_ip_v4,
     xdm.intermediate.ipv6 = inter_ip_v6
 | alter
-    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "WF(?:\s\S+){5}\s(\S+)"), "")),
+    xdm.intermediate.port = to_integer(arraystring(regextract(_raw_log, "WF(?:\s\S+){5}\s(\S+)"), "")),
     xdm.network.rule = arraystring(regextract(_raw_log, "WF(?:\s\S+){6}\s(\S+)"), ""),
     xdm.observer.action = arraystring(regextract(_raw_log, "WF(?:\s\S+){8}\s(\S+)"), ""),
     xdm.alert.description = arraystring(regextract(_raw_log, "\[([^]]+)\]"), ""),
@@ -57,7 +57,7 @@ filter _raw_log ~= "\s(TR)\s"
     xdm.intermediate.ipv4 = inter_ip_v4,
     xdm.intermediate.ipv6 = inter_ip_v6
 | alter
-    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "TR\s\S+\s(\S+)"), "")),
+    xdm.intermediate.port = to_integer(arraystring(regextract(_raw_log, "TR\s\S+\s(\S+)"), "")),
     xdm.source.port = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){3}\s(\S+)"), "")),
     xdm.source.user.username = arraystring(regextract(_raw_log, "TR(?:\s\S+){4}\s(\S+)"), ""),
     xdm.network.http.method = arraystring(regextract(_raw_log, "TR(?:\s\S+){6}\s(\S+)"), ""),
@@ -66,7 +66,7 @@ filter _raw_log ~= "\s(TR)\s"
     xdm.source.sent_bytes = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){11}\s(\S+)"), "")),
     xdm.target.sent_bytes = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){12}\s(\S+)"), "")),
     xdm.event.duration = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){14}\s(\S+)"), "")),
-    xdm.intermediate.port = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){16}\s(\S+)"), "")),
+    xdm.target.port = to_integer(arraystring(regextract(_raw_log, "TR(?:\s\S+){16}\s(\S+)"), "")),
     xdm.observer.action = arraystring(regextract(_raw_log, "TR(?:\s\S+){21}\s(\S+)"), ""),
     xdm.target.url = arraystring(regextract(_raw_log, "TR(?:\s\S+){23}\s(\S+)"), ""),
     xdm.network.http.referrer = arraystring(regextract(_raw_log, "TR(?:\s\S+){25}\s(\S+)"), "");
