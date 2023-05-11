@@ -113,6 +113,7 @@ class MockerCases:
     skipped_nightly_test = CollectTestsMocker(TEST_DATA / 'skipped_nightly_test')
     MR1 = CollectTestsMocker(TEST_DATA / 'MR1')
     RN_CONFIG = CollectTestsMocker(TEST_DATA / 'release_notes_config')
+    PR1 = CollectTestsMocker(TEST_DATA / 'PR1')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -429,6 +430,14 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.T, ("FormattingPerformance - Test", "Email extraction test", "Domain extraction test"),
          ('Base', 'DeveloperTools', 'CommonTypes'), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',)),
+
+        # (36) see PR1 definition at the top of this file - only parsing rules xif file was changed
+        (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
+         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.xif',), (), ('MyXSIAMPack',)),
+
+        # (37) see PR1 definition at the top of this file - only parsing rules yml file was changed
+        (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
+         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml',), (), ('MyXSIAMPack',)),
     )
 )
 def test_branch(

@@ -123,6 +123,7 @@ MODELING_RULE_COMPONENT_FILES: set[FileType] = {
 
 XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.PARSING_RULE,
+    FileType.PARSING_RULE_XIF,
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
