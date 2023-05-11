@@ -557,7 +557,7 @@ class Client(BaseClient):
                 return {}, res, errors
 
             for _id, field in content_obj.get('FieldContents').items():
-                field_data = level_fields.get(str(_id))  # type: ignore
+                field_data = level_fields.get(str(_id), {})  # type: ignore
                 field_type = field_data.get('Type')
 
                 # when field type is IP Address

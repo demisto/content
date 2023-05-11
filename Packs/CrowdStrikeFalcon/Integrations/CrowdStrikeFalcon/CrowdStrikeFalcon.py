@@ -306,6 +306,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         token = get_token()
         headers['Authorization'] = 'Bearer {}'.format(token)
     url = SERVER + url_suffix
+
+    headers['User-Agent'] = 'PANW-XSOAR'
+
     try:
         res = requests.request(
             method,
