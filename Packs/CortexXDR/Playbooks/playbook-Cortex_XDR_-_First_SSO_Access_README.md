@@ -10,30 +10,36 @@ The playbook executes the following:
 The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Cortex XDR - First SSO Access - Set Verdict
-* TIM - Indicator Relationships Analysis
-* Account Enrichment - Generic v2.1
-* User Investigation - Generic
 * Block Account - Generic v2
+* Account Enrichment - Generic v2.1
+* TIM - Indicator Relationships Analysis
+* User Investigation - Generic
 
 ### Integrations
+
+* CortexXDRIR
 * XDR_iocs
 * XQLQueryingEngine
-* CortexXDRIR
 
 ### Scripts
+
 * Set
 
 ### Commands
-* ad-expire-password
+
 * ip
+* okta-clear-user-sessions
 * setIncident
 * xdr-endpoint-isolate
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -62,12 +68,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
 | XDRUsernameField | Cortex XDR User name Field. | actor_effective_username | Optional |
-| AutomaticallyResetPassword | Whether to reset the account password automatically. | False | Optional |
+| AutomaticallyClearSessions | Whether to clear all the user sessions automatically. | False | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - First SSO Access](../doc_files/Cortex_XDR_-_First_SSO_Access.png)
