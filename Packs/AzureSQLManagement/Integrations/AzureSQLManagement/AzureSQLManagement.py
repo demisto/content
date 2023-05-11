@@ -545,10 +545,10 @@ def resource_group_list_command(client: Client, args: Dict, subscriptions_id: Li
         demisto.debug(f'{human_readable=}')
         command_result = CommandResults(
             readable_output=human_readable,
-            outputs_prefix='AzureSQL.Subscription',
+            outputs_prefix='AzureSQL.ResourceGroup',
             outputs=response,
             raw_response=response,
-            outputs_key_field='subscriptionId'
+            outputs_key_field='id'
         )
         results.append(command_result)
     return results

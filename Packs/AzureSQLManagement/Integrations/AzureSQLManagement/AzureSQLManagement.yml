@@ -145,7 +145,7 @@ script:
       name: resource_group_name
       required: false
       secret: false
-    - defaultvalue: false
+    - default: false
       description: If true, returns the server lists that matches the given resource groups. Else, returns a list of all the servers.
       isArray: true
       name: list_by_resource_group
@@ -574,7 +574,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultvalue: false
+      default: false
       description: Specifies whether Managed Identity is used to access blob storage.
       isArray: false
       name: is_managed_identity_in_use
