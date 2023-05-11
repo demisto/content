@@ -35,6 +35,7 @@ def should_run_with_guid():
     # conditions to add when the feature is supported in XSIAM:
     # (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
     #     build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
+    # The try/except mechanism is to support development and to ignore cast errors.
     try:
         return (platform == "xsoar" and is_demisto_version_ge(MINIMUM_XSOAR_VERSION) and int(
             build_number) >= MINIMUM_BUILD_NUMBER_XSOAR)

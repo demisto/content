@@ -92,6 +92,7 @@ function shouldRunWithGuid() {
 
     // Checking if the stopScheduleEntry command is available.
     // If not, we are running on an older version of platform and we need to use the old polling mechanism.
+    // The try/catch mechanism is to support development and to ignore parseInt errors.
     try {
         if  ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR)) {
             return true;
