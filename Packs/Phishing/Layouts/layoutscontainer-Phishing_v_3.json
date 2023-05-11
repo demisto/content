@@ -180,7 +180,16 @@
                                 "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+							{
+								"endCol": 2,
+								"fieldId": "categories",
+								"height": 22,
+								"id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,
