@@ -26,9 +26,9 @@ WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and c
                          'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be ' \
                          'reviewed.'
 
-XSOAR_SUPPORT_LEVEL = 'Xsoar Support Level'
-PARTNER_SUPPORT_LEVEL = 'Partner Support Level'
-COMMUNITY_SUPPORT_LEVEL = 'Community Support Level'
+XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
+PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
+COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
 
 
@@ -113,11 +113,11 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
 
 def get_highest_support_label(packs_support_levels: Set[str]):
     if 'xsoar' in packs_support_levels:
-        return XSOAR_SUPPORT_LEVEL
+        return XSOAR_SUPPORT_LEVEL_LABEL
     elif 'partner' in packs_support_levels:
-        return PARTNER_SUPPORT_LEVEL
+        return PARTNER_SUPPORT_LEVEL_LABEL
     else:
-        return COMMUNITY_SUPPORT_LEVEL
+        return COMMUNITY_SUPPORT_LEVEL_LABEL
 
 
 def main():
