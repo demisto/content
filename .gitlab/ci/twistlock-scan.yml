@@ -12,7 +12,7 @@ twistlock-scan:run-lint-with-native-candidate:
   extends:
     - .twistlock-scan-rule
   script:
-    - section_start "Versions"
+    - section_start "Hello world"
     - |
       echo "hello world"
     - section_end "Run Lint with Native Candidate"
