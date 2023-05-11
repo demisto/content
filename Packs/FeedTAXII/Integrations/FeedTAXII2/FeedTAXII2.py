@@ -240,7 +240,6 @@ def main():  # pragma: no cover
     default_api_root = params.get('default_api_root')
     update_custom_fields = params.get('update_custom_fields') or False
 
-
     demisto.info(f'{objects_to_fetch=}')
 
     command = demisto.command()

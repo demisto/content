@@ -392,7 +392,6 @@ class Taxii2FeedClient:
 
     @staticmethod
     def get_indicator_publication(indicator: Dict[str, Any]):
-
         """
         Build publications grid field from the indicator external_references field
 
