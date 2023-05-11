@@ -5381,6 +5381,10 @@
         {
             "integrations": "AWS - Route53",
             "playbookID": "playbook-create_delete_record_Test"
+        },
+        {
+            "integrations": ["FeedLOLBas_test", "Demisto REST API"],
+            "playbookID": "FeedLOLBas_test"
         }
     ],
     "skipped_tests": {

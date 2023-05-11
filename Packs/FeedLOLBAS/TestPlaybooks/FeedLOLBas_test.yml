@@ -1,20 +1,20 @@
 id: FeedLOLBas_test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: FeedLOLBas_test
 description: Feed LOLBas Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c071b350-2ec4-4bc8-83f3-726530f9094e
+    taskid: 8943e6a8-0ea4-4bc4-86ec-2718f03794d8
     type: start
     task:
-      id: c071b350-2ec4-4bc8-83f3-726530f9094e
+      id: 8943e6a8-0ea4-4bc4-86ec-2718f03794d8
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e0203397-c7f1-4652-862d-03d9cdd828b8
+    taskid: 4cda221a-dce7-47bb-8b26-5ff44659181e
     type: regular
     task:
-      id: e0203397-c7f1-4652-862d-03d9cdd828b8
+      id: 4cda221a-dce7-47bb-8b26-5ff44659181e
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7ebf703d-ec03-4e0f-8d6b-19aafaaa5027
+    taskid: f473fdc3-3ae1-4ef1-8d4c-928b7083b23e
     type: regular
     task:
-      id: 7ebf703d-ec03-4e0f-8d6b-19aafaaa5027
+      id: f473fdc3-3ae1-4ef1-8d4c-928b7083b23e
       version: -1
       name: lolbas-get-indicators
       description: Retrieves a limited number of indicators.
@@ -105,23 +105,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 52ad736e-f16a-47da-8911-6e5defbf13cc
+    taskid: 1f1f830b-47f7-4ec1-8276-062e8cc0f79f
     type: title
     task:
-      id: 52ad736e-f16a-47da-8911-6e5defbf13cc
+      id: 1f1f830b-47f7-4ec1-8276-062e8cc0f79f
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -133,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 473ce9b0-8eaf-472a-8960-8e4d1eac7b0a
+    taskid: 5910110d-4919-4ff0-881a-bc07b7728173
     type: condition
     task:
-      id: 473ce9b0-8eaf-472a-8960-8e4d1eac7b0a
+      id: 5910110d-4919-4ff0-881a-bc07b7728173
       version: -1
       name: Verify outputs
       type: condition
@@ -144,7 +143,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -195,12 +194,53 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8165277c-d68e-489e-862b-009754993b8d
+    type: playbook
+    task:
+      id: 8165277c-d68e-489e-862b-009754993b8d
+      version: -1
+      name: Fetch Indicators Test
+      playbookName: Fetch Indicators Test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      searchfield:
+        simple: value, score, id
+      sourcebrand:
+        simple: LOLBAS Feed
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 910,
         "width": 380,
         "x": 50,
         "y": 50
@@ -209,4 +249,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.8.0
