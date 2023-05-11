@@ -74,7 +74,7 @@ def test_azure_sql_db_audit_policy_list_command(mocker):
     client = mock_client(mocker, util_load_json('test_data/azure_sql_db_audit_policy_list_command_result.json'))
     args = {'server_name': 'integration', 'db_name': 'integration-db'}
     results = azure_sql_db_audit_policy_list_command(client, args, 'resourceGroupName')
-    assert '### Database Audit Settings for resourceGroupName' in results.readable_output
+    assert "### Database Audit Settings for resource_group_name='resourceGroupName'" in results.readable_output
     assert results.outputs[0].get('type') == 'Microsoft.Sql/servers/databases/auditingSettings'
 
 
@@ -119,7 +119,8 @@ def test_azure_sql_db_audit_policy_create_update_command(mocker):
             'is_managed_identity_in_use': 'true'}
     results = azure_sql_db_audit_policy_create_update_command(client=client, args=args,
                                                               resource_group_name='resourceGroupName')
-    assert '### Create Or Update Database Auditing Settings for resourceGroupName' in results.readable_output
+    assert "### Create Or Update Database Auditing Settings for resource_group_name='resourceGroupName'" in \
+           results.readable_output
     assert results.outputs.get('retentionDays') == 5
     assert results.outputs.get('isAzureMonitorTargetEnabled') is True
     assert results.outputs.get('isManagedIdentityInUse') is False
@@ -146,7 +147,8 @@ def test_azure_sql_db_threat_policy_create_update_command(mocker):
             'email_addresses': 'test1@test.com'}
     results = azure_sql_db_threat_policy_create_update_command(client=client, args=args,
                                                                resource_group_name='resourceGroupName')
-    assert '### Create Or Update Database Threat Detection Policies for resourceGroupName' in results.readable_output
+    assert "### Create Or Update Database Threat Detection Policies for resource_group_name='resourceGroupName'" in \
+           results.readable_output
     assert results.outputs.get('retentionDays') == 5
     assert results.outputs.get('emailAddresses')[0] == 'test1@test.com'
 
