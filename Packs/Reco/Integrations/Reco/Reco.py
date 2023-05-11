@@ -1029,7 +1029,7 @@ def main() -> None:
             result = get_link_to_user_overview_page(
                 reco_client,
                 demisto.args()["entity"],
-                demisto.args()["param_type"],
+                demisto.args()["param"],
             )
             return_results(result)
         else:
