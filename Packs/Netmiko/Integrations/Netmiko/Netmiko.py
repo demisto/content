@@ -26,7 +26,7 @@ def return_file(keys):  # pragma: no cover
 
 
 class Client:  # pragma: no cover
-    def __init__(self, platform, hostname, username, password, port, keys):  # pragma: no cover
+    def __init__(self, platform, hostname, username, password, port, keys):
         self.platform = platform
         self.hostname = hostname
         self.username = username
@@ -35,7 +35,7 @@ class Client:  # pragma: no cover
         self.keys = keys
         self.net_connect = None
 
-    def connect(self):  # pragma: no cover
+    def connect(self):
         if self.keys:
             try:
                 self.net_connect = Netmiko(device_type=self.platform, host=self.hostname, port=self.port,
@@ -49,14 +49,14 @@ class Client:  # pragma: no cover
             except Exception as err:
                 return_error(err)
 
-    def disconnect(self):  # pragma: no cover
+    def disconnect(self):
         try:
             if self.net_connect:
                 self.net_connect.disconnect()
         except Exception as err:
             return_error(err)
 
-    def cmds(self, require_exit, exit_argument, commands, enable, isConfig):  # pragma: no cover
+    def cmds(self, require_exit, exit_argument, commands, enable, isConfig):
         try:
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
@@ -90,7 +90,7 @@ def cmds_command(client, args):
 
     # Parse the commands
     cmds = args.get('cmds')
-    if type(cmds) != list:
+    if type(cmds) != list:  # pragma: no cover
         try:
             cmds = cmds.split('\n')
         except Exception as err:
@@ -131,7 +131,7 @@ def cmds_command(client, args):
             md = "Error parsing raw print output"
             demisto.error(f"Error with raw print output - {err}")
 
-    else:
+    else:  # pragma: no cover
         hdrs = ["Hostname", "DateTimeUTC", "Command", "Output"]
         data = []
 
@@ -148,12 +148,12 @@ def cmds_command(client, args):
     outputs_key_field = None
     outputs_prefix = None
     outputs = None
-    if not disable_context:
+    if not disable_context:  # pragma: no cover
         outputs_prefix = "Netmiko"
         outputs_key_field = 'DateTimeUTC'
         outputs = output
 
-    command_results = CommandResults(
+    command_results = CommandResults(  # pragma: no cover
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
         outputs=outputs,
