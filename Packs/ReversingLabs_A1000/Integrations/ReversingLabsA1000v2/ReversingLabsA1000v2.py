@@ -567,6 +567,69 @@ def domain_report_output(domain, response_json):
     return results
 
 
+def get_ip_report(a1000):
+    """
+    Get a report for a submitted IP address
+    """
+    ip = demisto.getArg("ipAddress")
+
+    try:
+        response = a1000.network_ip_addr_report(ip_addr=ip)
+        response_json = response.json()
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_report_output(ip=ip, response_json=response_json)
+
+    return results
+
+
+def ip_report_output(ip, response_json):
+    top_threats = tableToMarkdown("Top threats", response_json.get("top_threats"))
+    file_statistics = response_json.get("downloaded_files_statistics")
+
+    reputations = response_json.get("third_party_reputations")
+    reputation_statistics = reputations.get("statistics")
+    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
+
+    markdown = f"""## ReversingLabs A1000 IP Address Report for {ip}\n **Modified time**: {response_json.get("modified_time")}"""
+    markdown = f"{markdown}\n {top_threats}"
+    markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
+    **Suspicious**: {file_statistics.get("suspicious")}
+    **Malicious**: {file_statistics.get("malicious")}
+    **Goodware**: {file_statistics.get("goodware")}
+    **Total**: {file_statistics.get("total")}
+    """
+    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+    markdown = f"{markdown}\n {reputation_sources}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_address_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
 def main():
 
     try:
@@ -617,8 +680,8 @@ def main():
             return_results(get_url_report(a1000))
         elif demisto.command() == 'reversinglabs-a1000-domain-report':
             return_results(get_domain_report(a1000))
-        elif demisto.command() == 'reversinglabs-a1000-ip-report':
-            pass
+        elif demisto.command() == 'reversinglabs-a1000-ip-address-report':
+            return_results(get_ip_report(a1000))
         elif demisto.command() == 'reversinglabs-a1000-ip-downloaded-files':
             pass
         elif demisto.command() == 'reversinglabs-a1000-ip-domain-resolutions':

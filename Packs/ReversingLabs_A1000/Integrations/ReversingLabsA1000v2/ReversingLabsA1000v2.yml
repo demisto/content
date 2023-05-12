@@ -378,6 +378,21 @@ script:
       - contextPath: ReversingLabs.a1000_domain_report
         description: A1000 domain report
         type: Unknown
+  - name: reversinglabs-a1000-ip-address-report
+    description: Get a report for the submitted IP address.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: ipAddress
+        description: IP address string
+        default: true
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.a1000_ip_address_report
+        description: A1000 IP address report
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.57674
   feed: false
   isfetch: false
