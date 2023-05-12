@@ -14,6 +14,9 @@ from CommonServerPython import *  # noqa: F401
 
 
 
+
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2662,60 +2665,7 @@ def conversation_history():
 
 
     if type(messages) == dict:
-        for message in messages:
-            if 'subtype' not in message:
-                user_id = message['user']
-                body = {
-                    'user':user_id
-                }
-                user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
-                user_details = user_details_response['user']
-                if 'thread_ts' in message:
-                    context = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['user'],
-                        'Name': user_details['name'],
-                        'FullName': user_details['real_name'],
-                        'TimeStamp': message['ts'],
-                        'HasReplies': 'Yes',
-                        'ThreadTimeStamp': message['thread_ts']
-                    }
-                else:
-                    context = {
-                        'Type': message['type'],
-                        'Text': message['text'],
-                        'UserId': message['user'],
-                        'Name': user_details['name'],
-                        'FullName': user_details['real_name'],
-                        'TimeStamp': message['ts'],
-                        'HasReplies': 'No',
-                        'ThreadTimeStamp': 'N/A'
-                    }
-            elif 'subtype' in message and 'thread_ts' in message:
-                context = {
-                    'Type': message['type'],
-                    'Text': message['text'],
-                    'UserId': message['username'],
-                    'Name': message['username'],
-                    'FullName': message['username'],
-                    'TimeStamp': message['ts'],
-                    'HasReplies': 'Yes',
-                    'ThreadTimeStamp': message['thread_ts']
-                }
-            else:
-                context = {
-                    'Type': message['type'],
-                    'Text': message['text'],
-                    'UserId': message['username'],
-                    'Name': message['username'],
-                    'FullName': message['username'],
-                    'TimeStamp': message['ts'],
-                    'HasReplies': 'No',
-                    'ThreadTimeStamp': "N/A"
-                }
-            readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
-
+        messages = [messages]
 
     if type(messages) == list:
         context = []
@@ -2811,6 +2761,9 @@ def conversation_replies():
     raw_response = send_slack_request_sync(CLIENT, 'conversations.replies', http_verb="GET", body=body)
     messages = raw_response['messages']
 
+
+    if type(messages) == dict:
+        messages = [messages]
 
     context = []
     for message in messages:
@@ -3098,6 +3051,7 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
 
