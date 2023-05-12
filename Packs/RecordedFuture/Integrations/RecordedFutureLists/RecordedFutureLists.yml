@@ -97,7 +97,8 @@ script:
     - name: freetext_names
       description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will add the best match in the Recorded Future data. For urls containing commas: escape with %2C'
     - name: entity_type
-      description: Type of the entities that should be added, only used together with freetext_names to improve entity resolving
+      required: false
+      description: Type of the entities that should be added, use together with freetext_names to improve entity resolution
       auto: PREDEFINED
       predefined:
       - ip
@@ -131,6 +132,79 @@ script:
     - contextPath: RecordedFuture.List.Entities.action_result
       description: Entity specific result for the action
       type: String
-fromversion: 6.5.0
+  - name: recordedfuture-lists-remove-entities
+    description: Remove entities from a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
+    arguments:
+    - name: list_id
+      required: true
+      description: Id of the list that should be removed, can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal
+    - name: entity_ids
+      description: 'Specific ids from Recorded Future separated by comma, For urls containing commas: replace comma with %2C'
+      required: false
+    - name: freetext_names
+      description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will remove the best match in the Recorded Future data. For urls containing commas: escape with %2C'
+      required: false
+    - name: entity_type
+      required: false
+      description: Type of the entities that should be removed, use together with freetext_names to improve entity resolution
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - domain
+      - malware
+      - url
+      - hash
+      - cve
+      - company
+      - person
+      - product
+      - industry
+      - country
+      - attack-vector
+      - operation
+      - mitre-identifier
+      - malware-category
+    outputs:
+    - contextPath: RecordedFuture.List.Entities.name
+      description: Name of the entity in the list
+      type: String
+    - contextPath: RecordedFuture.List.Entities.type
+      description: The Recorded Future entity type resolved during the action
+      type: String
+    - contextPath: RecordedFuture.List.Entities.id
+      description: Unique id of the entity in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.Entities.input_value
+      description: The value inputted to the command
+      type: String
+    - contextPath: RecordedFuture.List.Entities.action_result
+      description: Entity specific result for the action
+      type: String
+  - name: recordedfuture-lists-entities
+    description: Get the entities that are currently in given lists
+    arguments:
+    - name: list_ids
+      required: true
+      description: Recorded Future list ids, separated by commas.
+    outputs: 
+    - contextPath: RecordedFuture.List.id
+      description: Unique id of the list in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.name
+      description: Name of the list in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.type
+      description: Recorded future entity type
+      type: String
+    - contextPath: RecordedFuture.List.Entities.name
+      description: Name of the entity in the list
+      type: String
+    - contextPath: RecordedFuture.List.Entities.type
+      description: The Recorded Future entity type resolved during the action
+      type: String
+    - contextPath: RecordedFuture.List.Entities.id
+      description: Unique id of the entity in Recorded Future
+      type: String
+    fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
