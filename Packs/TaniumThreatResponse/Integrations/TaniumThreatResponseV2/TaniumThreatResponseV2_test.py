@@ -1567,7 +1567,7 @@ def test_get_response_actions(requests_mock):
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/response-actions',
                       json=api_raw_response)
 
-    args = {'limit': 2, 'offset': 0}
+    args = {'limit': 2, 'offset': 0, 'partial_computer_name': '1', 'status': 'test'}
     human_readable, outputs, _ = TaniumThreatResponseV2.get_response_actions(MOCK_CLIENT, args)
     assert 'Response Actions' in human_readable
     assert outputs.get('Tanium.ResponseActions(val.id === obj.id)', {})['data'][0].get('id') == 10
