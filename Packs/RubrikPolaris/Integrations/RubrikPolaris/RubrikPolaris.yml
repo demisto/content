@@ -2476,6 +2476,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: Maximum size of the file in bytes that will be included in the scan. The maximum allowed size is 15000000 bytes.
+      defaultValue: 5000000
+      isArray: false
+      name: max_file_size
+      required: false
+      secret: false
+    - default: false
       description: |-
         Provide comma separated snapshot IDs on which to perform a scan separated by colon for each object ID (in the same order). Supports comma separated values.
 
@@ -2893,7 +2900,7 @@ script:
     - contextPath: RubrikPolaris.GPSVMRecoverFiles.id
       description: Recover files request ID.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.56486
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.58589
   feed: false
   isfetch: true
   longRunning: false
