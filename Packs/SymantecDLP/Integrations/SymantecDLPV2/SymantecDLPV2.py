@@ -697,8 +697,8 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     page_size = arg_to_number(args.get('page_size'))
     raw_filter = args.get('raw_filter')
     try:
-        incidents_result = client.get_incidents_request(creation_date, status_ids, severities_dlp, incident_types_dlp,
-                                                        limit * page, None, raw_filter)  # type: ignore
+        incidents_result = client.get_incidents_request(
+            creation_date, status_ids, severities_dlp, incident_types_dlp, limit * page, None, raw_filter)  # type: ignore
     except DemistoException as e:
         if '400' in str(e):
             return_error = 'Error 400: Bad filter. Ensure the filter meets the requirements shown at https://apidocs.securitycloud.symantec.com/#/doc?id=incidentlists.'
@@ -862,7 +862,7 @@ def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
 
         try:
             original_filename = results.headers.get('Content-Disposition').split('=')[1]
-        except DemistoException as e:
+        except Exception as e:
             original_filename = 'unknown'
         return fileResult(original_filename, original_message_file)
 
@@ -882,7 +882,7 @@ def get_report_filters_command(client: Client, args: Dict[str, Any]):
         report_results = client.get_report_filters_request(report_id)
         report_results['filterString'] = json.dumps(report_results)
         return CommandResults(
-            readable_output=report_results['filterString'],
+            readable_output=f'Returned results for report id {report_id}',
             outputs_prefix='SymantecDLP.ReportFilter',
             outputs=report_results,
             outputs_key_field="id"
@@ -958,7 +958,7 @@ def update_sender_pattern_command(client: Client, args: Dict[str, Any]):
             "Sender Pattern Update Results",
             update_results
         ),
-        outputs_prefix='SymantecDLP.Update',
+        outputs_prefix='SymantecDLP.SenderUpdate',
         outputs=update_results,
         outputs_key_field="id"
     )
@@ -983,7 +983,7 @@ def update_recipient_pattern_command(client: Client, args: Dict[str, Any]):
             "Sender Pattern Update Results",
             update_results
         ),
-        outputs_prefix='SymantecDLP.Update',
+        outputs_prefix='SymantecDLP.RecipientUpdate',
         outputs=update_results,
         outputs_key_field="id"
     )
@@ -1001,10 +1001,7 @@ def get_message_body_command(client: Client, args: Dict[str, Any]):
             "MessageBody": body_results
         }
         return CommandResults(
-            readable_output=tableToMarkdown(
-                f'Incident {incident_id} Body',
-                results
-            ),
+            readable_output=f'Message body for incident {incident_id} written to context data',
             outputs_prefix='SymantecDLP.MessageBody',
             outputs=results,
             outputs_key_field="id"
