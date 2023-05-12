@@ -1754,7 +1754,6 @@ class TestJiraFetchIncidents:
         mocker.patch('JiraV3.demisto.getLastRun', return_value={})
         mocker.patch('JiraV3.create_incident_from_issue', return_value={})
         set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
-        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
         query_raw_response = {
             'issues': [
                 {'id': '1', 'fields': {'created': '2023-12-11 21:09', 'updated': '2023-12-12 21:09'}},
@@ -1797,7 +1796,6 @@ class TestJiraFetchIncidents:
                                    'updated_date': '2023-12-12 22:09'})
         mocker.patch('JiraV3.create_incident_from_issue', return_value={})
         set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
-        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
         query_raw_response = {
             'issues': [
                 {'id': '3', 'fields': {'created': '2024-01-11 21:09', 'updated': '2024-01-12 21:09'}},
@@ -1842,7 +1840,6 @@ class TestJiraFetchIncidents:
                                    'updated_date': '2023-12-12 22:09'})
         mocker.patch('JiraV3.create_incident_from_issue', return_value={})
         set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
-        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
         query_raw_response = {
             'issues': [
                 {'id': '3', 'fields': {'created': '2023-12-11 22:09', 'updated': '2024-01-12 21:09'}},
@@ -1887,7 +1884,6 @@ class TestJiraFetchIncidents:
                                    'updated_date': '2023-12-12 22:09'})
         mocker.patch('JiraV3.create_incident_from_issue', return_value={})
         set_last_run_mocker = mocker.patch('JiraV3.demisto.setLastRun', side_effect=demisto.setLastRun)
-        query_raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
         query_raw_response = {
             'issues': [
                 {'id': '3', 'fields': {'created': '2022-01-12 22:09', 'updated': '2023-12-12 22:09'}},
