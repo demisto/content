@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: DelineaSS
   version: -1
@@ -92,7 +92,7 @@ script:
       required: true
       secret: true
     - default: false
-      description: Comment to update the password
+      description: Notes to update the password
       isArray: false
       name: autoComment
       required: false
@@ -229,7 +229,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comment to get a secret
+      description: Notes to get a secret
       isArray: false
       name: autoComment
       required: false
@@ -709,7 +709,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Delete the secret with comment
+      description: Notes to Delete the secret
       isArray: false
       name: autoComment
       required: false
@@ -1105,7 +1105,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comment to change the password
+      description: Notes to change the password
       isArray: false
       name: autoComment
       required: false
@@ -1118,7 +1118,7 @@ script:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.11.57890
   feed: false
   isfetch: false
   longRunning: false
