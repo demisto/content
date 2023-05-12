@@ -630,14 +630,25 @@ def test_address_group_to_xsoar_format():
     assert address_group['dynamic_filter'] == "Microsoft 365 and Hamuzim"
     assert 'dynamic' not in address_group
 
-
-def test_external_dynamic_list_to_xsoar_format():
+@pytest.mark.parametrize('input, expected_output', [('external-dynamic-list.json', 'five_minute'),
+                                                    ('external-dynamic-list2.json', None)])
+def test_external_dynamic_list_to_xsoar_format(input, expected_output):
+    """"_summary_"
+    Given:
+        - A json of external dynamic list
+        1. the json contains frequency and exception list
+        2. the json doesn't contain frequency
+    When:
+        - Converting the external dynamic list to xsoar format
+    Then:
+        - Validate the frequency and exception list
+    """
     from PrismaSASE import external_dynamic_list_to_xsoar_format
-    dynamic_list = json.loads(load_mock_response('external-dynamic-list.json'))
+    dynamic_list = json.loads(load_mock_response(input))
     external_dynamic_list_to_xsoar_format(dynamic_list)
     assert dynamic_list['type'] == 'ip'
     assert dynamic_list['source'] == 'https://www.test.com'
-    assert dynamic_list['frequency'] == 'five_minute'
+    assert dynamic_list['frequency'] == expected_output
     assert dynamic_list['exception_list'] == ['www.test.com']
 
 
