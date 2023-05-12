@@ -630,6 +630,7 @@ def test_address_group_to_xsoar_format():
     assert address_group['dynamic_filter'] == "Microsoft 365 and Hamuzim"
     assert 'dynamic' not in address_group
 
+
 @pytest.mark.parametrize('input, expected_output', [('external-dynamic-list.json', 'five_minute'),
                                                     ('external-dynamic-list2.json', None)])
 def test_external_dynamic_list_to_xsoar_format(input, expected_output):
