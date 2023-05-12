@@ -27,3 +27,6 @@ BypassDevCheck
 RemediationNotificationSubject
 RemediationNotificationHTMLBody
 workloads
+elasticsearch
+PostgreSQL
+Mysql
