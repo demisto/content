@@ -86,19 +86,21 @@ class Client(BaseClient):
 
     def get_issues_since_time(self,
                               since: Optional[datetime],
-                              until: Optional[datetime] = None) -> typing.Generator[dict, None, None]:
+                              until: Optional[datetime] = None,
+                              severity: int = 1) -> typing.Generator[dict, None, None]:
         if not until:
             until = datetime.utcnow()
 
         endpoint = 'search/issues/'
         collections_query = 'collection:' + ' collection:'.join(self.collection_ids)
+        severity_query = f' severity_gte: {severity}'
 
         # Datetime format - 2022-10-07T17:36:37.000Z
         datetime_query = f' last_seen_before:{until.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}'
         if since:
             datetime_query = datetime_query + f' last_seen_after:{since.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}'
 
-        search_query = collections_query + datetime_query
+        search_query = collections_query + datetime_query + severity_query
         endpoint = endpoint + urllib.parse.quote(search_query)
 
         params = {'page': 0}
@@ -188,7 +190,7 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
             parsed_time = datetime.now()
         last_start_time = parsed_time
 
-    issues = client.get_issues_since_time(last_start_time)
+    issues = client.get_issues_since_time(last_start_time, params.get('minimum_severity'))
     most_recent_update = None
 
     parsed_issues = []
