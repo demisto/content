@@ -1437,7 +1437,6 @@
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
             "timeout": 200
-
         },
         {
             "integrations": "WildFire-v2",
@@ -1757,6 +1756,12 @@
         {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
+            "timeout": 500,
+            "is_mockable": false
+        },
+        {
+            "integrations": "Jira V3",
+            "playbookID": "JiraV3 Test",
             "timeout": 500,
             "is_mockable": false
         },
@@ -3422,7 +3427,6 @@
             "fromversion": "6.5.0",
             "timeout": 3000
         },
-
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
@@ -5972,7 +5976,7 @@
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
     ],
-    "reputation_tests":[
+    "reputation_tests": [
         "FormattingPerformance - Test",
         "reputations.json Test",
         "Indicators reputation-.json Test",

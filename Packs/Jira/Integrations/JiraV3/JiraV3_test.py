@@ -1,5 +1,6 @@
 import io
 import json
+from sys import api_version
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -25,7 +26,8 @@ def jira_base_client_mock() -> JiraBaseClient:
     the abstract methods defined on the abstract class, if it is not empty, we won't be able to instantiate the abstract class,
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
-    return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback')
+    return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback',
+                          api_version='999')
 
 
 def jira_cloud_client_mock() -> JiraCloudClient:
@@ -41,7 +43,51 @@ def jira_onprem_client_mock() -> JiraOnPremClient:
 
 
 def test_v2_args_to_v3():
-    ...
+    from JiraV3 import map_v2_args_to_v3
+    v2_args = {
+        'startAt': 'dummy_start_at',
+        'maxResults': 'dummy_max_results',
+        'extraFields': 'dummy_fields',
+        'getAttachments': 'dummy_get_attachments',
+        'expandLinks': 'dummy_expand_links',
+        'issueJson': 'dummy_issue_json',
+        'projectKey': 'dummy_project_key',
+        'issueTypeName': 'dummy_issue_type_name',
+        'issueTypeId': 'dummy_issue_type_id',
+        'projectName': 'dummy_project_name',
+        'dueDate': 'dummy_due_date',
+        'parentIssueKey': 'dummy_parent_issue_key',
+        'parentIssueId': 'dummy_parent_issue_id',
+        'attachmentName': 'dummy_attachment_name',
+        'globalId': 'dummy_global_id',
+        'applicationType': 'dummy_application_type',
+        'applicationName': 'dummy_application_name',
+        'issueId': '1234',
+        'issueIdOrKey': 'dummy_issue_key'
+    }
+    expected_v3_args = {
+        'start_at': 'dummy_start_at',
+        'max_results': 'dummy_max_results',
+        'fields': 'dummy_fields',
+        'get_attachments': 'dummy_get_attachments',
+        'expand_links': 'dummy_expand_links',
+        'issue_json': 'dummy_issue_json',
+        'project_key': 'dummy_project_key',
+        'issue_type_name': 'dummy_issue_type_name',
+        'issue_type_id': 'dummy_issue_type_id',
+        'project_name': 'dummy_project_name',
+        'due_date': 'dummy_due_date',
+        'parent_issue_key': 'dummy_parent_issue_key',
+        'parent_issue_id': 'dummy_parent_issue_id',
+        'attachment_name': 'dummy_attachment_name',
+        'global_id': 'dummy_global_id',
+        'application_type': 'dummy_application_type',
+        'application_name': 'dummy_application_name',
+        'issue_id': '1234',
+        'issue_key': 'dummy_issue_key'
+    }
+    v3_args = map_v2_args_to_v3(args=v2_args)
+    assert v3_args == expected_v3_args
 
 
 # Helper functions unit tests
@@ -167,49 +213,6 @@ def test_prepare_pagination_args(pagination_args, expected_parsed_pagination_arg
     assert expected_parsed_pagination_args == parsed_pagination_args
 
 
-# Commands unit tests
-
-# BOARD_EPICS_LIST_CASES = [
-#     ('test_data/raw_responses/board_epics/board_epic_list.json', 'test_data/parsed_responses/board_epics/board_epic_list.json'),
-#     ('test_data/raw_responses/board_epics/board_epic_list_empty.json',
-#      'test_data/parsed_responses/board_epics/board_epic_list_empty.json')
-# ]
-
-
-# @pytest.mark.parametrize('raw_response_file, expected_parsed_response_file', BOARD_EPICS_LIST_CASES)
-# def test_jira_board_epic_list(mocker, raw_response_file, expected_parsed_response_file):
-#     """Check that the jira-board-epic-list parses the raw results correctly
-#     """
-#     from JiraV3 import board_epic_list_command
-#     raw_response = util_load_json(raw_response_file)
-#     expected_parsed_response = util_load_json(expected_parsed_response_file)
-#     client = jira_base_client_mock()
-#     mocker.patch.object(client, 'get_epics_from_board', return_value=raw_response)
-#     parsed_response = board_epic_list_command(client=client, args={'board_id': '14'})
-#     assert parsed_response.to_context() == expected_parsed_response
-
-
-# SPRINT_ISSUES_LIST_CASES = [
-#     ('test_data/raw_responses/sprint_issues/sprint_issues_list.json',
-#      'test_data/parsed_responses/sprint_issues/sprint_issues_list.json'),
-#     ('test_data/raw_responses/sprint_issues/sprint_issues_list_empty.json',
-#      'test_data/parsed_responses/sprint_issues/sprint_issues_list_empty.json')
-# ]
-
-
-# @pytest.mark.parametrize('raw_response_file, expected_parsed_response_file', SPRINT_ISSUES_LIST_CASES)
-# def test_jira_sprint_issue_list(mocker, raw_response_file, expected_parsed_response_file):
-#     """Check that the jira-sprint-issue-list parses the raw results correctly
-#     """
-#     from JiraV3 import sprint_issues_list_command
-#     raw_response = util_load_json(raw_response_file)
-#     expected_parsed_response = util_load_json(expected_parsed_response_file)
-#     client = jira_base_client_mock()
-#     mocker.patch.object(client, 'get_issues_from_sprint', return_value=raw_response)
-#     mocker.patch.object(client, 'get_sprint_issues_from_board', return_value=raw_response)
-#     parsed_response = sprint_issues_list_command(client=client, args={'sprint_id': '4'})
-#     assert parsed_response.to_context() == expected_parsed_response
-
 class TestJiraGetIssueCommand:
     def test_create_file_info_from_attachment(self, mocker):
         """
@@ -250,14 +253,15 @@ class TestJiraGetIssueCommand:
         Then
             - Validate that a fileResult object was created
         """
-        from JiraV3 import download_issue_attachments_to_war_room
+        from JiraV3 import get_issue_command
         client = jira_base_client_mock()
+        raw_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        mocker.patch.object(client, 'get_issue', return_value=raw_issue_response)
         mocker.patch('JiraV3.create_file_info_from_attachment', return_value={'Contents': '', 'ContentsFormat': 'dummy_format',
                                                                               'Type': 'dummy_type', 'File': 'dummy_filename',
                                                                               'FileID': 'dummy_id'})
         demisto_results_mocker = mocker.patch.object(demisto, 'results')
-        raw_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
-        download_issue_attachments_to_war_room(client, issue=raw_issue_response, get_attachments=get_attachments)
+        get_issue_command(client=client, args={'issue_id': '1234', 'get_attachments': get_attachments})
         if get_attachments:
             demisto_results_mocker.assert_called_once()
         else:
@@ -1534,7 +1538,7 @@ class TestJiraGetRemoteData:
         mocker.patch('JiraV3.get_updated_remote_data', return_value=expected_parsed_entries)
         remote_data_response = get_remote_data_command(client=client, args={'id': '1234', 'lastUpdate': '2023-01-01'},
                                                        attachment_tag_from_jira='',
-                                                       comment_tag_from_jira='', mirror_resolved_issue=False)
+                                                       comment_tag_from_jira='', mirror_resolved_issue=True)
         assert remote_data_response.entries == expected_parsed_entries
 
 
@@ -1660,20 +1664,19 @@ class TestJiraFetchIncidents:
     def test_get_fetched_comments(self, mocker):
         """
         Given:
-            - A Jira client, the issue response, and the labels which will be returned as part of the data of
-            the fetched incident
+            - A Jira client, and an issue id.
         When
-            - Extracting the comments of the fetched issue
+            - Extracting the comments' entries of the fetched issue.
         Then
-            - Validate that the correct data is extracted and returned
+            - Validate that the correct data is extracted and returned.
         """
         from JiraV3 import get_fetched_comments
-        comments_entries = [
+        expected_comments_entries = [
             {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
              'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'},
             {'Id': '18329', 'Comment': 'Second comment', 'User': 'Tomer Malache', 'Created': '2023-03-27T20:54:15.878+0300',
              'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Tomer Malache'}]
-        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=expected_comments_entries)
         attachments_entries = [
             {'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_1',
              'FileID': 'dummy_id_1'}, {
@@ -1681,13 +1684,8 @@ class TestJiraFetchIncidents:
                     'dummy_id_2'}]
         mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=attachments_entries)
         client = jira_base_client_mock()
-        labels: List[Dict[str, str]] = []
-        issue: Dict[str, Any] = {}
-        get_fetched_comments(client=client, issue_id='1234', issue=issue, labels=labels)
-        expected_issue = {'extractedComments': comments_entries}
-        expected_labels = [{'type': 'comments', 'value': str(comments_entries)}]
-        assert labels == expected_labels
-        assert issue == expected_issue
+        comments_entries = get_fetched_comments(client=client, issue_id='1234')
+        assert comments_entries == expected_comments_entries
 
     def test_add_extracted_data_to_incident(self):
         """
@@ -1700,12 +1698,12 @@ class TestJiraFetchIncidents:
         """
         from JiraV3 import add_extracted_data_to_incident
         issue = util_load_json('test_data/get_issue_test/raw_response.json')
-        add_extracted_data_to_incident(issue=issue)
+        expected_issue = add_extracted_data_to_incident(issue=issue)
         expected_extracted_issue_data = {'extractedSubtasks': [
             {'id': '21525', 'key': 'COMPANYSA-63'}, {'id': '21538', 'key': 'COMPANYSA-70'}],
             'extractedCreator': 'Example User(admin@demistodev.com)', 'extractedComponents': [
                 'Almost-Done', 'dummy-comp', 'Integration', 'New-Component']}
-        assert expected_extracted_issue_data.items() <= issue.items()
+        assert expected_extracted_issue_data.items() <= expected_issue.items()
 
     @pytest.mark.parametrize('issue_field_priority, severity', [
         ({'name': 'Highest'}, 4),
@@ -1921,7 +1919,8 @@ class TestJiraFetchIncidents:
         Given:
             - Arguments to use when calling the fetch incidents mechanism
         When
-            - Fetching incidents
+            - Fetching incidents (in this unit test, we fetch two incidents, but only check on the first
+            incident)
         Then
             - Validate that the correct value of the rawJSON key is returned, which will be used for the
             incident fields

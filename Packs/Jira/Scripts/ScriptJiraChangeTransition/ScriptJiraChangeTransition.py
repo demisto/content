@@ -2,28 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_output(error_msg):
-    return {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["text"],
-        "Contents": error_msg,
-        "HumanReadable": error_msg,
-        "ReadableContentsFormat": formats["text"],
-    }
-
-
 def main():
-    output = {}
     try:
         apply_transition()
-    except Exception as e:
-        output = create_output(
-            ('Error occurred while running script-JiraChangeTransition. got the next error:\n'
-             f'{e}')
-        )
-    finally:
-        if output:
-            demisto.results(output)
+    except Exception as exc:
+        return_error(f'Failed to execute script-JiraChangeTransition. Error: {exc}')
 
 
 def apply_transition():

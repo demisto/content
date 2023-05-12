@@ -130,10 +130,14 @@ If `Fetch attachments` is enabled, The fetched incidents will include the attach
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+**Notes**: For OnPrem, all the commands use the **WRITE** scope, for Cloud, the required scopes for each command will be mentioned under the name of the command.
+
 ### jira-issue-get-attachment
 
 ***
 Download attachments for a specific issue (Will download a file to War Room).
+
+Scope: `read:jira-work`
 
 #### Base Command
 
@@ -182,6 +186,8 @@ Download attachments for a specific issue (Will download a file to War Room).
 ***
 Deletes an issue in Jira. Issue's sub-tasks will also be deleted if there are any.
 
+Scope: `write:jira-work`
+
 #### Base Command
 
 `jira-delete-issue`
@@ -210,6 +216,8 @@ There is no context output for this command.
 
 ***
 Gets specific fields from a Jira issue and adds it to context dynamically.
+
+Scope: `read:jira-work`
 
 #### Base Command
 
@@ -331,6 +339,8 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 ***
 Creates (or updates) an issue link.
 
+Scope: `write:jira-work`
+
 #### Base Command
 
 `jira-issue-add-link`
@@ -373,6 +383,8 @@ There is no context output for this command.
 
 ***
 Gets the account ID for a given user attribute.
+
+Scope: `read:jira-user`
 
 #### Base Command
 
@@ -417,6 +429,8 @@ Gets the account ID for a given user attribute.
 
 ***
 Queries Jira issues.
+
+Scope: `read:jira-work`
 
 #### Base Command
 
@@ -546,7 +560,9 @@ Queries Jira issues.
 ### jira-get-id-offset
 
 ***
-Returns the ID offset. For example the first issue ID.
+Returns the ID offset, which is the id of the first issue that was created in the current Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
+
+Scope: `read:jira-work`
 
 #### Base Command
 
@@ -585,6 +601,8 @@ There are no input arguments for this command.
 ***
 Adds a new comment to an existing Jira issue.
 
+Scope: `write:jira-work`
+
 #### Base Command
 
 `jira-issue-add-comment`
@@ -620,6 +638,8 @@ There is no context output for this command.
 ***
 Uploads a file attachment to an issue.
 
+Scope: `write:jira-work`
+
 #### Base Command
 
 `jira-issue-upload-file`
@@ -654,7 +674,9 @@ There is no context output for this command.
 ### jira-list-transitions
 
 ***
-Lists all possible transitions for a given ticket.
+Lists all possible transitions for a given ticket in its current status.
+
+Scope: `read:jira-work`
 
 #### Base Command
 
@@ -712,6 +734,8 @@ Lists all possible transitions for a given ticket.
 
 ***
 Modifies an issue in Jira.
+
+Scope: `write:jira-work`
 
 #### Base Command
 
@@ -847,6 +871,8 @@ Modifies an issue in Jira.
 ***
 Creates a new issue in Jira.
 
+Scope: `write:jira-work`
+
 #### Base Command
 
 `jira-create-issue`
@@ -917,6 +943,8 @@ Creates a new issue in Jira.
 
 ***
 Fetches an issue from Jira.
+
+Scope: `read:jira-work`
 
 #### Base Command
 
@@ -1248,6 +1276,8 @@ Fetches an issue from Jira.
 ***
 Returns the comments added to a ticket.
 
+Scope: `read:jira-work`
+
 #### Base Command
 
 `jira-get-comments`
@@ -1335,6 +1365,13 @@ Use this command to complete the authorization process. After copying the author
 
 There is no context output for this command.
 
+#### Human Readable Output
+>
+>### Logged in successfully  
+>
+>A refresh token was saved to the integration context. This token will be
+>used to generate a new access token once the current one expires.
+
 ### jira-oauth-start
 
 ***
@@ -1351,6 +1388,12 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+
+>In order to retrieve the authorization code, use the following link:  
+>[https://example.com](https://example.com)  
+>After authorizing, you will be redirected to the configured callback URL, where you will retrieve the authorization code provided as a query parameter called `code`, and insert it as an argument to the !jira-oauth-complete command
 
 ### jira-oauth-test
 
@@ -1369,10 +1412,16 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+#### Human Readable Output
+
+>Successful connection.
+
 ### jira-issue-delete-comment
 
 ***
-Delete a comment that's part of an issue.
+Delete a comment from an issue.
+
+Scope: `write:jira-work`
 
 #### Base Command
 
@@ -1401,7 +1450,9 @@ There is no context output for this command.
 ### jira-issue-edit-comment
 
 ***
-Edit a comment that's part of an issue.
+Edit a comment that is part of an issue.
+
+Scope: `write:jira-work`
 
 #### Base Command
 
@@ -1414,7 +1465,7 @@ Edit a comment that's part of an issue.
 | issue_id | The issue ID (Issue ID or key is required). | Optional |
 | issue_key | The issue key (Issue ID or key is required). | Optional |
 | comment_id | The comment ID. | Required |
-| comment | The content of the comment. | Required |
+| comment | The content of the comment to modify. | Required |
 | visibility | The roles that can view the comment, for example: Administrators. | Optional |
 
 #### Context Output
@@ -1476,6 +1527,8 @@ Edit a comment that's part of an issue.
 
 ***
 This command returns the issue fields, both system and custom fields.
+
+Scope: `read:jira-work`
 
 #### Base Command
 
@@ -1590,6 +1643,8 @@ This command returns the issue fields, both system and custom fields.
 ***
 Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints, then the board_id argument is required. At most 50 issues may be moved at once.
 
+Scope: `write:board-scope:jira-software`
+
 #### Base Command
 
 `jira-issue-to-backlog`
@@ -1620,6 +1675,8 @@ There is no context output for this command.
 ***
 Moves issues from backlog to board, the command does not work with boards with sprints. At most 50 issues may be moved at once. This command is only supported for Jira Cloud instances.
 
+Scope: `write:board-scope:jira-software`
+
 #### Base Command
 
 `jira-issue-to-board`
@@ -1649,6 +1706,8 @@ There is no context output for this command.
 
 ***
 Get board data. If board_id is given, then only the board that corresponds to the board_id is returned, otherwise, the the command will return boards that match the project_key_id, type, or board_name arguments.
+
+Scopes: `read:board-scope:jira-software`, `read:issue-details:jira`
 
 #### Base Command
 
@@ -1738,6 +1797,8 @@ Get board data. If board_id is given, then only the board that corresponds to th
 
 ***
 Get issues from the backlog of a specific board. For Jira OnPrem, the board must be of type scrum.
+
+Scopes: `read:board-scope:jira-software`, `read:issue-details:jira`
 
 #### Base Command
 
@@ -1843,6 +1904,8 @@ Get issues from the backlog of a specific board. For Jira OnPrem, the board must
 
 ***
 Get all issues from a specific board.
+
+Scopes: `read:board-scope:jira-software`, `read:issue-details:jira`
 
 #### Base Command
 
@@ -1968,6 +2031,8 @@ Get all issues from a specific board.
 ***
 Get all sprints of a specific board.
 
+Scope: `read:sprint:jira-software`
+
 #### Base Command
 
 `jira-board-sprint-list`
@@ -2057,6 +2122,8 @@ Get all sprints of a specific board.
 ***
 Get all epics from a specific board
 
+Scope: `read:epic:jira-software`
+
 #### Base Command
 
 `jira-board-epic-list`
@@ -2139,6 +2206,8 @@ Get all epics from a specific board
 
 ***
 Get all issues in a sprint.
+
+Scopes: `read:sprint:jira-software`, `read:issue-details:jira`, `read:jql:jira`
 
 #### Base Command
 
@@ -2262,6 +2331,8 @@ Get all issues in a sprint.
 ***
 Moves issues to a sprint, for a given sprint ID. Issues can only be moved to open or active sprints. At most 50 issues may be moved at once.
 
+Scope: `write:sprint:jira-software`
+
 #### Base Command
 
 `jira-sprint-issue-move`
@@ -2291,6 +2362,8 @@ There is no context output for this command.
 
 ***
 Get all issues that belong to an epic (Child Issues).
+
+Scopes: `read:epic:jira-software`, `read:issue-details:jira`, `read:jql:jira`
 
 #### Base Command
 
@@ -2430,6 +2503,8 @@ Get all issues that belong to an epic (Child Issues).
 ***
 Returns a list of all issue link types.
 
+Scope: `read:jira-work`
+
 #### Base Command
 
 `jira-issue-link-type-get`
@@ -2523,6 +2598,8 @@ There are no input arguments for this command.
 
 ***
 Use this command to create a link between two issues.
+
+Scope: `write:jira-work`
 
 #### Base Command
 
@@ -2669,7 +2746,7 @@ In order for the mirroring to work properly, please keep the timezone of the Jir
   * You can set the tags for incoming entries in the instance configuration, using **Attachment Entry Tag from Jira**, and **Comment Entry Tag from Jira**.
   * You can set the tags for outgoing entries in the instance configuration, using **Attachment Entry Tag to Jira**, and **Comment Entry Tag to Jira**.
 * **Jira Issue Type** - Shows the status of the Jira issue. You can press on it in the **Jira Incident Layout** to see the available statuses that you can transition into, and press on one of them to change the status of the issue. ![Show Jira statuses](doc_files/show-jira-statuses.png)
-* **Jira Estimate** - Shows the estimate of the Jira issue. The field can also be edited and mirrored out. Use the format 2w 4d 6h 45m (w - weeks, d - days, h - hours, m - minutes).
+* **Jira Estimate** - Shows the estimate of the Jira issue. The field can also be edited and mirrored out. Use the format 2w 4d 6h 45m (w - weeks, d - days, h - hours, m - minutes). Please add the `Time Tracking` field to the screen in your Jira projects in order for this field to work properly.
 * **Jira Component** - Shows the components of the Jira issue. The field can also be edited and mirrored out.
 * **Source Created By** - Shows the display name, and email of the user who created the Jira issue.
 * **Jira Subtask** - Shows the subtasks of the Jira issue in the form of a table.

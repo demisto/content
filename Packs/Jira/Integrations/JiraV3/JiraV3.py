@@ -1,4 +1,3 @@
-import urllib3
 from abc import ABCMeta
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -43,19 +42,25 @@ MIRROR_DIRECTION_DICT = {
 # This will be appended to the attachment's name when mirroring an attachment from XSOAR to Jira
 ATTACHMENT_MIRRORED_FROM_XSOAR = '_mirrored_from_xsoar'
 COMMENT_MIRRORED_FROM_XSOAR = 'Mirrored from Cortex XSOAR'
-
-
-# Exception Classes
-class RevokedAccessTokenError(Exception):
-    """This class is used to raise exceptions when the access token stored in the integration context has been revoked
-    or not valid anymore, so we could try to retrieve another access token using the refresh token or show an error message
-    to the user.
-    """
-
-    def __init__(self):
-        super().__init__(('The access token has been revoked or no authorization was done for your instance, if so,'
-                          ' please refer to the documentation to authorize your instance'))
-    pass
+V2_ARGS_TO_V3: Dict[str, str] = {
+    'startAt': 'start_at',
+    'maxResults': 'max_results',
+    'extraFields': 'fields',
+    'getAttachments': 'get_attachments',
+    'expandLinks': 'expand_links',
+    'issueJson': 'issue_json',
+    'projectKey': 'project_key',
+    'issueTypeName': 'issue_type_name',
+    'issueTypeId': 'issue_type_id',
+    'projectName': 'project_name',
+    'dueDate': 'due_date',
+    'parentIssueKey': 'parent_issue_key',
+    'parentIssueId': 'parent_issue_id',
+    'attachmentName': 'attachment_name',
+    'globalId': 'global_id',
+    'applicationType': 'application_type',
+    'applicationName': 'application_name',
+}
 
 
 class JiraBaseClient(BaseClient, metaclass=ABCMeta):
@@ -105,10 +110,13 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'components': 'update.components'
     }
 
+    AGILE_API_ENDPOINT = 'rest/agile/1.0'
+
     def __init__(self, base_url: str, proxy: bool, verify: bool,
-                 callback_url: str):
+                 callback_url: str, api_version: str):
         headers: Dict[str, str] = {'Accept': 'application/json'}
         self.callback_url = callback_url
+        self.api_version = api_version
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
 
     @abstractmethod
@@ -158,7 +166,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         # The valid_until key stores the valid date in seconds to make it easier for comparison
         valid_until = integration_context.get('valid_until', 0)
         current_time = get_current_time_in_seconds()
-        if current_time >= valid_until:
+        if current_time >= valid_until - 10:
             refresh_token = integration_context.get('refresh_token', '')
             if not refresh_token:
                 raise DemistoException(('No refresh token was configured, please complete the authorization process'
@@ -208,7 +216,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     # Query Requests
-    @abstractmethod
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
         """This method is in charge of running a JQL (Jira Query Language), and retrieving its results.
 
@@ -219,10 +226,17 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The query results, which will hold the issues acquired from the query.
         """
-        pass
+        # We supply the renderedFields query parameter to retrieve some content in HTML format, since Jira uses a format
+        # called ADF (for api version 3), or a custom complex format (for api version 2) and it is easier to parse the
+        # content in HTML format, using a 3rd party package, rather than complex format.
+        # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
+        # data about the attachments in the issue), otherwise, it won't get returned in the query.
+        query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
+        return self.http_request_with_access_token(
+            method='GET', url_suffix=f'rest/api/{self.api_version}/search', params=query_params
+        )
 
     # Board Requests
-    @abstractmethod
     def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
                                 start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         """This method is in charge of retrieving issues from the backlog of a specific board.
@@ -236,9 +250,17 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant issues.
         """
-        pass
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results,
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/backlog',
+            params=query_params
+        )
 
-    @abstractmethod
     def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
                               start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         """This method is in charge of returning issues from a specific board.
@@ -252,9 +274,17 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant issues.
         """
-        pass
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
+            params=query_params
+        )
 
-    @abstractmethod
     def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
                                max_results: int | None = None) -> Dict[str, Any]:
         """This method is in charge of returning the sprints of a specific board, if the board supports sprints.
@@ -267,9 +297,16 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant sprints.
         """
-        pass
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint',
+            params=query_params
+        )
 
-    @abstractmethod
     def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
                              max_results: int | None = None) -> Dict[str, Any]:
         """This method is in charge of returning the issues with issue type `epic`, of a specific board.
@@ -283,9 +320,17 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant epic issues.
         """
-        pass
+        query_params = assign_params(
+            startAt=start_at,
+            maxResults=max_results,
+            done=done
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/epic',
+            params=query_params
+        )
 
-    @abstractmethod
     def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of moving issues from a sprint, back to backlog of their board.
 
@@ -296,9 +341,13 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/backlog/issue',
+            json_data=json_data,
+            resp_type='response',
+        )
 
-    @abstractmethod
     def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
                    start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
         """This method is in charge of retrieving the boards found in the Jira instance.
@@ -315,9 +364,19 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant boards.
         """
-        pass
+        query_params = assign_params(
+            type=board_type,
+            projectKeyOrId=project_key_id,
+            name=board_name,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board',
+            params=query_params
+        )
 
-    @abstractmethod
     def get_board(self, board_id: str) -> Dict[str, Any]:
         """This method is in charge of retrieving the board corresponding to the board_id.
 
@@ -327,9 +386,11 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the relevant board.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}',
+        )
 
-    @abstractmethod
     def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
                                jql_query: str | None = None) -> Dict[str, Any]:
         """This method is in charge of retrieving the issues from a specific sprint.
@@ -343,9 +404,17 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the issues of the sprint.
         """
-        pass
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
+            params=query_params
+        )
 
-    @abstractmethod
     def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
                                      max_results: int | None = None, jql_query: str | None = None) -> Dict[str, Any]:
         """This method is in charge of retrieving the issues from a specific sprint.
@@ -360,9 +429,17 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the issues of the sprint.
         """
-        pass
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint/{sprint_id}/issue',
+            params=query_params
+        )
 
-    @abstractmethod
     def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of moving issues to a specified sprint.
 
@@ -373,20 +450,25 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
+            json_data=json_data,
+            resp_type='response',
+        )
 
     # Issue Fields Requests
-    @abstractmethod
     def get_issue_fields(self) -> List[Dict[str, Any]]:
         """This method is in charge of returning system and custom issue fields
 
         Returns:
             List[Dict[str, Any]]: The result of the API, which will hold the issue fields.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='GET', url_suffix=f'rest/api/{self.api_version}/field'
+        )
 
     # Issue Requests
-    @abstractmethod
     def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of transitioning an issue to a different status using a transition.
 
@@ -397,9 +479,13 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions',
+            json_data=json_data,
+            resp_type='response',
+        )
 
-    @abstractmethod
     def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """This method is in charge of adding a link (web link) to a specific issue.
 
@@ -410,22 +496,29 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold data about the added web link.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/remotelink',
+            json_data=json_data,
+        )
 
-    @abstractmethod
-    def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
+    def get_comments(self, issue_id_or_key: str, max_results: int = DEFAULT_PAGE_SIZE) -> Dict[str, Any]:
         """This method is in charge of returning the comments of a specific issue.
 
         Args:
             issue_id_or_key (str): The issue id or key.
-            max_results (int, optional): The maximum number of comments. Defaults to 50.
+            max_results (int, optional): The maximum number of comments. Defaults to DEFAULT_PAGE_SIZE (50).
 
         Returns:
             Dict[str, Any]: The result of the API, which will hold the comments of the issue.
         """
-        pass
+        query_params = {'expand': 'renderedBody', 'maxResults': max_results}
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment',
+            params=query_params,
+        )
 
-    @abstractmethod
     def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
         """This method is in charge of deleting a comment from an issue.
 
@@ -436,9 +529,12 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='DELETE',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment/{comment_id}',
+            resp_type='response',
+        )
 
-    @abstractmethod
     def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """This method is in charge of adding a comment to an issue.
 
@@ -449,9 +545,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the newly added comment.
         """
-        pass
+        query_params = {'expand': 'renderedBody'}
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment',
+            json_data=json_data,
+            params=query_params,
+        )
 
-    @abstractmethod
     def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """This method is in charge of editing a comment that is part of an issue.
 
@@ -463,9 +564,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold the edited comment.
         """
-        pass
+        query_params = {'expand': 'renderedBody'}
+        return self.http_request_with_access_token(
+            method='PUT',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/comment/{comment_id}',
+            json_data=json_data,
+            params=query_params,
+        )
 
-    @abstractmethod
     def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
         """This method is in charge of returning a specific issue.
 
@@ -477,9 +583,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold issue.
         """
-        pass
+        query_params = {'expand': 'renderedFields,transitions,names'}
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
+            params=query_params,
+            full_url=full_issue_url,
+        )
 
-    @abstractmethod
     def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of editing a specific issue.
 
@@ -491,9 +602,13 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='PUT',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
+            json_data=json_data,
+            resp_type='response',
+        )
 
-    @abstractmethod
     def delete_issue(self, issue_id_or_key: str) -> requests.Response:
         """This method is in charge of deleting a specific issue.
 
@@ -503,9 +618,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        pass
+        query_params = {'deleteSubtasks': 'true'}
+        return self.http_request_with_access_token(
+            method='DELETE',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}',
+            params=query_params,
+            resp_type='response',
+        )
 
-    @abstractmethod
     def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
         """This method is in charge of returning the available transitions of a specific issue.
 
@@ -515,9 +635,11 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The result of the API, which will hold available transitions.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions',
+        )
 
-    @abstractmethod
     def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """This method is in charge of creating a new issue.
 
@@ -527,9 +649,10 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the newly created issue.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='POST', url_suffix=f'rest/api/{self.api_version}/issue', json_data=json_data
+        )
 
-    @abstractmethod
     def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
                         jql_query: str | None = None) -> Dict[str, Any]:
         """This method is in charge of returning the issues that belong to a specific epic issue.
@@ -543,18 +666,28 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the issues that belong to the epic issue.
         """
-        pass
+        query_params = assign_params(
+            jql=jql_query,
+            startAt=start_at,
+            maxResults=max_results
+        )
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/epic/{epic_id_or_key}/issue',
+            params=query_params
+        )
 
-    @abstractmethod
     def get_issue_link_types(self) -> Dict[str, Any]:
         """This method is in charge of returning a list of all issue link types.
 
         Returns:
             Dict[str, Any]: The results of the API, which will hold the issue link types.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/{self.api_version}/issueLinkType',
+        )
 
-    @abstractmethod
     def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of creating an issue link between two issues.
 
@@ -564,10 +697,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             requests.Response: The raw response of the endpoint.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/{self.api_version}/issueLink',
+            json_data=json_data,
+            resp_type='response'
+        )
 
     # Attachments Requests
-    @abstractmethod
     def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
         """This method is in charge of uploading an attachment to an issue.
 
@@ -578,9 +715,16 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             List[Dict[str, Any]]: The results of the API, which will hold the newly added attachment.
         """
-        pass
+        headers = {
+            'X-Atlassian-Token': 'no-check',
+        }
+        return self.http_request_with_access_token(
+            method='POST',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/attachments',
+            files=files,
+            headers=headers,
+        )
 
-    @abstractmethod
     def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
         """This method is in charge of returning the metadata for an attachment.
 
@@ -590,7 +734,9 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the metadata of the attachment.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='GET', url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}'
+        )
 
     @abstractmethod
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
@@ -621,14 +767,16 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
     def get_user_info(self) -> Dict[str, Any]:
         """This method is in charge of returning the user info of the current user.
 
         Returns:
             Dict[str, Any]: The results of the API, which will hold the current user info.
         """
-        pass
+        return self.http_request_with_access_token(
+            method='GET',
+            url_suffix=f'rest/api/{self.api_version}/myself'
+        )
 
 
 class JiraCloudClient(JiraBaseClient):
@@ -636,13 +784,13 @@ class JiraCloudClient(JiraBaseClient):
     with the addition of any required configurations and implementations of methods that are specific
     for Jira Cloud.
     """
+    ATLASSIAN_AUTH_URL = 'https://auth.atlassian.com'
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
                  callback_url: str, cloud_id: str, server_url: str):
         self.client_id = client_id
         self.client_secret = client_secret
         self.cloud_id = cloud_id
-        # TODO Need to add the scopes in the documentation (README and description)
         self.scopes = [
             # Jira Cloud
             'read:jira-work', 'read:jira-user', 'write:jira-work',
@@ -657,7 +805,8 @@ class JiraCloudClient(JiraBaseClient):
             # For refresh token
             'offline_access']
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
-                         base_url=f'{server_url}/{cloud_id}')
+                         base_url=urljoin(server_url, cloud_id),
+                         api_version='3')
 
     def test_instance_connection(self) -> None:
         self.get_user_info()
@@ -686,25 +835,24 @@ class JiraCloudClient(JiraBaseClient):
                                client_id=self.client_id,
                                scope=' '.join(scopes),  # Scopes are separated with spaces
                                redirect_uri=self.callback_url,
-                               #    state='some_state',
                                response_type='code',
                                prompt='consent')
         res_auth_url = self._http_request(method='GET',
-                                          full_url='https://auth.atlassian.com/authorize',
+                                          full_url=urljoin(self.ATLASSIAN_AUTH_URL, 'authorize'),
                                           params=params,
                                           resp_type='response')
-        if(res_auth_url.url):
+        if res_auth_url.url:
             return res_auth_url.url
         raise DemistoException('No URL was returned.')
 
     def oauth2_retrieve_access_token(self, code: str = '', refresh_token: str = '') -> None:
-        if(code and refresh_token):
+        if code and refresh_token:
             # The code argument is used when the user authenticates using the authorization URL process
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
             raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
                                    ' access token, please only provide one'))
-        if(not (code or refresh_token)):
+        if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
 
@@ -718,7 +866,7 @@ class JiraCloudClient(JiraBaseClient):
         )
         res_access_token = self._http_request(
             method='POST',
-            full_url='https://auth.atlassian.com/oauth/token',
+            full_url=urljoin(self.ATLASSIAN_AUTH_URL, 'oauth/token'),
             data=data,
             resp_type='json',
         )
@@ -734,15 +882,15 @@ class JiraCloudClient(JiraBaseClient):
         set_integration_context(integration_context)
 
     # Query Requests
-    def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
-        # We supply the renderedFields query parameter to retrieve some content in HTML format, since Jira uses a format
-        # called ADF, and it is easier to parse the content in HTML format, using a 3rd party package, rather than ADF.
-        # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
-        # data about the attachments in the issue), otherwise, it won't get returned in the query.
-        query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
-        return self.http_request_with_access_token(
-            method='GET', url_suffix='rest/api/3/search', params=query_params
-        )
+    # def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
+    #     # We supply the renderedFields query parameter to retrieve some content in HTML format, since Jira uses a format
+    #     # called ADF, and it is easier to parse the content in HTML format, using a 3rd party package, rather than ADF.
+    #     # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
+    #     # data about the attachments in the issue), otherwise, it won't get returned in the query.
+    #     query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
+    #     return self.http_request_with_access_token(
+    #         method='GET', url_suffix='rest/api/3/search', params=query_params
+    #     )
 
     def run_project_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
         """Queries projects with respect to the query_params. This method is mainly used to
@@ -759,91 +907,91 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     # Board Requests
-    def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
-                                start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results,
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/backlog',
-            params=query_params
-        )
+    # def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
+    #                             start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results,
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/backlog',
+    #         params=query_params
+    #     )
 
-    def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
-                              start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/issue',
-            params=query_params
-        )
+    # def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
+    #                           start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
+    #         params=query_params
+    #     )
 
-    def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
-                               max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/sprint',
-            params=query_params
-        )
+    # def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
+    #                            max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint',
+    #         params=query_params
+    #     )
 
-    def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
-                             max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            startAt=start_at,
-            maxResults=max_results,
-            done=done
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/epic',
-            params=query_params
-        )
+    # def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
+    #                          max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         startAt=start_at,
+    #         maxResults=max_results,
+    #         done=done
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/epic',
+    #         params=query_params
+    #     )
 
-    def get_board(self, board_id: str) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}',
-        )
+    # def get_board(self, board_id: str) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}',
+    #     )
 
-    def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
-                   start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            type=board_type,
-            projectKeyOrId=project_key_id,
-            name=board_name,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix='rest/agile/1.0/board',
-            params=query_params
-        )
+    # def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
+    #                start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         type=board_type,
+    #         projectKeyOrId=project_key_id,
+    #         name=board_name,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix='{self.AGILE_API_ENDPOINT}/board',
+    #         params=query_params
+    #     )
 
-    def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix='rest/agile/1.0/backlog/issue',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix='{self.AGILE_API_ENDPOINT}/backlog/issue',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def issues_to_backlog(self, board_id, json_data: Dict[str, Any]) -> requests.Response:
+    def issues_to_backlog(self, board_id: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of moving issues, back to backlog of their board.
 
         Args:
-            board_id (_type_): The id of the board that the issues reside in.
+            board_id (str): The id of the board that the issues reside in.
             json_data (Dict[str, Any]): The data that is sent to the endpoint to move the issues back to backlog.
 
         Returns:
@@ -851,16 +999,16 @@ class JiraCloudClient(JiraBaseClient):
         """
         return self.http_request_with_access_token(
             method='POST',
-            url_suffix=f'rest/agile/1.0/backlog/{board_id}/issue',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/backlog/{board_id}/issue',
             json_data=json_data,
             resp_type='response',
         )
 
-    def issues_to_board(self, board_id, json_data: Dict[str, Any]) -> requests.Response:
+    def issues_to_board(self, board_id: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of moving issues from backlog to board.
 
         Args:
-            board_id (_type_): The id of the board that the issues reside in.
+            board_id (str): The id of the board that the issues reside in.
             json_data (Dict[str, Any]): The data that is sent to the endpoint to move the issues back to the
             board from the backlog.
 
@@ -869,181 +1017,181 @@ class JiraCloudClient(JiraBaseClient):
         """
         return self.http_request_with_access_token(
             method='POST',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/issue',
+            url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
             json_data=json_data,
             resp_type='response',
         )
 
-    def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/agile/1.0/sprint/{sprint_id}/issue',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
-                               jql_query: str | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/sprint/{sprint_id}/issue',
-            params=query_params
-        )
+    # def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
+    #                            jql_query: str | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
+    #         params=query_params
+    #     )
 
-    def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
-                                     max_results: int | None = None,
-                                     jql_query: str | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/sprint/{sprint_id}/issue',
-            params=query_params
-        )
+    # def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
+    #                                  max_results: int | None = None,
+    #                                  jql_query: str | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint/{sprint_id}/issue',
+    #         params=query_params
+    #     )
 
     # Issue Fields Requests
-    def get_issue_fields(self) -> List[Dict[str, Any]]:
-        return self.http_request_with_access_token(
-            method='GET', url_suffix='rest/api/3/field'
-        )
+    # def get_issue_fields(self) -> List[Dict[str, Any]]:
+    #     return self.http_request_with_access_token(
+    #         method='GET', url_suffix='rest/api/3/field'
+    #     )
 
     #  Issue Requests
-    def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/remotelink',
-            json_data=json_data,
-        )
+    # def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/remotelink',
+    #         json_data=json_data,
+    #     )
 
-    def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
-        query_params = {'expand': 'renderedBody', 'maxResults': max_results}
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
-            params=query_params,
-        )
+    # def get_comments(self, issue_id_or_key: str, max_results: int = DEFAULT_PAGE_SIZE) -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedBody', 'maxResults': max_results}
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
+    #         params=query_params,
+    #     )
 
-    def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='DELETE',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
-            resp_type='response',
-        )
+    # def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='DELETE',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
+    #         resp_type='response',
+    #     )
 
-    def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
-            method='PUT',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
-            json_data=json_data,
-            params=query_params,
-        )
+    # def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedBody'}
+    #     return self.http_request_with_access_token(
+    #         method='PUT',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
+    #         json_data=json_data,
+    #         params=query_params,
+    #     )
 
-    def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
-        query_params = {'expand': 'renderedFields,transitions,names'}
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
-            params=query_params,
-            full_url=full_issue_url,
-        )
+    # def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedFields,transitions,names'}
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
+    #         params=query_params,
+    #         full_url=full_issue_url,
+    #     )
 
-    def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='PUT',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='PUT',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def delete_issue(self, issue_id_or_key: str) -> requests.Response:
-        query_params = {'deleteSubtasks': 'true'}
-        return self.http_request_with_access_token(
-            method='DELETE',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
-            params=query_params,
-            resp_type='response',
-        )
+    # def delete_issue(self, issue_id_or_key: str) -> requests.Response:
+    #     query_params = {'deleteSubtasks': 'true'}
+    #     return self.http_request_with_access_token(
+    #         method='DELETE',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
+    #         params=query_params,
+    #         resp_type='response',
+    #     )
 
-    def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='POST', url_suffix='rest/api/3/issue', json_data=json_data
-        )
+    # def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='POST', url_suffix='rest/api/3/issue', json_data=json_data
+    #     )
 
-    def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
-        )
+    # def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/transitions',
+    #     )
 
-    def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
-            json_data=json_data,
-            params=query_params,
-        )
+    # def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedBody'}
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment',
+    #         json_data=json_data,
+    #         params=query_params,
+    #     )
 
-    def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
-                        jql_query: str | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/epic/{epic_id_or_key}/issue',
-            params=query_params
-        )
+    # def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
+    #                     jql_query: str | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/epic/{epic_id_or_key}/issue',
+    #         params=query_params
+    #     )
 
-    def get_issue_link_types(self) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix='rest/api/3/issueLinkType',
-        )
+    # def get_issue_link_types(self) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix='rest/api/3/issueLinkType',
+    #     )
 
-    def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix='rest/api/3/issueLink',
-            json_data=json_data,
-            resp_type='response'
-        )
+    # def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix='rest/api/3/issueLink',
+    #         json_data=json_data,
+    #         resp_type='response'
+    #     )
 
     # Attachments Requests
-    def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
-        headers = {
-            'X-Atlassian-Token': 'no-check',
-        }
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/3/issue/{issue_id_or_key}/attachments',
-            files=files,
-            headers=headers,
-        )
+    # def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+    #     headers = {
+    #         'X-Atlassian-Token': 'no-check',
+    #     }
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/3/issue/{issue_id_or_key}/attachments',
+    #         files=files,
+    #         headers=headers,
+    #     )
 
-    def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET', url_suffix=f'rest/api/3/attachment/{attachment_id}'
-        )
+    # def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET', url_suffix=f'rest/api/3/attachment/{attachment_id}'
+    #     )
 
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
         return self.http_request_with_access_token(
@@ -1053,17 +1201,17 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     # User Requests
-    def get_id_by_attribute(self, attribute: str, max_results: int = 50) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
         query = {'query': attribute, 'maxResults': max_results}
         return self.http_request_with_access_token(
-            method='GET', url_suffix='rest/api/3/user/search', params=query
+            method='GET', url_suffix=f'rest/api/{self.api_version}/user/search', params=query
         )
 
-    def get_user_info(self) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix='rest/api/3/myself'
-        )
+    # def get_user_info(self) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix='rest/api/3/myself'
+    #     )
 
 
 class JiraOnPremClient(JiraBaseClient):
@@ -1073,10 +1221,10 @@ class JiraOnPremClient(JiraBaseClient):
                  callback_url: str, server_url: str):
         self.client_id = client_id
         self.client_secret = client_secret
-        # TODO Need to add the scopes in the documentation (README and description)
         self.scopes = 'WRITE'
         super().__init__(proxy=proxy, verify=verify, callback_url=callback_url,
-                         base_url=f'{server_url}')
+                         base_url=f'{server_url}',
+                         api_version='2')
 
     def oauth_start(self) -> str:
         return self.oauth2_start(scopes=self.scopes)
@@ -1113,12 +1261,9 @@ class JiraOnPremClient(JiraBaseClient):
         }
         integration_context |= new_authorization_context
         set_integration_context(integration_context)
-        # state = base64.urlsafe_b64encode(os.urandom(40)).decode('utf-8')
-        # state = re.sub('[^a-zA-Z0-9]+', '', state)
         params = assign_params(client_id=self.client_id,
                                scope=scopes,  # Scopes are separated with spaces
                                redirect_uri=self.callback_url,
-                               #    state=state,
                                code_challenge=code_challenge,
                                code_challenge_method='S256',
                                response_type='code')
@@ -1126,7 +1271,7 @@ class JiraOnPremClient(JiraBaseClient):
                                           url_suffix='rest/oauth2/latest/authorize',
                                           params=params,
                                           resp_type='response')
-        if(res_auth_url.url):
+        if res_auth_url.url:
             return res_auth_url.url
         raise DemistoException('No URL was returned.')
 
@@ -1134,13 +1279,13 @@ class JiraOnPremClient(JiraBaseClient):
         self.oauth2_retrieve_access_token(code=code)
 
     def oauth2_retrieve_access_token(self, code: str = '', refresh_token: str = '') -> None:
-        if(code and refresh_token):
+        if code and refresh_token:
             # The code argument is used when the user authenticates using the authorization URL process
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
             raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
                                    ' access token, please only provide one'))
-        if(not (code or refresh_token)):
+        if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
         integration_context = get_integration_context()
@@ -1176,152 +1321,152 @@ class JiraOnPremClient(JiraBaseClient):
         self.get_user_info()
 
     # Query Requests
-    def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
-        # We supply the renderedFields query parameter to retrieve some content in HTML format, since, by default, Jira
-        # returns the content in a complex way, which would then require further parsing. Retrieving them in HTML format
-        # makes it easier to extract the important information needed using a 3rd-party package.
-        # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
-        # data about the attachments in the issue), otherwise, it won't get returned in the query.
-        query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
-        return self.http_request_with_access_token(
-            method='GET', url_suffix='rest/api/2/search', params=query_params
-        )
+    # def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
+    #     # We supply the renderedFields query parameter to retrieve some content in HTML format, since, by default, Jira
+    #     # returns the content in a complex way, which would then require further parsing. Retrieving them in HTML format
+    #     # makes it easier to extract the important information needed using a 3rd-party package.
+    #     # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
+    #     # data about the attachments in the issue), otherwise, it won't get returned in the query.
+    #     query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
+    #     return self.http_request_with_access_token(
+    #         method='GET', url_suffix='rest/api/2/search', params=query_params
+    #     )
 
     # Issue Fields Requests
-    def get_issue_fields(self) -> List[Dict[str, Any]]:
-        return self.http_request_with_access_token(
-            method='GET', url_suffix='rest/api/2/field'
-        )
+    # def get_issue_fields(self) -> List[Dict[str, Any]]:
+    #     return self.http_request_with_access_token(
+    #         method='GET', url_suffix='rest/api/2/field'
+    #     )
 
     #  Issue Requests
-    def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
-        query_params = {'expand': 'renderedBody', 'maxResults': max_results}
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment',
-            params=query_params,
-        )
+    # def get_comments(self, issue_id_or_key: str, max_results: int = DEFAULT_PAGE_SIZE) -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedBody', 'maxResults': max_results}
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment',
+    #         params=query_params,
+    #     )
 
-    def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='DELETE',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment/{comment_id}',
-            resp_type='response',
-        )
+    # def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='DELETE',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment/{comment_id}',
+    #         resp_type='response',
+    #     )
 
-    def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
-            method='PUT',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment/{comment_id}',
-            json_data=json_data,
-            params=query_params,
-        )
+    # def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedBody'}
+    #     return self.http_request_with_access_token(
+    #         method='PUT',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment/{comment_id}',
+    #         json_data=json_data,
+    #         params=query_params,
+    #     )
 
-    def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
-        query_params = {'expand': 'renderedFields,transitions,names'}
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
-            params=query_params,
-            full_url=full_issue_url,
-        )
+    # def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedFields,transitions,names'}
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
+    #         params=query_params,
+    #         full_url=full_issue_url,
+    #     )
 
-    def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='PUT',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='PUT',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def delete_issue(self, issue_id_or_key: str) -> requests.Response:
-        query_params = {'deleteSubtasks': 'true'}
-        return self.http_request_with_access_token(
-            method='DELETE',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
-            params=query_params,
-            resp_type='response',
-        )
+    # def delete_issue(self, issue_id_or_key: str) -> requests.Response:
+    #     query_params = {'deleteSubtasks': 'true'}
+    #     return self.http_request_with_access_token(
+    #         method='DELETE',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}',
+    #         params=query_params,
+    #         resp_type='response',
+    #     )
 
-    def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='POST', url_suffix='rest/api/2/issue', json_data=json_data
-        )
+    # def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='POST', url_suffix='rest/api/2/issue', json_data=json_data
+    #     )
 
-    def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/transitions',
-        )
+    # def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/transitions',
+    #     )
 
-    def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/transitions',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/transitions',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        query_params = {'expand': 'renderedBody'}
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment',
-            json_data=json_data,
-            params=query_params,
-        )
+    # def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     query_params = {'expand': 'renderedBody'}
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/comment',
+    #         json_data=json_data,
+    #         params=query_params,
+    #     )
 
-    def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/remotelink',
-            json_data=json_data,
-        )
+    # def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/remotelink',
+    #         json_data=json_data,
+    #     )
 
-    def get_issue_link_types(self) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix='rest/api/2/issueLinkType',
-        )
+    # def get_issue_link_types(self) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix='rest/api/2/issueLinkType',
+    #     )
 
-    def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix='rest/api/2/issueLink',
-            json_data=json_data,
-            resp_type='response'
-        )
+    # def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix='rest/api/2/issueLink',
+    #         json_data=json_data,
+    #         resp_type='response'
+    #     )
 
-    def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
-                        jql_query: str | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/epic/{epic_id_or_key}/issue',
-            params=query_params
-        )
+    # def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
+    #                     jql_query: str | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/epic/{epic_id_or_key}/issue',
+    #         params=query_params
+    #     )
 
     # Attachments Requests
-    def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
-        headers = {
-            'X-Atlassian-Token': 'no-check',
-        }
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/api/2/issue/{issue_id_or_key}/attachments',
-            files=files,
-            headers=headers,
-        )
+    # def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+    #     headers = {
+    #         'X-Atlassian-Token': 'no-check',
+    #     }
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'rest/api/2/issue/{issue_id_or_key}/attachments',
+    #         files=files,
+    #         headers=headers,
+    #     )
 
-    def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET', url_suffix=f'rest/api/2/attachment/{attachment_id}'
-        )
+    # def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET', url_suffix=f'rest/api/2/attachment/{attachment_id}'
+    #     )
 
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
         return self.http_request_with_access_token(
@@ -1331,133 +1476,133 @@ class JiraOnPremClient(JiraBaseClient):
         )
 
     # Board Requests
-    def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
-                             max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            startAt=start_at,
-            maxResults=max_results,
-            done=done
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/epic',
-            params=query_params
-        )
+    # def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
+    #                          max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         startAt=start_at,
+    #         maxResults=max_results,
+    #         done=done
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/epic',
+    #         params=query_params
+    #     )
 
-    def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
-                                start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results,
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/backlog',
-            params=query_params
-        )
+    # def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
+    #                             start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results,
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/backlog',
+    #         params=query_params
+    #     )
 
-    def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
-                              start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/issue',
-            params=query_params
-        )
+    # def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
+    #                           start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/issue',
+    #         params=query_params
+    #     )
 
-    def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
-                               max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/sprint',
-            params=query_params
-        )
+    # def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
+    #                            max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint',
+    #         params=query_params
+    #     )
 
-    def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix=f'rest/agile/1.0/sprint/{sprint_id}/issue',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
-                               jql_query: str | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/sprint/{sprint_id}/issue',
-            params=query_params
-        )
+    # def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
+    #                            jql_query: str | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/sprint/{sprint_id}/issue',
+    #         params=query_params
+    #     )
 
-    def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
-                                     max_results: int | None = None,
-                                     jql_query: str | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            jql=jql_query,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}/sprint/{sprint_id}/issue',
-            params=query_params
-        )
+    # def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
+    #                                  max_results: int | None = None,
+    #                                  jql_query: str | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         jql=jql_query,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}/sprint/{sprint_id}/issue',
+    #         params=query_params
+    #     )
 
-    def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
-        return self.http_request_with_access_token(
-            method='POST',
-            url_suffix='rest/agile/1.0/backlog/issue',
-            json_data=json_data,
-            resp_type='response',
-        )
+    # def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
+    #     return self.http_request_with_access_token(
+    #         method='POST',
+    #         url_suffix='{self.AGILE_API_ENDPOINT}/backlog/issue',
+    #         json_data=json_data,
+    #         resp_type='response',
+    #     )
 
-    def get_board(self, board_id: str) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix=f'rest/agile/1.0/board/{board_id}',
-        )
+    # def get_board(self, board_id: str) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix=f'{self.AGILE_API_ENDPOINT}/board/{board_id}',
+    #     )
 
-    def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
-                   start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
-        query_params = assign_params(
-            type=board_type,
-            projectKeyOrId=project_key_id,
-            name=board_name,
-            startAt=start_at,
-            maxResults=max_results
-        )
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix='rest/agile/1.0/board',
-            params=query_params
-        )
+    # def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
+    #                start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+    #     query_params = assign_params(
+    #         type=board_type,
+    #         projectKeyOrId=project_key_id,
+    #         name=board_name,
+    #         startAt=start_at,
+    #         maxResults=max_results
+    #     )
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix='{self.AGILE_API_ENDPOINT}/board',
+    #         params=query_params
+    #     )
 
     # User Requests
-    def get_id_by_attribute(self, attribute: str, max_results: int = 50) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
         query = {'username': attribute, 'maxResults': max_results}
         return self.http_request_with_access_token(
-            method='GET', url_suffix='rest/api/2/user/search', params=query
+            method='GET', url_suffix=f'rest/api/{self.api_version}/user/search', params=query
         )
 
-    def get_user_info(self) -> Dict[str, Any]:
-        return self.http_request_with_access_token(
-            method='GET',
-            url_suffix='rest/api/2/myself'
-        )
+    # def get_user_info(self) -> Dict[str, Any]:
+    #     return self.http_request_with_access_token(
+    #         method='GET',
+    #         url_suffix='rest/api/2/myself'
+    #     )
 
     def get_all_projects(self) -> List[Dict[str, Any]]:
         """Returns all projects which are found in the Jira instance
@@ -1598,6 +1743,8 @@ class JiraIssueFieldsParser:
         Args:
             issue_data (Dict[str, Any]): The issue response from the API.
             issue_field_id (str): The field id of the issue to return its data.
+            issue_fields_id_to_name_mapping (Dict[str, str]): This holds a mapping between the IDs and display names of the
+            issue fields.
 
         Returns:
             Dict[str, Any]: A dictionary where the key is the field id, and the value is a dictionary that holds the raw data
@@ -1652,7 +1799,6 @@ class JiraIssueFieldsParser:
             if issue_field_id in cls.ISSUE_FIELDS_ID_TO_CONTEXT:
                 issue_fields_context |= cls.ISSUE_FIELDS_ID_TO_CONTEXT[issue_field_id](issue_data)
             else:
-                # issue_field_id = issue_field.split('.')[-1]
                 issue_fields_context |= cls.get_raw_field_data_context(issue_data, issue_field_id,
                                                                        issue_fields_id_to_name_mapping)
         return issue_fields_context
@@ -1722,7 +1868,8 @@ def create_query_params(jql_query: str, start_at: int | None = None,
     """Create the query parameters when issuing a query.
 
     Args:
-        jql_query (str): The JQL query.
+        jql_query (str): The JQL query. The Jira Query Language string, used to search for issues in a project using
+        SQL-like syntax.
         start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
         max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
 
@@ -1730,10 +1877,10 @@ def create_query_params(jql_query: str, start_at: int | None = None,
         Dict[str, Any]: The query parameters to be sent when issuing a query request to the API.
     """
     start_at = start_at or 0
-    max_results = max_results or 50
+    max_results = max_results or DEFAULT_PAGE_SIZE
     demisto.debug(f'Querying with: {jql_query}\nstart_at: {start_at}\nmax_results: {max_results}\n')
     return {
-        'jql': jql_query,  # The Jira Query Language string, used to search for issues in a project using SQL-like syntax.
+        'jql': jql_query,
         'startAt': start_at,
         'maxResults': max_results,
     }
@@ -1791,9 +1938,9 @@ def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str,
 
 
 def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, value: Any) -> Dict[str, Any]:
-    """Create a nested dictionary from keys separated by dots(.), and insert the value as part of the last key in the dotted string.
+    """Create a nested dictionary from keys separated by dots(.), and insert the value as part of the last key in the dotted
+    string.
     For example, dotted_string=key1.key2.key3 with value=jira results in {key1: {key2: {key3: jira}}}
-    NOTE: TL: Is the explanation below redundant?
     This function is used to create the dictionary that will be sent when creating a new Jira issue. Let us look at the following
     scenario, we get that we want to enter a value of `Dummy summary` for the dotted field `field.summary`, which will result
     in {field: {summary: Dummy summary}}, but since we might have already created issue fields, for instance, we already added to
@@ -1827,7 +1974,7 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
         client (JiraBaseClient): The Jira client, which is necessary since constructing the data that will be sent to
         the API endpoint can vary, according to the Jira instance.
         issue_args (Dict[str, str]): The issue arguments supplied by the user
-        issue_fields_mapper (Dict[str, str]): A mapper that will map between the issue fields arguments that is supplied by
+        issue_fields_mapper (Dict[str, str]): A mapper that will map between the issue fields arguments that are supplied by
         the user, and the path of them in the issue fields object when creating a new issue, in dotted string format,
         for reference, look at the ISSUE_FIELDS_CREATE_MAPPER constant in JiraBaseClient
 
@@ -1883,7 +2030,8 @@ def create_update_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
         inner_dict = demisto.get(issue_fields, '.'.join(keys[: len(keys) - count]), defaultdict(dict))
         if count == 0:
             update_key_list = []
-            # Example: https://community.atlassian.com/t5/Jira-questions/How-to-use-SET-to-set-components-via-REST-API/qaq-p/845590
+            # Example:
+            # https://community.atlassian.com/t5/Jira-questions/How-to-use-SET-to-set-components-via-REST-API/qaq-p/845590
             # If we need to add, then each value must be added in a separate {add: value} dictionary
             for appended_value in values:
                 update_key_list.append({'add': appended_value})
@@ -2090,8 +2238,8 @@ def get_file_name_and_content(entry_id: str) -> tuple[str, bytes]:
         content of the file in bytes.
     """
     get_file_path_res = demisto.getFilePath(entry_id)
-    file_path = get_file_path_res["path"]
-    file_name = get_file_path_res["name"]
+    file_path = get_file_path_res.get('path')
+    file_name = get_file_path_res.get('name')
     file_bytes: bytes = b''
     with open(file_path, 'rb') as f:
         file_bytes = f.read()
@@ -2213,7 +2361,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     """
     jql_query = args.get('query', '')
     start_at = arg_to_number(args.get('start_at', ''))
-    max_results = arg_to_number(args.get('max_results', ''))
+    max_results = arg_to_number(args.get('max_results', DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     headers = args.get('headers', '')
     specific_fields = argToList(args.get('fields', ''))
     query_params = create_query_params(jql_query=jql_query, start_at=start_at, max_results=max_results)
@@ -2265,7 +2413,8 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     responses.extend(get_expanded_issues(client=client, issue=res,
                                          expand_links=expand_links))
     command_results: List[CommandResults] = []
-    download_issue_attachments_to_war_room(client=client, issue=res, get_attachments=get_attachments)
+    if get_attachments:
+        download_issue_attachments_to_war_room(client=client, issue=res)
     for response in responses:
         markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=response, specific_issue_fields=specific_fields,
                                                                   issue_fields_id_to_name_mapping=response.get('names', {}) or {})
@@ -2282,8 +2431,7 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     return command_results
 
 
-def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[str, Any],
-                                           get_attachments: bool = False) -> None:
+def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[str, Any]) -> None:
     """Downloads the attachments of an issue to the War Room.
 
     Args:
@@ -2291,9 +2439,8 @@ def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[s
         issue (Dict[str, Any]): The issue to retrieve and download its attachments
         get_attachments (bool, optional): Whether to download the attachments or not. Defaults to False.
     """
-    if get_attachments:
-        for attachment in demisto.get(issue, 'fields.attachment', []):
-            return_results(create_file_info_from_attachment(client=client, attachment_id=attachment.get('id')))
+    for attachment in demisto.get(issue, 'fields.attachment', []):
+        return_results(create_file_info_from_attachment(client=client, attachment_id=attachment.get('id')))
 
 
 def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any],
@@ -2460,9 +2607,7 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
-    limit = arg_to_number(args.get('limit', None))
-    if not limit:
-        limit = 50
+    limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     res = client.get_comments(issue_id_or_key=issue_id_or_key, max_results=limit)
     if comments_response := res.get('comments', []):
         human_readable, outputs = create_comments_command_results(
@@ -2496,7 +2641,7 @@ def create_comments_command_results(comments_response: List[Dict[str, Any]],
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     comments = [extract_comment_entry_from_raw_response(comment_response) for comment_response in comments_response]
     outputs: Dict[str, Any] = {'Comment': comments}
-    if(is_id):
+    if is_id:
         outputs |= {'Id': issue_id_or_key}
     else:
         extracted_issue_id = extract_issue_id_from_comment_url(comment_url=comments_response[0].get('self', ''))
@@ -2594,7 +2739,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     payload = {
         'body': text_to_adf(text=comment) if isinstance(client, JiraCloudClient) else comment
     }
-    if(visibility):
+    if visibility:
         payload['visibility'] = {
             "type": "role",
             "value": visibility
@@ -2611,7 +2756,7 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
 
 
 def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    """This command is in charge of returning all possible transitions for a given ticket.
+    """This command is in charge of returning all possible transitions for a given ticket in its current status.
 
     Args:
         client (JiraBaseClient): The Jira client.
@@ -2796,7 +2941,7 @@ def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
                                               page_size=arg_to_number(arg=args.get('page_size', None)),
                                               limit=arg_to_number(arg=args.get('limit', None)))
     start_at = pagination_args.get('start_at', 0)
-    max_results = pagination_args.get('max_results', 50)
+    max_results = pagination_args.get('max_results', DEFAULT_PAGE_SIZE)
     # Since the API does not support pagination, and the issue fields returned can carry hundreds of entries,
     # we decided to do the pagination manually.
     fields_entry = res[start_at: start_at + max_results]
@@ -2831,9 +2976,7 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
         CommandResults: CommandResults to return to XSOAR.
     """
     attribute = args.get('attribute', '')
-    max_results = arg_to_number(args.get('max_results', None))
-    if not max_results:
-        max_results = 50
+    max_results = arg_to_number(args.get('max_results', DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     res = client.get_id_by_attribute(attribute=attribute, max_results=max_results)
     if not res:
         return CommandResults(readable_output=f'No Account ID was found for attribute: {attribute}.')
@@ -2848,9 +2991,8 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
         # While using Jira Cloud, the account id is under the key 'accountId', and while using Jira OnPrem, it is under the
         # key 'name'
         account_ids = [res[0].get('accountId', '') or res[0].get('name', '')]
-        # if is_jira_cloud else [res[0].get('name', '')]
 
-    elif(is_jira_cloud):
+    elif is_jira_cloud:
         # We check the displayName and emailAddress, because that is what the Cloud API returns
         account_ids = [
             user.get('accountId', '') for user in res if (attribute.lower() in [user.get('displayName', '').lower(),
@@ -3124,7 +3266,7 @@ def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
     board_id = args.get('board_id', '')
     rank_before_issue = args.get('rank_before_issue', '')
     rank_after_issue = args.get('rank_after_issue', '')
-    if((rank_after_issue or rank_before_issue) and not board_id):
+    if (rank_after_issue or rank_before_issue) and not board_id:
         raise DemistoException(('Please supply the board_id argument when supplying the rank_after_issue, and'
                                 ' rank_before_issue arguments'))
     json_data = {'issues': issues}
@@ -3225,6 +3367,7 @@ def board_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
 
 def board_backlog_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     """This command is in charge of retrieving issues from the backlog of a specific board.
+    For Jira OnPrem, the board must be of type scrum.
 
     Args:
         client (JiraBaseClient): The Jira client.
@@ -3373,7 +3516,7 @@ def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any]) -> Command
                                            f' use the following link:\n{create_clickable_url(url)}\n'
                                            'After authorizing, you will be redirected to the configured callback URL, where you'
                                            ' will retrieve the authorization code provided as a query parameter called `code`,'
-                                           ' and insert it as an argument to the !jira-oauth-complete command'))
+                                           ' and insert it as an argument to the `!jira-oauth-complete` command'))
 
 
 def oauth_complete_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
@@ -3404,7 +3547,7 @@ def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
         CommandResults: CommandResults to return to XSOAR.
     """
     client.test_instance_connection()
-    return CommandResults(readable_output=('Successful connection.'))
+    return CommandResults(readable_output='Successful connection.')
 
 
 def test_module() -> str:
@@ -3412,10 +3555,10 @@ def test_module() -> str:
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    raise DemistoException(('In order to authorize the instance, first run the command !jira-oauth-start,'
+    raise DemistoException(('In order to authorize the instance, first run the command `!jira-oauth-start`,'
                             ' and complete the process in the URL that is returned. You will then be redirected'
                             ' to the callback URL . Copy the authorization code found in the query parameter'
-                            ' code, and paste that value in the command !jira-ouath-complete as an argument to finish'
+                            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
                             ' the process.'))
 
 
@@ -3434,7 +3577,8 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         fetch_attachments (bool): Whether to fetch the attachments or not.
         fetch_comments (bool): Whether to fetch the comments or not.
         max_fetch_incidents (int): The maximum number of incidents to fetch per fetch.
-        first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty.
+        first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty, and we are
+        fetching using created, or updated time.
         and we are fetching using created time.
         mirror_direction (str): The mirroring direction.
         comment_tag_to_jira (str): The comment tag to add to an entry to mirror it as a comment in Jira.
@@ -3473,7 +3617,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     if query_res := client.run_query(query_params=query_params):
         for issue in query_res.get('issues', []):
             issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
-            demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
+            demisto.debug(f'Creating an incident for Jira issue with ID: {str(issue_id)}')
             new_issue_ids.append(issue_id)
             last_fetch_id = issue_id
             new_fetch_created_time = convert_string_date_to_specific_format(
@@ -3571,24 +3715,25 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
     Returns:
         str: The query to use to fetch the appropriate incidents.
     """
+    issue_field_in_fetch_query_error_message = 'The issue field to fetch from cannot be in the fetch query'
     if issue_field_to_fetch_from in fetch_query:
-        raise DemistoException('The issue field to fetch from cannot be in the fetch query')
+        raise DemistoException(issue_field_in_fetch_query_error_message)
     error_message = f'Could not create the proper fetch query for the issue field {issue_field_to_fetch_from}'
     exclude_issue_ids_query = f" AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))}) " if issue_ids_to_exclude else ' '
     if issue_field_to_fetch_from == 'id':
         if 'id' not in fetch_query:
             return f'{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC'
-        error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
+        error_message = f'{error_message}\n{issue_field_in_fetch_query_error_message}'
     elif issue_field_to_fetch_from == 'created date':
         if 'created' not in fetch_query:
             return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
                     'ORDER BY created ASC')
-        error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
+        error_message = f'{error_message}\n{issue_field_in_fetch_query_error_message}'
     elif issue_field_to_fetch_from == 'updated date':
         if 'updated' not in fetch_query:
             return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
                     'ORDER BY updated ASC')
-        error_message = f'{error_message}\nThe issue field to fetch from cannot be in the fetch query'
+        error_message = f'{error_message}\n{issue_field_in_fetch_query_error_message}'
     raise DemistoException(error_message)
 
 
@@ -3673,7 +3818,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         {'type': 'description', 'value': issue_description},
     ]
     issue['parsedDescription'] = issue_description
-    add_extracted_data_to_incident(issue=issue)
+    issue |= add_extracted_data_to_incident(issue=issue)
     incident_name = f"Jira issue: {issue.get('id')}"
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, 'fields.priority') or {})
@@ -3682,9 +3827,9 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     if fetch_attachments:
         attachments = get_fetched_attachments(client=client, issue=issue)
     if fetch_comments:
-        get_fetched_comments(client, issue_id, issue, labels)
-    else:
-        labels.append({'type': 'comments', 'value': '[]'})
+        comments_entries = get_fetched_comments(client, issue_id)
+        issue['extractedComments'] = comments_entries
+        labels.append({'type': 'comments', 'value': str(comments_entries)})
 
     issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction, None)
 
@@ -3732,26 +3877,24 @@ def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> Li
     return attachments
 
 
-def get_fetched_comments(client: JiraBaseClient, issue_id: str, issue: Dict[str, Any], labels: List[Dict[str, str]]) -> None:
+def get_fetched_comments(client: JiraBaseClient, issue_id: str) -> List[Dict[str, str]]:
     """This function is in charge of fetching the comments when fetching an incident if the user configured to fetch
-    the comments. The fetched comments will be added to the `issue`, and `labels` objects.
+    the comments.
 
     Args:
         client (JiraBaseClient): The Jira client.
         issue_id (str): The issue id that was fetched.
-        issue (Dict[str, Any]): The issue object returned from the API, which holds the data of the incident. This argument will
-        be updated to hold the extracted comments.
-        labels (List[Dict[str, str]]): The labels object that will be returned as part of the incident. This argument will be
-        updated to hold the extracted comments.
+
+    Returns:
+        List[Dict[str, str]]: The fetched comments' entries.
     """
     demisto.debug('Fetching comments')
     comments_entries = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key=issue_id)
     demisto.debug(f'Fetched comments {comments_entries}')
-    issue['extractedComments'] = comments_entries
-    labels.append({'type': 'comments', 'value': str(comments_entries)})
+    return comments_entries
 
 
-def add_extracted_data_to_incident(issue: Dict[str, Any]) -> None:
+def add_extracted_data_to_incident(issue: Dict[str, Any]) -> Dict[str, Any]:
     """This function extracts data from the issue response returned from the API, to add it to the given issue object,
     so it can be forwarded as part of the incident's data, since most of the data returned from the API contains a lot
     of nested objects, which require further extraction.
@@ -3759,10 +3902,15 @@ def add_extracted_data_to_incident(issue: Dict[str, Any]) -> None:
 
     Args:
         issue (Dict[str, Any]): The issue object returned from the API.
+
+    Returns:
+        Dict[str, Any]: The extracted data which will be added to the incident.
     """
-    issue['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or []
-    issue['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or ''
-    issue['extractedComponents'] = JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
+    return {
+        'extractedSubtasks': JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or [],
+        'extractedCreator': JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or '',
+        'extractedComponents': JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
+    }
 
 
 def get_jira_issue_severity(issue_field_priority: Dict[str, Any]) -> int:
@@ -3915,7 +4063,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         demisto.debug(f'Raw issue response: {issue}')
         issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
             issue).get('Description') or ''
-        add_extracted_data_to_incident(issue=issue)
+        issue |= add_extracted_data_to_incident(issue=issue)
         user_timezone_name = get_user_timezone(client=client)
         _ = get_system_timezone()
         demisto.debug(f'Issue modified date in Jira: {dateparser.parse(demisto.get(issue, "fields.updated"))}')
@@ -3969,12 +4117,13 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         issue (Dict[str, Any]): The issue object returned from the API.
         updated_incident (Dict[str, Any]): The object that will hold the updated data of the incident.
         issue_modified_date (datetime): Timestamp of the last updated time of the issue in Jira.
+        attachment_tag_from_jira (str): The attachment tag to add to an entry to mirror it as an attachment from Jira.
+        comment_tag_from_jira (str): The comment tag to add to an entry to mirror it as a comment from Jira.
         incident_modified_date (datetime): Timestamp of the last updated time of the incident in XSOAR, with timezone equal
         to the Jira user's timezone (using {'TIMEZONE': user_timezone_name} setting in dateparser.parse)
-        issue_id (str): The issue id
+        issue_id (str): The issue id.
+        user_timezone_name (str): The timezone of the Jira user.
         mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
-        attachment_tag (str): The attachment tag, to tag the mirrored attachments.
-        comment_tag (str): The comment tag, to tag the mirrored comments.
 
     Returns:
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
@@ -3982,6 +4131,7 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
     parsed_entries: List[Dict[str, Any]] = []
     demisto.debug((f"Update incident, Incident name: Jira issue {issue.get('id')}"
                   f"Reason: Issue modified in remote"))
+    # Close incident if the Jira issue gets resolved, or its status gets updated to Done.
     if mirror_resolved_issue:
         if closed_issue := handle_incoming_resolved_issue(
             updated_incident
@@ -3990,6 +4140,7 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
                 f'Closing incident with ID: {issue_id}, since corresponding issue was resolved')
             parsed_entries.append(closed_issue)
 
+    # Mirroring attachments
     attachments_entries = get_attachments_entries_for_fetched_incident(
         client=client,
         attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
@@ -4007,6 +4158,8 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         client=client,
         issue_id_or_key=issue_id
     )
+
+    # Mirroring comments
     for comment_entry in comments_entries:
         comment_body = comment_entry.get('Comment', '')
         if comment_updated_date := dateparser.parse(comment_entry.get('Updated', ''), settings={'TIMEZONE': user_timezone_name}):
@@ -4018,7 +4171,7 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
                 # We only want to add comments as a Note Entry if it is newer than the incident's modified date.
                 parsed_entries.append({
                     'Type': EntryType.NOTE,
-                    'Contents': (f'{comment_body}\nJira Author: {comment_entry.get("UpdateUser")}'),
+                    'Contents': f'{comment_body}\nJira Author: {comment_entry.get("UpdateUser")}',
                     'ContentsFormat': EntryFormat.TEXT,
                     'Tags': [comment_tag_from_jira],  # The list of tags to add to the entry
                     'Note': True,
@@ -4039,7 +4192,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     was left in V3, and an extra condition was added to check if the issue was `resolved`.
 
     Args:
-        issue_data (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSAOR.
+        issue (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSAOR.
 
     Returns:
         Dict[str, Any]: An entry that indicates that the incident that corresponds to the issue will be closed.
@@ -4066,9 +4219,9 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_mapping_fields_command(client: JiraBaseClient) -> GetMappingFieldsResponse:
     """
-     this command pulls the remote schema for the different incident types, and their associated incident fields,
-     from the remote system.
-    :return: A list of keys you want to map
+    This command pulls the remote schema for the different incident types, and their associated incident fields,
+    from the remote system.
+    Returns: A list of keys you want to map
     """
     jira_incident_type_scheme = SchemeTypeMapping(type_name=JIRA_INCIDENT_TYPE_NAME)
     custom_fields = get_issue_fields_id_to_description_mapping(client=client)
@@ -4084,14 +4237,17 @@ def get_mapping_fields_command(client: JiraBaseClient) -> GetMappingFieldsRespon
 
 def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], comment_tag_to_jira: str,
                                  attachment_tag_to_jira: str) -> str:
-    """ Mirror-out data that is in Demito into Jira issue
+    """  Mirror-out data that is in XSOAR into a Jira issue.
 
     Notes:
         1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
 
     Args:
-        args: A dictionary contains the next data regarding a modified incident: data, entries, incident_changed,
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): A dictionary contains the next data regarding a modified incident: data, entries, incident_changed,
          remote_incident_id, inc_status, delta
+        comment_tag_to_jira (str): The comment tag to add to an entry to mirror it as a comment in Jira.
+        attachment_tag_to_jira (str): The attachment tag to add to an entry to mirror it as an attachment in Jira.
 
     Returns: The incident id that was modified.
     """
@@ -4123,7 +4279,7 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '
-                          f'as it is not new nor changed')
+                          f'as it is neither new nor changed')
 
         if entries:
             for entry in entries:
@@ -4160,26 +4316,6 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
     the command arguments of Jira V2 to the command arguments of Jira V3, since the command arguments
     of Jira V2 were inconsistent.
     """
-    v2_args_to_v3: Dict[str, str] = {
-        'startAt': 'start_at',
-        'maxResults': 'max_results',
-        'extraFields': 'fields',
-        'getAttachments': 'get_attachments',
-        'expandLinks': 'expand_links',
-        'issueJson': 'issue_json',
-        'projectKey': 'project_key',
-        'issueTypeName': 'issue_type_name',
-        'issueTypeId': 'issue_type_id',
-        'projectName': 'project_name',
-        'dueDate': 'due_date',
-        'parentIssueKey': 'parent_issue_key',
-        'parentIssueId': 'parent_issue_id',
-        'attachmentName': 'attachment_name',
-        'globalId': 'global_id',
-        'applicationType': 'application_type',
-        'applicationName': 'application_name',
-
-    }
     v3_args: Dict[str, Any] = {}
     demisto.debug(f'Got the following command arguments: {args}')
     for arg, value in args.items():
@@ -4190,8 +4326,8 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
                 v3_args['issue_id'] = value
             else:
                 v3_args['issue_key'] = value
-        elif arg in v2_args_to_v3:
-            v3_args[v2_args_to_v3[arg]] = value
+        elif arg in V2_ARGS_TO_V3:
+            v3_args[V2_ARGS_TO_V3[arg]] = value
         else:
             v3_args[arg] = value
     return v3_args

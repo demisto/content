@@ -2,17 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_output(error_msg):
-    return {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["text"],
-        "Contents": error_msg,
-        "HumanReadable": error_msg,
-        "ReadableContentsFormat": formats["text"],
-    }
-
-
-def execute_xsoar_command(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+def execute_jira_list_transitions_command(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Execute the command !jira-list-transitions with respect to the arguments `args`, which will hold the issue id
     and which brand to use, Jira V3, or V2.
 
@@ -49,8 +39,8 @@ def extract_statuses_from_transition_response(command_execution_response: List[D
 
 
 def get_status_names_by_source_brand(incident_id: Dict[str, Any], source_brand: str) -> Dict[str, Any]:
-    """Gets the list of possible transitions of an incident of type Jira Incident, by calling the command
-    !jira-list-transitions, while taking into consideration of we are using Jira V2 or V3, using the `using-brand` argument.
+    """Gets the list of possible statuses of an incident of type Jira Incident, by calling the command
+    !jira-list-transitions, while taking into consideration if we are using Jira V2 or V3, using the `using-brand` argument.
 
     Args:
         incident_id (Dict[str, Any]): The incident id, which is the Jira issue id.
@@ -67,11 +57,11 @@ def get_status_names_by_source_brand(incident_id: Dict[str, Any], source_brand: 
         args = {"issueId": incident_id, 'using-brand': source_brand}
     else:
         raise DemistoException('No Jira instance was found, please configure the newest Jira Integration')
-    res = execute_xsoar_command(args=args)
+    res = execute_jira_list_transitions_command(args=args)
     statuses_names = extract_statuses_from_transition_response(command_execution_response=res)
     if isError(res):
         raise DemistoException(f'Error occurred while running jira-list-transitions. The response is: {res}')
-    demisto.debug(f'Got the following transitions: {statuses_names}')
+    demisto.debug(f'Got the following statuses: {statuses_names}')
     return {"hidden": False, "options": sorted(statuses_names)}
 
 
@@ -82,18 +72,12 @@ def main():
         incident = demisto.incidents()[0]
         if incident_id := incident.get("dbotMirrorId"):
             output = get_status_names_by_source_brand(incident_id=incident_id, source_brand=incident.get('sourceBrand', ''))
+            demisto.results(output)
         else:
-            output = create_output(
-                'Error occurred while running script-JiraListStatus because could not get "dbotMirrorId" from '
-                'incident. '
-            )
+            raise DemistoException(('Error occurred while running script-JiraListStatus because could not get "dbotMirrorId" from'
+                                    ' incident.'))
     except Exception as ex:
-        output = create_output(
-            "Error occurred while running script-JiraListStatus. got the next error:\n"
-            + str(ex)
-        )
-    finally:
-        demisto.results(output)
+        return_error(f'Error occurred while running script-JiraListStatus. Got the error:\n{ex}')
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

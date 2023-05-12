@@ -2,17 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_output(error_msg):
-    return {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["text"],
-        "Contents": error_msg,
-        "HumanReadable": error_msg,
-        "ReadableContentsFormat": formats["text"],
-    }
-
-
-def execute_xsoar_command(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+def execute_jira_list_transitions_command(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Execute the command !jira-list-transitions with respect to the arguments `args`, which will hold the issue id
     and which brand to use, Jira V3, or V2.
 
@@ -61,10 +51,10 @@ def get_transition_names_by_source_brand(incident_id: Dict[str, Any], source_bra
     res: List[Dict[str, Any]] = []
     demisto.debug(f'Got the following source brand {source_brand}')
     if source_brand == 'Jira V3':
-        res = execute_xsoar_command(args={'issue_id': incident_id, 'using-brand': source_brand})
+        res = execute_jira_list_transitions_command(args={'issue_id': incident_id, 'using-brand': source_brand})
         transitions_names = get_transitions_from_jirav3_brand(res)
     elif source_brand == 'jira-v2':
-        res = execute_xsoar_command(args={"issueId": incident_id, 'using-brand': source_brand})
+        res = execute_jira_list_transitions_command(args={"issueId": incident_id, 'using-brand': source_brand})
         if not res:
             raise DemistoException('Got an empty list object after executing the command !jira-list-transitions')
         transitions_names = res[0].get('Contents', [])
@@ -77,24 +67,18 @@ def get_transition_names_by_source_brand(incident_id: Dict[str, Any], source_bra
 
 
 def main():
-    demisto.debug('ScriptJiraListTransition is being called')
+    demisto.debug('script-JiraListTransition is being called')
     output = {}
     try:
         incident = demisto.incidents()[0]
         if incident_id := incident.get("dbotMirrorId"):
             output = get_transition_names_by_source_brand(incident_id=incident_id, source_brand=incident.get('sourceBrand', ''))
+            demisto.results(output)
         else:
-            output = create_output(
-                'Error occurred while running script-JiraListTransition because could not get "dbotMirrorId" from '
-                'incident. '
-            )
+            raise DemistoException(('Error occurred while running script-JiraListTransition because could not get "dbotMirrorId"'
+                                    ' from incident.'))
     except Exception as ex:
-        output = create_output(
-            "Error occurred while running script-JiraListTransition. got the next error:\n"
-            + str(ex)
-        )
-    finally:
-        demisto.results(output)
+        return_error(f'Error occurred while running script-JiraListTransition. Got the error:\n{ex}')
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

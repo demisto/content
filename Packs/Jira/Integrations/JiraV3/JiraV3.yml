@@ -5,7 +5,7 @@ name: Jira V3
 display: Atlassian Jira V3
 category: Case Management
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
-  The integration now supports both on-prem, and cloud instances.
+  The integration now supports both OnPrem, and cloud instances.
 configuration:
 - name: server_url
   display: Server URL
@@ -471,7 +471,8 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - deprecated: false
-    description: Returns the ID offset. For example the first issue ID.
+    description: Returns the ID offset, which is the id of the first issue that was created in the current
+      Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
     execution: false
     name: jira-get-id-offset
     outputs:
@@ -579,7 +580,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists all possible transitions for a given ticket.
+    description: Lists all possible transitions for a given ticket in its current status.
     execution: false
     name: jira-list-transitions
     outputs:
@@ -1232,7 +1233,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Delete a comment that's part of an issue.
+    description: Delete a comment from an issue.
     execution: false
     name: jira-issue-delete-comment
   - arguments:
@@ -1255,7 +1256,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The content of the comment.
+      description: The content of the comment to modify.
       isArray: false
       name: comment
       required: true
@@ -1267,7 +1268,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Edit a comment that's part of an issue.
+    description:  Edit a comment that is part of an issue.
     execution: false
     name: jira-issue-edit-comment
     outputs:
@@ -2193,7 +2194,7 @@ script:
   subtype: python3
   type: python
 tests:
-  - no tests
+  - JiraV3 Test
 defaultmapperin: classifier-mapper-incoming-JiraV3
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 5.0.0
