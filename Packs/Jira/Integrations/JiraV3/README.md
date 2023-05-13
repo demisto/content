@@ -118,7 +118,7 @@ When you enable incidents fetching, you have the option to configure a query whi
 
 * `id` of Jira issues
 * `created time` of Jira issues
-* `updated time` of Jira issues
+* `updated time` of Jira issues (using this field may cause to duplicates, so be wary)
 
 If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
 By default, 50 issues are fetched for each call.
