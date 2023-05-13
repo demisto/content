@@ -8,7 +8,7 @@ This script is used to convert Jira comments to a table.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 6.8.0 |
 
 ## Inputs
 
