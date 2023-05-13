@@ -4292,9 +4292,10 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
                     demisto.debug('Add new file')
                     file_path = demisto.getFilePath(entry_id)
                     file_name, file_extension = os.path.splitext(file_path.get('name', ''))
-                    upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id,
-                                                    issue_id_or_key=remote_id,
-                                                    attachment_name=f'{file_name}{ATTACHMENT_MIRRORED_FROM_XSOAR}{file_extension}')
+                    upload_XSOAR_attachment_to_jira(
+                        client=client, entry_id=entry_id,
+                        issue_id_or_key=remote_id,
+                        attachment_name=f'{file_name}{ATTACHMENT_MIRRORED_FROM_XSOAR}{file_extension}')
                 elif comment_tag_to_jira in entry_tags:
                     demisto.debug('Add new comment')
                     entry_content = f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}'
