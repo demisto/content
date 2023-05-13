@@ -1,50 +1,78 @@
 [MODEL: dataset = "vmware_vcenter_raw" ]
 filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" or _raw_log contains "Stats" or _raw_log contains "localhost" or _raw_log contains "Thread" or _raw_log contains "thread" or _raw_log contains "certificates" or _raw_log contains "DEBUG" or _raw_log contains "INFO" or _raw_log contains "appmgmt" or _raw_log contains "cloudvm" or _raw_log contains "pool" or _raw_log contains "vmon"
-| alter Date = arrayindex(regextract(_raw_log,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+"),0)
-    ,Hour = arrayindex(regextract(_raw_log,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)"),0)
-| alter TimeStamp = concat(Date," ",Hour)
-| alter log_level1 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s([A-Za-z]+)"),0)
-    ,log_level2 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\|\s+([A-Za-z]+)\s"),0)
-    ,log_level3 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[[a-zA-Z0-9\-\]]+\s+([a-zA-Z]+)\s"),0)
-    ,log_level4 = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{3}Z\s[a-zA-Z]+\s([a-zA-Z]+)\s"),0)
-| alter LogLevel = coalesce(log_level1 , log_level2 , log_level3 , log_level4 )
-| alter event_type = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[([a-z0-9\-]+)"),0)
-    ,originator = arrayindex(regextract(_raw_log,"Originator\@(\d+)"),0)
-	,opID = arrayindex(regextract(_raw_log,"opID\=([a-zA-Z0-9ֿ\-]+)"),0)
-    , message = arrayindex(regextract(_raw_log ,"[A-Z]{2,}\s*\|(.*)$"),0)
+| alter 
+    log_level1 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s([A-Za-z]+)"),0),
+    log_level2 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\|\s+([A-Za-z]+)\s"),0),
+    log_level3 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[[a-zA-Z0-9\-\]]+\s+([a-zA-Z]+)\s"),0),
+    log_level4 = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{3}Z\s[a-zA-Z]+\s([a-zA-Z]+)\s"),0)
+| alter 
+    LogLevel = coalesce(log_level1 , log_level2 , log_level3 , log_level4 )
+| alter 
+    event_type = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[([a-z0-9\-]+)"),0),    
+	opID = arrayindex(regextract(_raw_log,"opID\=([a-zA-Z0-9ֿ\-]+)"),0),
+    message = arrayindex(regextract(_raw_log ,"[A-Z]{2,}\s*\|(.*)$"),0)
 | alter
     xdm.event.type = event_type,
     xdm.target.resource.id = opID,
     xdm.event.description = message,
     xdm.alert.severity = LogLevel;
 
-filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
-| alter message = arrayindex(regextract(_raw_log ,"\]([^\]]+)$"),0)
-    ,event_type1= arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[([a-z0-9\-]+)"),0)
-    ,event_type2 = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s([a-zA-Z]+-[a-zA-Z0-9-]+)"),0)
-| alter event_type = coalesce(event_type1 , event_type2 )
-| alter user_name1 = arrayindex(regextract(_raw_log, "User\s\'*([^\@]+)\@"),0)
-    ,user_name2 = arrayindex(regextract(_raw_log, "Username=\'([^\']+)\'"),0)
-| alter user_name = coalesce(user_name1 , user_name2)
+filter _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
+| alter 
+    message = arrayindex(regextract(_raw_log ,"\]([^\]]+)$"),0),
+    event_type1= arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[([a-z0-9\-]+)"),0),
+    event_type2 = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s([a-zA-Z]+-[a-zA-Z0-9-]+)"),0)
+| alter 
+    event_type = coalesce(event_type1, event_type2)
+| alter 
+    user_name1 = arrayindex(regextract(_raw_log, "User\s\'*([^\@]+)\@"),0),
+    user_name2 = arrayindex(regextract(_raw_log, "Username=\'([^\']+)\'"),0)
+| alter 
+    user_name = coalesce(user_name1, user_name2)
 | alter
     xdm.event.type = event_type,
     xdm.event.description = message,
     xdm.source.user.username = user_name;
 
+filter _raw_log contains "vpxd"
+| alter 
+    message = arrayindex(regextract(_raw_log ,"\]([^\]]+)$"),0),
+    event_type1= arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[([a-z0-9\-]+)"),0),
+    event_type2 = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s([a-zA-Z]+-[a-zA-Z0-9-]+)"),0),
+    event_type3 = arraystring(regextract(_raw_log ,"<\d+>\d+\s\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+[+|-]\d+:\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]([^\s\]]+)"), ""),
+    extract_event_description = arraystring(regextract(_raw_log ,"<\d+>\d+\s\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+[+|-]\d+:\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s][^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s\[([^\]]+)\]"), "")
+| alter 
+    check_event_type3 = if(event_type3 = "x", null, event_type3)
+| alter 
+    user_name1 = arrayindex(regextract(_raw_log, "User\s\'*([^\@]+)\@"),0),
+    user_name2 = arrayindex(regextract(_raw_log, "Username=\'([^\']+)\'"),0),
+    user_name3 = arraystring(regextract(_raw_log, "<\d+>\d+\s\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+[+|-]\d+:\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s\[([^\s]+)\]\s[^\s]+\s[^\s]+\s\[[^\]]+\]"), ""),
+    event_type = coalesce(event_type1, event_type2, check_event_type3)
+| alter 
+    user_name = coalesce(user_name1, user_name2, user_name3)
+| alter
+    xdm.event.type = event_type,
+    xdm.event.description = coalesce(message, extract_event_description),
+    xdm.source.user.username = user_name;
+
 filter _raw_log contains "tomcat" or _raw_log contains "HTTP"
-| alter http_method1 = arrayindex(regextract(_raw_log,"\]\s\"(\w+)"),0)
-    ,http_method2 = arrayindex(regextract(_raw_log,"HTTP\/\w+\.\d+\s([a-zA-Z]+)"),0)
-| alter http_method = coalesce(http_method1,http_method2)
-| alter http_respone_code1 = arrayindex(regextract(_raw_log,"\[Response\]\s(\d+)"),0)
-    ,http_respone_code2 = arrayindex(regextract(_raw_log,"[A-Z][^\"]+\"\s(\d+)\s"),0)
-| alter http_respone_code = coalesce(http_respone_code1,http_respone_code2)
-| alter Bytes_size1 = arrayindex(regextract(_raw_log,"[A-Z][^\"]+\"\s\d+\s(\d+)"),0)
-    ,Bytes_size2 = arrayindex(regextract(_raw_log,"(\d+)\sbytes"),0)
-| alter bytes_size = coalesce(Bytes_size2,Bytes_size1)
-    ,message = arrayindex(regextract(_raw_log ,"\]([^\]]+)$"),0)
-    ,request = arrayindex(regextract(_raw_log,"\s([A-Z]+\s\/\S+)\s"),0)
-    ,User_agent = arrayindex(regextract(_raw_log,"\d+\s\(([^\)]+)"),0)
-    ,event_type = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{6}[\+|\-]\d{2}\:\d{2}\s\w+\s([a-zA-Z0-9-_]+)"),0)
+| alter 
+    http_method1 = arrayindex(regextract(_raw_log,"\]\s\"(\w+)"),0),
+    http_method2 = arrayindex(regextract(_raw_log,"HTTP\/\w+\.\d+\s([a-zA-Z]+)"),0)
+| alter 
+    http_method = coalesce(http_method1,http_method2)
+| alter 
+    http_respone_code1 = arrayindex(regextract(_raw_log,"\[Response\]\s(\d+)"),0),
+    http_respone_code2 = arrayindex(regextract(_raw_log,"[A-Z][^\"]+\"\s(\d+)\s"),0)
+| alter 
+    http_respone_code = coalesce(http_respone_code1,http_respone_code2)
+| alter 
+    Bytes_size1 = arrayindex(regextract(_raw_log,"[A-Z][^\"]+\"\s\d+\s(\d+)"),0),
+    Bytes_size2 = arrayindex(regextract(_raw_log,"(\d+)\sbytes"),0)
+| alter 
+    bytes_size = coalesce(Bytes_size2,Bytes_size1),
+    request = arrayindex(regextract(_raw_log,"\s([A-Z]+\s\/\S+)\s"),0),
+    event_type = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{6}[\+|\-]\d{2}\:\d{2}\s\w+\s([a-zA-Z0-9-_]+)"),0)
 | alter
     xdm.event.type = event_type,
     xdm.network.http.method = http_method,
