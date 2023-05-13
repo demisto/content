@@ -126,8 +126,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """
         pass
 
-    def http_request_with_access_token(self, method, headers: Dict[str, str] | None = None, url_suffix='', params=None, data=None,
-                                       json_data=None, resp_type='json', ok_codes=None, full_url='',
+    def http_request_with_access_token(self, method: str, headers: Dict[str, str] | None = None, url_suffix='', params=None,
+                                       data=None, json_data=None, resp_type='json', ok_codes=None, full_url='',
                                        files: Dict[str, Any] | None = None) -> Any:
         """This method wraps the _http_request that comes from the BaseClient class, and adds the access_token
         of the client to the headers request, by calling the get_access_token method, which is an abstract method,
@@ -2519,10 +2519,10 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     if status and transition:
         raise DemistoException('Please provide only status or transition, but not both.')
     elif status:
-        demisto.log(f'Updating the status to: {status}')
+        demisto.debug(f'Updating the status to: {status}')
         apply_issue_status(client=client, issue_id_or_key=issue_id_or_key, status_name=status)
     elif transition:
-        demisto.log(f'Updating the status using the transition: {transition}')
+        demisto.debug(f'Updating the status using the transition: {transition}')
         apply_issue_transition(client=client, issue_id_or_key=issue_id_or_key, transition_name=transition)
     action = args.get('action', 'rewrite')
     issue_fields = {}
@@ -2536,7 +2536,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     if issue_fields:
         demisto.debug(f'Updating the issue with the issue fields: {issue_fields}')
         client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
-        demisto.log(f'Issue {issue_id_or_key} was updated successfully')
+        demisto.debug(f'Issue {issue_id_or_key} was updated successfully')
         res = client.get_issue(issue_id_or_key=issue_id_or_key)
         markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
         return CommandResults(
@@ -2781,7 +2781,7 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     outputs: Dict[str, Any] = {'Transitions': {'transitions': transitions_names, 'ticketId': issue_id_or_key}}
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     outputs |= {'Id': issue_id_or_key} if is_id else {'Key': issue_id_or_key}
-    # The scripts script-JiraListTransition, and script-JiraListStatus use this command, therefore any change here (if necessary)
+    # The scripts script-JiraListTransition, and JiraListStatus use this command, therefore any change here (if necessary)
     # must be reflected in the scripts.
     return CommandResults(
         outputs_prefix='Ticket',
@@ -4244,8 +4244,8 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
 
     Args:
         client (JiraBaseClient): The Jira client.
-        args (Dict[str, Any]): A dictionary contains the next data regarding a modified incident: data, entries, incident_changed,
-         remote_incident_id, inc_status, delta
+        args (Dict[str, Any]): A dictionary contains the next data regarding a modified incident: data, entries,
+            incident_changed, remote_incident_id, inc_status, delta.
         comment_tag_to_jira (str): The comment tag to add to an entry to mirror it as a comment in Jira.
         attachment_tag_to_jira (str): The attachment tag to add to an entry to mirror it as an attachment in Jira.
 

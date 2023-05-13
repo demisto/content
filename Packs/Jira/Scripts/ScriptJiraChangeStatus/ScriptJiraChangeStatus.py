@@ -6,7 +6,7 @@ def main():
     try:
         apply_status()
     except Exception as exc:
-        return_error(f'Failed to execute script-JiraChangeStatus. Error: {exc}')
+        return_error(f'Failed to execute JiraChangeStatus. Error: {exc}')
 
 
 def edit_jira_issue_with_status(incident_id: str, status: str) -> Any:
@@ -21,7 +21,7 @@ def edit_jira_issue_with_status(incident_id: str, status: str) -> Any:
     )
     if not res or not isinstance(res, list):
         raise DemistoException(
-            f"Error occurred while running script-JiraChangeStatus. expected a list as response "
+            f"Error occurred while running JiraChangeStatus. expected a list as response "
             f"but got: {type(res)}. The response is: {res} "
         )
     return res
@@ -48,7 +48,7 @@ def apply_status():
         if entry.get("Type") == 1:
             if not (incident_content := entry.get("Contents")):
                 raise DemistoException(
-                    f'Error occurred while running script-JiraChangeStatus. Could not find:'
+                    f'Error occurred while running JiraChangeStatus. Could not find:'
                     f'"Contents" as key. The response is: {res} '
                 )
             elif isError(entry):
@@ -64,7 +64,7 @@ def apply_status():
                     )
                 ):
                     raise DemistoException(
-                        f"Error occurred while running script-JiraChangeStatus. Could "
+                        f"Error occurred while running JiraChangeStatus. Could "
                         f"not find: the issue's status name. The issue returned is: "
                         f"{incident_fields} "
                     )
@@ -79,13 +79,13 @@ def apply_status():
                         {"lastupdatetime": updated_time},
                     )
                 else:
-                    raise DemistoException(('Error occurred while running script-JiraChangeStatus'
+                    raise DemistoException(('Error occurred while running JiraChangeStatus'
                                             ', could not find the issue\'s updated time. The issue'
                                             f' returned is :{incident_fields}'))
                 break
             else:
                 raise DemistoException(
-                    f'Error occurred while running script-JiraChangeStatus. Could not '
+                    f'Error occurred while running JiraChangeStatus. Could not '
                     f'find:"fields" as key. The issue returned is: {incident_content} '
                 )
 

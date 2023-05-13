@@ -2891,7 +2891,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
 ## Change Ticket's Status Using Transitions or Statuses
 
 1. Make sure you're using the 'Jira Incident Layout' for displaying the incident which status you want to change.
- The reason this is required is that this layout is structured in a way that the **script-JiraChangeTransition**, **script-JiraListTransition**, **script-JiraListStatus**, and **script-JiraChangeStatus** scripts can work, which is crucial when you want to use transitions.
+ The reason this is required is that this layout is structured in a way that the **script-JiraChangeTransition**, **script-JiraListTransition**, **JiraListStatus**, and **JiraChangeStatus** scripts can work, which is crucial when you want to use transitions.
 2. In order to change an incident status, open the incident you would like to update.
 3. Under **Incident Info** search for the `Jira Transitions`, or `Jira Status` field.
 4. Click on "Select" and choose the name of the transition or status to apply.

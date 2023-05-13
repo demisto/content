@@ -64,6 +64,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -76,6 +77,7 @@
                     {
                         "h": 4,
                         "i": "caseinfoid-field-changed-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -90,6 +92,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -105,6 +108,7 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -167,6 +171,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -222,6 +227,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -277,6 +283,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -369,6 +376,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -414,6 +422,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -427,6 +436,7 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-78b685a0-dd60-11ed-ba03-97c472b31c46",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -443,6 +453,7 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-fe1b6300-dd60-11ed-ba03-97c472b31c46",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -463,10 +474,6 @@
                         "items": [
                             {
                                 "args": {
-                                    "tag": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
-                                    },
                                     "tags": {
                                         "simple": "",
                                         "userMarkedRequired": true
@@ -479,11 +486,12 @@
                                 "id": "7c0d3870-dd65-11ed-ba03-97c472b31c46",
                                 "index": 0,
                                 "name": "Press to add comment to Jira issue",
-                                "scriptId": "87f26ea3-16c2-41b9-8077-2faf16ab77df",
+                                "scriptId": "JiraAddComment",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -509,6 +517,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -1482,5 +1491,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -1,7 +1,7 @@
 commonfields:
-  id: script-JiraListStatus
+  id: JiraListStatus
   version: -1
-name: script-JiraListStatus
+name: JiraListStatus
 script: ''
 type: python
 tags:
@@ -10,12 +10,10 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.10.51930
-fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.11.58677
+fromversion: 6.8.0
 comment: |-
   This script lists all possible statuses for a given Jira issue.
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
 tests:
 - No tests (auto formatted)

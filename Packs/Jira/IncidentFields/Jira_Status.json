@@ -33,6 +33,6 @@
     "threshold": 72,
     "isExtractingSpecificIndicatorTypes": false,
     "fromVersion": "5.0.0",
-    "script": "script-JiraChangeStatus",
-    "fieldCalcScript": "script-JiraListStatus"
+    "script": "JiraChangeStatus",
+    "fieldCalcScript": "JiraListStatus"
 }

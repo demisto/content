@@ -2,10 +2,9 @@ commonfields:
   id: Jira V3
   version: -1
 name: Jira V3
-display: Atlassian Jira V3
+display: Atlassian Jira v3
 category: Case Management
-description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
-  The integration now supports both OnPrem, and cloud instances.
+description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and cloud instances.
 configuration:
 - name: server_url
   display: Server URL
@@ -15,12 +14,10 @@ configuration:
   additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
 - name: cloud_id
   display: Cloud ID
-  hint: 11223344-a1b2-3b33-c444-def123456789
   type: 0
   additionalinfo: This field is used to configure the Jira Cloud.
 - name: callback_url
   display: Callback URL
-  hint: https://www.callback.com
   type: 0
   required: true
 - display: Client ID
@@ -30,8 +27,7 @@ configuration:
   required: true
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
-  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used.
-    in the query.
+  additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
   name: fetch_query
   required: false
   type: 0
@@ -46,8 +42,7 @@ configuration:
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
 - display: Issue index to start fetching incidents from
-  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will
-    only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.
+  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.
   name: id_offset
   required: false
   defaultvalue: 0
@@ -72,9 +67,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 'false'
-  additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close
-    the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly,
-    if not, it will rely on if the status of the issue is changed to `Done`.
+  additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to `Done`.
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
@@ -136,14 +129,11 @@ configuration:
   display: Max incidents per fetch
   name: max_fetch
   required: false
-  additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. 
-    If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
+  additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
 - defaultvalue: 3 days
   display: Time range for initial data fetch
-  additionalinfo: "The time range to consider for the initial data fetch in format: <number>
-    <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days.
-     For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
+  additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
   name: first_fetch
   required: false
   type: 0
@@ -228,24 +218,24 @@ script:
     execution: false
     name: jira-get-specific-field
     outputs:
-      - contextPath: Ticket.Id
-        description: The ticket ID.
-        type: String
-      - contextPath: Ticket.Key
-        description: The ticket key.
-        type: String
-      - contextPath: Ticket.Assignee
-        description: The user assigned to the ticket.
-        type: String
-      - contextPath: Ticket.Creator
-        description: The user who created the ticket.
-        type: String
-      - contextPath: Ticket.Summary
-        description: The ticket summary.
-        type: String
-      - contextPath: Ticket.Status
-        description: The ticket status.
-        type: String
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
   - arguments:
     - default: false
       description: Deprecated. Please use global_id.
@@ -255,8 +245,7 @@ script:
       hidden: true
       secret: false
     - default: false
-      description: If the global ID is provided and a remote issue link exists with
-        that global ID, the remote issue link is updated.
+      description: If the global ID is provided and a remote issue link exists with that global ID, the remote issue link is updated.
       isArray: false
       name: global_id
       required: false
@@ -318,8 +307,7 @@ script:
       hidden: true
       secret: false
     - default: false
-      description: The application name of the linked remote application. For example "My
-        Confluence Instance".
+      description: The application name of the linked remote application. For example "My Confluence Instance".
       isArray: false
       name: application_name
       required: false
@@ -337,18 +325,14 @@ script:
     name: jira-issue-add-link
   - arguments:
     - default: false
-      description: The user attribute value. For Jira Cloud, this value can be the display name, or email address,
-        and for Jira OnPrem, this value can be the display name, email address, or username.
+      description: The user attribute value. For Jira Cloud, this value can be the display name, or email address, and for Jira OnPrem, this value can be the display name, email address, or username.
       isArray: false
       name: attribute
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of users to fetch when searching for a matching
-        user (default is 50). The maximum allowed value is dictated by the Jira property
-        'jira.search.views.default.max'. If you specify a value greater than
-        this number, your search results are truncated.
+      description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
       isArray: false
       name: max_results
       required: false
@@ -385,10 +369,7 @@ script:
       hidden: true
       secret: false
     - default: false
-      description: The maximum number of users to fetch when searching for a matching
-        user (default is 50). The maximum allowed value is dictated by the Jira property
-        'jira.search.views.default.max'. If you specify a value greater than
-        this number, your search results are truncated.
+      description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
       isArray: false
       name: max_results
       required: false
@@ -407,16 +388,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will
-        return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
+      description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
       isArray: true
-      name:  fields
+      name: fields
       required: false
       secret: false
     - default: false
       description: Deprecated. Please use fields.
       isArray: false
-      name:  extraFields
+      name: extraFields
       hidden: true
       required: false
       secret: false
@@ -471,8 +451,7 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - deprecated: false
-    description: Returns the ID offset, which is the id of the first issue that was created in the current
-      Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
+    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
     execution: false
     name: jira-get-id-offset
     outputs:
@@ -536,14 +515,13 @@ script:
       required: false
       secret: false
     - default: false
-      description:  The entry ID to upload.
+      description: The entry ID to upload.
       isArray: false
       name: upload
       required: true
       secret: false
     - default: false
-      description: The attachment name to be displayed in Jira (overrides the original
-        file name).
+      description: The attachment name to be displayed in Jira (overrides the original file name).
       isArray: false
       name: attachment_name
       required: false
@@ -614,8 +592,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to append or rewrite the values. The default value is `rewrite`. Only the `labels`, and `components`
-        arguments support the action append.
+      description: Whether to append or rewrite the values. The default value is `rewrite`. Only the `labels`, and `components` arguments support the action append.
       isArray: false
       name: action
       required: false
@@ -644,8 +621,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The issue object (in JSON format). Using this argument will override the other arguments.
-        For example {"fields":{"customfield_10037":"field_value"}}.'
+      description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
       isArray: false
       name: issue_json
       required: false
@@ -695,16 +671,13 @@ script:
       hidden: true
       secret: false
     - default: false
-      description: The name of the assignee. Relevant for Jira Server only. If you
-        are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute
-        command to get the user's name.
+      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
       isArray: false
       name: assignee
       required: false
       secret: false
     - default: false
-      description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
-        command to get the user's account ID.
+      description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
       isArray: false
       name: assignee_id
       required: false
@@ -734,8 +707,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of components. For example components="component1,component2". When using a Jira OnPrem
-        instance, or using the action append, the entered components must already exist.
+      description: A CSV list of components. For example components="component1,component2". When using a Jira OnPrem instance, or using the action append, the entered components must already exist.
       isArray: true
       name: components
       required: false
@@ -789,8 +761,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: 'The issue object (in JSON format). Using this argument will override the other arguments.
-        For example {"fields":{"customfield_10037":"field_value"}}.'
+      description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
       isArray: false
       name: issue_json
       required: false
@@ -892,30 +863,25 @@ script:
       hidden: true
       secret: false
     - default: false
-      description: The name of the assignee. Relevant for Jira Server only. If you
-        are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute
-        command to get the user's name.
+      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
       isArray: false
       name: assignee
       required: false
       secret: false
     - default: false
-      description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
-        command to get the user's account ID.
+      description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
       isArray: false
       name: assignee_id
       required: false
       secret: false
     - default: false
-      description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute
-        command to get the user's account ID.
+      description: The account ID of the reporter. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
       isArray: false
       name: reporter_id
       required: false
       secret: false
     - default: false
-      description: The name of the of the reporter. Relevant for Jira Server only. Please use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute
-        command to get the user's name.
+      description: The name of the of the reporter. Relevant for Jira Server only. Please use reporter_id for Jira Cloud. Use the jira-get-id-by-attribute command to get the user's name.
       isArray: false
       name: reporter
       required: false
@@ -959,8 +925,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem
-        instance, the entered components must already exist.
+      description: The component names of the issue. For example components="component1,component2". When using a Jira OnPrem instance, the entered components must already exist.
       isArray: true
       name: components
       required: false
@@ -978,10 +943,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will
-        return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
+      description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
       isArray: true
-      name:  fields
+      name: fields
       required: false
       secret: false
     - default: false
@@ -1197,16 +1161,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Use this command to complete the authorization process. After copying the authorization code found in the query
-                  parameter `code` of the callback URL, paste the value in the command as an argument to finish the process."
+    description: "Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process."
     execution: false
     name: jira-oauth-complete
   - deprecated: false
-    description: "Use this command to start the authorization process. In order to authorize the instance, first run the command,
-                  and complete the process in the URL that is returned. You will then be redirected
-                  to the callback URL where you will copy the authorization code found in the query parameter
-                  `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish
-                  the process."
+    description: "Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process."
     execution: false
     name: jira-oauth-start
   - deprecated: false
@@ -1268,7 +1227,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description:  Edit a comment that is part of an issue.
+    description: Edit a comment that is part of an issue.
     execution: false
     name: jira-issue-edit-comment
     outputs:
@@ -1412,8 +1371,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the
-                  boards' ID.
+      description: The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the boards' ID.
       isArray: false
       name: board_id
       required: false
@@ -1431,8 +1389,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints,
-     then the board_id argument is required. At most 50 issues may be moved at once.
+    description: Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints, then the board_id argument is required. At most 50 issues may be moved at once.
     execution: false
     name: jira-issue-to-backlog
   - arguments:
@@ -1513,8 +1470,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get board data. If board_id is given, then only the board that corresponds to the board_id is returned,
-      otherwise, the the command will return boards that match the project_key_id, type, or board_name arguments.
+    description: Get board data. If board_id is given, then only the board that corresponds to the board_id is returned, otherwise, the the command will return boards that match the project_key_id, type, or board_name arguments.
     execution: false
     name: jira-board-list
     outputs:
@@ -2154,13 +2110,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get remote data from a remote incident. This method does not update
-      the current incident, and should be used for debugging purposes only.
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     execution: false
     name: get-remote-data
   - deprecated: false
-    description: Returns the list of fields to map in outgoing mirroring.
-      This command is only used for debugging purposes.
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     execution: false
     name: get-mapping-fields
   - arguments:
@@ -2171,17 +2125,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get the list of incidents that were modified since the last update time.
-      This method is used for debugging purposes. The get-modified-remote-data command
-      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
   - deprecated: false
-    description: Updates the remote incident with local incident changes. This method
-      is only used for debugging purposes and will not update the current incident.
+    description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/btfl-soup:1.0.1.47958
+  dockerimage: demisto/btfl-soup:1.0.1.58760
   feed: false
   isfetch: true
   ismappable: true
@@ -2194,7 +2145,7 @@ script:
   subtype: python3
   type: python
 tests:
-  - JiraV3 Test
+- JiraV3 Test
 defaultmapperin: classifier-mapper-incoming-JiraV3
 defaultmapperout: JiraV3 Outgoing Mapper
-fromversion: 5.0.0
+fromversion: 6.8.0

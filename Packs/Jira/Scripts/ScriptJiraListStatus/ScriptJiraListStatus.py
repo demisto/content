@@ -18,7 +18,7 @@ def execute_jira_list_transitions_command(args: Dict[str, Any]) -> List[Dict[str
     if res and isinstance(res, list):
         return res
     else:
-        raise DemistoException((f'Error occurred while running script-JiraListStatus, expected a list as response but got:'
+        raise DemistoException((f'Error occurred while running JiraListStatus, expected a list as response but got:'
                                f' {type(res)}. The response is: {res}'))
 
 
@@ -35,7 +35,7 @@ def extract_statuses_from_transition_response(command_execution_response: List[D
     if not command_execution_response:
         raise DemistoException('Got an empty list object after executing the command !jira-list-transitions')
     transition_raw_response = command_execution_response[0].get('Contents', {})
-    return [transition.get('to', {}).get('name', '') for transition in transition_raw_response.get('transitions', {})]
+    return [transition.get('to', {}).get('name', '') for transition in transition_raw_response.get('transitions', [])]
 
 
 def get_status_names_by_source_brand(incident_id: Dict[str, Any], source_brand: str) -> Dict[str, Any]:
@@ -66,18 +66,17 @@ def get_status_names_by_source_brand(incident_id: Dict[str, Any], source_brand: 
 
 
 def main():
-    demisto.debug('script-JiraListStatus is being called')
-    output = {}
+    demisto.debug('JiraListStatus is being called')
     try:
         incident = demisto.incidents()[0]
         if incident_id := incident.get("dbotMirrorId"):
             output = get_status_names_by_source_brand(incident_id=incident_id, source_brand=incident.get('sourceBrand', ''))
-            demisto.results(output)
+            return_results(output)
         else:
-            raise DemistoException(('Error occurred while running script-JiraListStatus because could not get "dbotMirrorId" from'
+            raise DemistoException(('Error occurred while running JiraListStatus because could not get "dbotMirrorId" from'
                                     ' incident.'))
     except Exception as ex:
-        return_error(f'Error occurred while running script-JiraListStatus. Got the error:\n{ex}')
+        return_error(f'Error occurred while running JiraListStatus. Got the error:\n{ex}')
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

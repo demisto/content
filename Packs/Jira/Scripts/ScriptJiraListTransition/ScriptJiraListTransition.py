@@ -68,12 +68,11 @@ def get_transition_names_by_source_brand(incident_id: Dict[str, Any], source_bra
 
 def main():
     demisto.debug('script-JiraListTransition is being called')
-    output = {}
     try:
         incident = demisto.incidents()[0]
         if incident_id := incident.get("dbotMirrorId"):
             output = get_transition_names_by_source_brand(incident_id=incident_id, source_brand=incident.get('sourceBrand', ''))
-            demisto.results(output)
+            return_results(output)
         else:
             raise DemistoException(('Error occurred while running script-JiraListTransition because could not get "dbotMirrorId"'
                                     ' from incident.'))

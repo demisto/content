@@ -1,6 +1,5 @@
 import io
 import json
-from sys import api_version
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -1308,8 +1307,9 @@ class TestJiraGetModifiedRemoteIds():
 
 
 class TestJiraGetMappingFields:
-    ISSUE_FIELDS_RES = [{"id": "statuscategorychangedate", "key": "statuscategorychangedate", "name": "Status Category Changed"}, {
-        "id": "parent", "key": "parent", "name": "Parent"}]
+    ISSUE_FIELDS_RES = [
+        {"id": "statuscategorychangedate", "key": "statuscategorychangedate", "name": "Status Category Changed"},
+        {"id": "parent", "key": "parent", "name": "Parent"}]
 
     def test_get_mapping_fields_command(self, mocker):
         """
@@ -1614,7 +1614,8 @@ class TestJiraFetchIncidents:
             {'Id': '18329', 'Comment': 'Second comment', 'User': 'Tomer Malache', 'Created': '2023-03-27T20:54:15.878+0300',
              'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Tomer Malache'},
             {'Id': '18394', 'Comment': 'This is a comment from Jira demo', 'User': 'Tomer Malache',
-             'Created': '2023-04-24T15:41:54.472+0300', 'Updated': '2023-04-24T15:41:54.472+0300', 'UpdateUser': 'Tomer Malache'}]
+             'Created': '2023-04-24T15:41:54.472+0300', 'Updated': '2023-04-24T15:41:54.472+0300', 'UpdateUser': 'Tomer Malache'}
+        ]
         expected_comments_entries == comments_entries
 
     def test_get_attachments_entries_for_fetched_incident(self, mocker):
@@ -1635,9 +1636,11 @@ class TestJiraFetchIncidents:
                 'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_2', 'FileID':
                     'dummy_id_2'}]
         mocker.patch('JiraV3.create_file_info_from_attachment', side_effect=expected_attachments_entries)
-        attachments_entries = get_attachments_entries_for_fetched_incident(client=client,
-                                                                           attachments_metadata=[attachment_metadata_raw_response,
-                                                                                                 attachment_metadata_raw_response])
+        attachments_entries = get_attachments_entries_for_fetched_incident(
+            client=client,
+            attachments_metadata=[attachment_metadata_raw_response,
+                                  attachment_metadata_raw_response]
+        )
         expected_attachments_entries == attachments_entries
 
     def test_get_fetched_attachments(self, mocker):
