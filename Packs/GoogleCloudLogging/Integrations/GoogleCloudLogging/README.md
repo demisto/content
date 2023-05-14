@@ -1,5 +1,4 @@
 With Google Cloud Logging, users can centralize all their logs in a single location, making it easier to troubleshoot issues and gain insights from their data.
-This integration was integrated and tested with version xx of GoogleCloudLogging
 
 ## Configure Google Cloud Logging on Cortex XSOAR
 

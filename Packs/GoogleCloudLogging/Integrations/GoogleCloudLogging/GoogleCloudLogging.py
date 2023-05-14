@@ -82,7 +82,7 @@ class GoogleCloudLoggingClient(BaseClient):
         Returns:
             The request response.
         """
-        return self.service.entries().list(body=request_body).execute()
+        return self.service.entries().list(body=request_body).execute()  # pylint: disable=E1101
 
         # disable-secrets-detection-end
 
@@ -205,8 +205,8 @@ def log_entries_list_command(client: GoogleCloudLoggingClient, args: Dict[str, A
     resource_folders_names = argToList(args.get('folders_names', []))
 
     if not (resource_project_name or resource_organization_name or resource_billing_account_name or resource_folders_names):
-        raise DemistoException('At least one resource from project_name, organization_name, billing_account_name, '
-                               'folder_name is required.')
+        raise DemistoException('At least one resource from project_name, '
+                               'organization_name, billing_account_name, or folder_name must be provided.')
     resources = []
     for project_name in resource_project_name:
         resources.append(f'projects/{project_name}')
@@ -259,12 +259,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        try:
-            credentials_json = json.loads(credentials_json)
-        except json.JSONDecodeError:
-            return_error(
-                f'Failed to execute {demisto.command()} command.\nError:\n Unable to parse Service Account JSON. '
-                'Invalid JSON string.')
+        credentials_json = json.loads(credentials_json)
         client = GoogleCloudLoggingClient(credentials_json, proxy, verify_certificate)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -276,7 +271,11 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        error_message = f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}'
+        if type(e).__name__ == 'JSONDecodeError':
+            error_message = f'Failed to execute {demisto.command()} command.\nError:\n Unable to parse Service Account JSON. ' \
+                'Invalid JSON string.'
+        return_error(error_message)
 
 
 ''' ENTRY POINT '''
