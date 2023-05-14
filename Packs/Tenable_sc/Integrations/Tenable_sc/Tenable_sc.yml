@@ -662,7 +662,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The timezone for the given start_time, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html..'
+      description: 'The timezone for the given start_time, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html.'
       isArray: false
       name: time_zone
       required: false
@@ -1278,55 +1278,55 @@ script:
     
   - arguments:
     - default: false
-      description: 
+      description: The user's first name.
       isArray: false
       name: first_name
       required: false
       secret: false
     - default: false
-      description: 
+      description: The user's last name.
       isArray: false
       name: last_name
       required: false
       secret: false
     - default: false
-      description: 
+      description: The user's username.
       isArray: false
       name: user_name
       required: true
       secret: false
     - default: false
-      description: 
+      description: The user's email address. Required if email_notice is given.
       isArray: false
       name: email
       required: false
       secret: false
     - default: false
-      description: 
+      description: The user's postal address.
       isArray: false
       name: address
       required: false
       secret: false
     - default: false
-      description: 
+      description: The user's phone number.
       isArray: false
       name: phone
       required: false
       secret: false
     - default: false
-      description: 
+      description: The city the user is living in.
       isArray: false
       name: city
       required: false
       secret: false
     - default: false
-      description: 
+      description: The state the user is living in. 
       isArray: false
       name: state
       required: false
       secret: false
     - default: false
-      description: 
+      description: The country the user is living in. 
       isArray: false
       name: country
       required: false
@@ -1334,7 +1334,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 
+      description: Default is False. Wether the user should be locked or not.
       isArray: false
       name: locked
       predefined:
@@ -1343,21 +1343,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: 
+      description: If different from None, a valid email address must be given.
       isArray: false
       name: email_notice
       required: false
       secret: false
       auto: PREDEFINED
+      defaultValue: 'None'
       predefined:
       - 'both'
       - 'password'
       - 'id'
+      - 'None'
     - default: false
       description: Tenable (TNS). Lightweight Directory Access Protocol (LDAP). Security Assertion Markup Language (SAML). LDAP server or SAML authentication need to be configured in order to select LDAP or SAML.
       isArray: false
       name: auth_type
-      required: false
+      required: true
       secret: false
       auto: PREDEFINED
       defaultValue: 'tns'
@@ -1368,50 +1370,69 @@ script:
       - 'saml'
       - 'tns'
     - default: false
-      description: Password must be at least 3 characters.
+      description: The user's password. Must be at least 3 characters.
       isArray: false
       name: password
       required: true
       secret: false
     - default: false
-      description: 
+      description: 'The user timezone, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html.'
       isArray: false
       name: time_zone
       required: false
       secret: false
     - default: false
-      description: 
+      description: "The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts."
       isArray: false
       name: role_id
       required: true
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
     - default: false
-      description: 
+      description: When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False.
       isArray: false
       name: must_change_password
       required: false
       secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
     - default: false
-      description: 
+      description: Comma separated list of session user's role can manage group. Use tenable-sc-list-groups to get all available groups. Default is 0.
       isArray: false
+      defaultValue: 0
       name: managed_users_groups
       required: false
       secret: false
     - default: false
-      description: 
+      description: Comma separated list of session user's role can manage group. Use tenable-sc-list-groups to get all available groups. Default is 0.
       isArray: false
+      defaultValue: 0
       name: managed_objects_groups
       required: false
       secret: false
     - default: false
-      description: 
+      description: Default is 0. Valid group ID whose users can be managed by created user.
       isArray: false
       name: group_id
+      defaultValue: 0
       required: true
       secret: false
     - default: false
-      description: 
+      description: Default is 0. ID of a valid, usable, accessible asset. Use tenable-sc-list-assets to get all available assets. -1 is not set, 0 is all assets, and other numbers are asset id.
       isArray: false
+      defaultValue: 0
       name: responsible_asset_id
       required: true
       secret: false
@@ -1421,6 +1442,324 @@ script:
     name: tenable-sc-create-user
     outputs:
 
+  - arguments:
+    - default: false
+      description: The user's first name.
+      isArray: false
+      name: first_name
+      required: false
+      secret: false
+    - default: false
+      description: The user's last name.
+      isArray: false
+      name: last_name
+      required: false
+      secret: false
+    - default: false
+      description: The user's username.
+      isArray: false
+      name: user_name
+      required: false
+      secret: false
+    - default: false
+      description: The user's email address. Required if email_notice is given.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: The user's postal address.
+      isArray: false
+      name: address
+      required: false
+      secret: false
+    - default: false
+      description: The user's phone number.
+      isArray: false
+      name: phone
+      required: false
+      secret: false
+    - default: false
+      description: The city the user is living in.
+      isArray: false
+      name: city
+      required: false
+      secret: false
+    - default: false
+      description: The state the user is living in. 
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: The country the user is living in. 
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Default is False. Wether the user should be locked or not.
+      isArray: false
+      name: locked
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'The user timezone, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html.'
+      isArray: false
+      name: time_zone
+      required: false
+      secret: false
+    - default: false
+      description: "The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts."
+      isArray: false
+      name: role_id
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+    - default: false
+      description: When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False.
+      isArray: false
+      name: must_change_password
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+    - default: false
+      description: Comma separated list of session user's role can manage group. Use tenable-sc-list-groups to get all available groups. Default is 0.
+      isArray: false
+      defaultValue: 0
+      name: managed_users_groups
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of session user's role can manage group. Use tenable-sc-list-groups to get all available groups. Default is 0.
+      isArray: false
+      defaultValue: 0
+      name: managed_objects_groups
+      required: false
+      secret: false
+    - default: false
+      description: Default is 0. Valid group ID whose users can be managed by created user.
+      isArray: false
+      name: group_id
+      defaultValue: 0
+      required: false
+      secret: false
+    - default: false
+      description: Default is 0. ID of a valid, usable, accessible asset. Use tenable-sc-list-assets to get all available assets. -1 is not set, 0 is all assets, and other numbers are asset id.
+      isArray: false
+      defaultValue: 0
+      name: responsible_asset_id
+      required: false
+      secret: false
+    - default: false
+      description: The new password to set. Must be given with current_password. Must be at least 3 characters.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: This is admin/Security Manager password from instance parameters. required when attempting to change user's password. 
+      isArray: false
+      name: current_password
+      required: false
+      secret: false
+    - default: false
+      description: The id of the user whose details we wish to update.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: update user details by given user_id.
+    execution: false
+    name: tenable-sc-update-user
+    outputs:
+
+  - arguments:
+    - default: false
+      description: The id of the user we want to delete.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: delete a user by given user_id.
+    execution: false
+    name: tenable-sc-delete-user
+    outputs:
+
+  - arguments:
+    - default: false
+      description: The id of the plugin we want to search. If given, other arguments will be ignored.
+      isArray: false
+      name: plugin_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Default is 50. The number of objects to return in one response (maximum limit is 200). Ignored when plugin_id is given.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: default is none. none - both active and passive Plugin Families are returned. true - Only active Plugin Families will be returned. false - Only passive Plugin Families will be returned. Ignored when plugin_id is given.
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: update user details by given user_id.
+    execution: false
+    name: tenable-sc-list-plugin-family
+    outputs:
+
+  - arguments:
+    - default: false
+      description: The name of the policy you wish to create.
+      isArray: false
+      name: policy_name
+      required: false
+      secret: false
+    - default: false
+      description: The description of the policy you wish to create.
+      isArray: false
+      name: policy_description
+      required: false
+      secret: false
+    - default: false
+      description: Default is 1. Policy template id.
+      defaultValue: 1
+      isArray: false
+      name: policy_template_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Possible values: default, all or a comma separated list of values - 21,23,25,80,110.'
+      isArray: false
+      name: port_scan_range
+      required: false
+      secret: false
+    - default: false
+      description: Only possible if you are using Linux or FreeBSD. On Windows or macOS, the scanner does not do a TCP scan and instead uses the SYN scanner..If you enable this option, you can also set the syn_firewall_detection.
+      isArray: false
+      name: tcp_scanner
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'no'
+      predefined:
+      - 'no'
+      - 'yes'
+    - default: false
+      description: Identifies open TCP ports on the target hosts. If you enable this option, you can also set the syn_firewall_detection option.
+      isArray: false
+      name: syn_scanner
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'yes'
+      predefined:
+      - 'no'
+      - 'yes'
+    - default: false
+      description: Enabling the UDP port scanner may dramatically increase the scan time and produce unreliable results. Consider using the netstat or SNMP port enumeration options instead if possible.
+      isArray: false
+      name: udp_scanner
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'no'
+      predefined:
+      - 'no'
+      - 'yes'
+    - default: false
+      description: Can be retrieved from the result of  tenable-sc-list-plugin-family command .
+      isArray: false
+      name: family_id
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of plugin_ids, Can be retrieved from the result of  tenable-sc-list-plugin-family command  with family_id as argument.
+      isArray: false
+      name: plugins_id
+      required: false
+      secret: false
+    - default: false
+      description: Default is Automatic (normal). Rely on local port enumeration first before relying on network port scans.
+      isArray: false
+      name: syn_firewall_detection
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: Automatic (normal)
+      predefined:
+      - Automatic (normal)
+      - Do not detect RST rate limitation(soft)
+      - Ignore closed ports(aggressive)
+      - Disabled(softer)
+    deprecated: false
+    description: This command is prerequisite for creating remediation scan. creates policy.
+    execution: false
+    name: tenable-sc-create-policy
+    outputs:
+  
+
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Default is 50. The number of objects to return in one response (maximum limit is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The id of the query we wish to search.
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    - default: false
+      description: The query time to retrieve. When no type is set all queries are returned.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - alert
+      - lce
+      - mobile
+      - ticket
+      - user
+    deprecated: false
+    description: Lists queries.
+    execution: false
+    name: tenable-sc-list-query
+    outputs:
+  
   isfetch: true
   runonce: false
   script: '-'

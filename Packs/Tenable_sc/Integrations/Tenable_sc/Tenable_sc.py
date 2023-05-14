@@ -79,7 +79,7 @@ class Client(BaseClient):
         if res.status_code == 403 and try_number <= self.max_retries:
             self.login()
             headers['X-SecurityCenter'] = self.token  # The Token is being updated in the login
-            return self.send_request(path, method, body, params, headers, try_number + 1)
+            return self.send_request_old(path, method, body, params, headers, try_number + 1)
 
         elif res.status_code < 200 or res.status_code >= 300:
             try:
@@ -193,7 +193,8 @@ class Client(BaseClient):
                 else:
                     return_error("Please make sure to provide both time_zone and start_time.")
                 if all([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
-                    body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};BYDAY={repeat_rule_by_day}"
+                    body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};"
+                    f"BYDAY={repeat_rule_by_day}"
                 elif repeat_rule_freq and repeat_rule_interval:
                     body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval}"
                 elif any([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
@@ -249,9 +250,17 @@ class Client(BaseClient):
         return self.send_request(path, 'post', body=body)
 
     def get_query(self, query_id):
-        path = 'query/' + query_id
+        path = f'query/{query_id}'
 
         return self.send_request(path)
+
+    def list_queries(self, type):
+        path = 'query'
+        params = {}
+        if type:
+            params["type"] = type
+
+        return self.send_request(path=path, method="GET", params=params)
 
     def get_all_scan_results(self):
         params = {
@@ -488,8 +497,138 @@ class Client(BaseClient):
 
         return self.send_request(path, params=params)
 
+    def create_user(self, args):
+        body = create_user_request_body(args)
+
+        return self.send_request(path='user', body=body, method='POST')
+
+    def update_user(self, args, user_id):
+        body = create_user_request_body(args)
+
+        return self.send_request(path=f'user/{user_id}', body=body, method='PATCH')
+
+    def delete_user(self, user_id):
+        return self.send_request(path=f'user/{user_id}', method='DELETE')
+
+    def list_plugin_family(self, plugin_id, is_active):
+        path = "pluginFamily"
+        if plugin_id:
+            path += f"/{plugin_id}"
+        else:
+            if is_active == 'true':
+                path += "?fields=active"
+            elif is_active == 'false':
+                path += "?fields=passive"
+        return self.send_request(path=path, method='GET')
+
+    def create_policy(self, policy_name, policy_description, policy_template_id, port_scan_range, tcp_scanner, syn_scanner,
+                      udp_scanner, syn_firewall_detection, family_id, plugins_id):
+        body = {
+            "name": policy_name,
+            "description": policy_description,
+            "context": "scan",
+            "families": [{"id": family_id, "plugins": [{"id": id for id in plugins_id.split(',')}]}],
+            "preferences": {
+                "portscan_range": port_scan_range,
+                "tcp_scanner": tcp_scanner,
+                "syn_scanner": syn_scanner,
+                "udp_scanner": udp_scanner,
+                "syn_firewall_detection": syn_firewall_detection
+            },
+            "policyTemplate": {
+                "policy_template_id": policy_template_id
+            },
+        }
+        return self.send_request(path="policy", method='POST', body=body)
+
+    # def update_user(self, first_name, last_name, user_name, email, address, phone, city, state, country, locked,
+    #                 time_zone, must_change_password, role_id, managed_users_groups, managed_objects_groups,
+    #                 group_id, responsible_asset_id, user_id, current_password):
+        # body["preferences"] = []
+
+        # if first_name:
+        #     body["firstname"] = first_name
+        # if last_name:
+        #     body["lastname"] = last_name
+        # if user_name:
+        #     body["username"] = user_name
+        # if email:
+        #     body["email"] = email
+        # if city:
+        #     body["city"] = city
+        # if state:
+        #     body["state"] = state
+        # if address:
+        #     body["address"] = address
+        # if country:
+        #     body["country"] = country
+        # if role_id:
+        #     body["roleID"] = role_id
+        # if phone:
+        #     body["phone"] = phone
+        # if locked:
+        #     body["locked"] = locked
+        # if time_zone:
+        #     body["preferences"].append({"name": "timezone", "value": time_zone, "tag": ""})
+        # if must_change_password:
+        #     body["mustChangePassword"] = must_change_password
+        # if current_password:
+        #     body[""]
+
+        # if role_id and role_id != 1:
+        #     body["groupID"] = group_id
+        #     body["responsibleAssetID"] = responsible_asset_id
+        # elif role_id and role_id == 1:
+        #     body["managedUsersGroups"] = [{"id": int(managed_users_group)} for managed_users_group in managed_users_groups]
+        #     body["managedObjectsGroups"] = [{"id": int(managed_objects_group)} for
+        #                                     managed_objects_group in managed_objects_groups]
+
+        # return self.send_request(path='user', body=body, method='PATCH')
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def capitalize_first_letter(str):
+    if str == 'id':
+        return 'ID'
+    else:
+        return str[:1].upper() + str[1:]
+
+
+def create_user_request_body(args):
+    user_query_mapping_dict: dict[str, str] = {
+        "firstname": "first_name",
+        "lastname": "last_name",
+        "username": "user_name",
+        "email": "email",
+        "city": "city",
+        "state": "state",
+        "address": "address",
+        "country": "country",
+        "authType": "auth_type",
+        "roleID": "role_id",
+        "emailNotice": "email_notice",
+        "phone": "phone",
+        "locked": "locked",
+        "mustChangePassword": "must_change_password",
+        "currentPassword": "current_password"
+    }
+    body = {key: args.get(value) for key, value in user_query_mapping_dict.items() if args.get(value)}
+
+    if role_id := args.get('role_id'):
+        if role_id != 1:
+            body["groupID"] = args.get('group_id')
+            body["responsibleAssetID"] = args.get('responsible_asset_id')
+        else:
+            body["managedUsersGroups"] = [{"id": int(managed_users_group)} for
+                                          managed_users_group in args.get('managed_users_groups')]
+            body["managedObjectsGroups"] = [{"id": int(managed_objects_group)} for
+                                            managed_objects_group in args.get('managed_objects_groups')]
+    if time_zone := args.get('time_zone'):
+        body["preferences"].append([{"name": "timezone", "value": time_zone, "tag": ""}])
+
+    return body
 
 
 def get_server_url(url):
@@ -501,6 +640,54 @@ def get_server_url(url):
 def return_message(msg):
     demisto.results(msg)
     sys.exit(0)
+
+
+def validate_user_body_params(args, command_type):
+    numbers_args_ls = ["group_id", "user_id", "responsible_asset_id"]
+
+    time_zone = args.get("time_zone")
+    password = args.get("password")
+    email_notice = args.get("email_notice")
+    email = args.get("email")
+    auth_type = args.get("auth_type")
+
+    for number_arg in numbers_args_ls:
+        try:
+            int(args.get(number_arg, '0'))
+        except Exception:
+            return_error(f"{number_arg} must be a valid number.")
+
+    if time_zone and time_zone not in pytz.all_timezones:
+        return_error("Invalid time zone ID. Please choose one of the following: "
+                     "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
+
+    if command_type == "create" and (auth_type == 'Ldap' or auth_type == 'saml') and args.get("must_change_password"):
+        return_error(f"When choosing {auth_type=}, must_change_password must be set to False.")
+
+    if password:
+        if command_type == 'update' and not args.get("current_password"):
+            return_error("current_password must be provided when attempting to update password.")
+        if len(password) < 3:
+            return_error("Password length must be at least 3 characters.")
+
+    if email and not re.compile(emailRegex).match(email):
+        return_error(f"Error: The given email address: {email} is not valid")
+
+    if command_type == 'create' and not email_notice == 'None' and not email:
+        return_error("When email_notice is different from None, an email must be given as well.")
+
+
+def timestamp_to_utc(timestamp_str, default_returned_value=''):
+    if timestamp_str and (int(timestamp_str) > 0):  # no value is when timestamp_str == '-1'
+        return datetime.utcfromtimestamp(int(timestamp_str)).strftime(
+            '%Y-%m-%dT%H:%M:%SZ')
+    return default_returned_value
+
+
+def scan_duration_to_demisto_format(duration, default_returned_value=''):
+    if duration:
+        return float(duration) / 60
+    return default_returned_value
 
 
 ''' FUNCTIONS '''
@@ -1786,17 +1973,183 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
     })
 
 
-def timestamp_to_utc(timestamp_str, default_returned_value=''):
-    if timestamp_str and (int(timestamp_str) > 0):  # no value is when timestamp_str == '-1'
-        return datetime.utcfromtimestamp(int(timestamp_str)).strftime(
-            '%Y-%m-%dT%H:%M:%SZ')
-    return default_returned_value
+def create_user_command(client: Client, args: Dict[str, Any]):
+    validate_user_body_params(args, "create")
+    res = client.create_user(args)
+    print(res)
 
 
-def scan_duration_to_demisto_format(duration, default_returned_value=''):
-    if duration:
-        return float(duration) / 60
-    return default_returned_value
+def update_user_command(client: Client, args: Dict[str, Any]):
+    # must_change_password = argToBoolean(args.get('must_change_password', True))
+    # locked = argToBoolean(args.get('locked', False))
+    # managed_users_groups = args.get('managed_users_groups', '0').split(',')
+    # managed_objects_groups = args.get('managed_objects_groups', '0').split(',')
+    user_id = args.get('user_id')
+    validate_user_body_params(args, "update")
+    res = client.update_user(args, user_id)
+    print(res)
+
+
+def delete_user_command(client: Client, args: Dict[str, Any]):
+    user_id = args.get('user_id')
+    client.delete_user(user_id)
+    return demisto.results({
+        'HumanReadable': f"User {user_id} is deleted."
+    })
+
+
+def list_plugin_family_command(client: Client, args: Dict[str, Any]):
+    is_active = args.get('is_active')
+    limit = int(args.get('limit', '50'))
+    plugin_id = args.get('plugin_id', '')
+    res = client.list_plugin_family(plugin_id, is_active)
+    if not res or not res.get('response', []):
+        return_message('No plugins found')
+    plugins = res.get('response')
+    if isinstance(plugins, dict):
+        plugins = [plugins]
+        is_active = "false" if plugins.get("type") == "passive" else "true"
+    if len(plugins) > limit:
+        plugins = plugins[:limit]
+    mapped_plugins = [{"Plugin ID": plugin.get("id"), "Plugin Name": plugin.get("name")} for plugin in plugins]
+    if is_active:
+        for mapped_plugin in mapped_plugins:
+            mapped_plugin["Is Active"] = is_active
+    headers = ["Plugin ID", "Plugin Name", "Is Active"]
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Plugin families:', mapped_plugins, headers, removeNull=True),
+        'EntryContext': {
+            'TenableSC.PluginFamily(val.ID===obj.ID)': createContext(plugins, removeNull=True,
+                                                                     keyTransform=capitalize_first_letter)
+        }
+    })
+
+
+def create_policy_command(client: Client, args: Dict[str, Any]):
+    policy_name = args.get("policy")
+    policy_description = args.get("policy_description")
+    policy_template_id = args.get("policy_template_id", '1')
+    port_scan_range = args.get("port_scan_range", 'default')
+    tcp_scanner = args.get("tcp_scanner")
+    syn_scanner = args.get("syn_scanner")
+    udp_scanner = args.get("udp_scanner")
+    syn_firewall_detection = args.get("syn_firewall_detection", 'Automatic (normal)')
+    family_id = args.get("family_id")
+    plugins_id = args.get("plugins_id")
+    res = client.create_policy(policy_name, policy_description, policy_template_id, port_scan_range, tcp_scanner, syn_scanner,
+                               udp_scanner, syn_firewall_detection, family_id, plugins_id)
+    created_policy = res.get("response")
+    mapped_created_policy = {
+        # "Policy type": created_policy.get(""),
+        "Policy ID": created_policy.get("id"),
+        "name": created_policy.get("name"),
+        "Description": created_policy.get("description"),
+        "Created Time": created_policy.get("createdTime"),
+        # "Plugin Families": created_policy.get(""),
+        "Policy  Status": created_policy.get("status"),
+        "Policy UUID": created_policy.get("uuid"),
+        "Policy can Manage": created_policy.get("canManage"),
+        "Creator Username": created_policy.get("creator", {}).get("username"),
+        # "Owner Username": created_policy.get(""),
+        "policyTemplate ID": created_policy.get("policyTemplate", {}).get("id"),
+        "policyTemplate Name": created_policy.get("policyTemplate", {}).get("name")
+    }
+    headers = ["Policy type", "Policy Id", "name", "Description", "Created Time", "Plugin Families", "Policy  Status",
+               "Policy UUID", "Policy can Manage", "Creator Username", "Owner Username", "policyTemplate id",
+               "policyTemplate Name"]
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Policy was created successfully:', mapped_created_policy, headers, removeNull=True),
+        'EntryContext': {
+            'TenableSC.Query(val.ID===obj.ID)': createContext(created_policy, removeNull=True,
+                                                              keyTransform=capitalize_first_letter)
+        }
+    })
+
+
+def list_query_command(client: Client, args: Dict[str, Any]):
+    type = args.get('type')
+    limit = int(args.get('limit', '50'))
+    query_id = args.get('query_id', '')
+    if query_id:
+        res, hr, ec = get_query(client, query_id)
+    else:
+        res, hr, ec = list_queries(client, type, limit)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': {
+            'TenableSC.Query(val.ID===obj.ID)': createContext(ec, removeNull=True, keyTransform=capitalize_first_letter)
+        }
+    })
+
+
+def get_query(client: Client, query_id):
+    res = client.get_query(query_id)
+    if not res or not res.get('response', []):
+        return_message(f"The query {query_id} wasn't found")
+    query = res.get('response')
+    mapped_query = {
+        "Query Id": query_id,
+        "Query  Name": query.get("name"),
+        "Query Description": query.get("description"),
+        "Query Filters": query.get("filters")
+    }
+    headers = ["Query Id", "Query  Name", "Query Description", "Query Filters"]
+    hr = tableToMarkdown(f'Query {query_id}', mapped_query, headers, removeNull=True)
+    return res, hr, query
+
+
+def list_queries(client: Client, type, limit):
+    res = client.list_queries(type)
+    if not res or not res.get('response', []):
+        return_message("No queries found.")
+    queries = res.get('response')
+    manageable_queries = queries.get("manageable", [])
+    usable_queries = queries.get("usable_queries", [])
+    mapped_queries, mapped_usable_queries = [], []
+    found_ids = []
+
+    for manageable_query in manageable_queries:
+        query_id = manageable_query.get("id")
+        mapped_queries.append({
+            "Query Id": query_id,
+            "Query  Name": manageable_query.get("name"),
+            "Query Description": manageable_query.get("description"),
+            "Query Filters": manageable_query.get("filters"),
+            "Query Manageable": "True"
+        })
+        found_ids.append(query_id)
+
+    for usable_query in usable_queries:
+        query_id = usable_query.get("id")
+        if query_id not in found_ids:
+            mapped_usable_queries.append({
+                "Query Id": usable_query.get("id"),
+                "Query  Name": usable_query.get("name"),
+                "Query Description": usable_query.get("description"),
+                "Query Filters": usable_query.get("filters"),
+                "Query Usable": "True"
+            })
+        else:
+            for mapped_query in mapped_queries:
+                if query_id == mapped_query["Query Id"]:
+                    mapped_query["Query Usable"] = "True"
+
+    mapped_queries.extend(mapped_usable_queries)
+    headers = ["Query Id", "Query  Name", "Query Description", "Query Filters", "Query Manageable", "Query Usable"]
+    hr = tableToMarkdown('Queries:', mapped_queries, headers, removeNull=True)
+    return res, hr, queries
 
 
 def main():
@@ -1838,7 +2191,13 @@ def main():
         'tenable-sc-get-system-information': get_system_information_command,
         'tenable-sc-get-system-licensing': get_system_licensing_command,
         'tenable-sc-get-all-scan-results': get_all_scan_results_command,
-        'tenable-sc-list-groups': list_groups_command
+        'tenable-sc-list-groups': list_groups_command,
+        'tenable-sc-create-user': create_user_command,
+        'tenable-sc-update-user': update_user_command,
+        'tenable-sc-delete-user': delete_user_command,
+        'tenable-sc-list-plugin-family': list_plugin_family_command,
+        'tenable-sc-create-policy': create_policy_command,
+        'tenable-sc-list-query': list_query_command
     }
 
     try:
