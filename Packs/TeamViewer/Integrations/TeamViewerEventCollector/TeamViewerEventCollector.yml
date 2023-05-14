@@ -27,7 +27,7 @@ configuration:
   type: 8
   section: Connect
 - defaultvalue: 3 days
-  display: First fetch time
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days) - within the last 12 months. Recommended time is 3 days.
   name: first_fetch
   required: false
   type: 0
