@@ -655,6 +655,9 @@ class TestParsingIndicators:
 
         When:
          - parsing the autonomous-system into a format XSOAR knows to read.
+           1. update_custom_fields = False
+           2. update_custom_fields = True
+
 
         Then:
          - make sure all the fields are being parsed correctly.
@@ -665,10 +668,28 @@ class TestParsingIndicators:
             "id": "autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74",
             "number": 15139,
             "name": "Slime Industries",
-            "rir": "ARIN"
+            "rir": "ARIN",
+            "extensions": {"extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
         }
 
         xsoar_expected_response = [
+            {
+                'value': 15139,
+                'score': Common.DBotScore.NONE,
+                'rawJSON': autonomous_system_obj,
+                'type': 'ASN',
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'name': 'Slime Industries',
+                    'stixid': 'autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74',
+                    'tags': ["test"],
+                    'trafficlightprotocol': 'GREEN'
+                }
+            }
+        ]
+        xsoar_expected_response_with_update_custom_fields = [
             {
                 'value': 15139,
                 'score': Common.DBotScore.NONE,
@@ -685,8 +706,10 @@ class TestParsingIndicators:
                 }
             }
         ]
-
         assert taxii_2_client.parse_sco_autonomous_system_indicator(autonomous_system_obj) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_sco_autonomous_system_indicator(autonomous_system_obj) == xsoar_expected_response_with_update_custom_fields
+        taxii_2_client.update_custom_fields = False
 
     @pytest.mark.parametrize(
         '_object, xsoar_expected_response', [
