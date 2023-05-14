@@ -237,6 +237,9 @@ NIGHTLY_TESTS: tuple = (
     # modeling rule testdata file exists, expect modeling rule to be collected
     (MockerCases.MR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      (Path('MyXSIAMPack/ModelingRules/HarryRule'),)),
+
+    (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
+     None),
 )
 
 
