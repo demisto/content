@@ -709,7 +709,8 @@ class TestParsingIndicators:
         ]
         assert taxii_2_client.parse_sco_autonomous_system_indicator(autonomous_system_obj) == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
-        assert taxii_2_client.parse_sco_autonomous_system_indicator(autonomous_system_obj) == xsoar_expected_response_with_update_custom_fields
+        assert taxii_2_client.parse_sco_autonomous_system_indicator(
+            autonomous_system_obj) == xsoar_expected_response_with_update_custom_fields
 
     @pytest.mark.parametrize(
         '_object, xsoar_expected_response, xsoar_expected_response_with_update_custom_fields', [
@@ -760,7 +761,7 @@ class TestParsingIndicators:
                     "id": "domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5",
                     "value": "example.com",
                     "extensions": {
-                    "extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
+                        "extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
                 },
                 [
                     {
@@ -828,8 +829,7 @@ class TestParsingIndicators:
         assert taxii_2_client.parse_general_sco_indicator(_object) == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
         xsoar_expected_response_with_update_custom_fields[0]['rawJSON'] = _object
-        aa = taxii_2_client.parse_general_sco_indicator(_object)
-        assert aa == xsoar_expected_response_with_update_custom_fields
+        assert taxii_2_client.parse_general_sco_indicator(_object) == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_file_sco_indicator(self, taxii_2_client):
         """
@@ -1067,7 +1067,8 @@ class TestParsingIndicators:
 
         assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
-        assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response_with_update_custom_fields
+        assert taxii_2_client.parse_sco_windows_registry_key_indicator(
+            registry_object) == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_vulnerability(self, taxii_2_client):
         """
