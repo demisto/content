@@ -15,16 +15,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - First SSO Access - Set Verdict
 * Block Account - Generic v2
-* Account Enrichment - Generic v2.1
-* TIM - Indicator Relationships Analysis
 * User Investigation - Generic
+* Cortex XDR - First SSO Access - Set Verdict
+* TIM - Indicator Relationships Analysis
+* Account Enrichment - Generic v2.1
 
 ### Integrations
 
-* CortexXDRIR
 * XDR_iocs
+* CortexXDRIR
 * XQLQueryingEngine
 
 ### Scripts
@@ -34,9 +34,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * ip
+* xdr-endpoint-isolate
 * okta-clear-user-sessions
 * setIncident
-* xdr-endpoint-isolate
 
 ## Playbook Inputs
 
@@ -51,7 +51,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | EndpointID | XDR Endpoint ID. |  | Optional |
 | Username | User name. |  | Optional |
 | IPAddress | IP Address from the XDR Alert. |  | Optional |
-| AlertID | Alert ID. |  | Optional |
 | LoginCountry | The country from which the user logged in. |  | Optional |
 | AutomaticallyBlockAccount | Whether to block the account automatically. | False | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country. | False | Optional |

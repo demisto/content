@@ -571,7 +571,7 @@ tasks:
       id: 74577fe2-2dc9-4913-8f77-18be32c48ca2
       version: -1
       name: Should the Endpoint be isolated automatically?
-      description: Checks if the endpoint can be isolated automatically based on the input's value. (inputs.AutomaticallyIsolateEndpoint)
+      description: Checks if the endpoint can be isolated automatically based on the input's value. (AutomaticallyIsolateEndpoint)
       type: condition
       iscommand: false
       brand: ""
@@ -696,7 +696,7 @@ tasks:
     scriptarguments:
       countryname:
         complex:
-          root: inputs.Country
+          root: inputs.LoginCountry
           transformers:
           - operator: ConvertCountryCodeCountryName
             args:
@@ -860,7 +860,7 @@ tasks:
       id: 3bbe0d0f-f54d-42e6-862c-fc994a95d963
       version: -1
       name: Manually reset 2FA / clear user sessions / block if needed
-      description: Manually reset 2FA / clear user sessions / block if needed
+      description: Manually reset 2FA / clear user sessions / block if needed.
       type: regular
       iscommand: false
       brand: ""
@@ -1222,7 +1222,7 @@ tasks:
       id: 36cba334-80b3-45b9-8f46-d04ab74bc01a
       version: -1
       name: Should the Account be disabled automatically?
-      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (inputs.AutomaticallyBlockAccount)
+      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (AutomaticallyBlockAccount)
       type: condition
       iscommand: false
       brand: ""
@@ -1692,7 +1692,7 @@ tasks:
       id: 418e7f45-3394-43eb-8ff0-50453c346092
       version: -1
       name: Should verify factor authentication automatically?
-      description: Checks if the account can be disabled and reset the account's password automatically based on the input's value. (inputs.AutomaticallyBlockAccount)
+      description: Checks whether to automatically initiate two-factor authentication verification based on the input's value. (AutomaticallyClearSessions)
       type: condition
       iscommand: false
       brand: ""
@@ -1850,11 +1850,6 @@ inputs:
   value: {}
   required: false
   description: IP Address from the XDR Alert.
-  playbookInputQuery:
-- key: AlertID
-  value: {}
-  required: false
-  description: Alert ID.
   playbookInputQuery:
 - key: LoginCountry
   value: {}
