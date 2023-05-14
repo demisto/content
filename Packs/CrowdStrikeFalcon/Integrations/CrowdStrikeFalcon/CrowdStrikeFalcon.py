@@ -260,6 +260,16 @@ CPU_UTILITY_STR_TO_INT_KEY_MAP = {
     value: key for key, value in CPU_UTILITY_INT_TO_STR_KEY_MAP.items()}
 
 
+SCHEDULE_INTERVAL_STR_TO_INT = {
+    'never': 0,
+    'daily': 1,
+    'weekly': 7,
+    'every other week': 14,
+    'every 4 weeks': 28,
+    'monthly': 30,
+}
+
+
 class IncidentType(Enum):
     INCIDENT = 'inc'
     DETECTION = 'ldt'
@@ -5022,16 +5032,6 @@ def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
     return command_results
 
 
-schedule_interval_str_to_int = {
-    'never': 0,
-    'daily': 1,
-    'weekly': 7,
-    'every other week': 14,
-    'every 4 weeks': 28,
-    'monthly': 30,
-}
-
-
 def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
     result = {
         'host_groups': argToList(args.get('host_groups')),
@@ -5054,7 +5054,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
     result |= {
         'schedule': {
             'ignored_by_channelfile': True,
-            'interval': schedule_interval_str_to_int.get(str(args.get('schedule_interval')).lower()),
+            'interval': SCHEDULE_INTERVAL_STR_TO_INT.get(str(args.get('schedule_interval')).lower()),
             'start_timestamp': args.get('schedule_start_timestamp'),
         }
     } if is_scheduled else {
@@ -5073,11 +5073,12 @@ def create_ODS_scan_request(args: dict, is_scheduled: bool) -> dict:
 def ODS_verify_create_scan_command(args: dict) -> None:
 
     if not (args.get('hosts') or args.get('host_groups')):
-        raise DemistoException('MUST set hosts OR host_groups.')
+        raise DemistoException('MUST set either hosts OR host_groups.')
 
     if not (args.get('file_paths') or args.get('scan_inclusions')):
-        raise DemistoException('MUST set file_paths OR scan_inclusions.')
+        raise DemistoException('MUST set either file_paths OR scan_inclusions.')
 
+    # if the scan is set as scheduled the user needs to set "schedule_start_timestamp", "schedule_interval" and "host_groups".
     if argToBoolean(args.get('is_scheduled')) and not (
             args.get('schedule_start_timestamp')
             and args.get('schedule_interval') is not None  # can be zero
