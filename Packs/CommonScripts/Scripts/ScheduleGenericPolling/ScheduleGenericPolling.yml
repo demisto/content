@@ -50,4 +50,4 @@ scripttarget: 0
 runonce: false
 tests:
 - Generic Polling Test
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.11.57890
