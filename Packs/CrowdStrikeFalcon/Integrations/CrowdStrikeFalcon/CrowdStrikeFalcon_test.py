@@ -4817,7 +4817,10 @@ def test_map_scan_resource_to_UI(mocker):
         'Status': "failed",
         'Severity': None,
         'Description': "desc3456346",
-        'File Count': 'scanned: 0\nmalicious: 0\nquarantined: 0\nskipped: 0\ntraversed: 518464\n-\nscanned: 0\nmalicious: 0\nquarantined: 0\nskipped: 0\ntraversed: 209',
+        'File Count': ('scanned: 0\nmalicious: 0\n'
+                       'quarantined: 0\nskipped: 0\ntraversed: 518464'
+                       '\n-\nscanned: 0\nmalicious: 0\n'
+                       'quarantined: 0\nskipped: 0\ntraversed: 209'),
         'Hosts/Host groups': [
             "7471ba0636b34cbb8c65fae7979a6a9b"
         ],
@@ -5042,7 +5045,7 @@ def test_map_scan_host_resource_to_UI(mocker):
         "completed_on": "2022-11-01T19:08:17.903700092Z",
         "last_updated": "2022-11-01T19:08:17.903732519Z"
     }
-    
+
     mapped_resource = {
         'ID': "185a0ad5e159418e8927d956c1a793d8",
         'Scan ID': "fadde07ee8a44a07988e009b3152e339",
