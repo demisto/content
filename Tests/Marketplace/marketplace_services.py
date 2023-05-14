@@ -127,7 +127,7 @@ class Pack(object):
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
-        self._single_integration = True  # assuming the pack contains one integration
+        self._first_integration = True  # assuming the pack contains one integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
@@ -502,23 +502,33 @@ class Pack(object):
 
         is_data_source = self._is_data_source
         # this's the first integration in the pack, and the pack is in xsiam
-        if self._single_integration and 'marketplacev2' in self.marketplaces:
+        if self._first_integration and 'marketplacev2' in self.marketplaces:
 
-            # the integration is not deprecated
-            if not yaml_content.get('deprecated', False):
+            # # the integration is not deprecated
+            # if not yaml_content.get('deprecated', False):
+            #
+            #     # the integration contains isfetch or isfetchevents
+            #     if yaml_content.get('script', {}).get('isfetchevents', False) or \
+            #             yaml_content.get('script', {}).get('isfetch', False) is True:
+            #         logging.info(f"{yaml_content.get('name')} is a Data Source potential")
+            #         is_data_source = True
 
-                # the integration contains isfetch or isfetchevents
-                if yaml_content.get('script', {}).get('isfetchevents', False) or \
-                        yaml_content.get('script', {}).get('isfetch', False) is True:
-                    logging.info(f"{yaml_content.get('name')} is a Data Source potential")
-                    is_data_source = True
+            # the integration contains isfetch or isfetchevents (no matter if its deprecated or not)
+            if yaml_content.get('script', {}).get('isfetchevents', False) or \
+                    yaml_content.get('script', {}).get('isfetch', False) is True:
+                logging.info(f"{yaml_content.get('name')} is a Data Source potential")
+                is_data_source = True
         # already has the pack as data source
-        elif not self._single_integration and is_data_source:
+        elif not self._first_integration and is_data_source:
 
-            # got a second integration in the pack that's not deprecated
-            if not yaml_content.get('deprecated', False):
-                logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
-                is_data_source = False
+            # # got a second integration in the pack that's not deprecated
+            # if not yaml_content.get('deprecated', False):
+            #     logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
+            #     is_data_source = False
+
+            # found a second integration in the pack
+            logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
+            is_data_source = False
 
         return is_data_source
 
@@ -541,9 +551,12 @@ class Pack(object):
 
             self._is_data_source = self.is_data_source_pack(yaml_content)
 
-            # already found integration in the pack that's not deprecated
-            if not yaml_content.get('deprecated', False):
-                self._single_integration = False
+            # # already found integration in the pack that's not deprecated
+            # if not yaml_content.get('deprecated', False):
+            #     self._single_integration = False
+
+            # already found the first integration in the pack,
+            self._first_integration = False
 
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):

@@ -686,54 +686,61 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, is_actually_feed,'
+    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, first_integration, is_actually_feed,'
                              ' is_actually_siem, is_actually_data_source',
                              [
                                  # Check is_feed by Integration
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
-                                  'Integration', ["xsoar"], True, False, False),
+                                  'Integration', ["xsoar"], True, True, False, False),
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
-                                  'Integration', ["xsoar"], False, False, False),
+                                  'Integration', ["xsoar"], True, False, False, False),
                                  # Checks no feed parameter
                                  ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla'}},
-                                  'Integration', ["xsoar"], False, False, False),
+                                  'Integration', ["xsoar"], True, False, False, False),
 
                                  # Check is_feed by playbook
                                  ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
-                                  'Playbook', ["xsoar"], True, False, False),
+                                  'Playbook', ["xsoar"], True, True, False, False),
                                  ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
-                                  'Playbook', ["xsoar"], False, False, False),
+                                  'Playbook', ["xsoar"], True, False, False, False),
 
                                  # Check is_siem for integration
-                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', ["xsoar"], False,
-                                  True, False),
-                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', ["xsoar"], False,
-                                  False, False),
+                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', ["xsoar"], True,
+                                  False, True, False),
+                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', ["xsoar"], True,
+                                  False, False, False),
 
                                  # Check is_siem for rules
-                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', ["xsoar"], False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', ["xsoar"], False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', ["xsoar"], False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', ["xsoar"], True, False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', ["xsoar"], True, False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', ["xsoar"], True, False, True, False),
 
                                  # Check is_data_source for integration
+                                 # case 1: one integration, contains isfetchevents, in marketplacev2 -> data source
                                  ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], False, True, True),
+                                  ['xsoar', 'marketplacev2'], True, False, True, True),
+                                 # case 2: one integration, contains isfetch, not in marketplacev2 -> not data source
                                  ({'id': 'some-id', 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar'], False, False, False),
+                                  ['xsoar'], True, False, False, False),
+                                 # case 3: one integration (deprecated), with is_fetch, in marketplacev2 -> data source
                                  ({'id': 'some-id', 'deprecated': True, 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], False, False, False)
+                                  ['xsoar', 'marketplacev2'], True, False, False, True),
+                                 # case 4: not one integration, with isfetch, in marketplacev2 -> not data source
+                                 ({'id': 'some-id', 'deprecated': False, 'script': {'isfetch': True}}, 'Integration',
+                                  ['xsoar', 'marketplacev2'], False, False, False, False)
                              ])
-    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces,
+    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces, first_integration,
                                 is_actually_feed, is_actually_siem, is_actually_data_source):
         """ Tests is_feed or is_seem is set to True for pack changes for tagging.
         """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
         dummy_pack._marketplaces = marketplaces
+        dummy_pack._first_integration = first_integration
         dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
         assert dummy_pack.is_siem == is_actually_siem
