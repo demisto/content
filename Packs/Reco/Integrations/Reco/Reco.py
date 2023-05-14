@@ -35,6 +35,21 @@ STEP_FETCH = "fetch"
 STEP_INIT = "init"
 
 
+def extract_response(response: Any) -> List[Dict[str, Any]]:
+    if response.get("getTableResponse") is None:
+        demisto.error(f"got bad response, {response}")
+        raise Exception(f"got bad response, {response}")
+    else:
+        demisto.info(
+            f"Count of assets exposed publicly: {response.get('getTableResponse').get('totalNumberOfResults')}"
+        )
+        entities = (
+            response.get("getTableResponse", {}).get("data", {}).get("rows", [])
+        )
+        demisto.info(f"Got {len(entities)} entities")
+        return entities
+
+
 class RecoClient(BaseClient):
     def __init__(self, api_token: str, base_url: str, verify: bool, proxy):
         super().__init__(
@@ -109,16 +124,7 @@ class RecoClient(BaseClient):
                 data=json.dumps(params),
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
-            if response.get("getTableResponse") is None:
-                demisto.info(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of incidents: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                alerts = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(alerts)} alerts")
+            alerts = extract_response(response)
         except Exception as e:
             demisto.error(f"Findings Request ReadTimeout error: {str(e)}")
         demisto.info(f"done fetching RECO alerts, fetched {len(alerts)} alerts.")
@@ -189,16 +195,7 @@ class RecoClient(BaseClient):
                 data=json.dumps(params),
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
-            if response.get("getTableResponse") is None:
-                demisto.info(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of incidents: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                alerts = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(alerts)} alerts")
+            alerts = extract_response(response)
         except Exception as e:
             demisto.error(f"Findings Request ReadTimeout error: {str(e)}")
         demisto.info(f"done fetching RECO alerts, fetched {len(alerts)} alerts.")
@@ -339,18 +336,48 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
                 data=json.dumps(params),
             )
-            if response.get("getTableResponse") is None:
-                demisto.error(f"got bad response, {response}")
-                raise Exception(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of risky users: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                users = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(users)} users")
-                return users
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_exposed_publicly_files_at_risk(self) -> List[Dict[str, Any]]:
+        """Get exposed publicly files at risk. Returns a list of exposed publicly files at risk with analysis."""
+        params = {
+            "getTableRequest": {
+                "tableName": "DATA_RISK_MANAGEMENT_VIEW_BREAKDOWN_EXPOSED_PUBLICLY",
+                "pageSize": 100,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "last_access_date",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_OR",
+                    "filters": {
+                        "filters": [
+                            {
+                                "field": "data_category",
+                                "stringEquals": {
+                                    "value": "ALL"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
@@ -804,6 +831,34 @@ def get_assets_user_has_access(
     )
 
 
+def get_sensitive_assets_shared_with_public_link(reco_client: RecoClient) -> CommandResults:
+    """Get sensitive assets shared with public link from Reco."""
+    assets = reco_client.get_exposed_publicly_files_at_risk()
+    assets_list = []
+    for asset in assets:
+        asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
+        assets_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Assets",
+            assets_list,
+            headers=[
+                "asset_id",
+                "asset",
+                "data_category",
+                "data_categories",
+                "last_access_date",
+                "visibility",
+                "location",
+            ],
+        ),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_id",
+        outputs=assets_list,
+        raw_response=assets,
+    )
+
+
 def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex_search: bool) -> CommandResults:
     """Get sensitive assets from Reco. If contains is True, the asset name will be searched as a regex."""
     assets = reco_client.get_sensitive_assets_information(asset_name, None, regex_search)
@@ -882,7 +937,7 @@ def fetch_incidents(
         incident
         for incident in incidents
         if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
-        and (incident.get("dbotMirrorId", None) not in existing_incidents)
+           and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
@@ -1031,6 +1086,9 @@ def main() -> None:
                 demisto.args()["entity"],
                 demisto.args()["param"],
             )
+            return_results(result)
+        elif command == "reco-get-sensitive-assets-with-public-link":
+            result = get_sensitive_assets_shared_with_public_link(reco_client)
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
