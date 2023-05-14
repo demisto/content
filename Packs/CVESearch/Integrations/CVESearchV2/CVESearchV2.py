@@ -49,6 +49,9 @@ def cve_to_context(cve) -> Dict[str, str]:
         'Published': cve.get('Published', '').rstrip('Z'),
         'Modified': cve.get('Modified', '').rstrip('Z'),
         'Description': cve.get('summary', '')
+    #    'Vulnerable Products': [Common.CPE(cpe).to_context() for cpe in cve.get("vulnerable_product")],
+    #    'Vulnerable Configurations': [Common.CPE(cpe["id"]).to_context() for cpe
+    #                                  in cve.get("vulnerable_configuration")]
     }
 
 
@@ -120,13 +123,14 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
             cr = CommandResults(readable_output=f'### No results found for cve {_id}')
         else:
             data = cve_to_context(response)
-            indicator = generate_indicator(data)
+            indicator = generate_indicator(response)
             cr = CommandResults(
-                outputs_prefix='CVE',
-                outputs_key_field='ID',
+                outputs_prefix='CVEsearch.CVE',
+                outputs_key_field='CVE',
                 outputs=data,
                 raw_response=response,
                 indicator=indicator,
+                relationships=indicator.relationships
             )
         command_results.append(cr)
 
@@ -142,13 +146,53 @@ def generate_indicator(data: dict) -> Common.CVE:
     Returns:
         A CVE indicator with dbotScore
     """
+    cpe_parts = {
+        "a": "Application",
+        "o": "Operating-System",
+        "h": "Hardware"
+    }
+
+    cve_id = data.get('id', '')
+    cpe = data.get("vulnerable_product")[0].split(":")
+    vendor = cpe[3].capitalize() or ''
+    product = cpe[4].capitalize()
+    part = cpe_parts[cpe[2]]
+    relationships = [EntityRelationship(name="targets",
+                                        entity_a=cve_id,
+                                        entity_a_type="cve",
+                                        entity_b=product,
+                                        entity_b_type="software"),
+                     EntityRelationship(name="targets",
+                                        entity_a=cve_id,
+                                        entity_a_type="cve",
+                                        entity_b=vendor,
+                                        entity_b_type="identity")]
+
+    cvss_table = []
+
+    for category in ("impact", "access"):
+        if category:
+            for key, value in data.get(category).items():
+                cvss_table.append({"metrics": key, "value": value})
+
     cve_object = Common.CVE(
-        id=data.get('ID'),
-        cvss=data.get('CVSS'),
+        id=cve_id,
+        cvss=data.get('cvss'),
+        cvss_vector=data.get('cvss-vector'),
+        cvss_table=cvss_table,
         published=data.get('Published'),
         modified=data.get('Modified'),
-        description=data.get('Description')
+        description=data.get('summary'),
+        vulnerable_products=[Common.CPE(cpe) for cpe in data.get("vulnerable_product")],
+        vulnerable_configurations=[Common.CPE(cpe["id"]) for cpe in data.get("vulnerable_configuration")],
+        publications=[Common.Publications(title=data.get('id'),
+                                          link=reference,
+                                          source="Circl.lu") for reference in data.get("references")],
+        tags=[vendor, product, part, data.get('cwe')],
+        relationships=relationships
     )
+
+
     return cve_object
 
 
