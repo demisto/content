@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - displaypassword: Service Account JSON
-  additionalinfo: User's Service Account key in JSON format
+  additionalinfo: User's Service Account key in JSON format.
   name: credentials
   required: true
   hiddenusername: true
@@ -53,7 +53,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: When specified, the results returned limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. e.g "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name"
+      description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name"
       isArray: false
       name: filter
       required: false
@@ -128,7 +128,7 @@ script:
       description: The size of the HTTP request message in bytes, including the request headers and the request body.
       type: String
     - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.status
-      description: The response code indicating the status of response.
+      description: The response code indicating the status of the response.
       type: Number
     - contextPath: GoogleCloudLogging.LogsEntry.httpRequest.responseSize
       description: The size of the HTTP response message sent back to the client, in bytes, including the response headers and the response body.
@@ -170,7 +170,7 @@ script:
       description: An arbitrary operation identifier. Log entries with the same identifier are assumed to be part of the same operation.
       type: String
     - contextPath: GoogleCloudLogging.LogsEntry.operation.producer
-      description: An arbitrary producer identifier. The combination of id and producer must be globally unique.
+      description: An arbitrary producer identifier. The combination of ID and producer must be globally unique.
       type: String
     - contextPath: GoogleCloudLogging.LogsEntry.operation.first
       description: Set this to True if this is the first log entry in the operation.

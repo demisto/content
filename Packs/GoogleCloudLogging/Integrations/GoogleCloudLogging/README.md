@@ -8,7 +8,7 @@ With Google Cloud Logging, users can centralize all their logs in a single locat
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Service Account JSON | User's Service Account key in JSON format | True |
+    | Service Account JSON | User's Service Account key in JSON format. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -36,7 +36,7 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 | organization_name | A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
 | billing_account_name | A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
 | folder_name | A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
-| filter | When specified, the results returned limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. e.g "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name". | Optional | 
+| filter | When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name". | Optional | 
 | order_by | How the results should be sorted. Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Optional | 
 | limit | The maximum number of objects to return. | Optional | 
 | page_size | The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected. | Optional | 
@@ -72,7 +72,7 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 | GoogleCloudLogging.LogsEntry.httpRequest.protocol | String | Protocol used for the request. | 
 | GoogleCloudLogging.LogsEntry.labels | Unknown | A map of key, value pairs that provides additional information about the log entry. The labels can be user-defined or system-defined. | 
 | GoogleCloudLogging.LogsEntry.operation.id | String | An arbitrary operation identifier. Log entries with the same identifier are assumed to be part of the same operation. | 
-| GoogleCloudLogging.LogsEntry.operation.producer | String | An arbitrary producer identifier. The combination of id and producer must be globally unique. | 
+| GoogleCloudLogging.LogsEntry.operation.producer | String | An arbitrary producer identifier. The combination of ID and producer must be globally unique. | 
 | GoogleCloudLogging.LogsEntry.operation.first | Boolean | Set this to True if this is the first log entry in the operation. | 
 | GoogleCloudLogging.LogsEntry.operation.last | Boolean | Set this to True if this is the last log entry in the operation. | 
 | GoogleCloudLogging.LogsEntry.trace | String | The REST resource name of the trace being written to Cloud Trace in association with this log entry. | 
@@ -210,4 +210,4 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 >| xxx-xxx |
 
 ## Troubleshooting
-1. If you encounter the following error message: 'invalid_grant: Invalid JWT Signature.', {'error': 'invalid_grant', 'error_description': 'Invalid JWT Signature.'}, please ensure that your Service Account JSON, permissions and service account scopes are correct.
+If you encounter the following error message: 'Failed to generate/refresh token. Subject email or service account credentials are invalid. Reason: invalid_grant: Invalid JWT Signature.', please ensure that your Service Account JSON, permissions and service account scopes are correct.
