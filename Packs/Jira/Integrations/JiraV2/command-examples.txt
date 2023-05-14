@@ -1,0 +1,1 @@
+!jira-issue-assign issueId=21492 assignee_id=1234

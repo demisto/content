@@ -1,0 +1,32 @@
+{
+    "id": "incident_extrahoprevealxdetectionid",
+    "version": -1,
+    "modified": "2023-02-17T12:16:10.418090761+05:30",
+    "name": "ExtraHop Reveal(x) Detection ID",
+    "ownerOnly": false,
+    "description": "The unique ID of the detection",
+    "cliName": "extrahoprevealxdetectionid",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "ExtraHop Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

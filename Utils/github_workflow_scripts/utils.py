@@ -3,12 +3,15 @@
 import os
 import json
 from datetime import datetime
-from typing import Optional
+from typing import Any, Generator, Iterable, Optional, Tuple, Union
+
+from git import Repo
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 
 # override print so we have a timestamp with each print
 org_print = print
+CallArgs = Iterable[Union[Tuple[Any], Tuple[Any, dict]]]
 
 
 def load_json(file_path: str) -> dict:
@@ -36,6 +39,26 @@ def timestamped_print(*args, **kwargs):
     org_print(datetime.now().strftime('%H:%M:%S.%f'), *args, **kwargs)
 
 
+def iter_flatten_call_args(
+    call_args: CallArgs,
+) -> Generator:
+    for arg in call_args:
+        if isinstance(arg, tuple):
+            if isinstance(arg[0], tuple):  # nested tuple
+                yield arg[0][0]
+            else:
+                yield arg[0]
+
+        elif isinstance(arg, str):
+            yield arg
+        else:
+            raise ValueError("Unexpected call arg type")
+
+
+def flatten_call_args(call_args: CallArgs) -> Tuple[Any, ...]:
+    return tuple(iter_flatten_call_args(call_args))
+
+
 class EnvVariableError(Exception):
     def __init__(self, env_var_name: str):
         super().__init__(f'{env_var_name} env variable not set or empty')
@@ -61,3 +84,33 @@ def get_env_var(env_var_name: str, default_val: Optional[str] = None) -> str:
             return default_val
         raise EnvVariableError(env_var_name)
     return env_var_val
+
+
+class Checkout:  # pragma: no cover
+    """Checks out a given branch.
+    When the context manager exits, the context manager checks out the
+    previously current branch.
+    """
+
+    def __init__(self, repo: Repo, branch_to_checkout: str):
+        """Initializes instance attributes.
+        Arguments:
+            repo: git repo object
+            branch_to_checkout: The branch or commit hash to check out.
+        """
+        self.repo = repo
+        self.repo.remote().fetch(branch_to_checkout)
+        self._branch_to_checkout = branch_to_checkout
+        try:
+            self._original_branch = self.repo.active_branch.name
+        except TypeError:
+            self._original_branch = self.repo.git.rev_parse('HEAD')
+
+    def __enter__(self):
+        """Checks out the given branch"""
+        self.repo.git.checkout(self._branch_to_checkout)
+        return self
+
+    def __exit__(self, *args):
+        """Checks out the previous branch"""
+        self.repo.git.checkout(self._original_branch)

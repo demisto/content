@@ -6,3 +6,13 @@ cs-falcon-rtr-read-registry host_ids=15dbb9d8f06b45fe9f61eb46e829d986 registry_k
 cs-falcon-rtr-list-scheduled-tasks host_ids=15dbb9d8f06b45fe9f61eb46e829d986
 cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=15dbb9d8f06b45fe9f61eb46e829d986,046761c46ec84f40b27b6f79ce7cd32c
 cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593`
+cs-falcon-create-ml-exclusion value=/demo-test excluded_from=blocking groups=999999
+cs-falcon-update-ml-exclusion id=123456 comment=demo-comment
+cs-falcon-delete-ml-exclusion id=123456
+cs-falcon-search-ml-exclusion limit=1
+cs-falcon-create-ioa-exclusion exclusion_name=demo-test pattern_id=111111 cl_regex=.* ifn_regex="c:\\\\windows\\\\system32\\\\test.exe" groups=999999
+cs-falcon-update-ioa-exclusion id=123456 description=demo-description
+cs-falcon-delete-ioa-exclusion id=123456
+cs-falcon-search-ioa-exclusion limit=1
+cs-falcon-list-quarantined-file limit=1
+cs-falcon-apply-quarantine-file-action filename=test.exe action=delete comment=demo-comment

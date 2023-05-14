@@ -520,7 +520,7 @@ def split_notes(raw_notes, note_type, time_info):
             if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
                 notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
-        note_info, note_value = note.split('\n')
+        note_info, note_value = note.split('\n', 1)
         created_on, created_by = note_info.split(' - ')
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
@@ -743,14 +743,19 @@ class Client(BaseClient):
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
             if 'error' in json_res:
-                message = json_res.get('error', {}).get('message')
-                details = json_res.get('error', {}).get('detail')
-                if message == 'No Record found':
-                    return {'result': []}  # Return an empty results array
+                error = json_res.get('error', {})
                 if res.status_code == 401:
                     demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
                 else:
-                    raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    if isinstance(error, dict):
+                        message = json_res.get('error', {}).get('message')
+                        details = json_res.get('error', {}).get('detail')
+                        if message == 'No Record found':
+                            return {'result': []}  # Return an empty results array
+                        else:
+                            raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    else:
+                        raise Exception(f'ServiceNow Error: {error}')
 
             if res.status_code < 200 or res.status_code >= 300:
                 if res.status_code != 401 or num_of_tries == (max_retries - 1):
@@ -2152,6 +2157,11 @@ def fetch_incidents(client: Client) -> list:
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
+    # remove duplicate incidents which were already fetched
+    tickets_response = filter_incidents_by_duplicates_and_limit(
+        incidents_res=tickets_response, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='sys_id'
+    )
+
     for ticket in tickets_response:
         ticket.update(get_mirroring())
 
@@ -2178,14 +2188,10 @@ def fetch_incidents(client: Client) -> list:
             'severity': severity_map.get(ticket.get('severity', ''), 0),
             'attachment': get_ticket_file_attachments(client=client, ticket=ticket),
             'occurred': ticket.get(client.timestamp_field),
+            'sys_id': ticket.get('sys_id'),
             'rawJSON': json.dumps(ticket)
         })
         count += 1
-
-    # remove duplicate incidents which were already fetched
-    incidents = filter_incidents_by_duplicates_and_limit(
-        incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
-    )
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -2195,14 +2201,15 @@ def fetch_incidents(client: Client) -> list:
         end_fetch_time=end_snow_time,
         look_back=client.look_back,
         created_time_field='occurred',
-        id_field='name',
+        id_field='sys_id',
         date_format=DATE_FORMAT
     )
     demisto.debug(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
-        ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()}Z"
+        occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
+        ticket['occurred'] = f"{occurred}Z"
 
     demisto.setLastRun(last_run)
     return incidents

@@ -1,5 +1,6 @@
 [file:APIVoid.yml]
-ignore=IN154
+ignore=IN154,BA124
 
 [known_words]
-APIVoid
+apivoid
+

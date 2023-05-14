@@ -44,7 +44,7 @@
                     {
                         "description": "",
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 6,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
@@ -180,7 +180,16 @@
                                 "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+							{
+								"endCol": 2,
+								"fieldId": "categories",
+								"height": 22,
+								"id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -219,7 +228,7 @@
                         "type": "invTimeline",
                         "w": 3,
                         "x": 0,
-                        "y": 12
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -436,7 +445,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 12
                     },
                     {
                         "columns": [
@@ -497,7 +506,25 @@
                         "type": "linkedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 16
+                        "y": 18
+                    },
+                    {
+                        "description": "Indicators selected to be blocked.",
+                        "h": 2,
+                        "i": "swtuqptgvs-1a52c090-c187-11ed-a413-1fc9f082fba8",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Selected indicators to block",
+                        "query": "tags:\"Blocked Indicator In Systems\"",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
                     }
                 ],
                 "type": "custom"

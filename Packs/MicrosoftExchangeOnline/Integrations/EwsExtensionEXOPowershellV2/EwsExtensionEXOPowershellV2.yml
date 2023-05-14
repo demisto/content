@@ -35,9 +35,10 @@ configuration:
   required: true
   type: 0
   section: Connect
-description: Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
-display: EWS Extension Online Powershell v2
+description: Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
+display: EWS Extension Online Powershell v2 (Deprecated)
 name: EWS Extension Online Powershell v2
+deprecated: true
 script:
   commands:
   - arguments:
@@ -569,7 +570,7 @@ script:
   runonce: false
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchange:1.0.0.49040
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
 fromversion: 5.5.0
 tests:
 - playbook-O365-EWS-Extension-Powershell-Online-V2-Test

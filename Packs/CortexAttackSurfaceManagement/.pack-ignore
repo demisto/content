@@ -21,3 +21,9 @@ Nexpose
 RemediationGuidance
 closeReasons
 Openssh
+GcpProject
+RemediationRule
+BypassDevCheck
+RemediationNotificationSubject
+RemediationNotificationHTMLBody
+workloads

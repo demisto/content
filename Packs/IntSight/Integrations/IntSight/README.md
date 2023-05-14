@@ -9,7 +9,7 @@ This integration was tested with Intsights API version 3.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | True |
+    | Server URL (e.g. <https://192.168.0.1>) | True |
     | Credentials | True |
     | Password | True |
     | Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP" | False |
@@ -17,48 +17,51 @@ This integration was tested with Intsights API version 3.
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
     | Fetch incidents | False |
-    | Last date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | Max fetch | False |
     | Incident type | False |
     | Sub Account ID (MSSP accounts only) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### intsights-get-alert-image
+
 ***
 Returns an image of an alert by ID.
-
 
 #### Base Command
 
 `intsights-get-alert-image`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | image-id | The ID of the image to return. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
+
 ### intsights-get-alert-activities
+
 ***
 Returns alert activities.
-
 
 #### Base Command
 
 `intsights-get-alert-activities`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The ID of the alert. | Required | 
-
 
 #### Context Output
 
@@ -75,13 +78,14 @@ Returns alert activities.
 | IntSights.Alerts.Activities.ReadBy | string | The alert that was read by. | 
 
 ### intsights-assign-alert
+
 ***
 Assigns an alert.
-
 
 #### Base Command
 
 `intsights-assign-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -89,7 +93,6 @@ Assigns an alert.
 | alert-id | The unique ID of the Alert. | Required | 
 | assignee-email | The user email of the assignee. | Required | 
 | is-mssp-optional | Whether the assigned user is an MSSP user. Possible values are: true, false. Default is false. | Optional | 
-
 
 #### Context Output
 
@@ -99,19 +102,19 @@ Assigns an alert.
 | IntSights.Alerts.Assignees.AssigneeID | string | The ID of the assignee. | 
 
 ### intsights-unassign-alert
+
 ***
 Unassigns an alert from a user.
-
 
 #### Base Command
 
 `intsights-unassign-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The unique ID of the alert. | Required | 
-
 
 #### Context Output
 
@@ -120,13 +123,14 @@ Unassigns an alert from a user.
 | IntSights.Alerts.ID | string | The ID of the alert. | 
 
 ### intsights-send-mail
+
 ***
 Sends an email containing a question and details of the alert.
-
 
 #### Base Command
 
 `intsights-send-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -134,7 +138,6 @@ Sends an email containing a question and details of the alert.
 | alert-id | The unique ID of the alert. | Required | 
 | emails | The destination email addresses array (comma-separated). | Required | 
 | content | The content added to the alert details. | Required | 
-
 
 #### Context Output
 
@@ -145,20 +148,20 @@ Sends an email containing a question and details of the alert.
 | IntSights.Alerts.Question | string | Details of the question. | 
 
 ### intsights-ask-the-analyst
+
 ***
 Sends a question to the IntSights analyst about the requested alert.
-
 
 #### Base Command
 
 `intsights-ask-the-analyst`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The unique ID of the alert. | Required | 
 | question | Question to ask the Intsights analyst about the requested alert. | Required | 
-
 
 #### Context Output
 
@@ -168,20 +171,20 @@ Sends a question to the IntSights analyst about the requested alert.
 | IntSights.Alerts.Question | string | Details of the question. | 
 
 ### intsights-add-tag-to-alert
+
 ***
 Adds a tag to the alert.
-
 
 #### Base Command
 
 `intsights-add-tag-to-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The ID of the unique alert. | Required | 
 | tag-name | The new tag string. | Required | 
-
 
 #### Context Output
 
@@ -192,20 +195,20 @@ Adds a tag to the alert.
 | IntSights.Alerts.Tags.ID | string | The ID of the Tag. | 
 
 ### intsights-remove-tag-from-alert
+
 ***
 Removes a tag from the specified alert.
-
 
 #### Base Command
 
 `intsights-remove-tag-from-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The unique ID of the alert. | Required | 
 | tag-id | The unique ID of the tag to remove. | Required | 
-
 
 #### Context Output
 
@@ -215,20 +218,20 @@ Removes a tag from the specified alert.
 | IntSights.Alerts.Tags.ID | string | The ID of the tag. | 
 
 ### intsights-add-comment-to-alert
+
 ***
 Adds a comment to a specified alert.
-
 
 #### Base Command
 
 `intsights-add-comment-to-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The unique ID of the alert. | Required | 
 | comment | The comment to add to the alert. | Required | 
-
 
 #### Context Output
 
@@ -238,20 +241,20 @@ Adds a comment to a specified alert.
 | IntSights.Alerts.Comment | string | The comment in the alert. | 
 
 ### intsights-update-alert-severity
+
 ***
 Changes the severity of a specified alert.
-
 
 #### Base Command
 
 `intsights-update-alert-severity`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The unique ID of the alert. | Required | 
 | severity | The severity of the alert. Can be: "High", "Medium", or "Low". Possible values are: High, Medium, Low. | Required | 
-
 
 #### Context Output
 
@@ -261,19 +264,19 @@ Changes the severity of a specified alert.
 | IntSights.Alerts.Severity | string | The severity of the alert. | 
 
 ### intsights-get-alert-by-id
+
 ***
 Returns the alert object by alert ID.
-
 
 #### Base Command
 
 `intsights-get-alert-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The unique ID of the alert. | Required | 
-
 
 #### Context Output
 
@@ -299,19 +302,19 @@ Returns the alert object by alert ID.
 | IntSights.Alerts.SubType | string | The sub type of the alert. | 
 
 ### intsights-get-ioc-by-value
+
 ***
 Searches for an exact IOC value.
-
 
 #### Base Command
 
 `intsights-get-ioc-by-value`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The IOC value for which to search. | Required | 
-
 
 #### Context Output
 
@@ -330,7 +333,7 @@ Searches for an exact IOC value.
 | IntSights.Iocs.Sources.name | string | The source name of the IOC. | 
 | IntSights.Iocs.Sources.confidenceLevel | string | The confidence level of the IOC source. | 
 | IntSights.Iocs.Sources.id | string | The source id of the IOC. | 
-| IntSights.Iocs.tags | Array | The tags of the IOC. |
+| IntSights.Iocs.tags | Array | The tags of the IOC. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The type of the indicator. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -352,13 +355,14 @@ Searches for an exact IOC value.
 | Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
 
 ### intsights-get-iocs
+
 ***
 Returns count totals of the available IOCs.
-
 
 #### Base Command
 
 `intsights-get-iocs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -372,7 +376,6 @@ Returns count totals of the available IOCs.
 | last-seen-from | Beginning of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0. | Optional | 
 | last-updated-from | Beginning of the date range when the IOC was last updated (YYYY-MM-DD). | Optional | 
 | last-seen-to | End of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0. | Optional | 
-
 
 #### Context Output
 
@@ -391,7 +394,7 @@ Returns count totals of the available IOCs.
 | IntSights.Iocs.Sources.name | string | The source name of the IOC. | 
 | IntSights.Iocs.Sources.confidenceLevel | string | The confidence level of the IOC source. | 
 | IntSights.Iocs.Sources.id | string | The source id of the IOC. | 
-| IntSights.Iocs.tags | Array | The tags of the IOC. |
+| IntSights.Iocs.tags | Array | The tags of the IOC. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The type of the indicator. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -413,13 +416,14 @@ Returns count totals of the available IOCs.
 | Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
 
 ### intsights-get-alerts
+
 ***
 Returns alerts.
-
 
 #### Base Command
 
 `intsights-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -436,7 +440,6 @@ Returns alerts.
 | is-flagged | Whether to show flagged or unflagged alerts. | Optional | 
 | is-closed | Whether to show closed/open alerts. | Optional | 
 | time-delta | Shows alerts within a specified time delta, given in days. | Optional | 
-
 
 #### Context Output
 
@@ -462,19 +465,19 @@ Returns alerts.
 | IntSights.Alerts.SubType | string | The sub type of the alert. | 
 
 ### intsights-alert-takedown-request
+
 ***
 Requests an alert takedown.
-
 
 #### Base Command
 
 `intsights-alert-takedown-request`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The ID of the alert. | Required | 
-
 
 #### Context Output
 
@@ -483,19 +486,19 @@ Requests an alert takedown.
 | IntSights.Alerts.ID | string | The ID of the alert. | 
 
 ### intsights-get-alert-takedown-status
+
 ***
 Returns the alert takedown status.
-
 
 #### Base Command
 
 `intsights-get-alert-takedown-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The ID of the alert. | Required | 
-
 
 #### Context Output
 
@@ -505,13 +508,14 @@ Returns the alert takedown status.
 | IntSights.Alerts.TakedownStatus | string | The status of the takedown. | 
 
 ### intsights-update-ioc-blocklist-status
+
 ***
 Updates the IOC block list status.
-
 
 #### Base Command
 
 `intsights-update-ioc-blocklist-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -521,7 +525,6 @@ Updates the IOC block list status.
 | value | A comma separated list of the value of the IOCs. | Required | 
 | blocklist-status | A comma separated list of the IOCs block list status. Options: Sent, NotSent. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -530,19 +533,19 @@ Updates the IOC block list status.
 | IntSights.Alerts.Status | string | The status of the block list. | 
 
 ### intsights-get-ioc-blocklist-status
+
 ***
 Returns the status of the IOC block list.
-
 
 #### Base Command
 
 `intsights-get-ioc-blocklist-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert-id | The ID of the alert. | Required | 
-
 
 #### Context Output
 
@@ -552,13 +555,14 @@ Returns the status of the IOC block list.
 | IntSights.Alerts.Status | string | The status of the block list. | 
 
 ### intsights-close-alert
+
 ***
 Closes an alert
-
 
 #### Base Command
 
 `intsights-close-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -569,7 +573,6 @@ Closes an alert
 | is-hidden | The hidden status of the alert. Deletes an alert from the account instance - only when reason is a FalsePositive). Possible values are: True, False. Default is False. | Optional | 
 | rate | The rate of the alert. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -578,18 +581,18 @@ Closes an alert
 | IntSights.Alerts.Closed.Reason | string | The closed reason of the alert. | 
 
 ### intsights-mssp-get-sub-accounts
+
 ***
 Returns all Managed Security Service Provider's (MSSP) sub accounts.
-
 
 #### Base Command
 
 `intsights-mssp-get-sub-accounts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -602,19 +605,19 @@ Returns all Managed Security Service Provider's (MSSP) sub accounts.
 | IntSights.MsspAccount.CompanyName | String | The company name of IntSights MSSP sub account. | 
 
 ### intsights-request-ioc-enrichment
+
 ***
 Request and receive enrichment of an IOC.
-
 
 #### Base Command
 
 `intsights-request-ioc-enrichment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The IOC value for which to enrich. | Required | 
-
 
 #### Context Output
 
