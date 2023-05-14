@@ -96,11 +96,12 @@ class Client(BaseClient):
                                   params=params,
                                   resp_type='response')
 
-    def query_log_callback(self, url: str) -> dict:
+    def query_log_callback(self, url: str, ok_codes=None) -> dict:
         return self._http_request(method='GET',
                                   url_suffix='',
                                   full_url=url,
-                                  headers=self._headers)
+                                  headers=self._headers,
+                                  ok_codes=ok_codes)
 
     def validate(self) -> Response:
         """
@@ -572,13 +573,11 @@ def insight_idr_query_log_command(client: Client, log_id: str, query: str, time_
     data_for_readable_output = []
     new_data = []
 
-    # if 'links' in the response is a callback, and we need to get the full response
-    demisto.debug(f'\nresults.json(): {results.json()}\n')
-    if 'links' in results.json():
+    # 202 if there is a callback, and 200 if that's the full response
+    if results.status_code == 202:
         for link in results.json().get('links', []):
             url = link.get('href')
             data = client.query_log_callback(url)
-            demisto.debug(f'\ndata: {data}\n')
             new_data.append(data)
             events = data.get('events', [])
             for event in events:
@@ -638,26 +637,7 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
 
     results = client.query_log_set(log_set_id, params)
 
-    data_for_readable_output = []
-    new_data = []
-
-    # if 'links' in the response is a callback, and we need to get the full response
-    demisto.debug(f'\nresults.json(): {results.json()}\n')
-    if 'links' in results.json():
-        for link in results.json().get('links', []):
-            url = link.get('href')
-            data = client.query_log_callback(url)
-            demisto.debug(f'\ndata: {data}\n')
-            new_data.append(data)
-            events = data.get('events', [])
-            for event in events:
-                data_for_readable_output.append(event)
-    else:
-        events = results.json().get('events', [])
-        for event in events:
-            data_for_readable_output.append(event)
-
-    raw_response = new_data if new_data else results.json()
+    data_for_readable_output, raw_response = handle_query_log_results(client, results)
 
     readable_output = tableToMarkdown('Query Results', data_for_readable_output,
                                       headers=EVENTS_FIELDS, removeNull=True)
@@ -669,6 +649,33 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
         readable_output=readable_output
     )
     return command_results
+
+
+def handle_query_log_results(client: Client, result):
+    ok_codes = (200, 202)
+    data_for_readable_output = []
+    raw_responcse = []
+
+    results_list = [result.json()]
+    while results_list:
+        results = results_list.pop(0)
+        if results.status_code in ok_codes:
+            if 'events' in results:
+                events = results.get('events', [])
+                data_for_readable_output.extend(events)
+                raw_responcse.append(results)
+
+            if 'links' in results:
+                for link in results.get('links', []):
+                    url = link.get('href')
+                    new_results = client.query_log_callback(url, ok_codes=ok_codes)
+                    results_list.append(new_results)
+
+                    events_len = len(results.get('events', []))
+                    progress = results.get('progress')
+                    demisto.debug(f'Events length: {events_len}, progress: {progress}')
+
+    return data_for_readable_output, raw_responcse
 
 
 def test_module(client: Client) -> str:
