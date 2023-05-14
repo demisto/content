@@ -122,7 +122,7 @@ def unit_tests_results():
     return slack_results
 
 
-def bucket_upload_results(bucket_artifact_folder):
+def bucket_upload_results(bucket_artifact_folder, should_include_private_packs: bool):
     steps_fields = []
     pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK)
     marketplace_name = os.path.basename(bucket_artifact_folder).upper()
@@ -145,7 +145,7 @@ def bucket_upload_results(bucket_artifact_folder):
             'short': False
         }]
 
-    if successful_private_packs:
+    if successful_private_packs and should_include_private_packs:
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
         steps_fields += [{
             'title': 'Successful Private Packs:',
@@ -189,9 +189,9 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     # report pack updates
     if 'upload' in triggering_workflow_lower:
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR, True)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2, False)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE, False)
 
     # report failing test-playbooks
     if 'content nightly' in triggering_workflow_lower:
