@@ -114,7 +114,7 @@ def test_search_events_retrieves_when_limit_is_lower_than_results(mocker):
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
     limit = 1
-    mocker.patch.object(client, 'get_events', 
+    mocker.patch.object(client, 'get_events',
                         return_value={"AuditEvents": [{"event_id": 1, 'Timestamp': '2022-01-01T00:00:00Z'},
                                                       {"event_id": 2, 'Timestamp': '2022-01-01T00:20:00Z'}]})
 

@@ -23,6 +23,7 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
+
     def __init__(self, base_url, verify, proxy, headers):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
@@ -176,7 +177,7 @@ def main() -> None:
                 should_push_events = argToBoolean(args.get('should_push_events'))
                 events, results = search_events(
                     client=client,
-                    limit=arg_to_number(args.get('limit')) or DEFAULT_LIMIT, #removing limit
+                    limit=arg_to_number(args.get('limit')) or DEFAULT_LIMIT,
                     body={
                         'StartDate': first_fetch_time.strftime(DATE_FORMAT),
                         'EndDate': datetime.utcnow().strftime(DATE_FORMAT)
