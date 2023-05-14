@@ -381,6 +381,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 
 def main():
     incident = demisto.incident()
+    attachments = incident.get('attachment', [])
     custom_fields = incident.get('CustomFields')
     email_from = custom_fields.get('emailfrom', '')
     email_cc = custom_fields.get('emailcc', '')
@@ -391,7 +392,6 @@ def main():
     email_html = custom_fields.get('emailhtml', '')
     email_received = custom_fields.get('emailreceived', '')
     email_replyto = custom_fields.get('emailreplyto', '')
-    attachments = incident.get('attachment', [])
     email_latest_message = custom_fields.get('emaillatestmessage', '')
 
     try:
@@ -431,23 +431,30 @@ def main():
         return_results(False)
 
     except (IndexError, ValueError, DemistoException) as e:
-        if type(e).__name__ == 'IndexError':
-            demisto.debug('No related incident was found. A new incident was created.')
-        else:
-            demisto.debug(f"A new incident was created. Reason:\n {e}")
-
         args = demisto.args()
-        create_incidents_untagged = argToBoolean(args.get('create_incidents_untagged', False))
-        if create_incidents_untagged:
+
+        create_incidents_untagged = argToBoolean(args.get('CreateIncidentUntaggedEmail', False))
+        list_name = args.get('listName', 'EmailCommunication')
+        get_list_result = demisto.executeCommand("getList", {"listName": list_name})[0]
+        if get_list_result['Type'] != entryTypes['error'] or "Item not found" not in get_list_result['Contents']:
+            get_list_result_json = safe_load_json(get_list_result['Contents'])
+            create_incidents_untagged = argToBoolean(get_list_result_json.get('CreateIncidentUntaggedEmail', False))
+
+        if not create_incidents_untagged and isinstance(e, IndexError):
             # Return False - tell pre-processing not to create a new incident.
+            demisto.debug("No incident was created, Reason: CreateIncidentUntaggedEmail is False")
             return_results(False)
         else:
             # Return True - tell pre-processing to create a new incident.
+            if isinstance(e, IndexError):
+                demisto.debug('No related incident was found. A new incident was created.')
+            else:
+                demisto.debug(f"A new incident was created. Reason: \n {e}")
             demisto.executeCommand('setIncident',
                                    {'id': incident.get('id'),
                                     'customFields': {'emailgeneratedcode': get_unique_code()}})
             return_results(True)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
