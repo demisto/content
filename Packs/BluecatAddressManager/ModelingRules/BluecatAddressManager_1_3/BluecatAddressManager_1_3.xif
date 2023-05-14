@@ -1,0 +1,16 @@
+[MODEL: dataset=bluecat_address_manager_raw]
+alter
+dnsClass=arrayindex(regextract(_raw_log, "query:\s\S+\s([A-Z]+)\s"),0),
+outcome=if(_raw_log contains "status",arrayindex(regextract(_raw_log, "\sstatus\:\s(\w+)"),0))
+| alter
+xdm.intermediate.host.hostname=arrayindex(regextract(_raw_log, "\d{2}\:\d{2}\:\d{2}\s(\w+)\s"),0),
+xdm.source.ipv4=arrayindex(regextract(_raw_log, "\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\#"),0),
+xdm.source.port=to_integer(arrayindex(regextract(_raw_log, "\#(\d+)\s"),0)),
+xdm.network.dns.dns_question.name=arrayindex(regextract(_raw_log, "query:\s(\S+)\s"),0),
+xdm.target.domain=arrayindex(regextract(_raw_log, "query:\s(\S+)\s"),0),
+xdm.intermediate.ipv4=arrayindex(regextract(_raw_log, "\((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\)"),0),
+xdm.network.dns.dns_question.type=arrayindex(regextract(_raw_log, "query:\s\S+\s\S+\s([A-Z0-9]+)\s"),0),
+xdm.network.dns.dns_question.class=if(dnsClass="IN", 1, dnsClass="CS", 2, dnsClass="CH", 3, dnsClass="HS", 4),
+xdm.source.user.identifier=arrayindex(regextract(_raw_log, "client\s\@(\S+)\s"),0),
+xdm.event.description=if(_raw_log not contains "query",arrayindex(regextract(_raw_log, "\:\s(.+)"),0)),
+xdm.event.outcome=if(outcome="success", XDM_CONST.OUTCOME_SUCCESS, outcome contains "fail", XDM_CONST.OUTCOME_FAILED, outcome);
