@@ -58,7 +58,7 @@ For additional details see the following page: [Forward system events](https://h
 4. Under the _Event Forwarding Configuration (from the Agent/Appliance)_ section, for each protection module, select the relevant syslog configuartion for forwarding that module alerts to XSIAM. 
 5. Click **Save**. 
 
-For additional details see the following page: [Forward security events](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Configur2).
+For additional details ,see [Forward security events](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Configur2).
 
 
 ## Collect Events from Vendor
