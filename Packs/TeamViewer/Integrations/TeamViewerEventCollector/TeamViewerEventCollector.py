@@ -27,6 +27,11 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
+    def get_if_token_valid(self):
+        return self._http_request(
+            method='GET', url_suffix='/api/v1/ping',
+            headers=self._headers)
+
     def get_events(self, params=None, body=None):
         return self._http_request(
             method='POST', url_suffix='/api/v1/EventLogging',
@@ -89,16 +94,13 @@ def test_module(client: Client, first_fetch_time: datetime) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message: str = 'Authorization Error: make sure bearer token format is correctly set'
     try:
-        client.get_events(body={'StartDate': first_fetch_time.strftime(DATE_FORMAT),
-                                'EndDate': datetime.utcnow().strftime(DATE_FORMAT)})
-        message = 'ok'
+        res = client.get_if_token_valid()
+        if argToBoolean(res.get('token_valid')):
+            message = 'ok'
     except DemistoException as e:
-        if 'Wrong' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure bearer token format is correctly set'
-        else:
-            raise e
+        raise e
     return message
 
 
@@ -199,18 +201,16 @@ def main() -> None:
                     first_fetch_time=first_fetch_time,
                 )
                 demisto.debug(f'TeamViewer last run: {last_run} \n next run: {next_run}')
-
-                if should_push_events:
-                    demisto.debug(f'Number of events: {len(events)}')
-                    events = add_time_key_to_events(events)
-                    send_events_to_xsiam(
-                        events,
-                        vendor=VENDOR,
-                        product=PRODUCT
-                    )
-                    if next_run:
-                        # saves next_run for the time fetch-events is invoked
-                        demisto.setLastRun(next_run)
+                demisto.debug(f'Number of events: {len(events)}')
+                events = add_time_key_to_events(events)
+                send_events_to_xsiam(
+                    events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
+                if next_run:
+                    # saves next_run for the time fetch-events is invoked
+                    demisto.setLastRun(next_run)
         # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
