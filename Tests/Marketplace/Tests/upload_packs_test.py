@@ -632,7 +632,7 @@ class TestCorepacksFiles:
                     "corePacks": [],
                     "upgradeCorePacks": [],
                     "buildNumber": "123"
-                }
+            }
         }
         mocker.patch.object(GCPConfig, "COREPACKS_OVERRIDE_CONTENTS", corepacks_override)
         assert not should_override_locked_corepacks_file(marketplace='marketplacev2')
