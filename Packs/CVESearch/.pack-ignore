@@ -16,3 +16,5 @@ ignore=IN154
 [known_words]
 CPE
 CPEs
+CWE
+CWEs
