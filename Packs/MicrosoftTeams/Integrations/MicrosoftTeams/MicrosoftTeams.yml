@@ -112,7 +112,7 @@ configuration:
   section: Collect
   advanced: true
 - display: The header of an external form hyperlink.
-  name: incident_notifications_channel
+  name: external_form_url_header
   required: false
   type: 0
   section: Connect
