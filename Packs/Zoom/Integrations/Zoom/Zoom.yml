@@ -533,6 +533,389 @@ script:
     description: >
       Show all the meetings of a given user.
       Note: only scheduled and unexpired meetings will appear.
+  - name: zoom-list-account-public-channels 
+    description: List the existing channels
+    arguments:
+    - description: Number of channels to return. Max 300. The default is 50.
+      name: page-size
+      type: int
+    - description: >
+        The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
+      name: next_page_token
+      required: false
+      type: string
+    - name: page-number
+      description: >
+        Which page of results to return. The default = 1.
+
+        Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
+    - name: limit
+      required: false
+      description: The total amunt of results to show.
+    - name: channel_id
+      description: A channel ID. this is for a singel channel
+      required: false
+      type: string
+    outputs:
+    - contextPath: Zoom.Channel.Count
+      description: Total page count available
+      type: number
+  - name: zoom-list-user-channels
+    description: List the existing channels
+    arguments:
+    - description: Number of channels to return. Max 300. The default is 50.
+      name: page-size
+      type: int
+    - description: >
+        The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
+      name: next_page_token
+      required: false
+      type: string
+    - name: page-number
+      description: >
+        Which page of results to return. The default = 1.
+
+        Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
+    - name: limit
+      required: false
+      description: The total amunt of results to show.
+    - name: channel_id
+      description: A channel ID. this is for a singel channel
+      required: false
+      type: string
+    - name: user_id
+      description: A user ID. this is for a singel user
+      required: true
+      type: string
+    outputs:
+    - contextPath: Zoom.Channel.Count
+      description: Total page count available
+      type: number
+  - name: zoom-create-channel
+    description: Create a new channel in zoom account
+    execution: true
+    arguments:
+    - description: User id of user that channel is created for
+      name: user_id
+      required: true
+    - description: Channel members email list
+      name: member_emails
+      required: true
+      isArray: true
+    - description: Type of member premissions 
+      name: add_member_permissions
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - All channel members can add
+      - Only channel owner and admins can add
+    - description: Posting permissions in the Channel
+      name: posting_permissions
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - All members can post
+      - Only the owner and admins can post
+      - Only the owner, admins and certain members can post
+    - description: Whether new channel members can view messages and files previously posted in the channel
+      name: new_members_can_see_prev_msgs
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: true
+      required: false
+    - description: The channel name
+      name: channel_name
+      required: false
+    - description: Type of channel
+      name: channel_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Private channel
+      - Private channel with members that belong to one account
+      - Public channel
+      - New chat   
+    outputs:
+    - contextPath: Zoom.Channel.id
+      description: The ID of the created channel
+      type: string
+    - contextPath: Zoom.Channel.name
+      description: The name of the created channel
+      type: string
+    - contextPath: Zoom.Channel.type
+      description: created channel type
+      type: string
+    - contextPath: Zoom.Channel.url
+      description: created channel url
+      type: string
+  - arguments:
+    - description: The channel ID  to delete
+      name: channel_id
+      required: true
+    - description: Zoom User id 
+      name: user_id
+      required: true
+    description: Deletes a specific Zoom channel
+    execution: true
+    name: zoom-delete-channel
+  - name: zoom-update-channel 
+    description: Update an existing channel in zoom account
+    execution: true
+    arguments:
+    - description: ID of the channel to be update
+      name: channel_id
+      required: true
+    - description: User id of user that channel is created for
+      name: user_id
+      required: true
+    - description: Type of member permissions 
+      name: add_member_permissions
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - All channel members can add
+      - Only channel owner and admins can add
+    - description: Posting permissions in the Channel
+      name: posting_permissions
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - All members can post
+      - Only the owner and admins can post
+      - Only the owner, admins and certain members can post
+    - description: Whether existing channel members can view messages and files previously posted in the channel
+      name: new_members_can_see_prev_msgs
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: true
+      required: false
+    - description: The channel name
+      name: channel_name
+      required: false
+    outputs:
+  - name: zoom-invite-to-channel
+    description: Invites members that are in a user's contact list to a channel.
+    arguments:
+    - name: channel_id
+      description: A channel ID.
+      required: true
+      type: string
+    - description: User id of user that channel is created for
+      name: user_id
+      required: true
+    - name: members
+      description: A members email to invited to the channel
+      required: true
+      isArray: true
+      type: string
+    outputs:
+    - contextPath: Zoom.Channel.ids
+      description: The users ID that invited to the channel
+      type: string
+    - contextPath: Zoom.Channel.added_at
+      description: The date and time of the invite
+      type: string
+  - name: zoom-remove-from-channel
+    description: Removes a member from a chat channel. A channel can have one or many members.
+    arguments:
+    - name: channel_id
+      description: A channel ID.
+      required: true
+      type: string
+    - name: user_id
+      description: A user ID.
+      required: true
+      type: string
+    - name: member_id
+      description: User id or email
+      required: true
+      isArray: false
+      type: string
+    outputs:
+  - name: zoom-send-file
+    description: Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
+    arguments:
+    - name: to_channel
+      description: The channel ID of the channel to which to send the chat file..
+      required: false
+      type: string
+    - description: The user's ID.
+      name: user_id
+      required: true
+    - name: to_contact
+      description: The user ID or member ID of the contact to whom you want to send the chat file.
+      required: false
+      type: string
+    - name: entry_id
+      description: XSOAR internal file Id.
+      required: false
+      type: string
+    outputs:
+  - name: zoom-send-message
+    description: Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
+    arguments:
+    - name: user_id
+      description: User ID
+      type: string
+      required: true
+    - name: at_contact
+      description: Email address of the contact
+      required: false
+      type: string
+    - name: at_type
+      description: The type of mention
+      required: false
+      type: string
+      options:
+        - 1: Mention a contact
+        - 2: Mention "all" to notify everyone in the channel
+    - name: end_position
+      description: The end position of the mention
+      required: false
+      type: string
+    - name: start_position
+      description: The start position of the mention
+      required: false
+      type: string
+    - name: rt_start_position
+      description: Start position of the rich text
+      required: false
+      type: string
+    - name: rt_end_position
+      description: End position of the rich text
+      required: false
+      type: string
+    - name: format_type
+      description: The type of rich text
+      required: false
+      type: string
+      options:
+        - Bold
+        - Italic
+        - Strikethrough
+        - BulletedList
+        - NumberedList
+        - Underline
+        - FontSize
+        - FontColor
+        - BackgroundColor
+        - LeftIndent
+        - Paragraph
+        - Quote
+        - AddLink
+        - auto: PREDEFINED
+    - name: format_attr
+      description: The attribute value for the rich text
+      required: false
+      type: string
+    - name: message
+      description: The message to be sent
+      required: false
+      type: string
+    - name: file_ids
+      description: A list of file IDs to send
+      required: false
+      type: string
+      isArray: true
+    - name: reply_main_message_id
+      required: false
+      type: string
+    - name: to_channel
+      description: The channel ID of the channel where the message will be sent
+      required: false
+      type: string
+    - name: to_contact
+      description: The email address of the contact to whom the message will be sent
+      required: false
+      type: string
+  - name: zoom-delete-message
+    description: Deletes a Zoom message.
+    arguments:
+    - name : user_id
+      description: User ID or email.
+      required: true
+      type: string
+    - name: message_id
+      description: ID of the message to delete.
+      required: true
+      type: string
+    - name: to_channel
+      description: ID of the channel to send the message to.
+      required: false
+      type: string
+    - name: to_contact
+      description: Email address of the contact to send the message to.
+      required: false
+      type: string
+    outputs:
+  - name: zoom-update-message
+    description: Edits a Zoom message.
+    arguments:
+    - name : user_id
+      description: User ID.
+      required: true
+      type: string
+    - name : message_id
+      description: ID of the message to edit.
+      required: true
+      type: string
+    - name : message
+      description: The edited message.
+      required: true
+      type: string
+    - name : to_channel
+      description: ID of the channel to send the message to.
+      required: false
+      type: string
+    - name : to_contact
+      description: Email address of the contact to send the message to.
+      required: false
+      type: string
+    - name : entry_ids
+      description: A list of XSOAR file entry IDs to send.
+      required: false
+      isArray: true
+      type: string
+    outputs:
+  - name: zoom-list-messages
+    description: List the existing channels
+    arguments:
+    - description: Number of channels to return. Max 300. The default is 50.
+      name: page-size
+      type: int
+    - description: >
+        The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
+      name: next_page_token
+      required: false
+      type: string
+    - name: page-number
+      description: >
+        Which page of results to return. The default = 1.
+
+        Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
+    - name: limit
+      required: false
+      description: The total amunt of results to show.
+    - name: to_contact
+      description: A channel ID. this is for a singel channel
+      required: false
+      type: string
+    - name: to_channel
+      description: A channel ID. this is for a singel channel
+      required: false
+      type: string
+    - name: user_id
+      description: A user ID. this is for a singel user
+      required: true
+      type: string
+    outputs:
+    - contextPath: Zoom.ChatMessage
+      description: Total page count available
+      type: number
   dockerimage: demisto/pyjwt3:1.0.0.55864
   runonce: false
   script: "-"
