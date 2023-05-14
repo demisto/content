@@ -90,7 +90,7 @@ There is no context output for this command.
 
 >### Authorization instructions
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
->and enter the code **DELTEABB7** to authenticate.
+>and enter the code **CODECODE** to authenticate.
 >2. Run the **!azure-sql-auth-complete** command in the War Room.
 
 ### azure-sql-auth-complete
@@ -137,7 +137,7 @@ There is no context output for this command.
 ```!azure-sql-auth-reset```
 #### Human Readable Output
 
->Authorization was reset successfully. You can now run **!azure-sql-auth-start** and **!azure-sql-auth-complete**.
+>Authorization was reset successfully. You can now run ***!azure-sql-auth-start*** and ***!azure-sql-auth-complete***.
 
 ### azure-sql-auth-test
 
@@ -174,12 +174,12 @@ Lists all the servers.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | (Int) The maximum number of servers returned to the War Room. Default is 50. | Optional | 
-| offset | Offset in the data set. Default is 0. | Optional | 
-| subscription_id | Subscription id. This value will override instance param 'subscription_id'. | Optional | 
-| resource_group_name | Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                      | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| limit | (Int) The maximum number of servers returned to the War Room. Default is 50.                                                                         | Optional | 
+| offset | Offset in the data set. Default is 0.                                                                                                                | Optional | 
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'.                                                                      | Optional | 
+| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.                                   | Optional | 
 | list_by_resource_group | If true, returns the server lists that matches the given resource groups. Else, returns a list of all the servers. Possible values are: true, false. | Optional | 
 
 #### Context Output
@@ -245,45 +245,45 @@ Lists all of the databases for the server.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | Server name. | Required | 
-| limit | The maximum number of databases returned to the War Room. Default is 50. | Optional | 
-| offset | Offset in the data set. Default is 0. | Optional | 
-| subscription_id | Subscription id. This value will override instance param 'subscription_id'. | Optional | 
-| resource_group_name | Resource group name. This value will override instance param 'resource_group_name'. | Optional | 
+| **Argument Name** | **Description**                                                                         | **Required** |
+| --- |-----------------------------------------------------------------------------------------| --- |
+| server_name | Server name.                                                                            | Required | 
+| limit | The maximum number of databases returned to the War Room. Default is 50.                | Optional | 
+| offset | Offset in the data set. Default is 0.                                                   | Optional | 
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'.         | Optional | 
+| resource_group_name | Resource group name. This value will override the instance param 'resource_group_name'. | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSQL.DB | Unknown | All databases related to the server. | 
-| AzureSQL.DB.kind | String | Kind of database. | 
-| AzureSQL.DB.location | String | Database location. | 
-| AzureSQL.DB.id | String | Database ID. | 
-| AzureSQL.DB.name | String | Database name. | 
-| AzureSQL.DB.type | String | Database type. | 
-| AzureSQL.DB.managedBy | String | Resource that manages the database. | 
-| AzureSQL.DB.sku | Unknown | Database SKU. | 
-| AzureSQL.DB.catalogCollation | String | Collation of the catalog for the database. | 
-| AzureSQL.DB.collation | String | Database collation. | 
-| AzureSQL.DB.creationDate | String | Creation date of the database in ISO format. | 
-| AzureSQL.DB.currentServiceObjectiveName | String | Current service level objective name of the database. | 
-| AzureSQL.DB.currentSku | Unknown | Name, tier, and capacity of the SKU. | 
-| AzureSQL.DB.databaseID | String | Database ID. | 
-| AzureSQL.DB.defaultSecondaryLocation | String | Default secondary location of the database. | 
-| AzureSQL.DB.maxSizeBytes | Number | The maximum size of the database in bytes. | 
-| AzureSQL.DB.readReplicaCount | Number | The number of read-only secondary replicas of the database. | 
-| AzureSQL.DB.readScale | String | The read-only routing state. "Enabled" or "Disabled". | 
-| AzureSQL.DB.requestedServiceObjectiveName | String | The requested service objective name of the database. | 
-| AzureSQL.DB.status | String | Database status. | 
-| AzureSQL.DB.storageAccountType | String | Database storage account type. | 
-| AzureSQL.DB.zoneRedundant | Boolean | Whether the database zone is redundant. | 
-| AzureSQL.DB.currentBackupStorageRedundancy | Unknown | The storage account type used to store backups for this database. | 
-| AzureSQL.DB.requestedBackupStorageRedundancy | Unknown | The storage account type to be used to store backups for this database. | 
-| AzureSQL.DB.maintenanceConfigurationId | String | Maintenance configuration id assigned to the database. This configuration defines the period when the maintenance updates will occur. | 
+| **Path** | **Type** | **Description**                                                                                                                                                                                |
+| --- | --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AzureSQL.DB | Unknown | All databases related to the server.                                                                                                                                                           | 
+| AzureSQL.DB.kind | String | Kind of database.                                                                                                                                                                              | 
+| AzureSQL.DB.location | String | Database location.                                                                                                                                                                             | 
+| AzureSQL.DB.id | String | Database ID.                                                                                                                                                                                   | 
+| AzureSQL.DB.name | String | Database name.                                                                                                                                                                                 | 
+| AzureSQL.DB.type | String | Database type.                                                                                                                                                                                 | 
+| AzureSQL.DB.managedBy | String | Resource that manages the database.                                                                                                                                                            | 
+| AzureSQL.DB.sku | Unknown | Database SKU.                                                                                                                                                                                  | 
+| AzureSQL.DB.catalogCollation | String | Collation of the catalog for the database.                                                                                                                                                     | 
+| AzureSQL.DB.collation | String | Database collation.                                                                                                                                                                            | 
+| AzureSQL.DB.creationDate | String | Creation date of the database in ISO format.                                                                                                                                                   | 
+| AzureSQL.DB.currentServiceObjectiveName | String | Current service level objective name of the database.                                                                                                                                          | 
+| AzureSQL.DB.currentSku | Unknown | Name, tier, and capacity of the SKU.                                                                                                                                                           | 
+| AzureSQL.DB.databaseID | String | Database ID.                                                                                                                                                                                   | 
+| AzureSQL.DB.defaultSecondaryLocation | String | Default secondary location of the database.                                                                                                                                                    | 
+| AzureSQL.DB.maxSizeBytes | Number | The maximum size of the database in bytes.                                                                                                                                                     | 
+| AzureSQL.DB.readReplicaCount | Number | The number of read-only secondary replicas of the database.                                                                                                                                    | 
+| AzureSQL.DB.readScale | String | The read-only routing state. "Enabled" or "Disabled".                                                                                                                                          | 
+| AzureSQL.DB.requestedServiceObjectiveName | String | The requested service objective name of the database.                                                                                                                                          | 
+| AzureSQL.DB.status | String | Database status.                                                                                                                                                                               | 
+| AzureSQL.DB.storageAccountType | String | Database storage account type.                                                                                                                                                                 | 
+| AzureSQL.DB.zoneRedundant | Boolean | Whether the database zone is redundant.                                                                                                                                                        | 
+| AzureSQL.DB.currentBackupStorageRedundancy | Unknown | The storage account type used to store backups for this database.                                                                                                                              | 
+| AzureSQL.DB.requestedBackupStorageRedundancy | Unknown | The storage account type to be used to store backups for this database.                                                                                                                        | 
+| AzureSQL.DB.maintenanceConfigurationId | String | Maintenance configuration ID assigned to the database. This configuration defines the period when the maintenance updates will occur.                                                          | 
 | AzureSQL.DB.isLedgerOn | Boolean | Whether or not this database is a ledger database, which means all tables in the database are ledger tables. The value of this property cannot be changed after the database has been created. | 
-| AzureSQL.DB.isInfraEncryptionEnabled | Boolean | Infra encryption is enabled for this database. | 
+| AzureSQL.DB.isInfraEncryptionEnabled | Boolean | Whether infra encryption is enabled for this database.                                                                                                                                                 | 
 
 
 #### Command Example
@@ -352,31 +352,31 @@ Gets the audit settings of the specified database.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | Server name. | Required | 
-| db_name | Database name. | Required | 
-| limit | The maximum number of database audit policies returned to the War Room. Default is 50. | Optional | 
-| offset | Offset in the data set. Default is 0. | Optional | 
-| subscription_id | Subscription id. This value will override instance param 'subscription_id'. | Optional | 
-| resource_group_name | Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated. | Optional | 
+| **Argument Name** | **Description**                                                                                                                            | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| server_name | Server name.                                                                                                                               | Required | 
+| db_name | Database name.                                                                                                                             | Required | 
+| limit | The maximum number of database audit policies returned to the War Room. Default is 50.                                                     | Optional | 
+| offset | Offset in the data set. Default is 0.                                                                                                      | Optional | 
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'.                                                            | Optional | 
+| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSQL.DBAuditPolicy | Unknown | List of all database audit settings. | 
-| AzureSQL.DBAuditPolicy.kind | String | Kind of audit policy. | 
-| AzureSQL.DBAuditPolicy.id | String | Audit policy ID. | 
-| AzureSQL.DBAuditPolicy.name | String | Audit policy name. | 
-| AzureSQL.DBAuditPolicy.type | String | Resource type. | 
+| **Path** | **Type** | **Description**                                                                                              |
+| --- | --- |--------------------------------------------------------------------------------------------------------------|
+| AzureSQL.DBAuditPolicy | Unknown | List of all database audit settings.                                                                         | 
+| AzureSQL.DBAuditPolicy.kind | String | Kind of audit policy.                                                                                        | 
+| AzureSQL.DBAuditPolicy.id | String | Audit policy ID.                                                                                             | 
+| AzureSQL.DBAuditPolicy.name | String | Audit policy name.                                                                                           | 
+| AzureSQL.DBAuditPolicy.type | String | Resource type.                                                                                               | 
 | AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. Possible values: "True" \(Enabled\) or "False" \(Disabled\). | 
-| AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account. | 
-| AzureSQL.DBAuditPolicy.state | String | Policy state. | 
-| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | Storage subscription ID. | 
-| AzureSQL.DBAuditPolicy.databaseName | String | The name of the database that the audit policy is related to. | 
-| AzureSQL.DBAuditPolicy.serverName | String | The name of the server that the audit policy is related to. | 
-| AzureSQL.DBAuditPolicy.isManagedIdentityInUse | Boolean | Specifies whether Managed Identity is used to access blob storage | 
+| AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account.                                             | 
+| AzureSQL.DBAuditPolicy.state | String | Policy state.                                                                                                | 
+| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | Storage subscription ID.                                                                                     | 
+| AzureSQL.DBAuditPolicy.databaseName | String | The name of the database that the audit policy is related to.                                                | 
+| AzureSQL.DBAuditPolicy.serverName | String | The name of the server that the audit policy is related to.                                                  | 
+| AzureSQL.DBAuditPolicy.isManagedIdentityInUse | Boolean | Specifies whether Managed Identity is used to access blob storage.                                           | 
 
 
 #### Command Example
@@ -426,12 +426,12 @@ Gets the threat detection policy of the specified database.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | Server name. | Required | 
-| db_name | Database name. | Required | 
-| subscription_id | Subscription id. This value will override instance param 'subscription_id'. | Optional | 
-| resource_group_name | Resource group name. This value will override instance param 'resource_group_name'. | Optional | 
+| **Argument Name** | **Description**                                                                       | **Required** |
+| --- |---------------------------------------------------------------------------------------| --- |
+| server_name | Server name.                                                                          | Required | 
+| db_name | Database name.                                                                        | Required | 
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'.       | Optional | 
+| resource_group_name | Resource group name. This value will override the instance param 'resource_group_name'. | Optional | 
 
 #### Context Output
 
@@ -503,22 +503,22 @@ Creates or updates the database's auditing policy.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | Server name. | Required | 
-| db_name | Database name. | Required | 
-| state | Set the state of the policy. Possible values: "Enable" or "Disable". When *state* is enabled, *storage_endpoint* or *is_azure_monitor_target_enabled* are required. | Required | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                          | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| server_name | Server name.                                                                                                                                                                                                                                                             | Required | 
+| db_name | Database name.                                                                                                                                                                                                                                                           | Required | 
+| state | Set the state of the policy. Possible values: "Enable" or "Disable". When *state* is enabled, *storage_endpoint* or *is_azure_monitor_target_enabled* are required.                                                                                                      | Required | 
 | audit_actions_groups | Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15. | Optional | 
-| is_azure_monitor_target_enabled | Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false". | Optional | 
-| is_storage_secondary_key_in_use | Whether the storage Account Access Key value is the storage's secondary key. Possible values: "true" and "false". | Optional | 
-| queue_delay_ms | Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional | 
-| retention_days | Number of days to keep the policy in the audit logs. | Optional | 
-| storage_account_access_key | Identifier key of the auditing storage account. | Optional | 
-| storage_account_subscription_id | Storage subscription ID. | Optional | 
-| storage_endpoint | Storage endpoint. If the value for the state argument is enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required. | Optional | 
-| subscription_id | Subscription id. This value will override instance param 'subscription_id'. | Optional | 
-| resource_group_name | Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated. | Optional | 
-| is_managed_identity_in_use | Specifies whether Managed Identity is used to access blob storage. Possible values are: true, false. | Optional | 
+| is_azure_monitor_target_enabled | Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false".                                                                                                                                                                                 | Optional | 
+| is_storage_secondary_key_in_use | Whether the storage Account Access Key value is the storage's secondary key. Possible values: "true" and "false".                                                                                                                                                        | Optional | 
+| queue_delay_ms | Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second).                                                                                                                                      | Optional | 
+| retention_days | Number of days to keep the policy in the audit logs.                                                                                                                                                                                                                     | Optional | 
+| storage_account_access_key | Identifier key of the auditing storage account.                                                                                                                                                                                                                          | Optional | 
+| storage_account_subscription_id | Storage subscription ID.                                                                                                                                                                                                                                                 | Optional | 
+| storage_endpoint | Storage endpoint. If the value for the state argument is enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required.                                                                                                            | Optional | 
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'.                                                                                                                                                                                          | Optional | 
+| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.                                                                                                                               | Optional | 
+| is_managed_identity_in_use | Specifies whether Managed Identity is used to access blob storage. Possible values are: true, false.                                                                                                                                                                     | Optional | 
 
 #### Context Output
 
@@ -588,41 +588,41 @@ Creates or updates the database's threat detection policy.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | Server name. | Required | 
-| db_name | Database name. | Required | 
-| state | The state of the policy. Possible values: "Enabled" and "Disabled". | Required | 
-| retention_days | Number of days to keep the policy in the audit logs. | Optional | 
-| storage_account_access_key | The identifier key of the threat detection audit storage account. | Optional | 
-| storage_endpoint | The blob storage endpoint. This blob storage will hold all Threat Detection audit logs. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                        | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| server_name | Server name.                                                                                                                                                                           | Required | 
+| db_name | Database name.                                                                                                                                                                         | Required | 
+| state | The state of the policy. Possible values: "Enabled" and "Disabled".                                                                                                                    | Required | 
+| retention_days | Number of days to keep the policy in the audit logs.                                                                                                                                   | Optional | 
+| storage_account_access_key | The identifier key of the threat detection audit storage account.                                                                                                                      | Optional | 
+| storage_endpoint | The blob storage endpoint. This blob storage will hold all Threat Detection audit logs.                                                                                                | Optional | 
 | disabled_alerts | Comma-separated list of alerts that are disabled. Possible values: "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", and "Unsafe_Action". | Optional | 
-| email_addresses | Comma-separated list of email addresses to which the alert is sent. | Optional | 
-| email_account_admins | Whether the alert is sent to the account administrators. Possible values: "true" and "false". | Optional | 
-| use_server_default | Whether to use the default server policy. Possible values: "Enabled" and "Disabled". | Optional | 
-| subscription_id | Subscription id. This value will override instance param 'subscription_id'. | Optional | 
-| resource_group_name | Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated. | Optional | 
+| email_addresses | Comma-separated list of email addresses to which the alert is sent.                                                                                                                    | Optional | 
+| email_account_admins | Whether the alert is sent to the account administrators. Possible values: "true" and "false".                                                                                          | Optional | 
+| use_server_default | Whether to use the default server policy. Possible values: "Enabled" and "Disabled".                                                                                                   | Optional | 
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'.                                                                                                        | Optional | 
+| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.                                             | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSQL.DBThreatPolicy.kind | String | Kind of threat policy. | 
-| AzureSQL.DBThreatPolicy.location | String | Threat policy location. | 
-| AzureSQL.DBThreatPolicy.id | String | Threat policy ID | 
-| AzureSQL.DBThreatPolicy.name | String | Threat policy name. | 
-| AzureSQL.DBThreatPolicy.type | String | Threat policy type. | 
-| AzureSQL.DBThreatPolicy.state | String | Threat policy state. | 
-| AzureSQL.DBThreatPolicy.creationTime | String | Threat policy creation time. | 
-| AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
-| AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. | 
-| AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account. | 
-| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email accounts administrators who the alert is sent to. | 
-| AzureSQL.DBThreatPolicy.emailAddresses | String | List of email addresses to which the alert is sent. | 
+| **Path** | **Type** | **Description**                                                                 |
+| --- | --- |---------------------------------------------------------------------------------|
+| AzureSQL.DBThreatPolicy.kind | String | Kind of threat policy.                                                          | 
+| AzureSQL.DBThreatPolicy.location | String | Threat policy location.                                                         | 
+| AzureSQL.DBThreatPolicy.id | String | Threat policy ID.                                                               | 
+| AzureSQL.DBThreatPolicy.name | String | Threat policy name.                                                             | 
+| AzureSQL.DBThreatPolicy.type | String | Threat policy type.                                                             | 
+| AzureSQL.DBThreatPolicy.state | String | Threat policy state.                                                            | 
+| AzureSQL.DBThreatPolicy.creationTime | String | Threat policy creation time.                                                    | 
+| AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs.                      | 
+| AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account.               | 
+| AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account.                                         | 
+| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email accounts administrators who the alert is sent to.                         | 
+| AzureSQL.DBThreatPolicy.emailAddresses | String | List of email addresses to which the alert is sent.                             | 
 | AzureSQL.DBThreatPolicy.disabledAlerts | String | List of alerts that are disabled, or an empty string if no alerts are disabled. | 
-| AzureSQL.DBThreatPolicy.useServerDefault | Unknown | Whether to use the default server policy. | 
-| AzureSQL.DBThreatPolicy.databaseName | String | The name of the database that the threat policy is related to. | 
-| AzureSQL.DBThreatPolicy.serverName | String | The name of server that the threat policy is related to. | 
+| AzureSQL.DBThreatPolicy.useServerDefault | Unknown | Whether to use the default server policy.                                       | 
+| AzureSQL.DBThreatPolicy.databaseName | String | The name of the database that the threat policy is related to.                  | 
+| AzureSQL.DBThreatPolicy.serverName | String | The name of the server that the threat policy is related to.                    | 
 
 #### Command example
 ```!azure-sql-db-threat-policy-create-update server_name=sqlintegration db_name=sql-integration-db state=Enabled disabled_alerts="Sql_Injection,Sql_Injection_Vulnerability" retention_days=5```
@@ -703,18 +703,18 @@ There are no input arguments for this command.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSQL.Subscription.id | String | The fully qualified ID for the subscription. | 
-| AzureSQL.Subscription.authorizationSource | String | The authorization source of the request. Valid values are one or more combinations of Legacy, RoleBased, Bypassed, Direct and Management. For example, 'Legacy, RoleBased'. | 
-| AzureSQL.Subscription.managedByTenants | Unknown | An array containing the tenants managing the subscription. | 
-| AzureSQL.Subscription.subscriptionId | String | The subscription ID. | 
-| AzureSQL.Subscription.tenantId | String | The subscription tenant ID. | 
-| AzureSQL.Subscription.displayName | String | The subscription display name. | 
-| AzureSQL.Subscription.state | String | The subscription state. Possible values are Enabled, Warned, PastDue, Disabled, and Deleted. | 
-| AzureSQL.Subscription.subscriptionPolicies.locationPlacementId | String | The subscription location placement ID. The ID indicates which regions are visible for a subscription. For example, a subscription with a location placement Id of Public_2014-09-01 has access to Azure public regions. | 
-| AzureSQL.Subscription.subscriptionPolicies.quotaId | String | The subscription quota ID. | 
-| AzureSQL.Subscription.subscriptionPolicies.spendingLimit | String | The subscription spending limit. | 
+| **Path** | **Type** | **Description**                                                                                                                                                                                                          |
+| --- | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AzureSQL.Subscription.id | String | The fully qualified ID for the subscription.                                                                                                                                                                             | 
+| AzureSQL.Subscription.authorizationSource | String | The authorization source of the request. Valid values are one or more combinations of Legacy, RoleBased, Bypassed, Direct and Management. For example, 'Legacy, RoleBased'.                                              | 
+| AzureSQL.Subscription.managedByTenants | Unknown | An array containing the tenants managing the subscription.                                                                                                                                                               | 
+| AzureSQL.Subscription.subscriptionId | String | The subscription ID.                                                                                                                                                                                                     | 
+| AzureSQL.Subscription.tenantId | String | The subscription tenant ID.                                                                                                                                                                                              | 
+| AzureSQL.Subscription.displayName | String | The subscription display name.                                                                                                                                                                                           | 
+| AzureSQL.Subscription.state | String | The subscription state. Possible values are Enabled, Warned, PastDue, Disabled, and Deleted.                                                                                                                             | 
+| AzureSQL.Subscription.subscriptionPolicies.locationPlacementId | String | The subscription location placement ID. The ID indicates which regions are visible for a subscription. For example, a subscription with a location placement ID of Public_2014-09-01 has access to Azure public regions. | 
+| AzureSQL.Subscription.subscriptionPolicies.quotaId | String | The subscription quota ID.                                                                                                                                                                                               | 
+| AzureSQL.Subscription.subscriptionPolicies.spendingLimit | String | The subscription spending limit.                                                                                                                                                                                         | 
 
 #### Command Example
 ```azure-sql-subscriptions-list```
@@ -758,11 +758,11 @@ Gets all the resource groups for a subscription.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | Subscription id. This value will override instance param 'subscription_id'. Can support multiple subscription ids, comma separated. | Optional | 
-| tag | The tag and value that attached to the resource group. Input should be “Tag Name:Tag Value”. | Optional | 
-| limit | The number of results to return. | Optional | 
+| **Argument Name** | **Description**                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------| --- |
+| subscription_id | A comma-separated list of subscription IDs. This value will override the instance param 'subscription_id'. | Optional | 
+| tag | The tag and value that is attached to the resource group. Input should be “Tag Name:Tag Value”.           | Optional | 
+| limit | The number of results to return. Default value is 50.                                                   | Optional | 
 
 #### Context Output
 

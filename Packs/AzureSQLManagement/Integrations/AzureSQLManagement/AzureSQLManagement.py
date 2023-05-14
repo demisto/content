@@ -542,7 +542,6 @@ def resource_group_list_command(client: Client, args: Dict, subscriptions_id: Li
                                          t=readable_output_table,
                                          removeNull=True,
                                          headers=headers)
-        demisto.debug(f'{human_readable=}')
         command_result = CommandResults(
             readable_output=human_readable,
             outputs_prefix='AzureSQL.ResourceGroup',
@@ -597,36 +596,10 @@ def test_module(client):
 
     elif params.get('auth_type') == 'Authorization Code':
         raise Exception("When using user auth flow configuration, "
-                        "Please enable the integration and run the !msgraph-user-test command in order to test it")
+                        "Please enable the integration and run the !azure-sql-auth-test command in order to test it")
     elif params.get('auth_type') == 'Azure Managed Identities':
         client.ms_client.get_access_token()
         return 'ok'
-
-
-def create_client(params: Dict, subscription_id: Optional[str], resource_group_name: str) -> Client:  # pragma: no cover
-    """ Create the Azure SQL client
-    Args:
-        params: Dict - The params of the integration
-        subscription_id: str - The subscription ID that identifies an Azure subscription.
-        resource_group_name: str - The name of the resource group that contains the resource.
-    Returns:
-        An Azure SQL client.
-    """
-    return Client(
-        tenant_id=params.get('tenant_id', ''),
-        auth_type=params.get('auth_type', 'Device Code'),
-        auth_code=params.get('auth_code', {}).get('password', ''),
-        redirect_uri=params.get('redirect_uri', ''),
-        enc_key=params.get('credentials', {}).get('password', ''),
-        app_id=params.get('app_id', ''),
-        subscription_id=subscription_id,
-        resource_group_name=resource_group_name,
-        verify=not params.get('insecure', False),
-        proxy=params.get('proxy', False),
-        azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                     'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
-        managed_identities_client_id=get_azure_managed_identities_client_id(params)
-    )
 
 
 def command_with_multiple_resource_group_name(client: Client, args: Dict, command: str, resource_group_name: List) -> List:
@@ -668,60 +641,59 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        subscription_id = args.get('subscription_id') or params.get('subscription_id', '')
-        resource_group_name = args.get('resource_group_name') or params.get('resource_group_name', '')
+        subscription_id = argToList(args.get('subscription_id')) or [params.get('subscription_id', '')]
+        resource_group_name = argToList(args.get('resource_group_name')) or [params.get('resource_group_name', '')]
+        client = Client(
+            tenant_id=params.get('tenant_id', ''),
+            auth_type=params.get('auth_type', 'Device Code'),
+            auth_code=params.get('auth_code', {}).get('password', ''),
+            redirect_uri=params.get('redirect_uri', ''),
+            enc_key=params.get('credentials', {}).get('password', ''),
+            app_id=params.get('app_id', ''),
+            subscription_id=subscription_id[0],
+            resource_group_name=resource_group_name[0],
+            verify=not params.get('insecure', False),
+            proxy=params.get('proxy', False),
+            azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
+        )
         commands_with_multiple_resource_group_name_list = ['azure-sql-servers-list',
                                                            'azure-sql-db-audit-policy-list',
                                                            'azure-sql-db-audit-policy-create-update',
                                                            'azure-sql-db-threat-policy-create-update']
 
         if command == 'test-module':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(test_module(client))
 
         elif command in commands_with_multiple_resource_group_name_list:
-            subscription_id = args.get('subscription_id') or params.get('subscription_id', '')
-            resource_group_name = argToList(args.get('resource_group_name')) or [params.get('resource_group_name', '')]
-            if not resource_group_name and resource_group_name != ['']:
-                raise DemistoException('Enter a resource group name')
-            client = create_client(params, subscription_id, resource_group_name[0])
             return_results(command_with_multiple_resource_group_name(client, args, command, resource_group_name))
 
         elif command == 'azure-sql-db-list':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(azure_sql_db_list_command(client, args))
 
         elif command == 'azure-sql-db-threat-policy-get':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(azure_sql_db_threat_policy_get_command(client, args))
 
         elif command == 'azure-sql-auth-start':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(start_auth(client))
 
         elif command == 'azure-sql-auth-complete':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(complete_auth(client))
 
         elif command == 'azure-sql-auth-reset':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(reset_auth(client))
 
         elif command == 'azure-sql-auth-test':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(test_connection(client))
 
         elif command == 'azure-sql-generate-login-url':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(generate_login_url(client.ms_client))
 
         elif command == 'azure-sql-subscriptions-list':
-            client = create_client(params, subscription_id, resource_group_name)
             return_results(subscriptions_list_command(client))
 
         elif command == 'azure-sql-resource-group-list':
-            subscription_id = argToList(args.get('subscription_id')) or [params.get('subscription_id', '')]
-            client = create_client(params, subscription_id[0], resource_group_name)
             return_results(resource_group_list_command(client, args, subscription_id))
 
     # Log exceptions and return errors

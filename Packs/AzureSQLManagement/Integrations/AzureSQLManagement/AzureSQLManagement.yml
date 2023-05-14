@@ -134,19 +134,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription id. This value will override instance param 'subscription_id'.
+      description: Subscription ID. This value will override the instance param 'subscription_id'.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated.
+      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: If true, returns the server lists that matches the given resource groups. Else, returns a list of all the servers.
+      description: If true, returns the server lists that match the given resource groups. Else, returns a list of all the servers.
       isArray: true
       name: list_by_resource_group
       required: false
@@ -224,13 +224,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription id. This value will override instance param 'subscription_id'.
+      description: Subscription ID. This value will override the instance param 'subscription_id'.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: Resource group name. This value will override instance param 'resource_group_name'.
+      description: Resource group name. This value will override the instance param 'resource_group_name'.
       isArray: false
       name: resource_group_name
       required: false
@@ -313,7 +313,7 @@ script:
       description: The storage account type to be used to store backups for this database.
       type: Unknown
     - contextPath: AzureSQL.DB.maintenanceConfigurationId
-      description: Maintenance configuration id assigned to the database. This configuration defines the period when the maintenance updates will occur.
+      description: Maintenance configuration ID assigned to the database. This configuration defines the period when the maintenance updates will occur.
       type: String
     - contextPath: AzureSQL.DB.isLedgerOn
       description: Whether or not this database is a ledger database, which means all tables in the database are ledger tables. The value of this property cannot be changed after the database has been created.
@@ -349,13 +349,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription id. This value will override instance param 'subscription_id'.
+      description: Subscription ID. This value will override the instance param 'subscription_id'.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated.
+      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
       required: false
@@ -399,7 +399,7 @@ script:
       description: The name of the server that the audit policy is related to.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.isManagedIdentityInUse
-      description: Specifies whether Managed Identity is used to access blob storage
+      description: Specifies whether Managed Identity is used to access blob storage.
       type: Boolean
   - arguments:
     - default: false
@@ -415,13 +415,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription id. This value will override instance param 'subscription_id'.
+      description: Subscription ID. This value will override the instance param 'subscription_id'.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: Resource group name. This value will override instance param 'resource_group_name'.
+      description: Resource group name. This value will override the instance param 'resource_group_name'.
       isArray: false
       name: resource_group_name
       required: false
@@ -562,13 +562,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription id. This value will override instance param 'subscription_id'.
+      description: Subscription ID. This value will override the instance param 'subscription_id'.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated.
+      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
       required: false
@@ -710,13 +710,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription id. This value will override instance param 'subscription_id'.
+      description: Subscription ID. This value will override the instance param 'subscription_id'.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: Resource group name. This value will override instance param 'resource_group_name'. Can support multiple resource groups, comma separated.
+      description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
       isArray: true
       name: resource_group_name
       required: false
@@ -806,7 +806,7 @@ script:
         description: The subscription state. Possible values are Enabled, Warned, PastDue, Disabled, and Deleted.
         type: String
       - contextPath: AzureSQL.Subscription.subscriptionPolicies.locationPlacementId
-        description: The subscription location placement ID. The ID indicates which regions are visible for a subscription. For example, a subscription with a location placement Id of Public_2014-09-01 has access to Azure public regions.
+        description: The subscription location placement ID. The ID indicates which regions are visible for a subscription. For example, a subscription with a location placement ID of Public_2014-09-01 has access to Azure public regions.
         type: String
       - contextPath: AzureSQL.Subscription.subscriptionPolicies.quotaId
         description: The subscription quota ID.
@@ -816,19 +816,19 @@ script:
         type: String
   - arguments:
     - default: false
-      description: Subscription id. This value will override instance param 'subscription_id'. Can support multiple subscription ids, comma separated.
+      description: A comma-separated list of subscription ID.s This value will override the instance param 'subscription_id'.
       isArray: true
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: The tag and value that attached to the resource group. Input should be “Tag Name:Tag Value”.
+      description: The tag and value that is attached to the resource group. Input should be “Tag Name:Tag Value”.
       isArray: false
       name: tag
       required: false
       secret: false
-    - defaultvalue: 50
-      description: The number of results to return.
+    - default: false
+      description: The number of results to return. Default value is 50.
       isArray: false
       name: limit
       required: false
