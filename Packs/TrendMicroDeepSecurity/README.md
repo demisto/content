@@ -1,7 +1,5 @@
 # Trend Micro Deep Security
 
-This pack includes Cortex XSIAM content. 
-
 <~XSOAR>
 
 ## What does this pack do?
@@ -15,6 +13,9 @@ To use the Trend Deep Security APIs, you will need to create an API key in the T
 </~XSOAR>
 
 <~XSIAM>
+
+This pack includes Cortex XSIAM content. 
+
 ## Configuration on Server Side
 Browse to the Trend Micro DSM (Deep Security Manager) Web Console, and perform the steps below. 
 
