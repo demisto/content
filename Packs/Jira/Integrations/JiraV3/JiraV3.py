@@ -6,6 +6,7 @@ from collections import defaultdict
 from bs4 import BeautifulSoup
 from datetime import timezone
 import hashlib
+from copy import deepcopy
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -31,6 +32,7 @@ DEFAULT_PAGE = 0
 DEFAULT_PAGE_SIZE = 50
 # Errors
 ID_OR_KEY_MISSING_ERROR = 'Please provide either an issue ID or issue key.'
+ID_AND_KEY_GIVEN = 'Please provide only one, either an issue Id or issue key.'
 EPIC_ID_OR_KEY_MISSING_ERROR = 'Please provide either an epic ID or epic key.'
 CLOSE_INCIDENT_REASON = 'Issue was marked as "Resolved", or status was changed to "Done"'
 MIRROR_DIRECTION_DICT = {
@@ -850,10 +852,13 @@ class JiraCloudClient(JiraBaseClient):
             # The code argument is used when the user authenticates using the authorization URL process
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
+            demisto.debug('Both the code, and refresh token were given to obtain a new access token, this is not normal behavior')
             raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
                                    ' access token, please only provide one'))
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
+            demisto.debug(('Both the code, and refresh token were not given to obtain a new access token, this could'
+                           ' happen if the user deleted the integration"s context'))
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
 
         data = assign_params(
@@ -1283,10 +1288,13 @@ class JiraOnPremClient(JiraBaseClient):
             # The code argument is used when the user authenticates using the authorization URL process
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
+            demisto.debug('Both the code, and refresh token were given to get a new access token, this is not normal behavior')
             raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
                                    ' access token, please only provide one'))
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
+            demisto.debug(('Both the code, and refresh token were not given to obtain a new access token, this could'
+                           ' happen if the user deleted the integration"s context'))
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
         integration_context = get_integration_context()
         # We pop the key code_verifier, since we only want to use it when the user is authenticating using an authorization code,
@@ -1957,6 +1965,7 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     nested_dict: Dict[str, Any] = {}
     keys = dotted_string.split(".")
     for count, sub_key in enumerate(keys[::-1]):
+        
         inner_dict = demisto.get(issue_fields, '.'.join(keys[: len(keys) - count]), defaultdict(dict))
         if count == 0:
             inner_dict[sub_key] = value
@@ -2312,9 +2321,8 @@ def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandRes
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     url = args.get('url', '')
     title = args.get('title', '')
     summary = args.get('summary', '')
@@ -2401,9 +2409,8 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     Returns:
         List[CommandResults]: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     headers = args.get('headers', '')
     get_attachments = argToBoolean(args.get('get_attachments', False))
     expand_links = argToBoolean(args.get('expand_links', False))
@@ -2479,10 +2486,11 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    if 'project_name' in args:
-        args['project_id'] = get_project_id_from_name(client=client, project_name=args['project_name'])
+    args_for_api = deepcopy(args)
+    if project_name := args_for_api.get('project_name'):
+        args_for_api['project_id'] = get_project_id_from_name(client=client, project_name=project_name)
 
-    issue_fields = create_issue_fields(client=client, issue_args=args,
+    issue_fields = create_issue_fields(client=client, issue_args=args_for_api,
                                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
@@ -2511,9 +2519,8 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     status = args.get('status', '')
     transition = args.get('transition', '')
     if status and transition:
@@ -2563,9 +2570,8 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     client.delete_issue(issue_id_or_key=issue_id_or_key)
     return CommandResults(readable_output='Issue deleted successfully.')
 
@@ -2583,9 +2589,8 @@ def delete_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comm
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     comment_id = args.get('comment_id', '')
     client.delete_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id)
     return CommandResults(readable_output='Comment deleted successfully.')
@@ -2604,9 +2609,8 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     res = client.get_comments(issue_id_or_key=issue_id_or_key, max_results=limit)
     if comments_response := res.get('comments', []):
@@ -2684,9 +2688,8 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults:  CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     comment_id = args.get('comment_id', '')
     comment = args.get('comment', '')
     visibility = args.get('visibility', '')
@@ -2731,9 +2734,8 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     comment = args.get('comment', '')
     visibility = args.get('visibility', )
     payload = {
@@ -2768,9 +2770,8 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     res = client.get_transitions(issue_id_or_key=issue_id_or_key)
     transitions_names: List[str] = [
         transition.get('name', '') for transition in res.get('transitions', [])
@@ -2831,9 +2832,8 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
         CommandResults: CommandResults to return to XSOAR.
     """
     entry_id = args.get('upload', '')
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     attachment_name = args.get('attachment_name', '')
     res = upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id, attachment_name=attachment_name,
                                           issue_id_or_key=issue_id_or_key)
@@ -2909,9 +2909,8 @@ def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) ->
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
-    if not issue_id_or_key:
-        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
+                                          issue_key=args.get('issue_key', ''))
     fields = argToList(args.get('fields', ''))
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
     markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res, specific_issue_fields=fields,
@@ -3715,7 +3714,7 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
     Returns:
         str: The query to use to fetch the appropriate incidents.
     """
-    issue_field_in_fetch_query_error_message = 'The issue field to fetch from cannot be in the fetch query'
+    issue_field_in_fetch_query_error_message = 'The issue field to fetch by cannot be in the fetch query'
     if issue_field_to_fetch_from in fetch_query:
         raise DemistoException(issue_field_in_fetch_query_error_message)
     error_message = f'Could not create the proper fetch query for the issue field {issue_field_to_fetch_from}'
@@ -4332,6 +4331,27 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
         else:
             v3_args[arg] = value
     return v3_args
+
+
+def get_issue_id_or_key(issue_id: str = '', issue_key: str = ''):
+    """Returns either the issue ID, or issue key.
+
+    Args:
+        issue_id (str, optional): The issue ID. Defaults to ''.
+        issue_key (str, optional): issue key. Defaults to ''.
+
+    Raises:
+        DemistoException: If both issue ID, and key were given.
+        DemistoException: If both issue ID, and key were not given.
+
+    Returns:
+        _type_: _description_
+    """
+    if not (issue_id or issue_key):
+        raise DemistoException(ID_OR_KEY_MISSING_ERROR)
+    if (issue_id and issue_key):
+        raise DemistoException(ID_AND_KEY_GIVEN)
+    return issue_id or issue_key
 
 
 def main():

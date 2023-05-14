@@ -13,7 +13,7 @@ runonce: false
 dockerimage: demisto/python3:3.10.11.58677
 fromversion: 5.0.0
 comment: |-
-  This script lists all possible statuses for a given Jira issue.
+  This script lists all possible statuses for a given Jira issue. Works only for Jira v3.
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

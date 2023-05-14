@@ -1,6 +1,7 @@
 import io
 import json
 import pytest
+from regex import F
 import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)
@@ -210,6 +211,21 @@ def test_prepare_pagination_args(pagination_args, expected_parsed_pagination_arg
     from JiraV3 import prepare_pagination_args
     parsed_pagination_args = prepare_pagination_args(**pagination_args)
     assert expected_parsed_pagination_args == parsed_pagination_args
+
+
+@pytest.mark.parametrize('issue_id, issue_key', [('1234', 'key1'), ('', '')])
+def test_get_issue_id_or_key_error(issue_id, issue_key):
+    from JiraV3 import get_issue_id_or_key
+    with pytest.raises(DemistoException):
+        get_issue_id_or_key(issue_id, issue_key)
+
+
+@pytest.mark.parametrize('issue_id, issue_key, expected_issue_id_or_key',
+                         [('1234', '', '1234'), ('', 'key-1', 'key-1')])
+def test_get_issue_id_or_key(issue_id, issue_key, expected_issue_id_or_key):
+    from JiraV3 import get_issue_id_or_key
+    issue_id_or_key = get_issue_id_or_key(issue_id, issue_key)
+    assert issue_id_or_key == expected_issue_id_or_key
 
 
 class TestJiraGetIssueCommand:

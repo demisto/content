@@ -53,6 +53,9 @@
                 },
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
                 }
             }
         },
@@ -136,6 +139,9 @@
                 },
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
                 }
             }
         },

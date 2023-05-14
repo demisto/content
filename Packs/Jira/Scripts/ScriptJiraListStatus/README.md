@@ -1,4 +1,4 @@
-This script lists all possible statuses for a given Jira issue.
+This script lists all possible statuses for a given Jira issue. Works only for Jira v3.
 
 ## Script Data
 

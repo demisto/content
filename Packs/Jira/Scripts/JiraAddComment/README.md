@@ -1,4 +1,4 @@
-Use this script to add a comment to a Jira issue. This script should be run within an incident.
+Use this script to add a comment with a tag (the "Comment tag to Jira" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a comment to a Jira issue. This script should be run within an incident.
 
 ## Script Data
 

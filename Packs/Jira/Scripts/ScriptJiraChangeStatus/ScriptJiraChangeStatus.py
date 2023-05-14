@@ -55,39 +55,37 @@ def apply_status():
                 raise DemistoException(
                     f"Error occurred while running jira-get-issue. The response is: {incident_content}"
                 )
-            elif incident_fields := incident_content.get(
-                "fields"
-            ):
-                if not (
-                    jira_status := incident_fields.get("status", {}).get(
-                        "name"
-                    )
-                ):
-                    raise DemistoException(
-                        f"Error occurred while running JiraChangeStatus. Could "
-                        f"not find: the issue's status name. The issue returned is: "
-                        f"{incident_fields} "
-                    )
-
-                demisto.executeCommand(
-                    "setIncident",
-                    {"jirastatus": jira_status},
-                )
-                if updated_time := incident_fields.get('updated'):
-                    demisto.executeCommand(
-                        "setIncident",
-                        {"lastupdatetime": updated_time},
-                    )
-                else:
-                    raise DemistoException(('Error occurred while running JiraChangeStatus'
-                                            ', could not find the issue\'s updated time. The issue'
-                                            f' returned is :{incident_fields}'))
+            elif incident_fields := incident_content.get("fields"):
+                set_status_and_updated_time_of_incident(incident_fields=incident_fields)
                 break
             else:
                 raise DemistoException(
                     f'Error occurred while running JiraChangeStatus. Could not '
                     f'find:"fields" as key. The issue returned is: {incident_content} '
                 )
+
+
+def set_status_and_updated_time_of_incident(incident_fields: Dict[str, Any]):
+    if not (jira_status := incident_fields.get("status", {}).get("name")):
+        raise DemistoException(
+            f"Error occurred while running JiraChangeStatus. Could "
+            f"not find: the issue's status name. The issue returned is: "
+            f"{incident_fields} "
+        )
+
+    demisto.executeCommand(
+        "setIncident",
+        {"jirastatus": jira_status},
+    )
+    if updated_time := incident_fields.get('updated'):
+        demisto.executeCommand(
+            "setIncident",
+            {"lastupdatetime": updated_time},
+        )
+    else:
+        raise DemistoException(('Error occurred while running JiraChangeStatus'
+                                ', could not find the issue\'s updated time. The issue'
+                                f' returned is :{incident_fields}'))
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:  # pragma: no cover
