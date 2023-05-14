@@ -2,8 +2,11 @@
   "version_map": {
     "6.11.0": {
       "core_packs_file": "corepacks-6.11.0.json",
-      "core_packs_file_is_locked": true,
-      "file_version": "1"
+      "core_packs_file_is_locked": false,
+      "file_version": "1",
+      "marketplaces": [
+        "xsoar"
+      ]
     },
     "8.2.0": {
       "core_packs_file": "corepacks-8.2.0.json",

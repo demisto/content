@@ -130,7 +130,8 @@ def copy_from_build_to_prod(build_bucket, build_index_blob, production_bucket, p
 
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
-                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
+                             build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str,
+                             marketplace: str = 'xsoar'):
     """Uploads the corepacks.json file to the target bucket. This files contains all of the server's core packs, under
      the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
 
@@ -141,10 +142,11 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is downloaded from.
         storage_base_path (str): the path to upload the corepacks.json to.
         build_bucket_base_path (str): the path in the build bucket of the corepacks.json.
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
 
     """
     corepacks_files = [GCPConfig.CORE_PACK_FILE_NAME]
-    corepacks_files.extend(GCPConfig.get_core_packs_unlocked_files())
+    corepacks_files.extend(GCPConfig.get_core_packs_unlocked_files(marketplace))
     for corepacks_file in corepacks_files:
         build_corepacks_file_path = os.path.join(build_bucket_base_path, corepacks_file)
         build_corepacks_blob = build_bucket.blob(build_corepacks_file_path)

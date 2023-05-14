@@ -408,7 +408,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     """
     required_core_packs = GCPConfig.get_core_packs(marketplace)
     corepacks_files_names = [GCPConfig.CORE_PACK_FILE_NAME]
-    corepacks_files_names.extend(GCPConfig.get_core_packs_unlocked_files())
+    corepacks_files_names.extend(GCPConfig.get_core_packs_unlocked_files(marketplace))
     for corepacks_file in corepacks_files_names:
         logging.info(f"Creating corepacks file {corepacks_file}.")
         core_packs_public_urls = []

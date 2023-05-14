@@ -133,14 +133,18 @@ class GCPConfig(object):
         return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST_TO_UPDATE)
 
     @classmethod
-    def get_core_packs_unlocked_files(cls):
+    def get_core_packs_unlocked_files(cls, marketplace):
         """
         Find the current server versions that are unlocked and return the matching corepacks files.
         """
         unlocked_corepacks_files = []
         for version, core_pack_file_value in cls.CORE_PACKS_FILE_VERSIONS.items():
+            # check if the file is unlocked
             if not core_pack_file_value.get('core_packs_file_is_locked'):
-                unlocked_corepacks_files.append(core_pack_file_value.get('core_packs_file'))
+                # check if version should be used for this marketplace (if no marketplace was specified use by default)
+                supported_marketplaces = core_pack_file_value.get('marketplaces', [])
+                if not supported_marketplaces or marketplace in supported_marketplaces:
+                    unlocked_corepacks_files.append(core_pack_file_value.get('core_packs_file'))
         return unlocked_corepacks_files
 
 
