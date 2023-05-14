@@ -1050,9 +1050,11 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     """
     Checks if the corepacks_override.json file in the repo should be used to override an existing corepacks file.
     The override file should be used if the following conditions are met:
-    1. The versions-metadata.json file contains a server version to the server version specified in the override file.
+    1. The versions-metadata.json file contains a server version that matches the server version specified in the
+        override file.
     2. The file version of the server version in the corepacks_override.json file is greater than the matching file
         version in the versions-metadata.json file.
+    3. The marketplace to which the upload is taking place matches the marketplace specified in the override file.
 
     Args
         marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
@@ -1069,7 +1071,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
                      f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
-    if int(override_corepacks_file_version) == int(current_corepacks_file_version):
+    if int(override_corepacks_file_version) <= int(current_corepacks_file_version):
         logging.info(f'Corepacks file version of server version {override_corepacks_server_version} in '
                      f' {GCPConfig.COREPACKS_OVERRIDE_FILE} is not greater than the version in'
                      f' {GCPConfig.VERSIONS_METADATA_FILE}. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
@@ -1087,7 +1089,7 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str):
     """
     Overrides an existing corepacks-X.X.X.json file, where X.X.X is the server version that was specified in the
     corepacks_override.json file.
-    Additionally, updates the file version in the versions-metadata.json file, and update the corepacks file with the
+    Additionally, updates the file version in the versions-metadata.json file, and updates the corepacks file with the
     current build number.
 
     Args:

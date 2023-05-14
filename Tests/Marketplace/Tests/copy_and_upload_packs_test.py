@@ -180,7 +180,7 @@ class TestRegex:
             json.dumps(corepacks_expected_data, indent=4)
         )
 
-        # Assert that the versioned corepacks-8.2.0.json was copied from the build bucket to the production bucket
+        # Assert that the versioned corepacks-8.3.0.json file was copied from the build bucket to the production bucket
         build_bucket.copy_blob.assert_called_once()
 
 # disable-secrets-detection-end
