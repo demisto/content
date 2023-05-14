@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto_sdk = "1.14.1"
+demisto_sdk = "1.14.3"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -132,7 +132,6 @@ ignore = [
     "E402", # module-import-not-at-top-of-file	
     "F403", # undefined-local-with-import-star
     "F405", # undefined-local-with-import-star-usage
-    "F821", # undefined-name
     "W605", # invalid-escape-sequence
 ]
 extend-exclude = ["CommonServerPython", "test_data"]
