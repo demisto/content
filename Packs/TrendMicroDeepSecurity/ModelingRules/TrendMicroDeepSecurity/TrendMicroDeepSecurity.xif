@@ -177,7 +177,7 @@ call tm_ds_convert_cef_event_id_to_int
     mitre_techniques_list = regextract(TrendMicroDsMitre, "\w+"),
     malware_target_type = uppercase(TrendMicroDsMalwareTargetType),
     spyware_infected_resource = cs3, /* Spyware item path. This field is only for spyware detection events.  */
-    spyware_infected_resource_type = if(cs4="10", "Files and Directories", cs4="11", "System Registry", cs4="12", "Internet Cookies", cs4="13", "Internet URL Shortcut", cs4="14", "Programs in Memory", cs4="15", "Program Startup Areas", cs4="16", "Browser Helper Object", cs4="17", "Layered Service Provider", cs4="18", "Hosts File", cs4="19", "Windows Policy Settings", cs4="20", "Browser", cs4="23", "Windows Shell Setting", cs4="24", "IE Downloaded Program Files", cs4="25", "Add/Remove Programs", cs4="26", "Services", "Other"),
+    spyware_infected_resource_type = if(cs4="10", "Files and Directories", cs4="11", "System Registry", cs4="12", "Internet Cookies", cs4="13", "Internet URL Shortcut", cs4="14", "Programs in Memory", cs4="15", "Program Startup Areas", cs4="16", "Browser Helper Object", cs4="17", "Layered Service Provider", cs4="18", "Hosts File", cs4="19", "Windows Policy Settings", cs4="20", "Browser", cs4="23", "Windows Shell Setting", cs4="24", "IE Downloaded Program Files", cs4="25", "Add/Remove Programs", cs4="26", "Services", "Other")
 | alter 
     process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
 | alter 
