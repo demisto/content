@@ -30,7 +30,7 @@ Browse to the Trend Micro DSM (Deep Security Manager) Web Console, and perform t
    | `Server Port`                   | The target syslog port of the XSIAM Broker VM Syslog Server.  
    | `Event Format`                  | Select **Common Event Format** (CEF).
    | `Transport`                     | Select the transport protocol.
-   | `Include time zone in events`   | Whether to include year and time zone in the event timestamp (Recommended) or not.  
+   | `Include time zone in events`   | Whether to include the year and time zone in the event timestamp (Recommended).  
    | `Facility`                      | Type of process that events will be associated with. see [_Syslog Facilities and Levels_](https://success.trendmicro.com/dcx/s/solution/TP000086250?language=en_US).
    | `Agents should forward logs`    | Whether security events from the DSA (Deep Security Agents) should be sent to the target XSIAM VM Broker directly, or via the DSM. 
 
