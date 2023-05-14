@@ -93,15 +93,13 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix=f'log_search/query/logsets/{log_set_id}',
                                   headers=self._headers,
-                                  params=params,
-                                  resp_type='response')
+                                  params=params)
 
-    def query_log_callback(self, url: str, ok_codes=None) -> dict:
+    def query_log_callback(self, url: str) -> dict:
         return self._http_request(method='GET',
                                   url_suffix='',
                                   full_url=url,
-                                  headers=self._headers,
-                                  ok_codes=ok_codes)
+                                  headers=self._headers)
 
     def validate(self) -> Response:
         """
@@ -652,28 +650,27 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
 
 
 def handle_query_log_results(client: Client, result):
-    ok_codes = (200, 202)
     data_for_readable_output = []
     raw_responcse = []
 
-    results_list = [result.json()]
+    results_list = [result]
     while results_list:
         results = results_list.pop(0)
-        if results.status_code in ok_codes:
-            if 'events' in results:
-                events = results.get('events', [])
-                data_for_readable_output.extend(events)
-                raw_responcse.append(results)
 
-            if 'links' in results:
-                for link in results.get('links', []):
-                    url = link.get('href')
-                    new_results = client.query_log_callback(url, ok_codes=ok_codes)
-                    results_list.append(new_results)
+        if 'events' in results:
+            events = results.get('events', [])
+            data_for_readable_output.extend(events)
+            raw_responcse.append(results)
 
-                    events_len = len(results.get('events', []))
-                    progress = results.get('progress')
-                    demisto.debug(f'Events length: {events_len}, progress: {progress}')
+        if 'links' in results:
+            for link in results.get('links', []):
+                url = link.get('href')
+                new_results = client.query_log_callback(url)
+                results_list.append(new_results)
+
+                events_len = len(results.get('events', []))
+                progress = results.get('progress')
+                demisto.debug(f'Events length: {events_len}, progress: {progress}')
 
     return data_for_readable_output, raw_responcse
 

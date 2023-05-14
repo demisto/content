@@ -445,7 +445,7 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
 
-    mock_response = util_load_json('test_data/list_log_sets.json')
+    mock_response = util_load_json('test_data/query_log_set.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/query/logsets/x', json=mock_response)
 
@@ -460,8 +460,10 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
     response = insight_idr_query_log_set_command(client, 'x', '', '', '')
 
     outputs = []
-    for event in response.raw_response.get('events', []):
-        outputs.append(event)
+
+    for result in response.raw_response:
+        for event in result.get('events', []):
+            outputs.append(event)
 
     assert response.outputs_prefix == 'Rapid7InsightIDR.Event'
     assert response.outputs_key_field == 'message'
