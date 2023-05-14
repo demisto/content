@@ -3958,6 +3958,15 @@ class Common(object):
         :type traffic_light_protocol: ``str``
         :param traffic_light_protocol: The CVE tlp color.
 
+        :type publications: ``str``
+        :param publications: Unique system-assigned ID of the vulnerability evaluation logic
+
+        :type vulnerable_products: ``str``
+        :param publications: A list of CPE objects
+
+        :type vulnerable_configurations: ``str``
+        :param publications: A list of CPE objects
+
         :return: None
         :rtype: ``None``
         """
@@ -3965,9 +3974,8 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None, publications=None, vulnerable_products=None,
-                     vulnerable_configurations=None, vendor=None):
-            # type (str, str, str, str, str) -> None
+                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None,
+                     vulnerable_products=None, vulnerable_configurations=None):
 
             # Main indicator value
             self.id = id
@@ -3989,17 +3997,14 @@ class Common(object):
 
             # XSOAR Fields
             self.relationships = relationships
-            self.dbot_score = Common.DBotScore(
-                indicator=id,
-                indicator_type=DBotScoreType.CVE,
-                integration_name=None,
-                score=Common.DBotScore.NONE
-            )
+            self.dbot_score = dbot_score if dbot_score else Common.DBotScore(indicator=id,
+                                                                             indicator_type=DBotScoreType.CVE,
+                                                                             integration_name=None,
+                                                                             score=Common.DBotScore.NONE)
 
             # Core custom fields for CVE type
             self.vulnerable_products = vulnerable_products
             self.vulnerable_configurations = vulnerable_configurations
-            self.vendor = vendor
 
         def to_context(self):
             cve_context = {
@@ -4063,9 +4068,6 @@ class Common(object):
 
             if self.vulnerable_configurations:
                 cve_context['vulnerableconfigurations'] = self.create_context_table(self.vulnerable_configurations)
-
-            if self.vendor:
-                cve_context['Vendor'] = self.vendor
 
             return ret_value
 
