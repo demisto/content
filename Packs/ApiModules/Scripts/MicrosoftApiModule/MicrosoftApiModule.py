@@ -61,6 +61,8 @@ GRAPH_BASE_ENDPOINTS = {
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008,
+                             }  # See: https://login.microsoftonline.com/error?code=50173
 
 
 class MicrosoftClient(BaseClient):
@@ -70,7 +72,6 @@ class MicrosoftClient(BaseClient):
                  token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
-                 refresh_token_param: Optional[str] = '',
                  auth_code: str = '',
                  scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
@@ -98,7 +99,6 @@ class MicrosoftClient(BaseClient):
             contain the token url
             enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
             refresh_token: The current used refresh token.
-            refresh_token_param: The refresh token from the integration's parameters (i.e instance configuration).
             scope: The scope of the application (only if self deployed)
             resource: The resource of the application (only if self deployed)
             multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
@@ -130,7 +130,6 @@ class MicrosoftClient(BaseClient):
             self.enc_key = enc_key
             self.tenant_id = tenant_id
             self.refresh_token = refresh_token
-            self.refresh_token_param = refresh_token_param
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
@@ -362,6 +361,9 @@ class MicrosoftClient(BaseClient):
                 msg += ' Server message: {}'.format(server_msg)
         except Exception as ex:
             demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        if oproxy_response.status_code == 403 and "Hash Verification Error" in oproxy_response.text:
+            msg += '\nOproxy server returned error, In case you have changed the *Token* parameter\n' \
+                   'run the *!<integration command prefix>-auth-reset* command to rerun the authentication process.'  # TODO - (this the issue case)
         raise Exception(msg)
 
     def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
@@ -405,28 +407,7 @@ class MicrosoftClient(BaseClient):
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
-            # Try to send request to the Oproxy server with the refresh token from the integration parameters
-            # (instance configuration).
-            # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
-            if self.refresh_token_param:
-                demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
-                              ' authorizing with the Oproxy, this time using the refresh token from the integration'
-                              ' parameters (instance configuration).')
-                content = self.refresh_token_param
-                oproxy_second_try_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
-
-                if not oproxy_second_try_response.ok:
-                    demisto.error('Authentication failure from server (second attempt - using refresh token from the'
-                                  ' integration parameters: {} {} {}'.format(oproxy_second_try_response.status_code,
-                                                                             oproxy_second_try_response.reason,
-                                                                             oproxy_second_try_response.text))
-                    self._raise_authentication_error(oproxy_response)
-
-                else:  # Second try succeeded
-                    oproxy_response = oproxy_second_try_response
-
-            else:  # no refresh token for a second auth try
-                self._raise_authentication_error(oproxy_response)
+            self._raise_authentication_error(oproxy_response)
 
         # Oproxy authentication succeeded
         try:
@@ -687,11 +668,17 @@ class MicrosoftClient(BaseClient):
             response = error.json()
             demisto.error(str(response))
             inner_error = response.get('error', {})
+            error_description = response.get('error_description', '')
+            demisto.error(error_description)
             if isinstance(inner_error, dict):
                 err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
             else:
                 err_str = inner_error
             if err_str:
+                if set(response.get("error_codes", [])).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                    err_str += "\nTry to regenerate the 'Authorization code' parameter and then " \
+                               "run the *!<integration command prefix>-auth-reset* command to rerun the " \
+                               "authentication process."  # TODO check device code flow errors
                 return err_str
             # If no error message
             raise ValueError
@@ -858,3 +845,15 @@ You will be automatically redirected to a link with the following structure:
 and paste it in your instance configuration under the **Authorization code** parameter.
     """
     return CommandResults(readable_output=result_msg)
+
+
+def reset_auth() -> CommandResults:
+    """
+    The command reset the integration context
+    * after running the command will need to regenerate the access token by giving new token/auth-code
+    :return:
+    """
+    demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
+    set_integration_context({})
+    return CommandResults(readable_output='Authentication was reset successfully. '
+                                          'Click **Test** to validate the URLs, token, and connection.')

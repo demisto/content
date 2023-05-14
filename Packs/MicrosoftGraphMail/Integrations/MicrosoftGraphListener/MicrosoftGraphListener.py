@@ -221,12 +221,7 @@ def main():     # pragma: no cover
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-
-    # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the integration
-    # context (if exists) so It will be possible to manually update the refresh token param for an existing integration
-    # instance.
-    refresh_token_param = refresh_token  # Refresh token from the integration parameters (i.e current instance config)
-    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
+    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
     client = MsGraphListenerClient(
         self_deployed=self_deployed,
@@ -250,7 +245,6 @@ def main():     # pragma: no cover
         mark_fetched_read=mark_fetched_read,
         redirect_uri=params.get('redirect_uri', ''),
         certificate_thumbprint=certificate_thumbprint,
-        refresh_token_param=refresh_token_param,
         managed_identities_client_id=managed_identities_client_id)
     try:
         args = demisto.args()
