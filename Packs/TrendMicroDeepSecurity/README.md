@@ -49,7 +49,7 @@ After defining a syslog configuration, you can define event forwarding for the s
 3. In the _SIEM_ section, in the _Forward System Events to a remote computer (via Syslog) using configuration_  option, select the relevant syslog configuration that was defined for forwarding the events to the XSIAM Broker VM. 
 4. Click **Save**. 
 
-For additional details see the following page: [Forward system events](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Configur).
+For additional details, see [Forward system events](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Configur).
 
 #### Forward Security Events
 1. Navigate to _Policies_ and double-click the relevant policy which is applied to the monitored agents. 
