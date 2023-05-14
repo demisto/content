@@ -1,0 +1,13 @@
+| alter seq_number = arrayindex(regextract(_raw_log , "(\d+)\:\s+\**[A-Za-z]+\s+\d+\s\d+\:\d+\:\d+\.\d+\s*[A-Z]*\:\s%[A-Z]+"),0),
+    facility = arrayindex(regextract(_raw_log, "%([A-Z]+[\-\_A-Za-z]*)\-\d+"),0),
+    severity = arrayindex(regextract(_raw_log ,"%[A-Z]+[\-\_A-Za-z]*\-(\d+)\-"),0),
+    event_type = arrayindex(regextract(_raw_log, "%[A-Z]+[\-\_A-Za-z0-9]*\-\d+\-([A-Z\-\_]+)"),0),
+    message = arrayindex(regextract(_raw_log,"%[A-Z]+[\-\_A-Za-z]*\-\d+\-[A-Z\-\_]+\:\s(.*)"),0),
+    switch_hostname = arrayindex(regextract(_raw_log ,"\<\d+\>\d+\:\s([\w+\-\_]+)\:\s\d+\:"),0)
+| alter InterfaceName1 = arrayindex(regextract(_raw_log ,"Interface\s([^\/]+\/\d+\/*\d*)"),0),
+    InterfaceName2 = arrayindex(regextract(_raw_log ,"interface\sname\s([^\/]+\/\d+\/\d+)"),0),
+    InterfaceName3 = arrayindex(regextract(_raw_log , "Interface\s([A-Za-z\-\d]+)"),0),
+    state = arrayindex(regextract(_raw_log , "changed\sstate\sto\s*[a-z]*\s([a-z]+)"),0),
+    sourceip =  arrayindex(regextract(_raw_log , "list\s\d+\spermitted\s(\d+\.\d+\.\d+\.\d+)"),0),
+    action = if(event_type = "IEEE_DISCONNECT",arrayindex(regextract(_raw_log ,"Interface\s[^\:]+\:\s(.*)"),0),null)
+| alter InterfaceName = coalesce(InterfaceName1, InterfaceName2 , InterfaceName3)
