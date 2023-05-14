@@ -119,10 +119,10 @@ def fix_traceback_line_numbers(trace_str):
     """
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
-            block_start < start < end < block_end 
+            block_start < start < end < block_end
             for block_start, block_end in adjusted_lines.items()
         )
-        
+
     for number in re.findall(r'line (\d+)', trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
@@ -203,7 +203,7 @@ except Exception:
         sys.exc_clear()
 
 CONTENT_RELEASE_VERSION = '0.0.0'
-CONTENT_BRANCH_NAME = 'master'
+CONTENT_BRANCH_NAME = 'DRA-CVE-UPDATE'
 IS_PY3 = sys.version_info[0] == 3
 PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
@@ -3598,6 +3598,20 @@ class Common(object):
                 'data': self.dns_record_data
             }
 
+
+    class CPE:
+        """
+
+        """
+        def __init__(self, cpe=None):
+            self.cpe = cpe
+
+        def to_context(self):
+            return {
+                'cpe': self.cpe,
+            }
+
+
     class File(Indicator):
         """
         File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
@@ -3944,12 +3958,6 @@ class Common(object):
         :type traffic_light_protocol: ``str``
         :param traffic_light_protocol: The CVE tlp color.
 
-        :type publications: ``str``
-        :param publications: Unique system-assigned ID of the vulnerability evaluation logic
-
-        :type dbot_score: ``DBotScore``
-        :param dbot_score: If file has a score then create and set a DBotScore object
-
         :return: None
         :rtype: ``None``
         """
@@ -3957,7 +3965,8 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None):
+                     tags=None, traffic_light_protocol=None, publications=None, vulnerable_products=None,
+                     vulnerable_configurations=None, vendor=None):
             # type (str, str, str, str, str) -> None
 
             # Main indicator value
@@ -3980,10 +3989,17 @@ class Common(object):
 
             # XSOAR Fields
             self.relationships = relationships
-            self.dbot_score = dbot_score if dbot_score else Common.DBotScore(indicator=id,
-                                                                             indicator_type=DBotScoreType.CVE,
-                                                                             integration_name=None,
-                                                                             score=Common.DBotScore.NONE)
+            self.dbot_score = Common.DBotScore(
+                indicator=id,
+                indicator_type=DBotScoreType.CVE,
+                integration_name=None,
+                score=Common.DBotScore.NONE
+            )
+
+            # Core custom fields for CVE type
+            self.vulnerable_products = vulnerable_products
+            self.vulnerable_configurations = vulnerable_configurations
+            self.vendor = vendor
 
         def to_context(self):
             cve_context = {
@@ -4032,15 +4048,24 @@ class Common(object):
             if self.traffic_light_protocol:
                 cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
 
-            if self.publications:
-                cve_context['Publications'] = self.create_context_table(self.publications)
-
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
             }
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
+
+            if self.publications:
+                cve_context['Publications'] = self.create_context_table(self.publications)
+
+            if self.vulnerable_products:
+                cve_context['vulnerableproduct'] = self.create_context_table(self.vulnerable_products)
+
+            if self.vulnerable_configurations:
+                cve_context['vulnerableconfigurations'] = self.create_context_table(self.vulnerable_configurations)
+
+            if self.vendor:
+                cve_context['Vendor'] = self.vendor
 
             return ret_value
 
@@ -10490,7 +10515,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     found_incidents = last_run.get('found_incident_ids', {})
 
     incidents = []
-    
+
     demisto.debug('lb: Number of incidents before filtering: {}, their ids: {}'.format(len(incidents_res),
                                                                                        [incident_res[id_field] for incident_res in incidents_res]))
     for incident in incidents_res:
@@ -10654,12 +10679,12 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         new_last_run = {
             'time': start_fetch_time,
         }
-    
+
     if look_back > 0:
         new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     else:
         new_last_run['limit'] = fetch_limit
-    
+
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
 
@@ -10884,7 +10909,7 @@ def xsiam_api_call_with_retries(
 
     :type headers: ``dict``
     :param headers: headers for the request
-    
+
     :type error_msg: ``str``
     :param error_msg: The error message prefix in case of an error.
 
