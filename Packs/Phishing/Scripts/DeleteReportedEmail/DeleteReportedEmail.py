@@ -5,16 +5,15 @@ from typing import Callable, Union
 import time
 from urllib.parse import quote, unquote
 
-seconds = time.time()
-
+DOCS_TROUBLESHOOTING_URL = 'https://xsoar.pan.dev/docs/reference/scripts/delete-reported-email#troubleshooting'
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
                       'SecurityAndCompliance', 'SecurityAndComplianceV2']
+seconds = time.time()
 
 
 class MissingEmailException(Exception):
     def __init__(self):
-        super().__init__('Email was not found in the mailbox. It is possible that the email was already '
-                         'deleted manually.')
+        super().__init__('Error: Email not found in mailbox. It may have been manually deleted.')
 
 
 class DeletionFailed(Exception):
@@ -286,14 +285,21 @@ def get_search_args(args: dict):
     user_id = custom_fields.get('reportedemailto')
     email_subject = custom_fields.get('reportedemailsubject')
     from_user_id = custom_fields.get('reportedemailfrom')
+    email_origin = custom_fields.get('reportedemailorigin')
     delete_type = args.get('delete_type', custom_fields.get('emaildeletetype', 'soft'))
     delete_from_brand = delete_from_brand_handler(incident_info, args)
 
+    missing_field_error_message = "'{field_name} field could not be found.\n" \
+                                  f"See {DOCS_TROUBLESHOOTING_URL} for possible solutions."
+
+    if not email_origin or email_origin.lower() == 'none':
+        raise ValueError(missing_field_error_message.format(field_name='Reported Email Origin'))
+
     if not message_id:
-        raise ValueError("Message ID ('reportedemailmessageid') of the original email could not be found.")
+        raise ValueError(missing_field_error_message.format(field_name='Reported Email Message ID'))
 
     if not user_id:
-        raise ValueError("User ID ('reportedemailto') of the original email could not be found.")
+        raise ValueError(missing_field_error_message.format(field_name='Reported Email To'))
 
     search_args = {
         'delete-type': delete_type,
