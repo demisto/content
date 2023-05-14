@@ -9,9 +9,11 @@ from typing import Dict, List, Any
 urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
-CMD_URL = 'security/alerts_v2'
 API_V2 = "Alerts v2"
 API_V1 = "Legacy Alerts"
+LEGACY_API_ENDPOINT = 'security/alerts'
+API_V2_ENDPOINT = 'security/alerts_v2'
+CMD_URL = API_V2_ENDPOINT
 API_VER = API_V2
 PAGE_SIZE_LIMIT_DICT = {API_V2: 2000, API_V1: 1000}
 API_V1_PAGE_LIMIT = 500
@@ -181,7 +183,7 @@ class MsGraphClient:
         if api_version == API_V1:
             global CMD_URL, API_VER
             API_VER = API_V1
-            CMD_URL = 'security/alerts'
+            CMD_URL = LEGACY_API_ENDPOINT
 
     def search_alerts(self, params):
         cmd_url = CMD_URL
