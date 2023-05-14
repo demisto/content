@@ -599,7 +599,4 @@ def test_invalid_argument_res(mocker):
                                        'format': 'xml',
                                        'verbose': 'false'})
     except Exception as e:
-        assert e.message == 'Error while trying to get the report from the API.'
-        assert demisto.results.call_count == 1
-        assert demisto.results.call_args[0][0]['Type'] == 4
-        assert demisto.results.call_args[0][0]['Contents'] == 'Invalid argument'
+        assert str(e) == 'Request Failed with error: Invalid argument'
