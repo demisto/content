@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id:  
+  id: Microsoft Teams
   version: -1
 configuration:
 - display: "Bot ID"
@@ -115,8 +115,8 @@ configuration:
   name: incident_notifications_channel
   required: false
   type: 0
-  defaultvalue: Microsoft Teams Form
   section: Connect
+  defaultvalue: Microsoft Teams Form
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -748,7 +748,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.58199
+  dockerimage: demisto/teams:1.0.0.58918
   feed: false
   isfetch: false
   longRunning: true
