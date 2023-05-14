@@ -537,20 +537,6 @@ inputs:
     Else --> Will ignore the push section and continue the playbook.
   playbookInputQuery:
 outputs:
-- contextPath: incident
-  type: unknown
-- contextPath: incident.id
-  type: unknown
-- contextPath: incident.status
-  type: unknown
-- contextPath: incident.created
-  type: unknown
-- contextPath: incident.modified
-  type: unknown
-- contextPath: incident.dueDate
-  type: unknown
-- contextPath: incident.openDuration
-  type: unknown
 - contextPath: PrismaSase.CandidateConfig
   description: Configuration job object.
   type: unknown

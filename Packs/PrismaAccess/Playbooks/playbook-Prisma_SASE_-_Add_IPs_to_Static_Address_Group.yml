@@ -545,6 +545,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: PrismaSase.AddressGroup
+  description: The root context key for Prisma SASE integration output.
   type: unknown
 - contextPath: PrismaSase.AddressGroup.id
   description: The address group ID.
@@ -574,6 +575,7 @@ outputs:
 - contextPath: PrismaSase.Address.name
   description: Address name.
 - contextPath: PrismaSase.CandidateConfig
+  description: Configuration job object.
   type: unknown
 - contextPath: PrismaSase.CandidateConfig.job_id
   description: Configuration job ID.

@@ -8,12 +8,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma SASE - Add IPs to Static Address Group
 * Prisma SASE - Create Address Object
+* Prisma SASE - Add IPs to Static Address Group
 
 ### Integrations
 
-PrismaSASE
+* PrismaSASE
 
 ### Scripts
 
@@ -21,10 +21,10 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* prisma-sase-address-group-create
-* prisma-sase-security-rule-create
 * prisma-sase-candidate-config-push
+* prisma-sase-security-rule-create
 * prisma-sase-address-group-list
+* prisma-sase-address-group-create
 
 ## Playbook Inputs
 
@@ -36,7 +36,7 @@ This playbook does not use any scripts.
 | IP | The address value \(should match the type\). |  | Optional |
 | Folder | The configuration folder group setting.<br/>The default value is 'Shared'. | Shared | Optional |
 | StaticAddressGroupName | The static address group name will be appended with IP indicators. |  | Optional |
-| AutoCommit | Possible values:<br/>True -&amp;gt; Will commit and push configuration.<br/>False -&amp;gt; Manual push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
+| AutoCommit | Possible Values:<br/>True -&amp;gt; Will commit and push configuration.<br/>False -&amp;gt; Manual push will be required.<br/>Else --&amp;gt; Will ignore the push section and continue the playbook. |  | Optional |
 
 ## Playbook Outputs
 
@@ -44,14 +44,14 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PrismaSase.AddressGroup |  | unknown |
+| PrismaSase.AddressGroup | The Prisma Access Address group object. | unknown |
 | PrismaSase.AddressGroup.id | The address group ID. | unknown |
 | PrismaSase.AddressGroup.name | The address group name. | unknown |
 | PrismaSase.AddressGroup.description | The address group description. | unknown |
 | PrismaSase.AddressGroup.addresses | The address group addresses. | unknown |
 | PrismaSase.AddressGroup.dynamic_filter | The address group filter. | unknown |
 | PrismaSase.AddressGroup.folder | The address group folder. | unknown |
-| PrismaSase |  | unknown |
+| PrismaSase | The root context key for Prisma SASE integration output. | unknown |
 | PrismaSase.SecurityRule | Created security rule. | unknown |
 | PrismaSase.SecurityRule.action | Security rule action. | unknown |
 | PrismaSase.SecurityRule.application | Security rule application. | unknown |
@@ -67,9 +67,9 @@ This playbook does not use any scripts.
 | PrismaSase.SecurityRule.source | Security rule source. | unknown |
 | PrismaSase.SecurityRule.source_user | Security rule source user. | unknown |
 | PrismaSase.SecurityRule.to | Security rule to field \(destination zone\(s\)\). | unknown |
-| PrismaSase.SecurityRule.profile_setting |  | unknown |
+| PrismaSase.SecurityRule.profile_setting | The Security rule group object in the rule. | unknown |
 | PrismaSase.SecurityRule.profile_setting.group | Security rule group. | unknown |
-| PrismaSase.CandidateConfig |  | unknown |
+| PrismaSase.CandidateConfig | Configuration job object. | unknown |
 | PrismaSase.CandidateConfig.job_id | Configuration job ID. | unknown |
 | PrismaSase.CandidateConfig.result | The configuration push result, e.g., OK, FAIL. | unknown |
 | PrismaSase.CandidateConfig.details | The configuration push details. | unknown |
