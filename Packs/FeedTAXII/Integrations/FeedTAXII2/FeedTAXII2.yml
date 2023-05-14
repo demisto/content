@@ -165,7 +165,7 @@ configuration:
   - Skip indicators with more than a single observation
   required: false
   type: 15
-- additionalinfo: Choose whether to import the XSOAR custom fields(which overwrites the fields from other sources).
+- additionalinfo: "Choose whether to import the XSOAR custom fields. Note: this might overwrite the data pulled from other sources."
   display: Update custom fields
   name: update_custom_fields
   required: false
