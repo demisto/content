@@ -2760,7 +2760,8 @@
         },
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
-            "integrations": "Threat Crowd",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
             "fromversion": "4.1.0"
         },
         {
@@ -5381,6 +5382,10 @@
         {
             "integrations": "AWS - Route53",
             "playbookID": "playbook-create_delete_record_Test"
+        },
+        {
+          "integrations":  "Cylance Protect v2",
+          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         }
     ],
     "skipped_tests": {
