@@ -2477,7 +2477,7 @@ script:
     description: Checks the reputation of a domain.
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.11.57890
+  dockerimage: demisto/python3:3.10.11.58677
   feed: false
   isfetch: true
   longRunning: false
