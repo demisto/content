@@ -571,11 +571,13 @@ class TestCorepacksFiles:
             1. A server version in the corepacks_override file that does not exist in the versions-metadata file
             2. A valid server version in the corepacks_override file, but a file version that is not greater than the
                 file version in the versions-metadata file.
-            3. A valid server version and a file version greater than the file version in the versions-metadata file.
+            3. The marketplace to override the corepacks file to, doesn't match the current marketplace.
+            4. A valid server version and a file version greater than the file version in the versions-metadata file.
         Then:
             1. Assert that the result returned from the function is False
             2. Assert that the result returned from the function is False
-            3. Assert that the result returned from the function is True
+            3. Assert that the result returned from the function is False
+            4. Assert that the result returned from the function is True
         """
 
         from Tests.Marketplace.upload_packs import should_override_locked_corepacks_file
@@ -619,6 +621,23 @@ class TestCorepacksFiles:
         assert not should_override_locked_corepacks_file()
 
         # Case 3
+        corepacks_override = {
+            "server_version": "8.2.0",
+            "file_version": "1",
+            "marketplaces": [
+                "xsoar"
+            ],
+            "updated_corepacks_content":
+                {
+                    "corePacks": [],
+                    "upgradeCorePacks": [],
+                    "buildNumber": "123"
+                }
+        }
+        mocker.patch.object(GCPConfig, "COREPACKS_OVERRIDE_CONTENTS", corepacks_override)
+        assert not should_override_locked_corepacks_file(marketplace='marketplacev2')
+
+        # Case 4
         corepacks_override = {
             "server_version": "8.2.0",
             "file_version": "2",

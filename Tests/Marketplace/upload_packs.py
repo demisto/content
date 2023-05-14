@@ -1046,7 +1046,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
-def should_override_locked_corepacks_file():
+def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     """
     Checks if the corepacks_override.json file in the repo should be used to override an existing corepacks file.
     The override file should be used if the following conditions are met:
@@ -1054,9 +1054,13 @@ def should_override_locked_corepacks_file():
     2. The file version of the server version in the corepacks_override.json file is greater than the matching file
         version in the versions-metadata.json file.
 
+    Args
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
+
     Returns True if a file should be updated and False otherwise.
     """
     override_corepacks_server_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('server_version')
+    override_marketplaces = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('marketplaces', [])
     override_corepacks_file_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('file_version')
     current_corepacks_file_version = GCPConfig.CORE_PACKS_FILE_VERSIONS.get(
         override_corepacks_server_version, {}).get('file_version')
@@ -1069,6 +1073,11 @@ def should_override_locked_corepacks_file():
         logging.info(f'Corepacks file version of server version {override_corepacks_server_version} in '
                      f' {GCPConfig.COREPACKS_OVERRIDE_FILE} is not greater than the version in'
                      f' {GCPConfig.VERSIONS_METADATA_FILE}. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
+        return False
+
+    if override_marketplaces and marketplace not in override_marketplaces:
+        logging.info(f'Current marketplace {marketplace} is not selected in the {GCPConfig.VERSIONS_METADATA_FILE} '
+                     f'file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
     return True
@@ -1406,7 +1415,7 @@ def main():
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
 
     # override a locked core packs file (used for hot-fixes)
-    if should_override_locked_corepacks_file():
+    if should_override_locked_corepacks_file(marketplace=marketplace):
         logging.info('Using the corepacks_override.json file to update an existing corepacks file.')
         override_locked_corepacks_file(build_number=build_number, artifacts_dir=os.path.dirname(packs_artifacts_path))
     else:

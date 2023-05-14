@@ -141,7 +141,7 @@ class GCPConfig(object):
         for version, core_pack_file_value in cls.CORE_PACKS_FILE_VERSIONS.items():
             # check if the file is unlocked
             if not core_pack_file_value.get('core_packs_file_is_locked'):
-                # check if version should be used for this marketplace (if no marketplace was specified use by default)
+                # check if version should be used for this marketplace (all are used by default if none was specified)
                 supported_marketplaces = core_pack_file_value.get('marketplaces', [])
                 if not supported_marketplaces or marketplace in supported_marketplaces:
                     unlocked_corepacks_files.append(core_pack_file_value.get('core_packs_file'))

@@ -1,6 +1,9 @@
 {
   "server_version": "8.2.0",
-  "file_version": "1",
+  "file_version": "2",
+  "marketplaces": [
+    "marketplacev2"
+  ],
   "updated_corepacks_content": {
     "corePacks": [
       "CommonTypes/3.4.66/CommonTypes.zip",
