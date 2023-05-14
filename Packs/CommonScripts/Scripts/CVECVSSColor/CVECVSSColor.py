@@ -24,7 +24,7 @@ try:
     cvss = float(cvss['Score'])
 
 
-except (ValueError, AttributeError):
+except (ValueError, AttributeError, KeyError):
     cvss = 0
 
 if not 0 < cvss <= 10:
