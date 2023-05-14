@@ -156,7 +156,7 @@ def main():
             if isTableTextMaxLengthSupported:
                 extra_cmd += f' {tableTextMaxLength}'
             else:
-                extra_cmd += f' ""'
+                extra_cmd += ' ""'
 
             extra_cmd += f' "{forceServerFormattedTimeString}"'
 
