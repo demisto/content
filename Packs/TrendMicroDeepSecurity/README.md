@@ -38,7 +38,7 @@ Please note:
 - Some logging functions are supported only for configurations which are defined to forward the DSA events indirectly via the DSM (and not directly to the syslog server).  
 - Traffic should be enabled from the DSM (Deep Security Manager) tenant to the XSIAM Syslog Server for the requested port & protocol. If the (DSA) Deep Security Agents are configured to forward the events directly to the XSIAM server (and not via the DSM), then traffic should be enabled from the agent tenants as well. See [_Allow event forwarding network traffic_](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html#Network) for additional details. 
 
-For full documentation see [_Forward Deep Security events to a Syslog or SIEM server_](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html) on the Deep Security Help Center page.  
+For full documentation, see [_Forward Deep Security events to a Syslog or SIEM server_](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html) on the Deep Security Help Center page.  
 
 ### Define Event Forwarding 
 After defining a syslog configuration, we can define event forwarding for the system and/or security events, using the syslog configuration defined in the previous section.  The system events are audit trail event and system alerts that are generated on the DSM, whereas the security events are alerts and notification events that are generated on the DSA from the various Deep Security protection modules. Define forwarding for the requested type of events: system events, security events, or both. 
