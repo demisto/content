@@ -702,7 +702,7 @@ tasks:
             args:
               country_code:
                 value:
-                  simple: inputs.Country
+                  simple: inputs.LoginCountry
                 iscontext: true
               country_name: {}
       xdralertsearchresults:

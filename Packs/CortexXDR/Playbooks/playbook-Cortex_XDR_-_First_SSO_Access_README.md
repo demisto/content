@@ -15,17 +15,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Account - Generic v2
-* User Investigation - Generic
-* Cortex XDR - First SSO Access - Set Verdict
 * TIM - Indicator Relationships Analysis
 * Account Enrichment - Generic v2.1
+* Cortex XDR - First SSO Access - Set Verdict
+* User Investigation - Generic
+* Block Account - Generic v2
 
 ### Integrations
 
+* XQLQueryingEngine
 * XDR_iocs
 * CortexXDRIR
-* XQLQueryingEngine
 
 ### Scripts
 
@@ -33,10 +33,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* ip
+* setIncident
 * xdr-endpoint-isolate
 * okta-clear-user-sessions
-* setIncident
+* ip
 
 ## Playbook Inputs
 
