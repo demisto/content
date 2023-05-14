@@ -41,7 +41,7 @@ Please note:
 For full documentation, see [_Forward Deep Security events to a Syslog or SIEM server_](https://help.deepsecurity.trendmicro.com/20_0/on-premise/event-syslog.html) on the Deep Security Help Center page.  
 
 ### Define Event Forwarding 
-After defining a syslog configuration, we can define event forwarding for the system and/or security events, using the syslog configuration defined in the previous section.  The system events are audit trail event and system alerts that are generated on the DSM, whereas the security events are alerts and notification events that are generated on the DSA from the various Deep Security protection modules. Define forwarding for the requested type of events: system events, security events, or both. 
+After defining a syslog configuration, you can define event forwarding for the system and/or security events, using the syslog configuration defined in the previous section.  The system events are audit trail events and system alerts that are generated on the DSM, whereas the security events are alerts and notification events that are generated on the DSA from the various Deep Security protection modules. Define forwarding for the requested type of events: system events, security events, or both. 
 
 #### Forward System Events
 1. Navigate to _Administration_ &rarr; _System Settings_ &rarr;
