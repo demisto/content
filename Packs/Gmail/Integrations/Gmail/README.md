@@ -24,7 +24,7 @@ You need to do the following in Google before configuring your integration insta
 7.  In the **Grant users access to this service account** section, click **DONE**.</br>
 8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.</br>![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
 9. Click the **ADD KEY** dropdown, and select **Create new key**.
-10. Select Key type **JSON** and click **CREATE**.</br>This will generate a json **Private key** file that will be downloaded and saved locally.
+10. Select Key type **JSON** and click **CREATE**.<br />This will generate a json **Private key** file that will be downloaded and saved locally.
 11. Click **CLOSE** to close the dialog.
 12. Navigate to **DETAILS** -> **Advanced Settings**.  Copy the **Client ID**.
 
