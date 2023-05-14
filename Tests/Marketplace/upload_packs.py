@@ -928,6 +928,7 @@ def get_images_data(packs_list: list, readme_images_dict: dict):
         The images data structure
     """
     images_data = {}
+    pack_image_data: dict = {}
 
     for pack in packs_list:
         pack_image_data: dict = {pack.name: {}}
