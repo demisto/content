@@ -35,7 +35,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def search_events(client: Client, limit: int | None,
+def search_events(client: Client, limit: int,
                   body: Optional[Dict[str, Any]] = None
                   ) -> Tuple[List[Dict[str, Any]], CommandResults]:
     """
@@ -63,8 +63,8 @@ def search_events(client: Client, limit: int | None,
             next_page = False
             demisto.debug('finished fetching http response')
     events: List[Dict[str, Any]] = sorted(results, key=lambda x: x['Timestamp'])
-    if limit:
-        events = events[:limit]
+    if limit < len(events):
+        events = events[-limit:]
     hr = tableToMarkdown(name='Events', t=events) if events else 'No events found.'
     return events, CommandResults(readable_output=hr)
 
@@ -113,7 +113,6 @@ def fetch_events_command(
         list: List of events that will be created in XSIAM.
     """
     last_fetch = last_run.get('last_fetch')
-    limit = max_fetch if last_fetch else None 
     last_fetch = first_fetch_time if last_fetch is None else datetime.strptime(last_fetch, DATE_FORMAT)
     demisto.debug(f'last fetch :\n {last_fetch}')
     body = {
@@ -121,7 +120,7 @@ def fetch_events_command(
         'EndDate': datetime.utcnow().strftime(DATE_FORMAT)
     }
     demisto.debug(f'TeamViewer starting fetch events with time params:\n {body}')
-    events, _ = search_events(client=client, limit=limit, body=body) # removing limit ?
+    events, _ = search_events(client=client, limit=max_fetch, body=body)
     next_run = {'last_fetch': events[-1].get('Timestamp')} if events else last_run
     demisto.debug(f"TeamViewer Returning {len(events)} events in total")
     return next_run, events

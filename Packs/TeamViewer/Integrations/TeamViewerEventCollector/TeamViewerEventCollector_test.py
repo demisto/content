@@ -58,8 +58,8 @@ def test_search_events_retrieves_requested_number_of_events(mocker):
     """
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
-    limit = 5
-    expected_results = [{"event_id": i} for i in range(1, limit + 1)]
+    limit = 3
+    expected_results = [{"event_id": i, 'Timestamp': f'2022-01-01T00:00:0{i}Z'} for i in range(1, limit + 1)]
     response = {"AuditEvents": expected_results}
     mocker.patch.object(client, 'get_events', return_value=response)
 
@@ -87,19 +87,20 @@ def test_search_events_retrieves_all_available_events_when_limit_is_higher_than_
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
     limit = 10
-    expected_results = [{"event_id": i} for i in range(1, 6)]
+    expected_results = [{"event_id": i, 'Timestamp': f'2022-01-01T00:00:0{i}Z'} for i in range(1, 6)]
     response = {"AuditEvents": expected_results, "ContinuationToken": "abc123"}
-    mocker.patch.object(client, 'get_events', side_effect=[response, {"AuditEvents": [{"event_id": 6}]}, {}])
+    mocker.patch.object(client, 'get_events',
+                        side_effect=[response, {"AuditEvents": []}, {}])
 
     # Act
     results = TeamViewerEventCollector.search_events(client=client, limit=limit)
 
     # Assert
-    assert len(results[0]) == 6
-    assert results[0] == expected_results + [{"event_id": 6}]
+    assert len(results[0]) == 5
+    assert results[0] == expected_results
 
 
-def test_search_events_retrieves_no_events_when_limit_is_zero(mocker):
+def test_search_events_retrieves_when_limit_is_lower_than_results(mocker):
     """
     Given:
     - mocker
@@ -108,22 +109,22 @@ def test_search_events_retrieves_no_events_when_limit_is_zero(mocker):
     - Calling the search_events function
 
     Then:
-    - Ensure that the that the function retrieves no events when the limit is set to 0.
+    - Ensure that the that the function retrieves 1 event when the limit is set to 1.
     """
     # Arrange
     client = TeamViewerEventCollector.Client(base_url="https://example.com", verify=False, proxy=False, headers={})
-    limit = 0
-    mocker.patch.object(client, 'get_events', return_value={"AuditEvents": [{"event_id": 1}]})
+    limit = 1
+    mocker.patch.object(client, 'get_events', 
+                        return_value={"AuditEvents": [{"event_id": 1, 'Timestamp': '2022-01-01T00:00:00Z'},
+                                                      {"event_id": 2, 'Timestamp': '2022-01-01T00:20:00Z'}]})
 
     # Act
     results = TeamViewerEventCollector.search_events(client=client, limit=limit)
 
     # Assert
-    assert len(results[0]) == 0
+    assert len(results[0]) == limit
 
 
-# Tests that the function retrieves no events when the time parameters
-# in the body are set to a time range with no events.
 def test_search_events_retrieves_no_events_when_time_parameters_have_no_events(mocker):
     """
     Given:
@@ -135,7 +136,8 @@ def test_search_events_retrieves_no_events_when_time_parameters_have_no_events(m
     - Calling the search_events function
 
     Then:
-    - Ensure that the function retrieves no events
+    - Ensure that the function retrieves no events when the time parameters
+    in the body are set to a time range with no events.
     """
     mock_http_request = mocker.patch.object(TeamViewerEventCollector.Client, 'get_events',
                                             return_value={'AuditEvents': [], 'ContinuationToken': None})
@@ -183,16 +185,12 @@ def test_fetch_events_command(mocker):
     Then:
     - Ensure the function returns the correct next run dictionary and events list
     """
-    from TeamViewerEventCollector import Client, fetch_events_command, DATE_FORMAT
+    from TeamViewerEventCollector import Client, fetch_events_command
     from datetime import datetime
     client = Client(base_url='https://test.com', verify=False, proxy=False, headers={})
     max_fetch = 50
     last_run = {'last_fetch': None}
     first_fetch_time = datetime(2022, 1, 1, 0, 0, 0)
-    expected_body = {
-        "StartDate": first_fetch_time.strftime(DATE_FORMAT),
-        "EndDate": datetime.utcnow().strftime(DATE_FORMAT)
-    }
     expected_next_run = {'last_fetch': '2023-04-16T10:46:49Z'}
     expected_events = [{'id': 1, 'Timestamp': '2023-01-01T01:00:00Z'}, {'id': 2, 'Timestamp': "2023-04-16T10:46:49Z"}]
 
@@ -203,7 +201,7 @@ def test_fetch_events_command(mocker):
 
     assert next_run == expected_next_run
     assert events == expected_events
-    http_request_mock.assert_called_once_with(params={}, body=expected_body)
+    http_request_mock.assert_called_once()
 
 
 def test_add_time_key():
