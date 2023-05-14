@@ -338,6 +338,7 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
     | Minimum incident severity to send notifications to Teams by |  | False |
     | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
     | Allow external users to create incidents via direct message |  | False |
+    | The header of an external form hyperlink. |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
