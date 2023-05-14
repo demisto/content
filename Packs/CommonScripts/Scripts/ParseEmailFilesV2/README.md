@@ -50,5 +50,6 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | Email.Format | The format of the email if available | string |
 
 #### Notes
-Be aware, we handle EML and MSG parsing when the email contains HTML differently, if it's an EML and it has the ***content-type*** of ***text/html*** the content of the body will be stored in the html field.
-In case it's an MSG we will store the text inside the HTML in the text field and the HTML in the html field.
+We handle EML and MSG parsing differently when the email contains HTML. 
+- If it's an EML and it has the **content-type** of *text/html*, the content of the body will be stored in the html field.
+- If it's an MSG, we store the text inside the HTML in the text field and the HTML in the html field.
