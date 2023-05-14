@@ -71,7 +71,8 @@ alter event_id = to_integer(cefDeviceEventClassId)
 /* DSM (Deep Security Manager) System Events */
 /*********************************************/
 [MODEL: dataset="trend_micro_deep_security_manager_raw"]
-call tm_ds_common_fields_modeling
+filter cefDeviceProduct = "Deep Security Manager" 
+| call tm_ds_common_fields_modeling
 | alter 
     target_type = uppercase(targetType)
 | alter 
@@ -97,7 +98,9 @@ call tm_ds_common_fields_modeling
 
 /* FW Events := cefDeviceEventClassId in ([20-21], [100-199]) */
 call tm_ds_convert_cef_event_id_to_int
-| filter event_id in (20, 21) or (event_id >= 100 and event_id < 200)
+| filter cefDeviceProduct  = "Deep Security Agent" 
+    and ((event_id in (20, 21) )
+    or (event_id >= 100 and event_id < 200))
 | alter xdm.event.type = "Firewall"
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
@@ -107,7 +110,8 @@ call tm_ds_convert_cef_event_id_to_int
 
 /* IPS Events := cefDeviceEventClassId in ([10], [200-299], [500-899], [1000000-1999999]) */ 
 call tm_ds_convert_cef_event_id_to_int
-| filter ((event_id = 10)
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and ((event_id = 10)
     or (event_id >= 200 and event_id < 300)
     or (event_id >= 500 and event_id < 900)
     or (event_id >= 1000000 and event_id < 2000000))
@@ -123,7 +127,9 @@ call tm_ds_convert_cef_event_id_to_int
 
 /* Integrity Monitoring Events := cefDeviceEventClassId in ([30], [2000000-2999999]) */
 call tm_ds_convert_cef_event_id_to_int
-| filter (event_id = 30) or (event_id >= 2000000 and event_id < 3000000)
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and ((event_id = 30) 
+    or (event_id >= 2000000 and event_id < 3000000))
 | alter xdm.event.type = "IntegrityMonitoring"
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
@@ -146,7 +152,9 @@ call tm_ds_convert_cef_event_id_to_int
 
 /* Log Inspection Events := cefDeviceEventClassId in ([40], [3000000-3999999]) */
 call tm_ds_convert_cef_event_id_to_int
-| filter (event_id = 40) or (event_id >= 3000000 and event_id < 4000000)
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and ((event_id = 40) 
+    or (event_id >= 3000000 and event_id < 4000000))
 | alter xdm.event.type = "LogInspection" 
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
@@ -165,7 +173,8 @@ call tm_ds_convert_cef_event_id_to_int
     
 /* Anti-Malware Events := cefDeviceEventClassId in [4000000-4999999] */
 call tm_ds_convert_cef_event_id_to_int
-| filter event_id >= 4000000 and event_id < 5000000
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 4000000 and event_id < 5000000)
 | alter xdm.event.type = "AntiMalware"
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
@@ -208,7 +217,8 @@ call tm_ds_convert_cef_event_id_to_int
 
 /* Web_Reputation Events := cefDeviceEventClassId in [5000000-5999999] */
 call tm_ds_convert_cef_event_id_to_int
-| filter event_id >= 5000000 and event_id < 6000000
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 5000000 and event_id < 6000000)
 | alter xdm.event.type = "WebReputation"
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
@@ -222,7 +232,8 @@ call tm_ds_convert_cef_event_id_to_int
 
 /*  Application Control Events := cefDeviceEventClassId in [6000000-6999999] */
 call tm_ds_convert_cef_event_id_to_int 
-| filter (event_id >= 6000000 and event_id < 7000000)
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 6000000 and event_id < 7000000)
 | alter xdm.event.type = "ApplicationControl"
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
@@ -247,7 +258,8 @@ call tm_ds_convert_cef_event_id_to_int
 
 /*  Application Control Events := cefDeviceEventClassId in [6000000-6999999] */
 call tm_ds_convert_cef_event_id_to_int 
-| filter (event_id >= 6000000 and event_id < 7000000)
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 6000000 and event_id < 7000000)
 | alter xdm.event.type = "ApplicationControl"
 | call tm_ds_common_fields_modeling
 | call tm_ds_agent_common_fields_modeling
@@ -272,7 +284,8 @@ call tm_ds_convert_cef_event_id_to_int
 
 /* Fallback handling for all other DSA event */
 call tm_ds_convert_cef_event_id_to_int
-| filter (((event_id < 100) 
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (((event_id < 100) 
         or (event_id >= 400 and event_id < 500) 
         or (event_id >= 900 and event_id < 1000000)
         or (event_id >= 7000000))
