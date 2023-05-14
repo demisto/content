@@ -1,5 +1,5 @@
 Use Core REST APIs
-This integration was integrated and tested with version xx of Core REST API_mm
+This integration was integrated and tested with version 6.11 of Core REST API
 
 ## Configure Core REST API_mm on Cortex XSOAR
 
