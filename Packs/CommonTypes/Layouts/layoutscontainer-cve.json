@@ -15,7 +15,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
                         "isVisible": true,
                         "items": [
                             {
@@ -121,14 +121,15 @@
                         "name": "Vulnerability Details",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 2
+                        "x": 1,
+                        "y": 1,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
                         "isVisible": true,
                         "items": null,
                         "maxW": 3,
@@ -140,7 +141,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 7,
+                        "y": 9,
                         "columns": [
                             {
                                 "displayed": true,
@@ -178,7 +179,8 @@
                                 "key": "owner",
                                 "width": 160
                             }
-                        ]
+                        ],
+                        "maxH": null
                     },
                     {
                         "columns": [
@@ -202,7 +204,7 @@
                             }
                         ],
                         "h": 3,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
@@ -212,11 +214,12 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 1
+                        "y": 4,
+                        "maxH": null
                     },
                     {
                         "h": 5,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
@@ -226,12 +229,13 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 7,
+                        "maxH": null
                     },
                     {
                         "h": 1,
                         "hideName": false,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
                         "items": [
                             {
                                 "args": {},
@@ -268,11 +272,12 @@
                         "w": 1,
                         "x": 2,
                         "y": 0,
-                        "displayType": "ROW"
+                        "displayType": "ROW",
+                        "maxH": null
                     },
                     {
                         "h": 3,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-cba17b40-7d0c-11ec-abe4-4fa9d22d9889",
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-cba17b40-7d0c-11ec-abe4-4fa9d22d9889",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -282,12 +287,13 @@
                         "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 4
+                        "y": 6,
+                        "maxH": null
                     },
                     {
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-8c4ad450-8a4a-11ec-a1ef-6369524b39c7",
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-8c4ad450-8a4a-11ec-a1ef-6369524b39c7",
                         "items": [
                             {
                                 "endCol": 2,
@@ -308,11 +314,12 @@
                         "x": 0,
                         "y": 0,
                         "displayType": "ROW",
-                        "hideItemTitleOnlyOne": true
+                        "hideItemTitleOnlyOne": true,
+                        "maxH": null
                     },
                     {
-                        "h": 4,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+                        "h": 3,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -326,22 +333,11 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "cvssscore",
-                                "height": 22,
-                                "id": "d1d092b0-8e39-11ec-9c49-5f11296515d9",
-                                "index": 1,
-                                "listId": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "cvssvector",
                                 "height": 22,
                                 "id": "d0c64ea0-8e39-11ec-9c49-5f11296515d9",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -350,7 +346,7 @@
                                 "fieldId": "cvsstable",
                                 "height": 106,
                                 "id": "d532a970-8e39-11ec-9c49-5f11296515d9",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -361,10 +357,69 @@
                         "name": "CVSS",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 0,
+                        "x": 2,
+                        "y": 1,
                         "displayType": "ROW",
-                        "hideName": false
+                        "hideName": false,
+                        "maxH": null
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-b7da5140-ef25-11ed-800c-4b027a433365",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "CVSS Score",
+                        "query": "dfb4b422-06c0-431e-8478-6d24d8e11b8d",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": true,
+                        "i": "main-b891551f-96df-4348-8c29-a243172176a7-main-b891551f-96df-4348-8c29-a243172176a7-main-c5fc5760-ef29-11ed-800c-4b027a433365",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "vulnerableproducts",
+                                "height": 106,
+                                "id": "2f3d4f20-ef2c-11ed-800c-4b027a433365",
+                                "index": 0,
+                                "listId": "main-b891551f-96df-4348-8c29-a243172176a7-main-c5fc5760-ef29-11ed-800c-4b027a433365",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "vulnerableconfigurations",
+                                "height": 106,
+                                "id": "74b36720-ef2b-11ed-800c-4b027a433365",
+                                "index": 0,
+                                "listId": "main-b891551f-96df-4348-8c29-a243172176a7-main-c5fc5760-ef29-11ed-800c-4b027a433365",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
                     }
                 ],
                 "type": "custom"
@@ -444,7 +499,6 @@
                         "w": 1,
                         "x": 0,
                         "y": 7,
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1
                     },
@@ -458,7 +512,6 @@
                         "w": 1,
                         "x": 0,
                         "y": 9,
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1
                     },
@@ -530,8 +583,7 @@
                         "w": 1,
                         "x": 0,
                         "y": 2,
-                        "hideName": false,
-                        "maxH": null
+                        "hideName": false
                     },
                     {
                         "h": 3,
@@ -585,7 +637,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1
                     },
@@ -612,7 +663,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1
                     }
