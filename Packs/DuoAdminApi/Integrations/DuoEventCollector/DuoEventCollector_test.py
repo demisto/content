@@ -6,8 +6,8 @@ from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, 
 
 
 @pytest.fixture
-def ret_demisto_params():
-    return {
+def ret_fresh_client():
+    demisto_params = {
         "after": "1 month",
         "host": "api-a1fdb00d.duosecurity.com",
         "integration_key": "DI47EXXXXXXXWRYV2",
@@ -16,6 +16,9 @@ def ret_demisto_params():
         "retries": "5",
         "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
     }
+    p = Params(**demisto_params, mintime={})
+    demisto_params['params'] = p
+    return Client(demisto_params)   # type: ignore
 
 
 global_demisto_params = {
@@ -97,20 +100,31 @@ def test_call():
     }
 
 
-def test_main():
-    client = MagicMock(spec=Client)
-    client.call.return_value = (['event1'], {
+def test_setLastRun_when_no_new_events(ret_fresh_client, mocker):
+    """
+    Given:
+        receiving events from XSIAM for the first iteration and then no more events in the second call.
+    When:
+        running the whole fetch_events flow.
+    Then:
+        validate that the lastRun is being set to the last batch send from XSIAM.
+    """
+    client = ret_fresh_client
+    mocker.patch.object(Client, 'call', side_effect=[(['event1'], {
         "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
         "total_objects": 3
-    })
-    mock_get_events = GetEvents(client, ['TELEPHONY'])
+    }), ([], {})])
+    mocker.patch('DuoEventCollector.send_events_to_xsiam', return_vaule=None)
+    mock_get_events = GetEvents(client, [LogType.TELEPHONY])
     with patch('DuoEventCollector.GetEvents', return_value=mock_get_events):
         # call the main function
         main()
-        assert mock_get_events.get_last_run() == 'bla'
+        assert mock_get_events.get_last_run().get('after') == {LogType.TELEPHONY: {
+            "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74"
+        }}
 
 
-def test_set_next_run_filter_v1(ret_demisto_params):
+def test_set_next_run_filter_v1(ret_fresh_client):
     """
     Given:
         a metadata response from the api v1 and authentication log type.
@@ -119,15 +133,12 @@ def test_set_next_run_filter_v1(ret_demisto_params):
     Then:
         Assert that the min time for next run is correct.
     """
-    demisto_params = ret_demisto_params
-    p = Params(**demisto_params, mintime={})
-    demisto_params['params'] = p
-    client = Client(demisto_params)
+    client = ret_fresh_client
     client.set_next_run_filter_v1(12345)
-    assert p.mintime[LogType.ADMINISTRATION] == 12346
+    assert client.params.mintime[LogType.ADMINISTRATION] == 12346
 
 
-def test_set_next_run_filter_v2(ret_demisto_params):
+def test_set_next_run_filter_v2(ret_fresh_client):
     """
     Given:
         a metadata response from the api v2 and authentication log type.
@@ -136,16 +147,13 @@ def test_set_next_run_filter_v2(ret_demisto_params):
     Then:
         Assert that the min time for next run is correct.
     """
-    demisto_params = ret_demisto_params
-    p = Params(**demisto_params, mintime={})
-    demisto_params['params'] = p
-    client = Client(demisto_params)
+    client = ret_fresh_client
     metadata = {"metadata": {
         "next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"],
         "total_objects": 1
     }}
     client.set_next_run_filter_v2(LogType.AUTHENTICATION, metadata)
-    assert p.mintime[LogType.AUTHENTICATION] == {'next_offset': metadata.get('next_offset')}
+    assert client.params.mintime[LogType.AUTHENTICATION] == {'next_offset': metadata.get('next_offset')}
 
 
 def test_parse_mintime():
@@ -163,3 +171,59 @@ def test_parse_mintime():
     mintime_v1, mintime_v2 = parse_mintime(epocs_time)
     assert mintime_v1 == 1683666000
     assert mintime_v2 == 1683666000000
+
+
+def test_handle_authentication_logs(ret_fresh_client):
+    """
+    Given:
+        A call is being send to retrive authntication logs from duo
+    When:
+        Reciving the events
+    Then:
+        Validate that the events return are accessed properly
+    """
+    authentication_response = load_json('./test_data/authenticationV2.json')
+    client: Client = ret_fresh_client
+    client.params.mintime[LogType.AUTHENTICATION] = {}
+    with patch.object(client.admin_api, 'get_authentication_log', return_value=authentication_response):
+        events, metadata = client.handle_authentication_logs()
+
+    assert events == authentication_response.get('authlogs')
+    assert metadata == authentication_response.get('metadata')
+
+
+def test_handle_telephony_logs(ret_fresh_client):
+    """
+    Given:
+        A call is being send to retrive authntication logs from duo
+    When:
+        Reciving the events
+    Then:
+        Validate that the events return are accessed properly
+    """
+    telephony_response = load_json('./test_data/telephonyV2.json')
+    client: Client = ret_fresh_client
+    client.params.mintime[LogType.TELEPHONY] = {}
+    with patch.object(client.admin_api, 'get_telephony_log', return_value=telephony_response):
+        events, metadata = client.handle_telephony_logs()
+
+    assert events == telephony_response.get('items')
+    assert metadata == telephony_response.get('metadata')
+
+
+def test_handle_administration_logs(ret_fresh_client):
+    """
+    Given:
+        A call is being send to retrive authntication logs from duo
+    When:
+        Reciving the events
+    Then:
+        Validate that the events return are accessed properly
+    """
+    administration_response = load_json('./test_data/administration.json')
+    client: Client = ret_fresh_client
+    client.params.mintime[LogType.ADMINISTRATION] = 12345
+    with patch.object(client.admin_api, 'get_administrator_log', return_value=administration_response):
+        ret_events = client.handle_administration_logs()
+
+    assert administration_response == ret_events
