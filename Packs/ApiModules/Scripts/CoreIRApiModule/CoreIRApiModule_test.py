@@ -4,6 +4,7 @@ import json
 import os
 import zipfile
 from collections.abc import Callable
+from typing import Any
 
 import pytest
 
@@ -3288,13 +3289,13 @@ def test_get_list_risky_users_hosts_command_raise_exception(
 
 
 @pytest.mark.parametrize(
-    "args",
+    "args, expected_results",
     [
-        ({"group_names": "test"}),
-        ({"group_names": ""}),
+        ({"group_names": "test"}, "dummy1@gmail.com"),
+        ({"group_names": ""}, "dummy1@gmail.com"),
     ],
 )
-def test_get_list_user_groups_command(mocker, args: dict):
+def test_get_list_user_groups_command(mocker, args: dict[str, str], expected_results: str):
     """
     Test function to validate the behavior of the `get_list_user_groups_command` function.
 
@@ -3313,11 +3314,11 @@ def test_get_list_user_groups_command(mocker, args: dict):
     mocker.patch.object(CoreClient, "get_list_user_groups", return_value=test_data)
 
     results = get_list_user_groups_command(client=client, args=args)
-    assert "dummy1@gmail.com" in results.outputs[0]["user_email"]
+    assert expected_results in results.outputs[0]["user_email"]
 
 
 @pytest.mark.parametrize(
-    "data",
+    "data, expected_results",
     [
         (
             {
@@ -3334,11 +3335,12 @@ def test_get_list_user_groups_command(mocker, args: dict):
                     "dummy5@gmail.com",
                 ],
                 "source": "Custom",
-            }
+            },
+            {"expected_len": 5, "expected_user": "dummy1@gmail.com"}
         )
     ],
 )
-def test_parse_user_groups(data: dict):
+def test_parse_user_groups(data: dict, expected_results: dict[str, Any]):
     """
     Test the 'parse_user_groups' function that parses user group information.
 
@@ -3353,8 +3355,8 @@ def test_parse_user_groups(data: dict):
     """
     results = parse_user_groups(data)
 
-    assert "dummy1@gmail.com" in results[0].get("User email")
-    assert len(results) == 5
+    assert expected_results["expected_user"] in results[0].get("User email")  # type: ignore[operator]
+    assert len(results) == expected_results["expected_len"]
 
 
 def test_get_list_user_groups_command_raise_exception(mocker):
@@ -3395,7 +3397,13 @@ def test_get_list_user_groups_command_raise_exception(mocker):
         get_list_user_groups_command(client, {"group_names": "test"})
 
 
-def test_get_list_users_command(mocker):
+@pytest.mark.parametrize(
+    "expected_output",
+    [
+        ("dummy@dummy.com")
+    ]
+)
+def test_get_list_users_command(mocker, expected_output: str):
     """
     Tests the `get_list_users_command` function.
 
@@ -3413,7 +3421,7 @@ def test_get_list_users_command(mocker):
     mocker.patch.object(CoreClient, "get_list_users", return_value=test_data)
 
     results = get_list_users_command(client=client, args={})
-    assert "dummy@dummy.com" in results.readable_output
+    assert expected_output in results.readable_output  # type:ignore[operator] 
 
 
 @pytest.mark.parametrize(
