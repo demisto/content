@@ -6,7 +6,7 @@ import pytest
 @pytest.mark.parametrize('dbotMirrorId, sourceBrand, execute_command_args',
                          [('1234', 'Jira V3', ('jira-list-transitions', {'issue_id': '1234', 'using-brand': 'Jira V3'})),
                           ('1234', 'jira-v2', ('jira-list-transitions', {'issueId': '1234', 'using-brand': 'jira-v2'}))])
-def list_status_test(dbotMirrorId, sourceBrand, execute_command_args):
+def test_list_status(dbotMirrorId, sourceBrand, execute_command_args):
     """Tests if the script is able to extract the statuses from the !jira-list-transitions command.
     """
     from ScriptJiraListStatus import main

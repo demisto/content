@@ -2,7 +2,7 @@ import demistomock as demisto
 from unittest.mock import MagicMock
 
 
-def change_jira_transition_test():
+def test_change_jira_transition():
     """Tests the order of the demisto.executeCommand, and checks if it was run with the correct arguments.
     """
     from ScriptJiraChangeTransition import apply_transition

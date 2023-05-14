@@ -6,7 +6,7 @@ import pytest
 @pytest.mark.parametrize('dbotMirrorId, sourceBrand, execute_command_args',
                          [('1234', 'Jira V3', ('jira-list-transitions', {'issue_id': '1234', 'using-brand': 'Jira V3'})),
                           ('1234', 'jira-v2', ('jira-list-transitions', {'issueId': '1234', 'using-brand': 'jira-v2'}))])
-def list_transition_for_v3_brand_test():
+def test_list_transition_for_v3_brand():
     """Tests if the script is able to extract the transitions from the !jira-list-transitions command, when
     using the Jira V3 brand.
     """
@@ -25,7 +25,7 @@ def list_transition_for_v3_brand_test():
     assert demisto_results_mocker.call_args_list[0][0][0] == ({'hidden': False, 'options': expected_statuses_names})
 
 
-def list_transition_for_v2_brand_test():
+def test_list_transition_for_v2_brand():
     """Tests if the script is able to extract the statuses from the !jira-list-transitions command, when
     using the Jira V2 brand.
     """
