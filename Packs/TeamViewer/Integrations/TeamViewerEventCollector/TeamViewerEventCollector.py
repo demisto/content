@@ -51,6 +51,8 @@ def search_events(client: Client, limit: int,
     results: List[Dict] = []
     token_next_page = None
     next_page = True
+    if limit <= 0:
+        raise DemistoException('the limit argument cannot be negative or zero.')
     while next_page:
         response = client.get_events(body=body)
         demisto.debug(f'http response:\n {response}')
@@ -160,7 +162,6 @@ def main() -> None:
         arg_name='First fetch time',
         required=True,
     )  # type: ignore
-
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {'Authorization': f'Bearer {api_key}'}
@@ -193,7 +194,7 @@ def main() -> None:
                 last_run = demisto.getLastRun()
                 next_run, events = fetch_events_command(
                     client=client,
-                    max_fetch=arg_to_number(params.get('max_fetch', DEFAULT_LIMIT)),  # type: ignore
+                    max_fetch=arg_to_number(params.get('max_fetch')) or DEFAULT_LIMIT,
                     last_run=last_run,
                     first_fetch_time=first_fetch_time,
                 )
