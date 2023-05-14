@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def main():
+def main():  # pragma: no cover
     try:
         apply_status()
     except Exception as exc:
@@ -90,5 +90,5 @@ def apply_status():
                 )
 
 
-if __name__ in ["__main__", "builtin", "builtins"]:
+if __name__ in ["__main__", "builtin", "builtins"]:  # pragma: no cover
     main()
