@@ -167,11 +167,7 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
         except Exception:
             raise Exception(f'Failed to parse response to json. response: {result.text}')
 
-        demisto.results({
-            'Type': entryTypes["error"],
-            'Contents': error_message,
-            'ContentsFormat': formats['text']
-        })
+        raise Exception(f'Request Failed with error: {error_message}')
 
     if result.status_code < 200 or result.status_code >= 300:
         if str(result.status_code) in ERROR_DICT:
@@ -1405,6 +1401,8 @@ def wildfire_get_file_report(file_hash: str, args: dict):
     md5 = file_hash if md5Regex.match(file_hash) else None
     entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
     human_readable, relationships, indicator = None, None, None
+
+    request_succeed = True
     try:
         json_res = http_request(
             get_report_uri,
@@ -1445,15 +1443,19 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
         demisto.error(f'Report not found. Error: {exc}')
         relationships = None
+    except Exception as ex:
+        request_succeed = False
+        raise ex
     finally:
-        try:
-            command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
-                                             outputs=remove_empty_elements(entry_context),
-                                             readable_output=human_readable, indicator=indicator, raw_response=json_res,
-                                             relationships=relationships)
-            return command_results, entry_context.get('Status')
-        except Exception:
-            raise DemistoException('Error while trying to get the report from the API.')
+        if request_succeed:
+            try:
+                command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
+                                                 outputs=remove_empty_elements(entry_context),
+                                                 readable_output=human_readable, indicator=indicator, raw_response=json_res,
+                                                 relationships=relationships)
+                return command_results, entry_context.get('Status')
+            except Exception:
+                raise DemistoException('Error while trying to get the report from the API.')
 
 
 def wildfire_get_report_command(args: dict):
