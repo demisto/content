@@ -3961,6 +3961,9 @@ class Common(object):
         :type publications: ``str``
         :param publications: Unique system-assigned ID of the vulnerability evaluation logic
 
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If file has a score then create and set a DBotScore object
+
         :type vulnerable_products: ``str``
         :param publications: A list of CPE objects
 
