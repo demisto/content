@@ -30,6 +30,7 @@ This command requires one of the following OAuth scopes:
     https://www.googleapis.com/auth/logging.admin
     https://www.googleapis.com/auth/cloud-platform.read-only
     https://www.googleapis.com/auth/cloud-platform
+
 #### Base Command
 
 `gcp-logging-log-entries-list`
