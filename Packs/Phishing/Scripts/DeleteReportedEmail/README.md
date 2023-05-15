@@ -41,5 +41,5 @@ The script was specifically developed for use by the `Delete Reported Email` lay
   This can happen if the mail to was forwarded to the listener mailbox was not forwarded as an attachment (with an `EML` file) like it should.
 * If either the `Reported Email Message ID` or `Reported Email To` fields are missing, the cause is likely to be one of the following:
   * An `EML` file was not attached to the email.
-  * The playbook is being used as a sub-playbook, causing the `EML` file to exist only in the parent incident.
+  * The playbook is being used as a sub-playbook, causing the `EML` file to exist only in the parent playbook.
   * The `Process Email - Generic v2` sub-playbook failed, or the `ParseEmailFilesV2` step within it specifically failed.
