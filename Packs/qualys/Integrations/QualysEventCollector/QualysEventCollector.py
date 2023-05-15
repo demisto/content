@@ -76,9 +76,8 @@ class Client(BaseClient):
         params = {
             "truncation_limit": max_fetch
         }
-        # todo:
-        # if since_datetime:
-        #     params["since_datetime"] = since_datetime
+        if since_datetime:
+            params["vm_scan_date_after"] = since_datetime
 
         response = self._http_request(
             method='GET',
@@ -181,12 +180,13 @@ def remove_last_events(events, time_to_remove, time_field):
             events.remove(event)
 
 
-def add_time_to_events(events, time_field):
+def add_fields_to_events(events, time_field, event_type_field):
     """
     Adds the _time key to the events.
     Args:
         events: List[Dict] - list of events to add the _time key to.
         time_field: the field to get _time from
+        event_type_field: type field in order to distinguish between the API's
     Returns:
         list: The events with the _time key.
     """
@@ -194,6 +194,7 @@ def add_time_to_events(events, time_field):
         for event in events:
             create_time = arg_to_datetime(arg=event.get(time_field))
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            event['event_type'] = event_type_field
 
 
 def get_activity_logs_events(client, last_run, max_fetch) -> tuple[Optional[list], str]:
@@ -209,7 +210,7 @@ def get_activity_logs_events(client, last_run, max_fetch) -> tuple[Optional[list
     activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV, END_RESPONSE_LOGS_CSV))
     next_run = activity_logs_events[0].get('Date') if activity_logs_events else last_run
     remove_last_events(activity_logs_events, next_run, 'Date')
-    add_time_to_events(activity_logs_events, 'Date')
+    add_fields_to_events(activity_logs_events, 'Date', 'activity_log')
 
     return activity_logs_events, next_run
 
@@ -225,9 +226,9 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
     """
     host_list_detections = client.get_host_list_detection(since_datetime=last_run, max_fetch=max_fetch)
     host_list_events = handle_host_list_detection_result(host_list_detections)
-    next_run = host_list_events[0].get('LAST_UPDATE_DATETIME') if host_list_events else last_run
+    next_run = host_list_events[0].get('LAST_VM_SCANNED_DATE') if host_list_events else last_run
     # remove_last_events(host_list_events, next_run, 'LAST_UPDATE_DATETIME')
-    add_time_to_events(host_list_events, 'LAST_UPDATE_DATETIME')
+    add_fields_to_events(host_list_events, 'LAST_VM_SCANNED_DATE', 'host_list_detection')
 
     return host_list_events, next_run
 
@@ -251,13 +252,12 @@ def fetch_events(client, last_run, first_fetch_time, max_fetch: int = 0):
         activity_logs_last_run = first_fetch_time
         host_list_detection_last_run = first_fetch_time
 
-    # activity_logs_events, next_run_activity_log = get_activity_logs_events(client, activity_logs_last_run, max_fetch)
+    activity_logs_events, next_run_activity_log = get_activity_logs_events(client, activity_logs_last_run, max_fetch)
 
     host_list_detection_events, next_run_host_list = get_host_list_detections_events(client,
                                                                                      host_list_detection_last_run,
                                                                                      max_fetch)
-    next_run_activity_log = "TODO"
-    activity_logs_events = []
+
     next_run = {'activity_logs': next_run_activity_log, 'host_list_detection': next_run_host_list}
     return next_run, activity_logs_events + host_list_detection_events
 

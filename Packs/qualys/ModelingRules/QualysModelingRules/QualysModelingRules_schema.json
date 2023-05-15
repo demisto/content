@@ -1,0 +1,56 @@
+{
+  "qualys_qualys_raw": {
+    "Action": {
+      "type": "string",
+      "is_array": false
+    },
+    "Module": {
+      "type": "string",
+      "is_array": false
+    },
+    "Details": {
+      "type": "string",
+      "is_array": false
+    },
+    "ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "ASSET_ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "IP": {
+      "type": "string",
+      "is_array": false
+    },
+    "IPV6": {
+      "type": "string",
+      "is_array": false
+    },
+    "TRACKING_METHOD": {
+      "type": "string",
+      "is_array": false
+    },
+    "NETWORK_ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "ID": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

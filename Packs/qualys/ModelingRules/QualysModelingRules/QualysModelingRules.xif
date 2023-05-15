@@ -1,0 +1,34 @@
+[MODEL: dataset="qualys_qualys_raw"]
+filter
+    event_type in ("activity_log")
+| alter
+    xdm.observer.action = Action,
+    xdm.event.type = Module,
+    xdm.event.description = Details;
+
+filter
+    event_type in ("host_list_detection")
+| alter
+    xdm.source.host.hardware_uuid = ID,
+    xdm.source.agent.identifier = ASSET_ID,
+    xdm.source.ipv4 = IP,
+    xdm.source.ipv6 = IPV6,
+    xdm.observer.type = TRACKING_METHOD,
+    xdm.network.session_id = NETWORK_ID,
+    xdm.source.host.os = coalesce(OS, OS_CPE),
+    xdm.source.host.hostname = coalesce(json_extract_scalar(DNS_DATA, "$.HOSTNAME"), json_extract_scalar(DETECTION_LIST, "$.DETECTION.INSTANCE")),
+    xdm.source.host.fqdn = coalesce(json_extract_scalar(DNS_DATA, "$.FDQN"), json_extract_scalar(DETECTION_LIST, "$.DETECTION.FDQN")),
+    xdm.source.cloud.provider = CLOUD_PROVIDER,
+    xdm.source.cloud.project = coalesce(CLOUD_SERVICE, json_extract_scalar(EC2, "$.NAME"), json_extract_scalar(GOOGLE, "$.NAME"), json_extract_scalar(AZURE, "$.NAME")),
+    xdm.source.host.device_id = coalesce(EC2_INSTANCE_ID, CLOUD_RESOURCE_ID),
+    xdm.source.user.netbios_domain = NETBIOS,
+    xdm.observer.unique_identifier = QG_HOSTID,
+    xdm.event.tags = coalesce(json_extract_scalar(`TAG`, "$.NAME"), json_extract_scalar(CLOUD_PROVIDER_TAGS, "$.NAME")),
+    xdm.event.id = json_extract_scalar(DETECTION_LIST, "$.DETECTION.QID"),
+    xdm.alert.subcategory = json_extract_scalar(DETECTION_LIST, "$.DETECTION.TYPE"),
+    xdm.alert.severity = json_extract_scalar(DETECTION_LIST, "$.DETECTION.SEVERITY"),
+    xdm.source.port = json_extract_scalar(DETECTION_LIST, "$.DETECTION.PORT"),
+    xdm.network.ip_protocol = json_extract_scalar(DETECTION_LIST, "$.DETECTION.PROTOCOL"),
+    xdm.observer.action = json_extract_scalar(DETECTION_LIST, "$.DETECTION.STATUS"),
+    xdm.source.application.name = json_extract_scalar(DETECTION_LIST, "$.DETECTION.SERVICE"),
+    xdm.event.outcome = coalesce(json_extract_scalar(DETECTION_LIST, "$.DETECTION.IS_IGNORED"), json_extract_scalar(DETECTION_LIST, "$.DETECTION.IS_DISABLED"));
