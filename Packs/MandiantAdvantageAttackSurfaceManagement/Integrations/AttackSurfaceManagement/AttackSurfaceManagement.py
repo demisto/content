@@ -93,7 +93,7 @@ class Client(BaseClient):
 
         endpoint = 'search/issues/'
         collections_query = 'collection:' + ' collection:'.join(self.collection_ids)
-        severity_query = f' severity_gte: {severity}'
+        severity_query = f' severity_gte:{severity}'
 
         # Datetime format - 2022-10-07T17:36:37.000Z
         datetime_query = f' last_seen_before:{until.strftime("%Y-%m-%dT%H:%M:%S.%fZ")}'
@@ -110,7 +110,7 @@ class Client(BaseClient):
                                           headers=self.get_headers())
 
             if not isinstance(response, dict) or not response.get('success'):
-                raise RuntimeError('Failed to retrieve issues from ASM')
+                raise RuntimeError(f'Failed to retrieve issues from ASM {response} {search_query}')
 
             yield from response.get('result', {}).get('hits')
 
@@ -160,6 +160,7 @@ class Client(BaseClient):
             raise DemistoException('The ASM API was unable to update'
                                    'the status of the issue')
 
+        demisto.debug(response)
         return response.get('result') or False
 
     def get_headers(self, include_project: bool = True):
@@ -168,7 +169,7 @@ class Client(BaseClient):
             "INTRIGUE_SECRET_KEY": self._secret_key
         }
         if include_project:
-            headers['PROJECT_ID'] = self.project_id
+            headers['PROJECT_ID'] = str(self.project_id)
 
         return headers
 
@@ -215,7 +216,7 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
             parsed_time = datetime.now()
         last_start_time = parsed_time
 
-    issues = client.get_issues_since_time(last_start_time, params.get('minimum_severity'))
+    issues = client.get_issues_since_time(last_start_time, severity=params.get('minimum_severity'))
     most_recent_update = None
 
     parsed_issues = []
@@ -227,6 +228,11 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
         new_incident['lastupdatetime'] = new_incident['dbotMirrorLastSync']
 
         parsed_issues.append(new_incident)
+
+        # If removed, far more issues can be pulled than will be ingested during an ingestion run, resulting
+        # in timeouts or apparent freezing
+        if len(parsed_issues) >= client.limit:
+            break
 
     parsed_issues = filter_incidents_by_duplicates_and_limit(
         incidents_res=parsed_issues, last_run=last_run, fetch_limit=client.limit, id_field='dbotMirrorId'
@@ -265,7 +271,9 @@ def test_module(client: Client) -> str:
         client.get_projects_list()
 
         if demisto.params().get('isFetch', False):
-            fetch_incident_helper(client)
+
+            last_run = demisto.getLastRun()
+            fetch_incident_helper(client, last_run)
 
         message = 'ok'
     except DemistoException as e:
@@ -361,31 +369,25 @@ def get_remote_data_command(client: Client, args: dict):
 def update_remote_system_command(client: Client, args: dict):
     parsed_args = UpdateRemoteSystemArgs(args)
 
-    if parsed_args.delta:
-        demisto.debug(f'Detected following delta keys: {str(list(parsed_args.delta.keys()))}')
-
-    demisto.debug(parsed_args.inc_status)
-
     remote_incident_id = parsed_args.remote_incident_id
+
+    issue_status = parsed_args.delta.get("runStatus")
+    demisto.debug(issue_status, parsed_args.inc_status)
+    if issue_status is not None:
+        demisto.debug("Attempting to UPDATEINCIDENT")
+        client.update_issue_status(remote_incident_id, parsed_args.inc_status)
 
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:
         if parsed_args.remote_incident_id:
             old_incident = client.get_issue_details(remote_incident_id)
+
             old_incident.update(parsed_args.delta)
 
             parsed_args.data = old_incident
         else:
             parsed_args.data['createInvestigation'] = True
 
-    issue_status = parsed_args.delta.get("runStatus")
-    if issue_status:
-        client.update_issue_status(remote_incident_id, issue_status)
-
     return remote_incident_id
-
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
 
 ''' MAIN FUNCTION '''
 
@@ -413,7 +415,7 @@ def main() -> None:
     access_key = params.get('credentials', {}).get('identifier')
     secret_key = params.get('credentials', {}).get('password')
     project_id = params.get('project_id')
-    collections_raw = arg_to_list(params.get('collection_ids', []))
+    collections_raw = argToList(params.get('collection_ids', []))
     collections = [c.strip() for c in collections_raw]
 
     limit = arg_to_number(params.get("max_fetch", 50))
