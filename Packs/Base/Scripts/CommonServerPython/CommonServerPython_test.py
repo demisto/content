@@ -8949,6 +8949,9 @@ TEST_RESPONSE_TO_CONTEXT_DATA = [
     ),
     (
         "test", "test"
+    ),
+    (
+        {"test_func": "test"}, {"TestFunc": "test"}
     )
 ]
 
@@ -8964,6 +8967,7 @@ def test_response_to_context(response, expected_results):
         Case 4: a response dict with a dict as a value.
         Case 5: a response list.
         Case 6: a response string.
+        Case 7: a response dict with a key with underscore.
     When:
         Running response_to_context function.
     Then:
@@ -8974,5 +8978,6 @@ def test_response_to_context(response, expected_results):
         Case 4: Should attempt to transform both the given dict key and the keys of the nested dict.
         Case 5: Should modify the dict inside the list.
         Case 6: Should return the input as is.
+        Case 7: Should remove the underscore and capitalize the first letters of both words.
     """
     assert response_to_context(response) == expected_results

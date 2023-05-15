@@ -7778,12 +7778,13 @@ def string_to_context_key(string):
 
 
 def response_to_context(reponse_obj):
-    """
-    Recursively creates a data dictionary where all key starts with capital letters.
-    Args:
-        reponse_obj: The response object to update.
-    Returns:
-        Any: A response with all keys (if there're any) starts with a capital letter.
+    """Recursively creates a data dictionary where all key starts with capital letters.
+
+    :type reponse_obj: ``Any``
+    :param reponse_obj: The response object to update.
+
+    :return: A response with all keys (if there're any) starts with a capital letter.
+    :rtype: ``Any``
     """
     parsed_dict = {}
     key = ""
