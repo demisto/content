@@ -27,7 +27,7 @@ DETECTION_TIMESTAMP_KEY = "first_timestamp"
 AUDIT_START_TIMESTAMP_FORMAT = "%Y-%m-%d"
 AUDIT_NEXT_RUN_KEY = "start"
 AUDIT_TIMESTAMP_KEY = "vectra_timestamp"
-
+#test
 XSIAM_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 
 
