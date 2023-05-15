@@ -686,7 +686,7 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, first_integration, is_actually_feed,'
+    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, single_integration, is_actually_feed,'
                              ' is_actually_siem, is_actually_data_source',
                              [
                                  # Check is_feed by Integration
@@ -734,13 +734,13 @@ class TestHelperFunctions:
                                  ({'id': 'some-id', 'deprecated': False, 'script': {'isfetch': True}}, 'Integration',
                                   ['xsoar', 'marketplacev2'], False, False, False, False)
                              ])
-    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces, first_integration,
+    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces, single_integration,
                                 is_actually_feed, is_actually_siem, is_actually_data_source):
         """ Tests is_feed or is_seem is set to True for pack changes for tagging.
         """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
         dummy_pack._marketplaces = marketplaces
-        dummy_pack._first_integration = first_integration
+        dummy_pack._single_integration = single_integration
         dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
         assert dummy_pack.is_siem == is_actually_siem
