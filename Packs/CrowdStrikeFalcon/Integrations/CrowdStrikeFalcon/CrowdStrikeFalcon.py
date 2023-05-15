@@ -5133,24 +5133,6 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
     return command_results
 
 
-def ODS_cancel_scans_request(ids: list[str]) -> dict:
-    return http_request('POST', '/ods/entities/scan-control-actions/cancel/v1', json={'ids': ids})
-
-
-def cs_falcon_ods_cancel_scan_command(args: dict) -> CommandResults:
-
-    ids = argToList(args.get('ids'))
-    response = ODS_cancel_scans_request(ids)
-    human_readable = tableToMarkdown('Canceled Scans:', response.get('resources', []), headers=['Scan ID'])
-
-    command_results = CommandResults(
-        raw_response=response,
-        readable_output=human_readable,
-    )
-
-    return command_results
-
-
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -5355,8 +5337,6 @@ def main():
             return_results(cs_falcon_ods_create_scan_command(args))
         elif command == 'cs-falcon-ods-delete-scheduled-scan':
             return_results(cs_falcon_ods_delete_scheduled_scan_command(args))
-        elif command == 'cs-falcon-ods-cancel-scan':
-            return_results(cs_falcon_ods_cancel_scan_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

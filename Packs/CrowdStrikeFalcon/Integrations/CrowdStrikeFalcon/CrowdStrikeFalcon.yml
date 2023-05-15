@@ -4210,14 +4210,6 @@ script:
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
     outputs: []
-  - arguments:
-    - description: Comma-separated list of scan IDs to cancel.
-      isArray: true
-      name: ids
-      required: true
-    description: Cancel ODS scans.
-    name: cs-falcon-ods-cancel-scan
-    outputs: []
   dockerimage: demisto/python3:3.10.11.57890
   isfetch: true
   ismappable: true

@@ -5685,30 +5685,3 @@ There is no context output for this command.
 >|Scan ID|
 >|---|
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
-
-### cs-falcon-ods-cancel-scan
-
-***
-Cancel ODS scans.
-
-#### Base Command
-
-`cs-falcon-ods-cancel-scan`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | Comma-separated list of scan IDs to cancel. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-#### Command example
-```!cs-falcon-ods-cancel-scan ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
-#### Human Readable Output
-
->### Canceled Scans:
->|Scan ID|
->|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |

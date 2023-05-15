@@ -5254,26 +5254,3 @@ def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_param
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_delete_scheduled_scans_request(ids, scans_filter)
     http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}')
-
-
-def test_ODS_cancel_scans_request(mocker):
-    """
-    Test ODS_cancel_scans_request.
-
-    Given
-        - List of ongoing scans to cancel.
-
-    When
-        - The user runs the "cs-falcon-ods-cancel-scan" command
-
-    Then
-        - Cancel ODS scans.
-    """
-    # TODO need to find better check
-    from CrowdStrikeFalcon import ODS_cancel_scans_request
-
-    ids = ['id1', 'id2']
-
-    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
-    ODS_cancel_scans_request(ids)
-    http_request.assert_called_with('POST', '/ods/entities/scan-control-actions/cancel/v1', json={'ids': ids})
