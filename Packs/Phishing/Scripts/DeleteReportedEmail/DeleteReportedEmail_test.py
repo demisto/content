@@ -247,6 +247,7 @@ def test_search_args(mocker, brand):
     INCIDENT_INFO = {
         'CustomFields':
             {
+                'reportedemailorigin': 'Attached',
                 'reportedemailmessageid': 'reportedemailmessageid',
                 'reportedemailto': 'reportedemailto',
                 'emaildeletetype': 'emaildeletetype',
@@ -261,13 +262,21 @@ def test_search_args(mocker, brand):
     current_search_args.update(ADDED_SEARCH_ARGS.get(brand, {}))
     assert get_search_args({}) == current_search_args
 
+    # Test 'email_origin' is 'none' exception
+    incident_info_copy = deepcopy(INCIDENT_INFO)
+    mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
+    incident_info_copy['CustomFields']["reportedemailorigin"] = "None"
+    with pytest.raises(ValueError) as e:
+        get_search_args({})
+    assert "'Reported Email Origin' field could not be found" in str(e.value)
+
     # Test missing message id exception
     incident_info_copy = deepcopy(INCIDENT_INFO)
     mocker.patch.object(demisto, 'incident', return_value=incident_info_copy)
     incident_info_copy['CustomFields'].pop("reportedemailmessageid")
     with pytest.raises(ValueError) as e:
         get_search_args({})
-    assert str(e.value) == "Message ID ('reportedemailmessageid') of the original email could not be found."
+    assert "'Reported Email Message ID' field could not be found" in str(e.value)
 
     # Test missing user id exception
     incident_info_copy = deepcopy(INCIDENT_INFO)
@@ -275,7 +284,7 @@ def test_search_args(mocker, brand):
     incident_info_copy['CustomFields'].pop("reportedemailto")
     with pytest.raises(ValueError) as e:
         get_search_args({})
-    assert str(e.value) == "User ID ('reportedemailto') of the original email could not be found."
+    assert "'Reported Email To' field could not be found" in str(e.value)
 
 
 def test_schedule_next_command(mocker):

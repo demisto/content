@@ -289,7 +289,7 @@ def get_search_args(args: dict):
     delete_type = args.get('delete_type', custom_fields.get('emaildeletetype', 'soft'))
     delete_from_brand = delete_from_brand_handler(incident_info, args)
 
-    missing_field_error_message = "'{field_name} field could not be found.\n" \
+    missing_field_error_message = "'{field_name}' field could not be found.\n" \
                                   f"See {DOCS_TROUBLESHOOTING_URL} for possible solutions."
 
     if not email_origin or email_origin.lower() == 'none':
