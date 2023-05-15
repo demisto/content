@@ -393,7 +393,99 @@ script:
       - contextPath: ReversingLabs.a1000_ip_address_report
         description: A1000 IP address report
         type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.57674
+  - name: reversinglabs-a1000-ip-downloaded-files
+    description: Get a list of files downloaded from an IP address.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: ipAddress
+        description: IP address string
+        default: true
+        isArray: false
+        required: true
+        secret: false
+      - name: extendedResults
+        description: Return extended results
+        default: true
+        isArray: false
+        required: false
+        secret: false
+      - name: classification
+        description: Return only results with this classification
+        isArray: false
+        required: false
+        secret: false
+      - name: pageSize
+        description: Number of results per query page
+        default: 500
+        isArray: false
+        required: false
+        secret: false
+      - name: maxResults
+        description: Maximum number of returned results
+        default: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.a1000_ip_address_downloaded_files
+        description: A1000 Files downloaded from IP address
+        type: Unknown
+  - name: reversinglabs-a1000-ip-domain-resolutions
+    description: Get a list of IP-to-domain resolutions.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: ipAddress
+        description: IP address string
+        default: true
+        isArray: false
+        required: true
+        secret: false
+      - name: pageSize
+        description: Number of results per query page
+        default: 500
+        isArray: false
+        required: false
+        secret: false
+      - name: maxResults
+        description: Maximum number of returned results
+        default: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.a1000_ip_domain_resolutions
+        description: A1000 IP-to-domain resolutions
+        type: Unknown
+  - name: reversinglabs-a1000-ip-urls
+    description: Get a list of URLs hosted on the requested IP address.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: ipAddress
+        description: IP address string
+        default: true
+        isArray: false
+        required: true
+        secret: false
+      - name: pageSize
+        description: Number of results per query page
+        default: 500
+        isArray: false
+        required: false
+        secret: false
+      - name: maxResults
+        description: Maximum number of returned results
+        default: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.a1000_ip_urls
+        description: A1000 URL-s hosted on an IP address
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58850
   feed: false
   isfetch: false
   longRunning: false

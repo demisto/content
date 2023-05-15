@@ -630,6 +630,165 @@ def ip_report_output(ip, response_json):
     return results
 
 
+def get_files_from_ip(a1000):
+    """
+    Get a list of hashes and classifications for files found on the requested IP address.
+    """
+    ip = demisto.getArg("ipAddress")
+    extended = demisto.getArg("extendedResults")
+    if extended:
+        extended = argToBoolean(extended)
+    classification = demisto.getArg("classification")
+    page_size = demisto.getArg("pageSize")
+    max_results = demisto.getArg("maxResults")
+
+    try:
+        response = a1000.network_files_from_ip_aggregated(
+            ip_addr=ip,
+            extended_results=extended,
+            classification=classification if classification else None,
+            page_size=page_size,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = files_from_ip_output(ip=ip, response=response)
+
+    return results
+
+
+def files_from_ip_output(ip, response):
+    returned_files = tableToMarkdown("Files downloaded from IP address", response)
+
+    markdown = f"## ReversingLabs A1000 Files Downloaded From IP Address {ip}\n"
+    markdown = f"{markdown} {returned_files}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_address_downloaded_files": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_ip_domain_resolutions(a1000):
+    """
+    Get a list of IP-to-domain resolutions.
+    """
+    ip = demisto.getArg("ipAddress")
+    page_size = demisto.getArg("pageSize")
+    max_results = demisto.getArg("maxResults")
+
+    try:
+        response = a1000.network_ip_to_domain_aggregated(
+            ip_addr=ip,
+            page_size=page_size,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_domain_resolutions_output(ip=ip, response=response)
+
+    return results
+
+
+def ip_domain_resolutions_output(ip, response):
+    returned_domains = tableToMarkdown("IP-to-domain resolutions", response)
+
+    markdown = f"## ReversingLabs A1000 IP-to-domain Resolutions for IP address {ip}\n"
+    markdown = f"{markdown} {returned_domains}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_domain_resolutions": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_urls_from_ip(a1000):
+    """
+    Get a list of URL-s hosted on an IP address.
+    """
+    ip = demisto.getArg("ipAddress")
+    page_size = demisto.getArg("pageSize")
+    max_results = demisto.getArg("maxResults")
+
+    try:
+        response = a1000.network_urls_from_ip_aggregated(
+            ip_addr=ip,
+            page_size=page_size,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = urls_from_ip_output(ip=ip, response=response)
+
+    return results
+
+
+def urls_from_ip_output(ip, response):
+    returned_urls = tableToMarkdown("URL-s hosted on the IP address", response)
+
+    markdown = f"## ReversingLabs A1000 URL-s Hosted On IP Address {ip}\n"
+    markdown = f"{markdown} {returned_urls}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_urls": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
 def main():
 
     try:
@@ -683,11 +842,11 @@ def main():
         elif demisto.command() == 'reversinglabs-a1000-ip-address-report':
             return_results(get_ip_report(a1000))
         elif demisto.command() == 'reversinglabs-a1000-ip-downloaded-files':
-            pass
+            return_results(get_files_from_ip(a1000))
         elif demisto.command() == 'reversinglabs-a1000-ip-domain-resolutions':
-            pass
+            return_results(get_ip_domain_resolutions(a1000))
         elif demisto.command() == 'reversinglabs-a1000-ip-urls':
-            pass
+            return_results(get_urls_from_ip(a1000))
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
 
