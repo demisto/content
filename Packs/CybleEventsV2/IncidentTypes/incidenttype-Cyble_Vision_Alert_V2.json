@@ -1,0 +1,30 @@
+{
+    "id": "Cyble Intel Alert V2",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Cyble Intel Alert V2",
+    "prevName": "Cyble Intel Alert V2",
+    "color": "#F8E7A5",
+    "playbookId": "Cyble Intel Alert V2",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "91b2b1be-7c2e-4ec5-8be8-3407aba92b65",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.8.0"
+}
