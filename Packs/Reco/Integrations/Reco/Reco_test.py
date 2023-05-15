@@ -377,6 +377,7 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
         risk_level=40,
+        source="test",
         before=datetime.datetime.now(),
         last_run={},
         max_fetch=1,
