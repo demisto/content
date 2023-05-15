@@ -3637,7 +3637,7 @@ def parse_risky_users_or_hosts(user_or_host: dict[str, Any], table_title: str) -
     }
 
 
-def parse_user_groups(group: dict[str, Any]) -> list[dict[str, str | None]]:
+def parse_user_groups(group: dict[str, Any]) -> list[dict[str, Any]]:
     return [
         {
             'User email': user,
@@ -3658,21 +3658,20 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def find_the_cause_error(err: str, id_or_group_or_role: str) -> str:
+def find_the_cause_error(err: Exception) -> str:
     """
     Finds the cause of an error message related to a missing ID, group or role.
 
     Args:
         err: A string containing the error message to parse.
-        id_or_group_or_role: A string representing the type of entity (ID, group or role) that was not found.
 
     Returns:
         A string describing the cause of the error message.
 
     """
-    pattern = fr"{id_or_group_or_role} \\?'([/A-Za-z 0-9]+)\\?'"
-    if match := re.search(pattern, err):
-        return f'Error: {id_or_group_or_role} {match[1]} was not found'
+    pattern = r"(id |Group |Role )\\?'([/A-Za-z 0-9]+)\\?'"
+    if match := re.search(pattern, str(err)):
+        return f'Error: {match[1]}{match[2]} was not found'
     return "Error: "
 
 
@@ -3688,20 +3687,18 @@ def handle_error(e, type_: str | None, custom_msg: str | None) -> None:
     Raises:
         ValueError: If the error message indicates that the resource was not found, a more detailed error message
             is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
-        ValueError: If the error message indicates that there were no risky users or hosts found, a value error is raised
-            with a specific error message and the original error as the cause.
     """
 
-    if e.res is not None and e.res.status_code == 500:
+    if (
+        e.res is not None
+        and e.res.status_code == 500
+        and 'was not found' in str(e)
+    ):
+        error_msg = find_the_cause_error(e)
+        raise ValueError(
+            f'{error_msg}{custom_msg if type_ in ("Group", "Role") else ""}. Full error message: {e}'
+        ) from e
 
-        if 'was not found' in str(e):
-            error_msg = find_the_cause_error(str(e), type_)
-            raise ValueError(
-                f'{error_msg}{custom_msg if type_ == ("Group" or "Role") else ""}. Full error message: {e}'
-            ) from e
-
-        elif 'No identity module' in str(e):
-            raise ValueError(f'{custom_msg}. Full error message: {e}') from e
     raise
 
 
@@ -3765,23 +3762,19 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
 
     """
     table_title = 'User ID'
+    outputs: list[dict] | dict
 
     if user_id := args.get('user_id'):
         try:
-            outputs: dict[str, Any] = client.get_risk_score_user_or_host(user_id).get('reply', {})
+            outputs = client.get_risk_score_user_or_host(user_id).get('reply', {})
         except DemistoException as e:
-            err_msg = "No risky users were found."
-            handle_error(e=e, type_="id", custom_msg=err_msg)
+            handle_error(e=e, type_="id", custom_msg=None)
 
-        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]  # type: ignore[arg-type]
 
     else:
         list_limit = int(args.get('limit', 50))
-        try:
-            outputs: list[dict[str, Any]] = client.get_list_risky_users().get('reply', [])[:list_limit]
-        except DemistoException as e:
-            err_msg = "No risky users were found."
-            handle_error(e=e, type_=None, custom_msg=err_msg)
+        outputs = client.get_list_risky_users().get('reply', [])[:list_limit]
 
         table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
 
@@ -3815,25 +3808,20 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
     - ValueError: If the API connection fails or the specified Host ID is not found.
     """
     table_title = 'Host ID'
+    outputs: list[dict] | dict
 
     if host_id := args.get('host_id'):
         try:
-            outputs: dict[str, Any] = client.get_risk_score_user_or_host(host_id).get('reply', {})
+            outputs = client.get_risk_score_user_or_host(host_id).get('reply', {})
         except DemistoException as e:
-            err_msg = "No risky hosts were found."
-            handle_error(e=e, type_="id", custom_msg=err_msg)
+            handle_error(e=e, type_="id", custom_msg=None)
 
-        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]   # type: ignore[arg-type]
     else:
         list_limit = int(args.get('limit', 50))
-        try:
-            outputs: list[dict[str, Any]] = client.get_list_risky_hosts().get('reply', [])[:list_limit]
-        except DemistoException as e:
-            err_msg = "No risky hosts were found."
-            handle_error(e=e, type_=None, custom_msg=err_msg)
+        outputs = client.get_list_risky_hosts().get('reply', [])[:list_limit]
 
         table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
-
     readable_output = tableToMarkdown(name='Risky Hosts', t=table_for_markdown)
 
     return CommandResults(
@@ -3921,39 +3909,32 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
     )
 
 
-def set_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
-    user_emails = argToList(args['user_emails'])
-    role_name = args['role_name']
-
-    res = client.set_user_role(user_emails, role_name).get("reply")
-    amount_users_update = res.get("update_count")
-    if amount_users_update != len(user_emails):
-        return CommandResults(
-            readable_output=f"{amount_users_update} users role have been updated successfully. Some users have not been found."
-        )
-
-    return CommandResults(readable_output="User Role Was Updated Successfully.")
-
-
-def remove_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+def change_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
-    Removes one or more users.
+    Changes the role of user(s) in the system.
 
     Args:
-        client (CoreClient): An instance of the CoreClient class.
-        args (dict[str, str]): A dictionary of arguments passed to the function, including:
-            user_emails (str): A comma-separated list of email addresses for the users to be removed.
+        client (CoreClient): An instance of the CoreClient class used to interact with the system.
+        args (dict[str, str]): A dictionary containing the command arguments.
+            - 'user_emails' (str): A comma-separated string of user emails.
+            - 'role_name' (str, optional): The name of the role to assign to the user(s).
+              If not provided, the role for the user(s) will be removed.
 
     Returns:
-        CommandResults: An instance of the CommandResults class, containing a human-readable
-        message indicating that the users were removed successfully.
+        CommandResults: An object containing the result of the command execution.
     """
     user_emails = argToList(args['user_emails'])
 
-    res = client.remove_user_role(user_emails).get("reply")
-    amount_users_update = res.get("update_count")
-    if amount_users_update != len(user_emails):
-        return CommandResults(
-            readable_output=f"{amount_users_update} users role have been removed successfully. Some users have not been found."
-        )
-    return CommandResults(readable_output="User Role Was Removed Successfully.")
+    if role_name := args.get('role_name'):
+        res = client.set_user_role(user_emails, role_name)["reply"]
+        action_msg = "updated"
+    else:
+        res = client.remove_user_role(user_emails)["reply"]
+        action_msg = "removed"
+
+    count = res.get("update_count")
+    plural_suffix = 's' if len(user_emails) > 1 else ''
+
+    return CommandResults(
+        readable_output=f"Role was {action_msg} successfully for {count} user{plural_suffix}."
+    )
