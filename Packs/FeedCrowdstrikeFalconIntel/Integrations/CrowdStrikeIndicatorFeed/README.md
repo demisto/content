@@ -30,7 +30,7 @@ CrowdStrike Falcon Intel Indicator Feed
     
 4. Click **Test** to validate the URLs, token, and connection.
 
-**Note**: To change the fetch start time , use the `crowdstrike-reset-fetch-indicators` command after setting the desired time.
+**Note**: To change the fetch start time , use the `crowdstrike-reset-fetch-indicators` command after setting the desired time in `First Fetch Time` parameter.
 
 ## Commands
 
