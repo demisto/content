@@ -555,18 +555,7 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
-            if response.get("getTableResponse") is None:
-                demisto.error(f"got bad response, {response}")
-                raise Exception(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                assets = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(assets)} result")
-                return assets
+            return extract_response(response)
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
