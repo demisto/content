@@ -61,7 +61,7 @@ HTML_MESSAGE_BAD = '''
 <div style='font-size:18px;'>
 Nope!!! Try again.
 Remember to overwrite the "secret" argument when you are re-running the task. 
-To re-run this task -> Click on "Complete Task" -> clear the Secret value using the trash-can icon -> fill out the Secret value -> click on the 'Run script now' :)
+To re-run this task -> Click on "Complete Task" -> clear the Secret value using the trash-can icon -> out the Secret value -> click on the 'Run script now' :)
 </div>
 ''' %(bad_images[random.randint(0,len(bad_images)-1)])
 
