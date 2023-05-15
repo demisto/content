@@ -86,6 +86,7 @@ class Client(BaseClient):
             return res.text, res.headers.get('Content-Disposition')
         if resp_type == 'content':
             return res.content, res.headers.get('Content-Disposition')
+        print("TEST")
 
         return res
 
