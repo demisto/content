@@ -1,0 +1,234 @@
+{
+    "content": [
+        {
+            "ID": "57b974da5b0a195300b6bc7b",
+            "Value": "OpUSA",
+            "Type": "Campaign",
+            "Severity": "High",
+            "Aliases": [],
+            "Origins": [
+                "Global"
+            ],
+            "TargetCountries": [
+                "United States"
+            ],
+            "TargetSectors": [
+                "Financial Services",
+                "Government"
+            ],
+            "CreatedDate": "content[0]_CreatedDate",
+            "UpdatedDate": "content[0]_UpdatedDate",
+            "TTPs": [
+                "DDoS",
+                "Defacement",
+                "SQL Injection"
+            ],
+            "Overview": "OpUSA was a campaign that was launched by Anonymous hacktivists and various Arab and Muslim hacking groups on May 7, 2013. The campaign was launched in response to the American government\u2019s involvement in wars around the world, specifically in Iraq and Afghanistan. By the end of the campaign, dozens of American websites and servers had been hacked, hundreds of emails were leaked and thousands of social media accounts were hijacked.",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "AnonGhost",
+                "AnonSec",
+                "Anonymous",
+                "Mauritania Attacker",
+                "Ungku",
+                "ZCompany Hacking Crew"
+            ],
+            "RelatedCampaigns": [],
+            "MitreAttack": []
+        },
+        {
+            "ID": "6220ea495c879c2c4d36c124",
+            "Value": "El Patron",
+            "Type": "ThreatActor",
+            "Severity": "Medium",
+            "Aliases": [],
+            "Origins": [],
+            "TargetCountries": [
+                "Russian Federation"
+            ],
+            "TargetSectors": [
+                "Media"
+            ],
+            "CreatedDate": "content[1]_CreatedDate",
+            "UpdatedDate": "content[1]_UpdatedDate",
+            "TTPs": [],
+            "Overview": "El Patron is a member of the Anonymous hacking group, operating under the moniker \"El_patron_real.\"     \n\nOn March 3, 2022, El Patron and other Anonymous affiliates took down the Russian news website lenta.ru.",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "Anonymous"
+            ],
+            "RelatedCampaigns": [
+                "OpRussia 2022-2023",
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        },
+        {
+            "ID": "57b59fd5a5b95fbe01eb4bbe",
+            "Value": "AnonGhost",
+            "Type": "ThreatActor",
+            "Severity": "High",
+            "Aliases": [],
+            "Origins": [
+                "Global"
+            ],
+            "TargetCountries": [
+                "Israel",
+                "Russian Federation",
+                "United States"
+            ],
+            "TargetSectors": [
+                "Banking",
+                "Government"
+            ],
+            "CreatedDate": "content[2]_CreatedDate",
+            "UpdatedDate": "content[2]_UpdatedDate",
+            "TTPs": [
+                "DDoS",
+                "Defacement",
+                "SQL Injection"
+            ],
+            "Overview": "AnonGhost is a disparate group of around 15 pro-Palestinian hacktivists who are based in Africa, the Middle East, and Europe. They have focused on disputing Israel in cyberspace since 2013 and have recently begun to target the US.\n\nThe AnonGhost Team appears to be headed by Mauritania Attacker. The group targets government, corporate and private websites around the world to bring attention to its extremist agenda. For several years,  AnonGhost\u2019s activity has primarily involved defacing websites with anti-western, anti-Israel, and anti-Semitic messages, especially during OpIsrael and OpUSA campaigns in recent years. In the past months, Anonghost declared their support of the Islamic State in Iraq and Syria (ISIS) and focused on targets in the U.S. \n\nIn addition to cyber-attacks, the network has launched a number of software tools designed to enable users to conduct their own cyber-attacks against their targets of choice. For example, in March 2015, AnonGhost alerted its supporters via its social media profiles to a new software which enables users to initiate denial of service (DOS) attacks.\n\nOn March 7, 2022, AnonGhost, affiliated with Anonymous, claimed to have hacked and shut down two Russian SCADA water supply systems.",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "Anonymous",
+                "Anonymous Kurdistan",
+                "Ghost Squad Hackers",
+                "HaX StroKE",
+                "Lous666",
+                "Mauritania Attacker",
+                "Mauritanian Hackers group",
+                "Mrlele",
+                "P@r@dox17",
+                "Ungku"
+            ],
+            "RelatedCampaigns": [
+                "OpBiz",
+                "OpCatalonia",
+                "OpIcarus",
+                "OpIsrael",
+                "OpNoDAPL",
+                "OpRussia 2022-2023",
+                "OpSingleGateway",
+                "OpUSA",
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        },
+        {
+            "ID": "622df6d1fc44af0671de66d5",
+            "Value": "Ghost Angel",
+            "Type": "ThreatActor",
+            "Severity": "Medium",
+            "Aliases": [],
+            "Origins": [],
+            "TargetCountries": [
+                "Russian Federation",
+                "United States"
+            ],
+            "TargetSectors": [],
+            "CreatedDate": "content[3]_CreatedDate",
+            "UpdatedDate": "content[3]_UpdatedDate",
+            "TTPs": [],
+            "Overview": "content[3]_Overview",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "Anonymous"
+            ],
+            "RelatedCampaigns": [
+                "OpRussia 2022-2023",
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        },
+        {
+            "ID": "6224d853c8b07d7b752cffd9",
+            "Value": "Ghost_Codin",
+            "Type": "ThreatActor",
+            "Severity": "High",
+            "Aliases": [],
+            "Origins": [],
+            "TargetCountries": [
+                "Russian Federation"
+            ],
+            "TargetSectors": [],
+            "CreatedDate": "content[4]_CreatedDate",
+            "UpdatedDate": "content[4]_UpdatedDate",
+            "TTPs": [],
+            "Overview": "Ghost_Codin is a member of TheGhostSquad, an Anonymous affiliates group. In March 2022, he was observed taking part in the #OpRussia cyber campaign against Russia.",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "Anonymous"
+            ],
+            "RelatedCampaigns": [
+                "OpRussia 2022-2023",
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        },
+        {
+            "ID": "62273c882d52d3516aac46a0",
+            "Value": "IsaacWiper",
+            "Type": "Malware",
+            "Severity": "Medium",
+            "Aliases": [],
+            "Origins": [],
+            "TargetCountries": [
+                "Ukraine"
+            ],
+            "TargetSectors": [
+                "Government"
+            ],
+            "CreatedDate": "content[5]_CreatedDate",
+            "UpdatedDate": "content[5]_UpdatedDate",
+            "TTPs": [
+                "File Deletion"
+            ],
+            "Overview": "The IsaacWiper malware, first observed by cybersecurity researchers in February 2022, has been active since at least October 2021. The malware was used to attack a Ukrainian government network, amidst the Russo-Ukrainian War. IsaacWiper was not attributed to any specific threat actor, but it is assumed to be operated by Russia-supporters. \n\nIsaacWiper\u2019s initial access vector is yet to be known, but it was found in Windows DLL or EXE files with no Authenticode signature. Once deployed, it enumerates the physical drives and calls DeviceIoControl to get their device numbers. Then, it wipes the first 0x10000 bytes of each disk, using the Mersenne Twister pseudorandom generator. The malware continues to enumerate the logical drives as well, wiping every file of each disk with random bytes. In addition, it is assumed that the malware operators use tools, such as Impacket, to move laterally. On some occasions, the malware was deployed alongside the RemCom remote access tool, which may imply a connection between both malware.",
+            "AdditionalInformation": "On February 25, 2022, the IsaacWiper operators deployed a new version of the malware with debug logs, suggesting that they were unable to wipe some of the compromised devices and wanted to determine the reason for further development.",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [],
+            "RelatedCampaigns": [
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        },
+        {
+            "ID": "622dfb92fc44af0671de7439",
+            "Value": "HermeticRansom",
+            "Type": "Malware",
+            "Severity": "Medium",
+            "Aliases": [
+                "Elections GoRansom",
+                "PartyTicket"
+            ],
+            "Origins": [],
+            "TargetCountries": [
+                "Ukraine"
+            ],
+            "TargetSectors": [
+                "General"
+            ],
+            "CreatedDate": "content[6]_CreatedDate",
+            "UpdatedDate": "content[6]_UpdatedDate",
+            "TTPs": [
+                "File Encryption",
+                "Ransom Collection"
+            ],
+            "Overview": "The HermeticRansom ransomware (AKA PartyTicket, Elections GoRansom) was first observed by cybersecurity researchers in February 2022. The malware was used to attack Ukrainian entities and is suspectedly operated by Russian threat actors, amidst the Russo-Ukrainian War.\n\nHermeticRansom, written in Golang, was observed to be distributed alongside the HermeticWiper malware, probably in an attempt to obscure the latter\u2019s activity. On at least one occasion, HermeticRansom was deployed using the GPO deployment method, similar to HermeticWiper. Once deployed, the ransomware encrypts the files that are stored upon the victim\u2019s computer, while dropping a ransomware note referencing a statement made by the United States President Joe Biden. In addition, the contact email address that appears in the note suggests voting for Joe Biden in the 2024 elections (\u201cvote2024forjb\u201d).",
+            "AdditionalInformation": "content[6]_AdditionalInformation",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [],
+            "RelatedCampaigns": [
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        }
+    ],
+    "nextOffset": "nextOffset"
+}
