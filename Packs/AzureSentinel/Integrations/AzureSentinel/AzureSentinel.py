@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 # IMPORTS
@@ -79,7 +78,7 @@ CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'Sus
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
                  client_secret: str, subscription_id: str,
-                 resource_group_name: str, workspace_name: str, certificate_thumbprint: Optional[str],
+                 resource_group_name: str, cloud_type: str, workspace_name: str, certificate_thumbprint: Optional[str],
                  private_key: Optional[str], verify: bool = True, proxy: bool = False,
                  managed_identities_client_id: Optional[str] = None):
         """
@@ -135,6 +134,7 @@ class AzureSentinelClient:
             ok_codes=(200, 201, 202, 204),
             verify=verify,
             proxy=proxy,
+            endpoint=cloud_type,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
@@ -1884,6 +1884,7 @@ def main():
         client_secret = params.get('credentials', {}).get('password')
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
             params.get('certificate_thumbprint')
+        azure_cloud_type = demisto.params().get('azure_cloud')
         private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password'))
                        or params.get('private_key'))
         managed_identities_client_id = get_azure_managed_identities_client_id(params)
@@ -1905,6 +1906,7 @@ def main():
             client_secret=client_secret,
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
+            cloud_type=azure_cloud_type,
             workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
