@@ -26,5 +26,8 @@
         "pam",
         "privileged access management"
     ],
-    "marketplaces": []
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
