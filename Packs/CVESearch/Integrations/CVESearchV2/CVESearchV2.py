@@ -1,5 +1,6 @@
 import urllib3
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List, Union, Tuple
+import re
 
 from CommonServerPython import *
 
@@ -144,7 +145,7 @@ def generate_indicator(data: dict) -> Common.CVE:
         A CVE indicator with dbotScore
     """
 
-    def parse_cpe(cpe: str) -> tuple[List[str], List[EntityRelationship]]:
+    def parse_cpe(cpe: str) -> tuple[list[str], list[EntityRelationship]]:
         """
 
         Args:
@@ -155,10 +156,16 @@ def generate_indicator(data: dict) -> Common.CVE:
 
         """
 
+        cpe_parts = {
+            "a": "Application",
+            "o": "Operating-System",
+            "h": "Hardware"
+        }
+
         relationships = []
 
         try:
-            vendor = cpe[3].capitalize()
+            vendor = cpe[3].capitalize().replace("\\", "").replace("_", " ")
             if vendor:
                 relationships.append(EntityRelationship(name="targets",
                                                         entity_a=cve_id,
@@ -169,7 +176,7 @@ def generate_indicator(data: dict) -> Common.CVE:
             vendor = ''
 
         try:
-            product = cpe[4].capitalize()
+            product = cpe[4].capitalize().replace("\\", "").replace("_", " ")
             if product:
                 relationships.append(EntityRelationship(name="targets",
                                                         entity_a=cve_id,
@@ -187,19 +194,19 @@ def generate_indicator(data: dict) -> Common.CVE:
 
         return [vendor, product, part], relationships
 
-    cpe_parts = {
-        "a": "Application",
-        "o": "Operating-System",
-        "h": "Hardware"
-    }
+
 
     relationships = []
-    tags = []
     cve_id = data.get('id', '')
-    cpe = data.get("vulnerable_product")
+    cpe = data.get("vulnerable_product", '')
 
     if cpe:
-        tags, relationships = parse_cpe(cpe[0])
+        cpe = re.split('(?<!\\\):', cpe[0])
+        tags, relationships = parse_cpe(cpe)
+        tags.append(data.get('cwe'))
+
+    else:
+        tags = [data.get('cwe')]
 
     cvss_table = []
 
@@ -221,7 +228,7 @@ def generate_indicator(data: dict) -> Common.CVE:
         publications=[Common.Publications(title=data.get('id'),
                                           link=reference,
                                           source="Circl.lu") for reference in data.get("references")],
-        tags=tags.append(data.get('cwe')),
+        tags=tags
     )
 
     if relationships:
