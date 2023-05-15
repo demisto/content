@@ -2,7 +2,6 @@ category: Messaging and Conferencing
 commonfields:
   id: Opsgeniev2
   version: -1
-deprecated: true
 configuration:
 - defaultvalue: https://api.opsgenie.com
   display: Server URL (e.g. https://example.net)
@@ -24,7 +23,8 @@ configuration:
   required: false
   type: 4
 description: Deprecated. Use the OpsGenieV3 integration instead.
-display: Opsgenie v2
+display: Opsgenie v2 (Deprecated)
+deprecated: true
 name: Opsgeniev2
 fromversion: 6.0.0
 tests:
