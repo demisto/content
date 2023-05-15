@@ -233,3 +233,4 @@ linter
 pylint
 delimiter
 GCP
+Qradar

@@ -21,6 +21,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Retrieve_File_by_sha256"
+        },
+        {
             "integrations": "Twitter v2",
             "playbookID": "playbook-Test_Twitter_v2",
             "instance_names": "Twitter v2"
@@ -1368,7 +1372,8 @@
                 "ThreatQ v2",
                 "Demisto REST API"
             ],
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -2755,7 +2760,8 @@
         },
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
-            "integrations": "Threat Crowd",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
             "fromversion": "4.1.0"
         },
         {
@@ -3625,6 +3631,13 @@
         {
             "integrations": "EWS Extension Online Powershell v2",
             "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V2-Test",
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 250
+        },
+        {
+            "integrations": "EWS Extension Online Powershell v3",
+            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V3-Test",
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
@@ -5369,6 +5382,10 @@
         {
             "integrations": "AWS - Route53",
             "playbookID": "playbook-create_delete_record_Test"
+        },
+        {
+          "integrations":  "Cylance Protect v2",
+          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         }
     ],
     "skipped_tests": {
@@ -5545,7 +5562,8 @@
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
-        "SumoLogic-Test": "401 unauthorized, CIAC-6334"
+        "SumoLogic-Test": "401 unauthorized, CIAC-6334",
+        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
