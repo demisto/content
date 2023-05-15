@@ -74,7 +74,7 @@ class Client(BaseClient):
         endpoint = 'user_collections'
 
         response = self._http_request('GET', endpoint,
-                                      headers=self.get_headers())
+                                      headers=self.get_headers(project_id=project_id))
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
@@ -161,13 +161,15 @@ class Client(BaseClient):
         demisto.debug(response)
         return response.get('result') or False
 
-    def get_headers(self, include_project: bool = True):
+    def get_headers(self, include_project: bool = True, project_id=None):
+        if not project_id:
+            project_id = self.project_id
         headers = {
             "INTRIGUE_ACCESS_KEY": self._access_key,
             "INTRIGUE_SECRET_KEY": self._secret_key
         }
         if include_project:
-            headers['PROJECT_ID'] = str(self.project_id)
+            headers['PROJECT_ID'] = str(project_id)
 
         return headers
 
