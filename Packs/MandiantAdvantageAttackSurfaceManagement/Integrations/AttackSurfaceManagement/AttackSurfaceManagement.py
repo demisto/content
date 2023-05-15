@@ -4,14 +4,12 @@ import urllib.parse
 from dateutil import parser
 
 import dateutil
-import requests
 
 # import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -134,7 +132,7 @@ class Client(BaseClient):
 
     def get_notes(self,
                   resource_type: str,
-                  resource_id: str) -> dict:
+                  resource_id: str) -> list:
         endpoint = f'notes/{resource_type}/{resource_id}'
 
         response = self._http_request('GET', endpoint,
@@ -173,7 +171,9 @@ class Client(BaseClient):
 
         return headers
 
+
 ''' HELPER FUNCTIONS '''
+
 
 def helper_create_incident(issue: dict, project_id: int) -> dict:
     severity_map = {1: 4, 2: 3, 3: 2, 4: 1, 5: 0.5}
@@ -185,7 +185,6 @@ def helper_create_incident(issue: dict, project_id: int) -> dict:
     issue = {
         'name': issue.get('summary', {}).get('pretty_name'),
         'details': json.dumps(issue, indent=4),
-        'occurred': parser.parse(issue.get('first_seen')).isoformat(),
         'severity': severity_map.get(issue.get('summary', {}).get('severity'),),
         'rawJSON': json.dumps(raw_json),
         'dbotMirrorId': issue.get('id', issue.get('uid')),
@@ -198,7 +197,12 @@ def helper_create_incident(issue: dict, project_id: int) -> dict:
         }
     }
 
+    occurred = issue.get('first_seen')
+    if isinstance(occurred, str):
+        issue['occurred'] = parser.parse(occurred).isoformat()
+
     return issue
+
 
 def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, list]:
     last_start_time: datetime
@@ -208,8 +212,10 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
     if not client.project_id:
         raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
 
-    if last_run and 'time' in last_run and last_run['time']:
-        last_start_time = parser.parse(last_run.get('time'))
+    last_run_time = last_run.get('time')
+
+    if last_run_time and isinstance(last_run_time, str):
+        last_start_time = parser.parse(last_run_time)
     else:
         parsed_time = dateparser.parse(params.get("first_fetch"), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
         if not parsed_time:
@@ -248,6 +254,7 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
     }
 
     return last_run, parsed_issues,
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -318,8 +325,6 @@ def get_collections(client: Client, args: dict = None) -> CommandResults:
     )
 
 
-
-
 def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
 
@@ -327,6 +332,7 @@ def fetch_incidents(client: Client):
 
     demisto.setLastRun(last_run)
     return new_issues
+
 
 def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
@@ -389,6 +395,7 @@ def update_remote_system_command(client: Client, args: dict):
 
     return remote_incident_id
 
+
 ''' MAIN FUNCTION '''
 
 
@@ -418,8 +425,8 @@ def main() -> None:
     collections_raw = argToList(params.get('collection_ids', []))
     collections = [c.strip() for c in collections_raw]
 
-    limit = arg_to_number(params.get("max_fetch", 50))
-    timeout = arg_to_number(params.get("timeout", 60))
+    limit = arg_to_number(params.get("max_fetch", 50)) or 50
+    timeout = arg_to_number(params.get("timeout", 60)) or 60
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
