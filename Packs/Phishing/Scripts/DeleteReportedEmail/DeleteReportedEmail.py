@@ -13,7 +13,7 @@ seconds = time.time()
 
 class MissingEmailException(Exception):
     def __init__(self):
-        super().__init__('Error: Email not found in mailbox. It may have been manually deleted.')
+        super().__init__('Email not found in mailbox. It may have been manually deleted.')
 
 
 class DeletionFailed(Exception):
