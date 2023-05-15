@@ -3245,13 +3245,13 @@ def fetch_threats(client: Client, args):
                                          site_ids=args.get('fetch_site_ids'))
     for threat in threats:
         rank = threat.get('rank')
+        threat.update(get_mirroring_fields(args))
         try:
             rank = int(rank)
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
         if IS_VERSION_2_1 or rank >= args.get('fetch_threat_rank'):
-            threat['type'] = 'threat'
             incident = to_incident('Threat', threat)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = int(date_occurred_dt.timestamp() * 1000)
@@ -3281,7 +3281,6 @@ def fetch_alerts(client: Client, args):
         severity = alert.get('ruleInfo').get('severity')
 
         if str(severity) in args.get('fetch_severity'):
-            alert['type'] = 'alert'
             incident = to_incident('Alert', alert)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = int(date_occurred_dt.timestamp() * 1000)
@@ -3377,6 +3376,7 @@ def main():
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
     block_site_ids = argToList(params.get('block_site_ids')) or []
+    mirror_direction = params.get('mirror_direction', None)
 
     headers = {
         'Authorization': 'ApiToken ' + token if token else 'ApiToken',
@@ -3478,7 +3478,8 @@ def main():
                     'fetch_threat_rank': fetch_threat_rank,
                     'fetch_site_ids': fetch_site_ids,
                     'fetch_incidentStatus': fetch_incidentStatus,
-                    'fetch_severity': fetch_severity
+                    'fetch_severity': fetch_severity,
+                    'mirror_direction': mirror_direction
                 }
 
                 return_results(fetch_handler(client, fetch_dict))
