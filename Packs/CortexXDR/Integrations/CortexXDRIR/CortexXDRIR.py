@@ -1612,10 +1612,10 @@ def main():  # pragma: no cover
             return_results(get_list_roles_command(client, args))
 
         elif command == 'xdr-set-user-role':
-            return_results(set_user_role_command(client, args))
+            return_results(change_user_role_command(client, args))
 
         elif command == 'xdr-remove-user-role':
-            return_results(remove_user_role_command(client, args))
+            return_results(change_user_role_command(client, args))
 
     except Exception as err:
         return_error(str(err))

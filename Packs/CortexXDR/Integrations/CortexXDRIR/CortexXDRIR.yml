@@ -3315,9 +3315,9 @@ script:
   - arguments:
     - description: |
         Unique ID of a specific user.
-        User ID could be in the following format: dummy/dummy
+        User ID could be either of the `dummy/dummy` format, or `dummy`
       name: user_id
-    - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when don't asking for specific user)
+    - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(limit should be used when no specific host is requested)
       name: limit
       defaultValue: 50
     name: xdr-list-risky-users
@@ -3351,11 +3351,11 @@ script:
     - description: >
         Unique ID of a specific host.
       name: host_id
-    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(use limit when you don't asking for specific host).
+    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(limit should be used when no specific host is requested).
       name: limit
       defaultValue: 50
     name: xdr-list-risky-hosts
-    description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in your environment along with the reason affecting each score.
+    description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
     - contextPath: PaloAltoNetworksXDR.RiskyHost.type
       description: Form of identification element.
@@ -3387,7 +3387,7 @@ script:
       isArray: true
       required: true
     name: xdr-list-user-groups
-    description: Retrieve a list of the current user emails associated with one or more user groups in your environment.
+    description: Retrieve a list of the current user emails associated with one or more user groups in the environment.
     outputs:
     - contextPath: PaloAltoNetworksXDR.UserGroup.group_name
       description: Name of the User Group.
@@ -3415,7 +3415,7 @@ script:
       name: role_names
       required: true
     name: xdr-list-roles
-    description: Retrieve information about one or more roles created in your environment.
+    description: Retrieve information about one or more roles created in the environment.
     outputs:
     - contextPath: PaloAltoNetworksXDR.Role.pretty_name
       description: Name of the role as it appears in the Management Console.
