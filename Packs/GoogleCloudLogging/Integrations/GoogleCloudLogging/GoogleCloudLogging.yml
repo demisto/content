@@ -200,7 +200,7 @@ script:
       description: A globally unique identifier for all log entries in a sequence of split log entries.
       type: String
     - contextPath: GoogleCloudLogging.LogsEntry.split.index
-      description: The index of this LogEntry in the sequence of split log entries. Log entries are given |index| values 0, 1, ..., n-1 for a sequence of n log entries.
+      description: The index of this LogEntry in the sequence of split log entries.
       type: Number
     - contextPath: GoogleCloudLogging.LogsEntry.split.totalSplits
       description: The total number of log entries that the original LogEntry was split into.
