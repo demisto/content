@@ -7777,6 +7777,35 @@ def string_to_context_key(string):
         raise Exception('The key is not a string: {}'.format(string))
 
 
+def response_to_context(reponse_obj):
+    """
+    Recursively creates a data dictionary where all key starts with capital letters.
+    Args:
+        reponse_obj: The response object to update.
+    Returns:
+        Any: A response with all keys (if there're any) starts with a capital letter.
+    """
+    parsed_dict = {}
+    key = ""
+    if isinstance(reponse_obj, dict):
+        for key, value in reponse_obj.items():
+            if key == 'id':
+                key = 'ID'
+            else:
+                key = string_to_context_key(key)
+            if isinstance(value, dict):
+                parsed_dict[key] = response_to_context(value)
+            elif isinstance(value, list):
+                parsed_dict[key] = [response_to_context(list_item) for list_item in value]
+            else:
+                parsed_dict[key] = value
+        return parsed_dict
+    elif isinstance(reponse_obj, list):
+        return [response_to_context(list_item) for list_item in value]
+    else:
+        return reponse_obj
+
+
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead

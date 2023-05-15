@@ -25,7 +25,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
+    response_to_context
 
 try:
     from StringIO import StringIO
@@ -8928,3 +8929,50 @@ def test_replace_spaces_in_credential(credential, expected):
 
     result = replace_spaces_in_credential(credential)
     assert result == expected
+
+
+TEST_RESPONSE_TO_CONTEXT_DATA = [
+    (
+        {"id": "111"}, {"ID": "111"}
+    ),
+    (
+        {"test": [1]}, {"Test": [1]}
+    ),
+    (
+        {"test1": [{'test2': "val"}]}, {"Test1": [{'Test2': "val"}]}
+    ),
+    (
+        {"test1": {'test2': "val"}}, {"Test1": {'Test2': "val"}}
+    ),
+    (
+        [{"test1": {'test2': "val"}}], [{"Test1": {'Test2': "val"}}]
+    ),
+    (
+        "test", "test"
+    )
+]
+
+
+@pytest.mark.parametrize('response, expected_results', TEST_RESPONSE_TO_CONTEXT_DATA)
+def test_response_to_context(response, expected_results):
+    """
+    Given:
+        A response
+        Case 1: a response dict with a key "id".
+        Case 2: a response dict with a list as a value.
+        Case 3: a response dict with a list of dicts as a value.
+        Case 4: a response dict with a dict as a value.
+        Case 5: a response list.
+        Case 6: a response string.
+    When:
+        Running response_to_context function.
+    Then:
+        Test - Assert the function created the dict formatted succesfuly.
+        Case 1: Should transfom key to "ID".
+        Case 2: Should attempt to transform only the dict key.
+        Case 3: Should attempt to transform only the dict inside the list.
+        Case 4: Should attempt to transform both the given dict key and the keys of the nested dict.
+        Case 5: Should modify the dict inside the list.
+        Case 6: Should return the input as is.
+    """
+    assert response_to_context(response) == expected_results
