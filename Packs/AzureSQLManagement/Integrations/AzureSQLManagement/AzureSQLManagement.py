@@ -536,7 +536,6 @@ def resource_group_list_command(client: Client, args: Dict, subscriptions_id: Li
                 'Provisioning State': result.get('properties', {}).get('provisioningState')
             }
             readable_output_table.append(d)
-        demisto.debug(f'{readable_output_table=}')
         headers = ['Name', 'Location', 'Tags', 'Provisioning State']
         human_readable = tableToMarkdown(name=f'Resource Group List for {sub_id}',
                                          t=readable_output_table,
@@ -637,7 +636,6 @@ def main() -> None:
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-    demisto.debug(f'{params=}\n{args=}')
 
     demisto.debug(f'Command being called is {command}')
     try:
