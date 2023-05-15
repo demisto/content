@@ -13,3 +13,8 @@ ignore=BA124
 [file:DemistoClassApiModule.yml]
 ignore=BA124
 
+[file:MicrosoftGraphMailApiModule.yml]
+ignore=BA124
+
+[tests_require_network]
+NGINXApiModule

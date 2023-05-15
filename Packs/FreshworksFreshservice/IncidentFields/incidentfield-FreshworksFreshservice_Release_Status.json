@@ -1,0 +1,37 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FreshworksFreshservice Release Request"
+    ],
+    "caseInsensitive": false,
+    "cliName": "freshworksfreshservicereleasestatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_freshworksfreshservicereleasestatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FreshworksFreshservice Release Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "Open",
+        "On hold",
+        "In Progress",
+        "Incomplete",
+        "Completed"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -153,6 +153,38 @@ Get sensitive assets by name (optional to search by regex)
 There is no context output for this command.
 
 
+### reco-get-sensitive-assets-by-id
+
+***
+Get sensitive assets by id
+
+#### Base Command
+
+`reco-get-sensitive-assets-by-id`
+
+#### Input
+
+| **Argument Name** | **Description**    | **Required** |
+|-------------------|--------------------|--------------|
+| asset_id          | Asset ID to search | Required     |
+
+
+#### Context Output
+
+
+| **Path**    | **Type** | **Description** |
+|-------------|----------|----------------|
+| Reco.SensitiveAssets.file_name | string   |  The name of the asset |
+| Reco.SensitiveAssets.file_owner | string   | The owner of the asset |
+| Reco.SensitiveAssets.file_url | Unknown     |  Json string of the asset's url and the name |
+| Reco.SensitiveAssets.currently_permitted_users | String   | List of currently permitted users |
+| Reco.SensitiveAssets.visibility | string   |  Visibility of the asset |
+| Reco.SensitiveAssets.location | string   |  The path of the asset |
+| Reco.SensitiveAssets.source | string   |  SaaS tool source of the asset |
+| Reco.SensitiveAssets.sensitivity_level | Number  | The sensitivity level of the asset |
+
+
+
 ### reco-add-leaving-org-user-label
 
 ***
@@ -171,4 +203,21 @@ Tag a user as leaving employee in Reco
 #### Context Output
 
 There is no context output for this command.
+
+
+### reco-get-link-to-user-overview-page
+
+***
+Get link to user overview page in Reco
+
+#### Base Command
+
+`reco-get-link-to-user-overview-page`
+
+#### Input
+
+| **Argument Name** | **Description**                                                             | **Required** |
+|-------------------|-----------------------------------------------------------------------------| --- |
+| entity_id         | Email address of the user to get the link to the user overview page in Reco. | Required |
+| link_type         | Type of the link                                                            | Required |
 

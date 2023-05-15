@@ -1512,6 +1512,7 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 ***
 Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
 
+ Note: This command indicates that the JSON you submitted was valid. However, in cases where data is incorrect or required fields are left unspecified, observables can be ignored or imported as false positive.
 
 #### Base Command
 
@@ -1528,7 +1529,8 @@ Imports indicators (observables) into ThreatStream. Approval is not required for
 | trustedcircles | A comma-separated list of trusted circle IDs with which threat data should be shared. | Optional | 
 | classification | Denotes whether the indicator data is public or private to the organization. Possible values are: private, public. | Required | 
 | allow_unresolved | Whether unresolved domain observables are included in the file will be accepted as valid in ThreatStream and imported. Possible values are: yes, no. | Optional | 
-| file_id | The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. | Required | 
+| file_id | The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. | Optional | 
+| indicators_json | The “meta” section will be added to this json, and we will send this json to the api endpoint. | Optional | 
 
 
 #### Context Output

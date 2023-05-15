@@ -1,4 +1,6 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 from typing import Callable, Union
 import time
 from urllib.parse import quote, unquote
@@ -6,7 +8,7 @@ from urllib.parse import quote, unquote
 seconds = time.time()
 
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
-                      'SecurityAndCompliance']
+                      'SecurityAndCompliance', 'SecurityAndComplianceV2']
 
 
 class MissingEmailException(Exception):
@@ -298,6 +300,7 @@ def get_search_args(args: dict):
         'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq '
                                                             f'\'{quote(unquote(message_id))}\'"'},
         'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')},
+        'SecurityAndComplianceV2': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')}
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -338,7 +341,7 @@ def main():
     delete_from_brand = search_args['using-brand']
     try:
 
-        if delete_from_brand == 'SecurityAndCompliance':
+        if delete_from_brand in ['SecurityAndCompliance', 'SecurityAndComplianceV2']:
             security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items()}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
 

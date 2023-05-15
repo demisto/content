@@ -11,7 +11,7 @@
 	"id": "Azure AKS Misconfiguration",
 	"locked": false,
 	"name": "Azure AKS Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - Azure AKS Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - Azure AKS Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
