@@ -1470,6 +1470,6 @@ def main():  # pragma: no cover
     except Exception as err:
         return_error(str(err))
 
-
+print('done')
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
