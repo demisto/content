@@ -7,18 +7,18 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: REST API endpoint
+  display: Server URL (e.g. https://WORKDAY_HOST/ccx/api/v1/TENANT_NAME)
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application. e.g. https://WORKDAY_HOST/ccx/api/v1/TENANT_NAME'
+  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
   section: Connect
 - name: token_url
-  display: Token endpoint
+  display: Token endpoint (e.g. https://WORKDAY_HOST/ccx/oauth2/TENANT_NAME/token)
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application. e.g. https://WORKDAY_HOST/ccx/oauth2/TENANT_NAME/token'
+  additionalinfo: 'Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.'
   section: Connect
 - name: credentials
   display: Client ID
@@ -60,7 +60,7 @@ configuration:
   section: Collect
 - additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '1000'
-  display: Max Fetch
+  display: Max events per fetch
   hidden: false
   name: max_fetch
   required: false

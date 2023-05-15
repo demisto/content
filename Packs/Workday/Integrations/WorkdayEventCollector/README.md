@@ -8,7 +8,7 @@ Use Workday Event Collector integration to get activity loggings from Workday.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | REST API endpoint (e.g. https://WORKDAY_HOST/ccx/api/v1/TENANT_NAME) | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application | True |
+    | Server URL (e.g. https://WORKDAY_HOST/ccx/api/v1/TENANT_NAME) | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application | True |
     | Token endpoint (e.g. https://WORKDAY_HOST/ccx/oauth2/TENANT_NAME/token) | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application. | True |
     | Client ID | Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday. | True |
     | Client Secret |  | True |
@@ -16,7 +16,7 @@ Use Workday Event Collector integration to get activity loggings from Workday.
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
+    | Max events per fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
