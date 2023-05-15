@@ -3333,7 +3333,13 @@ def fetch_handler(client: Client, args):
 
 
 def to_incident(type, data):
-    incident = {}
+    incident = {
+        'details': json.dumps(data),
+        'rawJSON': json.dumps(data),
+        'labels': [{'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
+                   for _type, value in data.items()]
+    }
+
     if type == 'Threat':
         incident_info = data.get('threatInfo', {}) if IS_VERSION_2_1 else data
         incident['name'] = f'Sentinel One {type}: {incident_info.get("classification", "Not classified")}'
@@ -3342,8 +3348,6 @@ def to_incident(type, data):
     elif type == 'Alert':
         incident['name'] = f'Sentinel One {type}: {data.get("ruleInfo").get("name")}'
         incident['occurred'] = data.get('alertInfo').get('createdAt')
-
-    incident['rawJSON'] = json.dumps(data)
 
     return incident
 
