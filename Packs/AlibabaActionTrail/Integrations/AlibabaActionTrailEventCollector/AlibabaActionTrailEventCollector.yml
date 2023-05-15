@@ -7,7 +7,7 @@ sectionOrder:
 name: Alibaba Action Trail Event Collector
 display: Alibaba Action Trail Event Collector
 category: Analytics & SIEM
-description: Alibaba logs event collector integration for XSIAM.
+description: Alibaba logs event collector integration for XSIAM. test
 configuration:
   - display: Endpoint
     name: endpoint
