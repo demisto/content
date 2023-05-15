@@ -631,7 +631,7 @@ tasks:
       version: -1
       name: Welcome message
       description: |-
-        Welcome to SE_Summit_2023 and our Capture the Flag (CTF) hands-on XSOAR 8 exercise!
+        Welcome to XSOAR's Capture the Flag (CTF) - a hands-on XSOAR exercise!
 
          This treasure hunt will prepare you with familiarity with the new interface and demonstrate that XSOAR 8 is still just XSOAR. We are excited to have you here and look forward to you starting the first challenge (CTF1). Once you proceed from this step, the clock starts. Good luck!
 
