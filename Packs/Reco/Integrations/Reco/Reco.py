@@ -21,6 +21,7 @@ ENTRY_TYPE_EVENT = "ENTRY_TYPE_EVENT"
 LABEL_STATUS_RESOLVED = "LABEL_STATUS_RESOLVED"
 
 FILTER_RELATIONSHIP_AND = "FILTER_RELATIONSHIP_AND"
+PAGE_SIZE = 1000
 
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 RECO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -346,7 +347,7 @@ class RecoClient(BaseClient):
         params = {
             "getTableRequest": {
                 "tableName": "DATA_RISK_MANAGEMENT_VIEW_BREAKDOWN_EXPOSED_PUBLICLY",
-                "pageSize": 100,
+                "pageSize": PAGE_SIZE,
                 "fieldSorts": {
                     "sorts": [
                         {
@@ -363,6 +364,121 @@ class RecoClient(BaseClient):
                                 "field": "data_category",
                                 "stringEquals": {
                                     "value": "ALL"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> List[Dict[str, Any]]:
+        # Calculate the date 30 days ago
+        thirty_days_ago = datetime.utcnow() - timedelta(days=last_interaction_time_before_in_days)
+
+        # Format the date in the desired format
+        formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
+        params = {
+            "getTableRequest": {
+                "tableName": "DATA_RISK_MANAGEMENT_VIEW_TOP_3RD_PARTIES_DOMAIN",
+                "pageSize": 1000,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "last_activity",
+                            "sortDirection": "SORT_DIRECTION_ASC"
+                        },
+                        {
+                            "sortBy": "num_files",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "filters": {
+                        "filters": [
+                            {
+                                "field": "last_activity",
+                                "before": {
+                                    "value": f"{formatted_date}"
+                                }
+                            },
+                            {
+                                "field": "data_category",
+                                "stringNotContains": {
+                                    "value": "ALL"
+                                }}
+                        ]
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_files_shared_with_3rd_parties(self,
+                                          domain: str,
+                                          last_interaction_time_before_in_days: int) -> List[Dict[str, Any]]:
+        """Get files shared with 3rd parties. Returns a list of files at risk with analysis."""
+        # Calculate the date 30 days ago
+        thirty_days_ago = datetime.utcnow() - timedelta(days=last_interaction_time_before_in_days)
+
+        # Format the date in the desired format
+        formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
+        params = {
+            "getTableRequest": {
+                "tableName": "DATA_RISK_MANAGEMENT_VIEW_SHARED_TOP_EXT_DOMAIN_FILES",
+                "pageSize": 100,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "data_category",
+                            "sortDirection": "SORT_DIRECTION_ASC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "filters": {
+                                    "filters": [
+                                        {
+                                            "field": "domain",
+                                            "regexCaseInsensitive": {
+                                                "value": f"{domain}"
+                                            }
+                                        },
+                                        {
+                                            "field": "last_access_time",
+                                            "before": {
+                                                "value": f"{formatted_date}"
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         ]
@@ -859,6 +975,62 @@ def get_sensitive_assets_shared_with_public_link(reco_client: RecoClient) -> Com
     )
 
 
+def get_3rd_parties_list(reco_client: RecoClient, last_interaction_time_in_days: int) -> CommandResults:
+    """Get 3rd parties list from Reco."""
+    domains = reco_client.get_3rd_parties_risk_list(last_interaction_time_in_days)
+    domains_list = []
+    for domain in domains:
+        domain_as_dict = parse_table_row_to_dict(domain.get("cells", {}))
+        domains_list.append(domain_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Domains",
+            domains_list,
+            headers=[
+                "domain",
+                "last_activity",
+                "num_files",
+                "num_users",
+                "data_category",
+            ],
+        ),
+        outputs_prefix="Reco.Domains",
+        outputs_key_field="domain",
+        outputs=domains_list,
+        raw_response=domains,
+    )
+
+
+def get_files_shared_with_3rd_parties(reco_client: RecoClient,
+                                      domain: str,
+                                      last_interaction_time_before_in_days: int) -> CommandResults:
+    """Get files shared with 3rd parties from Reco."""
+    files = reco_client.get_files_shared_with_3rd_parties(domain, last_interaction_time_before_in_days)
+    files_list = []
+    for file in files:
+        file_as_dict = parse_table_row_to_dict(file.get("cells", {}))
+        files_list.append(file_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Files",
+            files_list,
+            headers=[
+                "domain",
+                "location",
+                "users",
+                "data_category",
+                "asset",
+                "last_access_date",
+                "asset_id",
+            ],
+        ),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_id",
+        outputs=files_list,
+        raw_response=files,
+    )
+
+
 def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex_search: bool) -> CommandResults:
     """Get sensitive assets from Reco. If contains is True, the asset name will be searched as a regex."""
     assets = reco_client.get_sensitive_assets_information(asset_name, None, regex_search)
@@ -937,7 +1109,7 @@ def fetch_incidents(
         incident
         for incident in incidents
         if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
-           and (incident.get("dbotMirrorId", None) not in existing_incidents)
+        and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
@@ -1089,6 +1261,14 @@ def main() -> None:
             return_results(result)
         elif command == "reco-get-sensitive-assets-with-public-link":
             result = get_sensitive_assets_shared_with_public_link(reco_client)
+            return_results(result)
+        elif command == "reco-get-3rd-parties-accessible-to-data-list":
+            result = get_3rd_parties_list(reco_client, int(demisto.args()["last_interaction_time_in_days"]))
+            return_results(result)
+        elif command == "reco-get-files-shared-with-3rd-parties":
+            result = get_files_shared_with_3rd_parties(reco_client,
+                                                       demisto.args()["domain"],
+                                                       int(demisto.args()["last_interaction_time_in_days"]))
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
