@@ -27,9 +27,6 @@
                 "priority": {
                     "simple": "jirapriority"
                 },
-                "status": {
-                    "simple": "jirav3status"
-                },
                 "summary": {
                     "simple": "jirasummary"
                 }

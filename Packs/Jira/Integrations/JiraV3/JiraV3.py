@@ -3788,14 +3788,17 @@ def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
                 v3_args['issue_id'] = value
             else:
                 v3_args['issue_key'] = value
-        elif arg in V2_ARGS_TO_V3:
+        elif arg in V2_ARGS_TO_V3 and arg not in v3_args:
             v3_args[V2_ARGS_TO_V3[arg]] = value
-        else:
+        elif arg not in v3_args:
+            # Since we are not breaking BC, we want to give the v2 arguments the priority.
+            # therefore, the if statement that converts the v2 argument to v3 is executed before
+            # this if statement, this way, the final argument is prioritized to v2.
             v3_args[arg] = value
     return v3_args
 
 
-def get_issue_id_or_key(issue_id: str = '', issue_key: str = ''):
+def get_issue_id_or_key(issue_id: str = '', issue_key: str = '') -> str:
     """Returns either the issue ID, or issue key.
 
     Args:
@@ -3807,7 +3810,7 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = ''):
         DemistoException: If both issue ID, and key were not given.
 
     Returns:
-        _type_: _description_
+        str: The issue ID, or key.
     """
     if not (issue_id or issue_key):
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -3816,7 +3819,7 @@ def get_issue_id_or_key(issue_id: str = '', issue_key: str = ''):
     return issue_id or issue_key
 
 
-def main():
+def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args = map_v2_args_to_v3(demisto.args())
     verify_certificate: bool = not params.get('insecure', False)
