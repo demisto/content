@@ -199,7 +199,7 @@ def helper_create_incident(issue: dict, project_id: int) -> dict:
         }
     }
 
-    occurred = issue.get('first_seen')
+    occurred = raw_json.get('first_seen')
     if isinstance(occurred, str):
         issue['occurred'] = parser.parse(occurred).isoformat()
 
