@@ -17,7 +17,8 @@ from Reco import (
     add_risky_user_label,
     get_assets_user_has_access,
     get_sensitive_assets_by_name,
-    get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link
+    get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link,
+    get_3rd_parties_list, get_files_shared_with_3rd_parties
 )
 
 from test_data.structs import (
@@ -506,8 +507,10 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_invalid_response(requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json={})
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json={})
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json={"getTableResponse": {}})
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json={
+        "getTableResponse": {}
+    })
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
         last_run={},
@@ -713,3 +716,28 @@ def test_get_exposed_publicly(requests_mock, reco_client: RecoClient) -> None:
     )
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_3rd_parties_list(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json=raw_result, status_code=200
+    )
+    actual_result = get_3rd_parties_list(
+        reco_client=reco_client,
+        last_interaction_time_in_days=30,
+    )
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+
+
+def test_get_files_shared_with_3rd_parties(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json=raw_result, status_code=200
+    )
+    actual_result = get_files_shared_with_3rd_parties(
+        reco_client=reco_client,
+        domain="data",
+        last_interaction_time_before_in_days=30,
+    )
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
