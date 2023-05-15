@@ -14,18 +14,30 @@ configuration:
   section: Connect
 - display: Application ID
   name: app_id
-  required: true
   type: 0
   section: Connect
+  hidden: true
 - display: Application Secret
   name: app_secret
-  required: true
   type: 4
   section: Connect
+  hidden: true
 - display: Tenant API Key
   name: tid
-  required: true
   type: 4
+  section: Connect
+  hidden: true
+- display: Application ID
+  displaypassword: Application Secret
+  name: app_creds
+  required: false
+  type: 9
+  section: Connect
+- hiddenusername: true
+  displaypassword: Tenant API Key
+  name: api_key
+  required: false
+  type: 9
   section: Connect
 - display: Use system proxy settings
   name: proxy

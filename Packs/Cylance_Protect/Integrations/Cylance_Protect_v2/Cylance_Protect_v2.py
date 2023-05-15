@@ -1513,18 +1513,20 @@ def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
 
 # EXECUTION
 def main():    # pragma: no cover
+    params = demisto.params()
+    
     global APP_ID
-    APP_ID = demisto.params()['app_id']
+    APP_ID = params.get('app_creds', {}).get('identifier') or params.get('app_id')
     global APP_SECRET
-    APP_SECRET = demisto.params()['app_secret']
+    APP_SECRET = params.get('app_creds', {}).get('password') or params.get('app_secret')
     global TID
-    TID = demisto.params()['tid']
+    TID = params.get('api_key', {}).get('password') or params.get('tid')
     global SERVER_URL
     SERVER_URL = load_server_url()
     global FILE_THRESHOLD
-    FILE_THRESHOLD = demisto.params()['file_threshold']
+    FILE_THRESHOLD = params['file_threshold']
     global USE_SSL
-    USE_SSL = not demisto.params().get('unsecure', False)
+    USE_SSL = not params.get('unsecure', False)
     command = demisto.command()
 
     LOG(f'Command being called is {command}')
