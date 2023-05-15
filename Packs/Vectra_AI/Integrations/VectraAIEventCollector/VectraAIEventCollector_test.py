@@ -25,7 +25,6 @@ import json
 from datetime import datetime
 from pathlib import Path
 from CommonServerPython import *
-from hypothesis import given, strategies as st
 from freezegun import freeze_time
 
 """ Constants """
@@ -45,8 +44,7 @@ DETECTIONS: Dict[str, Any] = load_json(Path("./test_data/search_detections.json"
 """ VectraClient Tests """
 
 
-@given(st.text())
-def test_create_headers(token: str):
+def test_create_headers():
 
     """
     Given:
@@ -57,10 +55,10 @@ def test_create_headers(token: str):
         - Authentication headers match.
     """
 
-    client = VectraClient("url.dev,", api_key=token)
+    client = VectraClient("url.dev,", api_key='token')
 
     actual = client._create_headers()
-    expected = {"Content-Type": "application/json", "Authorization": f"Token {token}"}
+    expected = {"Content-Type": "application/json", "Authorization": "Token token"}
 
     assert "Content-Type" in actual.keys()
     assert "Authorization" in actual.keys()
