@@ -24,6 +24,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
 
+#### Permissions
+This command requires the following [scopes](https://cloud.google.com/logging/docs/reference/v2/rest/v2/entries/list?apix_params=%7B%22resource%22%3A%7B%22resourceNames%22%3A%5B%22projects%2Fgcp-integrations%22%5D%2C%22pageSize%22%3A5%7D%7D#authorization-scopes).
 #### Base Command
 
 `gcp-logging-log-entries-list`
@@ -36,7 +38,7 @@ Lists log entries. Use this method to retrieve log entries that originated from 
 | organization_name | A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
 | billing_account_name | A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
 | folder_name | A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional | 
-| filter | When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name". | Optional | 
+| filter | When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name". | Optional | 
 | order_by | How the results should be sorted. Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Optional | 
 | limit | The maximum number of objects to return. | Optional | 
 | page_size | The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected. | Optional | 

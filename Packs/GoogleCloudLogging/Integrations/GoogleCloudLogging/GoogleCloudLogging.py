@@ -28,7 +28,7 @@ def prepare_gsuite_client() -> GSuiteClient:
         client (GSuiteClient): GSuiteClient client.
 
     Returns:
-        The request response.
+        A gsuite client.
     """
     credentials_json = demisto.params().get('credentials', {}).get('password')
     verify_certificate = not demisto.params().get('insecure', False)
@@ -77,17 +77,11 @@ def test_module(params: dict) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
-    message: str = ''
     try:
         prepare_gsuite_client()
-        message = 'ok'
-    except Exception as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    except ValueError as e:
+        raise e
+    return 'ok'
 
 
 def get_all_results(client: GSuiteClient, limit: int, request_body: dict) -> dict:
@@ -196,7 +190,9 @@ def log_entries_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Comm
     request_body = {'resourceNames': resources,
                     'filter': args.get('filter'),
                     'orderBy': args.get('order_by')}
-    if page_size and args.get('next_token') and not arg_to_number(args.get('limit')):
+    if limit:
+        request_body['pageSize'] = limit or 50
+    elif args.get('next_token'):
         request_body['pageSize'] = page_size
         request_body['pageToken'] = args.get('next_token')
     else:
@@ -229,17 +225,8 @@ def log_entries_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Comm
 def main() -> None:
     """main function, parses params and runs command functions"""
     command = demisto.command()
-    credentials_json = demisto.params().get('credentials', {}).get('password')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-    headers = {'Content-Type': 'application/json'}
-    demisto.debug(f'Command being called is {demisto.command()}')
-
     try:
-        service_account_json = GSuiteClient.safe_load_non_strict_json(credentials_json)
-        client = GSuiteClient(service_account_json,
-                              base_url='https://logging.googleapis.com/', verify=verify_certificate, proxy=proxy,
-                              headers=headers)
+        client = prepare_gsuite_client()
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(demisto.params())

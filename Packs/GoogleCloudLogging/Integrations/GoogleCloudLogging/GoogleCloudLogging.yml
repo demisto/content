@@ -53,7 +53,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 protoPayload.serviceName:name"
+      description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name"
       isArray: false
       name: filter
       required: false

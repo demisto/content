@@ -153,8 +153,7 @@ def test_log_entries_list_command(mocker, client, args, expected_call_count, exp
 
 @pytest.mark.parametrize('params, args, command, expected_result',
                          [({'credentials': {'password': "{334}"}}, {}, 'test-module',
-                           'Failed to execute test-module command.\nError:\nUnable '
-                           'to parse JSON string. Please verify the JSON is valid.'),
+                           'Unable to parse JSON string. Please verify the JSON is valid.'),
                           ({'credentials': {'password': json.dumps(TEST_JSON)}}, {}, 'test-module',
                            'ok')])
 def test_main(mocker, params, args, command, expected_result):
@@ -166,7 +165,7 @@ def test_main(mocker, params, args, command, expected_result):
     When:
         - Calling main function.
     Then:
-        - Ensure the error message.
+        - Ensure the returned message.
     """
     from GoogleCloudLogging import main
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -174,9 +173,14 @@ def test_main(mocker, params, args, command, expected_result):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(sys, 'exit')
     mocker.patch.object(demisto, 'results')
-    main()
-    call_args = demisto.results.call_args[0][0]
-    if isinstance(call_args, str):
-        assert call_args == expected_result
+    if params.get('credentials').get('password') == "{334}":
+        with pytest.raises(Exception) as ve:
+            main()
+            assert str(ve.value) == expected_result
     else:
-        assert call_args.get('Contents') == expected_result
+        main()
+        call_args = demisto.results.call_args[0][0]
+        if isinstance(call_args, str):
+            assert call_args == expected_result
+        else:
+            assert call_args.get('Contents') == expected_result

@@ -23,7 +23,7 @@ https://www.googleapis.com/auth/cloud-platform.
    
 More information about creating the required resources can be found here:
 * [Create a Project](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
-* [Enable Google APIs ](https://developers.google.com/workspace/guides/enable-apis)
+* [Enable Google APIs](https://developers.google.com/workspace/guides/enable-apis)
 * [Create a Service Account & Service Account Key](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount)
 
 
