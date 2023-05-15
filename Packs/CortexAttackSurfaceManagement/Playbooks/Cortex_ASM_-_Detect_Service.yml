@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 496ac3c4-b77d-4485-870e-4d464c2045f1
+    taskid: 9c978021-e400-4f01-8f14-499aaa7890e0
     type: condition
     task:
-      id: 496ac3c4-b77d-4485-870e-4d464c2045f1
+      id: 9c978021-e400-4f01-8f14-499aaa7890e0
       version: -1
       name: What is the sub-alert type?
       description: Determines ASM sub-alert type for different scans.
@@ -51,10 +51,10 @@ tasks:
       - "10"
       Banner Check:
       - "8"
-      Single Port Check:
-      - "9"
       SNMP Check:
       - "29"
+      Single Port Check:
+      - "9"
       Unclaimed S3 Bucked:
       - "32"
     separatecontext: false
@@ -75,7 +75,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: RdpServer,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer
+              simple: RdpServer,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer
           ignorecase: true
     - label: Banner Check
       condition:
