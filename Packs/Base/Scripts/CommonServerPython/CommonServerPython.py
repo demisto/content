@@ -117,6 +117,12 @@ def fix_traceback_line_numbers(trace_str):
     :return: The new formated traceback.
     :rtype: ``str``
     """
+    def is_adjusted_block(start, end, adjusted_lines):
+        return any(
+            block_start < start < end < block_end 
+            for block_start, block_end in adjusted_lines.items()
+        )
+        
     for number in re.findall(r'line (\d+)', trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
@@ -124,12 +130,18 @@ def fix_traceback_line_numbers(trace_str):
             module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
             actual_number = line_num - module_start_line
 
-            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
-            for module_info in _MODULES_LINE_MAPPING.values():
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection
+            # should avoid adjust ApiModule twice in case of ApiModuleA -> import ApiModuleB
+            adjusted_lines = {}  # type: ignore[var-annotated]
+            modules_info = list(_MODULES_LINE_MAPPING.values())
+            modules_info.sort(key=lambda obj: int(obj.get('start_wrapper', obj['start'])))
+            for module_info in modules_info:
                 block_start = module_info.get('start_wrapper', module_info['start'])
                 block_end = module_info.get('end_wrapper', module_info['end'])
-                if block_start > module_start_line and block_end < line_num:
+                if block_start > module_start_line and block_end < line_num \
+                        and not is_adjusted_block(block_start, block_end, adjusted_lines):
                     actual_number -= block_end - block_start
+                    adjusted_lines[block_start] = block_end
 
             # a traceback line is of the form: File "<string>", line 8853, in func5
             trace_str = trace_str.replace(
@@ -7522,7 +7534,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
     if is_error(res):
         error_message = get_error(res)
         if fail_on_error:
-            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+            raise DemistoException('Failed to execute {}. Error details:\n{}'.format(command, error_message))
         else:
             return False, error_message
 
@@ -8371,6 +8383,8 @@ if 'requests' in sys.modules:
 
             def __init__(self, verify=True, **kwargs):
                 # type: (bool, dict) -> None
+                if not verify and IS_PY3:
+                    self.context.check_hostname = False
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
                 super().__init__(**kwargs)  # type: ignore[arg-type]
@@ -10429,6 +10443,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
+    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(last_run_time.strftime(date_format), now.strftime(date_format)))
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
@@ -10473,13 +10488,19 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     :return: List of incidents after filtering duplicates when len(incidents) <= limit
     :rtype: ``list``
     """
+    demisto.debug('lb: Filtering incidents by duplicates and limit')
     found_incidents = last_run.get('found_incident_ids', {})
 
     incidents = []
+    
+    demisto.debug('lb: Number of incidents before filtering: {}, their ids: {}'.format(len(incidents_res),
+                                                                                       [incident_res[id_field] for incident_res in incidents_res]))
     for incident in incidents_res:
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
+    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents_res),
+                                                                                      [incident[id_field] for incident in incidents]))
     return incidents[:fetch_limit]
 
 
@@ -10503,6 +10524,7 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
     :return: The latest incident time
     :rtype: ``str``
     """
+    demisto.debug('lb: Getting latest incident created time')
     latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
 
     for incident in incidents:
@@ -10513,6 +10535,7 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
     if increase_last_run_time:
         latest_incident_time = latest_incident_time + timedelta(milliseconds=1)
 
+    demisto.debug("lb: latest_incident_time is {}".format(latest_incident_time))
     return latest_incident_time.strftime(date_format)
 
 
@@ -10532,6 +10555,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     :return: The new incidents ids
     :rtype: ``dict``
     """
+    demisto.debug('lb: Remove old incidents ids')
     look_back_in_seconds = look_back * 60
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
@@ -10541,6 +10565,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
         if current_time - addition_time < deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
 
+    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
 
@@ -10564,6 +10589,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
     :rtype: ``dict``
     """
 
+    demisto.debug('lb: Get found incident ids')
     found_incidents = last_run.get('found_incident_ids', {})
     current_time = int(time.time())
 
@@ -10611,7 +10637,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
-
+    demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
+                  "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
     remove_incident_ids = True
 
     if len(incidents) == 0:
@@ -10634,6 +10661,9 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     else:
         new_last_run['limit'] = fetch_limit
+    
+    demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
+                                                                                       remove_incident_ids))
 
     return new_last_run, remove_incident_ids
 
