@@ -541,50 +541,6 @@ class Client(BaseClient):
         }
         return self.send_request(path="policy", method='POST', body=body)
 
-    # def update_user(self, first_name, last_name, user_name, email, address, phone, city, state, country, locked,
-    #                 time_zone, must_change_password, role_id, managed_users_groups, managed_objects_groups,
-    #                 group_id, responsible_asset_id, user_id, current_password):
-        # body["preferences"] = []
-
-        # if first_name:
-        #     body["firstname"] = first_name
-        # if last_name:
-        #     body["lastname"] = last_name
-        # if user_name:
-        #     body["username"] = user_name
-        # if email:
-        #     body["email"] = email
-        # if city:
-        #     body["city"] = city
-        # if state:
-        #     body["state"] = state
-        # if address:
-        #     body["address"] = address
-        # if country:
-        #     body["country"] = country
-        # if role_id:
-        #     body["roleID"] = role_id
-        # if phone:
-        #     body["phone"] = phone
-        # if locked:
-        #     body["locked"] = locked
-        # if time_zone:
-        #     body["preferences"].append({"name": "timezone", "value": time_zone, "tag": ""})
-        # if must_change_password:
-        #     body["mustChangePassword"] = must_change_password
-        # if current_password:
-        #     body[""]
-
-        # if role_id and role_id != 1:
-        #     body["groupID"] = group_id
-        #     body["responsibleAssetID"] = responsible_asset_id
-        # elif role_id and role_id == 1:
-        #     body["managedUsersGroups"] = [{"id": int(managed_users_group)} for managed_users_group in managed_users_groups]
-        #     body["managedObjectsGroups"] = [{"id": int(managed_objects_group)} for
-        #                                     managed_objects_group in managed_objects_groups]
-
-        # return self.send_request(path='user', body=body, method='PATCH')
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -612,19 +568,19 @@ def create_user_request_body(args):
         "phone": "phone",
         "locked": "locked",
         "mustChangePassword": "must_change_password",
-        "currentPassword": "current_password"
+        "currentPassword": "current_password",
+        "password": "password",
+        "groupID": "group_id",
+        "responsibleAssetID": "responsible_asset_id"
     }
     body = {key: args.get(value) for key, value in user_query_mapping_dict.items() if args.get(value)}
 
-    if role_id := args.get('role_id'):
-        if role_id != 1:
-            body["groupID"] = args.get('group_id')
-            body["responsibleAssetID"] = args.get('responsible_asset_id')
-        else:
-            body["managedUsersGroups"] = [{"id": int(managed_users_group)} for
-                                          managed_users_group in args.get('managed_users_groups')]
-            body["managedObjectsGroups"] = [{"id": int(managed_objects_group)} for
-                                            managed_objects_group in args.get('managed_objects_groups')]
+    if args.get('managed_users_groups'):
+        body["managedUsersGroups"] = [{"id": managed_users_group} for
+                                      managed_users_group in args.get('managed_users_groups').split(',')]
+    if args.get('managed_objects_groups'):
+        body["managedObjectsGroups"] = [{"id": int(managed_objects_group)} for
+                                        managed_objects_group in args.get('managed_objects_groups').split(',')]
     if time_zone := args.get('time_zone'):
         body["preferences"].append([{"name": "timezone", "value": time_zone, "tag": ""}])
 
@@ -673,8 +629,8 @@ def validate_user_body_params(args, command_type):
     if email and not re.compile(emailRegex).match(email):
         return_error(f"Error: The given email address: {email} is not valid")
 
-    if command_type == 'create' and not email_notice == 'None' and not email:
-        return_error("When email_notice is different from None, an email must be given as well.")
+    if command_type == 'create' and not email_notice == 'none' and not email:
+        return_error("When email_notice is different from none, an email must be given as well.")
 
 
 def timestamp_to_utc(timestamp_str, default_returned_value=''):
@@ -1153,17 +1109,7 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
 
 
 def launch_scan_command(client: Client, args: Dict[str, Any]):
-    scan_id = args.get('scan_id')
-    target_address = args.get('diagnostic_target')
-    target_password = args.get('diagnostic_password')
-
-    if (target_address and not target_password) or (target_password and not target_address):
-        return_error('Error: If a target is provided, both IP/Hostname and the password must be provided')
-
-    res = client.launch_scan(scan_id, {'address': target_address, 'password': target_password})
-
-    if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
-        return_error('Error: Could not retrieve the scan')
+    res = launch_scan(client, args)
 
     scan_result = res['response']['scanResult']
 
@@ -1195,16 +1141,42 @@ def launch_scan_command(client: Client, args: Dict[str, Any]):
     })
 
 
+def launch_scan_report_command(client: Client, args: Dict[str, Any]):
+    res = launch_scan(client, args)
+    scan_id = res.get("response", {}).get("scanID")
+    poll_scan_status(client, {"scan_results_id": scan_id})
+
+
+@polling_function('tenable-sc-poll-scan-status')
+def poll_scan_status(client: Client, args: Dict[str, Any]):
+    scan_results, _ = get_scan_status(client, args)[0]
+    is_scan_incomplete = scan_results.get("status") != "Completed"
+    if is_scan_incomplete:
+        return PollResult(continue_to_poll=True, response=scan_results)
+    else:
+        return PollResult(continue_to_poll=False, response=process_results(scan_results))
+
+
+def process_results(scan_results):
+    id = scan_results.get("id")
+
+
+def launch_scan(client: Client, args: Dict[str, Any]):
+    scan_id = args.get('scan_id')
+    target_address = args.get('diagnostic_target')
+    target_password = args.get('diagnostic_password')
+
+    if (target_address and not target_password) or (target_password and not target_address):
+        return_error('Error: If a target is provided, both IP/Hostname and the password must be provided')
+
+    res = client.launch_scan(scan_id, {'address': target_address, 'password': target_password})
+
+    if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
+        return_error('Error: Could not retrieve the scan')
+
+
 def get_scan_status_command(client: Client, args: Dict[str, Any]):
-    scan_results_ids = argToList(args.get('scan_results_id'))
-
-    scans_results = []
-    for scan_results_id in scan_results_ids:
-        res = client.get_scan_results(scan_results_id)
-        if not res or 'response' not in res or not res['response']:
-            return_message('Scan results not found')
-
-        scans_results.append(res['response'])
+    scans_results, res = get_scan_status(client, args)
 
     headers = ['ID', 'Name', 'Status', 'Description']
 
@@ -1225,6 +1197,19 @@ def get_scan_status_command(client: Client, args: Dict[str, Any]):
             'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_scans_results, removeNull=True)
         }
     })
+
+
+def get_scan_status(client: Client, args: Dict[str, Any]):
+    scan_results_ids = argToList(args.get('scan_results_id'))
+
+    scans_results = []
+    for scan_results_id in scan_results_ids:
+        res = client.get_scan_results(scan_results_id)
+        if not res or 'response' not in res or not res['response']:
+            return_message('Scan results not found')
+
+        scans_results.append(res['response'])
+    return scans_results, res
 
 
 def get_scan_report_command(client: Client, args: Dict[str, Any]):
@@ -1885,11 +1870,11 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
     show_users = argToBoolean(args.get("show_users", True))
     limit = int(args.get('limit', '50'))
     res = client.list_groups(show_users)
-    if len(res) > limit:
-        res = res[:limit]
     if not res or not res.get('response', []):
         return_message('No groups found')
     groups = res.get('response', [])
+    if len(groups) > limit:
+        groups = groups[:limit]
     mapped_groups = [{
         'ID': group.get('id'),
         'Name': group.get('name'),
@@ -1976,18 +1961,71 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
 def create_user_command(client: Client, args: Dict[str, Any]):
     validate_user_body_params(args, "create")
     res = client.create_user(args)
-    print(res)
+    if not res or not res.get('response', {}):
+        return_message("User wasn't created successfully.")
+    headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
+               "User Group Name", "User  LDAP  Name"]
+    response = res.get("response", {})
+    mapped_response = {
+        "User type": res.get("type"),
+        "User Id": response.get("id"),
+        "User Status": response.get("status"),
+        "User Name": response.get("username"),
+        "First Name": response.get("firstname"),
+        "Lat Name ": response.get("lastname"),
+        "Email ": response.get("email"),
+        "User Role Name": response.get("role", {}).get("name"),
+        "User Group Name": response.get("group", {}).get("name"),
+        "User  LDAP  Name": response.get("ldap", {}).get("name")
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(f'User {args.get("user_name")} was created successfully.', mapped_response,
+                                         headers, removeNull=True),
+        'EntryContext': {
+            'TenableSC.User(val.ID===obj.ID)': createContext(response, removeNull=True)
+        }
+    })
 
 
 def update_user_command(client: Client, args: Dict[str, Any]):
-    # must_change_password = argToBoolean(args.get('must_change_password', True))
-    # locked = argToBoolean(args.get('locked', False))
-    # managed_users_groups = args.get('managed_users_groups', '0').split(',')
-    # managed_objects_groups = args.get('managed_objects_groups', '0').split(',')
     user_id = args.get('user_id')
     validate_user_body_params(args, "update")
     res = client.update_user(args, user_id)
     print(res)
+    # if not res or not res.get('response', {}):
+    #     return_message("User wasn't created successfully.")
+    # headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
+    #            "User Group Name", "User  LDAP  Name"]
+    # response = res.get("response", {})
+    # mapped_response = {
+    #     "User type": res.get("type"),
+    #     "User Id": response.get("id"),
+    #     "User Status": response.get("status"),
+    #     "User Name": response.get("username"),
+    #     "First Name": response.get("firstname"),
+    #     "Lat Name ": response.get("lastname"),
+    #     "Email ": response.get("email"),
+    #     "User Role Name": response.get("role", {}).get("name"),
+    #     "User Group Name": response.get("group", {}).get("name"),
+    #     "User  LDAP  Name": response.get("ldap", {}).get("name")
+    # }
+
+    # demisto.results({
+    #     'Type': entryTypes['note'],
+    #     'Contents': res,
+    #     'ContentsFormat': formats['json'],
+    #     'ReadableContentsFormat': formats['markdown'],
+    #     'HumanReadable': tableToMarkdown(f'user {args.get("user_name")} was created succesfully.', mapped_response,
+    #                                      headers, removeNull=True),
+    #     'EntryContext': {
+    #         'TenableSC.User(val.ID===obj.ID)': createContext(response, removeNull=True)
+    #     }
+    # })
 
 
 def delete_user_command(client: Client, args: Dict[str, Any]):
@@ -2044,22 +2082,22 @@ def create_policy_command(client: Client, args: Dict[str, Any]):
                                udp_scanner, syn_firewall_detection, family_id, plugins_id)
     created_policy = res.get("response")
     mapped_created_policy = {
-        # "Policy type": created_policy.get(""),
+        "Policy type": res.get("type"),
         "Policy ID": created_policy.get("id"),
         "name": created_policy.get("name"),
         "Description": created_policy.get("description"),
         "Created Time": created_policy.get("createdTime"),
-        # "Plugin Families": created_policy.get(""),
+        "Plugin Families": created_policy.get("families"),
         "Policy  Status": created_policy.get("status"),
         "Policy UUID": created_policy.get("uuid"),
         "Policy can Manage": created_policy.get("canManage"),
         "Creator Username": created_policy.get("creator", {}).get("username"),
-        # "Owner Username": created_policy.get(""),
+        "Owner ID": created_policy.get("ownerID"),
         "policyTemplate ID": created_policy.get("policyTemplate", {}).get("id"),
         "policyTemplate Name": created_policy.get("policyTemplate", {}).get("name")
     }
     headers = ["Policy type", "Policy Id", "name", "Description", "Created Time", "Plugin Families", "Policy  Status",
-               "Policy UUID", "Policy can Manage", "Creator Username", "Owner Username", "policyTemplate id",
+               "Policy UUID", "Policy can Manage", "Creator Username", "Owner ID", "policyTemplate id",
                "policyTemplate Name"]
     demisto.results({
         'Type': entryTypes['note'],
@@ -2192,12 +2230,15 @@ def main():
         'tenable-sc-get-system-licensing': get_system_licensing_command,
         'tenable-sc-get-all-scan-results': get_all_scan_results_command,
         'tenable-sc-list-groups': list_groups_command,
+
         'tenable-sc-create-user': create_user_command,
         'tenable-sc-update-user': update_user_command,
         'tenable-sc-delete-user': delete_user_command,
         'tenable-sc-list-plugin-family': list_plugin_family_command,
         'tenable-sc-create-policy': create_policy_command,
-        'tenable-sc-list-query': list_query_command
+        'tenable-sc-list-query': list_query_command,
+        'tenable-sc-launch-scan-report': launch_scan_report_command,
+        'tenable-sc-poll-scan-status': poll_scan_status
     }
 
     try:

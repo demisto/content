@@ -1247,7 +1247,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: list all groups.
+    description: Available only for sec man. list all groups.
     execution: false
     name: tenable-sc-list-groups
     outputs:
@@ -1275,7 +1275,6 @@ script:
     - contextPath: TenableSC.Group.Users.Username
       description: Group's user's user name.
       type: string
-    
   - arguments:
     - default: false
       description: The user's first name.
@@ -1349,12 +1348,12 @@ script:
       required: false
       secret: false
       auto: PREDEFINED
-      defaultValue: 'None'
+      defaultValue: 'none'
       predefined:
       - 'both'
       - 'password'
       - 'id'
-      - 'None'
+      - 'none'
     - default: false
       description: Tenable (TNS). Lightweight Directory Access Protocol (LDAP). Security Assertion Markup Language (SAML). LDAP server or SAML authentication need to be configured in order to select LDAP or SAML.
       isArray: false
@@ -1441,6 +1440,194 @@ script:
     execution: false
     name: tenable-sc-create-user
     outputs:
+    - contextPath: TenableSC.User.address
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.apiKeys
+      description: ''
+      type: Unknown
+    - contextPath: TenableSC.User.authType
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.canManage
+      description: ''
+      type: Boolean
+    - contextPath: TenableSC.User.canUse
+      description: ''
+      type: Boolean
+    - contextPath: TenableSC.User.city
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.country
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.createdTime
+      description: ''
+      type: Date
+    - contextPath: TenableSC.User.email
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.failedLogins
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.fax
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.fingerprint
+      description: ''
+      type: Unknown
+    - contextPath: TenableSC.User.firstname
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.group.description
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.group.id
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.group.name
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.id
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.lastLogin
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.lastLoginIP
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.lastname
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.ldap.description
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.ldap.id
+      description: ''
+      type: Number
+    - contextPath: TenableSC.User.ldap.name
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.ldapUsername
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.locked
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.managedObjectsGroups.description
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.managedObjectsGroups.id
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.managedObjectsGroups.name
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.managedUsersGroups.description
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.managedUsersGroups.id
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.managedUsersGroups.name
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.modifiedTime
+      description: ''
+      type: Date
+    - contextPath: TenableSC.User.mustChangePassword
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.password
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.phone
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.preferences.name
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.preferences.tag
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.preferences.value
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.description
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.id
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.name
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.uuid
+      description: ''
+      type: Unknown
+    - contextPath: TenableSC.User.role.description
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.role.id
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.role.name
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.state
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.status
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.title
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.username
+      description: ''
+      type: String
+    - contextPath: TenableSC.User.uuid
+      description: ''
+      type: String
+    
+
+
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Default is 50. The number of objects to return in one response (maximum limit is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The id of the query we wish to search.
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    - default: false
+      description: The query time to retrieve. When no type is set all queries are returned.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - alert
+      - lce
+      - mobile
+      - ticket
+      - user
+    deprecated: false
+    description: Lists queries.
+    execution: false
+    name: tenable-sc-list-query
+    outputs:
+    
+
+
 
   - arguments:
     - default: false
@@ -1725,41 +1912,34 @@ script:
     execution: false
     name: tenable-sc-create-policy
     outputs:
-  
+
 
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: Default is 50. The number of objects to return in one response (maximum limit is 200).
+      description: The id of the scan we wish to get the report on. Can be retrieved from list-scans command.
       isArray: false
-      name: limit
+      name: scan_id
+      required: true
+      secret: false
+    - default: false
+      description: Valid IP/Hostname of a specific target to scan. Must be provided with diagnostic_password.
+      isArray: false
+      name: diagnostic_target
       required: false
       secret: false
     - default: false
-      description: The id of the query we wish to search.
+      description: Valid password of the diagnostic_target. Must be provided with diagnostic_target.
       isArray: false
-      name: query_id
+      name: diagnostic_password
       required: false
       secret: false
-    - default: false
-      description: The query time to retrieve. When no type is set all queries are returned.
-      isArray: false
-      name: type
-      required: false
-      secret: false
-      auto: PREDEFINED
-      predefined:
-      - alert
-      - lce
-      - mobile
-      - ticket
-      - user
     deprecated: false
     description: Lists queries.
     execution: false
-    name: tenable-sc-list-query
+    name: tenable-sc-launch-scan-report
     outputs:
-  
+
+
   isfetch: true
   runonce: false
   script: '-'
