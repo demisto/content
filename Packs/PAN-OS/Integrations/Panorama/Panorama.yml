@@ -130,7 +130,7 @@ configuration:
   section: Collect
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
-  additionalinfo: The maximum number of incidents to fetch per Log Type Query.
+  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
   name: max_fetch
   required: false
   type: 0
@@ -154,56 +154,56 @@ configuration:
   advanced: true
 - display: Traffic Log Type Query
   name: traffic_query
-  additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action})"
+  additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
   advanced: true
 - display: Threat Log Type Query
   name: threat_query
-  additionalinfo: "Threat Log Type query example: (severity geq high)"
+  additionalinfo: "Threat Log Type query example: (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
   advanced: true
 - display: URL Log Type Query
   name: url_query
-  additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high)"
+  additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
   advanced: true
 - display: Data Log Type Query
   name: data_query
-  additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high)"
+  additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
   advanced: true
 - display: Correlation Log Type Query
   name: correlation_query
-  additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address})"
+  additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
   advanced: true
 - display: System Log Type Query
   name: system_query
-  additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity})"
+  additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity}). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
   advanced: true
 - display: Wildfire Submission Log Type Query
   name: wildfire_query
-  additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole))"
+  additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole)). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
   advanced: true
 - display: Decryption Log Type Query
   name: decryption_query
-  additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))"
+  additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination})). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   required: false
   type: 12
   section: Collect
@@ -9559,7 +9559,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.56449
+  dockerimage: demisto/pan-os-python:1.0.0.58557
   feed: false
   isfetch: true
   longRunning: false
