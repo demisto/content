@@ -1043,6 +1043,7 @@ def get_new_indicators(
             "limit": limit,
             "gte_mscore": minimum_mscore,
             "exclude_osint": exclude_osint,
+            "last_updated": "asc"
         }  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
