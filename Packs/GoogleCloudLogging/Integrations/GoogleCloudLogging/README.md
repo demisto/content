@@ -25,7 +25,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
 
 #### Permissions
-This command requires the following [scopes](https://cloud.google.com/logging/docs/reference/v2/rest/v2/entries/list?apix_params=%7B%22resource%22%3A%7B%22resourceNames%22%3A%5B%22projects%2Fgcp-integrations%22%5D%2C%22pageSize%22%3A5%7D%7D#authorization-scopes).
+This command requires one of the following OAuth scopes:
+    https://www.googleapis.com/auth/logging.read
+    https://www.googleapis.com/auth/logging.admin
+    https://www.googleapis.com/auth/cloud-platform.read-only
+    https://www.googleapis.com/auth/cloud-platform
 #### Base Command
 
 `gcp-logging-log-entries-list`
