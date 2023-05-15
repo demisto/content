@@ -48,6 +48,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '1':
     id: '1'
     taskid: aa7ddce2-5a85-46fe-8e35-6c4ebbe62059
@@ -87,12 +88,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '2':
     id: '2'
-    taskid: 1b16e2d5-3ef1-45ad-8e0d-d4aa1f2df746
+    taskid: 2d5a394a-96eb-4d6c-8228-0118f1a8e1f9
     type: regular
     task:
-      id: 1b16e2d5-3ef1-45ad-8e0d-d4aa1f2df746
+      id: 2d5a394a-96eb-4d6c-8228-0118f1a8e1f9
       version: -1
       name: Add original email details to context
       description: Sets the details of the email that was forwarded under the email context key. Also saves the HTML or email text to the email body section in the layout.
@@ -123,12 +125,65 @@ tasks:
     - incidentfield: Rendered HTML
       output:
         complex:
-          root: inputs.EmailHtml
+          root: .
           transformers:
-          - operator: SetIfEmpty
+          - operator: If-Then-Else
             args:
-              applyIfEmpty: {}
-              defaultValue:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB:
+                value:
+                  simple: lhsB!=rhsB
+              conditionInBetween:
+                value:
+                  simple: and
+              else: {}
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.UseOldHTMLFields
+                iscontext: true
+              lhsB:
+                value:
+                  simple: inputs.EmailHtml
+                iscontext: true
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: inputs.EmailHtml
+                iscontext: true
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB:
+                value:
+                  simple: lhsB!=rhsB
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.UseOldHTMLFields
+                iscontext: true
+              lhsB:
+                value:
+                  simple: inputs.EmailText
+                iscontext: true
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
                 value:
                   simple: inputs.EmailText
                 iscontext: true
@@ -136,6 +191,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '3':
     id: '3'
     taskid: 5802b254-fac3-4c94-8b2d-89038b4239e5
@@ -159,8 +215,6 @@ tasks:
         complex:
           root: inputs.EmailFileToExtract
     reputationcalc: 2
-    results:
-    - AttachmentName
     separatecontext: false
     view: |-
       {
@@ -176,6 +230,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '4':
     id: '4'
     taskid: d6c5b273-5d28-487a-8ccf-aefb1759d1f5
@@ -246,6 +301,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '5':
     id: '5'
     taskid: b50d466b-3299-40c7-8ba4-e18f05bb0d3c
@@ -287,6 +343,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '6':
     id: '6'
     taskid: 68d4779d-e845-4c51-8b7d-628f42bf4a96
@@ -314,6 +371,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '11':
     id: '11'
     taskid: 02bb525c-7801-4a05-8368-323b10f7bc4d
@@ -344,6 +402,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '16':
     id: '16'
     taskid: 1e92b0fe-4a08-4667-856d-8393f0f18b58
@@ -409,6 +468,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '18':
     id: '18'
     taskid: 5d4f7213-dbe7-4a40-8960-f177324ac530
@@ -450,12 +510,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '19':
     id: '19'
-    taskid: f9acc75d-f15f-4e8f-8744-c3420b86bcc4
+    taskid: 1e6ab05a-d0ce-4847-8d2a-e50433d904f7
     type: regular
     task:
-      id: f9acc75d-f15f-4e8f-8744-c3420b86bcc4
+      id: 1e6ab05a-d0ce-4847-8d2a-e50433d904f7
       version: -1
       name: Display email information in layout
       description: Updates Cortex XSOAR incident fields using data from the email object.
@@ -522,10 +583,32 @@ tasks:
           accessor: BodyFormat
       emailbodyhtml:
         complex:
-          root: Email
-          accessor: HTML
+          root: .
           transformers:
-          - operator: Stringify
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else: {}
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.UseOldHTMLFields
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: Email.HTML
+                iscontext: true
       emailcc:
         complex:
           root: Email
@@ -549,7 +632,15 @@ tasks:
           root: Email
           accessor: HTML
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Email.Text
+                iscontext: true
           - operator: uniq
+          - operator: Stringify
       emailimage:
         complex:
           root: Email
@@ -671,13 +762,69 @@ tasks:
           root: EmailUrlClicked
       renderedhtml:
         complex:
-          root: Email
-          accessor: HTML
+          root: .
           transformers:
-          - operator: SetIfEmpty
+          - operator: If-Then-Else
             args:
-              applyIfEmpty: {}
-              defaultValue:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB:
+                value:
+                  simple: lhsB!=rhsB
+              conditionInBetween:
+                value:
+                  simple: and
+              else:
+                value:
+                  simple: .
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.UseOldHTMLFields
+                iscontext: true
+              lhsB:
+                value:
+                  simple: Email.HTML
+                iscontext: true
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: Email.HTML
+                iscontext: true
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB:
+                value:
+                  simple: lhsB==rhsB
+              conditionInBetween:
+                value:
+                  simple: and
+              else: {}
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.UseOldHTMLFields
+                iscontext: true
+              lhsB:
+                value:
+                  simple: Email.HTML
+                iscontext: true
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
                 value:
                   simple: Email.Text
                 iscontext: true
@@ -746,6 +893,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '20':
     id: '20'
     taskid: 293d898d-dc20-44ff-81bd-81ebb1056023
@@ -792,6 +940,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '21':
     id: '21'
     taskid: 0388326d-fb71-4386-8a1f-b9e33eb70242
@@ -843,6 +992,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '22':
     id: '22'
     taskid: 6bb8388f-977a-4fd5-83c0-c62843fc8857
@@ -874,12 +1024,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '23':
     id: '23'
-    taskid: 24798019-cf27-4fbd-8f2d-e1443ede01e5
+    taskid: 8398a7c0-fb88-4a69-83fc-3493ea024fa3
     type: condition
     task:
-      id: 24798019-cf27-4fbd-8f2d-e1443ede01e5
+      id: 8398a7c0-fb88-4a69-83fc-3493ea024fa3
       version: -1
       name: Are there any files in the incident?
       description: Checks whether the incident contains any kind of file.
@@ -902,6 +1053,8 @@ tasks:
                 root: inputs.File
                 accessor: EntryID
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -916,6 +1069,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '24':
     id: '24'
     taskid: 73335578-482c-4f91-8d4c-dde807dbd8cf
@@ -953,6 +1107,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '25':
     id: '25'
     taskid: 609256a1-714e-42d2-83f9-a245b903ddd4
@@ -988,6 +1143,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '26':
     id: '26'
     taskid: fc7c93bd-a76d-4329-804e-9e36a56e6d0f
@@ -1043,6 +1199,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '27':
     id: '27'
     taskid: cb1897a4-77db-478e-83de-5cfd82749846
@@ -1103,6 +1260,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '28':
     id: '28'
     taskid: fd5a4fa8-7edb-4342-88fe-b842a41906f8
@@ -1163,6 +1321,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '29':
     id: '29'
     taskid: 48d7ce37-ace0-433c-86d9-5ec0e75982a5
@@ -1223,6 +1382,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '30':
     id: '30'
     taskid: e3200e4e-7fbe-45cd-89c8-6f76b32cf65f
@@ -1283,6 +1443,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '31':
     id: '31'
     taskid: 5c020da7-dd25-41dd-8208-c24d0c28c941
@@ -1343,6 +1504,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '32':
     id: '32'
     taskid: b01edbd3-8f20-4abf-8344-7b28dddc35f9
@@ -1388,6 +1550,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '33':
     id: '33'
     taskid: 06309202-bd36-411d-85fb-026d39e3767c
@@ -1426,6 +1589,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '34':
     id: '34'
     taskid: 9e32420a-cbe7-44aa-892e-5112ba7364a2
@@ -1487,6 +1651,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '36':
     id: '36'
     taskid: efef13c9-b8f6-49e4-8fd8-a51c5c664481
@@ -1526,6 +1691,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '37':
     id: '37'
     taskid: 5ce226b3-dafb-4503-867a-453e0326b7d4
@@ -1572,6 +1738,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '38':
     id: '38'
     taskid: 92eff262-ab72-45d1-8ce0-b5a353ee0599
@@ -1654,6 +1821,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '39':
     id: '39'
     taskid: 9f007781-ed52-47a4-8ee6-4714d5be06ca
@@ -1696,6 +1864,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '40':
     id: '40'
     taskid: fd58d739-4b2b-4b54-881d-403a91126651
@@ -1739,6 +1908,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '41':
     id: '41'
     taskid: b0f67d11-6da9-4d36-8d1c-6ad107972fbe
@@ -1806,6 +1976,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '42':
     id: '42'
     taskid: cf61d30f-5608-4e1f-884d-8b53c3a987d9
@@ -1895,6 +2066,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '43':
     id: '43'
     taskid: 4696b16c-670b-44f6-8595-1d6e09016766
@@ -1935,6 +2107,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '44':
     id: '44'
     taskid: be817d7a-f6d7-482f-84a1-b9d734af50cf
@@ -1971,6 +2144,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '45':
     id: '45'
     taskid: 4df560a8-e403-4170-84d5-e56a1a92b871
@@ -2005,6 +2179,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '46':
     id: '46'
     taskid: fa6dfbef-a424-47eb-80a7-0b06238025e7
@@ -2041,6 +2216,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '47':
     id: '47'
     taskid: ce085c9a-03b6-4155-8755-ea1d3d9744b3
@@ -2077,6 +2253,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '48':
     id: '48'
     taskid: c455a74c-0b75-4448-8f83-9b26622f9da0
@@ -2107,6 +2284,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '49':
     id: '49'
     taskid: bb94119b-622f-4098-873c-9a52e65b8540
@@ -2137,6 +2315,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '50':
     id: '50'
     taskid: 6a08d29d-324b-4451-85c6-d1711c01a651
@@ -2167,6 +2346,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '55':
     id: '55'
     taskid: d92b905f-b6f6-408c-896b-6910ed0f9251
@@ -2226,6 +2406,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '56':
     id: '56'
     taskid: 6ed6697b-5d7a-4700-8b04-41bf375be00f
@@ -2237,7 +2418,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#default#':
       - '6'
@@ -2271,32 +2451,6 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core REST API
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2342,6 +2496,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 system: true
 view: |-
   {
@@ -2509,6 +2664,17 @@ inputs:
     Outer file: The file at the first level is parsed.
     All files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.
   playbookInputQuery:
+- key: UseOldHTMLFields
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input is used to preserve backward-compatibility. It determines whether the playbook should set email fields that are no longer being used in the out-of-the-box content.
+    If set to True, the playbook will save data into the the "Email Body HTML" and "Rendered HTML" incident fields.
+    If set to False, the playbook will not save data into those fields, and will simply be using the Email HTML field.
+    If you are ingesting large emails which are causing issues with large amounts of data being saved into incident fields, you should set the value to False.
+    We recommend setting the value to False unless you are certain that you need the "Email Body HTML" and "Rendered HTML" incident fields.
+  playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
   description: The email HTML body if it exists.
@@ -2544,6 +2710,6 @@ outputs:
   description: The file object.
   type: string
 tests:
-- Phishing v3 - Get Original Email + Search & Delete - Test
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
+- Phishing v3 - Get Original Email + Search & Delete - Test
 fromversion: 6.0.0
