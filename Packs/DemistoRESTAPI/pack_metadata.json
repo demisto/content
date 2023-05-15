@@ -1,5 +1,5 @@
 {
-    "name": "Cortex REST API",
+    "name": "Cortex REST API_mm",
     "description": "Use Demisto REST APIs",
     "support": "xsoar",
     "currentVersion": "1.3.23",
