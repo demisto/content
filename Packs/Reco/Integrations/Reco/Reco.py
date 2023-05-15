@@ -42,7 +42,7 @@ def extract_response(response: Any) -> List[Dict[str, Any]]:
         raise Exception(f"got bad response, {response}")
     else:
         demisto.info(
-            f"Count of assets exposed publicly: {response.get('getTableResponse').get('totalNumberOfResults')}"
+            f"Count of entites: {response.get('getTableResponse').get('totalNumberOfResults')}"
         )
         entities = (
             response.get("getTableResponse", {}).get("data", {}).get("rows", [])
@@ -392,7 +392,7 @@ class RecoClient(BaseClient):
         params = {
             "getTableRequest": {
                 "tableName": "DATA_RISK_MANAGEMENT_VIEW_TOP_3RD_PARTIES_DOMAIN",
-                "pageSize": 1000,
+                "pageSize": PAGE_SIZE,
                 "fieldSorts": {
                     "sorts": [
                         {
@@ -505,7 +505,7 @@ class RecoClient(BaseClient):
         params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "files_view",
-                "pageSize": 1000,
+                "pageSize": PAGE_SIZE,
                 "fieldFilters": {
                     "relationship": "FILTER_RELATIONSHIP_AND",
                     "fieldFilterGroups": {
@@ -571,7 +571,7 @@ class RecoClient(BaseClient):
         params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "files_view",
-                "pageSize": 1000,
+                "pageSize": PAGE_SIZE,
                 "fieldFilters": {
                     "relationship": "FILTER_RELATIONSHIP_AND",
                     "fieldFilterGroups": {
@@ -616,18 +616,7 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
-            if response.get("getTableResponse") is None:
-                demisto.error(f"got bad response, {response}")
-                raise Exception(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                assets = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(assets)} result")
-                return assets
+            return extract_response(response)
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
