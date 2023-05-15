@@ -3554,19 +3554,19 @@ class Pack(object):
         """
         pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
 
-        for _dir in [PackFolders.XSIAM_REPORTS, PackFolders.XSIAM_DASHBOARDS]:
+        for _dir in [PackFolders.XSIAM_REPORTS.value, PackFolders.XSIAM_DASHBOARDS.value]:
             local_preview_image_dir = os.path.join(PACKS_FOLDER, self.name, _dir)
             if not os.path.isdir(local_preview_image_dir):
                 logging.debug(f"Could not find content items with preview images for pack {self.name}")
                 continue
 
-            preview_image_relative_path = glob.glob(os.path.join(local_preview_image_dir, '*.png'))
-            if not preview_image_relative_path:
+            preview_image_relative_paths = glob.glob(os.path.join(local_preview_image_dir, '*.png'))
+            if not preview_image_relative_paths:
                 logging.debug(f"Could not find preview images in pack {local_preview_image_dir}")
                 continue
 
-            logging.info(f"Found preview image: {preview_image_relative_path}")
-            preview_image_relative_path = preview_image_relative_path[0]
+            logging.info(f"Found preview image: {preview_image_relative_paths}")
+            preview_image_relative_path: str = preview_image_relative_paths[0]
             image_name = os.path.basename(preview_image_relative_path)
             image_storage_path = os.path.join(pack_storage_root_path, _dir, image_name)
             pack_image_blob = storage_bucket.blob(image_storage_path)
