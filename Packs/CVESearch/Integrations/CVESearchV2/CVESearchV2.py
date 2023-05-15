@@ -1,5 +1,5 @@
 import urllib3
-from typing import Dict, Any, List, Union, Tuple
+from typing import Dict, Any, List, Union
 import re
 
 from CommonServerPython import *
@@ -149,7 +149,7 @@ def generate_indicator(data: dict) -> Common.CVE:
         """
 
         Args:
-            cpe: A string represeting a single CPE, see "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf"
+            cpe: A string representing a single CPE, see "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf"
 
         Returns:
             A list of tags and a list of EntityRelationships.
@@ -194,9 +194,6 @@ def generate_indicator(data: dict) -> Common.CVE:
 
         return [vendor, product, part], relationships
 
-
-
-    relationships = []
     cve_id = data.get('id', '')
     cpe = data.get("vulnerable_product", '')
 
