@@ -1,0 +1,77 @@
+{
+    "content": [
+        {
+            "value": "test",
+            "type": "Hashes",
+            "status": "Retired",
+            "severity": "High",
+            "score": 95.42028985507247,
+            "lastUpdateDate": "content[0]_lastUpdateDate",
+            "lastSeen": "content[0]_lastSeen",
+            "firstSeen": "content[0]_firstSeen",
+            "relatedMalware": [],
+            "relatedCampaigns": [],
+            "relatedThreatActors": [],
+            "reportedFeeds": [
+                {
+                    "id": "59e376681bb0800644e1368f",
+                    "name": "Cyber Threat Alliance",
+                    "confidenceLevel": 2
+                }
+            ],
+            "whitelisted": false,
+            "tags": []
+        },
+        {
+            "value": "test",
+            "type": "Hashes",
+            "status": "Retired",
+            "severity": "High",
+            "score": 100,
+            "lastUpdateDate": "content[1]_lastUpdateDate",
+            "lastSeen": "content[1]_lastSeen",
+            "firstSeen": "content[1]_firstSeen",
+            "relatedMalware": [],
+            "relatedCampaigns": [],
+            "relatedThreatActors": [],
+            "reportedFeeds": [
+                {
+                    "id": "59e376681bb0800644e1368f",
+                    "name": "Cyber Threat Alliance",
+                    "confidenceLevel": 2
+                }
+            ],
+            "whitelisted": false,
+            "tags": []
+        },
+        {
+            "value": "content[2]_value",
+            "type": "IpAddresses",
+            "status": "Retired",
+            "severity": "Low",
+            "score": 0,
+            "lastUpdateDate": "content[2]_lastUpdateDate",
+            "lastSeen": "content[2]_lastSeen",
+            "firstSeen": "content[2]_firstSeen",
+            "geolocation": "US",
+            "relatedMalware": [],
+            "relatedCampaigns": [],
+            "relatedThreatActors": [],
+            "reportedFeeds": [
+                {
+                    "id": "59e376681bb0800644e1368f",
+                    "name": "Cyber Threat Alliance",
+                    "confidenceLevel": 2
+                },
+                {
+                    "id": "5c597cda73f7b6c78a7fb504",
+                    "name": "Bad IPs",
+                    "confidenceLevel": 1
+                }
+            ],
+            "whitelisted": true,
+            "tags": []
+        }
+    ],
+    "nextOffset": "nextOffset"
+}
