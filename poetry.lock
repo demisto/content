@@ -991,14 +991,14 @@ files = [
 
 [[package]]
 name = "demisto-py"
-version = "3.2.9"
+version = "3.2.10"
 description = "A Python library for the Demisto API"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "demisto-py-3.2.9.tar.gz", hash = "sha256:afdc08684eddb7704e0cf31f59191926794b72ae715113d89e9aae72ae7d459b"},
-    {file = "demisto_py-3.2.9-py3-none-any.whl", hash = "sha256:25ec36ad517635cb79f60f6edc2a43b5a5e009d6c2d0709bc91739c54067e9a4"},
+    {file = "demisto-py-3.2.10.tar.gz", hash = "sha256:ae3ee25afe2fabee1e6120aafbb84615aa583ebe407b54ff10f2747bbdcc6514"},
+    {file = "demisto_py-3.2.10-py3-none-any.whl", hash = "sha256:70bd630374fc2c238e5aed1bedebdd8e8105161a62b696fd327ff2ed8893dca3"},
 ]
 
 [package.dependencies]
@@ -1011,14 +1011,14 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.14.3"
+version = "1.14.5"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.14.3-py3-none-any.whl", hash = "sha256:be31870dd922767a07d3f61a374ceb1d99d42771a30faa5a32cd17adce823e77"},
-    {file = "demisto_sdk-1.14.3.tar.gz", hash = "sha256:62f243b099edc91eb00af88fcead2a5ce0c6dcc83ca869910e0c08f946f5ca41"},
+    {file = "demisto_sdk-1.14.5-py3-none-any.whl", hash = "sha256:ac0a016e53bee6e964985e03c337a51598dd9e3a8663af74c7e40565320e2956"},
+    {file = "demisto_sdk-1.14.5.tar.gz", hash = "sha256:7298b9e699aa96d9869a328201811e7707a7e8edac6e94db3fc531aac6841d6b"},
 ]
 
 [package.dependencies]
@@ -1034,7 +1034,7 @@ coverage = ">=7.2.1,<8.0.0"
 cryptography = ">=36.0.2,<37.0.0"
 dateparser = ">=1.1.1,<2.0.0"
 decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.9,<4.0.0"
+demisto-py = ">=3.2.10,<4.0.0"
 dictdiffer = ">=0.9.0,<0.10.0"
 dictor = ">=0.1.9,<0.2.0"
 docker = ">=5.0.3,<6.0.0"
@@ -3344,6 +3344,7 @@ optional = false
 python-versions = "*"
 files = [
     {file = "pdf2image-1.16.3-py3-none-any.whl", hash = "sha256:b6154164af3677211c22cbb38b2bd778b43aca02758e962fe1e231f6d3b0e380"},
+    {file = "pdf2image-1.16.3.tar.gz", hash = "sha256:74208810c2cef4d9e347769b8e62a52303982ddb4f2dfd744c7ab4b940ae287e"},
 ]
 
 [package.dependencies]
@@ -6436,4 +6437,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "1ac1804f8c61cf07622b743d35bebc0574b40adc110e9c32378b5fcd37fd064d"
+content-hash = "18ace6bf70ac1bc552150010c965d4ddbb5d603f956435713598a98c7c12e682"
