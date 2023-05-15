@@ -3699,8 +3699,6 @@ def handle_error(e, type_: str | None, custom_msg: str | None) -> None:
             f'{error_msg}{custom_msg if type_ in ("Group", "Role") else ""}. Full error message: {e}'
         ) from e
 
-    raise
-
 
 def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
@@ -3769,7 +3767,7 @@ def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> Co
             outputs = client.get_risk_score_user_or_host(user_id).get('reply', {})
         except DemistoException as e:
             handle_error(e=e, type_="id", custom_msg=None)
-
+            raise
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]  # type: ignore[arg-type]
 
     else:
@@ -3815,7 +3813,7 @@ def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> Co
             outputs = client.get_risk_score_user_or_host(host_id).get('reply', {})
         except DemistoException as e:
             handle_error(e=e, type_="id", custom_msg=None)
-
+            raise
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]   # type: ignore[arg-type]
     else:
         list_limit = int(args.get('limit', 50))
@@ -3854,7 +3852,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
     except DemistoException as e:
         error_msg = ", Note: If you sent more than one group name, they may not exist either"
         handle_error(e=e, type_="Group", custom_msg=error_msg)
-
+        raise
     table_for_markdown: list[dict[str, str | None]] = []
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
@@ -3890,7 +3888,7 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
     except DemistoException as e:
         error_msg = ", Note: If you sent more than one Role name, they may not exist either"
         handle_error(e=e, type_="Role", custom_msg=error_msg)
-
+        raise
     if not outputs:
         return CommandResults(readable_output="No entries")
 

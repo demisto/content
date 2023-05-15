@@ -3383,7 +3383,8 @@ def test_get_list_user_groups_command_raise_exception(mocker):
     )
     with pytest.raises(
         ValueError,
-        match="Error: Group test was not found, Note: If you sent more than one group name, they may not exist either. Full error message: Group 'test' was not found"
+        match="Error: Group test was not found, Note: If you sent more than one group name, they may not exist either. "
+        "Full error message: Group 'test' was not found",
     ):
         get_list_user_groups_command(client, {"group_names": "test"})
 
