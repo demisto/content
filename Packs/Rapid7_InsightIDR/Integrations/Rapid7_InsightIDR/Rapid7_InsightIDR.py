@@ -86,8 +86,7 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix=f'log_search/query/logs/{log_id}',
                                   headers=self._headers,
-                                  params=params,
-                                  resp_type='response')
+                                  params=params)
 
     def query_log_set(self, log_set_id: str, params: dict) -> Response:
         return self._http_request(method='GET',
@@ -568,24 +567,7 @@ def insight_idr_query_log_command(client: Client, log_id: str, query: str, time_
 
     results = client.query_log(log_id, params)
 
-    data_for_readable_output = []
-    new_data = []
-
-    # 202 if there is a callback, and 200 if that's the full response
-    if results.status_code == 202:
-        for link in results.json().get('links', []):
-            url = link.get('href')
-            data = client.query_log_callback(url)
-            new_data.append(data)
-            events = data.get('events', [])
-            for event in events:
-                data_for_readable_output.append(event)
-    else:
-        events = results.json().get('events', [])
-        for event in events:
-            data_for_readable_output.append(event)
-
-    raw_response = new_data if new_data else results.json()
+    data_for_readable_output, raw_response = handle_query_log_results(client, results)
 
     readable_output = tableToMarkdown('Query Results', data_for_readable_output,
                                       headers=EVENTS_FIELDS, removeNull=True)

@@ -2,6 +2,8 @@
 import io
 import json
 
+import pytest
+
 from CommonServerPython import *
 
 REGION = 'us'
@@ -407,7 +409,7 @@ def test_insight_idr_query_log(requests_mock) -> None:
     """
     from Rapid7_InsightIDR import Client, insight_idr_query_log_command
 
-    mock_response = util_load_json('test_data/list_log_sets.json')
+    mock_response = util_load_json('test_data/query_log_set.json')
     requests_mock.get(
         f'https://{REGION}.api.insight.rapid7.com/log_search/query/logs/x', json=mock_response)
 
@@ -422,8 +424,8 @@ def test_insight_idr_query_log(requests_mock) -> None:
     response = insight_idr_query_log_command(client, 'x', '', '', '')
 
     outputs = []
-    for event in response.raw_response.get('events', []):
-        outputs.append(event)
+    for result in response.raw_response:
+        outputs.extend(iter(result.get('events', [])))
 
     assert response.outputs_prefix == 'Rapid7InsightIDR.Event'
     assert response.outputs_key_field == 'message'
@@ -469,9 +471,25 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
     assert response.outputs == outputs
 
 
-def test_insight_idr_query_log_set_with_pagination(requests_mock) -> None:
-    from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
+@pytest.mark.parametrize('end_point', [
+    ('logsets'),
+    ('logs'),
+])
+def test_insight_idr_query_log_with_pagination(requests_mock, end_point) -> None:
+    """
+    Given:
+        - User has provided logs_per_page argument
+    When:
+        - insight_idr_query_log_command or insight_idr_query_log_set_command is called
+    Then:
+        - Ensure pagination is working as expected
+    """
+    from Rapid7_InsightIDR import Client, insight_idr_query_log_command, insight_idr_query_log_set_command
 
+    commands = {
+        "logsets": insight_idr_query_log_set_command,
+        "logs": insight_idr_query_log_command
+    }
     mock_response_page_1 = util_load_json('test_data/query_log_set_page_1.json')
     mock_response_page_2 = util_load_json('test_data/query_log_set_page_2.json')
     mock_response_page_3 = util_load_json('test_data/query_log_set_page_3.json')
@@ -479,7 +497,7 @@ def test_insight_idr_query_log_set_with_pagination(requests_mock) -> None:
     base_url = f'https://{REGION}.api.insight.rapid7.com'
 
     requests_mock.get(
-        f'{base_url}/log_search/query/logsets/x', json=mock_response_page_1)
+        f'{base_url}/log_search/query/{end_point}/x', json=mock_response_page_1)
     requests_mock.get(
         f'{base_url}/query/logs/123?per_page=1&sequence_number=1', json=mock_response_page_2)
     requests_mock.get(
@@ -493,7 +511,7 @@ def test_insight_idr_query_log_set_with_pagination(requests_mock) -> None:
         },
         proxy=False
     )
-    response = insight_idr_query_log_set_command(client, 'x', '', logs_per_page=1)
+    response = commands[end_point](client, 'x', '', logs_per_page=1)
 
     outputs = []
 
@@ -504,15 +522,32 @@ def test_insight_idr_query_log_set_with_pagination(requests_mock) -> None:
     assert response.outputs == outputs
 
 
-def test_insight_idr_query_log_set_with_callback(mocker, requests_mock) -> None:
-    from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
+@pytest.mark.parametrize('end_point', [
+    ('logsets'),
+    ('logs'),
+])
+def test_insight_idr_query_log_with_callback(mocker, requests_mock, end_point) -> None:
+    """
+    Given:
+        - User has provided valid logset ID or log key
+    When:
+        - insight_idr_query_log_command or insight_idr_query_log_set_command is called
+            and callback is enabled
+    Then:
+        - Ensure callback is working as expected
+    """
+    from Rapid7_InsightIDR import Client, insight_idr_query_log_command, insight_idr_query_log_set_command
 
+    commands = {
+        "logsets": insight_idr_query_log_set_command,
+        "logs": insight_idr_query_log_command
+    }
     mock_response_callback = util_load_json('test_data/query_log_set_callback.json')
     mock_response_callback_1 = util_load_json('test_data/query_log_set_callback_1.json')
     mock_response = util_load_json('test_data/query_log_set.json')
 
     requests_mock.get(
-        f'https://{REGION}.api.insight.rapid7.com/log_search/query/logsets/x', json=mock_response_callback)
+        f'https://{REGION}.api.insight.rapid7.com/log_search/query/{end_point}/x', json=mock_response_callback)
     mocker.patch.object(Client, 'query_log_callback', side_effect=[mock_response_callback_1, mock_response])
 
     client = Client(
@@ -523,7 +558,7 @@ def test_insight_idr_query_log_set_with_callback(mocker, requests_mock) -> None:
         },
         proxy=False
     )
-    response = insight_idr_query_log_set_command(client, 'x', '')
+    response = commands[end_point](client, 'x', '')
 
     outputs = []
 
