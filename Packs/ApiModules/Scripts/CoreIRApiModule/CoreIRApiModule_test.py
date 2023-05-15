@@ -13,7 +13,7 @@ from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoEx
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, get_list_risky_users_command, get_list_risky_hosts_command, get_list_user_groups_command, \
-    parse_user_groups, get_list_users_command, get_list_roles_command, set_user_role_command, remove_user_role_command
+    parse_user_groups, get_list_users_command, get_list_roles_command, change_user_role_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3199,7 +3199,7 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
     ],
 )
 def test_get_list_risky_users_and_hosts_command(
-    mocker, func_command: Callable, func_http: str, args: dict, excepted_calls: dict
+    mocker, func_command: Callable, func_http: str, args: dict[str, str], excepted_calls: dict[str, int]
 ):
     """
     Tests the `get_list_risky_users_command` and `get_list_risky_hosts_command` functions.
@@ -3282,20 +3282,13 @@ def test_get_list_risky_users_hosts_command_raise_exception(
         ),
     )
     with pytest.raises(
-        Exception,
+        ValueError,
         match="Error: id test was not found. Full error message: id 'test' was not found"
     ):
         command_func(client, {id: "test"})
 
 
-@pytest.mark.parametrize(
-    "args, expected_results",
-    [
-        ({"group_names": "test"}, "dummy1@gmail.com"),
-        ({"group_names": ""}, "dummy1@gmail.com"),
-    ],
-)
-def test_get_list_user_groups_command(mocker, args: dict[str, str], expected_results: str):
+def test_get_list_user_groups_command(mocker):
     """
     Test function to validate the behavior of the `get_list_user_groups_command` function.
 
@@ -3313,8 +3306,8 @@ def test_get_list_user_groups_command(mocker, args: dict[str, str], expected_res
     test_data = load_test_data("./test_data/get_list_user_groups.json")
     mocker.patch.object(CoreClient, "get_list_user_groups", return_value=test_data)
 
-    results = get_list_user_groups_command(client=client, args=args)
-    assert expected_results in results.outputs[0]["user_email"]
+    results = get_list_user_groups_command(client=client, args={"group_names": "test"})
+    assert test_data["reply"] == results.outputs
 
 
 @pytest.mark.parametrize(
@@ -3330,17 +3323,17 @@ def test_get_list_user_groups_command(mocker, args: dict[str, str], expected_res
                 "user_email": [
                     "dummy1@gmail.com",
                     "dummy2@gmail.com",
-                    "dummy3@gmail.com",
-                    "dummy4@gmail.com",
-                    "dummy5@gmail.com",
                 ],
                 "source": "Custom",
             },
-            {"expected_len": 5, "expected_user": "dummy1@gmail.com"}
+            [
+                {'User email': 'dummy1@gmail.com', 'Group Name': 'Group2', 'Group Description': None},
+                {'User email': 'dummy2@gmail.com', 'Group Name': 'Group2', 'Group Description': None}
+            ]
         )
     ],
 )
-def test_parse_user_groups(data: dict, expected_results: dict[str, Any]):
+def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str, Any]]):
     """
     Test the 'parse_user_groups' function that parses user group information.
 
@@ -3355,8 +3348,7 @@ def test_parse_user_groups(data: dict, expected_results: dict[str, Any]):
     """
     results = parse_user_groups(data)
 
-    assert expected_results["expected_user"] in results[0].get("User email")  # type: ignore[operator]
-    assert len(results) == expected_results["expected_len"]
+    assert expected_results == results
 
 
 def test_get_list_user_groups_command_raise_exception(mocker):
@@ -3390,20 +3382,13 @@ def test_get_list_user_groups_command_raise_exception(mocker):
         ),
     )
     with pytest.raises(
-        Exception,
-        match="Error: Group test was not found, Note: If you sent more than one group name, "
-              "they may not exist either. Full error message: Group 'test' was not found",
+        ValueError,
+        match="Error: Group test was not found, Note: If you sent more than one group name, they may not exist either. Full error message: Group 'test' was not found"
     ):
         get_list_user_groups_command(client, {"group_names": "test"})
 
 
-@pytest.mark.parametrize(
-    "expected_output",
-    [
-        ("dummy@dummy.com")
-    ]
-)
-def test_get_list_users_command(mocker, expected_output: str):
+def test_get_list_users_command(mocker):
     """
     Tests the `get_list_users_command` function.
 
@@ -3421,7 +3406,7 @@ def test_get_list_users_command(mocker, expected_output: str):
     mocker.patch.object(CoreClient, "get_list_users", return_value=test_data)
 
     results = get_list_users_command(client=client, args={})
-    assert expected_output in results.readable_output  # type:ignore[operator] 
+    assert test_data["reply"] == results.outputs  # type:ignore[operator]
 
 
 @pytest.mark.parametrize(
@@ -3471,23 +3456,57 @@ def test_get_list_roles_command(
 
 
 @pytest.mark.parametrize(
-    "func, expected_output, args",
+    "func, args, update_count, expected_output",
     [
-        (set_user_role_command, "User Role Was Updated Successfully", {"user_emails": "test@test.com", "role_name": "test"}),
-        (remove_user_role_command, "User Role Was Removed Successfully", {"user_emails": "test@test.com"})
+        (
+            "remove_user_role",
+            {"user_emails": "test1@example.com,test2@example.com"},
+            {"reply": {"update_count": 2}},
+            "Role was removed successfully for 2 users."
+        ),
+        (
+            "remove_user_role",
+            {"user_emails": "test1@example.com,test2@example.com"},
+            {"reply": {"update_count": 0}},
+            "Role was removed successfully for 0 users."
+        ),
+        (
+            "set_user_role",
+            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
+            {"reply": {"update_count": 2}},
+            "Role was updated successfully for 2 users."
+        ),
+        (
+            "set_user_role",
+            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
+            {"reply": {"update_count": 0}},
+            "Role was updated successfully for 0 users."
+        )
     ]
 )
-def test_user_role_command(mocker, func, expected_output: str, args: dict[str, str]):
+def test_change_user_role_command_happy_path(
+    mocker, func: str,
+    args: dict[str, str],
+    update_count: dict[str, dict[str, int]],
+    expected_output: str
+):
+    """
+    Given:
+    - Valid user emails and role name provided.
+
+    When:
+    - Running the change_user_role_command function.
+
+    Then:
+    - Ensure the function returns a CommandResults object with the expected readable output.
+    """
+
     client = CoreClient("test", {})
+    mocker.patch.object(CoreClient, func, return_value=update_count)
 
-    mock_res = {"reply": {"update_count": 1}}
+    result = change_user_role_command(client, args)
 
-    mocker.patch.object(CoreClient, "set_user_role", return_value=mock_res)
-    mocker.patch.object(CoreClient, "remove_user_role", return_value=mock_res)
-
-    results = func(client=client, args=args)
-
-    assert expected_output in results.readable_output
+    assert result.readable_output == expected_output
 
 
 def test_endpoint_command_fails(requests_mock):
