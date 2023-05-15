@@ -110,7 +110,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.11.57293
+  dockerimage: demisto/python3:3.10.11.58677
   feed: false
 fromversion: 6.8.0
 tests:
