@@ -4,7 +4,7 @@
   "TestPlaybooks": [],
   "ParsingRules": [
     {
-      "MicrosoftGraphSecurity": {
+      "MyXSIAMPack": {
         "name": "MyXSIAMPack",
         "file_path": "Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml",
         "source": [
