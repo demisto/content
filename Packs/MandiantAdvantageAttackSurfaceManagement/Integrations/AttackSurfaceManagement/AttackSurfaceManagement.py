@@ -158,7 +158,6 @@ class Client(BaseClient):
             raise DemistoException('The ASM API was unable to update'
                                    'the status of the issue')
 
-        demisto.debug(response)
         return response.get('result') or False
 
     def get_headers(self, include_project: bool = True, project_id=None):
@@ -380,9 +379,7 @@ def update_remote_system_command(client: Client, args: dict):
     remote_incident_id = parsed_args.remote_incident_id
 
     issue_status = parsed_args.delta.get("runStatus")
-    demisto.debug(issue_status, parsed_args.inc_status)
     if issue_status is not None:
-        demisto.debug("Attempting to UPDATEINCIDENT")
         client.update_issue_status(remote_incident_id, parsed_args.inc_status)
 
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:

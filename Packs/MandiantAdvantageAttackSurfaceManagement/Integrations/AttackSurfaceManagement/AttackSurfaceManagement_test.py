@@ -217,7 +217,7 @@ MOCK_FETCH_ISSUES_RESPONSE = {
                 "collection_uuid": "f12c71db-d34d-4733-a19e-b8742ed7eb70",
                 "organization_uuid": "075892c8-fe6f-454e-a071-34a7342c16a3",
                 "entity_type": "Intrigue::Entity::Uri",
-                "entity_name": "https://www.gridability.eu:443",
+                "entity_name": "https://www.fakeurl.eu:443",
                 "entity_uid": "2a7cdfb23b2253a9ea4cc88962e0b7cd9b1622f7d44e56f675a8700b934d1f51",
                 "upstream": "intrigue",
                 "summary": {
@@ -559,7 +559,8 @@ def test_get_collections_with_project(client: AttackSurfaceManagement.Client, re
 @freeze_time(datetime.fromtimestamp(1681768194))
 def test_fetch_incidents(client: AttackSurfaceManagement.Client, requests_mock, mocker):
     requests_mock.get(
-        f'{SERVER_URL}/search/issues/collection%3A12341234%20collection%3A23452345%20last_seen_before%3A2023-04-17T21%3A49%3A54.000000Z%20last_seen_after%3A2023-03-18T21%3A49%3A54.000000Z%20severity_gte%3A1?page=0',
+        f'{SERVER_URL}/search/issues/collection%3A12341234%20collection%3A23452345%20last_seen_before%3A2023-04-17T21%3A49%3A54.000000Z%20'
+        'last_seen_after%3A2023-03-18T21%3A49%3A54.000000Z%20severity_gte%3A1?page=0',
         headers={'content-type': 'application/json', 'project_id': '1234'}, json=MOCK_FETCH_ISSUES_RESPONSE)
 
     requests_mock.get(f'{SERVER_URL}/issues/2e0134b5b346a5d0a9d5ee0efe7dfb69dfcc5c1cf65a6df63568f85dc587a120',
@@ -609,3 +610,27 @@ def test_get_remote_data(client: AttackSurfaceManagement.Client, requests_mock, 
                                      'test_user'
     assert notes_data["Note"] is True
     assert notes_data['Tags'] == ['note_from_ma_asm']
+
+def test_update_remote_system(client: AttackSurfaceManagement.Client, requests_mock):
+    args = {
+        'data': {},
+        'entries': [],
+        'incidentChanged': True,
+        'remoteId': 'FAKE_ID',
+        'status': 2,
+        'delta': {
+            "runStatus": ""
+        }
+    }
+
+    requests_mock.get(f'{SERVER_URL}/issues/FAKE_ID', json={'success': True})
+
+    requests_mock.post(f'{SERVER_URL}/issues/FAKE_ID/status', json={
+        "success": True,
+        "message": "Successfully reported status as open_triaged",
+        "result": True
+    })
+
+    result = AttackSurfaceManagement.update_remote_system_command(client, args)
+
+    assert result == 'FAKE_ID'
