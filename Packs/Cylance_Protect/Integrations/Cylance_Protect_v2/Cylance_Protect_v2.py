@@ -1514,7 +1514,7 @@ def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
 # EXECUTION
 def main():    # pragma: no cover
     params = demisto.params()
-    
+
     global APP_ID
     APP_ID = params.get('app_creds', {}).get('identifier') or params.get('app_id')
     global APP_SECRET
