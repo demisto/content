@@ -177,12 +177,10 @@ def log_entries_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Comm
                                'project_name, organization_name, billing_account_name, or folder_name.')
     resources = []
     resources.extend([f'projects/{project_name}' for project_name in resource_project_name if resource_project_name])
-    resources.extend(
-        [f'organizations/{organization_name}' for organization_name in resource_organization_name if resource_organization_name])
-    resources.extend(
-        [f'billingAccounts/{billing_account_name}'
-         for billing_account_name in resource_billing_account_name
-         if resource_billing_account_name])
+    resources.extend([f'organizations/{organization_name}' for organization_name in resource_organization_name
+                      if resource_organization_name])
+    resources.extend([f'billingAccounts/{billing_account_name}'
+                      for billing_account_name in resource_billing_account_name if resource_billing_account_name])
     resources.extend([f'folders/{folders_names}' for folders_names in resource_folders_names if resource_folders_names])
 
     limit = arg_to_number(args.get('limit'))
@@ -206,7 +204,6 @@ def log_entries_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Comm
         else:
             demisto.debug(f'Request body: {request_body}')
             response = get_entries_request(client, request_body)
-            # response = client.get_entries_request(request_body)
     except ValueError as e:
         raise ValueError(e) from e
     return CommandResults(
