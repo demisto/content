@@ -9,7 +9,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.11.57890
+dockerimage: demisto/python3:3.10.11.58677
 enabled: true
 name: SentinelOne-Get-MAC
 outputs:
