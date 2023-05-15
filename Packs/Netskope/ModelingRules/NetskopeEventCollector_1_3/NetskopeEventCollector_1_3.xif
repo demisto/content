@@ -1,4 +1,4 @@
-[MODEL: dataset=netskope_netskope_raw]
+[MODEL: dataset=shelly_netskope1_raw]
 // Page Logs
 filter source_log_event = "page"
 | alter

@@ -11,7 +11,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-ALL_SUPPORTED_EVENT_TYPES = ['alert', 'application', 'audit', 'network', 'page']
+ALL_SUPPORTED_EVENT_TYPES = ['page', 'alert', 'application', 'audit', 'network']
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_EVENTS_PAGES_PER_FETCH = 3 * MAX_EVENTS_PAGE_SIZE  # more than 3 pages likely to reach a timeout
 
@@ -43,6 +43,12 @@ class Client(BaseClient):
             'limit': limit,
             'type': event_type
         }
+        # body = {
+        #     'starttime': 1683014056,
+        #     'endtime': 1683014056,
+        #     'limit': limit,
+        #     'type': 'page'
+        # }
         response = self._http_request(method='GET', url_suffix='events', json_data=body)
         return response
 
@@ -140,12 +146,13 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
 
             events = []
             for event in results:
-                if event.get('timestamp') == last_run[event_type] and event.get('_id') not in last_run_ids:
+                event['event_id'] = event['_id']
+                if event.get('timestamp') == last_run[event_type] and event.get('event_id') not in last_run_ids:
                     events.append(event)
-                    last_run_ids.add(event['_id'])
+                    last_run_ids.add(event['event_id'])
                 else:
-                    last_run[f'{event_type}-ids'] = [event['_id']]
-                    last_run_ids = set(event['_id'])
+                    last_run[f'{event_type}-ids'] = [event['event_id']]
+                    last_run_ids.add(event['event_id'])
                     last_run[event_type] = event['timestamp']
                     events.append(event)
 
@@ -281,13 +288,13 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
     max_fetch = min(arg_to_number(params.get('max_fetch')), MAX_EVENTS_PAGES_PER_FETCH)  # type: ignore[type-var]
-    vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
+    vendor, product = params.get('vendor', 'netskopeTest'), params.get('product', 'netskopeTest')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(base_url, token, api_version, verify_certificate, proxy)
 
-        last_run = demisto.getLastRun()
+        # last_run = demisto.getLastRun()
         first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
         last_run = {}
         for event_type in ALL_SUPPORTED_EVENT_TYPES:
