@@ -64,7 +64,7 @@ class Client(BaseClient):
 
     def get_projects_list(self) -> typing.List:
         endpoint = 'projects'
-        response = self._http_request('GET', endpoint)
+        response = self._http_request('GET', endpoint, headers=self.get_headers(include_project=False))
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
@@ -76,7 +76,7 @@ class Client(BaseClient):
         endpoint = 'user_collections'
 
         response = self._http_request('GET', endpoint,
-                                     headers={'PROJECT_ID': str(project_id)})
+                                      headers=self.get_headers())
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return'
@@ -107,7 +107,7 @@ class Client(BaseClient):
 
         while True:
             response = self._http_request('GET', endpoint, params=params,
-                                         headers={'PROJECT_ID': str(self.project_id)})
+                                          headers=self.get_headers())
 
             if not isinstance(response, dict) or not response.get('success'):
                 raise RuntimeError('Failed to retrieve issues from ASM')
@@ -124,7 +124,7 @@ class Client(BaseClient):
         endpoint = f'issues/{issue_id}'
 
         response = self._http_request('GET', endpoint,
-                                     headers={'PROJECT_ID': str(self.project_id)})
+                                      headers=self.get_headers())
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return details for'
@@ -138,7 +138,7 @@ class Client(BaseClient):
         endpoint = f'notes/{resource_type}/{resource_id}'
 
         response = self._http_request('GET', endpoint,
-                                     headers={'PROJECT_ID': str(self.project_id)})
+                                      headers=self.get_headers())
 
         if not isinstance(response, dict) or not response.get('success'):
             raise DemistoException('The ASM API was unable to return notes for'
@@ -146,6 +146,31 @@ class Client(BaseClient):
 
         return response.get('result') or []
 
+    def update_issue_status(self,
+                            indicator_id: str,
+                            indicator_status: int):
+        endpoint = f'/issues/{indicator_id}/status'
+        request_body = {
+            'status': XSOAR_TO_ASM_STATUS_MAP[indicator_status]
+        }
+
+        response = self._http_request('POST', endpoint, json_data=request_body, headers=self.get_headers())
+
+        if not isinstance(response, dict) or not response.get('success'):
+            raise DemistoException('The ASM API was unable to update'
+                                   'the status of the issue')
+
+        return response.get('result') or False
+
+    def get_headers(self, include_project: bool = True):
+        headers = {
+            "INTRIGUE_ACCESS_KEY": self._access_key,
+            "INTRIGUE_SECRET_KEY": self._secret_key
+        }
+        if include_project:
+            headers['PROJECT_ID'] = self.project_id
+
+        return headers
 
 ''' HELPER FUNCTIONS '''
 
@@ -182,8 +207,8 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
     if not client.project_id:
         raise DemistoException('Must configure a Project ID to fetch incidents from Mandiant ASM')
 
-    if last_run and 'start_time' in last_run and last_run['start_time']:
-        last_start_time = parser.parse(last_run.get('start_time'))
+    if last_run and 'time' in last_run and last_run['time']:
+        last_start_time = parser.parse(last_run.get('time'))
     else:
         parsed_time = dateparser.parse(params.get("first_fetch"), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
         if not parsed_time:
@@ -206,13 +231,13 @@ def fetch_incident_helper(client: Client, last_run: dict) -> typing.Tuple[dict, 
     parsed_issues = filter_incidents_by_duplicates_and_limit(
         incidents_res=parsed_issues, last_run=last_run, fetch_limit=client.limit, id_field='dbotMirrorId'
     )
-
-    most_recent_update = parsed_issues[-1]['last_seen']
+    if parsed_issues:
+        most_recent_update = parsed_issues[-1].get('last_seen')
 
     new_issues = [json.loads(i['rawJSON'])['uid'] for i in parsed_issues]
 
     last_run = {
-        'start_time': most_recent_update,
+        'time': most_recent_update,
         'found_incident_ids': list(set(new_issues + last_run.get('found_incident_ids', [])))
     }
 
@@ -268,7 +293,7 @@ def get_projects(client: Client, args: dict = None) -> CommandResults:
 
 
 def get_collections(client: Client, args: dict = None) -> CommandResults:
-    args = args if args else {}
+    args = args or {}
 
     project_id: int = args.get('project_id', client.project_id)
 
@@ -314,7 +339,7 @@ def get_remote_data_command(client: Client, args: dict):
         notes = client.get_notes('issue', masm_id)
         notes_entries = []
         for note in notes:
-            timestamp: datetime = dateutil.parser.parse(note['created_at'])
+            timestamp: datetime = dateutil.parser.parse(note.get('created_at'))
             if timestamp.timestamp() > last_updated.timestamp():
                 new_note = {
                     'Type': EntryType.NOTE,
@@ -352,17 +377,11 @@ def update_remote_system_command(client: Client, args: dict):
         else:
             parsed_args.data['createInvestigation'] = True
 
-        demisto.debug(json.dumps(parsed_args.data))
-
     issue_status = parsed_args.delta.get("runStatus")
     if issue_status:
-        demisto.debug(f"New issue status: {XSOAR_TO_ASM_STATUS_MAP[issue_status]}")
-        # TODO: Push update to XSOAR
+        client.update_issue_status(remote_incident_id, issue_status)
 
-    warroom_entries = parsed_args.entries
-    for entry in warroom_entries:
-        # TODO: Identify if entry originated from ASM or XSOAR
-        demisto.debug(entry)
+    return remote_incident_id
 
 
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
@@ -394,11 +413,11 @@ def main() -> None:
     access_key = params.get('credentials', {}).get('identifier')
     secret_key = params.get('credentials', {}).get('password')
     project_id = params.get('project_id')
-    collections_raw = params.get('collection_ids', '').split(',')
+    collections_raw = arg_to_list(params.get('collection_ids', []))
     collections = [c.strip() for c in collections_raw]
 
-    limit = int(params.get("max_fetch", 50))
-    timeout = int(params.get("timeout", 60))
+    limit = arg_to_number(params.get("max_fetch", 50))
+    timeout = arg_to_number(params.get("timeout", 60))
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
