@@ -42,6 +42,8 @@ MIRROR_DIRECTION = {
     'Both': 'Both'
 }
 
+def convert_to_ts():
+    return
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -1583,7 +1585,7 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-get-contributing-event':
             return_results(get_contributing_event_command(client, args))
-
+            
         elif command == 'xdr-replace-featured-field':
             return_results(replace_featured_field_command(client, args))
 
@@ -1599,6 +1601,6 @@ def main():  # pragma: no cover
     except Exception as err:
         return_error(str(err))
 
-
+print('done')
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
