@@ -11,7 +11,7 @@ def test_change_jira_status():
     demisto.incidents = MagicMock(return_value=[{
         'dbotMirrorId': '1234',
         'CustomFields': {
-            'jirastatus': 'New Status'
+            'jirav3status': 'New Status'
         }
     }])
     execute_command_mocker = demisto.executeCommand = MagicMock(side_effect=[None, [{
@@ -22,7 +22,7 @@ def test_change_jira_status():
     call_args_list = execute_command_mocker.call_args_list
     assert call_args_list[0][0] == ('jira-edit-issue', {'issueId': '1234', 'status': 'New Status', 'issue_id': '1234'})
     assert call_args_list[1][0] == ('jira-get-issue', {'issueId': '1234', 'issue_id': '1234'})
-    assert call_args_list[2][0] == ('setIncident', {'jirastatus': 'New Status'})
+    assert call_args_list[2][0] == ('setIncident', {'jirav3status': 'New Status'})
     assert call_args_list[3][0] == ('setIncident', {'lastupdatetime': '2023-01-01'})
 
 
@@ -34,7 +34,7 @@ def test_new_status_not_found_error():
     demisto.incidents = MagicMock(return_value=[{
         'dbotMirrorId': '1234',
         'CustomFields': {
-            'jirastatus': 'New Status'
+            'jirav3status': 'New Status'
         }
     }])
     demisto.executeCommand = MagicMock(side_effect=[None, [{
@@ -54,7 +54,7 @@ def test_new_updated_time_not_found_error():
     demisto.incidents = MagicMock(return_value=[{
         'dbotMirrorId': '1234',
         'CustomFields': {
-            'jirastatus': 'New Status'
+            'jirav3status': 'New Status'
         }
     }])
     demisto.executeCommand = MagicMock(side_effect=[None, [{

@@ -47,6 +47,12 @@ configuration:
   required: false
   defaultvalue: 0
   type: 0
+- defaultvalue: 3 days
+  display: Time range for initial data fetch
+  additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
+  name: first_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -130,12 +136,6 @@ configuration:
   name: max_fetch
   required: false
   additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
-  type: 0
-- defaultvalue: 3 days
-  display: Time range for initial data fetch
-  additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
-  name: first_fetch
-  required: false
   type: 0
 script:
   commands:
@@ -2091,10 +2091,6 @@ script:
     description: Use this command to create a link between two issues.
     execution: false
     name: jira-issue-to-issue-link
-  - deprecated: false
-    description: Dummy fetch
-    execution: false
-    name: fetch-incidents
   - arguments:
     - default: false
       description: The remote incident ID.

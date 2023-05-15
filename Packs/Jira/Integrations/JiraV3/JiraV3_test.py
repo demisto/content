@@ -1,7 +1,6 @@
 import io
 import json
 import pytest
-from regex import F
 import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)

@@ -66,6 +66,9 @@ def apply_transition():
 
 
 def set_status_and_updated_time_of_incident(incident_fields: Dict[str, Any]):
+    """Gets the fields of the new edited Jira issue, and updates the Jira Status, JiraV3 Status, and Last Update Time
+    Incident Fields.
+    """
     if not (jira_status := incident_fields.get("status", {}).get("name")):
         raise DemistoException(
             f"Error occurred while running script-JiraChangeTransition. Could "
@@ -73,9 +76,14 @@ def set_status_and_updated_time_of_incident(incident_fields: Dict[str, Any]):
             f"{incident_fields} "
         )
 
+    # We set for both jirastatus, and jirav3status since this script works for both Jira V3 and Jira V2.
     demisto.executeCommand(
         "setIncident",
         {"jirastatus": jira_status},
+    )
+    demisto.executeCommand(
+        "setIncident",
+        {"jirav3status": jira_status},
     )
     demisto.executeCommand(
         "setIncident",

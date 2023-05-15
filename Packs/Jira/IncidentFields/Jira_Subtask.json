@@ -21,7 +21,8 @@
     "openEnded": true,
     "associatedTypes": [
         "Jira Incident",
-        "Jira Create Issue and Mirror"
+        "Jira Create Issue and Mirror",
+        "JiraV3 Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,

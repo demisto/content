@@ -39,9 +39,9 @@ def apply_status():
             f'Failed to get "CustomFields" of incident with {incident_id} dbotMirrorId. The incident is:\n'
             f' {incident} '
         )
-    if not (chosen_status := custom_fields.get("jirastatus")):
+    if not (chosen_status := custom_fields.get("jirav3status")):
         raise DemistoException(
-            f'Failed to get "jirastatus" incident field from incident with {incident_id} dbotMirrorId.'
+            f'Failed to get "jirav3status" incident field from incident with {incident_id} dbotMirrorId.'
         )
     res = edit_jira_issue_with_status(incident_id=incident_id, status=chosen_status)
     for entry in res:
@@ -66,6 +66,9 @@ def apply_status():
 
 
 def set_status_and_updated_time_of_incident(incident_fields: Dict[str, Any]):
+    """Gets the fields of the new edited Jira issue, and updates the JiraV3 Status, and Last Update Time
+    Incident Fields.
+    """
     if not (jira_status := incident_fields.get("status", {}).get("name")):
         raise DemistoException(
             f"Error occurred while running JiraChangeStatus. Could "
@@ -75,7 +78,7 @@ def set_status_and_updated_time_of_incident(incident_fields: Dict[str, Any]):
 
     demisto.executeCommand(
         "setIncident",
-        {"jirastatus": jira_status},
+        {"jirav3status": jira_status},
     )
     if updated_time := incident_fields.get('updated'):
         demisto.executeCommand(

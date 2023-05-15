@@ -3,7 +3,7 @@
     "feed": false,
     "id": "JiraV3 Outgoing Mapper",
     "mapping": {
-        "Jira Incident": {
+        "JiraV3 Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "assignee": {
@@ -28,7 +28,7 @@
                     "simple": "jirapriority"
                 },
                 "status": {
-                    "simple": "jirastatus"
+                    "simple": "jirav3status"
                 },
                 "summary": {
                     "simple": "jirasummary"

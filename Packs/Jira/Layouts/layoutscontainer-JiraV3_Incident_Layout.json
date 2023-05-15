@@ -320,7 +320,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "jirastatus",
+                                "fieldId": "jirav3status",
                                 "height": 22,
                                 "id": "5c0e93a0-4ead-11eb-a3d0-ef4e96fe7991",
                                 "index": 2,

@@ -30,7 +30,7 @@
                 "Jira Reporter Name": {
                     "simple": "fields.reporter.displayName"
                 },
-                "Jira Status": {
+                "JiraV3 Status": {
                     "simple": "fields.status.name"
                 },
                 "Jira Summary": {
@@ -59,7 +59,7 @@
                 }
             }
         },
-        "Jira Incident": {
+        "JiraV3 Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Created Time": {
@@ -95,7 +95,7 @@
                 "Jira Reporter Name": {
                     "simple": "fields.reporter.displayName"
                 },
-                "Jira Status": {
+                "JiraV3 Status": {
                     "simple": "fields.status.name"
                 },
                 "Jira Summary": {
@@ -175,7 +175,7 @@
                 "Jira Reporter Name": {
                     "simple": "fields.reporter.displayName"
                 },
-                "Jira Status": {
+                "JiraV3 Status": {
                     "simple": "fields.status.name"
                 },
                 "Jira Summary": {
