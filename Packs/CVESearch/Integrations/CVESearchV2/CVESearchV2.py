@@ -49,9 +49,6 @@ def cve_to_context(cve) -> Dict[str, str]:
         'Published': cve.get('Published', '').rstrip('Z'),
         'Modified': cve.get('Modified', '').rstrip('Z'),
         'Description': cve.get('summary', '')
-    #    'Vulnerable Products': [Common.CPE(cpe).to_context() for cpe in cve.get("vulnerable_product")],
-    #    'Vulnerable Configurations': [Common.CPE(cpe["id"]).to_context() for cpe
-    #                                  in cve.get("vulnerable_configuration")]
     }
 
 
@@ -190,7 +187,6 @@ def generate_indicator(data: dict) -> Common.CVE:
 
         return [vendor, product, part], relationships
 
-
     cpe_parts = {
         "a": "Application",
         "o": "Operating-System",
@@ -230,7 +226,6 @@ def generate_indicator(data: dict) -> Common.CVE:
 
     if relationships:
         cve_object.relationships = relationships
-
 
     return cve_object
 
