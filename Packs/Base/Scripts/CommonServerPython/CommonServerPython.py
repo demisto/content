@@ -7801,7 +7801,7 @@ def response_to_context(reponse_obj):
                 parsed_dict[key] = value
         return parsed_dict
     elif isinstance(reponse_obj, list):
-        return [response_to_context(list_item) for list_item in value]
+        return [response_to_context(list_item) for list_item in reponse_obj]
     else:
         return reponse_obj
 
