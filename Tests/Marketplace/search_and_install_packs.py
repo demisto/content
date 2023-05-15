@@ -714,10 +714,10 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:
-        for peck in packs_to_install_body:
-            if peck not in installed_packs:
-                installed_packs.append(peck)
-                packs_to_install_together.append(peck)
+        for pack in packs_to_install_body:
+            if pack not in installed_packs:
+                installed_packs.append(pack)
+                packs_to_install_together.append(pack)
         if len(packs_to_install_together) > 9:
             install_packs(client, host, packs_to_install_together)
             packs_to_install_together = []
