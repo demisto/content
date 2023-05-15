@@ -1,8 +1,4 @@
 Searches for CVE information using circl.lu.
-This integration was integrated and tested with version xx of CVE Search v2
-
-Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-cve-search-v2).
 
 ## Configure CVE Search v2 on Cortex XSOAR
 
@@ -36,21 +32,21 @@ Returns the latest updated CVEs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of CVEs to display. | Optional | 
+| limit | The maximum number of CVEs to display. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
-| CVE.ID | String   | The ID of the CVE. | 
-| CVE.CVSS | Number   | The CVSS score of the CVE. | 
-| CVE.Published | Date     | The date the CVE was published. | 
-| CVE.Modified | Date     | The date that the CVE was last modified. | 
-| CVE.Description | String   | The description of the CVE. | 
-| DBotScore.Indicator | String   | The indicator value. | 
-| DBotScore.Score | Number   | The indicator score. | 
-| DBotScore.Type | String   | The indicator type. | 
-| DBotScore.Vendor | String   | The vendor reporting the score of the indicator. | 
+| CVE.ID | String   | The ID of the CVE. |
+| CVE.CVSS | Number   | The CVSS score of the CVE. |
+| CVE.Published | Date     | The date the CVE was published. |
+| CVE.Modified | Date     | The date that the CVE was last modified. |
+| CVE.Description | String   | The description of the CVE. |
+| DBotScore.Indicator | String   | The indicator value. |
+| DBotScore.Score | Number   | The indicator score. |
+| DBotScore.Type | String   | The indicator type. |
+| DBotScore.Vendor | String   | The vendor reporting the score of the indicator. |
 
 ### cve
 
@@ -65,21 +61,21 @@ Returns CVE information by CVE ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | The CVE ID. For example: CVE-2014-1234. | Required | 
+| cve_id | The CVE ID. For example: CVE-2014-1234. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE. | 
-| CVE.CVSS | number | The CVSS score of the CVE. | 
-| CVE.Published | Date | The date the CVE was published. | 
-| CVE.Modified | Date | The date that the CVE was last modified. | 
-| CVE.Description | String | The description of the CVE. | 
-| DBotScore.Indicator | String | The indicator value. | 
-| DBotScore.Score | Number | The indicator score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
+| CVE.ID | String | The ID of the CVE. |
+| CVE.CVSS | number | The CVSS score of the CVE. |
+| CVE.Published | Date | The date the CVE was published. |
+| CVE.Modified | Date | The date that the CVE was last modified. |
+| CVE.Description | String | The description of the CVE. |
+| DBotScore.Indicator | String | The indicator value. |
+| DBotScore.Score | Number | The indicator score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. |
 
 
 ##### Command Example
@@ -90,10 +86,10 @@ Returns CVE information by CVE ID.
 {
     "CVE": [
         {
-            "ID": "CVE-2014-1234", 
-            "Published": "2014-01-10T12:02:00", 
-            "CVSS": 2.1, 
-            "Modified": "2014-01-10T17:57:00", 
+            "ID": "CVE-2014-1234",
+            "Published": "2014-01-10T12:02:00",
+            "CVSS": 2.1,
+            "Modified": "2014-01-10T17:57:00",
             "Description": "The paratrooper-newrelic gem 1.0.1 for Ruby allows local users to obtain the X-Api-Key value by listing the curl process."
         }
     ]
