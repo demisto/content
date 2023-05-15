@@ -5388,8 +5388,8 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-          "integrations":  "Cylance Protect v2",
-          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         }
     ],
     "skipped_tests": {
@@ -5506,6 +5506,7 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
+        "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",

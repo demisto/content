@@ -16,4 +16,4 @@ comment: |-
   This script lists all possible transitions for a given Jira issue.
 runas: DBotWeakRole
 tests:
-- Jira-v2-Test
+- No tests
