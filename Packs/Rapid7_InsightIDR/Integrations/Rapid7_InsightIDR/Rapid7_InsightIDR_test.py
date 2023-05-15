@@ -462,11 +462,75 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
     outputs = []
 
     for result in response.raw_response:
-        for event in result.get('events', []):
-            outputs.append(event)
+        outputs.extend(iter(result.get('events', [])))
 
     assert response.outputs_prefix == 'Rapid7InsightIDR.Event'
     assert response.outputs_key_field == 'message'
+    assert response.outputs == outputs
+
+
+def test_insight_idr_query_log_set_with_pagination(requests_mock) -> None:
+    from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
+
+    mock_response_page_1 = util_load_json('test_data/query_log_set_page_1.json')
+    mock_response_page_2 = util_load_json('test_data/query_log_set_page_2.json')
+    mock_response_page_3 = util_load_json('test_data/query_log_set_page_3.json')
+
+    base_url = f'https://{REGION}.api.insight.rapid7.com'
+
+    requests_mock.get(
+        f'{base_url}/log_search/query/logsets/x', json=mock_response_page_1)
+    requests_mock.get(
+        f'{base_url}/query/logs/123?per_page=1&sequence_number=1', json=mock_response_page_2)
+    requests_mock.get(
+        f'{base_url}/query/logs/123?per_page=1&sequence_number=2', json=mock_response_page_3)
+
+    client = Client(
+        base_url=f'https://{REGION}.api.insight.rapid7.com/',
+        verify=False,
+        headers={
+            'Authentication': 'apikey'
+        },
+        proxy=False
+    )
+    response = insight_idr_query_log_set_command(client, 'x', '', logs_per_page=1)
+
+    outputs = []
+
+    for result in response.raw_response:
+        outputs.extend(iter(result.get('events', [])))
+
+    assert len(outputs) == 3
+    assert response.outputs == outputs
+
+
+def test_insight_idr_query_log_set_with_callback(mocker, requests_mock) -> None:
+    from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
+
+    mock_response_callback = util_load_json('test_data/query_log_set_callback.json')
+    mock_response_callback_1 = util_load_json('test_data/query_log_set_callback_1.json')
+    mock_response = util_load_json('test_data/query_log_set.json')
+
+    requests_mock.get(
+        f'https://{REGION}.api.insight.rapid7.com/log_search/query/logsets/x', json=mock_response_callback)
+    mocker.patch.object(Client, 'query_log_callback', side_effect=[mock_response_callback_1, mock_response])
+
+    client = Client(
+        base_url=f'https://{REGION}.api.insight.rapid7.com/',
+        verify=False,
+        headers={
+            'Authentication': 'apikey'
+        },
+        proxy=False
+    )
+    response = insight_idr_query_log_set_command(client, 'x', '')
+
+    outputs = []
+
+    for result in response.raw_response:
+        outputs.extend(iter(result.get('events', [])))
+
+    assert len(outputs) == 1
     assert response.outputs == outputs
 
 

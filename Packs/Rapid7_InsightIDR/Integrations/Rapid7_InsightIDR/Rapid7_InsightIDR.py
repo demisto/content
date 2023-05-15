@@ -657,8 +657,7 @@ def handle_query_log_results(client: Client, result):
     while results_list:
         results = results_list.pop(0)
 
-        if 'events' in results:
-            events = results.get('events', [])
+        if events := results.get('events', []):
             data_for_readable_output.extend(events)
             raw_responcse.append(results)
 
