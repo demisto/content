@@ -1997,6 +1997,10 @@ tasks:
           accessor: asmserviceid
       report_type:
         simple: summary
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3169,6 +3173,10 @@ tasks:
           accessor: asmtags
       report_type:
         simple: analysis
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
