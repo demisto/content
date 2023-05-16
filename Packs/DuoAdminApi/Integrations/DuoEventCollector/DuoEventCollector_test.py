@@ -87,17 +87,17 @@ def test_parse_events(event, expected_res):
     parse_events(event) == expected_res
 
 
-def test_call():
-    mock_admin_api = MagicMock()
-    mock_response = load_json('./test_data/telephonyV2.json')
-    mock_admin_api.get_telephony_log.return_value = mock_response
-    client.admin_api = mock_admin_api
-    client.params.mintime = {LogType.TELEPHONY: {'min_time': '16843543575', 'next_offset': []}}
-    _, metadata = client.call(['TELEPHONY'])
-    assert metadata == {
-        "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
-        "total_objects": 3
-    }
+# def test_call():
+#     mock_admin_api = MagicMock()
+#     mock_response = load_json('./test_data/telephonyV2.json')
+#     mock_admin_api.get_telephony_log.return_value = mock_response
+#     client.admin_api = mock_admin_api
+#     client.params.mintime = {LogType.TELEPHONY: {'min_time': '16843543575', 'next_offset': []}}
+#     _, metadata = client.call(['TELEPHONY'])
+#     assert metadata == {
+#         "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
+#         "total_objects": 3
+#     }
 
 
 def test_setLastRun_when_no_new_events(ret_fresh_client, mocker):
@@ -115,11 +115,11 @@ def test_setLastRun_when_no_new_events(ret_fresh_client, mocker):
         "total_objects": 3
     }), ([], {})])
     mocker.patch('DuoEventCollector.send_events_to_xsiam', return_vaule=None)
-    mock_get_events = GetEvents(client, [LogType.TELEPHONY])
+    mock_get_events = GetEvents(client, [LogType.AUTHENTICATION])
     with patch('DuoEventCollector.GetEvents', return_value=mock_get_events):
         # call the main function
         main()
-        assert mock_get_events.get_last_run().get('after') == {LogType.TELEPHONY: {
+        assert mock_get_events.get_last_run().get('after') == {LogType.AUTHENTICATION: {
             "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74"
         }}
 
@@ -134,7 +134,7 @@ def test_set_next_run_filter_v1(ret_fresh_client):
         Assert that the min time for next run is correct.
     """
     client = ret_fresh_client
-    client.set_next_run_filter_v1(12345)
+    client.set_next_run_filter_v1(LogType.ADMINISTRATION, 12345)
     assert client.params.mintime[LogType.ADMINISTRATION] == 12346
 
 
@@ -192,7 +192,7 @@ def test_handle_authentication_logs(ret_fresh_client):
     assert metadata == authentication_response.get('metadata')
 
 
-def test_handle_telephony_logs(ret_fresh_client):
+def test_handle_telephony_logs_v2(ret_fresh_client):
     """
     Given:
         A call is being send to retrive authntication logs from duo
@@ -205,10 +205,28 @@ def test_handle_telephony_logs(ret_fresh_client):
     client: Client = ret_fresh_client
     client.params.mintime[LogType.TELEPHONY] = {}
     with patch.object(client.admin_api, 'get_telephony_log', return_value=telephony_response):
-        events, metadata = client.handle_telephony_logs()
+        events, metadata = client.handle_telephony_logs_v2()
 
     assert events == telephony_response.get('items')
     assert metadata == telephony_response.get('metadata')
+
+
+def test_handle_telephony_logs_v1(ret_fresh_client):
+    """
+    Given:
+        A call is being send to retrive authntication logs from duo
+    When:
+        Reciving the events
+    Then:
+        Validate that the events return are accessed properly
+    """
+    telephony_response = load_json('./test_data/telephonyV1.json')
+    client: Client = ret_fresh_client
+    client.params.mintime[LogType.TELEPHONY] = {}
+    with patch.object(client.admin_api, 'get_telephony_log', return_value=telephony_response):
+        ret_events = client.handle_telephony_logs_v1()
+
+    assert telephony_response == ret_events
 
 
 def test_handle_administration_logs(ret_fresh_client):

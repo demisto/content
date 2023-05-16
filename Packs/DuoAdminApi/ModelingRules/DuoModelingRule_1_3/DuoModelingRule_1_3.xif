@@ -1,4 +1,4 @@
-[MODEL: dataset=duo_custom_duo_custom_raw]
+[MODEL: dataset=duo_duo_raw]
 filter
     eventtype = "authentication"
 | alter

@@ -4,8 +4,8 @@ import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 from CommonServerPython import *
 
-VENDOR = "duo_custom"
-PRODUCT = "duo_custom"
+VENDOR = "duo"
+PRODUCT = "duo"
 
 
 class LogType(str, Enum):
@@ -49,7 +49,7 @@ class Client:
                     events, response_metadata = self.handle_authentication_logs()
 
                 elif request_order[0] == LogType.TELEPHONY:
-                    events, response_metadata = self.handle_telephony_logs()
+                    events = self.handle_telephony_logs_v1()
 
                 elif request_order[0] == LogType.ADMINISTRATION:
                     events = self.handle_administration_logs()
@@ -90,7 +90,7 @@ class Client:
         events = response.get('authlogs', [])
         return events, response_metadata
 
-    def handle_telephony_logs(self) -> tuple:
+    def handle_telephony_logs_v2(self) -> tuple:
         """
         Uses the V2 version of the API.
         For the first time the logs are retreived will work with mintime parameter.
@@ -113,15 +113,21 @@ class Client:
 
         return events, response_metadata
 
+    def handle_telephony_logs_v1(self) -> list:
+        # TELEPHONY end point uses the V1 api endpoint.
+        events = self.admin_api.get_telephony_log(mintime=self.params.mintime[LogType.TELEPHONY])
+        events = sorted(events, key=lambda e: e['timestamp'])
+        return events
+
     def handle_administration_logs(self) -> list:
         # ADMINISTRATION end point uses the V1 api endpoint.
         events = self.admin_api.get_administrator_log(mintime=self.params.mintime[LogType.ADMINISTRATION])
         events = sorted(events, key=lambda e: e['timestamp'])
         return events
 
-    def set_next_run_filter_v1(self, mintime: int):
+    def set_next_run_filter_v1(self, log_type: LogType, mintime: int):
         """Set the next_run for the v1 api. works with mintime parameter"""
-        self.params.set_next_offset_value(mintime + 1, LogType.ADMINISTRATION)
+        self.params.set_next_offset_value(mintime + 1, log_type)
 
     def set_next_run_filter_v2(self, log_type: LogType, metadata: dict):
         """Set the next_run for the v2 api, works with the next_offset parameter"""
@@ -148,15 +154,18 @@ class GetEvents:
         events = events[: int(self.client.params.limit)]
         return events, metadata
 
-    def _iter_events(self) -> None:  # type: ignore  # pragma: no cover
+    def _iter_events(self) -> None:    # type: ignore  # pragma: no cover
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """
         events, metadata = self.make_sdk_call()
         while True:
             if events:
-                if self.request_order[0] == LogType.ADMINISTRATION:
-                    self.client.set_next_run_filter_v1(events[-1]['timestamp'])
+                if self.request_order[0] in [
+                    LogType.ADMINISTRATION,
+                    LogType.TELEPHONY,
+                ]:
+                    self.client.set_next_run_filter_v1(self.request_order[0], events[-1]['timestamp'])
                 else:
                     self.client.set_next_run_filter_v2(self.request_order[0], metadata)
             yield events
@@ -258,7 +267,7 @@ def main():  # pragma: no cover
             v1_mintime, v2_mintime = parse_mintime(last_run)
             last_run = {LogType.AUTHENTICATION.value: {'min_time': v2_mintime, 'next_offset': []},
                         LogType.ADMINISTRATION.value: v1_mintime,
-                        LogType.TELEPHONY.value: {'min_time': v2_mintime, 'next_offset': []}}
+                        LogType.TELEPHONY.value: v1_mintime}
         else:
             last_run = last_run['after']
 

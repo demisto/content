@@ -1,0 +1,147 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "30f15519-2f57-4c49-a0b9-496c23bde00e",
+            "vendor": "duo",
+            "product": "duo",
+            "dataset": "duo_duo_raw",
+            "event_data": {
+                "action": "user_update",
+                "description": "{\"notes\": \"Joe asked for their nickname to be displayed instead of Joseph.\", \"realname\": \"Joe Smith\"}",
+                "isotimestamp": "2020-01-24T15:09:42+00:00",
+                "object": "jsmith",
+                "timestamp": 1579878582,
+                "username": "admin",
+                "event_type" : "administrator",
+                "phone": "+97255555",
+                "eventtype" : "administrator"
+            },
+            "expected_values": {
+                "xdm.source.location.city": null,
+                "xdm.intermediate.host.os": null,
+                "xdm.target.resource.type": null,
+                "xdm.auth.auth_method": null,
+                "xdm.event.type": "administrator",
+                "xdm.target.user.username": null,
+                "xdm.target.user.groups": null,
+                "xdm.source.location.country": null,
+                "xdm.source.user.username": "admin",
+                "xdm.intermediate.host.fqdn": null,
+                "xdm.intermediate.host.os_family": null,
+                "xdm.event.description": "{\"notes\": \"Joe asked for their nickname to be displayed instead of Joseph.\", \"realname\": \"Joe Smith\"}",
+                "xdm.event.operation_sub_type": null,
+                "xdm.event.outcome": null,
+                "xdm.event.operation": "user_update",
+                "xdm.target.user.identifier": "+97255555",
+                "xdm.event.outcome_reason": null,
+                "xdm.target.user.upn": null,
+                "xdm.source.host.hostname": null,
+                "xdm.source.application.name": null,
+                "xdm.target.resource.name": "jsmith",
+                "xdm.source.ipv4": null,
+                "xdm.source.host.ipv4_addresses": null
+            }
+        },
+        {
+            "test_data_event_id": "23741068-e9c2-4e67-8873-d65e3b6109ab",
+            "vendor": "duo",
+            "product": "duo",
+            "dataset": "duo_duo_raw",
+            "event_data": {
+                "access_device": {
+                    "browser": "Chrome",
+                    "browser_version": "67.0.3396.99",
+                    "flash_version": "uninstalled",
+                    "hostname": null,
+                    "ip": "169.232.89.219",
+                    "is_encryption_enabled": true,
+                    "is_firewall_enabled": true,
+                    "is_password_set": true,
+                    "java_version": "uninstalled",
+                    "location": {
+                      "city": "Ann Arbor",
+                      "country": "United States",
+                      "state": "Michigan"
+                    },
+                    "os": "Mac OS X",
+                    "os_version": "10.14.1",
+                    "security_agents": []
+                  },
+                  "adaptive_trust_assessments": {
+                    "more_secure_auth": {
+                      "features_version": "3.0",
+                      "model_version": "2022.07.19.001",
+                      "policy_enabled": false,
+                      "reason": "Normal level of trust; no detection of known attack pattern",
+                      "trust_level": "NORMAL"
+                    },
+                    "remember_me": {
+                      "features_version": "3.0",
+                      "model_version": "2022.07.19.001",
+                      "policy_enabled": false,
+                      "reason": "Known Access IP",
+                      "trust_level": "NORMAL"
+                    }
+                  },
+                  "alias": "",
+                  "application": {
+                    "key": "DIY231J8BR23QK4UKBY8",
+                    "name": "Microsoft Azure Active Directory"
+                  },
+                  "auth_device": {
+                    "ip": "192.168.225.254",
+                    "key": "DP5BJ05HI4WRBVI4Q7JF",
+                    "location": {
+                      "city": "Ann Arbor",
+                      "country": "United States",
+                      "state": "Michigan"
+                    },
+                    "name": "My iPhone X (734-555-2342)"
+                  },
+                  "email": "narroway@example.com",
+                  "event_type": "authentication",
+                  "factor": "duo_push",
+                  "isotimestamp": "2020-02-13T18:56:20.351346+00:00",
+                  "ood_software": null,
+                  "reason": "user_approved",
+                  "result": "success",
+                  "timestamp": 1581620180,
+                  "trusted_endpoint_status": "not trusted",
+                  "txid": "340a23e3-23f3-23c1-87dc-1491a23dfdbb",
+                  "user": {
+                    "groups": ["Duo Users", "CorpHQ Users"],
+                    "key": "DU3KC77WJ06Y5HIV7XKQ",
+                    "name": "narroway@example.com"
+                  },
+                  "eventtype": "authentication"
+            },
+            "expected_values": {
+                "xdm.source.location.city": "Ann Arbor",
+                "xdm.intermediate.host.os": "Mac OS X",
+                "xdm.target.resource.type": null,
+                "xdm.auth.auth_method": "duo_push",
+                "xdm.event.type": "authentication",
+                "xdm.target.user.username": null,
+                "xdm.target.user.groups": null,
+                "xdm.source.location.country": "United States",
+                "xdm.source.user.username": null,
+                "xdm.intermediate.host.fqdn": null,
+                "xdm.intermediate.host.os_family": "10.14.1",
+                "xdm.event.description": null,
+                "xdm.event.operation_sub_type": null,
+                "xdm.event.outcome": null,
+                "xdm.event.operation": null,
+                "xdm.target.user.identifier": null,
+                "xdm.event.outcome_reason": "user_approved",
+                "xdm.target.user.upn": null,
+                "xdm.source.host.hostname": null,
+                "xdm.source.application.name": null,
+                "xdm.target.resource.name": null,
+                "xdm.source.ipv4": null,
+                "xdm.source.host.ipv4_addresses": "169.232.89.219"
+            }
+        }
+    ]
+}
+
+
