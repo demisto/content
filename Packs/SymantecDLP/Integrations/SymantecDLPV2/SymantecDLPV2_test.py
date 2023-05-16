@@ -606,14 +606,16 @@ def test_list_users_command(requests_mock):
     """
     from SymantecDLPV2 import Client, list_users_command
 
-    requests_mock.get(
-        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/users',
-        json=[
+    mocked_response = [
             {
                 "userId": 241, "userName": "User1", "emailAddress": "test@gmail.com",
                 "accountDisabled": "no", "roles": ["API Web"]
             }
         ]
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/users',
+        json=mocked_response
     )
 
     client = Client(
@@ -625,9 +627,55 @@ def test_list_users_command(requests_mock):
     )
 
     result = list_users_command(client)
-    assert result.outputs == [
-        {
-            'userId': 241, 'userName': 'User1', 'emailAddress': 'test@gmail.com',
-            'accountDisabled': 'no', 'roles': ['API Web']
+    assert result.outputs == mocked_response
+
+
+def test_get_sender_recipient_pattern_command(requests_mock):
+    """
+    Given:
+        pattern id
+
+    When:
+        running get_sender_recipient_pattern_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, get_sender_recipient_pattern_command
+
+    mocked_response = {
+           "id": 503,
+           "name": "XSOAR Sender Block Example",
+           "description": "demo",
+           "ruleType": 4,
+           "modifiedDate": "05/16/23 12:20 PM",
+           "modifiedBy": {
+              "id": 343,
+              "name": "AdminUsername "
+           },
+           "userPatterns": [
+              "domain-jsmith",
+              "domain-jdoe"
+           ],
+           "ipAddresses": [
+              "1.1.1.1",
+              "2.2.2.2"
+           ]
         }
-    ]
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/1234',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = get_sender_recipient_pattern_command(client, {'pattern_id': '1234'})
+    assert result.outputs == mocked_response
+    assert result.outputs_prefix == 'SymantecDLP.SenderRecipientPattern'
