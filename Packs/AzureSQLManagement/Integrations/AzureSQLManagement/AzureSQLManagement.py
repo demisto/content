@@ -697,7 +697,8 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         if 'Error in API call [404] - Not Found' in e.message:
-            return_results(str(e.message))
+            message = e.message.split('"message":')[1].split('"')[1]
+            return_results(message)
         else:
             return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
