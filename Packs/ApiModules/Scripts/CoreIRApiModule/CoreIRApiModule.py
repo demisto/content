@@ -3675,7 +3675,7 @@ def find_the_cause_error(err: Exception) -> str:
     return "Error: "
 
 
-def handle_error(e, type_: str | None, custom_msg: str | None) -> None:
+def handle_error(e: Exception, type_: str | None, custom_msg: str | None) -> None:
     """
     Handles an error that may occur during a process.
 
