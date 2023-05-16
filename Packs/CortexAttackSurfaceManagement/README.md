@@ -39,6 +39,10 @@ Automated remediation is only possible when the right conditions are met.  These
   - RDP Server
   - Telnet Server
   - Unencrypted FTP Server
+  - Mysql Server
+  - Mongo Server
+  - Postgres Server
+  - Elasticsearch Server
   - Unclaimed S3 Bucket*
 - Asset is a cloud compute instance:
   - AWS EC2 Instance
@@ -48,6 +52,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - AWS IAM
   - Azure IAM
   - GCP IAM
+  - Prisma Cloud
   - Rapid7 InsightVM (Nexpose)
   - Splunk
   - ServiceNow CMDB
@@ -71,6 +76,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
   - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Cortex ASM - Prisma Cloud Enrichment](#cortex-asm---prisma-cloud-enrichment)
   - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
   - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
@@ -130,6 +136,12 @@ Playbook that is used as a container folder for all enrichments of ASM alerts.
 Playbook that given the IP address enriches GCP information relevant to ASM alerts.
 
 ![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
+
+#### Cortex ASM - Prisma Cloud Enrichment
+
+Playbook that given the IP address enriches Prisma Cloud information relevant to ASM alerts.
+
+![Cortex ASM - Prisma Cloud Enrichment](https://raw.githubusercontent.com/demisto/content/fb81c4212b33f1020dce1abc4f0198d4a0256936/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Prisma_Cloud_Enrichment.png)
 
 #### Cortex ASM - Qualys Enrichment
 
