@@ -74,6 +74,7 @@ tasks:
       id: 621d18d2-3ebf-4025-8509-dee865d92efe
       version: -1
       name: Location is User Drive
+      description: 'Location is User Drive or Shared Drive'
       type: condition
       iscommand: false
       brand: ""

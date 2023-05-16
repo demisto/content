@@ -233,8 +233,7 @@ Get all sensitive assets with public link from Reco
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
