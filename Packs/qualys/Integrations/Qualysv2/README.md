@@ -69,6 +69,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Asset Tag Commands
+There are several API endpoints on the Qualys API that can be used in the QualysV2 integration configurations as the `SERVER URL` parameter.
 When using `asset-tag` commands, the [official documentation](https://www.qualys.com/docs/qualys-asset-management-tagging-api-v2-user-guide.pdf) recommends that the `SERVER URL` parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`.
 
 ## Commands
