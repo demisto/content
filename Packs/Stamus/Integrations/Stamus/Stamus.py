@@ -269,11 +269,11 @@ def fetch_incidents(client: Client, timestamp: int) -> tuple[dict[str, int], lis
         incident = {
             'name': '%s_incident_%s' % (alert['target'], idx),
             # Stamus ID used to get related events
-            'dbotMirrorId': str(alert['id']),
-            'details': alert['threat_description'],
-            'occurred': alert['timestamp'],
+            'dbotMirrorId': str(alert.get('id')),
+            'details': alert.get('threat_description'),
+            'occurred': alert.get('timestamp'),
             'rawJSON': json.dumps(alert),
-            'type': alert['target_type'],
+            'type': alert.get('target_type'),
         }
         incidents.append(incident)
 
