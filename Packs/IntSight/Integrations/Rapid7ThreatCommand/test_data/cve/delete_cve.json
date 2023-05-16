@@ -1,0 +1,11 @@
+{
+    "success": {
+        "amount": 1
+    },
+    "failure": [
+        {
+            "cveId": "CVE-1999-0003",
+            "failReason": "CVEs are not associated to account"
+        }
+    ]
+}
