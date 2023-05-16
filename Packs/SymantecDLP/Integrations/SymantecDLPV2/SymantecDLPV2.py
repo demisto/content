@@ -1,3 +1,5 @@
+import requests
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -209,7 +211,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_incident_original_message_request(self, incident_id: str) -> Dict[str, str]:
+    def get_incident_original_message_request(self, incident_id: str) -> requests.Response:
         """Returns incident original message.
         :param incident_id: The incident ID.
         """
@@ -268,7 +270,14 @@ class Client(BaseClient):
 
         return response
 
-    def update_sender_pattern_request(self, pattern_id: str, pattern_name: str, pattern_description: str, new_ips: List[str] = None, new_users: List[str] = None) -> Dict[str, str]:
+    def update_sender_pattern_request(
+        self,
+        pattern_id: str,
+        pattern_name: str | None,
+        pattern_description: str| None,
+        new_ips: List[str] = None,
+        new_users: List[str] = None
+    ) -> Dict[str, str]:
         """
         Updates the sender pattern
 
@@ -294,7 +303,15 @@ class Client(BaseClient):
                                       headers=headers, json_data=data)
         return response
 
-    def update_recipient_pattern_request(self, pattern_id: str, pattern_name: str, pattern_description: str, new_ips: List[str] = None, new_emails: List[str] = None, new_domains: List[str] = None) -> Dict[str, str]:
+    def update_recipient_pattern_request(
+        self,
+        pattern_id: str,
+        pattern_name: str | None,
+        pattern_description: str | None,
+        new_ips: List[str] = None,
+        new_emails: List[str] = None,
+        new_domains: List[str] = None
+    ) -> Dict[str, str]:
         """
         Updates the sender pattern
 
@@ -855,7 +872,7 @@ def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
     Fetch the original message
     """
     try:
-        incident_id = args.get('incident_id')
+        incident_id = args.get('incident_id', '')
         results = client.get_incident_original_message_request(incident_id)
         original_message_file = results.content
 
@@ -877,7 +894,7 @@ def get_report_filters_command(client: Client, args: Dict[str, Any]):
     Fetch the original message
     """
     try:
-        report_id = args.get('report_id')
+        report_id = args.get('report_id', '')
         report_results = client.get_report_filters_request(report_id)
         report_results['filterString'] = json.dumps(report_results)
         return CommandResults(
@@ -912,7 +929,7 @@ def get_sender_recipient_pattern_command(client: Client, args: Dict[str, Any]):
     """
     Fetch the original message
     """
-    pattern_id = args.get('pattern_id')
+    pattern_id = args.get('pattern_id', '')
     pattern_results = client.get_sender_recipient_pattern_request(pattern_id)
 
     return CommandResults(
@@ -944,13 +961,15 @@ def update_sender_pattern_command(client: Client, args: Dict[str, Any]):
     """
     Update the sender pattern
     """
-    pattern_id = args.get('pattern_id')
+    pattern_id = args.get('pattern_id', '')
     pattern_name = args.get('name')
     pattern_description = args.get('description')
-    new_ips = argToList(args.get('ips'))
-    new_users = argToList(args.get('users'))
+    new_ips = argToList(args.get('ips', []))
+    new_users = argToList(args.get('users', []))
 
-    update_results = client.update_sender_pattern_request(pattern_id, pattern_name, pattern_description, new_ips, new_users)
+    update_results = client.update_sender_pattern_request(
+        pattern_id, pattern_name, pattern_description, new_ips, new_users
+    )
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -967,12 +986,12 @@ def update_recipient_pattern_command(client: Client, args: Dict[str, Any]):
     """
     Update the sender pattern
     """
-    pattern_id = args.get('pattern_id')
+    pattern_id = args.get('pattern_id', '')
     pattern_name = args.get('name')
     pattern_description = args.get('description')
-    new_ips = argToList(args.get('ips'))
-    new_emails = argToList(args.get('emails'))
-    new_domains = argToList(args.get('domains'))
+    new_ips = argToList(args.get('ips', []))
+    new_emails = argToList(args.get('emails', []))
+    new_domains = argToList(args.get('domains', []))
 
     update_results = client.update_recipient_pattern_request(
         pattern_id, pattern_name, pattern_description, new_ips, new_emails, new_domains)
@@ -993,7 +1012,7 @@ def get_message_body_command(client: Client, args: Dict[str, Any]):
     Fetch the message body
     """
     try:
-        incident_id = args.get('incident_id')
+        incident_id = args.get('incident_id', '')
         body_results = client.get_message_body_request(incident_id)
         results = {
             "IncidentID": incident_id,
