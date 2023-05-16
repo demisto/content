@@ -1,4 +1,5 @@
 Use Workday Event Collector integration to get activity loggings from Workday.
+This integration was integrated and tested with API v1.
 
 ## Configure Workday Event Collector on Cortex XSOAR
 
@@ -25,7 +26,7 @@ Use Workday Event Collector integration to get activity loggings from Workday.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### get_activity_logging_command
+### workday-get-activity-logging
 
 ***
 Returns activity loggings extracted from Workday.

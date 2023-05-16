@@ -1,6 +1,5 @@
 ## Workday Event Collector
 Use this integration to collect activity logs automatically from Workday.
-You can also use the ***workday-get-activity-loggings*** command to manually collect events.
 
 In order to use this integration, you need to enter your Workday credentials in the relevant integration instance parameters.
 
