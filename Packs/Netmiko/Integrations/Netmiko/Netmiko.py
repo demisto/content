@@ -121,7 +121,7 @@ def cmds_command(client, args):
     raw_print_list = list()
 
     # Output the results
-    if raw_print:  # pragma: no cover
+    if raw_print:
         md = str()
         try:
             for command in output.get('Commands'):
@@ -131,7 +131,7 @@ def cmds_command(client, args):
             md = "Error parsing raw print output"
             demisto.error(f"Error with raw print output - {err}")
 
-    else:  # pragma: no cover
+    else:
         hdrs = ["Hostname", "DateTimeUTC", "Command", "Output"]
         data = []
 
@@ -148,12 +148,12 @@ def cmds_command(client, args):
     outputs_key_field = None
     outputs_prefix = None
     outputs = None
-    if not disable_context:  # pragma: no cover
+    if not disable_context:
         outputs_prefix = "Netmiko"
         outputs_key_field = 'DateTimeUTC'
         outputs = output
 
-    command_results = CommandResults(  # pragma: no cover
+    command_results = CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
         outputs=outputs,
