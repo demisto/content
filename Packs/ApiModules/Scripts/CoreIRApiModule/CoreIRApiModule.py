@@ -3870,22 +3870,22 @@ def get_list_risky_users_or_host_command(client: CoreClient, command: str, args:
 
     match command:
         case "user":
-            id_ = "user_id"
+            id_key = "user_id"
             table_title = "Risky Users"
             table_header = "User ID"
             outputs_prefix = "RiskyUser"
             get_func = client.get_list_risky_users
         case 'host':
-            id_ = "host_id"
+            id_key = "host_id"
             table_title = "Risky Hosts"
             table_header = "Host ID"
             outputs_prefix = "RiskyHost"
             get_func = client.get_list_risky_hosts
 
     outputs: list[dict] | dict
-    if id := args.get(id_):
+    if id_ := args.get(id_key):
         try:
-            outputs = client.get_risk_score_user_or_host(id).get('reply', {})
+            outputs = client.get_risk_score_user_or_host(id_).get('reply', {})
         except DemistoException as e:
             handle_error(e=e, type_="id", custom_msg="")
 
