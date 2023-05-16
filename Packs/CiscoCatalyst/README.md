@@ -24,7 +24,7 @@ logging timestamp datetime UTC
 ```
 exit
 ```
-6. to save the configuration changes run the commend:
+6. To save the configuration changes run the command:
 ```
 write memory
 ```
