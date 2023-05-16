@@ -423,13 +423,12 @@ def test_insight_idr_query_log(requests_mock) -> None:
     )
     response = insight_idr_query_log_command(client, 'x', '', '', '')
 
-    outputs = []
-    for result in response.raw_response:
-        outputs.extend(iter(result.get('events', [])))
+    outputs = [event for result in response.raw_response for event in result.get('events', [])]
 
     assert response.outputs_prefix == 'Rapid7InsightIDR.Event'
     assert response.outputs_key_field == 'message'
     assert response.outputs == outputs
+    assert len(outputs) == 1
 
 
 def test_insight_idr_query_log_set(requests_mock) -> None:
@@ -461,14 +460,12 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
     )
     response = insight_idr_query_log_set_command(client, 'x', '', '', '')
 
-    outputs = []
-
-    for result in response.raw_response:
-        outputs.extend(iter(result.get('events', [])))
+    outputs = [event for result in response.raw_response for event in result.get('events', [])]
 
     assert response.outputs_prefix == 'Rapid7InsightIDR.Event'
     assert response.outputs_key_field == 'message'
     assert response.outputs == outputs
+    assert len(outputs) == 1
 
 
 @pytest.mark.parametrize('end_point', [
@@ -513,10 +510,7 @@ def test_insight_idr_query_log_with_pagination(requests_mock, end_point) -> None
     )
     response = commands[end_point](client, 'x', '', logs_per_page=1)
 
-    outputs = []
-
-    for result in response.raw_response:
-        outputs.extend(iter(result.get('events', [])))
+    outputs = [event for result in response.raw_response for event in result.get('events', [])]
 
     assert len(outputs) == 3
     assert response.outputs == outputs
@@ -560,10 +554,7 @@ def test_insight_idr_query_log_with_callback(mocker, requests_mock, end_point) -
     )
     response = commands[end_point](client, 'x', '')
 
-    outputs = []
-
-    for result in response.raw_response:
-        outputs.extend(iter(result.get('events', [])))
+    outputs = [event for result in response.raw_response for event in result.get('events', [])]
 
     assert len(outputs) == 1
     assert response.outputs == outputs

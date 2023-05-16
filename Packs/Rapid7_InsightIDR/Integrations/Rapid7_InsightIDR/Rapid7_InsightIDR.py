@@ -649,9 +649,8 @@ def handle_query_log_results(client: Client, result):
                 new_results = client.query_log_callback(url)
                 results_list.append(new_results)
 
-                events_len = len(results.get('events', []))
                 progress = results.get('progress')
-                demisto.debug(f'Events length: {events_len}, progress: {progress}')
+                demisto.debug(f'Events length: {len(events)}, progress: {progress}')
 
     return data_for_readable_output, raw_responcse
 
