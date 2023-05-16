@@ -1,0 +1,236 @@
+{
+    "IntelligenceFeed": [
+        {
+            "_id": "5b68306cf84f7c8696047fda",
+            "Name": "AlienVault OTX",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5b68306bf84f7c8696047fd9",
+            "Name": "Bambenek C&C Tracker",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5c34bdd303516a4731688db3",
+            "Name": "Dshield",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "62c5b32e9ea81674575a3ce9",
+            "Name": "Heisenberg Brute Force",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "629f0b12553e21a36e59e272",
+            "Name": "Quake360",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "626e3af2cc1e431463f4890e",
+            "Name": "RiskIQ",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "587cc90ac294f907cbe97e1f",
+            "Name": "TOR Project official exit nodes",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5935163fcadf65cc48880b76",
+            "Name": "Threat Library",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5b6b177da4a0e9f153098d7e",
+            "Name": "US-CERT",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5ec1207ba40ff351016c2887",
+            "Name": "Abuse CH SSL Blocklist",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5c597cda73f7b6c78a7fb505",
+            "Name": "Binary Defense Systems Artillery",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5d14e1dd934af8feb2e45bce",
+            "Name": "BotScout",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5b68306cf84f7c8696047fdc",
+            "Name": "Cisco Talos IP Blacklist",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "59e376681bb0800644e1368f",
+            "Name": "Cyber Threat Alliance",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5d371bce2ab2d1c086e4681f",
+            "Name": "Cyware",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5c34bdd303516a4731688db4",
+            "Name": "Emerging Threats",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "587cc90ac294f907cbe97e1d",
+            "Name": "Feodo Tracker",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5ec12040a40ff351016c003b",
+            "Name": "GreenSnow Blocklist",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5d304e76aaa14788240656db",
+            "Name": "OpenPhish",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5ec120aca40ff351016c4a99",
+            "Name": "Snort IP Blocklist",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "606983cca1232ec999815699",
+            "Name": "ThreatFox",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5b68306df84f7c8696047fdd",
+            "Name": "URLhaus",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5ec12094a40ff351016c3a16",
+            "Name": "VX Vault",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5c34bdd303516a4731688db0",
+            "Name": "Blocklist.de",
+            "ConfidenceLevel": 1,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5d304e48aaa14788240656da",
+            "Name": "Botvrij.eu",
+            "ConfidenceLevel": 1,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5c34bdd303516a4731688db1",
+            "Name": "BruteForceBlocker",
+            "ConfidenceLevel": 1,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5d9b316de532f5ea8b7d82fe",
+            "Name": "CINS Score",
+            "ConfidenceLevel": 1,
+            "IsEnabled": true
+        },
+        {
+            "_id": "587cc90ac294f907cbe97e19",
+            "Name": "Cyber Crime Tracker",
+            "ConfidenceLevel": 1,
+            "IsEnabled": true
+        },
+        {
+            "_id": "5c34bdd303516a4731688db2",
+            "Name": "Dan.me.uk Tor List",
+            "ConfidenceLevel": 1,
+            "IsEnabled": true
+        },
+        {
+            "_id": "587cc90ac294f907cbe97e1a",
+            "Name": "PhishTank",
+            "ConfidenceLevel": 1,
+            "IsEnabled": true
+        }
+    ],
+    "Files": [
+        {
+            "_id": "64008854a3b59c11943130dd",
+            "Name": "23",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "6400acc4f363a2d03c12eb01",
+            "Name": "sdfsfsdfsasdsadassddf",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "6400ac7bf363a2d03c12e9e8",
+            "Name": "sdfsfsdfsdf",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "6400a3289083fa5eab401cdd",
+            "Name": "test2023",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "6400a3528b260c81ce84652b",
+            "Name": "test2023ss",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "6400a3ffd0ecdeaafafc6d70",
+            "Name": "test2023ssds",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        },
+        {
+            "_id": "6400a4ccd0ecdeaafafc7160",
+            "Name": "test20sdfsdf23ssds",
+            "ConfidenceLevel": 2,
+            "IsEnabled": true
+        }
+    ],
+    "Emails": [
+        {
+            "_id": "63fdb08bae8f108e4c4c330c",
+            "Name": "test@test.com",
+            "ConfidenceLevel": 3,
+            "IsEnabled": true
+        }
+    ]
+}
