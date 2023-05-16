@@ -1,7 +1,8 @@
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
-    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting
+    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
+    ReanalyzeFile
 
 VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
@@ -1118,6 +1119,32 @@ def yara_retro_matches_feed_output(response_json, time_value):
     return results
 
 
+def reanalyze_sample_command():
+    reanalyze = ReanalyzeFile(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    sample_hash = demisto.getArg("hash")
+
+    try:
+        response = reanalyze.reanalyze_samples(
+            sample_hashes=sample_hash
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"reanalyze_sample": response.text},
+        readable_output=response.text
+    )
+
+    return_results(results)
+
+
 def main():
     command = demisto.command()
 
@@ -1183,6 +1210,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-yara-retro-matches-feed":
         yara_retro_matches_feed_command()
+
+    elif command == "reversinglabs-titaniumcloud-reanalyze-sample":
+        reanalyze_sample_command()
 
     else:
         return_error(f"Command {command} does not exist")
