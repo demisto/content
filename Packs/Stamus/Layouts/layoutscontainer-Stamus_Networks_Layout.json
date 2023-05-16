@@ -453,8 +453,8 @@
         ]
     },
     "group": "incident",
-    "id": "Stamus Networks Layout",
-    "name": "Stamus Networks Layout",
+    "id": "Stamus Networks DoC Layout",
+    "name": "Stamus Networks DoC Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",

@@ -25,14 +25,14 @@ This integration was integrated and tested with version 39.0.0 of Stamus
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### Stamus-Check-IOC
+### stamus-check-ioc
 
 ***
 [Get events with IOC key/value filter]
 
 #### Base Command
 
-`Stamus-Check-IOC`
+`stamus-check-ioc`
 
 #### Input
 
@@ -47,14 +47,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 | --- | --- | --- |
 | StamusIntegration.IOC | String | \[Fetch events matching an IOC.\] |
 
-### Stamus-Get-Host-Insight
+### stamus-get-host-insight
 
 ***
 [Get Host Insights information]
 
 #### Base Command
 
-`Stamus-Get-Host-Insight`
+`stamus-get-host-insight`
 
 #### Input
 
@@ -68,14 +68,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 | --- | --- | --- |
 | StamusIntegration.HostInsights | String | \[Fetch information about a host known by Host Insight module\] |
 
-### Stamus-Get-DoC-Events
+### stamus-get-doc-events
 
 ***
 [Get events for a Declaration of Compromise using the Stamus ID]
 
 #### Base Command
 
-`Stamus-Get-DoC-Events`
+`stamus-get-doc-events`
 
 #### Input
 

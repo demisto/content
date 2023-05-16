@@ -63,7 +63,7 @@ script:
     deprecated: false
     description: '[Get events with IOC key/value filter]'
     execution: false
-    name: Stamus-Check-IOC
+    name: stamus-check-ioc
     outputs:
     - contextPath: StamusIntegration.IOC
       description: '[Fetch events matching an IOC.]'
@@ -78,7 +78,7 @@ script:
     deprecated: false
     description: '[Get Host Insights information]'
     execution: false
-    name: Stamus-Get-Host-Insight
+    name: stamus-get-host-insight
     outputs:
     - contextPath: StamusIntegration.HostInsights
       description: '[Fetch information about a host known by Host Insight module]'
@@ -93,7 +93,7 @@ script:
     deprecated: false
     description: '[Get events for a Declaration of Compromise using the Stamus ID]'
     execution: false
-    name: Stamus-Get-DoC-Events
+    name: stamus-get-doc-events
     outputs:
     - contextPath: StamusIntegration.RelatedEvents
       description: '[Get events for a Declaration of Compromise.]'

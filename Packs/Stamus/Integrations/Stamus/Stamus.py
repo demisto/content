@@ -356,13 +356,13 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'Stamus-Get-Host-Insight':
+        elif demisto.command() == 'stamus-get-host-insight':
             return_results(fetch_host_id(client, args))
 
-        elif demisto.command() == 'Stamus-Get-DoC-Events':
+        elif demisto.command() == 'stamus-get-doc-events':
             return_results(fetch_events(client, args))
 
-        elif demisto.command() == 'Stamus-Check-IOC':
+        elif demisto.command() == 'stamus-check-ioc':
             return_results(fetch_by_ioc(client, args))
 
     except Exception as e:
