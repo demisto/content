@@ -785,4 +785,81 @@ def test_update_sender_pattern_command(requests_mock):
 
 
 def test_recipient_pattern_command(requests_mock):
-    pass
+    """
+    Given:
+        pattern id
+
+    When:
+        running update_sender_pattern_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, update_recipient_pattern_command
+
+    mocked_response = {
+        "id": 503,
+        "name": "XSOAR Sender Block Example",
+        "description": "demo",
+        "ruleType": 4,
+        "modifiedDate": "05/16/23 12:20 PM",
+        "modifiedBy": {
+            "id": 343,
+            "name": "AdminUsername "
+        },
+        "userPatterns": [
+            "domain-jsmith",
+            "domain-jdoe"
+        ],
+        "ipAddresses": [
+            "1.1.1.1",
+            "2.2.2.2"
+        ]
+    }
+
+    requests_mock.put(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/1234',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = update_recipient_pattern_command(client, {'pattern_id': '1234'})
+    assert result.outputs == mocked_response
+    assert result.outputs_prefix == 'SymantecDLP.RecipientUpdate'
+
+
+def test_get_message_body_command(requests_mock):
+    """
+    Given:
+        pattern id
+
+    When:
+        running update_sender_pattern_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, get_message_body_command
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/messageBody',
+        json={'test': 'test'}
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = get_message_body_command(client, {'incident_id': '1234'})
+    assert result.outputs == {'IncidentID': '1234', 'MessageBody': {'test': 'test'}}
