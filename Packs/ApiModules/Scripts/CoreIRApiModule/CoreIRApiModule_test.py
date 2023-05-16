@@ -3336,9 +3336,7 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
     Raises:
         AssertionError: If the parsing of user groups data fails.
     """
-    results = parse_user_groups(data)
-
-    assert expected_results == results
+    assert parse_user_groups(data) == expected_results
 
 
 def test_list_user_groups_command_raise_exception(mocker):
