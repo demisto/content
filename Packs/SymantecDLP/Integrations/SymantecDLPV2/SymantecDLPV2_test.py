@@ -572,7 +572,7 @@ def test_get_report_filters_command(requests_mock):
         running get_report_filters_command
 
     Then:
-        Make sure the context output is returned as excpected
+        Make sure the context output is returned as expected
     """
     from SymantecDLPV2 import Client, get_report_filters_command
 
@@ -591,3 +591,43 @@ def test_get_report_filters_command(requests_mock):
 
     result = get_report_filters_command(client, {'report_id': '1234'})
     assert result.outputs == {'test': 'test', 'filterString': '{"test": "test"}'}
+
+
+def test_list_users_command(requests_mock):
+    """
+    Given:
+        a user
+
+    When:
+        running list_users_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, list_users_command
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/users',
+        json=[
+            {
+                "userId": 241, "userName": "User1", "emailAddress": "test@gmail.com",
+                "accountDisabled": "no", "roles": ["API Web"]
+            }
+        ]
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = list_users_command(client)
+    assert result.outputs == [
+        {
+            'userId': 241, 'userName': 'User1', 'emailAddress': 'test@gmail.com',
+            'accountDisabled': 'no', 'roles': ['API Web']
+        }
+    ]
