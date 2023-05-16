@@ -4,10 +4,10 @@ This pack includes Cortex XSIAM content.
 
 
 ## Add timezone to the logs  
-The only supported event time is the event time with timezone.
+The only supported event time is an event time with the time zone.
 
 1. Access the switch's command-line interface (CLI) using a terminal emulator or SSH.
-2. Enter privileged EXEC mode by entering the following command and providing the enable password:
+2. Access privileged EXEC mode by entering the following command and providing the enable password:
 ```
 enable
 ```
@@ -16,7 +16,7 @@ enable
 ```
 configure terminal
 ```
-4. Configure the logging timestamp and specify the desired time format with timezone:
+4. Configure the logging timestamp and specify the desired time format with the time zone:
 ```
 logging timestamp datetime UTC
 ```
@@ -24,11 +24,11 @@ logging timestamp datetime UTC
 ```
 exit
 ```
-6. to save the configuration changes run the commend:
+6. To save the configuration changes run the command:
 ```
 write memory
 ```
-**Note** The time format will be: "May 16 2023 14:30:00 UTC"
+**Note** The time format is: "May 16 2023 14:30:00 UTC"
 
 
 ## Collect Events from Vendor
