@@ -1255,28 +1255,6 @@
             "has_api": false
         },
         {
-            "playbookID": "Test_EDL",
-            "integrations": "EDL",
-            "instance_names": "edl_update_from_8_0_0",
-            "fromversion": "8.0.0",
-            "pid_threshold": 8,
-            "has_api": false
-        },
-        {
-            "playbookID": "EDL Performance Test",
-            "instance_names": "edl_auto_from_8_0_0",
-            "integrations": [
-                "EDL",
-                "Create-Mock-Feed-Relationships"
-            ],
-            "fromversion": "8.0.0",
-            "timeout": 3500,
-            "memory_threshold": 900,
-            "pid_threshold": 12,
-            "context_print_dt": "EDLHey",
-            "has_api": false
-        },
-        {
             "playbookID": "Test_export_indicators_service",
             "instance_names": "eis_on_demand",
             "integrations": "ExportIndicators",
