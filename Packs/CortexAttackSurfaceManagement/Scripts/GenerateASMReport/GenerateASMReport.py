@@ -7,18 +7,23 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def build_report(template: List[Dict], alert_id: str, file_prefix: str) -> Dict:
+def build_report(template: List[Dict], alert_id: str, report_type: str) -> Dict:
     """Take a JSON template input and return a PDF Summary Report
 
     Args:
         template (List[Dict]): Python list of dicts built from args
         alert_id (str): the alert number
-        file_prefix: the prefix of the filename
+        report_type: whether it is summary or analysis report
 
     Returns:
         Dict: File Result object
     """
-
+    if report_type == "summary":
+        file_prefix = "asm_alert_investigation_summary"
+    elif report_type == "analysis":
+        file_prefix = "asm_alert_analysis_report"
+    else:
+        raise ValueError("available options are `summary` and `analysis`")
     # Convert Dict to json string
     template_str = json.dumps(template)
     # Encode json to b64 for SanePdfReports
@@ -873,13 +878,8 @@ def asset_format(asset_raw: Dict[str, Any]) -> List:
 def main():
 
     try:
-        args = demisto.args()
-        template = build_template(args)
-        if args.get('report_type') == "summary":
-            file_prefix = "asm_alert_investigation_summary"
-        elif args.get('report_type') == "analysis":
-            file_prefix = "asm_alert_analysis_report"
-        return_results(build_report(template, args.get("alert_id", ""), file_prefix))
+        template = build_template(demisto.args())
+        return_results(build_report(template, demisto.args().get("alert_id", ""), demisto.args().get('report_type')))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute Generate Summary Report. Error: {str(ex)}")

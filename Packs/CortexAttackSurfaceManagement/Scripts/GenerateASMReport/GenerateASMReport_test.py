@@ -78,7 +78,7 @@ def test_build_report(mocker):
     template = util_load_json("test_data/template.json")
     sanepdf_raw = util_load_json("test_data/sanepdf_raw.json")
     mocker.patch.object(demisto, "executeCommand", return_value=sanepdf_raw)
-    result = build_report(template, "1234", "asm_alert_investigation_summary")
+    result = build_report(template, "1234", "summary")
     assert isinstance(result, dict)
     assert result["Type"] == EntryType.ENTRY_INFO_FILE
 
@@ -111,8 +111,9 @@ def test_service_format(mocker):
     """
     from GenerateASMReport import service_format
 
-    result = service_format({"service_type": "test", "service_name": "name",
-                             "first_observed": 1680850320000, "last_observed": 1683306120000})
+    result = service_format({"service_type": "test", "service_name": "name", "first_observed": 1680850320000,
+                             "last_observed": 1683306120000, "domain": "acme.com",
+                             "details": {"tlsVersions": [{"tlsVersion": "1.2"}]}})
     assert result == [
         {
             "Field": "Service Type",
@@ -153,8 +154,15 @@ def test_service_format(mocker):
         {
             "Field": "Last Observed",
             "Value": "2023-05-05"
+        },
+        {
+            "Field": "Domains",
+            "Value": "acme.com"
+        },
+        {
+            "Field": "TLS",
+            "Value": "1.2"
         }
-
     ]
 
 
@@ -170,7 +178,9 @@ def test_asset_format(mocker):
     """
     from GenerateASMReport import asset_format
 
-    result = asset_format({"name": "name", "type": "type"})
+    result = asset_format({"name": "name", "type": "type", "ips": ["1.1.1.1"], "domain": "acme.com",
+                           "details": {"ip_ranges": {'range': {"FIRST_IP": "1.1.1.1", "LAST_IP": "2.2.2.2",
+                                                               "EXPLAINERS": ["Associated with acme.com"]}}}})
     assert result == [
         {
             "Field": "Asset Name",
@@ -187,5 +197,21 @@ def test_asset_format(mocker):
         {
             "Field": "Detected Services on Asset",
             "Value": "n/a"
+        },
+        {
+            "Field": "IPs",
+            "Value": '1.1.1.1'
+        },
+        {
+            "Field": "Domains",
+            "Value": "acme.com"
+        },
+        {
+            "Field": "Associated IP Range",
+            "Value": "1.1.1.1 - 2.2.2.2"
+        },
+        {
+            "Field": "IP Range Attribution Details",
+            "Value": "Associated with acme.com"
         }
     ]
