@@ -67,6 +67,10 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Asset Tags Commands
+When using `asset-tag` commands, the [official documentation](https://www.qualys.com/docs/qualys-asset-management-tagging-api-v2-user-guide.pdf) recommends that the `SERVER URL` parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
