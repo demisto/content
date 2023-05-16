@@ -1,9 +1,7 @@
-from typing import Union
-import demistomock as demisto
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
-    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics
+    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting
 
 VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
@@ -892,6 +890,132 @@ def certificate_analytics_command():
     return_results([results, file_results])
 
 
+def yara_ruleset_command():
+    yara = YARAHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    yara_action = demisto.getArg("yaraAction")
+    ruleset_name = demisto.getArg("rulesetName")
+    ruleset_text = demisto.getArg("rulesetText")
+    sample_available = demisto.getArg("sampleAvailable")
+
+    if yara_action == "CREATE RULESET":
+        if ruleset_text:
+            ruleset_text = str(ruleset_text)
+        else:
+            return_error("When using the CREATE RULESET action, the rulesetText argument is required.")
+
+        if sample_available:
+            sample_available = argToBoolean(sample_available)
+
+        try:
+            response = yara.create_ruleset(
+                ruleset_name=ruleset_name,
+                ruleset_text=ruleset_text,
+                sample_available=sample_available
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        output_key = "create_yara_ruleset"
+
+    elif yara_action == "DELETE RULESET":
+        try:
+            response = yara.delete_ruleset(
+                ruleset_name=ruleset_name
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        output_key = "delete_yara_ruleset"
+
+    elif yara_action == "GET RULESET INFO":
+        try:
+            response = yara.get_ruleset_info(
+                ruleset_name=ruleset_name
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        output_key = "get_yara_ruleset_info"
+
+    elif yara_action == "GET RULESET TEXT":
+        try:
+            response = yara.get_ruleset_text(
+                ruleset_name=ruleset_name
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        response_json = response.json()
+        output_key = "get_yara_ruleset_text"
+
+    else:
+        return_error(f"Yara ruleset action {yara_action} does not exist.")
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={output_key: response_json},
+        readable_output=response_json
+    )
+
+    return_results(results)
+
+
+def yara_matches_feed_command():
+    yara = YARAHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    time_format = demisto.getArg("timeFormat")
+    time_value = demisto.getArg("timeValue")
+
+    try:
+        response = yara.yara_matches_feed(
+            time_format=time_format,
+            time_value=time_value
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = yara_matches_feed_output(response_json=response_json, time_value=time_value)
+
+    return_results(results)
+
+
+def yara_matches_feed_output(response_json, time_value):
+    feed = response_json.get("rl", {}).get("feed", {})
+    entries = tableToMarkdown("Entries", feed.get("entries", []))
+    last_timestamp = feed.get("last_timestamp")
+    range_from = feed.get("time_range", {}).get("from")
+    range_to = feed.get("time_range", {}).get("to")
+
+    markdown = f"""## YARA Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
+    **From**: {range_from}
+    **To**: {range_to}
+    """
+    markdown = f"{markdown}\n {entries}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"yara_matches_feed": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
 def main():
     command = demisto.command()
 
@@ -945,6 +1069,12 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-certificate-analytics":
         certificate_analytics_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-ruleset-actions":
+        yara_ruleset_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-matches-feed":
+        yara_matches_feed_command()
 
     else:
         return_error(f"Command {command} does not exist")

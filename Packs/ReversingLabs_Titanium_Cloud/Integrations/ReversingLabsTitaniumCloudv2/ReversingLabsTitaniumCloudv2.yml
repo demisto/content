@@ -393,7 +393,74 @@ script:
     - contextPath: ReversingLabs.certificate_analytics
       description: ''
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.40822
+  - name: reversinglabs-titaniumcloud-yara-ruleset-actions
+    description: Perform various YARA ruleset actions.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: yaraAction
+        description: YARA ruleset action
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'CREATE RULESET'
+          - 'DELETE RULESET'
+          - 'GET RULESET INFO'
+          - 'GET RULESET TEXT'
+      - name: rulesetName
+        description: Name of the YARA ruleset
+        isArray: false
+        required: true
+        secret: false
+      - name: rulesetText
+        description: Text of the YARA ruleset
+        isArray: false
+        required: false
+        secret: false
+      - name: sampleAvailable
+        description: Return only samples that are available for download to the user. Must be boolean.
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.create_yara_ruleset
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.delete_yara_ruleset
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.get_yara_ruleset_info
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.get_yara_ruleset_text
+        description: ''
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-yara-matches-feed
+    description: Returns a recordset of YARA ruleset matches in the specified time range.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: timeFormat
+        description: Define the time format that is used
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'utc'
+          - 'timestamp'
+      - name: timeValue
+        description: Time value in the defined format
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.yara_matches_feed
+        description: ''
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58984
   feed: false
   isfetch: false
   longRunning: false
