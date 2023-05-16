@@ -1529,7 +1529,7 @@ def main():    # pragma: no cover
     USE_SSL = not params.get('unsecure', False)
     command = demisto.command()
     
-    if not any((APP_ID, APP_SECRET, TID)):
+    if not all((APP_ID, APP_SECRET, TID)):
         raise DemistoException('Please fill out the Application ID, Application Secret and Tenant API Key')
 
     LOG(f'Command being called is {command}')
