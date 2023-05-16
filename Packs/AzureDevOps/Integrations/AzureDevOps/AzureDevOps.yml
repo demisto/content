@@ -130,7 +130,7 @@ script:
     arguments: []
     outputs: []
   - deprecated: false
-    description: Run this command if you need to rerun the authentication process for some reason,.
+    description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-devops-auth-reset
     arguments: []

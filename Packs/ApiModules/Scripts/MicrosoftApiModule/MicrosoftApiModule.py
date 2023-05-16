@@ -670,8 +670,6 @@ class MicrosoftClient(BaseClient):
             response = error.json()
             demisto.error(str(response))
             inner_error = response.get('error', {})
-            error_description = response.get('error_description', '')
-            demisto.error(error_description)
             if isinstance(inner_error, dict):
                 err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
             else:
@@ -857,5 +855,5 @@ def reset_auth() -> CommandResults:
     """
     demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
     set_integration_context({})
-    return CommandResults(readable_output='Authentication was reset successfully. Please regenerate the credentials, '
+    return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
                                           'and then click **Test** to validate the credentials and connection.')

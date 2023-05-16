@@ -2841,19 +2841,6 @@ def test_connection(client: AzureFirewallClient) -> str:
     return 'Success!'
 
 
-def reset_auth() -> str:
-    """
-    Reset Azure auth properties.
-
-    Returns:
-        str: Informative message.
-
-    """
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-firewall-auth-start** to start' \
-           ' the authentication process.'
-
-
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()

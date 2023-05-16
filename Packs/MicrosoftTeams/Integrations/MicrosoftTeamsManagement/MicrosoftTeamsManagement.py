@@ -578,14 +578,6 @@ def test_connection(client: Client) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!microsoft-teams-auth-start** to start the '
-                        'authentication process.'
-    )
-
-
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication for client credentials only.
     Returning 'ok' indicates that the integration works like it is supposed to.

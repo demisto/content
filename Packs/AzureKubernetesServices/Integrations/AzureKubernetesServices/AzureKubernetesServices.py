@@ -170,11 +170,6 @@ def test_connection(client: AKSClient) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-ks-auth-start** to start the authentication process.'
-
-
 @logger
 def test_module(client):
     """

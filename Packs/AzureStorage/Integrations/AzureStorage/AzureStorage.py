@@ -700,12 +700,6 @@ def test_connection(client: ASClient) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-storage-auth-start** to start the authentication \
-    process.'
-
-
 def test_module(client: ASClient) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.

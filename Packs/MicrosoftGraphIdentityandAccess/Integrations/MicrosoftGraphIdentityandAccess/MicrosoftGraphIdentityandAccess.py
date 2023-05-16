@@ -355,14 +355,6 @@ def test_connection(client: Client) -> str:  # pragma: no cover
     return '✅ Success!'
 
 
-def reset_auth() -> CommandResults:  # pragma: no cover
-    set_integration_context({})
-    return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!msgraph-identity-auth-start** to '
-                        'start the authentication process.'
-    )
-
-
 def list_directory_roles(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """Lists all service principals
 
@@ -900,7 +892,7 @@ def main():  # pragma: no cover
         elif command == 'msgraph-identity-auth-test':
             return_results(test_connection(client))
         elif command == 'msgraph-identity-auth-reset':
-            return_results(test_connection(client))
+            return_results(reset_auth())
         elif command == 'msgraph-identity-directory-roles-list':
             return_results(list_directory_roles(client, args))
         elif command == 'msgraph-identity-directory-role-members-list':

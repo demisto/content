@@ -503,13 +503,6 @@ def resource_group_list_command(client: AzureWAFClient, **args) -> CommandResult
 
 
 @logger
-def reset_auth(client: AzureWAFClient):
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!azure-waf-auth-start** and **!azure-waf-auth-complete**.')
-
-
-@logger
 def test_module(client, params):
     """
     Performs basic GET request to check if the API is reachable and authentication is successful.

@@ -177,11 +177,6 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         return next_run, incidents
 
 
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!msgraph-mail-test** to verify the authentication.'
-
-
 def main():     # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
@@ -261,7 +256,7 @@ def main():     # pragma: no cover
             client.test_connection()
             return_results(CommandResults(readable_output='```✅ Success!```'))
         if command == 'msgraph-mail-auth-reset':
-            return_results(CommandResults(readable_output=reset_auth()))
+            return_results(reset_auth())
         if command == 'fetch-incidents':
             next_run, incidents = client.fetch_incidents(demisto.getLastRun())
             demisto.setLastRun(next_run)

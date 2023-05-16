@@ -122,14 +122,6 @@ def test_connection(client: Client) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!msgraph-apps-start** to start the '
-                        'authentication process.'
-    )
-
-
 def list_service_principals_command(ms_client: Client, args: dict) -> CommandResults:
     """Lists all service principals
 

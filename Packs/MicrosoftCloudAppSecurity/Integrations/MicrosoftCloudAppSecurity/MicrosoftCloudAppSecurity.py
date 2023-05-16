@@ -235,13 +235,6 @@ def complete_auth(client: Client) -> CommandResults:
 
 
 @logger
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!microsoft-cas-auth-start** and **!microsoft-cas-auth-complete**.')
-
-
-@logger
 def test_connection(client: Client) -> CommandResults:
     client.ms_client.get_access_token()  # type: ignore[attr-defined]
     # If fails, MicrosoftApiModule returns an error

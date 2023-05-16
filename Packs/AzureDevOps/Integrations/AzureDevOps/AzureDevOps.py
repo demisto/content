@@ -1336,12 +1336,6 @@ def test_connection(client) -> str:
     return 'Success!'
 
 
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. Run **!azure-devops-auth-start** to '
-                                          'start the authentication process.')
-
-
 def parse_incident(pull_request: dict, integration_instance: str) -> dict:
     """
     Parse pull request to XSOAR Incident.

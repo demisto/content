@@ -448,13 +448,6 @@ def complete_auth(client: Client) -> CommandResults:
 
 
 @logger
-def reset_auth(client: Client) -> CommandResults:
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!azure-sql-auth-start** and **!azure-sql-auth-complete**.')
-
-
-@logger
 def test_module(client):
     """
     Performs basic GET request to check if the API is reachable and authentication is successful.

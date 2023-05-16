@@ -449,12 +449,6 @@ def test_connection(client: Client) -> str:
     return 'Success!'
 
 
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-risky-users-auth-start** to start ' \
-           'the authentication process.'
-
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS

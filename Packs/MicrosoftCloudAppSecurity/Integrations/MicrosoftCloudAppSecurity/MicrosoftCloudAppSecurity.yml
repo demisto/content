@@ -140,7 +140,7 @@ script:
     execution: false
     name: microsoft-cas-auth-complete
   - deprecated: false
-    description: Run this command if you need to re-run the authentication process. (for device-code mode)
+    description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: microsoft-cas-auth-reset
   - deprecated: false

@@ -524,17 +524,6 @@ def complete_auth(client: DataExplorerClient) -> str:
     return '✅ Authorization completed successfully.'
 
 
-def reset_auth() -> str:
-    """
-    Start the authorization process.
-    Returns:
-          str: Message about resetting the authorization process.
-    """
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-data-explorer-auth-start** to start the authentication \
-    process.'
-
-
 def test_connection(client: DataExplorerClient) -> str:
     """
     Test the connection with Azure Data Explorer service.
