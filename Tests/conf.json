@@ -1233,9 +1233,25 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
-            "instance_names": "edl_update",
+            "instance_names": "edl_update_to_7_9_9",
             "fromversion": "5.5.0",
+            "toversion": "7.9.9",
             "pid_threshold": 8,
+            "has_api": false
+        },
+        {
+            "playbookID": "EDL Performance Test",
+            "instance_names": "edl_auto_to_7_9_9",
+            "integrations": [
+                "EDL",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.0.0",
+            "toversion": "7.9.9",
+            "timeout": 3500,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "context_print_dt": "EDLHey",
             "has_api": false
         },
         {
@@ -3811,20 +3827,6 @@
             "playbookID": "CarbonBlackLiveResponseCloud-Test",
             "fromversion": "5.5.0",
             "is_mockable": false
-        },
-        {
-            "playbookID": "EDL Performance Test",
-            "instance_names": "edl_auto",
-            "integrations": [
-                "EDL",
-                "Create-Mock-Feed-Relationships"
-            ],
-            "fromversion": "6.0.0",
-            "timeout": 3500,
-            "memory_threshold": 900,
-            "pid_threshold": 12,
-            "context_print_dt": "EDLHey",
-            "has_api": false
         },
         {
             "playbookID": "Export Indicators Performance Test",
