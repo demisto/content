@@ -24,6 +24,8 @@ RBAC
 Preprocessing
 emailsubject
 Untagged
+CC
+BCC
 
 [file:classifier-MSGraphMail_-_Classifier_-_Email_Communication.json]
 ignore=BA101
