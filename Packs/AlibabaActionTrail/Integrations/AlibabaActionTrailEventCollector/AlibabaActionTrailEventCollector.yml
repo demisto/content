@@ -7,7 +7,7 @@ sectionOrder:
 name: Alibaba Action Trail Event Collector
 display: Alibaba Action Trail Event Collector
 category: Analytics & SIEM
-description: Alibaba logs event collector integration for XSIAM. test
+description: Alibaba logs event collector integration for XSIAM.
 configuration:
   - display: Endpoint
     name: endpoint
@@ -68,7 +68,7 @@ script:
       name: alibaba-get-events
       arguments:
         - name: from
-          description: The date after which to search for logs in ISO format. For example, 2020-12-24T00:00:00. test3
+          description: The date after which to search for logs in ISO format. For example, 2020-12-24T00:00:00.
           required: false
           isArray: false
         - name: limit
@@ -77,7 +77,7 @@ script:
           defaultValue: "1"
         - auto: PREDEFINED
           defaultValue: "False"
-          description: Set this argument to True in order to create events, otherwise the command will only display them. test4
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
           isArray: false
           name: should_push_events
           predefined:
