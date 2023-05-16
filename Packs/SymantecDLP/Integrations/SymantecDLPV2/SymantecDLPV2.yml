@@ -67,7 +67,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: Symantec Data Loss Prevention version 16.0 enables you to discover, monitor and protect your sensitive corporate information.
+description: Symantec Data Loss Prevention version 15.7 enables you to discover, monitor and protect your sensitive corporate information.
 display: Symantec Data Loss Prevention v2
 name: Symantec Data Loss Prevention v2
 script:
@@ -498,7 +498,7 @@ script:
     outputs:
     - contextPath: File
       description: Original message file from the incident
-      type: unknown
+      type: Unknown
   - arguments:
     - description: Report ID for which to retrieve filters.
       name: report_id
@@ -508,14 +508,14 @@ script:
     outputs:
     - contextPath: SymantecDLP.ReportFilter
       description: The filter criteria for a saved search in the Enforce console
-      type: string
+      type: Unknown
   - arguments: []
     description: Returns details for all SDLP users from the Enforce console. Requires SDLP 16.0.
     name: symantec-dlp-list-users
     outputs:
     - contextPath: SymantecDLP.Users
       description: List of SDLP users and details
-      type: string
+      type: Unknown
   - arguments:
     - description: Pattern ID for which to retrieve pattern details
       name: pattern_id
@@ -525,14 +525,14 @@ script:
     outputs:
     - contextPath: SymantecDLP.SenderRecipientPattern
       description: Sender/recipient pattern returned from the Enforce console.
-      type: string
+      type: Unknown
   - arguments: []
     description: Returns a list of all sender/recipient patterns from the Enforce console. Requires SDLP 16.0.
     name: symantec-dlp-list-sender-recipient-patterns
     outputs:
     - contextPath: SymantecDLP.Patterns
       description: ' The list of all sender/recipient patterns returned from the Enforce console.'
-      type: string
+      type: Unknown
   - arguments:
     - description: ID number of the pattern to update
       name: pattern_id
@@ -554,7 +554,7 @@ script:
     outputs:
     - contextPath: SymantecDLP.SenderUpdate
       description: Results of updating the sender pattern from the Enforce Console.
-      type: string
+      type: Unknown
   - arguments:
     - description: ID number of the pattern to update
       name: pattern_id
@@ -579,7 +579,7 @@ script:
     outputs:
     - contextPath: SymantecDLP.RecipientUpdate
       description: Results of updating the recipient pattern from the Enforce Console.
-      type: string
+      type: Unknown
   - arguments:
     - description: The incident ID.
       name: incident_id
@@ -589,7 +589,7 @@ script:
     outputs:
     - contextPath: SymantecDLP.MessageBody
       description: Message body for the incident returned by the Enforce console.
-      type: string
+      type: Unknown
   dockerimage: demisto/python3:3.10.11.58677
   isfetch: true
   runonce: false
