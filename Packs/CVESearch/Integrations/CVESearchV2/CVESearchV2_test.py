@@ -1,8 +1,9 @@
 import json
 import os
-from CVESearchV2 import cve_command, valid_cve_id_format, Client, generate_indicator
+from CVESearchV2 import cve_command, valid_cve_id_format, Client, generate_indicator, parse_cpe
 from CommonServerPython import DemistoException, argToList
 import pytest
+import re
 
 BASE_URL = 'https://cve.circl.lu/api/'
 
@@ -54,6 +55,19 @@ def test_indicator_creation():
         correct_indicator = json.load(js)
     indicator = generate_indicator(response).to_context()
     assert indicator == correct_indicator
+
+
+@pytest.mark.parametrize("cpe,expected_output", [
+    ("cpe:2.3:a:vendor:product", (["Vendor", "Product", "Application"])),
+    ("cpe:2.3:o:windows::", (["Windows", "Operating-System"])),
+    ("cpe:2.3:h:router::", (["Router", "Hardware"])),
+    ("cpe:2.3:a:vendor_with_underscores:product_with_underscores", (["Vendor with underscores", "Product with underscores", "Application"])),
+    ("cpe:2.3:o:", (["Operating-System"])),
+])
+def test_parse_cpe(cpe, expected_output):
+    cpe = re.split('(?<!\\\):', cpe)
+    tags, relationships = parse_cpe(cpe, 'CVE-2022-1111')
+    assert tags == expected_output
 
 
 @pytest.mark.parametrize("cve_id_arg,response_data,expected", test_data)

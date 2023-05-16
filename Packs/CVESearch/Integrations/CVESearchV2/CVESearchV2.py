@@ -135,6 +135,56 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
     return command_results
 
 
+def parse_cpe(cpe: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
+    """
+
+        Args:
+            cpe: A string representing a single CPE, see "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf"
+
+        Returns:
+            A list of tags and a list of EntityRelationships.
+
+        """
+
+    cpe_parts = {
+        "a": "Application",
+        "o": "Operating-System",
+        "h": "Hardware"
+    }
+
+    relationships = []
+
+    try:
+        vendor = cpe[3].capitalize().replace("\\", "").replace("_", " ")
+        if vendor:
+            relationships.append(EntityRelationship(name="targets",
+                                                    entity_a=cve_id,
+                                                    entity_a_type="cve",
+                                                    entity_b=vendor,
+                                                    entity_b_type="identity"))
+    except IndexError:
+        vendor = ''
+
+    try:
+        product = cpe[4].capitalize().replace("\\", "").replace("_", " ")
+        if product:
+            relationships.append(EntityRelationship(name="targets",
+                                                    entity_a=cve_id,
+                                                    entity_a_type="cve",
+                                                    entity_b=product,
+                                                    entity_b_type="software"))
+    except IndexError:
+        product = ''
+
+    try:
+        part = cpe_parts[cpe[2]]
+
+    except IndexError:
+        part = ''
+
+    return [tag for tag in (vendor, product, part) if tag], relationships
+
+
 def generate_indicator(data: dict) -> Common.CVE:
     """
     Generating a single cve indicator with dbot score from cve data.
@@ -145,72 +195,22 @@ def generate_indicator(data: dict) -> Common.CVE:
         A CVE indicator with dbotScore
     """
 
-    def parse_cpe(cpe: str) -> tuple[list[str], list[EntityRelationship]]:
-        """
-
-        Args:
-            cpe: A string representing a single CPE, see "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf"
-
-        Returns:
-            A list of tags and a list of EntityRelationships.
-
-        """
-
-        cpe_parts = {
-            "a": "Application",
-            "o": "Operating-System",
-            "h": "Hardware"
-        }
-
-        relationships = []
-
-        try:
-            vendor = cpe[3].capitalize().replace("\\", "").replace("_", " ")
-            if vendor:
-                relationships.append(EntityRelationship(name="targets",
-                                                        entity_a=cve_id,
-                                                        entity_a_type="cve",
-                                                        entity_b=vendor,
-                                                        entity_b_type="identity"))
-        except IndexError:
-            vendor = ''
-
-        try:
-            product = cpe[4].capitalize().replace("\\", "").replace("_", " ")
-            if product:
-                relationships.append(EntityRelationship(name="targets",
-                                                        entity_a=cve_id,
-                                                        entity_a_type="cve",
-                                                        entity_b=product,
-                                                        entity_b_type="software"))
-        except IndexError:
-            product = ''
-
-        try:
-            part = cpe_parts[cpe[2]]
-
-        except IndexError:
-            part = ''
-
-        return [vendor, product, part], relationships
-
     cve_id = data.get('id', '')
     cpe = data.get("vulnerable_product", '')
 
     if cpe:
         cpe = re.split('(?<!\\\):', cpe[0])
-        tags, relationships = parse_cpe(cpe)
-        tags.append(data.get('cwe'))
+        tags, relationships = parse_cpe(cpe, cve_id)
+        tags.append(data.get('cwe', ''))
 
     else:
-        tags = [data.get('cwe')]
+        tags = [data.get('cwe', '')]
 
     cvss_table = []
 
     for category in ("impact", "access"):
-        if category:
-            for key, value in data.get(category).items():
-                cvss_table.append({"metrics": key, "value": value})
+        for key, value in data.get(category, []).items():
+            cvss_table.append({"metrics": key, "value": value})
 
     cve_object = Common.CVE(
         id=cve_id,
@@ -220,11 +220,11 @@ def generate_indicator(data: dict) -> Common.CVE:
         published=data.get('Published'),
         modified=data.get('Modified'),
         description=data.get('summary'),
-        vulnerable_products=[Common.CPE(cpe) for cpe in data.get("vulnerable_product")],
-        vulnerable_configurations=[Common.CPE(cpe["id"]) for cpe in data.get("vulnerable_configuration")],
+        vulnerable_products=[Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])],
+        vulnerable_configurations=[Common.CPE(cpe["id"]) for cpe in data.get("vulnerable_configuration", [])],
         publications=[Common.Publications(title=data.get('id'),
                                           link=reference,
-                                          source="Circl.lu") for reference in data.get("references")],
+                                          source="Circl.lu") for reference in data.get("references", [])],
         tags=tags
     )
 
