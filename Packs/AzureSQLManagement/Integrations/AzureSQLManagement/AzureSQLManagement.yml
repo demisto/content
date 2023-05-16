@@ -19,14 +19,14 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: Test button won’t work if not populated. This value can be overridden on a command basis.
+  additionalinfo: This value can be overridden on a command basis.
 - display: Default Resource Group Name
   hidden: false
   name: resource_group_name
   required: false
   type: 0
   section: Connect
-  additionalinfo: Test button won’t work if not populated. This value can be overridden on a command basis.
+  additionalinfo: This value can be overridden on a command basis.
 - additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
@@ -146,7 +146,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: If true, returns the server lists that match the given resource groups. Else, returns a list of all the servers.
+      description: If true, returns the server lists that match the given resource groups. Else, returns a list of all the servers. Default value is False.
       isArray: true
       name: list_by_resource_group
       required: false

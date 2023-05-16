@@ -696,7 +696,10 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        if 'Error in API call [404] - Not Found' in e.message:
+            return_results(str(e.message))
+        else:
+            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 from MicrosoftApiModule import *  # noqa: E402
