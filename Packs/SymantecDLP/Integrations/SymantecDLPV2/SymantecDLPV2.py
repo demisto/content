@@ -12,7 +12,6 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_PAGE_SIZE = 50
-
 INCIDENT_TYPE_MAPPING = {
     'Network': 'NETWORK',
     'Discover': 'DISCOVER',
@@ -224,7 +223,7 @@ class Client(BaseClient):
     def get_report_filters_request(self, report_id: str) -> Dict[str, str]:
         """Returns incident static attributes.
 
-        :param incident_id: The incident ID.
+        :param report_id: The report id ID.
 
         """
 
