@@ -1,10 +1,6 @@
 
-# %%UPDATE%% <Product Name>
+# Cisco Catalyst
 This pack includes Cortex XSIAM content.
-
-
-## Configuration on Server Side
-%%UPDATE%% <Add vendor's specifications>
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
@@ -19,6 +15,6 @@ You can configure the specific vendor and product for this instance.
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**:
-   - vendor as vendor - %%UPDATE%% <vendor>
-   - product as product - %%UPDATE%% <product>
+   - vendor as vendor - cisco
+   - product as product - catalyst
  
