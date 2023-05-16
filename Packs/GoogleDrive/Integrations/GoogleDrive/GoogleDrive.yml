@@ -7,7 +7,6 @@ sectionOrder:
 configuration:
 - name: user_service_account_json
   display: User's Service Account JSON
-  required: true
   defaultvalue:
   type: 4
   section: Connect
@@ -20,6 +19,12 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: The primary email address of the user to fetch the incident(s).
+- display: User ID
+  displaypassword: User's Service Account JSON
+  name: user_creds
+  required: false
+  type: 9
+  section: Connect
 - name: action_detail_case_include
   display: Action Detail Case Include
   required: false
