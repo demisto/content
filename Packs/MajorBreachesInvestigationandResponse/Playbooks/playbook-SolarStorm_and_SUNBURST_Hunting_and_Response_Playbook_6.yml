@@ -974,95 +974,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "51":
-    id: "51"
-    taskid: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
-    type: playbook
-    task:
-      id: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
-      version: -1
-      name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-
-      playbookName: Block Indicators - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "83"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: PANWHunting
-          accessor: DetectedExternalIPs
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IP.Address
-                iscontext: true
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-      StaticAddressGroup: {}
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-      URLBlacklistMiner: {}
-      URLListName:
-        simple: Demisto Remediation - URL EDL
-      Username: {}
-      categories: {}
-      device-group:
-        complex:
-          root: inputs.DeviceGroup
-      type: {}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2510,
-          "y": 2310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
     taskid: f5255969-e3b5-4dbb-808d-28d7093ac2be
@@ -1476,7 +1389,7 @@ tasks:
       '#default#':
       - "56"
       "yes":
-      - "51"
+      - "114"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2322,7 +2235,7 @@ tasks:
       '#default#':
       - "86"
       "yes":
-      - "87"
+      - "115"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2378,66 +2291,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "87":
-    id: "87"
-    taskid: 486960ff-baab-4c17-8bff-d6193d4a5264
-    type: playbook
-    task:
-      id: 486960ff-baab-4c17-8bff-d6193d4a5264
-      version: -1
-      name: Block IP - Generic v2
-      description: |-
-        This playbook blocks malicious IPs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Check Point Firewall
-        * Palo Alto Networks Minemeld
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-        * FortiGate
-      playbookName: Block IP - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: Expanse.Issue
-          accessor: ip
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      StaticAddressGroup: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2250,
-          "y": 3220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "89":
     id: "89"
     taskid: 5ed59e1a-0df7-41bc-84f2-fd5813f3d845
@@ -3273,7 +3128,280 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: b241779f-9dab-43e4-8e71-cd2a4ed9007b
+    type: playbook
+    task:
+      id: b241779f-9dab-43e4-8e71-cd2a4ed9007b
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: "True"
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 48339eeb-7c30-46db-83a3-e80e890befaa
+    type: playbook
+    task:
+      id: 48339eeb-7c30-46db-83a3-e80e890befaa
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: Expense.Issue
+          accessor: ip
+      InputEnrichment:
+        simple: "False"
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 2270,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3413,5 +3541,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests
+- No tests (auto formatted)
 fromversion: 6.0.0
