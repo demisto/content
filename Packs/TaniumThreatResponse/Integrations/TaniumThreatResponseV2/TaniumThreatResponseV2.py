@@ -2162,7 +2162,6 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     ipaddrs_client = argToList(arg=command_args.get('ip_client'))
     ipaddrs_server = argToList(arg=command_args.get('ip_server'))
     port = arg_to_number(arg=command_args.get('port'))
-    print("TEST")
 
     is_resp_filtering_required = statuses or hostnames or ipaddrs_client or ipaddrs_client or ipaddrs_server or port
     filter_arguments = [
