@@ -679,3 +679,55 @@ def test_get_sender_recipient_pattern_command(requests_mock):
     result = get_sender_recipient_pattern_command(client, {'pattern_id': '1234'})
     assert result.outputs == mocked_response
     assert result.outputs_prefix == 'SymantecDLP.SenderRecipientPattern'
+
+
+def test_list_sender_recipient_patterns_command(requests_mock):
+    """
+    Given:
+        list of patterns
+
+    When:
+        running list_sender_recipient_patterns_command
+
+    Then:
+        Make sure the context output is returned as expected
+    """
+    from SymantecDLPV2 import Client, list_sender_recipient_patterns_command
+
+    mocked_response = [
+        {
+            "id": 503,
+            "name": "XSOAR Sender Block Example",
+            "description": "demo",
+            "ruleType": 4,
+            "modifiedDate": "05/16/23 12:20 PM",
+            "modifiedBy": {
+                "id": 343,
+                "name": "AdminUsername "
+            },
+            "userPatterns": [
+                "domain-jsmith",
+                "domain-jdoe"
+            ],
+            "ipAddresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ]
+        }
+    ]
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/list',
+        json=mocked_response
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = list_sender_recipient_patterns_command(client)
+    assert result.outputs == mocked_response
