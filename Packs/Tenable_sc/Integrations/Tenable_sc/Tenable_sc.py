@@ -1961,6 +1961,19 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
 def create_user_command(client: Client, args: Dict[str, Any]):
     validate_user_body_params(args, "create")
     res = client.create_user(args)
+    hr_header = f'User {args.get("user_name")} was created successfully.'
+    process_update_and_create_user_response(res, hr_header)
+
+
+def update_user_command(client: Client, args: Dict[str, Any]):
+    user_id = args.get('user_id')
+    validate_user_body_params(args, "update")
+    res = client.update_user(args, user_id)
+    hr_header = f'user {args.get("user_id")} was updated succesfully.'
+    process_update_and_create_user_response(res, hr_header)
+
+
+def process_update_and_create_user_response(res, hr_header):
     if not res or not res.get('response', {}):
         return_message("User wasn't created successfully.")
     headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
@@ -1978,54 +1991,16 @@ def create_user_command(client: Client, args: Dict[str, Any]):
         "User Group Name": response.get("group", {}).get("name"),
         "User  LDAP  Name": response.get("ldap", {}).get("name")
     }
-
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(f'User {args.get("user_name")} was created successfully.', mapped_response,
-                                         headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(hr_header, mapped_response, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.User(val.ID===obj.ID)': createContext(response, removeNull=True)
         }
     })
-
-
-def update_user_command(client: Client, args: Dict[str, Any]):
-    user_id = args.get('user_id')
-    validate_user_body_params(args, "update")
-    res = client.update_user(args, user_id)
-    print(res)
-    # if not res or not res.get('response', {}):
-    #     return_message("User wasn't created successfully.")
-    # headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
-    #            "User Group Name", "User  LDAP  Name"]
-    # response = res.get("response", {})
-    # mapped_response = {
-    #     "User type": res.get("type"),
-    #     "User Id": response.get("id"),
-    #     "User Status": response.get("status"),
-    #     "User Name": response.get("username"),
-    #     "First Name": response.get("firstname"),
-    #     "Lat Name ": response.get("lastname"),
-    #     "Email ": response.get("email"),
-    #     "User Role Name": response.get("role", {}).get("name"),
-    #     "User Group Name": response.get("group", {}).get("name"),
-    #     "User  LDAP  Name": response.get("ldap", {}).get("name")
-    # }
-
-    # demisto.results({
-    #     'Type': entryTypes['note'],
-    #     'Contents': res,
-    #     'ContentsFormat': formats['json'],
-    #     'ReadableContentsFormat': formats['markdown'],
-    #     'HumanReadable': tableToMarkdown(f'user {args.get("user_name")} was created succesfully.', mapped_response,
-    #                                      headers, removeNull=True),
-    #     'EntryContext': {
-    #         'TenableSC.User(val.ID===obj.ID)': createContext(response, removeNull=True)
-    #     }
-    # })
 
 
 def delete_user_command(client: Client, args: Dict[str, Any]):
@@ -2230,9 +2205,9 @@ def main():
         'tenable-sc-get-system-licensing': get_system_licensing_command,
         'tenable-sc-get-all-scan-results': get_all_scan_results_command,
         'tenable-sc-list-groups': list_groups_command,
-
         'tenable-sc-create-user': create_user_command,
         'tenable-sc-update-user': update_user_command,
+
         'tenable-sc-delete-user': delete_user_command,
         'tenable-sc-list-plugin-family': list_plugin_family_command,
         'tenable-sc-create-policy': create_policy_command,

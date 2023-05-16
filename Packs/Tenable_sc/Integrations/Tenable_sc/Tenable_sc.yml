@@ -1441,194 +1441,155 @@ script:
     name: tenable-sc-create-user
     outputs:
     - contextPath: TenableSC.User.address
-      description: ''
+      description: User address.
       type: String
     - contextPath: TenableSC.User.apiKeys
-      description: ''
+      description: User api keys.
       type: Unknown
     - contextPath: TenableSC.User.authType
-      description: ''
+      description: User auth type.
       type: String
     - contextPath: TenableSC.User.canManage
-      description: ''
+      description: User permissions.
       type: Boolean
     - contextPath: TenableSC.User.canUse
-      description: ''
+      description: User permissions.
       type: Boolean
     - contextPath: TenableSC.User.city
-      description: ''
+      description: User city of residence.
       type: String
     - contextPath: TenableSC.User.country
-      description: ''
+      description: User country of residence.
       type: String
     - contextPath: TenableSC.User.createdTime
-      description: ''
+      description: User creation time.
       type: Date
     - contextPath: TenableSC.User.email
-      description: ''
+      description: User email address.
       type: String
     - contextPath: TenableSC.User.failedLogins
-      description: ''
+      description: User number of failed logins.
       type: String
     - contextPath: TenableSC.User.fax
-      description: ''
+      description: User fax.
       type: String
     - contextPath: TenableSC.User.fingerprint
-      description: ''
+      description: User fingerprint.
       type: Unknown
     - contextPath: TenableSC.User.firstname
-      description: ''
+      description: User first name.
       type: String
     - contextPath: TenableSC.User.group.description
-      description: ''
+      description: User group's description.
       type: String
     - contextPath: TenableSC.User.group.id
-      description: ''
+      description: User group's id.
       type: String
     - contextPath: TenableSC.User.group.name
-      description: ''
+      description: User group's name.
       type: String
     - contextPath: TenableSC.User.id
-      description: ''
+      description: User id.
       type: String
     - contextPath: TenableSC.User.lastLogin
-      description: ''
+      description: User last login time.
       type: String
     - contextPath: TenableSC.User.lastLoginIP
-      description: ''
+      description: User last login IP.
       type: String
     - contextPath: TenableSC.User.lastname
-      description: ''
+      description: User last name.
       type: String
     - contextPath: TenableSC.User.ldap.description
-      description: ''
+      description: User ldap description.
       type: String
     - contextPath: TenableSC.User.ldap.id
-      description: ''
+      description: User ldap ID>
       type: Number
     - contextPath: TenableSC.User.ldap.name
-      description: ''
+      description: User ldap name.
       type: String
     - contextPath: TenableSC.User.ldapUsername
-      description: ''
+      description: user ldap username.
       type: String
     - contextPath: TenableSC.User.locked
-      description: ''
+      description: if user is locked or not.
       type: String
     - contextPath: TenableSC.User.managedObjectsGroups.description
-      description: ''
+      description: User managed object groups description.
       type: String
     - contextPath: TenableSC.User.managedObjectsGroups.id
-      description: ''
+      description: User managed object groups id
       type: String
     - contextPath: TenableSC.User.managedObjectsGroups.name
-      description: ''
+      description: User managed object groups name.
       type: String
     - contextPath: TenableSC.User.managedUsersGroups.description
-      description: ''
+      description: User managed users groups description.
       type: String
     - contextPath: TenableSC.User.managedUsersGroups.id
-      description: ''
+      description: User managed users groups id.
       type: String
     - contextPath: TenableSC.User.managedUsersGroups.name
-      description: ''
+      description: User managed users groups name.
       type: String
     - contextPath: TenableSC.User.modifiedTime
-      description: ''
+      description: User last modification time.
       type: Date
     - contextPath: TenableSC.User.mustChangePassword
-      description: ''
+      description: If user must change password.
       type: String
     - contextPath: TenableSC.User.password
-      description: ''
+      description: If user password is set.
       type: String
     - contextPath: TenableSC.User.phone
-      description: ''
+      description: User phone number.
       type: String
     - contextPath: TenableSC.User.preferences.name
-      description: ''
+      description: User preferences name.
       type: String
     - contextPath: TenableSC.User.preferences.tag
-      description: ''
+      description: User preferences tag.
       type: String
     - contextPath: TenableSC.User.preferences.value
-      description: ''
+      description: User preferences value.
       type: String
     - contextPath: TenableSC.User.responsibleAsset.description
-      description: ''
+      description: User responsible asset description.
       type: String
     - contextPath: TenableSC.User.responsibleAsset.id
-      description: ''
+      description: User responsible asset id.
       type: String
     - contextPath: TenableSC.User.responsibleAsset.name
-      description: ''
+      description: User responsible asset name.
       type: String
     - contextPath: TenableSC.User.responsibleAsset.uuid
-      description: ''
+      description: User responsible asset uuid.
       type: Unknown
     - contextPath: TenableSC.User.role.description
-      description: ''
+      description: User tole description.
       type: String
     - contextPath: TenableSC.User.role.id
-      description: ''
+      description: User role id.
       type: String
     - contextPath: TenableSC.User.role.name
-      description: ''
+      description: User role name
       type: String
     - contextPath: TenableSC.User.state
-      description: ''
+      description: User state.
       type: String
     - contextPath: TenableSC.User.status
-      description: ''
+      description: User status.
       type: String
     - contextPath: TenableSC.User.title
-      description: ''
+      description: User title.
       type: String
     - contextPath: TenableSC.User.username
-      description: ''
+      description: User username.
       type: String
     - contextPath: TenableSC.User.uuid
-      description: ''
+      description: User UUID.
       type: String
-    
-
-
-  - arguments:
-    - default: false
-      defaultValue: '50'
-      description: Default is 50. The number of objects to return in one response (maximum limit is 200).
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The id of the query we wish to search.
-      isArray: false
-      name: query_id
-      required: false
-      secret: false
-    - default: false
-      description: The query time to retrieve. When no type is set all queries are returned.
-      isArray: false
-      name: type
-      required: false
-      secret: false
-      auto: PREDEFINED
-      predefined:
-      - alert
-      - lce
-      - mobile
-      - ticket
-      - user
-    deprecated: false
-    description: Lists queries.
-    execution: false
-    name: tenable-sc-list-query
-    outputs:
-    
-
-
-
   - arguments:
     - default: false
       description: The user's first name.
@@ -1779,6 +1740,193 @@ script:
     execution: false
     name: tenable-sc-update-user
     outputs:
+    - contextPath: TenableSC.User.address
+      description: User address.
+      type: String
+    - contextPath: TenableSC.User.apiKeys
+      description: User api keys.
+      type: Unknown
+    - contextPath: TenableSC.User.authType
+      description: User auth type.
+      type: String
+    - contextPath: TenableSC.User.canManage
+      description: User permissions.
+      type: Boolean
+    - contextPath: TenableSC.User.canUse
+      description: User permissions.
+      type: Boolean
+    - contextPath: TenableSC.User.city
+      description: User city of residence.
+      type: String
+    - contextPath: TenableSC.User.country
+      description: User country of residence.
+      type: String
+    - contextPath: TenableSC.User.createdTime
+      description: User creation time.
+      type: Date
+    - contextPath: TenableSC.User.email
+      description: User email address.
+      type: String
+    - contextPath: TenableSC.User.failedLogins
+      description: User number of failed logins.
+      type: String
+    - contextPath: TenableSC.User.fax
+      description: User fax.
+      type: String
+    - contextPath: TenableSC.User.fingerprint
+      description: User fingerprint.
+      type: Unknown
+    - contextPath: TenableSC.User.firstname
+      description: User first name.
+      type: String
+    - contextPath: TenableSC.User.group.description
+      description: User group's description.
+      type: String
+    - contextPath: TenableSC.User.group.id
+      description: User group's id.
+      type: String
+    - contextPath: TenableSC.User.group.name
+      description: User group's name.
+      type: String
+    - contextPath: TenableSC.User.id
+      description: User id.
+      type: String
+    - contextPath: TenableSC.User.lastLogin
+      description: User last login time.
+      type: String
+    - contextPath: TenableSC.User.lastLoginIP
+      description: User last login IP.
+      type: String
+    - contextPath: TenableSC.User.lastname
+      description: User last name.
+      type: String
+    - contextPath: TenableSC.User.ldap.description
+      description: User ldap description.
+      type: String
+    - contextPath: TenableSC.User.ldap.id
+      description: User ldap ID>
+      type: Number
+    - contextPath: TenableSC.User.ldap.name
+      description: User ldap name.
+      type: String
+    - contextPath: TenableSC.User.ldapUsername
+      description: user ldap username.
+      type: String
+    - contextPath: TenableSC.User.locked
+      description: if user is locked or not.
+      type: String
+    - contextPath: TenableSC.User.managedObjectsGroups.description
+      description: User managed object groups description.
+      type: String
+    - contextPath: TenableSC.User.managedObjectsGroups.id
+      description: User managed object groups id
+      type: String
+    - contextPath: TenableSC.User.managedObjectsGroups.name
+      description: User managed object groups name.
+      type: String
+    - contextPath: TenableSC.User.managedUsersGroups.description
+      description: User managed users groups description.
+      type: String
+    - contextPath: TenableSC.User.managedUsersGroups.id
+      description: User managed users groups id.
+      type: String
+    - contextPath: TenableSC.User.managedUsersGroups.name
+      description: User managed users groups name.
+      type: String
+    - contextPath: TenableSC.User.modifiedTime
+      description: User last modification time.
+      type: Date
+    - contextPath: TenableSC.User.mustChangePassword
+      description: If user must change password.
+      type: String
+    - contextPath: TenableSC.User.password
+      description: If user password is set.
+      type: String
+    - contextPath: TenableSC.User.phone
+      description: User phone number.
+      type: String
+    - contextPath: TenableSC.User.preferences.name
+      description: User preferences name.
+      type: String
+    - contextPath: TenableSC.User.preferences.tag
+      description: User preferences tag.
+      type: String
+    - contextPath: TenableSC.User.preferences.value
+      description: User preferences value.
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.description
+      description: User responsible asset description.
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.id
+      description: User responsible asset id.
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.name
+      description: User responsible asset name.
+      type: String
+    - contextPath: TenableSC.User.responsibleAsset.uuid
+      description: User responsible asset uuid.
+      type: Unknown
+    - contextPath: TenableSC.User.role.description
+      description: User tole description.
+      type: String
+    - contextPath: TenableSC.User.role.id
+      description: User role id.
+      type: String
+    - contextPath: TenableSC.User.role.name
+      description: User role name
+      type: String
+    - contextPath: TenableSC.User.state
+      description: User state.
+      type: String
+    - contextPath: TenableSC.User.status
+      description: User status.
+      type: String
+    - contextPath: TenableSC.User.title
+      description: User title.
+      type: String
+    - contextPath: TenableSC.User.username
+      description: User username.
+      type: String
+    - contextPath: TenableSC.User.uuid
+      description: User UUID.
+      type: String
+    
+
+
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Default is 50. The number of objects to return in one response (maximum limit is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The id of the query we wish to search.
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    - default: false
+      description: The query time to retrieve. When no type is set all queries are returned.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - alert
+      - lce
+      - mobile
+      - ticket
+      - user
+    deprecated: false
+    description: Lists queries.
+    execution: false
+    name: tenable-sc-list-query
+    outputs:
+    
+
 
   - arguments:
     - default: false
