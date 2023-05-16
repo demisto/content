@@ -2084,6 +2084,29 @@
             "is_mockable": false
         },
         {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test self deployed",
+            "instance_names": "ms_graph_security_client_cred",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test dev v2",
+            "instance_names": "ms_graph_security_dev_v2"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test prod v2",
+            "instance_names": "ms_graph_security_prod_v2",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test self deployed v2",
+            "instance_names": "ms_graph_security_client_cred_v2",
+            "is_mockable": false
+        },
+        {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_dev"
