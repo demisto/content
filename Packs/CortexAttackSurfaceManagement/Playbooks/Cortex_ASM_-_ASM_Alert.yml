@@ -3094,7 +3094,7 @@ tasks:
       id: 8f8d355d-3037-4b46-8871-4fc131e9d44d
       version: -1
       name: GenerateSummaryReport - Analysis
-      description: Generate an ASM Alert Summary report.
+      description: Generate an ASM Alert Analysis report.
       scriptName: GenerateASMReport
       type: regular
       iscommand: false
