@@ -1,0 +1,615 @@
+{
+  "count": 6212,
+  "next": "mock://vectra-v22.dev.local/api/v2.2/search/detections?page_size=5",
+  "previous": null,
+  "results": [
+    {
+      "summary": {
+        "app_protocols": [
+          "rdp"
+        ],
+        "num_attempts": 1000,
+        "description": "This host is making many login attempts on an internal system.",
+        "dst_ips": [
+          "127.127.127.127"
+        ]
+      },
+      "id": 7412,
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7412",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7412",
+      "category": "LATERAL MOVEMENT",
+      "detection": "Brute-Force",
+      "detection_category": "LATERAL MOVEMENT",
+      "detection_type": "Brute-Force",
+      "custom_detection": null,
+      "description": null,
+      "src_ip": "127.127.127.127",
+      "state": "fixed",
+      "t_score": 0,
+      "c_score": 0,
+      "certainty": 0,
+      "threat": 0,
+      "created_timestamp": "2022-09-01T02:27:27Z",
+      "first_timestamp": "2022-09-01T02:15:48Z",
+      "last_timestamp": "2022-09-30T05:56:02Z",
+      "targets_key_asset": false,
+      "is_targeting_key_asset": false,
+      "src_account": null,
+      "src_host": {
+        "id": 873,
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
+        "is_key_asset": false,
+        "groups": [
+          {
+            "id": 144,
+            "name": "Partner VLAB - User Devices",
+            "description": "",
+            "last_modified": "2022-01-27T12:05:24Z",
+            "last_modified_by": "user (Removed)",
+            "type": "ip"
+          }
+        ],
+        "threat": 77,
+        "certainty": 84
+      },
+      "note": null,
+      "notes": [],
+      "note_modified_by": null,
+      "note_modified_timestamp": null,
+      "sensor": "eti2pc2s",
+      "sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+      "tags": [],
+      "triage_rule_id": null,
+      "assigned_to": "Xsoar",
+      "assigned_date": "2022-12-14T06:59:08Z",
+      "groups": [
+        {
+          "id": 144,
+          "name": "Partner VLAB - User Devices",
+          "description": "",
+          "type": "ip",
+          "last_modified": "2022-01-27T12:05:24Z",
+          "last_modified_by": "user"
+        }
+      ],
+      "is_marked_custom": false,
+      "is_custom_model": false,
+      "filtered_by_ai": false,
+      "filtered_by_user": false,
+      "filtered_by_rule": false,
+      "grouped_details": [
+        {
+          "num_attempts": 200,
+          "app_protocol": "rdp",
+          "first_timestamp": "2022-09-30T05:55:59Z",
+          "last_timestamp": "2022-09-30T05:56:02Z",
+          "dst_hosts": [
+            {
+              "id": 325,
+              "name": "VMAL #2 - FS01",
+              "ip": "127.127.127.127"
+            }
+          ],
+          "dst_ips": [
+            "127.127.127.127"
+          ],
+          "target_domains": [
+            ""
+          ]
+        },
+        {
+          "num_attempts": 200,
+          "app_protocol": "rdp",
+          "first_timestamp": "2022-09-28T03:12:03Z",
+          "last_timestamp": "2022-09-28T03:12:06Z",
+          "dst_hosts": [
+            {
+              "id": 325,
+              "name": "VMAL #2 - FS01",
+              "ip": "127.127.127.127"
+            }
+          ],
+          "dst_ips": [
+            "127.127.127.127"
+          ],
+          "target_domains": [
+            ""
+          ]
+        },
+        {
+          "num_attempts": 200,
+          "app_protocol": "rdp",
+          "first_timestamp": "2022-09-14T01:05:11Z",
+          "last_timestamp": "2022-09-14T01:05:13Z",
+          "dst_hosts": [
+            {
+              "id": 325,
+              "name": "VMAL #2 - FS01",
+              "ip": "127.127.127.127"
+            }
+          ],
+          "dst_ips": [
+            "127.127.127.127"
+          ],
+          "target_domains": [
+            "fs01.archer.local"
+          ]
+        },
+        {
+          "num_attempts": 200,
+          "app_protocol": "rdp",
+          "first_timestamp": "2022-09-01T04:46:02Z",
+          "last_timestamp": "2022-09-01T04:46:05Z",
+          "dst_hosts": [
+            {
+              "id": 325,
+              "name": "VMAL #2 - FS01",
+              "ip": "127.127.127.127"
+            }
+          ],
+          "dst_ips": [
+            "127.127.127.127"
+          ],
+          "target_domains": [
+            ""
+          ]
+        },
+        {
+          "num_attempts": 200,
+          "app_protocol": "rdp",
+          "first_timestamp": "2022-09-01T02:15:48Z",
+          "last_timestamp": "2022-09-01T02:15:53Z",
+          "dst_hosts": [
+            {
+              "id": 325,
+              "name": "VMAL #2 - FS01",
+              "ip": "127.127.127.127"
+            }
+          ],
+          "dst_ips": [
+            "127.127.127.127"
+          ],
+          "target_domains": [
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7413,
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7413",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7413",
+      "category": "LATERAL MOVEMENT",
+      "detection": "Suspicious Remote Execution",
+      "detection_category": "LATERAL MOVEMENT",
+      "detection_type": "Suspicious Remote Execution",
+      "custom_detection": null,
+      "description": null,
+      "src_ip": "127.127.127.127",
+      "state": "inactive",
+      "t_score": 20,
+      "c_score": 94,
+      "certainty": 94,
+      "threat": 20,
+      "created_timestamp": "2022-09-01T02:31:31Z",
+      "first_timestamp": "2022-09-01T02:30:33Z",
+      "last_timestamp": "2022-09-14T01:36:27Z",
+      "targets_key_asset": false,
+      "is_targeting_key_asset": false,
+      "src_account": null,
+      "src_host": {
+        "id": 873,
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
+        "is_key_asset": false,
+        "groups": [
+          {
+            "id": 144,
+            "name": "Partner VLAB - User Devices",
+            "description": "",
+            "last_modified": "2022-01-27T12:05:24Z",
+            "last_modified_by": "user (Removed)",
+            "type": "ip"
+          }
+        ],
+        "threat": 77,
+        "certainty": 84
+      },
+      "note": null,
+      "notes": [],
+      "note_modified_by": null,
+      "note_modified_timestamp": null,
+      "sensor": "eti2pc2s",
+      "sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+      "tags": [],
+      "triage_rule_id": null,
+      "assigned_to": "Xsoar",
+      "assigned_date": "2022-12-14T06:59:08Z",
+      "groups": [
+        {
+          "id": 144,
+          "name": "Partner VLAB - User Devices",
+          "description": "",
+          "type": "ip",
+          "last_modified": "2022-01-27T12:05:24Z",
+          "last_modified_by": "user"
+        }
+      ],
+      "is_marked_custom": false,
+      "is_custom_model": false,
+      "filtered_by_ai": false,
+      "filtered_by_user": false,
+      "filtered_by_rule": false,
+      "grouped_details": [
+        {
+          "grouping_field": "multi_fields",
+          "multi_fields": [
+            "IWbemServices",
+            "administrator",
+            null,
+            "127.127.127.127",
+            "127.127.127.127"
+          ],
+          "first_timestamp": null,
+          "last_timestamp": "2022-09-14T01:36:27Z",
+          "src_host": {
+            "id": 873,
+            "ip": "127.127.127.127",
+            "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)"
+          },
+          "uuid": "IWbemServices",
+          "named_pipe": "",
+          "executed_functions": [
+            "ExecMethod"
+          ],
+          "normal_src_hosts": [
+            {
+              "name": "VMAL #2 windows 127.127.127.127 (higaki-ha11)",
+              "ip": "127.127.127.127",
+              "id": 872
+            }
+          ],
+          "normal_dst_hosts": [],
+          "normal_users": null,
+          "accounts": [
+            "administrator"
+          ],
+          "dst_hosts": [
+            {
+              "id": 825,
+              "ip": "127.127.127.127",
+              "name": "VMAL #2 - Windows 10 pc-lkane"
+            }
+          ],
+          "dst_ips": [
+            "127.127.127.127"
+          ],
+          "num_events": 3
+        }
+      ],
+      "summary": {
+        "accounts": [
+          "administrator"
+        ],
+        "executed_functions": [
+          "ExecMethod"
+        ],
+        "dst_ips": [
+          "127.127.127.127"
+        ],
+        "num_events": 3
+      }
+    },
+    {
+      "id": 7432,
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7432",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7432",
+      "category": "RECONNAISSANCE",
+      "detection": "Port Scan",
+      "detection_category": "RECONNAISSANCE",
+      "detection_type": "Port Scan",
+      "custom_detection": "VMAL",
+      "description": null,
+      "src_ip": "127.127.127.127",
+      "state": "inactive",
+      "t_score": 0,
+      "c_score": 0,
+      "certainty": 0,
+      "threat": 0,
+      "created_timestamp": "2022-09-14T01:02:18Z",
+      "first_timestamp": "2022-09-14T00:53:06Z",
+      "last_timestamp": "2022-09-14T00:57:46Z",
+      "targets_key_asset": false,
+      "is_targeting_key_asset": false,
+      "src_account": null,
+      "src_host": {
+        "id": 873,
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
+        "is_key_asset": false,
+        "groups": [
+          {
+            "id": 144,
+            "name": "Partner VLAB - User Devices",
+            "description": "",
+            "last_modified": "2022-01-27T12:05:24Z",
+            "last_modified_by": "user (Removed)",
+            "type": "ip"
+          }
+        ],
+        "threat": 77,
+        "certainty": 84
+      },
+      "note": null,
+      "notes": [],
+      "note_modified_by": null,
+      "note_modified_timestamp": null,
+      "sensor": "eti2pc2s",
+      "sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+      "tags": [],
+      "triage_rule_id": 1298,
+      "assigned_to": "Xsoar",
+      "assigned_date": "2022-12-14T06:59:08Z",
+      "groups": [
+        {
+          "id": 144,
+          "name": "Partner VLAB - User Devices",
+          "description": "",
+          "type": "ip",
+          "last_modified": "2022-01-27T12:05:24Z",
+          "last_modified_by": "user"
+        }
+      ],
+      "is_marked_custom": true,
+      "is_custom_model": false,
+      "filtered_by_ai": false,
+      "filtered_by_user": true,
+      "filtered_by_rule": false,
+      "grouped_details": [
+        {
+          "grouping_field": "last_timestamp",
+          "num_attempts": 784,
+          "num_successes": 0,
+          "duration": 164.0,
+          "last_timestamp": "2022-09-14T00:57:46Z",
+          "dst_ips": [
+            "127.127.127.127"
+          ]
+        },
+        {
+          "grouping_field": "last_timestamp",
+          "num_attempts": 744,
+          "num_successes": 0,
+          "duration": 156.0,
+          "last_timestamp": "2022-09-14T00:57:38Z",
+          "dst_ips": [
+            "127.127.127.127"
+          ]
+        },
+        {
+          "grouping_field": "last_timestamp",
+          "num_attempts": 279,
+          "num_successes": 0,
+          "duration": 110.0,
+          "last_timestamp": "2022-09-14T00:54:56Z",
+          "dst_ips": [
+            "127.127.127.127"
+          ]
+        },
+        {
+          "grouping_field": "last_timestamp",
+          "num_attempts": 238,
+          "num_successes": 0,
+          "duration": 110.0,
+          "last_timestamp": "2022-09-14T00:54:56Z",
+          "dst_ips": [
+            "127.127.127.127"
+          ]
+        }
+      ],
+      "summary": {
+        "num_attempts": 2045,
+        "num_successes": 0,
+        "dst_ports": [
+          1
+        ],
+        "dst_ips": [
+          "127.127.127.127",
+          "127.127.127.127"
+        ]
+      }
+    },
+    {
+      "summary": {
+        "app_protocols": [
+          "rdp"
+        ],
+        "num_attempts": 100,
+        "description": "This host is making many login attempts on an internal system.",
+        "dst_ips": [
+          "127.127.127.127"
+        ]
+      },
+      "id": 7433,
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7433",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7433",
+      "category": "LATERAL MOVEMENT",
+      "detection": "Brute-Force",
+      "detection_category": "LATERAL MOVEMENT",
+      "detection_type": "Brute-Force",
+      "custom_detection": "VMAL",
+      "description": null,
+      "src_ip": "127.127.127.127",
+      "state": "inactive",
+      "t_score": 0,
+      "c_score": 0,
+      "certainty": 0,
+      "threat": 0,
+      "created_timestamp": "2022-09-14T01:06:50Z",
+      "first_timestamp": "2022-09-14T01:04:43Z",
+      "last_timestamp": "2022-09-14T01:04:46Z",
+      "targets_key_asset": false,
+      "is_targeting_key_asset": false,
+      "src_account": null,
+      "src_host": {
+        "id": 873,
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
+        "is_key_asset": false,
+        "groups": [
+          {
+            "id": 144,
+            "name": "Partner VLAB - User Devices",
+            "description": "",
+            "last_modified": "2022-01-27T12:05:24Z",
+            "last_modified_by": "user (Removed)",
+            "type": "ip"
+          }
+        ],
+        "threat": 77,
+        "certainty": 84
+      },
+      "note": null,
+      "notes": [],
+      "note_modified_by": null,
+      "note_modified_timestamp": null,
+      "sensor": "eti2pc2s",
+      "sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+      "tags": [],
+      "triage_rule_id": 1299,
+      "assigned_to": "Xsoar",
+      "assigned_date": "2022-12-14T06:59:08Z",
+      "groups": [
+        {
+          "id": 144,
+          "name": "Partner VLAB - User Devices",
+          "description": "",
+          "type": "ip",
+          "last_modified": "2022-01-27T12:05:24Z",
+          "last_modified_by": "user"
+        }
+      ],
+      "is_marked_custom": true,
+      "is_custom_model": false,
+      "filtered_by_ai": false,
+      "filtered_by_user": true,
+      "filtered_by_rule": false,
+      "grouped_details": [
+        {
+          "num_attempts": 100,
+          "app_protocol": "rdp",
+          "first_timestamp": "2022-09-14T01:04:43Z",
+          "last_timestamp": "2022-09-14T01:04:46Z",
+          "dst_hosts": [
+            {
+              "id": 817,
+              "name": "VMAL #2 - DC01",
+              "ip": "127.127.127.127"
+            }
+          ],
+          "dst_ips": [
+            "127.127.127.127"
+          ],
+          "target_domains": [
+            "dc01.archer.local"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7434,
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7434",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7434",
+      "category": "RECONNAISSANCE",
+      "detection": "RDP Recon",
+      "detection_category": "RECONNAISSANCE",
+      "detection_type": "RDP Recon",
+      "custom_detection": "VMAL",
+      "description": null,
+      "src_ip": "127.127.127.127",
+      "state": "inactive",
+      "t_score": 0,
+      "c_score": 0,
+      "certainty": 0,
+      "threat": 0,
+      "created_timestamp": "2022-09-14T01:06:50Z",
+      "first_timestamp": "2022-09-14T01:04:43Z",
+      "last_timestamp": "2022-09-14T01:05:18Z",
+      "targets_key_asset": false,
+      "is_targeting_key_asset": false,
+      "src_account": null,
+      "src_host": {
+        "id": 873,
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
+        "is_key_asset": false,
+        "groups": [
+          {
+            "id": 144,
+            "name": "Partner VLAB - User Devices",
+            "description": "",
+            "last_modified": "2022-01-27T12:05:24Z",
+            "last_modified_by": "user (Removed)",
+            "type": "ip"
+          }
+        ],
+        "threat": 77,
+        "certainty": 84
+      },
+      "note": null,
+      "notes": [],
+      "note_modified_by": null,
+      "note_modified_timestamp": null,
+      "sensor": "eti2pc2s",
+      "sensor_name": "Vec2c610896a947c5b5102c466a28f49a",
+      "tags": [],
+      "triage_rule_id": 1300,
+      "assigned_to": "Xsoar",
+      "assigned_date": "2022-12-14T06:59:08Z",
+      "groups": [
+        {
+          "id": 144,
+          "name": "Partner VLAB - User Devices",
+          "description": "",
+          "type": "ip",
+          "last_modified": "2022-01-27T12:05:24Z",
+          "last_modified_by": "user"
+        }
+      ],
+      "is_marked_custom": true,
+      "is_custom_model": false,
+      "filtered_by_ai": false,
+      "filtered_by_user": true,
+      "filtered_by_rule": false,
+      "grouped_details": [],
+      "summary": {
+        "client_names": [
+          "encrypted_RDP_clientName"
+        ],
+        "client_tokens": [
+          "remote",
+          "remote_access"
+        ],
+        "num_attempts": 52,
+        "dst_hosts": [
+          {
+            "id": 325,
+            "name": "VMAL #2 - FS01",
+            "ip": "127.127.127.127"
+          },
+          {
+            "id": 817,
+            "name": "VMAL #2 - DC01",
+            "ip": "127.127.127.127"
+          }
+        ]
+      }
+    }
+  ]
+}
