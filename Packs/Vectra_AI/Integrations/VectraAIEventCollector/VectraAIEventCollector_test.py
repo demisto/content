@@ -25,6 +25,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from CommonServerPython import *
+from hypothesis import given, strategies as st, settings
 from freezegun import freeze_time
 
 """ Constants """
@@ -44,8 +45,9 @@ DETECTIONS: Dict[str, Any] = load_json(Path("./test_data/search_detections.json"
 """ VectraClient Tests """
 
 
-def test_create_headers():
-
+@settings(max_examples=10)
+@given(st.text())
+def test_create_headers(token: str):
     """
     Given:
         - A Vectra client.
@@ -55,10 +57,10 @@ def test_create_headers():
         - Authentication headers match.
     """
 
-    client = VectraClient("url.dev,", api_key='token')
+    client = VectraClient("url.dev,", api_key=token)
 
     actual = client._create_headers()
-    expected = {"Content-Type": "application/json", "Authorization": "Token token"}
+    expected = {"Content-Type": "application/json", "Authorization": f"Token {token}"}
 
     assert "Content-Type" in actual.keys()
     assert "Authorization" in actual.keys()
@@ -84,7 +86,6 @@ def test_test_module(mocker: MockerFixture):
 
 
 def test_test_module_exception(mocker: MockerFixture):
-
     """
     Given
     - A dictionary of endpoints
@@ -203,7 +204,6 @@ class TestCommands:
         detections: Dict[str, Any],
         audits: Dict[str, Any],
     ):
-
         """
         Given:
             - Fetching for the first time, first_fetch set to default (3 days)
@@ -382,7 +382,6 @@ def test_add_parsing_rules(event: Dict[str, Any], expected_time: str, format: st
     ],
 )
 def test_get_most_recent_detection(detections: List[Dict[str, Any]], expected: str):
-
     """
     Given: A list of detections
 
