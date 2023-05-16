@@ -1,6 +1,6 @@
 import json
 import os
-from CVESearchV2 import cve_command, valid_cve_id_format, Client
+from CVESearchV2 import cve_command, valid_cve_id_format, Client, generate_indicator
 from CommonServerPython import DemistoException, argToList
 import pytest
 
@@ -44,6 +44,16 @@ test_data = [
     ({"cve_id": "cve-2000-1234,CVE-2020-155555"}, ['response.json', 'empty_response.json'], 2),
     ({"cve_id": "cve-2000-1234"}, ['response.json'], 1),
 ]
+
+
+def test_indicator_creation():
+    with open(os.path.join(os.getcwd(), 'test_data', 'response.json')) as js:
+        response = json.load(js)
+
+    with open(os.path.join(os.getcwd(), 'test_data', 'indicator.json')) as js:
+        correct_indicator = json.load(js)
+    indicator = generate_indicator(response).to_context()
+    assert indicator == correct_indicator
 
 
 @pytest.mark.parametrize("cve_id_arg,response_data,expected", test_data)
