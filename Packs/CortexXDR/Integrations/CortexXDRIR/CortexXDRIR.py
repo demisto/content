@@ -1600,10 +1600,10 @@ def main():  # pragma: no cover
             return_results(get_list_users_command(client, args))
 
         elif command == 'xdr-list-risky-users':
-            return_results(get_list_risky_users_command(client, args))
+            return_results(get_list_risky_users_or_host_command(client, "user", args))
 
         elif command == 'xdr-list-risky-hosts':
-            return_results(get_list_risky_hosts_command(client, args))
+            return_results(get_list_risky_users_or_host_command(client, "host", args))
 
         elif command == 'xdr-list-user-groups':
             return_results(get_list_user_groups_command(client, args))

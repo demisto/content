@@ -3,7 +3,6 @@ from freezegun import freeze_time
 import json
 import os
 import zipfile
-from collections.abc import Callable
 from typing import Any
 
 import pytest
@@ -12,8 +11,8 @@ import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
-    isolate_endpoint_command, get_list_risky_users_command, get_list_risky_hosts_command, get_list_user_groups_command, \
-    parse_user_groups, get_list_users_command, get_list_roles_command, change_user_role_command
+    isolate_endpoint_command, get_list_user_groups_command, parse_user_groups, get_list_users_command, get_list_roles_command, \
+    change_user_role_command, get_list_risky_users_or_host_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3170,58 +3169,51 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
 
 
 @pytest.mark.parametrize(
-    "func_command, func_http, args, excepted_calls",
+    "command, func_http, args, excepted_calls",
     [
         (
-            get_list_risky_users_command,
+            "user",
             "get_list_risky_users",
             {"user_id": "test"},
             {"get_risk_score_user_or_host": 1, "get_list_risky_users": 0},
         ),
         (
-            get_list_risky_users_command,
+            "user",
             "get_list_risky_users",
             {},
             {"get_risk_score_user_or_host": 0, "get_list_risky_users": 1},
         ),
         (
-            get_list_risky_hosts_command,
+            "host",
             "get_list_risky_hosts",
             {"host_id": "test"},
             {"get_risk_score_user_or_host": 1, "get_list_risky_hosts": 0},
         ),
         (
-            get_list_risky_hosts_command,
+            "host",
             "get_list_risky_hosts",
             {},
             {"get_risk_score_user_or_host": 0, "get_list_risky_hosts": 1},
         ),
     ],
 )
-def test_get_list_risky_users_and_hosts_command(
-    mocker, func_command: Callable, func_http: str, args: dict[str, str], excepted_calls: dict[str, int]
+def test_get_list_risky_users_or_hosts_command(
+    mocker, command: str, func_http: str, args: dict[str, str], excepted_calls: dict[str, int]
 ):
     """
-    Tests the `get_list_risky_users_command` and `get_list_risky_hosts_command` functions.
-    Each test case checks if the function call results in the expected function calls to the
-    client API, and asserts that the expected API function is called with the expected arguments.
+    Test case to verify the behavior of the 'get_list_risky_users_or_hosts_command' function.
 
     Args:
-        mocker: The pytest-mock object.
-        func_command (function): The function being tested
-            (either `get_list_risky_users_command` or `get_list_risky_hosts_command`).
-        func_http (str): The name of the CoreClient method being called in the
-            function being tested (either "get_list_risky_users" or "get_list_risky_hosts").
-        args (dict): The arguments to pass to the function being tested.
-        expected_calls (dict): A dictionary that specifies the expected number
-            of calls to `get_risk_score_user_or_host` and `func_http`.
+        mocker (Any): The mocker object to patch the required methods.
+        command (str): The command to be tested ('user' or 'host').
+        func_http (str): The name of the HTTP function to be called.
+        args (dict[str, str]): The arguments for the command.
+        expected_calls (dict[str, int]): The expected number of calls for each mocked method.
 
     Returns:
         None
-
-    Raises:
-        AssertionError: If the number of calls to `get_risk_score_user_or_host` or `func_http` does not match the expected values.
     """
+
     client = CoreClient("test", {})
 
     get_risk_by_user_or_host = mocker.patch.object(
@@ -3229,7 +3221,7 @@ def test_get_list_risky_users_and_hosts_command(
     )
     get_list_risky_users = mocker.patch.object(CoreClient, func_http, return_value={})
 
-    func_command(client=client, args=args)
+    get_list_risky_users_or_host_command(client=client, command=command, args=args)
 
     assert (
         get_risk_by_user_or_host.call_count
@@ -3239,32 +3231,30 @@ def test_get_list_risky_users_and_hosts_command(
 
 
 @pytest.mark.parametrize(
-    "command_func, id",
+    "command ,id",
     [
-        (get_list_risky_users_command, "user_id"),
-        (get_list_risky_hosts_command, "host_id"),
+        ('user', "user_id"),
+        ('host', "host_id"),
     ],
 )
 def test_get_list_risky_users_hosts_command_raise_exception(
-    mocker, command_func: Callable, id: str
+    mocker, command: str, id: str
 ):
     """
-    Tests that the 'get_list_risky_users_command' and 'get_list_risky_hosts_command'
-    functions raise an exception when the
-    given user or host ID is not found in the system.
+    Test case to verify if the 'get_list_risky_users_or_host_command' function raises the expected exception.
 
     Args:
-        mocker: The pytest-mock object.
-        command_func: The function to be tested, either 'get_list_risky_users_command'
-                      or 'get_list_risky_hosts_command'.
-        id: A string representing the ID of the user or host to be tested.
+        mocker (Any): The mocker object to patch the 'get_risk_score_user_or_host' method.
+        command (str): The command to be tested ('user' or 'host').
+        id (str): The ID parameter for the command.
 
     Raises:
-        Exception: If the user or host ID is not found in the system.
+        ValueError: If the expected exception is not raised or the error message doesn't match.
 
     Returns:
         None
     """
+
     client = CoreClient(
         base_url="test",
         headers={},
@@ -3285,7 +3275,7 @@ def test_get_list_risky_users_hosts_command_raise_exception(
         ValueError,
         match="Error: id test was not found. Full error message: id 'test' was not found"
     ):
-        command_func(client, {id: "test"})
+        get_list_risky_users_or_host_command(client, command, {id: "test"})
 
 
 def test_get_list_user_groups_command(mocker):

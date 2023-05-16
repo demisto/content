@@ -3742,94 +3742,6 @@ def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandR
     )
 
 
-def get_list_risky_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
-    """
-    Retrieves a list of risky users or details about a specific user's risk score.
-
-    Args:
-        client: A CoreClient object used to communicate with the API.
-        args: A dictionary containing the following keys (optional):
-            - user_id [str]: ID of the user to retrieve risk score details for.
-            - limit [str]: Specifying the maximum number of risky users to return.
-
-    Returns:
-        A CommandResults object
-
-    Raises:
-        ValueError: If the API connection fails or the specified user ID is not found.
-
-    """
-    table_title = 'User ID'
-    outputs: list[dict] | dict
-
-    if user_id := args.get('user_id'):
-        try:
-            outputs = client.get_risk_score_user_or_host(user_id).get('reply', {})
-        except DemistoException as e:
-            handle_error(e=e, type_="id", custom_msg=None)
-            raise
-        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]  # type: ignore[arg-type]
-
-    else:
-        list_limit = int(args.get('limit', 50))
-        outputs = client.get_list_risky_users().get('reply', [])[:list_limit]
-
-        table_for_markdown = [parse_risky_users_or_hosts(user, table_title) for user in outputs]
-
-    readable_output = tableToMarkdown(name='Risky Users', t=table_for_markdown)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.RiskyUser',
-        outputs_key_field='id',
-        outputs=outputs,
-    )
-
-
-def get_list_risky_hosts_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
-    """
-    This function retrieves a list of risky hosts from the Core API module.
-    If a host ID is provided, it retrieves the details of that host.
-    Otherwise, it will retrieve data for up to a specified limit (default is 50).
-    The function then formats the output into a table and returns it as a Command Results object.
-
-    Args:
-    - client: A CoreClient object that is used to communicate with the Core API module.
-    - args: A dictionary of arguments that are passed to the function. The following keys may be present:
-        - host_id(optional): The ID of the risky host to retrieve details for.
-        - limit(optional): The maximum number of risky hosts to retrieve.
-
-    Returns:
-    - A CommandResults object
-
-    Raises:
-    - ValueError: If the API connection fails or the specified Host ID is not found.
-    """
-    table_title = 'Host ID'
-    outputs: list[dict] | dict
-
-    if host_id := args.get('host_id'):
-        try:
-            outputs = client.get_risk_score_user_or_host(host_id).get('reply', {})
-        except DemistoException as e:
-            handle_error(e=e, type_="id", custom_msg=None)
-            raise
-        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_title)]   # type: ignore[arg-type]
-    else:
-        list_limit = int(args.get('limit', 50))
-        outputs = client.get_list_risky_hosts().get('reply', [])[:list_limit]
-
-        table_for_markdown = [parse_risky_users_or_hosts(host, table_title) for host in outputs]
-    readable_output = tableToMarkdown(name='Risky Hosts', t=table_for_markdown)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.RiskyHost',
-        outputs_key_field='id',
-        outputs=outputs,
-    )
-
-
 def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
      Retrieves a list of user groups from the Core API module based on the specified group names.
@@ -3935,4 +3847,61 @@ def change_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
 
     return CommandResults(
         readable_output=f"Role was {action_msg} successfully for {count} user{plural_suffix}."
+    )
+
+
+def get_list_risky_users_or_host_command(client: CoreClient, command: str, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves a list of risky users or details about a specific user's risk score.
+
+    Args:
+        client: A CoreClient object used to communicate with the API.
+        args: A dictionary containing the following headers (optional):
+            - user_id [str]: ID of the user to retrieve risk score details for.
+            - limit [str]: Specifying the maximum number of risky users to return.
+
+    Returns:
+        A CommandResults object
+
+    Raises:
+        ValueError: If the API connection fails or the specified user ID is not found.
+
+    """
+
+    match command:
+        case "user":
+            id_ = "user_id"
+            table_title = "Risky Users"
+            table_header = "User ID"
+            outputs_prefix = "RiskyUser"
+            get_func = client.get_list_risky_users
+        case 'host':
+            id_ = "host_id"
+            table_title = "Risky Hosts"
+            table_header = "Host ID"
+            outputs_prefix = "RiskyHost"
+            get_func = client.get_list_risky_hosts
+
+    outputs: list[dict] | dict
+    if id := args.get(id_):
+        try:
+            outputs = client.get_risk_score_user_or_host(id).get('reply', {})
+        except DemistoException as e:
+            handle_error(e=e, type_="id", custom_msg="")
+
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_header)]  # type: ignore[arg-type]
+
+    else:
+        list_limit = int(args.get('limit', 50))
+        outputs = get_func().get('reply', [])[:list_limit]
+
+        table_for_markdown = [parse_risky_users_or_hosts(user, table_header) for user in outputs]
+
+    readable_output = tableToMarkdown(name=table_title, t=table_for_markdown)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.{outputs_prefix}',
+        outputs_key_field='id',
+        outputs=outputs,
     )
