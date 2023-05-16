@@ -800,6 +800,22 @@ tasks:
                     right:
                       value:
                         simple: docm
+                - - operator: isNotEqualString
+                    left:
+                       value:
+                         simple: File.Extension
+                       iscontext: true
+                    right:
+                       value:
+                         simple: oft
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: oft
                 accessor: EntryID
                 transformers:
                 - operator: uniq
