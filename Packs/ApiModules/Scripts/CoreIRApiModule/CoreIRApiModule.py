@@ -1243,40 +1243,40 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
 
-    def get_list_users(self) -> dict[str, list[dict[str, Any]]]:
+    def list_users(self) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/rbac/get_users/',
             json_data={"request_data": {}},
         )
 
-    def get_risk_score_user_or_host(self, user_or_host_id: str) -> dict[str, dict[str, Any]]:
+    def risk_score_user_or_host(self, user_or_host_id: str) -> dict[str, dict[str, Any]]:
         return self._http_request(
             method='POST',
             url_suffix='/get_risk_score/',
             json_data={"request_data": {"id": user_or_host_id}},
         )
 
-    def get_list_risky_users(self) -> dict[str, list[dict[str, Any]]]:
+    def list_risky_users(self) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/get_risky_users/',
         )
 
-    def get_list_risky_hosts(self) -> dict[str, list[dict[str, Any]]]:
+    def list_risky_hosts(self) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/get_risky_hosts/',
         )
 
-    def get_list_user_groups(self, group_names: list[str]) -> dict[str, list[dict[str, Any]]]:
+    def list_user_groups(self, group_names: list[str]) -> dict[str, list[dict[str, Any]]]:
         return self._http_request(
             method='POST',
             url_suffix='/rbac/get_user_group/',
             json_data={"request_data": {"group_names": group_names}},
         )
 
-    def get_list_roles(self, role_names: list[str]) -> dict[str, list[list[dict[str, Any]]]]:
+    def list_roles(self, role_names: list[str]) -> dict[str, list[list[dict[str, Any]]]]:
         return self._http_request(
             method='POST',
             url_suffix='/rbac/get_roles/',
@@ -3669,9 +3669,9 @@ def find_the_cause_error(err: Exception) -> str:
         A string describing the cause of the error message.
 
     """
-    pattern = r"(id |Group |Role )\\?'([/A-Za-z 0-9]+)\\?'"
+    pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9]+)\\?'"
     if match := re.search(pattern, str(err)):
-        return f'Error: {match[1]}{match[2]} was not found'
+        return f'Error: {match[1]} {match[2]} was not found'
     return "Error: "
 
 
@@ -3700,7 +3700,7 @@ def handle_error(e, type_: str | None, custom_msg: str | None) -> None:
         ) from e
 
 
-def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+def list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
     Returns a list of all users using the Core API client.
 
@@ -3727,7 +3727,7 @@ def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandR
         }
 
     try:
-        listed_users: list[dict[str, Any]] = client.get_list_users().get('reply', [])
+        listed_users: list[dict[str, Any]] = client.list_users().get('reply', [])
     except Exception as e:
         raise ValueError(f'API connection failed: {e}') from e
 
@@ -3742,7 +3742,7 @@ def get_list_users_command(client: CoreClient, args: dict[str, str]) -> CommandR
     )
 
 
-def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
      Retrieves a list of user groups from the Core API module based on the specified group names.
 
@@ -3760,7 +3760,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
 
     group_names = argToList(args['group_names'])
     try:
-        outputs = client.get_list_user_groups(group_names).get("reply", [])
+        outputs = client.list_user_groups(group_names).get("reply", [])
     except DemistoException as e:
         error_msg = ", Note: If you sent more than one group name, they may not exist either"
         handle_error(e=e, type_="Group", custom_msg=error_msg)
@@ -3777,7 +3777,7 @@ def get_list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Co
     )
 
 
-def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+def list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
     Retrieves a list of roles with the provided role names from the Core API.
 
@@ -3796,7 +3796,7 @@ def get_list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandR
     """
     role_names = argToList(args["role_names"])
     try:
-        outputs = client.get_list_roles(role_names).get("reply", [])
+        outputs = client.list_roles(role_names).get("reply", [])
     except DemistoException as e:
         error_msg = ", Note: If you sent more than one Role name, they may not exist either"
         handle_error(e=e, type_="Role", custom_msg=error_msg)
@@ -3850,7 +3850,7 @@ def change_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
     )
 
 
-def get_list_risky_users_or_host_command(client: CoreClient, command: str, args: dict[str, str]) -> CommandResults:
+def list_risky_users_or_host_command(client: CoreClient, command: str, args: dict[str, str]) -> CommandResults:
     """
     Retrieves a list of risky users or details about a specific user's risk score.
 
@@ -3874,18 +3874,18 @@ def get_list_risky_users_or_host_command(client: CoreClient, command: str, args:
             table_title = "Risky Users"
             table_header = "User ID"
             outputs_prefix = "RiskyUser"
-            get_func = client.get_list_risky_users
+            get_func = client.list_risky_users
         case 'host':
             id_ = "host_id"
             table_title = "Risky Hosts"
             table_header = "Host ID"
             outputs_prefix = "RiskyHost"
-            get_func = client.get_list_risky_hosts
+            get_func = client.list_risky_hosts
 
     outputs: list[dict] | dict
     if id := args.get(id_):
         try:
-            outputs = client.get_risk_score_user_or_host(id).get('reply', {})
+            outputs = client.risk_score_user_or_host(id).get('reply', {})
         except DemistoException as e:
             handle_error(e=e, type_="id", custom_msg="")
 
