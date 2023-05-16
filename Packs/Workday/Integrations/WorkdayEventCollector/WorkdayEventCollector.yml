@@ -7,14 +7,14 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: Server URL (e.g. https://WORKDAY_HOST/ccx/api/v1/TENANT_NAME)
+  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/v1/TENANT-NAME)
   required: true
   defaultvalue:
   type: 0
   additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
   section: Connect
 - name: token_url
-  display: Token endpoint (e.g. https://WORKDAY_HOST/ccx/oauth2/TENANT_NAME/token)
+  display: Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT-NAME/token)
   required: true
   defaultvalue:
   type: 0
