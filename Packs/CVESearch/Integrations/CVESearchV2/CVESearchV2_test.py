@@ -1,7 +1,7 @@
 import json
 import os
 from CVESearchV2 import cve_command, valid_cve_id_format, Client, generate_indicator, parse_cpe
-from CommonServerPython import DemistoException, argToList
+from CommonServerPython import DemistoException, argToList, EntityRelationship
 import pytest
 import re
 
@@ -57,17 +57,35 @@ def test_indicator_creation():
     assert indicator == correct_indicator
 
 
-@pytest.mark.parametrize("cpe,expected_output", [
-    ("cpe:2.3:a:vendor:product", (["Vendor", "Product", "Application"])),
-    ("cpe:2.3:o:windows::", (["Windows", "Operating-System"])),
-    ("cpe:2.3:h:router::", (["Router", "Hardware"])),
-    ("cpe:2.3:a:vendor_with_underscores:product_with_underscores", (["Vendor with underscores", "Product with underscores", "Application"])),
-    ("cpe:2.3:o:", (["Operating-System"])),
+@pytest.mark.parametrize("cpe, expected_output, expected_relationships", [
+    ("cpe:2.3:a:vendor:product",
+     ["Vendor", "Product", "Application"],
+     [EntityRelationship(name="targets",
+                         entity_a='CVE-2022-1111',
+                         entity_a_type="cve",
+                         entity_b='Vendor',
+                         entity_b_type="identity").to_context(),
+      EntityRelationship(name="targets",
+                         entity_a='CVE-2022-1111',
+                         entity_a_type="cve",
+                         entity_b='Product',
+                         entity_b_type="software").to_context()]),
+    ("cpe:2.3:h:a\:_vendor",
+     ["A: vendor", "Hardware"],
+     [EntityRelationship(name="targets",
+                         entity_a='CVE-2022-1111',
+                         entity_a_type="cve",
+                         entity_b='A: vendor',
+                         entity_b_type="identity").to_context()]),
+    ("cpe:2.3:o:::",
+     ["Operating-System"],
+     []),
 ])
-def test_parse_cpe(cpe, expected_output):
+def test_parse_cpe(cpe, expected_output, expected_relationships):
     cpe = re.split('(?<!\\\):', cpe)
     tags, relationships = parse_cpe(cpe, 'CVE-2022-1111')
     assert tags == expected_output
+    assert [relationship.to_context() for relationship in relationships] == expected_relationships
 
 
 @pytest.mark.parametrize("cve_id_arg,response_data,expected", test_data)
