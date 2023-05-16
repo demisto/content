@@ -1440,154 +1440,154 @@ script:
     execution: false
     name: tenable-sc-create-user
     outputs:
-    - contextPath: TenableSC.User.address
+    - contextPath: TenableSC.User.Address
       description: User address.
       type: String
-    - contextPath: TenableSC.User.apiKeys
+    - contextPath: TenableSC.User.ApiKeys
       description: User api keys.
       type: Unknown
-    - contextPath: TenableSC.User.authType
+    - contextPath: TenableSC.User.AuthType
       description: User auth type.
       type: String
-    - contextPath: TenableSC.User.canManage
+    - contextPath: TenableSC.User.CanManage
       description: User permissions.
       type: Boolean
-    - contextPath: TenableSC.User.canUse
+    - contextPath: TenableSC.User.CanUse
       description: User permissions.
       type: Boolean
-    - contextPath: TenableSC.User.city
+    - contextPath: TenableSC.User.City
       description: User city of residence.
       type: String
-    - contextPath: TenableSC.User.country
+    - contextPath: TenableSC.User.Country
       description: User country of residence.
       type: String
-    - contextPath: TenableSC.User.createdTime
+    - contextPath: TenableSC.User.CreatedTime
       description: User creation time.
       type: Date
-    - contextPath: TenableSC.User.email
+    - contextPath: TenableSC.User.Email
       description: User email address.
       type: String
-    - contextPath: TenableSC.User.failedLogins
+    - contextPath: TenableSC.User.FailedLogins
       description: User number of failed logins.
       type: String
-    - contextPath: TenableSC.User.fax
+    - contextPath: TenableSC.User.Fax
       description: User fax.
       type: String
-    - contextPath: TenableSC.User.fingerprint
+    - contextPath: TenableSC.User.Fingerprint
       description: User fingerprint.
       type: Unknown
-    - contextPath: TenableSC.User.firstname
+    - contextPath: TenableSC.User.Firstname
       description: User first name.
       type: String
-    - contextPath: TenableSC.User.group.description
+    - contextPath: TenableSC.User.group.Description
       description: User group's description.
       type: String
-    - contextPath: TenableSC.User.group.id
+    - contextPath: TenableSC.User.Group.ID
       description: User group's id.
       type: String
-    - contextPath: TenableSC.User.group.name
+    - contextPath: TenableSC.User.Group.Name
       description: User group's name.
       type: String
-    - contextPath: TenableSC.User.id
+    - contextPath: TenableSC.User.ID
       description: User id.
       type: String
-    - contextPath: TenableSC.User.lastLogin
+    - contextPath: TenableSC.User.LastLogin
       description: User last login time.
       type: String
-    - contextPath: TenableSC.User.lastLoginIP
+    - contextPath: TenableSC.User.LastLoginIP
       description: User last login IP.
       type: String
-    - contextPath: TenableSC.User.lastname
+    - contextPath: TenableSC.User.Lastname
       description: User last name.
       type: String
-    - contextPath: TenableSC.User.ldap.description
+    - contextPath: TenableSC.User.Ldap.Description
       description: User ldap description.
       type: String
-    - contextPath: TenableSC.User.ldap.id
+    - contextPath: TenableSC.User.Ldap.ID
       description: User ldap ID>
       type: Number
-    - contextPath: TenableSC.User.ldap.name
+    - contextPath: TenableSC.User.Ldap.Name
       description: User ldap name.
       type: String
-    - contextPath: TenableSC.User.ldapUsername
+    - contextPath: TenableSC.User.LdapUsername
       description: user ldap username.
       type: String
-    - contextPath: TenableSC.User.locked
+    - contextPath: TenableSC.User.Locked
       description: if user is locked or not.
       type: String
-    - contextPath: TenableSC.User.managedObjectsGroups.description
+    - contextPath: TenableSC.User.ManagedObjectsGroups.Description
       description: User managed object groups description.
       type: String
-    - contextPath: TenableSC.User.managedObjectsGroups.id
+    - contextPath: TenableSC.User.ManagedObjectsGroups.ID
       description: User managed object groups id
       type: String
-    - contextPath: TenableSC.User.managedObjectsGroups.name
+    - contextPath: TenableSC.User.ManagedObjectsGroups.Name
       description: User managed object groups name.
       type: String
-    - contextPath: TenableSC.User.managedUsersGroups.description
+    - contextPath: TenableSC.User.ManagedUsersGroups.Description
       description: User managed users groups description.
       type: String
-    - contextPath: TenableSC.User.managedUsersGroups.id
+    - contextPath: TenableSC.User.ManagedUsersGroups.ID
       description: User managed users groups id.
       type: String
-    - contextPath: TenableSC.User.managedUsersGroups.name
+    - contextPath: TenableSC.User.ManagedUsersGroups.Name
       description: User managed users groups name.
       type: String
-    - contextPath: TenableSC.User.modifiedTime
+    - contextPath: TenableSC.User.ModifiedTime
       description: User last modification time.
       type: Date
-    - contextPath: TenableSC.User.mustChangePassword
+    - contextPath: TenableSC.User.MustChangePassword
       description: If user must change password.
       type: String
-    - contextPath: TenableSC.User.password
+    - contextPath: TenableSC.User.Password
       description: If user password is set.
       type: String
-    - contextPath: TenableSC.User.phone
+    - contextPath: TenableSC.User.Phone
       description: User phone number.
       type: String
-    - contextPath: TenableSC.User.preferences.name
+    - contextPath: TenableSC.User.Preferences.Name
       description: User preferences name.
       type: String
-    - contextPath: TenableSC.User.preferences.tag
+    - contextPath: TenableSC.User.Preferences.Tag
       description: User preferences tag.
       type: String
-    - contextPath: TenableSC.User.preferences.value
+    - contextPath: TenableSC.User.Preferences.Value
       description: User preferences value.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.description
+    - contextPath: TenableSC.User.ResponsibleAsset.Description
       description: User responsible asset description.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.id
+    - contextPath: TenableSC.User.ResponsibleAsset.ID
       description: User responsible asset id.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.name
+    - contextPath: TenableSC.User.ResponsibleAsset.Name
       description: User responsible asset name.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.uuid
-      description: User responsible asset uuid.
+    - contextPath: TenableSC.User.ResponsibleAsset.UUID
+      description: User responsible asset UUID.
       type: Unknown
-    - contextPath: TenableSC.User.role.description
+    - contextPath: TenableSC.User.Role.Description
       description: User tole description.
       type: String
-    - contextPath: TenableSC.User.role.id
+    - contextPath: TenableSC.User.Role.ID
       description: User role id.
       type: String
-    - contextPath: TenableSC.User.role.name
+    - contextPath: TenableSC.User.Role.Name
       description: User role name
       type: String
-    - contextPath: TenableSC.User.state
+    - contextPath: TenableSC.User.State
       description: User state.
       type: String
-    - contextPath: TenableSC.User.status
+    - contextPath: TenableSC.User.Status
       description: User status.
       type: String
-    - contextPath: TenableSC.User.title
+    - contextPath: TenableSC.User.Title
       description: User title.
       type: String
-    - contextPath: TenableSC.User.username
+    - contextPath: TenableSC.User.Username
       description: User username.
       type: String
-    - contextPath: TenableSC.User.uuid
+    - contextPath: TenableSC.User.UUID
       description: User UUID.
       type: String
   - arguments:
@@ -1740,194 +1740,156 @@ script:
     execution: false
     name: tenable-sc-update-user
     outputs:
-    - contextPath: TenableSC.User.address
+    - contextPath: TenableSC.User.Address
       description: User address.
       type: String
-    - contextPath: TenableSC.User.apiKeys
+    - contextPath: TenableSC.User.ApiKeys
       description: User api keys.
       type: Unknown
-    - contextPath: TenableSC.User.authType
+    - contextPath: TenableSC.User.AuthType
       description: User auth type.
       type: String
-    - contextPath: TenableSC.User.canManage
+    - contextPath: TenableSC.User.CanManage
       description: User permissions.
       type: Boolean
-    - contextPath: TenableSC.User.canUse
+    - contextPath: TenableSC.User.CanUse
       description: User permissions.
       type: Boolean
-    - contextPath: TenableSC.User.city
+    - contextPath: TenableSC.User.City
       description: User city of residence.
       type: String
-    - contextPath: TenableSC.User.country
+    - contextPath: TenableSC.User.Country
       description: User country of residence.
       type: String
-    - contextPath: TenableSC.User.createdTime
+    - contextPath: TenableSC.User.CreatedTime
       description: User creation time.
       type: Date
-    - contextPath: TenableSC.User.email
+    - contextPath: TenableSC.User.Email
       description: User email address.
       type: String
-    - contextPath: TenableSC.User.failedLogins
+    - contextPath: TenableSC.User.FailedLogins
       description: User number of failed logins.
       type: String
-    - contextPath: TenableSC.User.fax
+    - contextPath: TenableSC.User.Fax
       description: User fax.
       type: String
-    - contextPath: TenableSC.User.fingerprint
+    - contextPath: TenableSC.User.Fingerprint
       description: User fingerprint.
       type: Unknown
-    - contextPath: TenableSC.User.firstname
+    - contextPath: TenableSC.User.Firstname
       description: User first name.
       type: String
-    - contextPath: TenableSC.User.group.description
+    - contextPath: TenableSC.User.group.Description
       description: User group's description.
       type: String
-    - contextPath: TenableSC.User.group.id
+    - contextPath: TenableSC.User.Group.ID
       description: User group's id.
       type: String
-    - contextPath: TenableSC.User.group.name
+    - contextPath: TenableSC.User.Group.Name
       description: User group's name.
       type: String
-    - contextPath: TenableSC.User.id
+    - contextPath: TenableSC.User.ID
       description: User id.
       type: String
-    - contextPath: TenableSC.User.lastLogin
+    - contextPath: TenableSC.User.LastLogin
       description: User last login time.
       type: String
-    - contextPath: TenableSC.User.lastLoginIP
+    - contextPath: TenableSC.User.LastLoginIP
       description: User last login IP.
       type: String
-    - contextPath: TenableSC.User.lastname
+    - contextPath: TenableSC.User.Lastname
       description: User last name.
       type: String
-    - contextPath: TenableSC.User.ldap.description
+    - contextPath: TenableSC.User.Ldap.Description
       description: User ldap description.
       type: String
-    - contextPath: TenableSC.User.ldap.id
+    - contextPath: TenableSC.User.Ldap.ID
       description: User ldap ID>
       type: Number
-    - contextPath: TenableSC.User.ldap.name
+    - contextPath: TenableSC.User.Ldap.Name
       description: User ldap name.
       type: String
-    - contextPath: TenableSC.User.ldapUsername
+    - contextPath: TenableSC.User.LdapUsername
       description: user ldap username.
       type: String
-    - contextPath: TenableSC.User.locked
+    - contextPath: TenableSC.User.Locked
       description: if user is locked or not.
       type: String
-    - contextPath: TenableSC.User.managedObjectsGroups.description
+    - contextPath: TenableSC.User.ManagedObjectsGroups.Description
       description: User managed object groups description.
       type: String
-    - contextPath: TenableSC.User.managedObjectsGroups.id
+    - contextPath: TenableSC.User.ManagedObjectsGroups.ID
       description: User managed object groups id
       type: String
-    - contextPath: TenableSC.User.managedObjectsGroups.name
+    - contextPath: TenableSC.User.ManagedObjectsGroups.Name
       description: User managed object groups name.
       type: String
-    - contextPath: TenableSC.User.managedUsersGroups.description
+    - contextPath: TenableSC.User.ManagedUsersGroups.Description
       description: User managed users groups description.
       type: String
-    - contextPath: TenableSC.User.managedUsersGroups.id
+    - contextPath: TenableSC.User.ManagedUsersGroups.ID
       description: User managed users groups id.
       type: String
-    - contextPath: TenableSC.User.managedUsersGroups.name
+    - contextPath: TenableSC.User.ManagedUsersGroups.Name
       description: User managed users groups name.
       type: String
-    - contextPath: TenableSC.User.modifiedTime
+    - contextPath: TenableSC.User.ModifiedTime
       description: User last modification time.
       type: Date
-    - contextPath: TenableSC.User.mustChangePassword
+    - contextPath: TenableSC.User.MustChangePassword
       description: If user must change password.
       type: String
-    - contextPath: TenableSC.User.password
+    - contextPath: TenableSC.User.Password
       description: If user password is set.
       type: String
-    - contextPath: TenableSC.User.phone
+    - contextPath: TenableSC.User.Phone
       description: User phone number.
       type: String
-    - contextPath: TenableSC.User.preferences.name
+    - contextPath: TenableSC.User.Preferences.Name
       description: User preferences name.
       type: String
-    - contextPath: TenableSC.User.preferences.tag
+    - contextPath: TenableSC.User.Preferences.Tag
       description: User preferences tag.
       type: String
-    - contextPath: TenableSC.User.preferences.value
+    - contextPath: TenableSC.User.Preferences.Value
       description: User preferences value.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.description
+    - contextPath: TenableSC.User.ResponsibleAsset.Description
       description: User responsible asset description.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.id
+    - contextPath: TenableSC.User.ResponsibleAsset.ID
       description: User responsible asset id.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.name
+    - contextPath: TenableSC.User.ResponsibleAsset.Name
       description: User responsible asset name.
       type: String
-    - contextPath: TenableSC.User.responsibleAsset.uuid
-      description: User responsible asset uuid.
+    - contextPath: TenableSC.User.ResponsibleAsset.UUID
+      description: User responsible asset UUID.
       type: Unknown
-    - contextPath: TenableSC.User.role.description
+    - contextPath: TenableSC.User.Role.Description
       description: User tole description.
       type: String
-    - contextPath: TenableSC.User.role.id
+    - contextPath: TenableSC.User.Role.ID
       description: User role id.
       type: String
-    - contextPath: TenableSC.User.role.name
+    - contextPath: TenableSC.User.Role.Name
       description: User role name
       type: String
-    - contextPath: TenableSC.User.state
+    - contextPath: TenableSC.User.State
       description: User state.
       type: String
-    - contextPath: TenableSC.User.status
+    - contextPath: TenableSC.User.Status
       description: User status.
       type: String
-    - contextPath: TenableSC.User.title
+    - contextPath: TenableSC.User.Title
       description: User title.
       type: String
-    - contextPath: TenableSC.User.username
+    - contextPath: TenableSC.User.Username
       description: User username.
       type: String
-    - contextPath: TenableSC.User.uuid
+    - contextPath: TenableSC.User.UUID
       description: User UUID.
       type: String
-    
-
-
-  - arguments:
-    - default: false
-      defaultValue: '50'
-      description: Default is 50. The number of objects to return in one response (maximum limit is 200).
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The id of the query we wish to search.
-      isArray: false
-      name: query_id
-      required: false
-      secret: false
-    - default: false
-      description: The query time to retrieve. When no type is set all queries are returned.
-      isArray: false
-      name: type
-      required: false
-      secret: false
-      auto: PREDEFINED
-      predefined:
-      - alert
-      - lce
-      - mobile
-      - ticket
-      - user
-    deprecated: false
-    description: Lists queries.
-    execution: false
-    name: tenable-sc-list-query
-    outputs:
-    
-
-
   - arguments:
     - default: false
       description: The id of the user we want to delete.
@@ -1940,7 +1902,6 @@ script:
     execution: false
     name: tenable-sc-delete-user
     outputs:
-
   - arguments:
     - default: false
       description: The id of the plugin we want to search. If given, other arguments will be ignored.
@@ -1970,7 +1931,21 @@ script:
     execution: false
     name: tenable-sc-list-plugin-family
     outputs:
-
+    - contextPath: TenableSC.PluginFamily.ID
+      description: PluginFamily ID.
+      type: String
+    - contextPath: TenableSC.PluginFamily.Name
+      description: PluginFamily name.
+      type: String
+    - contextPath: TenableSC.PluginFamily.Count
+      description: Number of plugins in family.
+      type: String
+    - contextPath: TenableSC.PluginFamily.Plugins
+      description: The plugins list.
+      type: String
+    - contextPath: TenableSC.PluginFamily.Type
+      description: PluginFamily type.
+      type: String
   - arguments:
     - default: false
       description: The name of the policy you wish to create.
@@ -1989,7 +1964,7 @@ script:
       defaultValue: 1
       isArray: false
       name: policy_template_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: 'Possible values: default, all or a comma separated list of values - 21,23,25,80,110.'
@@ -2040,7 +2015,7 @@ script:
       description: Comma separated list of plugin_ids, Can be retrieved from the result of  tenable-sc-list-plugin-family command  with family_id as argument.
       isArray: false
       name: plugins_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: Default is Automatic (normal). Rely on local port enumeration first before relying on network port scans.
@@ -2060,8 +2035,505 @@ script:
     execution: false
     name: tenable-sc-create-policy
     outputs:
-
-
+    - contextPath: TenableSC.ScanPolicy.AuditFiles
+      description: Policy audit files.
+      type: Unknown
+    - contextPath: TenableSC.ScanPolicy.CanManage
+      description: Policy permissions.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.CanUse
+      description: Policy permissions.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Context
+      description: Policy context.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.CreatedTime
+      description: Policy creation time.
+      type: Date
+    - contextPath: TenableSC.ScanPolicy.Creator.Firstname
+      description: Policy creator first name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Creator.ID
+      description: Policy creator ID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Creator.Lastname
+      description: Policy creator last name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Creator.Username
+      description: Policy creator user name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Creator.UUID
+      description: Policy creator UUID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Description
+      description: Policy description.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Families.Count
+      description: Policy number of families.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Families.ID
+      description: Policy family ID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Families.Name
+      description: Policy family name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Families.Plugins
+      description: Policy family plugins.
+      type: Unknown
+    - contextPath: TenableSC.ScanPolicy.GenerateXCCDFResults
+      description: Policy generated XCCDF results.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Groups
+      description: Policy groups.
+      type: Unknown
+    - contextPath: TenableSC.ScanPolicy.ID
+      description: Policy ID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.ModifiedTime
+      description: Policy last modification time.
+      type: Date
+    - contextPath: TenableSC.ScanPolicy.Name
+      description: Policy name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Owner.Firstname
+      description: Policy owner first name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Owner.ID
+      description: Policy owner ID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Owner.Lastname
+      description: Policy owner last name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Owner.Username
+      description: Policy owner user name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Owner.UUID
+      description: Policy owner UUID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.OwnerGroup.Description
+      description: Policy owner group description.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.OwnerGroup.ID
+      description: Policy owner group ID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.OwnerGroup.Name
+      description: Policy owner group name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.PolicyTemplate.Agent
+      description: Policy template agent.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.PolicyTemplate.Description
+      description: Policy template description.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.PolicyTemplate.ID
+      description: Policy template ID.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.PolicyTemplate.Name
+      description: Policy template name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Preferences.PortscanRange
+      description: Policy port scan range.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Preferences.SynFirewallDetection
+      description: Policy SYN Firewall detection.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Preferences.SynScanner
+      description: Policy SYN scanner.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Preferences.TcpScanner
+      description: Policy TCP scanner.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Preferences.UdpScanner
+      description: Policy UDP scanner.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.Status
+      description: Policy status.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.tags
+      description: Policy tags.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.TargetGroup.Description
+      description: Policy target group description.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.TargetGroup.ID
+      description: Policy target group ID.
+      type: Number
+    - contextPath: TenableSC.ScanPolicy.TargetGroup.Name
+      description: Policy target group name.
+      type: String
+    - contextPath: TenableSC.ScanPolicy.UUID
+      description: Policy UUID.
+      type: String
+  - arguments:
+    - default: false
+      description: The id of the query we wish to search.
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    - default: false
+      description: The query time to retrieve. When no type is set all queries are returned.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - alert
+      - lce
+      - mobile
+      - ticket
+      - user
+    deprecated: false
+    description: Lists queries.
+    execution: false
+    name: tenable-sc-list-query
+    outputs:
+    - contextPath: TenableSC.Query.Manageable.BrowseColumns
+      description: Relevant only when query_id is not given. Manageable Query browse columns.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.BrowseSortColumn
+      description: Relevant only when query_id is not given. Manageable Query browse sort column.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.BrowseSortDirection
+      description: Relevant only when query_id is not given. Manageable Query browse sort direction.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.CanManage
+      description: Relevant only when query_id is not given. Manageable Query permissions.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.CanUse
+      description: Relevant only when query_id is not given. Manageable Query permissions.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Context
+      description: Relevant only when query_id is not given. Manageable Query context.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.CreatedTime
+      description: Relevant only when query_id is not given. Manageable Query creation time.
+      type: Date
+    - contextPath: TenableSC.Query.Manageable.Creator.Firstname
+      description: Relevant only when query_id is not given. Manageable Query Creator first name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Creator.ID
+      description: Relevant only when query_id is not given. Manageable Query Creator ID.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Creator.Lastname
+      description: Relevant only when query_id is not given. Manageable Query Creator last name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Creator.Username
+      description: Relevant only when query_id is not given. Manageable Query Creator user name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Creator.UUID
+      description: Relevant only when query_id is not given. Manageable Query Creator UUID.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Description
+      description: Relevant only when query_id is not given. Manageable Query description.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.FilterName
+      description: Relevant only when query_id is not given. Manageable Query filter name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.Operator
+      description: Relevant only when query_id is not given. Manageable Query filter operator.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.Value
+      description: Relevant only when query_id is not given. Manageable Query filter value
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Groups
+      description: Relevant only when query_id is not given. Manageable Query groups.
+      type: Unknown
+    - contextPath: TenableSC.Query.Manageable.ID
+      description: Relevant only when query_id is not given. Manageable Query ID.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.ModifiedTime
+      description: Relevant only when query_id is not given. Manageable Query modification time.
+      type: Date
+    - contextPath: TenableSC.Query.Manageable.Name
+      description: Relevant only when query_id is not given. Manageable Query name
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Owner.Firstname
+      description: Relevant only when query_id is not given. Manageable Query owner first name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Owner.ID
+      description: Relevant only when query_id is not given. Manageable Query owner ID.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Owner.Lastname
+      description: Relevant only when query_id is not given. Manageable Query owner last name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Owner.Username
+      description: Relevant only when query_id is not given. Manageable Query owner user name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Owner.UUID
+      description: Relevant only when query_id is not given. Manageable Query owner UUID.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.OwnerGroup.Description
+      description: Relevant only when query_id is not given. Manageable Query owner group description.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.OwnerGroup.ID
+      description: Relevant only when query_id is not given. Manageable Query owner group ID.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.OwnerGroup.Name
+      description: Relevant only when query_id is not given. Manageable Query owner group name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Status
+      description: Relevant only when query_id is not given. Manageable Query status
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Tags
+      description: Relevant only when query_id is not given. Manageable Query tags
+      type: String
+    - contextPath: TenableSC.Query.Manageable.TargetGroup.Description
+      description: Relevant only when query_id is not given. Manageable Query target group description.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.TargetGroup.ID
+      description: Relevant only when query_id is not given. Manageable Query target group ID.
+      type: Number
+    - contextPath: TenableSC.Query.Manageable.TargetGroup.Name
+      description: Relevant only when query_id is not given. Manageable Query target group name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Tool
+      description: Relevant only when query_id is not given. Manageable Query tool.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Type
+      description: Relevant only when query_id is not given. Manageable Query type.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.Value.Description
+      description: Relevant only when query_id is not given. Manageable Query filter value description.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.Value.ID
+      description: Relevant only when query_id is not given. Manageable Query filter value ID.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.Value.Name
+      description: Relevant only when query_id is not given. Manageable Query filter value name.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.Value.Type
+      description: Relevant only when query_id is not given. Manageable Query filter value type.
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters.Value.UUID
+      description: Relevant only when query_id is not given. Manageable Query filter value UUID
+      type: String
+    - contextPath: TenableSC.Query.Manageable.Filters
+      description: Relevant only when query_id is not given. Manageable Query filters.
+      type: Unknown
+    - contextPath: TenableSC.Query.Usable.BrowseColumns
+      description: Relevant only when query_id is not given. Usable Query browse columns.
+      type: String
+    - contextPath: TenableSC.Query.Usable.BrowseSortColumn
+      description: Relevant only when query_id is not given. Usable Query browse sort column.
+      type: String
+    - contextPath: TenableSC.Query.Usable.BrowseSortDirection
+      description: Relevant only when query_id is not given. Usable Query browse sort direction.
+      type: String
+    - contextPath: TenableSC.Query.Usable.CanManage
+      description: Relevant only when query_id is not given. Usable Query permissions.
+      type: String
+    - contextPath: TenableSC.Query.Usable.CanUse
+      description: Relevant only when query_id is not given. Usable Query permissions.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Context
+      description: Relevant only when query_id is not given. Usable Query context.
+      type: String
+    - contextPath: TenableSC.Query.Usable.CreatedTime
+      description: Relevant only when query_id is not given. Usable Query creation time.
+      type: Date
+    - contextPath: TenableSC.Query.Usable.Creator.Firstname
+      description: Relevant only when query_id is not given. Usable Query Creator first name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Creator.ID
+      description: Relevant only when query_id is not given. Usable Query Creator ID.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Creator.Lastname
+      description: Relevant only when query_id is not given. Usable Query Creator last name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Creator.Username
+      description: Relevant only when query_id is not given. Usable Query Creator user name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Creator.UUID
+      description: Relevant only when query_id is not given. Usable Query Creator UUID.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Description
+      description: Relevant only when query_id is not given. Usable Query description.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.FilterName
+      description: Relevant only when query_id is not given. Usable Query filter name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.Operator
+      description: Relevant only when query_id is not given. Usable Query filter operator.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.Value
+      description: Relevant only when query_id is not given. Usable Query filter value
+      type: String
+    - contextPath: TenableSC.Query.Usable.Groups
+      description: Relevant only when query_id is not given. Usable Query groups.
+      type: Unknown
+    - contextPath: TenableSC.Query.Usable.ID
+      description: Relevant only when query_id is not given. Usable Query ID.
+      type: String
+    - contextPath: TenableSC.Query.Usable.ModifiedTime
+      description: Relevant only when query_id is not given. Usable Query modification time.
+      type: Date
+    - contextPath: TenableSC.Query.Usable.Name
+      description: Relevant only when query_id is not given. Usable Query name
+      type: String
+    - contextPath: TenableSC.Query.Usable.Owner.Firstname
+      description: Relevant only when query_id is not given. Usable Query owner first name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Owner.ID
+      description: Relevant only when query_id is not given. Usable Query owner ID.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Owner.Lastname
+      description: Relevant only when query_id is not given. Usable Query owner last name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Owner.Username
+      description: Relevant only when query_id is not given. Usable Query owner user name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Owner.UUID
+      description: Relevant only when query_id is not given. Usable Query owner UUID.
+      type: String
+    - contextPath: TenableSC.Query.Usable.OwnerGroup.Description
+      description: Relevant only when query_id is not given. Usable Query owner group description.
+      type: String
+    - contextPath: TenableSC.Query.Usable.OwnerGroup.ID
+      description: Relevant only when query_id is not given. Usable Query owner group ID.
+      type: String
+    - contextPath: TenableSC.Query.Usable.OwnerGroup.Name
+      description: Relevant only when query_id is not given. Usable Query owner group name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Status
+      description: Relevant only when query_id is not given. Usable Query status
+      type: String
+    - contextPath: TenableSC.Query.Usable.Tags
+      description: Relevant only when query_id is not given. Usable Query tags
+      type: String
+    - contextPath: TenableSC.Query.Usable.TargetGroup.Description
+      description: Relevant only when query_id is not given. Usable Query target group description.
+      type: String
+    - contextPath: TenableSC.Query.Usable.TargetGroup.ID
+      description: Relevant only when query_id is not given. Usable Query target group ID.
+      type: Number
+    - contextPath: TenableSC.Query.Usable.TargetGroup.Name
+      description: Relevant only when query_id is not given. Usable Query target group name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Tool
+      description: Relevant only when query_id is not given. Usable Query tool.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Type
+      description: Relevant only when query_id is not given. Usable Query type.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.Value.Description
+      description: Relevant only when query_id is not given. Usable Query filter value description.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.Value.ID
+      description: Relevant only when query_id is not given. Usable Query filter value ID.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.Value.Name
+      description: Relevant only when query_id is not given. Usable Query filter value name.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.Value.Type
+      description: Relevant only when query_id is not given. Usable Query filter value type.
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters.Value.UUID
+      description: Relevant only when query_id is not given. Usable Query filter value UUID
+      type: String
+    - contextPath: TenableSC.Query.Usable.Filters
+      description: Relevant only when query_id is not given. Usable Query filters.
+      type: Unknown
+    - contextPath: TenableSC.Query.BrowseColumns
+      description: Relevant only when query_id is given. Query browse columns.
+      type: String
+    - contextPath: TenableSC.Query.BrowseSortColumn
+      description: Relevant only when query_id is given. Query browse sort columns.
+      type: String
+    - contextPath: TenableSC.Query.BrowseSortDirection
+      description: Relevant only when query_id is given. Query browse sort direction
+      type: String
+    - contextPath: TenableSC.Query.CanManage
+      description: Relevant only when query_id is given. Query permissions.
+      type: String
+    - contextPath: TenableSC.Query.CanUse
+      description: Relevant only when query_id is given. Query permissions.
+      type: String
+    - contextPath: TenableSC.Query.Context
+      description: Relevant only when query_id is given. Query context.
+      type: String
+    - contextPath: TenableSC.Query.CreatedTime
+      description: Relevant only when query_id is given. Query creation time.
+      type: Date
+    - contextPath: TenableSC.Query.Creator.Firstname
+      description: Relevant only when query_id is given. Query creator first name.
+      type: String
+    - contextPath: TenableSC.Query.Creator.ID
+      description: Relevant only when query_id is given. Query creator ID.
+      type: String
+    - contextPath: TenableSC.Query.Creator.Lastname
+      description: Relevant only when query_id is given. Query creator last name.
+      type: String
+    - contextPath: TenableSC.Query.Creator.Username
+      description: Relevant only when query_id is given. Query creator user name.
+      type: String
+    - contextPath: TenableSC.Query.Creator.UUID
+      description: Relevant only when query_id is given. Query creator UUID.
+      type: String
+    - contextPath: TenableSC.Query.Description
+      description: Relevant only when query_id is given. Query description.
+      type: String
+    - contextPath: TenableSC.Query.Filters
+      description: Relevant only when query_id is given. Query filters.
+      type: Unknown
+    - contextPath: TenableSC.Query.Groups
+      description: Relevant only when query_id is given. Query groups.
+      type: Unknown
+    - contextPath: TenableSC.Query.ID
+      description: Relevant only when query_id is given. Query ID.
+      type: String
+    - contextPath: TenableSC.Query.ModifiedTime
+      description: Relevant only when query_id is given. Query modification time.
+      type: Date
+    - contextPath: TenableSC.Query.Name
+      description: Relevant only when query_id is given. Query name.
+      type: String
+    - contextPath: TenableSC.Query.Owner.Firstname
+      description: Relevant only when query_id is given. Query owner first name.
+      type: String
+    - contextPath: TenableSC.Query.Owner.ID
+      description: Relevant only when query_id is given. Query owner ID.
+      type: String
+    - contextPath: TenableSC.Query.Owner.Lastname
+      description: Relevant only when query_id is given. Query owner last name.
+      type: String
+    - contextPath: TenableSC.Query.Owner.Username
+      description: Relevant only when query_id is given. Query owner user name.
+      type: String
+    - contextPath: TenableSC.Query.Owner.UUID
+      description: Relevant only when query_id is given. Query owner UUID.
+      type: String
+    - contextPath: TenableSC.Query.OwnerGroup.Description
+      description: Relevant only when query_id is given. Query owner group description.
+      type: String
+    - contextPath: TenableSC.Query.OwnerGroup.ID
+      description: Relevant only when query_id is given. Query owner group ID.
+      type: String
+    - contextPath: TenableSC.Query.OwnerGroup.Name
+      description: Relevant only when query_id is given. Query owner group name.
+      type: String
+    - contextPath: TenableSC.Query.Status
+      description: Relevant only when query_id is given. Query status.
+      type: String
+    - contextPath: TenableSC.Query.Tags
+      description: Relevant only when query_id is given. Query tags.
+      type: String
+    - contextPath: TenableSC.Query.TargetGroup.Description
+      description: Relevant only when query_id is given. Query target group description.
+      type: String
+    - contextPath: TenableSC.Query.TargetGroup.ID
+      description: Relevant only when query_id is given. Query target group ID.
+      type: Number
+    - contextPath: TenableSC.Query.TargetGroup.Name
+      description: Relevant only when query_id is given. Query target group name.
+      type: String
+    - contextPath: TenableSC.Query.Tool
+      description: Relevant only when query_id is given. Query tool 
+      type: String
+    - contextPath: TenableSC.Query.Type
+      description: Relevant only when query_id is given. Query type.
+      type: String
   - arguments:
     - default: false
       description: The id of the scan we wish to get the report on. Can be retrieved from list-scans command.

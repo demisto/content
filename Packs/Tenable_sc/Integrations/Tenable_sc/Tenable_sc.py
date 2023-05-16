@@ -536,7 +536,7 @@ class Client(BaseClient):
                 "syn_firewall_detection": syn_firewall_detection
             },
             "policyTemplate": {
-                "policy_template_id": policy_template_id
+                "id": policy_template_id
             },
         }
         return self.send_request(path="policy", method='POST', body=body)
@@ -1143,22 +1143,18 @@ def launch_scan_command(client: Client, args: Dict[str, Any]):
 
 def launch_scan_report_command(client: Client, args: Dict[str, Any]):
     res = launch_scan(client, args)
-    scan_id = res.get("response", {}).get("scanID")
+    scan_id = res.get("response", {}).get("scanResult", {}).get("id")
     poll_scan_status(client, {"scan_results_id": scan_id})
 
 
 @polling_function('tenable-sc-poll-scan-status')
 def poll_scan_status(client: Client, args: Dict[str, Any]):
-    scan_results, _ = get_scan_status(client, args)[0]
-    is_scan_incomplete = scan_results.get("status") != "Completed"
+    scan_results, _ = get_scan_status(client, args)
+    is_scan_incomplete = scan_results[0].get("status") != "Completed"
     if is_scan_incomplete:
         return PollResult(continue_to_poll=True, response=scan_results)
     else:
-        return PollResult(continue_to_poll=False, response=process_results(scan_results))
-
-
-def process_results(scan_results):
-    id = scan_results.get("id")
+        return PollResult(get_scan_report_command(client, {"scan_results_id": scan_results}))
 
 
 def launch_scan(client: Client, args: Dict[str, Any]):
@@ -1173,6 +1169,8 @@ def launch_scan(client: Client, args: Dict[str, Any]):
 
     if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
         return_error('Error: Could not retrieve the scan')
+
+    return res
 
 
 def get_scan_status_command(client: Client, args: Dict[str, Any]):
@@ -1224,10 +1222,12 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
     scan_results = res['response']
 
     headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
-               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName', 'Status']
+               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName', 'Status',
+               'Scan Type', 'Import Status', 'Is Scan Running', 'Completed IPs']
     vuln_headers = ['ID', 'Name', 'Family', 'Severity', 'Total']
 
     mapped_results = {
+        'Scan Type': res['type'],
         'ID': scan_results['id'],
         'Name': scan_results['name'],
         'Status': scan_results['status'],
@@ -1241,7 +1241,10 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
         'ImportTime': timestamp_to_utc(scan_results['importStart']),
         'ScannedIPs': scan_results['scannedIPs'],
         'Owner': scan_results['owner'].get('username'),
-        'RepositoryName': scan_results['repository'].get('name')
+        'RepositoryName': scan_results['repository'].get('name'),
+        'Import Status': scan_results['importStatus'],
+        'Is Scan Running ': scan_results['running'],
+        'Completed IPs': scan_results['progress']['completedIPs']
     }
 
     hr = tableToMarkdown('Tenable.sc Scan ' + mapped_results['ID'] + ' Report',
@@ -1993,7 +1996,7 @@ def process_update_and_create_user_response(res, hr_header):
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'Contents': response,
+        'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(hr_header, mapped_response, headers, removeNull=True),
@@ -2005,8 +2008,12 @@ def process_update_and_create_user_response(res, hr_header):
 
 def delete_user_command(client: Client, args: Dict[str, Any]):
     user_id = args.get('user_id')
-    client.delete_user(user_id)
-    return demisto.results({
+    res = client.delete_user(user_id)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['text'],
         'HumanReadable': f"User {user_id} is deleted."
     })
 
@@ -2020,8 +2027,8 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
         return_message('No plugins found')
     plugins = res.get('response')
     if isinstance(plugins, dict):
-        plugins = [plugins]
         is_active = "false" if plugins.get("type") == "passive" else "true"
+        plugins = [plugins]
     if len(plugins) > limit:
         plugins = plugins[:limit]
     mapped_plugins = [{"Plugin ID": plugin.get("id"), "Plugin Name": plugin.get("name")} for plugin in plugins]
@@ -2129,7 +2136,7 @@ def list_queries(client: Client, type, limit):
         return_message("No queries found.")
     queries = res.get('response')
     manageable_queries = queries.get("manageable", [])
-    usable_queries = queries.get("usable_queries", [])
+    usable_queries = queries.get("usable", [])
     mapped_queries, mapped_usable_queries = [], []
     found_ids = []
 
@@ -2143,7 +2150,6 @@ def list_queries(client: Client, type, limit):
             "Query Manageable": "True"
         })
         found_ids.append(query_id)
-
     for usable_query in usable_queries:
         query_id = usable_query.get("id")
         if query_id not in found_ids:
@@ -2207,7 +2213,6 @@ def main():
         'tenable-sc-list-groups': list_groups_command,
         'tenable-sc-create-user': create_user_command,
         'tenable-sc-update-user': update_user_command,
-
         'tenable-sc-delete-user': delete_user_command,
         'tenable-sc-list-plugin-family': list_plugin_family_command,
         'tenable-sc-create-policy': create_policy_command,
