@@ -18,7 +18,8 @@ def demisto_mocker_2_1(mocker):
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'fetch_type': 'Threats'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'time': 1558541949000})
     mocker.patch.object(demisto, 'incidents')
 
@@ -28,7 +29,8 @@ def demisto_mocker_2_0(mocker):
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.0',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'fetch_type': 'Threats'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'time': 1558541949000})
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'results')
