@@ -68,12 +68,17 @@ class Client:
         if not full_url:
             params['api-version'] = API_VERSION
 
-        return self.ms_client.http_request(method=method,
-                                           url_suffix=url_suffix,
-                                           full_url=full_url,
-                                           json_data=data,
-                                           params=params,
-                                           resp_type=resp_type)
+        try:
+            return self.ms_client.http_request(method=method,
+                                               url_suffix=url_suffix,
+                                               full_url=full_url,
+                                               json_data=data,
+                                               params=params,
+                                               resp_type=resp_type)
+        except DemistoException as e:
+            if 'Error in API call [404] - Not Found' in e.message:
+                message = e.message.split('"message":')[1].split('"')[1]
+                return message
 
     @logger
     def azure_sql_servers_list(self, resource_group_name: str = None):
@@ -198,6 +203,9 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, str], resourc
         server_list_raw = client.azure_sql_servers_list()
         name = 'Servers List'
 
+    if isinstance(server_list_raw, str):  # if there is 404, an error message will return
+        return CommandResults(readable_output=server_list_raw)
+
     server_list_fixed = copy.deepcopy(server_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
     for server in server_list_fixed:
         if properties := server.get('properties', {}):
@@ -236,6 +244,10 @@ def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandRe
     limit_int = int(args.get('limit', '50'))
 
     database_list_raw = client.azure_sql_db_list(args.get('server_name'))
+
+    if isinstance(database_list_raw, str):  # if there is 404, an error message will return
+        return CommandResults(readable_output=database_list_raw)
+
     database_list_fixed = copy.deepcopy(database_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
 
     for db in database_list_fixed:
@@ -281,6 +293,10 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str],
     limit_int = int(args.get('limit', '50'))
 
     audit_list_raw = client.azure_sql_db_audit_policy_list(server_name, db_name, resource_group_name)
+
+    if isinstance(audit_list_raw, str):  # if there is 404 then, error message will return
+        return CommandResults(readable_output=audit_list_raw)
+
     audit_list_fixed = copy.deepcopy(audit_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in audit_list_fixed:
         db['serverName'] = server_name
@@ -353,6 +369,10 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[s
                                                                   storage_endpoint=storage_endpoint,
                                                                   is_managed_identity_in_use=is_managed_identity_in_use,
                                                                   resource_group_name=resource_group_name)
+
+    if isinstance(raw_response, str):  # if there is 404, an error message will return
+        return CommandResults(readable_output=raw_response)
+
     fixed_response = copy.deepcopy(raw_response)
     if properties := fixed_response.get('properties', {}):
         fixed_response['serverName'] = server_name
@@ -388,6 +408,10 @@ def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str])
     server_name = args.get('server_name')
     db_name = args.get('db_name')
     threat_raw = client.azure_sql_db_threat_policy_get(server_name, db_name)
+
+    if isinstance(threat_raw, str):  # if there is 404, an error message will return
+        return CommandResults(readable_output=threat_raw)
+
     threat_fixed = copy.deepcopy(threat_raw)
 
     if properties := threat_fixed.get('properties', {}):
@@ -457,6 +481,10 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
                                                                    use_server_default=use_server_default,
                                                                    storage_endpoint=storage_endpoint,
                                                                    resource_group_name=resource_group_name)
+
+    if isinstance(raw_response, str):  # if there is 404, an error message will return
+        return CommandResults(readable_output=raw_response)
+
     fixed_response = copy.deepcopy(raw_response)
     if properties := fixed_response.get('properties', {}):
         fixed_response['serverName'] = server_name
@@ -487,7 +515,12 @@ def subscriptions_list_command(client: Client) -> CommandResults:
     A ``CommandResults`` object that is then passed to ``return_results``,
     that contains all the subscriptions for a tenant.
     """
-    response = client.subscriptions_list_request().get('value', [{}])
+    response = client.subscriptions_list_request()
+
+    if isinstance(response, str):  # if there is 404, an error message will return
+        return CommandResults(readable_output=response)
+
+    response = response.get('value', [{}])
     readable_output_table = []
     for result in response:
         d = {
@@ -526,29 +559,37 @@ def resource_group_list_command(client: Client, args: Dict, subscriptions_id: Li
 
     results = []
     for sub_id in subscriptions_id:
-        response = client.resource_group_list_request(sub_id, tag, limit).get('value', [{}])
-        readable_output_table = []
-        for result in response:
-            d = {
-                'Name': result.get('name'),
-                'Location': result.get('location'),
-                'Tags': result.get('tags'),
-                'Provisioning State': result.get('properties', {}).get('provisioningState')
-            }
-            readable_output_table.append(d)
-        headers = ['Name', 'Location', 'Tags', 'Provisioning State']
-        human_readable = tableToMarkdown(name=f'Resource Group List for {sub_id}',
-                                         t=readable_output_table,
-                                         removeNull=True,
-                                         headers=headers)
-        command_result = CommandResults(
-            readable_output=human_readable,
-            outputs_prefix='AzureSQL.ResourceGroup',
-            outputs=response,
-            raw_response=response,
-            outputs_key_field='id'
-        )
-        results.append(command_result)
+        response = client.resource_group_list_request(sub_id, tag, limit)
+        demisto.debug(f'{response=}')
+
+        if isinstance(response, str):  # if there is 404, an error message will return
+            result_message = CommandResults(readable_output=response)
+            results.append(result_message)
+
+        else:
+            response = response.get('value', [{}])
+            readable_output_table = []
+            for result in response:
+                d = {
+                    'Name': result.get('name'),
+                    'Location': result.get('location'),
+                    'Tags': result.get('tags'),
+                    'Provisioning State': result.get('properties', {}).get('provisioningState')
+                }
+                readable_output_table.append(d)
+            headers = ['Name', 'Location', 'Tags', 'Provisioning State']
+            human_readable = tableToMarkdown(name=f'Resource Group List for {sub_id}',
+                                             t=readable_output_table,
+                                             removeNull=True,
+                                             headers=headers)
+            command_result = CommandResults(
+                readable_output=human_readable,
+                outputs_prefix='AzureSQL.ResourceGroup',
+                outputs=response,
+                raw_response=response,
+                outputs_key_field='id'
+            )
+            results.append(command_result)
     return results
 
 
@@ -696,11 +737,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        if 'Error in API call [404] - Not Found' in e.message:
-            message = e.message.split('"message":')[1].split('"')[1]
-            return_results(message)
-        else:
-            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 from MicrosoftApiModule import *  # noqa: E402
