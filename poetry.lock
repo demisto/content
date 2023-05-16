@@ -1111,7 +1111,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "upload_incident_to_alert"
-resolved_reference = "787e8ec948ceb63282698bf4ac163d85eb7ea73a"
+resolved_reference = "9be7e1580bc698a1440d45d2f19257e2895c6ed9"
 
 [[package]]
 name = "deprecated"
