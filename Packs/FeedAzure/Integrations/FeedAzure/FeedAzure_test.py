@@ -56,8 +56,8 @@ EXTRACT_METADATA_PACK = [
         ['All'],
         ['All'],
         {
-            'name': 'test-name',
-            'id': 'test-id',
+            'name': 'AzureAD.Suffix',
+            'id': 'AzureAD.Suffix',
             'properties': {
                 'changeNumber': 0,
                 'region': '',
@@ -67,8 +67,31 @@ EXTRACT_METADATA_PACK = [
             },
         },
         {
-            'id': 'test-id',
-            'name': 'test-name',
+            'id': 'AzureAD.Suffix',
+            'name': 'AzureAD.Suffix',
+            'region': '',
+            'platform': 'Azure',
+            'system_service': 'AzureAD',
+            'address_prefixes': ['9.9.9.9'],
+        },
+    ),
+    (
+        ['All'],
+        ['All'],
+        {
+            'name': 'AzureAD.Suffix',
+            'id': 'AzureAD.Suffix',
+            'properties': {
+                'changeNumber': 0,
+                'region': '',
+                'platform': 'Azure',
+                'systemService': '',
+                'addressPrefixes': ['9.9.9.9'],
+            },
+        },
+        {
+            'id': 'AzureAD.Suffix',
+            'name': 'AzureAD.Suffix',
             'region': '',
             'platform': 'Azure',
             'system_service': 'AzureAD',

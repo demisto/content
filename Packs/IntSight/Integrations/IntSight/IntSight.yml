@@ -4,10 +4,11 @@ commonfields:
 sectionOrder:
 - Connect
 - Collect
-name: IntSights
-display: IntSights
+name: IntSights (Deprecated)
+display: IntSights (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Use IntSights to manage and mitigate threats.
+description: Deprecated. Use Rapid7 Threat Command instead.
+deprecated: true
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
