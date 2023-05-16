@@ -16,7 +16,7 @@ enable
 ```
 configure terminal
 ```
-4. Configure the logging timestamp and specify the desired time format with timezone:
+4. Configure the logging timestamp and specify the desired time format with the time zone:
 ```
 logging timestamp datetime UTC
 ```
