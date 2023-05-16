@@ -53,8 +53,6 @@
 			"extensions": [
 				"cortexxsoarext.xsoar",
 				"ms-python.python",
-				"ms-vscode.PowerShell",
-				"ms-toolsai.jupyter",
 				"timonwong.shellcheck",
 				"GitHub.vscode-pull-request-github",
 				"eamodio.gitlens",
