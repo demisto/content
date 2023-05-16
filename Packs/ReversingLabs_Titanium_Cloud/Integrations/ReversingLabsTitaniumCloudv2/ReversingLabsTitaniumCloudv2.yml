@@ -494,6 +494,29 @@ script:
       - contextPath: ReversingLabs.cancel_yara_retro
         description: ''
         type: Unknown
+  - name: reversinglabs-titaniumcloud-yara-retro-matches-feed
+    description: Returns a recordset of YARA ruleset matches in the specified time range.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: timeFormat
+        description: Define the time format that is used
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'utc'
+          - 'timestamp'
+      - name: timeValue
+        description: Time value in the defined format
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.yara_retro_matches_feed
+        description: ''
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58984
   feed: false
   isfetch: false

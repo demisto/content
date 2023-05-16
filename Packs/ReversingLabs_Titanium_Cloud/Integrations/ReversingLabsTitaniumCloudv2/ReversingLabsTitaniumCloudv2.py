@@ -1071,6 +1071,53 @@ def yara_retro_actions_command():
     return_results(results)
 
 
+def yara_retro_matches_feed_command():
+    yara = YARARetroHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    time_format = demisto.getArg("timeFormat")
+    time_value = demisto.getArg("timeValue")
+
+    try:
+        response = yara.yara_retro_matches_feed(
+            time_format=time_format,
+            time_value=time_value
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = yara_retro_matches_feed_output(response_json=response_json, time_value=time_value)
+
+    return_results(results)
+
+
+def yara_retro_matches_feed_output(response_json, time_value):
+    feed = response_json.get("rl", {}).get("feed", {})
+    entries = tableToMarkdown("Entries", feed.get("entries", []))
+    last_timestamp = feed.get("last_timestamp")
+    range_from = feed.get("time_range", {}).get("from")
+    range_to = feed.get("time_range", {}).get("to")
+
+    markdown = f"""## YARA Retro Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
+    **From**: {range_from}
+    **To**: {range_to}
+    """
+    markdown = f"{markdown}\n {entries}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"yara_retro_matches_feed": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
 def main():
     command = demisto.command()
 
@@ -1133,6 +1180,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-yara-retro-hunt-actions":
         yara_retro_actions_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-retro-matches-feed":
+        yara_retro_matches_feed_command()
 
     else:
         return_error(f"Command {command} does not exist")
