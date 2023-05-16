@@ -47,6 +47,10 @@
             "value": "<dummy_message_id_1>"
         },
         {
+            "type": "Email/Categories",
+            "value": "['Green category']"
+        },
+        {
             "type": "Email/Header/MIME-Version",
             "value": "1.0"
         },
@@ -133,6 +137,7 @@
         ],
         "Cc": [],
         "Bcc": [],
+        "Categories": ["Green category"],
         "Text": "Body 1"
     }
 }
