@@ -64,6 +64,10 @@ class VectraClient(BaseClient):
         - `Dict[str, str]` of the HTTP headers.
         """
 
+
+
+
+
         return {
             "Content-Type": "application/json",
             "Authorization": f"Token {self.api_key}",
