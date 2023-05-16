@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 
 
 ## Add timezone to the logs  
-The only supported event time is the event time with timezone.
+The only supported event time is an event time with the time zone.
 
 1. Access the switch's command-line interface (CLI) using a terminal emulator or SSH.
 2. Enter privileged EXEC mode by entering the following command and providing the enable password:
