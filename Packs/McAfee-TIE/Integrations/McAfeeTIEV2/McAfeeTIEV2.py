@@ -95,7 +95,7 @@ class GeneralFileReputationParser(abc.ABC):
         The abstract method that is in charge of parsing the vendor's unique attributes.
         Each child class implementing this abstract method holds a dictionary that maps the data returned
         from the API (which are in numeric form) to humand readable data in order for the user to understand the
-        returned results.
+        returned results.KKK
         """
         pass
 
