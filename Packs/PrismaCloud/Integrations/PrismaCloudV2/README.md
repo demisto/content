@@ -752,6 +752,8 @@ Search alerts on the Prisma Cloud platform. When no absolute time nor relative t
 | detailed | Whether to retrieve the entire / trimmed alert model. Possible values are: true, false. Default is true. | Optional | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
 | next_token | Token of the next page to retrive. When provided, other arguments are ignored. | Optional | 
+| sort_field | The field to sort the results by. Possible values are: alertTime,firstSeen,lastSeen,lastUpdated. | Optional | 
+| sort_direction | The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc. | Optional | 
 
 #### Context Output
 
@@ -1154,6 +1156,8 @@ Search events inventory on the Prisma Cloud platform using RQL language. Use thi
 | time_range_value | The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc. | Optional | 
 | query | Query to run in Prisma Cloud event API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/event-query. | Required | 
 | limit | Maximum number of entries to return. Default is 50. | Optional | 
+| sort_field | The field to sort the results by. Possible values are: cloudService, operation, cloudAccount, cloudRegion, id, time, crud, user. | Optional | 
+| sort_direction | The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc. | Optional | 
 
 #### Context Output
 

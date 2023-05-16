@@ -1805,8 +1805,30 @@ script:
     description: Issue a sandbox command of a specific SHA2.
     execution: false
     name: file
+    outputs:
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: File.MD5
+        description: MD5 hash of the file submitted for analysis.
+        type: String
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file submitted for analysis.
+        type: String
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file submitted for analysis.
+        type: String
     polling: true
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.58677
   feed: false
   isfetch: true
   longRunning: false
