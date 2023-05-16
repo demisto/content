@@ -496,7 +496,7 @@ script:
     execution: false
     name: msgraph-groups-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.56396
+  dockerimage: demisto/crypto:1.0.0.58768
   isfetch: false
   longRunning: false
   longRunningPort: false
