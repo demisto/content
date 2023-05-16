@@ -635,18 +635,16 @@ def get_files_from_ip(a1000):
     Get a list of hashes and classifications for files found on the requested IP address.
     """
     ip = demisto.getArg("ipAddress")
-    extended = demisto.getArg("extendedResults")
-    if extended:
-        extended = argToBoolean(extended)
+    extended = argToBoolean(demisto.getArg("extendedResults"))
     classification = demisto.getArg("classification")
-    page_size = demisto.getArg("pageSize")
-    max_results = demisto.getArg("maxResults")
+    page_size = int(demisto.getArg("pageSize"))
+    max_results = int(demisto.getArg("maxResults"))
 
     try:
         response = a1000.network_files_from_ip_aggregated(
             ip_addr=ip,
             extended_results=extended,
-            classification=classification if classification else None,
+            classification=classification,
             page_size=page_size,
             max_results=max_results
         )
@@ -692,8 +690,8 @@ def get_ip_domain_resolutions(a1000):
     Get a list of IP-to-domain resolutions.
     """
     ip = demisto.getArg("ipAddress")
-    page_size = demisto.getArg("pageSize")
-    max_results = demisto.getArg("maxResults")
+    page_size = int(demisto.getArg("pageSize"))
+    max_results = int(demisto.getArg("maxResults"))
 
     try:
         response = a1000.network_ip_to_domain_aggregated(
@@ -743,8 +741,8 @@ def get_urls_from_ip(a1000):
     Get a list of URL-s hosted on an IP address.
     """
     ip = demisto.getArg("ipAddress")
-    page_size = demisto.getArg("pageSize")
-    max_results = demisto.getArg("maxResults")
+    page_size = int(demisto.getArg("pageSize"))
+    max_results = int(demisto.getArg("maxResults"))
 
     try:
         response = a1000.network_urls_from_ip_aggregated(
