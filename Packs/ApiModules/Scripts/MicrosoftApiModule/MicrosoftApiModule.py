@@ -62,7 +62,7 @@ GRAPH_BASE_ENDPOINTS = {
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008,
-                             }  # See: https://login.microsoftonline.com/error?code=50173
+                             }  # See: https://login.microsoftonline.com/error?code=
 
 
 class MicrosoftClient(BaseClient):
@@ -362,8 +362,10 @@ class MicrosoftClient(BaseClient):
         except Exception as ex:
             demisto.error('Failed parsing error response - Exception: {}'.format(ex))
         if oproxy_response.status_code == 403 and "Hash Verification Error" in oproxy_response.text:
-            msg += '\nOproxy server returned error, In case you have changed the *Token* parameter\n' \
-                   'run the *!<integration command prefix>-auth-reset* command to rerun the authentication process.'  # TODO - (this the issue case)
+            msg += '\nThe Oproxy server returned an error, ' \
+                   'there may be an issue with the *Token* parameter. ' \
+                   'You can run the *<integration command prefix>-auth-reset* command ' \
+                   'to reset the authentication process.'
         raise Exception(msg)
 
     def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
@@ -676,9 +678,9 @@ class MicrosoftClient(BaseClient):
                 err_str = inner_error
             if err_str:
                 if set(response.get("error_codes", [])).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                    err_str += "\nTry to regenerate the 'Authorization code' parameter and then " \
-                               "run the *!<integration command prefix>-auth-reset* command to rerun the " \
-                               "authentication process."  # TODO check device code flow errors
+                    err_str += "\nThere may be an issue with the *Authorization code* parameter. " \
+                               "You can run the *<integration command prefix>-auth-reset* command " \
+                               "to reset the authentication process."
                 return err_str
             # If no error message
             raise ValueError
@@ -855,5 +857,5 @@ def reset_auth() -> CommandResults:
     """
     demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
     set_integration_context({})
-    return CommandResults(readable_output='Authentication was reset successfully. '
-                                          'Click **Test** to validate the URLs, token, and connection.')
+    return CommandResults(readable_output='Authentication was reset successfully. Please regenerate the credentials, '
+                                          'and then click **Test** to validate the credentials and connection.')
