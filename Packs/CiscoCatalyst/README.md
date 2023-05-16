@@ -7,7 +7,7 @@ This pack includes Cortex XSIAM content.
 The only supported event time is an event time with the time zone.
 
 1. Access the switch's command-line interface (CLI) using a terminal emulator or SSH.
-2. Enter privileged EXEC mode by entering the following command and providing the enable password:
+2. Access privileged EXEC mode by entering the following command and providing the enable password:
 ```
 enable
 ```
