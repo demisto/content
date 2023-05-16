@@ -21,6 +21,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Retrieve_File_by_sha256"
+        },
+        {
             "integrations": "Twitter v2",
             "playbookID": "playbook-Test_Twitter_v2",
             "instance_names": "Twitter v2"
@@ -1229,9 +1233,25 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
-            "instance_names": "edl_update",
+            "instance_names": "edl_update_to_7_9_9",
             "fromversion": "5.5.0",
+            "toversion": "7.9.9",
             "pid_threshold": 8,
+            "has_api": false
+        },
+        {
+            "playbookID": "EDL Performance Test",
+            "instance_names": "edl_auto_to_7_9_9",
+            "integrations": [
+                "EDL",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.0.0",
+            "toversion": "7.9.9",
+            "timeout": 3500,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "context_print_dt": "EDLHey",
             "has_api": false
         },
         {
@@ -1368,7 +1388,8 @@
                 "ThreatQ v2",
                 "Demisto REST API"
             ],
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -2079,6 +2100,29 @@
             "is_mockable": false
         },
         {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test self deployed",
+            "instance_names": "ms_graph_security_client_cred",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test dev v2",
+            "instance_names": "ms_graph_security_dev_v2"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test prod v2",
+            "instance_names": "ms_graph_security_prod_v2",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Security Test self deployed v2",
+            "instance_names": "ms_graph_security_client_cred_v2",
+            "is_mockable": false
+        },
+        {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_dev"
@@ -2755,7 +2799,8 @@
         },
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
-            "integrations": "Threat Crowd",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
             "fromversion": "4.1.0"
         },
         {
@@ -3093,7 +3138,8 @@
             "integrations": "EWSO365",
             "instance_names": "ewso365_dev_team",
             "playbookID": "EWS_O365_test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": "EWSO365",
@@ -3629,6 +3675,13 @@
             "timeout": 250
         },
         {
+            "integrations": "EWS Extension Online Powershell v3",
+            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V3-Test",
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 250
+        },
+        {
             "integrations": "VirusTotal (API v3)",
             "playbookID": "VirusTotal (API v3) Detonate Test",
             "instance_names": [
@@ -3774,20 +3827,6 @@
             "playbookID": "CarbonBlackLiveResponseCloud-Test",
             "fromversion": "5.5.0",
             "is_mockable": false
-        },
-        {
-            "playbookID": "EDL Performance Test",
-            "instance_names": "edl_auto",
-            "integrations": [
-                "EDL",
-                "Create-Mock-Feed-Relationships"
-            ],
-            "fromversion": "6.0.0",
-            "timeout": 3500,
-            "memory_threshold": 900,
-            "pid_threshold": 12,
-            "context_print_dt": "EDLHey",
-            "has_api": false
         },
         {
             "playbookID": "Export Indicators Performance Test",
@@ -5102,7 +5141,8 @@
             "instance_names": [
                 "ewso365_dev_team"
             ],
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": 600
         },
         {
             "integrations": "OpsGenieV3",
@@ -5346,6 +5386,11 @@
             "fromversion": "6.8.0"
         },
         {
+            "integrations": "DatadogCloudSIEM",
+            "playbookID": "DatadogCloudSIEM",
+            "fromversion": "6.8.0"
+        },
+        {
             "playbookID": "Threat_Intel_Report_test",
             "fromversion": "6.5.0",
             "scripts": [
@@ -5367,10 +5412,15 @@
         {
             "integrations": "AWS - Route53",
             "playbookID": "playbook-create_delete_record_Test"
+        },
+        {
+          "integrations":  "Cylance Protect v2",
+          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         }
     ],
     "skipped_tests": {
         "CiscoWSAv2": "No instance - developed by Qmasters",
+        "DatadogCloudSIEM": "No instance - developed by Login soft",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
@@ -5542,10 +5592,13 @@
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
-        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. "
+        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
+        "SumoLogic-Test": "401 unauthorized, CIAC-6334",
+        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
+        "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
         "AbuseIPDB": "No instance - License expired",
         "checkpointdome9": "No instance - No license",

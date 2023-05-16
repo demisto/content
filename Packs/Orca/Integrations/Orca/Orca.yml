@@ -111,7 +111,108 @@ script:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  - name: orca-set-alert-severity
+    description: Change severity for the alert
+    arguments:
+    - name: alert_id
+      description: Alert id
+      required: true
+    - name: score
+      description: The Orca Score to set. Valid range 1.0 to 10.
+      required: true
+    outputs:
+    - contextPath: Orca.Alert
+      description: Changed alert.
+      type: string
+  - name: orca-get-alert-event-log
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    - name: limit
+      description: Limit of the event logs
+      defaultValue: "20"
+    - name: start_at_index
+      description: Start at index
+      defaultValue: "0"
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - comment
+      - set_status
+      - score_override
+      - dismiss
+      - snooze
+      - jira_link
+      - jira_add_vulnerabilities
+      - jira_change_log_event
+      - reset_fim_baseline
+      - verification_scan_status
+      - automation_rule_action
+      - azure_devops_work_item_link
+      - azure_devops_work_item_unlink
+      - alert_timeline_api_event
+      - service_now_incident_link
+      - service_now_incident_unlink
+      - service_now_si_incident_link
+      - service_now_si_incident_unlink
+      description: Type of the event logs
+    outputs:
+    - contextPath: Orca.Manager.EventLog
+      description: Alert Event Log
+    description: Get alert event log
+  - name: orca-set-alert-status
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - in_progress
+      - dismiss
+      - dismissed
+      - open
+      - close
+      - closed
+      description: Alert status
+    outputs:
+    - contextPath: Orca.Alert
+      description: Changed alert.
+      type: string
+    description: Get alert event log
+  - name: orca-verify-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    outputs:
+    - contextPath: Orca.Alert
+      description: Set Verify Alert result
+    description: Trigger verify alert
+  - name: orca-download-malicious-file
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    description: Downloads a capture file from CS Enterprise.
+  dockerimage: demisto/python3:3.10.11.57293
   feed: false
   isfetch: true
   longRunning: false

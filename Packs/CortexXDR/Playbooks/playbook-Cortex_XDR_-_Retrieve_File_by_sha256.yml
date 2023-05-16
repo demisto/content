@@ -5,12 +5,14 @@ contentitemexportablefields:
 name: Cortex XDR - Retrieve File by sha256
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-  This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we retrieve multiple files from the investigated device (using the Device ID incident field), based on their SHA256 hash.
-  To run the playbook always remember to make it shared with the global context and set the Sha256 input to run in a loop ( in case there are multiple SHA256s that needs to be retrieved).
-
-  How does this playbook works:
-  The playbook sets all SHA256 paths from the alert to be retreived from the endpoint. Once the playbook checked the relevent paths (Actor,Action and Cusallity paths) it will run all the mathced pats agains all the endpoints ids that are
-  associated with the incident.
+  The playbook facilitates the process of retrieving files from the investigated devices, unzipping the retrieved files, and loading them into the War Room.
+  
+  This playbook consists of the following steps:
+  Initially, the sub-playbook 'Cortex XDR - Get File Path from alerts by hash' examines the SHA256 file hashes and retrieves the file paths associated with each hash.
+  As soon as the SHA256 hashes, file paths, and endpoint IDs are obtained, the playbook attempts to retrieve the files from all the investigated devices.
+  Once the file retrieval automation has been completed successfully, the playbook will unzip the files and load them into the War Room.
+  
+  Note: When retrieving multiple files, ensure that the SHA256 input is set to run in a loop.
 starttaskid: '0'
 tasks:
   '0':
@@ -42,6 +44,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '4':
     id: '4'
     taskid: e63e712b-b53f-4e65-89ac-eda48db6306c
@@ -74,6 +77,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '7':
     id: '7'
     taskid: 0bf4c23a-bcf9-45d4-854b-91ed0ed66bdb
@@ -120,6 +124,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '8':
     id: '8'
     taskid: 824dc3ff-ec46-4c61-8f9c-646c4d5a6c1d
@@ -154,6 +159,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '9':
     id: '9'
     taskid: 01f71b03-0597-4ef8-8f9a-45fc154ef61d
@@ -196,6 +202,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '10':
     id: '10'
     taskid: e1c29b25-5585-4a27-8972-98fb0bfdbee6
@@ -236,16 +243,17 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '11':
     id: '11'
-    taskid: 74c258db-b362-4651-8074-34f33b2c6b4d
+    taskid: 62047755-1867-4fd2-88e7-e56a193cad2c
     type: regular
     task:
-      id: 74c258db-b362-4651-8074-34f33b2c6b4d
+      id: 62047755-1867-4fd2-88e7-e56a193cad2c
       version: -1
       name: 'Print Error - No path was found '
-      description: Prints text to War Room (Markdown supported).
-      scriptName: Print
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ''
@@ -253,7 +261,7 @@ tasks:
       '#none#':
       - '4'
     scriptarguments:
-      value:
+      message:
         simple: No Path was provided for ${inputs.Sha256}. Cannot retrieve the file without a proper path.
     separatecontext: false
     view: |-
@@ -270,6 +278,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
+    continueonerrortype: ""
   '12':
     id: '12'
     taskid: 9a36707a-0505-4f36-8b46-7fdf291efee9
@@ -306,6 +316,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '13':
     id: '13'
     taskid: 5fd33cc0-7b06-4e45-866b-a939c66e8a6e
@@ -354,6 +365,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -403,5 +415,5 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
-- No tests (auto formatted)
+- Test Playbook - Cortex XDR - Retrieve File by sha256
 fromversion: 6.5.0

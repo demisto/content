@@ -1,7 +1,9 @@
 id: Cortex ASM - GCP Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex ASM - GCP Enrichment
-description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
+description: Given the IP address this playbook enriches GCP and Firewall information.
 starttaskid: "0"
 tasks:
   "0":
@@ -50,8 +52,17 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      GcpIP:
+        complex:
+          root: inputs.RemoteIP
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -66,15 +77,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    scriptarguments:
-      GcpIP:
-        complex:
-          root: inputs.RemoteIP
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
   "2":
     id: "2"
     taskid: ee4812d0-34d9-41e9-8ddc-58390e5371eb
@@ -92,7 +94,6 @@ tasks:
       - "4"
       - "5"
       - "3"
-      - "35"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -145,7 +146,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
+          "x": 1370,
           "y": 590
         }
       }
@@ -601,12 +602,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: d1020633-769e-485e-84e1-7eb9635e8062
+    taskid: 08910aa4-9f09-4fc6-834a-329ecb76b6e9
     type: title
     task:
-      id: d1020633-769e-485e-84e1-7eb9635e8062
+      id: 08910aa4-9f09-4fc6-834a-329ecb76b6e9
       version: -1
-      name: Tags - Compute Instance
+      name: Tags
       type: title
       iscommand: false
       brand: ""
@@ -620,7 +621,7 @@ tasks:
       {
         "position": {
           "x": 1810,
-          "y": 920
+          "y": 925
         }
       }
     note: false
@@ -632,10 +633,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 6a45462b-7c61-49d9-83d5-f7224a92dd39
+    taskid: aa652e68-37bd-46d9-890e-b068ac3021a2
     type: regular
     task:
-      id: 6a45462b-7c61-49d9-83d5-f7224a92dd39
+      id: aa652e68-37bd-46d9-890e-b068ac3021a2
       version: -1
       name: Set tags grid field
       description: |-
@@ -674,7 +675,7 @@ tasks:
                 value:
                   simple: values(@)
       val3:
-        simple: GCP-instance-labels
+        simple: GCP
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1110,132 +1111,7 @@ tasks:
       {
         "position": {
           "x": 1810,
-          "y": 1065
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 6326d4c8-637a-4734-8134-808b2bcbb99b
-    type: regular
-    task:
-      id: 6326d4c8-637a-4734-8134-808b2bcbb99b
-      version: -1
-      name: Set tags grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      gridfield:
-        simple: asmtags
-      keys:
-        simple: Key,Value,Source
-      val1:
-        complex:
-          root: GCPIAM.TagBindings
-          accessor: key
-      val2:
-        complex:
-          root: GCPIAM.TagBindings
-          accessor: value
-      val3:
-        simple: GCP-project-folder-tags
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2230,
-          "y": 1265
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 1414247b-89e4-4a4d-88da-ca5ed991128d
-    type: title
-    task:
-      id: 1414247b-89e4-4a4d-88da-ca5ed991128d
-      version: -1
-      name: Tags - Project/Folder/Organization Tags
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "32"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2230,
-          "y": 920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 222d3b79-ea1b-4633-8f89-2c293e2066c7
-    type: condition
-    task:
-      id: 222d3b79-ea1b-4633-8f89-2c293e2066c7
-      version: -1
-      name: Is there tagbinding information?
-      description: Determines if there is GCP-IAM tagbindings information to populate tags field.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "34"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: GCPIAM
-                accessor: TagBindings
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2230,
-          "y": 590
+          "y": 1045
         }
       }
     note: false
@@ -1247,11 +1123,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "29_9_#default#": 0.16,
+      "3_9_#default#": 0.13,
+      "4_9_#default#": 0.25,
+      "5_9_#default#": 0.1
+    },
     "paper": {
       "dimensions": {
         "height": 2205,
-        "width": 2770,
+        "width": 2350,
         "x": -160,
         "y": 50
       }
@@ -1269,6 +1150,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
-contentitemexportablefields:
-  contentitemfields: {}
+fromversion: 6.8.0
