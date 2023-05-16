@@ -1,0 +1,3071 @@
+id: playbook-Rapid7ThreatCommand_MSSP_Test
+name: playbook-Rapid7ThreatCommand_MSSP_Test
+version: -1
+fromversion: 6.8.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee400'
+    type: start
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee400'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee401'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee401'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee402'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee402'
+      version: -1
+      name: threat-command-account-system-modules-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-account-system-modules-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee403'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee403'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.SystemModule.module_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.SystemModule.status
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee404'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee404'
+      version: -1
+      name: threat-command-mention-search
+      description: ''
+      script: rapid7_threat_command|||threat-command-mention-search
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      search:
+        simple: test.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee405'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee405'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.author
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.insertion_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Mentions.Tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.short_content
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Mentions.date
+            iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee406'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee406'
+      version: -1
+      name: threat-command-mssp-customer-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-mssp-customer-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee407'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee407'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.MsspCustomer.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.MsspCustomer.company_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.MsspCustomer.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.MsspCustomer.note
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee408'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee408'
+      version: -1
+      name: threat-command-mssp-user-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-mssp-user-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee409'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee409'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.MsspUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.MsspUser.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.MsspUser.role
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.MsspUser.is_deleted
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee410'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee410'
+      version: -1
+      name: threat-command-account-user-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-account-user-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      limit:
+        simple: '1'
+      user_type:
+        simple: 'Analyst'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee411'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee411'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AccountUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AccountUser.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AccountUser.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AccountUser.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AccountUser.role
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.AccountUser.is_deleted
+            iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee412'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee412'
+      version: -1
+      name: threat-command-alert-type-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-type-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee413'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee413'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AlertType.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AlertType.sub_type
+            iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee414'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee414'
+      version: -1
+      name: threat-command-alert-source-type-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-source-type-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee415'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee415'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AlertSourceType
+            iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee416'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee416'
+      version: -1
+      name: threat-command-alert-scenario-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-scenario-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee417'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee417'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Scenario.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Scenario.subtype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Scenario.scenario
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Scenario.description
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee418'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee418'
+      version: -1
+      name: threat-command-cyber-term-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-cyber-term-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee419'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee419'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.aliases
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.target_countries
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.sectors
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.origins
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.created_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.updated_date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.ttp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.overview
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.additional_information
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.related_malware
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.related_threat_actor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CyberTerm.related_campaigns
+            iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee420'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee420'
+      version: -1
+      name: threat-command-cyber-term-cve-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-cyber-term-cve-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      cyber_term_id:
+        simple: ${ThreatCommand.CyberTerm.id}
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee421'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee421'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.vendor_product
+            iscontext: true
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee422'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee422'
+      version: -1
+      name: threat-command-cyber-term-ioc-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-cyber-term-ioc-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      cyber_term_id:
+        simple: ${ThreatCommand.CyberTerm.id}
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: 23
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee423'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee423'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.updated_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.IOC.is_whitelisted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.IOC.reporting_feeds
+            iscontext: true
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee424'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee424'
+      version: -1
+      name: threat-command-source-document-create
+      description: ''
+      script: rapid7_threat_command|||threat-command-source-document-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '245'
+    scriptarguments:
+      name:
+        simple: test
+      description:
+        simple: test
+      confidence_level:
+        simple: '1'
+      domains:
+        simple: test.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '245':
+    id: 245
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee245'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee245'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '27'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Source.Files.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Source.Files.name
+            iscontext: true
+    view: '{"position":{"x":50,"y":4900}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: 25
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee425'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee425'
+      version: -1
+      name: threat-command-source-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-source-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee426'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee426'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Source.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Source.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Source.confidence_level
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Source.is_enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Source.type
+            iscontext: true
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: 27
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee427'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee427'
+      version: -1
+      name: threat-command-source-document-ioc-create
+      description: ''
+      script: rapid7_threat_command|||threat-command-source-document-ioc-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      source_id:
+        simple: ${ThreatCommand.Source.Files.id}
+      domains:
+        simple: test.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee428'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee428'
+      version: -1
+      name: threat-command-source-document-delete
+      description: ''
+      script: rapid7_threat_command|||threat-command-source-document-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      source_id:
+        simple: ${ThreatCommand.Source.Files.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: 29
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee429'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee429'
+      version: -1
+      name: threat-command-ioc-search
+      description: ''
+      script: rapid7_threat_command|||threat-command-ioc-search
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      last_updated_from:
+        simple: '2022-12-25T08:38:06Z'
+      type_list:
+        simple: 'Urls'
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee430'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee430'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '31'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.IOC.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.last_seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.IOC.is_whitelisted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IOC.last_update_date
+            iscontext: true
+    view: '{"position":{"x":50,"y":6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: 31
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee431'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee431'
+      version: -1
+      name: threat-command-ioc-tags-add
+      description: ''
+      script: rapid7_threat_command|||threat-command-ioc-tags-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      ioc_value:
+        simple: ${ThreatCommand.IOC.[0].value}
+      tag_values:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee432'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee432'
+      version: -1
+      name: threat-command-account-whitelist-update
+      description: ''
+      script: rapid7_threat_command|||threat-command-account-whitelist-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments:
+      is_whitelisted:
+        simple: Add to the user whitelist
+      domains:
+        simple: ${ThreatCommand.IOC.[0].value}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee433'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee433'
+      version: -1
+      name: threat-command-account-whitelist-remove
+      description: ''
+      script: rapid7_threat_command|||threat-command-account-whitelist-remove
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      domains:
+        simple: ${ThreatCommand.IOC.[0].value}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee434'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee434'
+      version: -1
+      name: threat-command-ioc-blocklist-add
+      description: ''
+      script: rapid7_threat_command|||threat-command-ioc-blocklist-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments:
+      domains:
+        simple: ${ThreatCommand.IOC.[0].value}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: 35
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee435'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee435'
+      version: -1
+      name: threat-command-ioc-blocklist-remove
+      description: ''
+      script: rapid7_threat_command|||threat-command-ioc-blocklist-remove
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments:
+      domains:
+        simple: ${ThreatCommand.IOC.[0].value}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: 36
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee436'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee436'
+      version: -1
+      name: threat-command-ioc-severity-update
+      description: ''
+      script: rapid7_threat_command|||threat-command-ioc-severity-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments:
+      severity:
+        simple: High
+      domains:
+        simple: ${ThreatCommand.IOC.[0].value}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee437'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee437'
+      version: -1
+      name: threat-command-ioc-comment-add
+      description: ''
+      script: rapid7_threat_command|||threat-command-ioc-comment-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments:
+      comment:
+        simple: test
+      domains:
+        simple: ${ThreatCommand.IOC.[0].value}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: 38
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee438'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee438'
+      version: -1
+      name: threat-command-enrichment-quota-usage
+      description: ''
+      script: rapid7_threat_command|||threat-command-enrichment-quota-usage
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: 39
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee439'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee439'
+      version: -1
+      name: threat-command-alert-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":-500,"y":10800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: 40
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee440'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee440'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '55'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.assets
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.assignees
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.sub_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.images
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.source_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.source_url
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.source_email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.source_network_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.source_date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.Tags
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.related_iocs
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.found_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.update_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.takedown_status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.is_closed
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.is_flagged
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.related_threat_ids
+            iscontext: true
+    view: '{"position":{"x":-500,"y":11000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: 41
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee441'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee441'
+      version: -1
+      name: threat-command-alert-takedown-request
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-takedown-request
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '42'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: 42
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee442'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee442'
+      version: -1
+      name: threat-command-alert-takedown-request-status-get
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-takedown-request-status-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: 43
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee443'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee443'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.takedown_status
+            iscontext: true
+    view: '{"position":{"x":50,"y":8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: 44
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee444'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee444'
+      version: -1
+      name: threat-command-alert-create
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-create
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '445'
+    scriptarguments:
+      title:
+        simple: test
+      description:
+        simple: test
+      scenario:
+        simple: ${ThreatCommand.Scenario.scenario}
+      severity:
+        simple: Low
+      source_type:
+        simple: ${ThreatCommand.AlertSourceType}
+      source_network_type:
+        simple: 'Clear Web'
+      source_url:
+        simple: https://www.test.com
+    separatecontext: false
+    view: '{"position":{"x":-500,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '445':
+    id: 445
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee445'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee445'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '41'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.id
+            iscontext: true
+    view: '{"position":{"x":-500,"y":7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: 45
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee445'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee445'
+      version: -1
+      name: threat-command-alert-close
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-close
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '53'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      reason:
+        simple: Other
+    separatecontext: false
+    view: '{"position":{"x":-500,"y":10400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: 46
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee446'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee446'
+      version: -1
+      name: threat-command-alert-severity-update
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-severity-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '49'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      severity:
+        simple: Medium
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '47':
+    id: 47
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee447'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee447'
+      version: -1
+      name: threat-command-alert-blocklist-get
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-blocklist-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '48':
+    id: 48
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee448'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee448'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.BlockList.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.BlockList.status
+            iscontext: true
+    view: '{"position":{"x":50,"y":9800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '49':
+    id: 49
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee449'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee449'
+      version: -1
+      name: threat-command-alert-blocklist-update
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-blocklist-update
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      urls:
+        simple: https://www.test.com
+      blocklist_status:
+        simple: Sent
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '50':
+    id: 50
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee450'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee450'
+      version: -1
+      name: threat-command-alert-ioc-report
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-ioc-report
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '51'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      external_sources:
+        simple: GoogleWebRisk
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '51':
+    id: 51
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee451'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee451'
+      version: -1
+      name: threat-command-alert-assign
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-assign
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '52'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      user_id:
+        simple: ${ThreatCommand.AccountUser.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '52':
+    id: 52
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee452'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee452'
+      version: -1
+      name: threat-command-alert-unassign
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-unassign
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '53':
+    id: 53
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee453'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee453'
+      version: -1
+      name: threat-command-alert-reopen
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-reopen
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '54'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '54':
+    id: 54
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee454'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee454'
+      version: -1
+      name: threat-command-alert-tag-add
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-tag-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      tag_name:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":10800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '55':
+    id: 55
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee455'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee455'
+      version: -1
+      name: threat-command-alert-tag-remove
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-tag-remove
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '56'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      tag_id:
+        simple: ${ThreatCommand.Alert.Tags.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '56':
+    id: 56
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee456'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee456'
+      version: -1
+      name: threat-command-alert-send-mail
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-send-mail
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '57'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      email_addresses:
+        simple: test@test.com
+      content:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '57':
+    id: 57
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee457'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee457'
+      version: -1
+      name: threat-command-alert-analyst-ask
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-analyst-ask
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '60'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      question:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '58':
+    id: 58
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee458'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee458'
+      version: -1
+      name: threat-command-alert-analyst-conversation-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-analyst-conversation-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '60'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":11600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '59':
+    id: 59
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee459'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee459'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '60'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.Message.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.Message.initiator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.Message.message
+            iscontext: true
+    view: '{"position":{"x":50,"y":11800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '60':
+    id: 60
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee460'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee460'
+      version: -1
+      name: threat-command-alert-activity-log-get
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-activity-log-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '61'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '61':
+    id: 61
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee461'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee461'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '62'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.Alert.ActivityLog.rate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.ActivityLog.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.ActivityLog.initiator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.ActivityLog.created_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.ActivityLog.update_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Alert.ActivityLog.id
+            iscontext: true
+    view: '{"position":{"x":50,"y":12200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '62':
+    id: 62
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee462'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee462'
+      version: -1
+      name: threat-command-alert-csv-get
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-csv-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '63'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '63':
+    id: 63
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee463'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee463'
+      version: -1
+      name: threat-command-alert-note-add
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-note-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '64'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+      note:
+        simple: test
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '64':
+    id: 64
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee464'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee464'
+      version: -1
+      name: threat-command-alert-image-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-alert-image-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '65'
+    scriptarguments:
+      alert_id:
+        simple: ${ThreatCommand.Alert.id}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":12800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '65':
+    id: 65
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee465'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee465'
+      version: -1
+      name: threat-command-cve-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-cve-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '66'
+    scriptarguments:
+      limit:
+        simple: '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":13000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '66':
+    id: 66
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee466'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee466'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '67'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].cpe
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].published_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].update_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].intsights_score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].cvss_score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].paste_site_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].hacking_forum_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].instant_message_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].dark_web_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].clear_web_cyber_blogs_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].code_repositories_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].exploit_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].social_media_mentions
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].first_mention_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].last_mention_date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].exploit_availability
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].vulnerability_origin
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].related_threat_actors
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].related_malware
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ThreatCommand.CVE.[1].related_campaigns
+            iscontext: true
+    view: '{"position":{"x":50,"y":13200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '67':
+    id: 67
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee467'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee467'
+      version: -1
+      name: threat-command-cve-add
+      description: ''
+      script: rapid7_threat_command|||threat-command-cve-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '68'
+    scriptarguments:
+      cve_ids:
+        simple: CVE-1999-0001
+    separatecontext: false
+    view: '{"position":{"x":50,"y":13400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '68':
+    id: 68
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee468'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee468'
+      version: -1
+      name: threat-command-cve-delete
+      description: ''
+      script: rapid7_threat_command|||threat-command-cve-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '69'
+    scriptarguments:
+      cve_ids:
+        simple: CVE-1999-0001
+    separatecontext: false
+    view: '{"position":{"x":50,"y":13600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '69':
+    id: 69
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee469'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee469'
+      version: -1
+      name: threat-command-asset-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-asset-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '70'
+    scriptarguments:
+      limit:
+        simple: 1
+    separatecontext: false
+    view: '{"position":{"x":50,"y":13800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '70':
+    id: 70
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee470'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee470'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '71'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Asset.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Asset.value
+            iscontext: true
+    view: '{"position":{"x":50,"y":14000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '71':
+    id: 71
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee471'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee471'
+      version: -1
+      name: threat-command-asset-type-list
+      description: ''
+      script: rapid7_threat_command|||threat-command-asset-type-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '72'
+    scriptarguments:
+      limit:
+        simple: 1
+    separatecontext: false
+    view: '{"position":{"x":50,"y":14200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '72':
+    id: 72
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee472'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee472'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '73'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.AssetType
+            iscontext: true
+    view: '{"position":{"x":50,"y":14400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '73':
+    id: 73
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee473'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee473'
+      version: -1
+      name: threat-command-asset-add
+      description: ''
+      script: rapid7_threat_command|||threat-command-asset-add
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '74'
+    scriptarguments:
+      asset_type:
+        simple: Domains
+      asset_value:
+        simple: test.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":14600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '74':
+    id: 74
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee474'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee474'
+      version: -1
+      name: threat-command-asset-delete
+      description: ''
+      script: rapid7_threat_command|||threat-command-asset-delete
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '75'
+    scriptarguments:
+      asset_type:
+        simple: Domains
+      asset_value:
+        simple: test.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":14800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '75':
+    id: 75
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee475'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee475'
+      version: -1
+      name: file
+      description: ''
+      script: rapid7_threat_command|||file
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '76'
+    scriptarguments:
+      file:
+        simple: eccc999fef9c3bc0acd34fd1fd1419cf7408b66cda916a1de00054066d8e6cb9
+    separatecontext: false
+    view: '{"position":{"x":50,"y":15000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '76':
+    id: 76
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee476'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee476'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '77'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.AssociatedFileNames
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Hashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+    view: '{"position":{"x":50,"y":15200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '77':
+    id: 77
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee477'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee477'
+      version: -1
+      name: ip
+      description: ''
+      script: rapid7_threat_command|||ip
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '78'
+    scriptarguments:
+      ip:
+        simple: '8.8.8.8'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":15400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '78':
+    id: 78
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee478'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee478'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '79'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.UpdatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IP.asn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IP.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IP.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.IP.updated_date
+            iscontext: true
+    view: '{"position":{"x":50,"y":15600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '79':
+    id: 79
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee479'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee479'
+      version: -1
+      name: url
+      description: ''
+      script: rapid7_threat_command|||url
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '80'
+    scriptarguments:
+      url:
+        simple: http://aauattoworksilleporo.site/MyGov/index2.html
+    separatecontext: false
+    view: '{"position":{"x":50,"y":15800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '80':
+    id: 80
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee480'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee480'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '81'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.DetectionEngines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.PositiveDetections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.URL.detection_engines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.URL.positive_detections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.URL.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.URL.url
+            iscontext: true
+    view: '{"position":{"x":50,"y":16000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '81':
+    id: 81
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee481'
+    type: regular
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee481'
+      version: -1
+      name: domain
+      description: ''
+      script: rapid7_threat_command|||domain
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '82'
+    scriptarguments:
+      domain:
+        simple: rigpriv.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":16200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '82':
+    id: 82
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee482'
+    type: condition
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee482'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      true:
+      - '83'
+    separatecontext: false
+    conditions:
+    - label: true
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.DNSRecords
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Domain.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Domain.sub_domains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Domain.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatCommand.Domain.updated_date
+            iscontext: true
+    view: '{"position":{"x":50,"y":16400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '83':
+    id: '83'
+    taskid: 'a8a658f9-186f-43f4-96d7-83962a2ee483'
+    type: title
+    task:
+      id: 'a8a658f9-186f-43f4-96d7-83962a2ee483'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":16600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
