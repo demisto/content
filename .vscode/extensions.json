@@ -6,6 +6,7 @@
     "recommendations": [
         "cortexxsoarext.xsoar",
         "ms-python.python",
+        "ms-vscode.PowerShell",
         "ms-toolsai.jupyter",
         "timonwong.shellcheck",
         "GitHub.vscode-pull-request-github",
@@ -24,10 +25,12 @@
         "KevinRose.vsc-python-indent",
         "rangav.vscode-thunder-client",
         "ms-python.black-formatter",
-        "LittleFoxTeam.vscode-python-test-adapter"
+        "LittleFoxTeam.vscode-python-test-adapter",
+        "charliermarsh.ruff",
+        "ryanluker.vscode-coverage-gutters"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": [
-
+        "ms-python.flake8"
     ]
 }
