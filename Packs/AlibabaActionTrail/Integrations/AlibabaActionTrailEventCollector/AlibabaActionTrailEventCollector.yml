@@ -77,7 +77,7 @@ script:
           defaultValue: "1"
         - auto: PREDEFINED
           defaultValue: "False"
-          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          description: Set this argument to True in order to create events, otherwise the command will only display them. test4
           isArray: false
           name: should_push_events
           predefined:
