@@ -3669,9 +3669,9 @@ def find_the_cause_error(err: Exception) -> str:
         A string describing the cause of the error message.
 
     """
-    pattern = r"(id |Group |Role )\\?'([/A-Za-z 0-9]+)\\?'"
+    pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9]+)\\?'"
     if match := re.search(pattern, str(err)):
-        return f'Error: {match[1]}{match[2]} was not found'
+        return f'Error: {match[1]} {match[2]} was not found'
     return "Error: "
 
 
