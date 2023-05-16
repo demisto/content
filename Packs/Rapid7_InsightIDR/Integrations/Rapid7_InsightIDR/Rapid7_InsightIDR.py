@@ -643,8 +643,8 @@ def handle_query_log_results(client: Client, result):
             data_for_readable_output.extend(events)
             raw_responcse.append(results)
 
-        if 'links' in results:
-            for link in results.get('links', []):
+        if links := results.get('links', []):
+            for link in links:
                 url = link.get('href')
                 new_results = client.query_log_callback(url)
                 results_list.append(new_results)

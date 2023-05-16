@@ -487,6 +487,7 @@ def test_insight_idr_query_log_with_pagination(requests_mock, end_point) -> None
         "logsets": insight_idr_query_log_set_command,
         "logs": insight_idr_query_log_command
     }
+    mock_response_callback = util_load_json('test_data/query_log_set_callback_with_pagination.json')
     mock_response_page_1 = util_load_json('test_data/query_log_set_page_1.json')
     mock_response_page_2 = util_load_json('test_data/query_log_set_page_2.json')
     mock_response_page_3 = util_load_json('test_data/query_log_set_page_3.json')
@@ -494,11 +495,13 @@ def test_insight_idr_query_log_with_pagination(requests_mock, end_point) -> None
     base_url = f'https://{REGION}.api.insight.rapid7.com'
 
     requests_mock.get(
-        f'{base_url}/log_search/query/{end_point}/x', json=mock_response_page_1)
+        f'{base_url}/log_search/query/{end_point}/x', json=mock_response_callback)
     requests_mock.get(
-        f'{base_url}/query/logs/123?per_page=1&sequence_number=1', json=mock_response_page_2)
+        f'{base_url}/query/logs/123?per_page=1&sequence_number=1', json=mock_response_page_1)
     requests_mock.get(
-        f'{base_url}/query/logs/123?per_page=1&sequence_number=2', json=mock_response_page_3)
+        f'{base_url}/query/logs/123?per_page=1&sequence_number=2', json=mock_response_page_2)
+    requests_mock.get(
+        f'{base_url}/query/logs/123?per_page=1&sequence_number=3', json=mock_response_page_3)
 
     client = Client(
         base_url=f'https://{REGION}.api.insight.rapid7.com/',
