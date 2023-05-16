@@ -3352,6 +3352,27 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
     assert command_result.readable_output == expected_demisto_result
 
 
+def test_panorama_apply_dns_command2(mocker):
+    """
+    Given:
+        - command args with a singel firewall
+    When:
+        - Running panorama-apply-dns
+    Then:
+        - Assert the request parameters are as expected
+    """
+    import Panorama
+    from Panorama import apply_dns_signature_policy_command
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(Panorama, 'http_request', return_value={})
+    apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
+
+    request_params = request_mock.call_args.kwargs['params']  # The body part of the request
+    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']" # noqa
+
+
 class TestHygieneFunctions:
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.Vsys.refreshall", return_value=[])
@@ -6086,6 +6107,60 @@ def test_pan_os_create_address_main_flow_error(args):
         panorama_create_address_command(args)
 
 
+@pytest.mark.parametrize(
+    "device_group, vsys, response, args, error", [
+        (
+            "test",
+            "",
+            '<response status="success" code="19"> \
+                <result total-count="0" count="0"> \
+                </result> \
+            </response>',
+            {"name": "test", "tag": "not exist"},
+            "Failed to create the address object since the tags `{'not exist'}` does not exist. "
+            "You can use the `create_tag` argument to create the tag."
+        ),
+        (
+            "",
+            "vsys1",
+            '<response status="success" code="19"> \
+                <result total-count="1" count="1"> \
+                    <tag admin="admin" dirtyId="3" time="2023/04/23 01:41:22"> \
+                        <entry name="exist" admin="admin" dirtyId="3" time="2023/04/23 01:18:03"/> \
+                    </tag> \
+                </result> \
+            </response>',
+            {"name": "test", "tag": "exist, not exist", 'create_tag': 'Yes'},
+            'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
+        ),
+    ]
+)
+def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, response, args, error):
+    """
+    Given:
+     - Tags that does not exist in the system as command arguments
+
+    When:
+     - Running the panorama_create_address_command function
+
+    Then:
+     - Make sure an exception is raised saying only tags that already exist in system can be the command input.
+    """
+    from Panorama import panorama_create_address_command
+    mocker.patch('Panorama.DEVICE_GROUP', device_group)
+    mocker.patch('Panorama.VSYS', vsys)
+    mocker.patch('Panorama.URL', 'https://example.com')
+
+    with requests_mock.Mocker() as m:
+        m.get('https://example.com', text=response, status_code=200)
+        m.post('https://example.com', text=response, status_code=200)
+
+        with pytest.raises(DemistoException) as e:
+            panorama_create_address_command(args)
+
+        assert e.value.message == error
+
+
 """ FETCH INCIDENTS """
 
 
@@ -6120,21 +6195,6 @@ class TestFetchIncidentsHelperFunctions:
             add_time_filter_to_query_parameter('time_generated geq "2020-01-01T00:00:00Z"',
                                                fetch_incidents_input.utc_time_twelve)
 
-    @pytest.mark.parametrize('query, id, expected_result',
-                             fetch_incidents_input.test_add_unique_id_filter_to_query_parameter_args)
-    def test_add_unique_id_filter_to_query_parameter(self, query, id, expected_result):
-        """
-        Given:
-            - a query from parameters
-        When:
-            - every fetch incidents cycle starts
-        Then:
-            - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
-              according to the queries log type last fetch time.
-        """
-        from Panorama import add_unique_id_filter_to_query_parameter
-        assert add_unique_id_filter_to_query_parameter(query, id) == expected_result
-
     @pytest.mark.parametrize('params, expected_result', fetch_incidents_input.test_parse_queries_args)
     def test_log_types_queries_to_dict(self, params, expected_result):
         """
@@ -6162,10 +6222,10 @@ class TestFetchIncidentsHelperFunctions:
         - assert that the returned context formatted incident entry is valid
         """
         from Panorama import incident_entry_to_incident_context, DATE_FORMAT
-        raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE'}
+        raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE', 'device_name': 'dummy_device'}
         if occured := dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}):
             context_entry = {
-                'name': '1',
+                'name': 'dummy_device 1',
                 'occurred': occured.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(raw_entry),
                 'type': 'TYPE'
@@ -6250,7 +6310,7 @@ class TestFetchIncidentsFlows:
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/22 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
         mocker.patch('Panorama.get_query_entries', return_value={})
 
@@ -6279,10 +6339,11 @@ class TestFetchIncidentsFlows:
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
-        expected_parsed_incident_entries = {'name': '000000001', 'occurred': '2022-01-01T12:00:00Z',
+        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00',
+                       'device_name': 'device_for_test'}
+        expected_parsed_incident_entries = {'name': 'device_for_test 000000001', 'occurred': '2022-01-01T12:00:00Z',
                                             'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -6294,7 +6355,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000001'
+        assert last_id_dict.get('X_log_type', '') == {'device_for_test': '000000001'}
 
     def test_second_fetch_with_no_incidents_flow(self, mocker):
         """
@@ -6315,7 +6376,7 @@ class TestFetchIncidentsFlows:
                     'last_id_dict': {'X_log_type': '000000001'}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
         raw_entries = []
         expected_parsed_incident_entries = []
@@ -6349,14 +6410,15 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 13:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device': '000000001'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022/1/1 13:00:00'}]
+        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022/1/1 13:00:00',
+                        'device_name': 'dummy_device'}]
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+        expected_parsed_incident_entries = [{'name': 'dummy_device 000000002', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -6368,7 +6430,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device': '000000002'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_flow(self, mocker):
         """
@@ -6390,20 +6452,22 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 12:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)",
                         'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00'},
-                       {'seqno': '000000001', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00'}]
+        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00',
+                        'device_name': 'dummy_device1'},
+                       {'seqno': '000000001', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00',
+                        'device_name': 'dummy_device2'}]
 
         fetch_incidents_request_result = {'X_log_type': [raw_entries[0]], 'Y_log_type': [raw_entries[1]]}
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+        expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'},
-                                            {'name': '000000001', 'occurred': '2022-01-01T13:00:00Z',
+                                            {'name': 'dummy_device2 000000001', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(raw_entries[1]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse(
             '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
@@ -6418,9 +6482,9 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == '000000001'
+        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000001'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_and_different_last_fetch_flow(self, mocker):
         """
@@ -6442,19 +6506,21 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 11:00:00', 'Y_log_type': '2022-01-01 13:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001', 'Y_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}, 'Y_log_type': {'dummy_device2': '000000002'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)",
                         'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        X_log_type_raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00'}]
-        Y_log_type_raw_entries = [{'seqno': '000000002', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00'}]
+        X_log_type_raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00',
+                                   'device_name': 'dummy_device1'}]
+        Y_log_type_raw_entries = [{'seqno': '000000003', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00',
+                                   'device_name': 'dummy_device2'}]
         fetch_incidents_request_result = {'X_log_type': X_log_type_raw_entries, 'Y_log_type': Y_log_type_raw_entries}
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+        expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(X_log_type_raw_entries[0]), 'type': 'X_log_type'},
-                                            {'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+                                            {'name': 'dummy_device2 000000003', 'occurred': '2022-01-01T13:00:00Z',
                                              'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
                                      'Y_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
@@ -6467,9 +6533,85 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == '000000002'
+        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000003'}
+
+
+def test_update_max_fetch_dict(mocker):
+    """
+    Given:
+    - configured_max_fetch - maximum number of incidents the client configured to fetch.
+    - max_fetch_dict - dictionary with the maximum number of incidents to fetch per log type.
+    - last_fetch_dict - dictionary with the last fetch time per log type.
+    When:
+        - update_max_fetch_dict is called.
+        - max_fetch_dict has a log type that is not in last_fetch_dict.
+    Then:
+        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type.
+    """
+    from Panorama import update_max_fetch_dict
+    mocker.patch('demistomock.getLastRun', return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08"}})
+    res = update_max_fetch_dict(configured_max_fetch=5, max_fetch_dict={"log_type1": 10, "log_type2": 15},
+                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
+    assert res == {'log_type1': 15, 'log_type2': 5}
+
+
+def test_find_largest_id_per_device(mocker):
+    """
+    Given:
+    - list of dictionaries representing raw entries, some contain seqno and some don't, some contain device_name and
+    When:
+        - find_largest_id_per_device is called.
+    Then:
+        - return a dictionary with the largest id per device and skip entries that don't contain seqno or device_name.
+    """
+    raw_entries = [{'device_name': 'dummy_device1', 'seqno': '000000001'},
+                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                   {'device_name': 'dummy_device2', 'seqno': '000000001'},
+                   {'device_name': 'dummy_device7'},
+                   {'seqno': '000000008'}]
+    from Panorama import find_largest_id_per_device
+    res = find_largest_id_per_device(raw_entries)
+    assert res == {'dummy_device1': '000000002', 'dummy_device2': '000000001'}
+
+
+def test_filter_fetched_entries(mocker):
+    """
+    Given:
+    - list of dictionares repesenting raw entries, some contain seqno and some don't,  some contain device_name and some don't.
+    - dictionary with the largest id per device.
+    When:
+    - filter_fetched_entries is called.
+    Then:
+    - return a dictionary the entries that there id is larger then the id in the id_dict,
+        without the entries that do not have seqno.
+    """
+    from Panorama import filter_fetched_entries
+    raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
+                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                   {'device_name': 'dummy_device2', 'seqno': '000000001'}],
+                   "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'},
+                                 {'seqno': '000000007'}]}
+    id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000000'}}
+    res = filter_fetched_entries(raw_entries, id_dict)
+    assert res == {'log_type1': [{'device_name': 'dummy_device2', 'seqno': '000000001'}],
+                   'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
+
+
+def test_create_max_fetch_dict():
+    """
+    Given:
+    - dictionary of queries and max_fetch.
+    When:
+    - create_max_fetch_dict is called.
+    Then:
+    - return a dictionary of queries and max_fetch.
+    """
+    from Panorama import create_max_fetch_dict
+    queries_dict = {'log_type1': '(mock)', 'log_type2': '(mocker)'}
+    res = create_max_fetch_dict(queries_dict, 5)
+    assert res == {'log_type1': 5, 'log_type2': 5}
 
 
 @pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
