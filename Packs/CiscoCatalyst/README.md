@@ -3,13 +3,33 @@
 This pack includes Cortex XSIAM content.
 
 
-## add timezone to the logs in Cisco Catalyst switch  
+## Add timezone to the logs  
 The only supported event time is the event time with timezone.
-to add timezone to the logs run the following command:
+
+1. Access the switch's command-line interface (CLI) using a terminal emulator or SSH.
+2. Enter privileged EXEC mode by entering the following command and providing the enable password:
 ```
-logging timestamp UTC
+enable
 ```
-This command sets the logging timestamp to UTC, indicating that the log messages will include the time zone information as UTC.
+3. Enter global configuration mode:
+
+```
+configure terminal
+```
+4. Configure the logging timestamp and specify the desired time format with timezone:
+```
+logging timestamp datetime UTC
+```
+5. Exit configuration mode:
+```
+exit
+```
+6. to save the configuration changes run the commend:
+```
+write memory
+```
+**Note** The time format will be: "May 16 2023 14:30:00 UTC"
+
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
