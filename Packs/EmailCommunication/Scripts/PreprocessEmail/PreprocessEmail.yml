@@ -7,11 +7,8 @@ args:
   name: files
 - name: CreateIncidentUntaggedEmail
   required: false
-  description: Skip incident creation for email that we can't find existing incident for it.
+  description: Allow the creation for email that we can't find existing incident for it.
   defaultValue: 'true'
-- name: listName
-  description: The name of the Cortex XSOAR list that holds the Email Communication settings in a JSON object.
-  defaultValue: EmailCommunication
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".

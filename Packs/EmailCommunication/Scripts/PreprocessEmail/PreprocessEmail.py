@@ -433,13 +433,7 @@ def main():
     except (IndexError, ValueError, DemistoException) as e:
         args = demisto.args()
 
-        create_incidents_untagged = argToBoolean(args.get('CreateIncidentUntaggedEmail', False))
-        list_name = args.get('listName', 'EmailCommunication')
-        get_list_result = demisto.executeCommand("getList", {"listName": list_name})[0]
-        if get_list_result['Type'] != entryTypes['error'] or "Item not found" not in get_list_result['Contents']:
-            get_list_result_json = safe_load_json(get_list_result['Contents'])
-            create_incidents_untagged = argToBoolean(get_list_result_json.get('CreateIncidentUntaggedEmail', False))
-
+        create_incidents_untagged = argToBoolean(args.get('CreateIncidentUntaggedEmail', True))
         if not create_incidents_untagged and isinstance(e, IndexError):
             # Return False - tell pre-processing not to create a new incident.
             demisto.debug("No incident was created, Reason: CreateIncidentUntaggedEmail is False")
