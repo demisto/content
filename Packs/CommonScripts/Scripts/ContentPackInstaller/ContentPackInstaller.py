@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from packaging.version import parse, Version, LegacyVersion
+from packaging.version import Version
 
 SCRIPT_NAME = 'ContentPackInstaller'
 
@@ -12,9 +12,9 @@ class ContentPackInstaller:
     PACK_ID_VERSION_FORMAT = '{}::{}'
 
     def __init__(self, instance_name: str = None):
-        self.installed_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
+        self.installed_packs: Dict[str, Version] = dict()
         self.newly_installed_packs: Dict[str, Version] = dict()
-        self.already_on_machine_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
+        self.already_on_machine_packs: Dict[str, Version] = dict()
         self.packs_data: Dict[str, Dict[str, str]] = dict()
         self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = dict()
         self.packs_failed: Dict[str, str] = dict()
@@ -49,8 +49,8 @@ class ContentPackInstaller:
 
         packs_data: List[Dict[str, str]] = res.get('response', [])
         for pack in packs_data:
-            self.installed_packs[pack['id']] = parse(pack['currentVersion'])
-            self.already_on_machine_packs[pack['id']] = parse(pack['currentVersion'])
+            self.installed_packs[pack['id']] = Version(pack['currentVersion'])
+            self.already_on_machine_packs[pack['id']] = Version(pack['currentVersion'])
 
     def get_pack_data_from_marketplace(self, pack_id: str) -> Dict[str, str]:
         """Returns the marketplace's data for a specific pack.
@@ -155,7 +155,7 @@ class ContentPackInstaller:
         for pack in packs_to_install:
             latest_version = self.get_latest_version_for_pack(pack['id'])
 
-            if parse(latest_version) > self.installed_packs.get(pack['id'], parse('1.0.0')):
+            if Version(latest_version) > self.installed_packs.get(pack['id'], Version('1.0.0')):
                 pack['version'] = latest_version
                 latest_version_packs_to_install.append(pack)
 
@@ -173,7 +173,7 @@ class ContentPackInstaller:
             return
 
         # make the pack installation request
-        packs_names_versions = {pack['id']: parse(pack['version']) for pack in packs_to_install}
+        packs_names_versions = {pack['id']: Version(pack['version']) for pack in packs_to_install}
         demisto.debug(f'{SCRIPT_NAME} - Sending installation request for: {packs_names_versions}')
 
         for pack in packs_to_install:
@@ -215,7 +215,7 @@ class ContentPackInstaller:
             if dependency_data.get('mandatory'):
                 dependency_version = dependency_data.get('minVersion', '1.0.0')
 
-                if parse(dependency_version) > self.installed_packs.get(dependency_id, parse('1.0.0')):
+                if Version(dependency_version) > self.installed_packs.get(dependency_id, Version('1.0.0')):
                     dependencies_to_install.append({
                         'id': dependency_id,
                         'version': dependency_version
@@ -240,11 +240,11 @@ class ContentPackInstaller:
 
         try:
             if pack_data['version'] in ['latest', '*']:
-                return parse(self.get_latest_version_for_pack(pack_data['id'])) == self.installed_packs[pack_data['id']]
+                return Version(self.get_latest_version_for_pack(pack_data['id'])) == self.installed_packs[pack_data['id']]
 
-            return parse(pack_data['version']) == self.installed_packs[pack_data['id']]
+            return Version(pack_data['version']) == self.installed_packs[pack_data['id']]
         except Exception:
-            return parse(self.get_latest_version_for_pack(pack_data['id'])) == self.installed_packs[pack_data['id']]
+            return Version(self.get_latest_version_for_pack(pack_data['id'])) == self.installed_packs[pack_data['id']]
 
     def install_pack_and_its_dependencies(self, pack_data: Dict[str, str], install_dependencies: bool) -> None:
         """Method for installing a pack and it's prerequisites in order.
