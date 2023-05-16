@@ -460,6 +460,40 @@ script:
       - contextPath: ReversingLabs.yara_matches_feed
         description: ''
         type: Unknown
+  - name: reversinglabs-titaniumcloud-yara-retro-hunt-actions
+    description: Perform various YARA retroactive hunting actions.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: yaraRetroAction
+        description: YARA retro hunt action
+        isArray: false
+        required: true
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'ENABLE RETRO HUNT'
+          - 'START RETRO HUNT'
+          - 'CHECK STATUS'
+          - 'CANCEL RETRO HUNT'
+      - name: rulesetName
+        description: Name of the YARA ruleset
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.enable_yara_retro
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.start_yara_retro
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.check_yara_retro_status
+        description: ''
+        type: Unknown
+      - contextPath: ReversingLabs.cancel_yara_retro
+        description: ''
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58984
   feed: false
   isfetch: false

@@ -1,7 +1,7 @@
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
-    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting
+    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting
 
 VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
@@ -921,7 +921,6 @@ def yara_ruleset_command():
         except Exception as e:
             return_error(str(e))
 
-        response_json = response.json()
         output_key = "create_yara_ruleset"
 
     elif yara_action == "DELETE RULESET":
@@ -932,7 +931,6 @@ def yara_ruleset_command():
         except Exception as e:
             return_error(str(e))
 
-        response_json = response.json()
         output_key = "delete_yara_ruleset"
 
     elif yara_action == "GET RULESET INFO":
@@ -943,7 +941,6 @@ def yara_ruleset_command():
         except Exception as e:
             return_error(str(e))
 
-        response_json = response.json()
         output_key = "get_yara_ruleset_info"
 
     elif yara_action == "GET RULESET TEXT":
@@ -954,11 +951,12 @@ def yara_ruleset_command():
         except Exception as e:
             return_error(str(e))
 
-        response_json = response.json()
         output_key = "get_yara_ruleset_text"
 
     else:
         return_error(f"Yara ruleset action {yara_action} does not exist.")
+
+    response_json = response.json()
 
     results = CommandResults(
         outputs_prefix="ReversingLabs",
@@ -1014,6 +1012,63 @@ def yara_matches_feed_output(response_json, time_value):
     )
 
     return results
+
+
+def yara_retro_actions_command():
+    retro = YARARetroHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    retro_action = demisto.getArg("yaraRetroAction")
+    ruleset_name = demisto.getArg("rulesetName")
+
+    if retro_action == "ENABLE RETRO HUNT":
+        try:
+            response = retro.enable_retro_hunt(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "enable_yara_retro"
+
+    elif retro_action == "START RETRO HUNT":
+        try:
+            response = retro.start_retro_hunt(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "start_yara_retro"
+
+    elif retro_action == "CHECK STATUS":
+        try:
+            response = retro.check_status(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "check_yara_retro_status"
+
+    elif retro_action == "CANCEL RETRO HUNT":
+        try:
+            response = retro.cancel_retro_hunt(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "cancel_yara_retro"
+
+    else:
+        return_error(f"YARA Retro action {retro_action} does not exist.")
+
+    response_json = response.json()
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={output_key: response_json},
+        readable_output=response_json
+    )
+
+    return_results(results)
 
 
 def main():
@@ -1075,6 +1130,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-yara-matches-feed":
         yara_matches_feed_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-retro-hunt-actions":
+        yara_retro_actions_command()
 
     else:
         return_error(f"Command {command} does not exist")
