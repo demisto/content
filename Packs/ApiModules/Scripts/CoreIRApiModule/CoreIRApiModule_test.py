@@ -3249,7 +3249,7 @@ def test_list_risky_users_hosts_command_raise_exception(
         id (str): The ID parameter for the command.
 
     Raises:
-        ValueError: If the expected exception is not raised or the error message doesn't match.
+        DemistoException: If the expected exception is not raised or the error message doesn't match.
 
     Returns:
         None
@@ -3272,7 +3272,7 @@ def test_list_risky_users_hosts_command_raise_exception(
         ),
     )
     with pytest.raises(
-        ValueError,
+        DemistoException,
         match="Error: id test was not found. Full error message: id 'test' was not found"
     ):
         list_risky_users_or_host_command(client, command, {id: "test"})
@@ -3372,7 +3372,7 @@ def test_list_user_groups_command_raise_exception(mocker):
         ),
     )
     with pytest.raises(
-        ValueError,
+        DemistoException,
         match="Error: Group test was not found, Note: If you sent more than one group name, they may not exist either. "
         "Full error message: Group 'test' was not found",
     ):
@@ -3401,29 +3401,27 @@ def test_list_users_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "role_data, expected_output",
+    "role_data",
     [
-        (
-            {
-                "reply": [
-                    [
-                        {
-                            "pretty_name": "test",
-                            "description": "test",
-                            "permissions": "test",
-                            "users": "test",
-                            "groups": "test",
-                        }
-                    ]
+
+        {
+            "reply": [
+                [
+                    {
+                        "pretty_name": "test",
+                        "description": "test",
+                        "permissions": "test",
+                        "users": "test",
+                        "groups": "test",
+                    }
                 ]
-            },
-            "test",
-        ),
-        ({}, "No entries"),
+            ]
+        },
+
     ],
 )
 def test_list_roles_command(
-    mocker, role_data: dict[str, str], expected_output: str
+    mocker, role_data: dict[str, str]
 ) -> None:
     """
     Tests the 'list_roles_command' function.
@@ -3438,12 +3436,11 @@ def test_list_roles_command(
     """
     client = CoreClient("test", {})
 
-    mocker.patch.object(CoreClient, "get_list_roles", return_value=role_data)
+    mocker.patch.object(CoreClient, "list_roles", return_value=role_data)
 
     results = list_roles_command(client=client, args={"role_names": "test"})
 
-    if results.readable_output:
-        assert expected_output in results.readable_output
+    assert role_data["reply"] == results.outputs
 
 
 @pytest.mark.parametrize(

@@ -3658,46 +3658,30 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def find_the_cause_error(err: Exception) -> str:
-    """
-    Finds the cause of an error message related to a missing ID, group or role.
-
-    Args:
-        err: A string containing the error message to parse.
-
-    Returns:
-        A string describing the cause of the error message.
-
-    """
-    pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9]+)\\?'"
-    if match := re.search(pattern, str(err)):
-        return f'Error: {match[1]} {match[2]} was not found'
-    return "Error: "
-
-
-def handle_error(e, type_: str | None, custom_msg: str | None) -> None:
+def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, custom_message: str | None) -> str | None:
     """
     Handles an error that may occur during a process.
 
     Args:
         e (Exception): The error that occurred.
         type (str | None): The type of resource associated with the error(Role id or Group), if applicable.
-        custom_msg (str | None): A custom error message to be included in the raised ValueError, if desired.
+        custom_message (str | None): A custom error message to be included in the raised ValueError, if desired.
 
     Raises:
         ValueError: If the error message indicates that the resource was not found, a more detailed error message
             is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
     """
-
     if (
         e.res is not None
         and e.res.status_code == 500
         and 'was not found' in str(e)
     ):
-        error_msg = find_the_cause_error(e)
-        raise ValueError(
-            f'{error_msg}{custom_msg if type_ in ("Group", "Role") else ""}. Full error message: {e}'
-        ) from e
+        pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9]+)\\?'"
+        if match := re.search(pattern, str(e)):
+            error_message = f'Error: {match[1]} {match[2]} was not found'
+
+        return f'{error_message}{custom_message if type_ in ("Group", "Role") else ""}. Full error message: {e}'
+    return None
 
 
 def list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
@@ -3726,11 +3710,7 @@ def list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResul
             'Groups': user.get('groups'),
         }
 
-    try:
-        listed_users: list[dict[str, Any]] = client.list_users().get('reply', [])
-    except Exception as e:
-        raise ValueError(f'API connection failed: {e}') from e
-
+    listed_users: list[dict[str, Any]] = client.list_users().get('reply', [])
     table_for_markdown = [parse_user(user) for user in listed_users]
     readable_output = tableToMarkdown(name='Users', t=table_for_markdown)
 
@@ -3762,9 +3742,10 @@ def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Comman
     try:
         outputs = client.list_user_groups(group_names).get("reply", [])
     except DemistoException as e:
-        error_msg = ", Note: If you sent more than one group name, they may not exist either"
-        handle_error(e=e, type_="Group", custom_msg=error_msg)
-        raise
+        custom_message = ", Note: If you sent more than one group name, they may not exist either"
+        error_message = enrich_error_message_id_group_role(e=e, type_="Group", custom_message=custom_message)
+        raise DemistoException(error_message)
+
     table_for_markdown: list[dict[str, str | None]] = []
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
@@ -3798,11 +3779,9 @@ def list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResul
     try:
         outputs = client.list_roles(role_names).get("reply", [])
     except DemistoException as e:
-        error_msg = ", Note: If you sent more than one Role name, they may not exist either"
-        handle_error(e=e, type_="Role", custom_msg=error_msg)
-        raise
-    if not outputs:
-        return CommandResults(readable_output="No entries")
+        custom_message = ", Note: If you sent more than one Role name, they may not exist either"
+        error_message = enrich_error_message_id_group_role(e=e, type_="Role", custom_message=custom_message)
+        raise DemistoException(error_message)
 
     headers = ["Role Name", "Description", "Permissions", "Users", "Groups"]
     table_for_markdown = [parse_role_names(role[0]) for role in outputs if len(role) == 1]
@@ -3837,16 +3816,16 @@ def change_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
 
     if role_name := args.get('role_name'):
         res = client.set_user_role(user_emails, role_name)["reply"]
-        action_msg = "updated"
+        action_message = "updated"
     else:
         res = client.remove_user_role(user_emails)["reply"]
-        action_msg = "removed"
+        action_message = "removed"
 
     count = res.get("update_count")
     plural_suffix = 's' if len(user_emails) > 1 else ''
 
     return CommandResults(
-        readable_output=f"Role was {action_msg} successfully for {count} user{plural_suffix}."
+        readable_output=f"Role was {action_message} successfully for {count} user{plural_suffix}."
     )
 
 
@@ -3887,7 +3866,8 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = client.risk_score_user_or_host(id).get('reply', {})
         except DemistoException as e:
-            handle_error(e=e, type_="id", custom_msg="")
+            error_message = enrich_error_message_id_group_role(e=e, type_="id", custom_message="")
+            raise DemistoException(error_message)
 
         table_for_markdown = [parse_risky_users_or_hosts(outputs, table_header)]  # type: ignore[arg-type]
 

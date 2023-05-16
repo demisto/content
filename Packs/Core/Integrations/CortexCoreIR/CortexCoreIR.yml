@@ -3639,7 +3639,7 @@ script:
       type: string
     - contextPath: Core.User.last_logged_in
       description: Timestamp of when the user last logged in.
-      type: integer
+      type: Number
     - contextPath: Core.User.user_type
       description: Type of user.
       type: string
@@ -3676,14 +3676,14 @@ script:
       description: Description of the incident.
       type: String
     - contextPath: Core.RiskyUser.reasons.severity
-      description: The severity of the incident
+      description: The severity of the incident.
       type: String
     - contextPath: Core.RiskyUser.reasons.status
-      description: The incident status
+      description: The incident status.
       type: String
     - contextPath: Core.RiskyUser.reasons.points
-      description: Points the incident get
-      type: integer
+      description: The score.
+      type: Number
   - arguments:
     - description: >
         Unique ID of a specific host.
@@ -3716,8 +3716,8 @@ script:
       description: The incident status.
       type: String
     - contextPath: Core.RiskyHost.reasons.points
-      description: Points the incident get.
-      type: integer
+      description: The score.
+      type: Number
   - arguments:
     - description: List of one or more user group names for which you want the associated users.
       name: group_names

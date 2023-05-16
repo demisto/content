@@ -3175,7 +3175,7 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID should be in the following format: dummy/dummy<br/>. | Optional | 
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`<br/>. | Optional | 
 | limit | Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user). Default is 50. | Optional | 
 
 #### Context Output
@@ -3184,12 +3184,12 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 | --- | --- | --- |
 | PaloAltoNetworksXDR.RiskyUser.type | String | Form of identification element. | 
 | PaloAltoNetworksXDR.RiskyUser.id | String | Identification value of the type field. | 
-| PaloAltoNetworksXDR.RiskyUser.score | Integer | The score assigned to the user. | 
+| PaloAltoNetworksXDR.RiskyUser.score | Number | The score assigned to the user. | 
 | PaloAltoNetworksXDR.RiskyUser.reasons.date created | String | Date the incident created. | 
 | PaloAltoNetworksXDR.RiskyUser.reasons.description | String | Description of the incident. | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.severity | String | The severity of the incident | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.status | String | Incident status | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.points | integer | Points the incident get | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.severity | String | The severity of the incident. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.status | String | Incident status. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.points | Number | The score. | 
 
 #### Command example
 ```!xdr-list-risky-users user_id=dummy```
@@ -3236,7 +3236,7 @@ Retrieve a list of the current users in your environment.
 | PaloAltoNetworksXDR.User.user_first_name | string | First name of the user | 
 | PaloAltoNetworksXDR.User.user_last_name | string | Last name of the user. | 
 | PaloAltoNetworksXDR.User.role_name | string | Role name associated with the user. | 
-| PaloAltoNetworksXDR.User.last_logged_in | integer | Timestamp of when the user last logged in. | 
+| PaloAltoNetworksXDR.User.last_logged_in | Number | Timestamp of when the user last logged in. | 
 | PaloAltoNetworksXDR.User.user_type | string | Type of user. | 
 | PaloAltoNetworksXDR.User.groups | array | Name of user groups associated with the user, if applicable. | 
 | PaloAltoNetworksXDR.User.scope | array | Name of scope associated with the user, if applicable. | 
@@ -3307,12 +3307,12 @@ Retrieve the risk score of a specific host or list of hosts with the highest ris
 | --- | --- | --- |
 | PaloAltoNetworksXDR.RiskyHost.type | String | Form of identification element. | 
 | PaloAltoNetworksXDR.RiskyHost.id | String | Identification value of the type field. | 
-| PaloAltoNetworksXDR.RiskyHost.score | Integer | The score assigned to the host. | 
+| PaloAltoNetworksXDR.RiskyHost.score | Number | The score assigned to the host. | 
 | PaloAltoNetworksXDR.RiskyHost.reasons.date created | String | Date the incident created. | 
 | PaloAltoNetworksXDR.RiskyHost.reasons.description | String | Description of the incident. | 
-| PaloAltoNetworksXDR.RiskyHost.reasons.severity | String | The severity of the incident | 
-| PaloAltoNetworksXDR.RiskyHost.reasons.status | String | Incident status | 
-| PaloAltoNetworksXDR.RiskyHost.reasons.points | integer | Points the incident get | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.severity | String | The severity of the incident. | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.status | String | Incident status. | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.points | Number | The score. | 
 
 #### Command example
 ```!xdr-list-risky-hosts host_id=dummy	```

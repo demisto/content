@@ -3302,7 +3302,7 @@ script:
       type: string
     - contextPath: PaloAltoNetworksXDR.User.last_logged_in
       description: Timestamp of when the user last logged in.
-      type: integer
+      type: Number
     - contextPath: PaloAltoNetworksXDR.User.user_type
       description: Type of user.
       type: string
@@ -3315,7 +3315,7 @@ script:
   - arguments:
     - description: |
         Unique ID of a specific user.
-        User ID could be either of the `dummy/dummy` format, or `dummy`
+        User ID could be either of the `foo/dummy` format, or just `dummy`.
       name: user_id
     - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(limit should be used when no specific host is requested)
       name: limit
@@ -3331,7 +3331,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.score
       description: The score assigned to the user.
-      type: Integer
+      type: Number
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.date created
       description: Date when the incident was created.
       type: String
@@ -3345,8 +3345,8 @@ script:
       description: The incident status
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
-      description: Points the incident get
-      type: integer
+      description: The score.
+      type: Number
   - arguments:
     - description: >
         Unique ID of a specific host.
@@ -3365,7 +3365,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.score
       description: The score assigned to the host.
-      type: Integer
+      type: Number
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
       description: Date when the incident was created.
       type: String
@@ -3379,8 +3379,8 @@ script:
       description: The incident status
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
-      description: Points the incident get.
-      type: integer
+      description: The score.
+      type: Number
   - arguments:
     - description: List of one or more user group names for which you want the associated users.
       name: group_names

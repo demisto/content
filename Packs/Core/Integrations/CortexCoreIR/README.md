@@ -2353,7 +2353,7 @@ Retrieve a list of the current users in your environment.
 | Core.User.user_first_name | string | First name of the user | 
 | Core.User.user_last_name | string | Last name of the user. | 
 | Core.User.role_name | string | Role name associated with the user. | 
-| Core.User.last_logged_in | integer | Timestamp of when the user last logged in. | 
+| Core.User.last_logged_in | Number | Timestamp of when the user last logged in. | 
 | Core.User.user_type | string | Type of user. | 
 | Core.User.groups | array | Name of user groups associated with the user, if applicable. | 
 | Core.User.scope | array | Name of scope associated with the user, if applicable. | 
@@ -2371,7 +2371,7 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID should be in the following format: dummy/dummy<br/>. | Optional | 
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`<br/>. | Optional | 
 | limit | Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user). Default is 50. | Optional | 
 
 #### Context Output
@@ -2380,12 +2380,12 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 | --- | --- | --- |
 | Core.RiskyUser.type | String | Form of identification element. | 
 | Core.RiskyUser.id | String | Identification value of the type field. | 
-| Core.RiskyUser.score | Integer | The score assigned to the user. | 
+| Core.RiskyUser.score | Number | The score assigned to the user. | 
 | Core.RiskyUser.reasons.date created | String | Date the incident created. | 
 | Core.RiskyUser.reasons.description | String | Description of the incident. | 
-| Core.RiskyUser.reasons.severity | String | The severity of the incident | 
-| Core.RiskyUser.reasons.status | String | Incident status | 
-| Core.RiskyUser.reasons.points | integer | Points the incident get | 
+| Core.RiskyUser.reasons.severity | String | The severity of the incident. | 
+| Core.RiskyUser.reasons.status | String | Incident status. | 
+| Core.RiskyUser.reasons.points | Number | The score.| 
 
 ### core-list-risky-hosts
 
@@ -2409,12 +2409,12 @@ Retrieve the risk score of a specific host or list of hosts with the highest ris
 | --- | --- | --- |
 | Core.RiskyHost.type | String | Form of identification element. | 
 | Core.RiskyHost.id | String | Identification value of the type field. | 
-| Core.RiskyHost.score | Integer | The score assigned to the host. | 
+| Core.RiskyHost.score | Number | The score assigned to the host. | 
 | Core.RiskyHost.reasons.date created | String | Date the incident created. | 
 | Core.RiskyHost.reasons.description | String | Description of the incident. | 
 | Core.RiskyHost.reasons.severity | String | The severity of the incident. | 
 | Core.RiskyHost.reasons.status | String | Incident status. | 
-| Core.RiskyHost.reasons.points | integer | Points the incident get. | 
+| Core.RiskyHost.reasons.points | Number | The score. | 
 
 ### core-list-user-groups
 
