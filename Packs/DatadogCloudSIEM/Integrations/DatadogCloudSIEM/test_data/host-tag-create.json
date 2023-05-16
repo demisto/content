@@ -1,0 +1,11 @@
+{
+  "host": "DESKTOP-IIQVPJ7",
+  "tags": [
+    "test:123",
+    "env:prod",
+    "environment:production12",
+    "environment:production13",
+    "region:east",
+    "source:my_apps"
+  ]
+}
