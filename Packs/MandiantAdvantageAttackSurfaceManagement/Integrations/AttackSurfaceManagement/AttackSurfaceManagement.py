@@ -421,8 +421,7 @@ def main() -> None:
     access_key = params.get('credentials', {}).get('identifier')
     secret_key = params.get('credentials', {}).get('password')
     project_id = params.get('project_id')
-    collections_raw = argToList(params.get('collection_ids', []))
-    collections = [c.strip() for c in collections_raw]
+    collections = argToList(params.get('collection_ids', []))
 
     limit = arg_to_number(params.get("max_fetch", 50)) or 50
     timeout = arg_to_number(params.get("timeout", 60)) or 60
