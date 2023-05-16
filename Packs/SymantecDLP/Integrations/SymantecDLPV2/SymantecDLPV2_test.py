@@ -549,7 +549,8 @@ def test_get_incident_original_message_command(requests_mock):
 
     requests_mock.get(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/originalMessage',
-        content='123'.encode())
+        content='123'.encode()
+    )
 
     client = Client(
         base_url="https://SymantecDLPV2.com",
@@ -560,3 +561,33 @@ def test_get_incident_original_message_command(requests_mock):
     )
 
     assert get_incident_original_message_command(client, {'incident_id': '1234'})
+
+
+def test_get_report_filters_command(requests_mock):
+    """
+    Given:
+        report id
+
+    When:
+        running get_report_filters_command
+
+    Then:
+        Make sure the context output is returned as excpected
+    """
+    from SymantecDLPV2 import Client, get_report_filters_command
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/savedReport/1234',
+        json={"test": "test"}
+    )
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    result = get_report_filters_command(client, {'report_id': '1234'})
+    assert result.outputs == {'test': 'test', 'filterString': '{"test": "test"}'}
