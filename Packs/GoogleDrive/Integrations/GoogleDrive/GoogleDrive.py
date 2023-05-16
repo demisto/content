@@ -1686,13 +1686,13 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        
+
         account_json = params.get('user_creds', {}).get('password') or params.get('user_service_account_json')
         user_id = params.get('user_creds', {}).get('identifier') or params.get('user_id', '')
-        
+
         if not account_json:
             raise DemistoException('Please fill out the User\'s Service Account JSON field.')
-        
+
         service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json)
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)

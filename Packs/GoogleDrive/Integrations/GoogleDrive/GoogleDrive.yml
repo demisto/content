@@ -11,6 +11,7 @@ configuration:
   type: 4
   section: Connect
   additionalinfo:
+  hidden: true
 - name: user_id
   display: User ID
   required: false
@@ -19,6 +20,7 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: The primary email address of the user to fetch the incident(s).
+  hidden: true
 - display: User ID
   displaypassword: User's Service Account JSON
   name: user_creds
