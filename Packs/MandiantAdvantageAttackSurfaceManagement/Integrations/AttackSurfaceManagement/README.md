@@ -1,5 +1,5 @@
 Integrate with Mandiant Advantage Attack Surface Management to import "issues" as Incidents.
-This integration was integrated and tested with version xx of AttackSurfaceManagement
+This integration was integrated and tested with version 1 of AttackSurfaceManagement
 
 ## Configure Mandiant Attack Surface Management on Cortex XSOAR
 
@@ -49,8 +49,11 @@ There are no input arguments for this command.
 | MandiantAdvantageASM.Projects.Owner | unknown | The E-Mail of the project owner | 
 
 #### Command example
+
 ```!attacksurfacemanagement-get-projects```
+
 #### Context Example
+
 ```json
 {
   "MandiantAdvantageASM": {
@@ -68,6 +71,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Results
+
 >|ID|Name|Owner|
 >|---|---|---|
 >| 6797 | ASMQA_AttackSurfaceAPP | name@attacksurface.app |
@@ -97,8 +101,11 @@ Retrieve a list of collections for a specified project
 | MandiantAdvantageASM.Collections.Owner | unknown | The owner of the collection | 
 
 #### Command example
+
 ```!attacksurfacemanagement-get-collections```
+
 #### Context Example
+
 ```json
 {
     "MandiantAdvantageASM": {
@@ -116,6 +123,7 @@ Retrieve a list of collections for a specified project
 #### Human Readable Output
 
 >### Results
+
 >|ID|Name|Owner|
 >|---|---|---|
 >| attacksurface_mw3tdwq | Attacksurface_APP_QA | ASMQA_AttackSurfaceAPP |
@@ -137,6 +145,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -156,6 +165,7 @@ Update a specific incident
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
@@ -173,10 +183,12 @@ Update issue in Mandiant Advantage ASM
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Mandiant Attack Surface Management corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
