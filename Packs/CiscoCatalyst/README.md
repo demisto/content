@@ -28,7 +28,7 @@ exit
 ```
 write memory
 ```
-**Note** The time format will be: "May 16 2023 14:30:00 UTC"
+**Note** The time format is: "May 16 2023 14:30:00 UTC"
 
 
 ## Collect Events from Vendor
