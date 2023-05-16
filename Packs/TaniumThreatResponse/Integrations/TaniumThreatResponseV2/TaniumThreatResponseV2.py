@@ -2308,6 +2308,7 @@ def main():
         if command == 'fetch-incidents':
             LOG(traceback.format_exc())
             LOG.print_log()
+            print("TEST")
             raise
 
         else:
@@ -2318,4 +2319,5 @@ def main():
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
+    print("TEST")
     main()
