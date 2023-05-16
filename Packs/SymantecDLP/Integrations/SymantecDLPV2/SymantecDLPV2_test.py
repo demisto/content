@@ -532,3 +532,31 @@ def test_get_incident_details_fetch(mocker):
                         'incidentStatusId': 1, 'detectionDate': '2022-03-06T15:23:39.197', 'policyVersion': 4,
                         'messageSource': 'NETWORK', 'messageType': 'HTTP', 'matchCount': 3,
                         'errorMessage': 'Notice: Incident contains partial data only'}
+
+
+def test_get_incident_original_message_command(requests_mock):
+    """
+    Given:
+        file content of an incident
+
+    When:
+        running get_incident_original_message_command
+
+    Then:
+        Make sure the file gets created as excpected
+    """
+    from SymantecDLPV2 import Client, get_incident_original_message_command
+
+    requests_mock.get(
+        'https://SymantecDLPV2.com/ProtectManager/webservices/v2/incidents/1234/originalMessage',
+        content='123'.encode())
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    assert get_incident_original_message_command(client, {'incident_id': '1234'})

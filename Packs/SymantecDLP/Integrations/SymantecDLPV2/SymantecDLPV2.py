@@ -861,7 +861,7 @@ def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
 
         try:
             original_filename = results.headers.get('Content-Disposition').split('=')[1]
-        except Exception as e:
+        except (TypeError, IndexError, AttributeError):
             original_filename = 'unknown'
         return fileResult(original_filename, original_message_file)
 
