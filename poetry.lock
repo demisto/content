@@ -1011,7 +1011,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.14.1"
+version = "1.14.5"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -1032,7 +1032,7 @@ coverage = "^7.2.1"
 cryptography = "^36.0.2"
 dateparser = "^1.1.1"
 decorator = "^5.1.1"
-demisto-py = "^3.2.9"
+demisto-py = "^3.2.10"
 dictdiffer = "^0.9.0"
 dictor = "^0.1.9"
 docker = "^5.0.3"
@@ -1110,8 +1110,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "handling_for_upload_scripts_with_name_x2"
-resolved_reference = "9eac37a296978878b79e55d2afda68bebf3e6071"
+reference = "upload_incident_to_alert"
+resolved_reference = "787e8ec948ceb63282698bf4ac163d85eb7ea73a"
 
 [[package]]
 name = "deprecated"
@@ -6454,4 +6454,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "3a201cd327b35dbf85b3d3c6e1abf87dca29678ecdb30fec9fd3b11e092e14fd"
+content-hash = "01a910e0b44c2c9e98919fb8afded3de328592f4f944a89f7cd7f3a7a961a970"
