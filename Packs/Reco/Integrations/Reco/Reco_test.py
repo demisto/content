@@ -18,7 +18,7 @@ from Reco import (
     get_assets_user_has_access,
     get_sensitive_assets_by_name,
     get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link,
-    get_3rd_parties_list, get_files_shared_with_3rd_parties
+    get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score
 )
 
 from test_data.structs import (
@@ -529,6 +529,10 @@ def test_risk_level_mapper():
     assert map_reco_score_to_demisto_score(risk_level_high) == 4
 
 
+def test_alert_mapper():
+    assert map_reco_alert_score_to_demisto_score("CRITICAL") == 4
+
+
 def test_get_max_fetch_bigger():
     big_number_max_fetch = 600
     result = get_max_fetch(big_number_max_fetch)
@@ -719,6 +723,27 @@ def test_get_exposed_publicly(requests_mock, reco_client: RecoClient) -> None:
     assert actual_result.outputs[0].get("source") is not None
 
 
+def test_get_exposed_publicly_page_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
+    with capfd.disabled():
+        with pytest.raises(Exception):
+            get_sensitive_assets_shared_with_public_link(
+                reco_client=reco_client
+            )
+
+
+def test_get_3rd_parties_list_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
+    with capfd.disabled():
+        with pytest.raises(Exception):
+            get_3rd_parties_list(
+                reco_client=reco_client,
+                last_interaction_time_in_days=30,
+            )
+
+
 def test_get_3rd_parties_list(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_assets_user_has_access_to_response()
     requests_mock.put(
@@ -742,3 +767,8 @@ def test_get_files_shared_with_3rd_parties(requests_mock, reco_client: RecoClien
         last_interaction_time_before_in_days=30,
     )
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+
+
+def test_date_formatting(reco_client: RecoClient) -> None:
+    date = reco_client.get_date_time_before_days_formatted(30)
+    assert ".999Z" in date

@@ -384,11 +384,7 @@ class RecoClient(BaseClient):
             raise e
 
     def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> List[Dict[str, Any]]:
-        # Calculate the date 30 days ago
-        thirty_days_ago = datetime.utcnow() - timedelta(days=last_interaction_time_before_in_days)
-
-        # Format the date in the desired format
-        formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
+        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
         params = {
             "getTableRequest": {
                 "tableName": "DATA_RISK_MANAGEMENT_VIEW_TOP_3RD_PARTIES_DOMAIN",
@@ -437,15 +433,19 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
+    @staticmethod
+    def get_date_time_before_days_formatted(last_interaction_time_before_in_days: int) -> str:
+        # Calculate the date 30 days ago
+        thirty_days_ago = datetime.utcnow() - timedelta(days=last_interaction_time_before_in_days)
+        # Format the date in the desired format
+        formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
+        return formatted_date
+
     def get_files_shared_with_3rd_parties(self,
                                           domain: str,
                                           last_interaction_time_before_in_days: int) -> List[Dict[str, Any]]:
         """Get files shared with 3rd parties. Returns a list of files at risk with analysis."""
-        # Calculate the date 30 days ago
-        thirty_days_ago = datetime.utcnow() - timedelta(days=last_interaction_time_before_in_days)
-
-        # Format the date in the desired format
-        formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
+        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
         params = {
             "getTableRequest": {
                 "tableName": "DATA_RISK_MANAGEMENT_VIEW_SHARED_TOP_EXT_DOMAIN_FILES",
@@ -1147,112 +1147,116 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
         )
-        if command == "fetch-incidents":
-            risk_level = params.get("risk_level")
-            source = params.get("source")
-            before = params.get("before")
-            after = params.get("after")
-
-            # How much time before the first fetch to retrieve incidents
-            if arg := params.get("first_fetch"):
-                first_fetch_time_stamp = dateparser.parse(arg)
-                if first_fetch_time_stamp:
-                    after = first_fetch_time_stamp
-
-            next_run, incidents = fetch_incidents(
-                reco_client,
-                last_run=demisto.getLastRun(),
-                max_fetch=max_fetch,
-                risk_level=risk_level,
-                source=source,
-                before=before,
-                after=after,
-            )
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-        elif command == "reco-update-incident-timeline":
-            incident_id = demisto.args()["incident_id"]
-            response = reco_client.update_reco_incident_timeline(
-                incident_id=incident_id,
-                comment=demisto.args()["comment"],
-            )
-            return_results(
-                CommandResults(
-                    raw_response=response,
-                    readable_output=f"Timeline updated successfully for incident {incident_id}",
-                )
-            )
-        elif command == "reco-resolve-visibility-event":
-            entity_id = demisto.args()["entity_id"]
-            label_name = demisto.args()["label_name"]
-            response = reco_client.resolve_visibility_event(
-                entity_id=entity_id, label_name=label_name
-            )
-            return_results(
-                CommandResults(
-                    raw_response=response,
-                    readable_output=f"Visibility event {entity_id} resolved successfully",
-                )
-            )
-        elif command == "test-module":
-            test_res = reco_client.validate_api_key()
-            return_results(test_res)
-        elif command == "reco-get-risky-users":
-            result = get_risky_users_from_reco(reco_client)
-            return_results(result)
-        elif command == "reco-add-risky-user-label":
-            email_address = demisto.args()["email_address"]
-            result = add_risky_user_label(reco_client, email_address)
-            return_results(result)
-        elif command == "reco-add-leaving-org-user-label":
-            email_address = demisto.args()["email_address"]
-            result = add_leaving_org_user(reco_client, email_address)
-            return_results(result)
-        elif command == "reco-get-assets-user-has-access-to":
-            only_sensitive = demisto.args().get("only_sensitive", False)
-            result = get_assets_user_has_access(
-                reco_client,
-                demisto.args()["email_address"],
-                only_sensitive,
-            )
-            return_results(result)
-        elif command == "reco-get-sensitive-assets-by-name":
-            regex_search = demisto.args().get("regex_search", False)
-            result = get_sensitive_assets_by_name(
-                reco_client,
-                demisto.args()["asset_name"],
-                regex_search,
-            )
-            return_results(result)
-        elif command == "reco-get-sensitive-assets-by-id":
-            result = get_sensitive_assets_by_id(
-                reco_client,
-                demisto.args()["asset_id"]
-            )
-            return_results(result)
-        elif command == "reco-get-link-to-user-overview-page":
-            result = get_link_to_user_overview_page(
-                reco_client,
-                demisto.args()["entity"],
-                demisto.args()["param"],
-            )
-            return_results(result)
-        elif command == "reco-get-sensitive-assets-with-public-link":
-            result = get_sensitive_assets_shared_with_public_link(reco_client)
-            return_results(result)
-        elif command == "reco-get-3rd-parties-accessible-to-data-list":
-            result = get_3rd_parties_list(reco_client, int(demisto.args()["last_interaction_time_in_days"]))
-            return_results(result)
-        elif command == "reco-get-files-shared-with-3rd-parties":
-            result = get_files_shared_with_3rd_parties(reco_client,
-                                                       demisto.args()["domain"],
-                                                       int(demisto.args()["last_interaction_time_in_days"]))
-            return_results(result)
-        else:
-            raise NotImplementedError(f"{command} is not an existing reco command")
+        command_handler(command, max_fetch, params, reco_client)
     except Exception as e:
         demisto.error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
         return_error(str(e))
+
+
+def command_handler(command: str, max_fetch: int, params: Dict[Any, Any], reco_client: RecoClient) -> None:
+    if command == "fetch-incidents":
+        risk_level = params.get("risk_level")
+        source = params.get("source")
+        before = params.get("before")
+        after = params.get("after")
+
+        # How much time before the first fetch to retrieve incidents
+        if arg := params.get("first_fetch"):
+            first_fetch_time_stamp = dateparser.parse(arg)
+            if first_fetch_time_stamp:
+                after = first_fetch_time_stamp
+
+        next_run, incidents = fetch_incidents(
+            reco_client,
+            last_run=demisto.getLastRun(),
+            max_fetch=max_fetch,
+            risk_level=risk_level,
+            source=source,
+            before=before,
+            after=after,
+        )
+        demisto.setLastRun(next_run)
+        demisto.incidents(incidents)
+    elif command == "reco-update-incident-timeline":
+        incident_id = demisto.args()["incident_id"]
+        response = reco_client.update_reco_incident_timeline(
+            incident_id=incident_id,
+            comment=demisto.args()["comment"],
+        )
+        return_results(
+            CommandResults(
+                raw_response=response,
+                readable_output=f"Timeline updated successfully for incident {incident_id}",
+            )
+        )
+    elif command == "reco-resolve-visibility-event":
+        entity_id = demisto.args()["entity_id"]
+        label_name = demisto.args()["label_name"]
+        response = reco_client.resolve_visibility_event(
+            entity_id=entity_id, label_name=label_name
+        )
+        return_results(
+            CommandResults(
+                raw_response=response,
+                readable_output=f"Visibility event {entity_id} resolved successfully",
+            )
+        )
+    elif command == "test-module":
+        test_res = reco_client.validate_api_key()
+        return_results(test_res)
+    elif command == "reco-get-risky-users":
+        result = get_risky_users_from_reco(reco_client)
+        return_results(result)
+    elif command == "reco-add-risky-user-label":
+        email_address = demisto.args()["email_address"]
+        result = add_risky_user_label(reco_client, email_address)
+        return_results(result)
+    elif command == "reco-add-leaving-org-user-label":
+        email_address = demisto.args()["email_address"]
+        result = add_leaving_org_user(reco_client, email_address)
+        return_results(result)
+    elif command == "reco-get-assets-user-has-access-to":
+        only_sensitive = demisto.args().get("only_sensitive", False)
+        result = get_assets_user_has_access(
+            reco_client,
+            demisto.args()["email_address"],
+            only_sensitive,
+        )
+        return_results(result)
+    elif command == "reco-get-sensitive-assets-by-name":
+        regex_search = demisto.args().get("regex_search", False)
+        result = get_sensitive_assets_by_name(
+            reco_client,
+            demisto.args()["asset_name"],
+            regex_search,
+        )
+        return_results(result)
+    elif command == "reco-get-sensitive-assets-by-id":
+        result = get_sensitive_assets_by_id(
+            reco_client,
+            demisto.args()["asset_id"]
+        )
+        return_results(result)
+    elif command == "reco-get-link-to-user-overview-page":
+        result = get_link_to_user_overview_page(
+            reco_client,
+            demisto.args()["entity"],
+            demisto.args()["param"],
+        )
+        return_results(result)
+    elif command == "reco-get-sensitive-assets-with-public-link":
+        result = get_sensitive_assets_shared_with_public_link(reco_client)
+        return_results(result)
+    elif command == "reco-get-3rd-parties-accessible-to-data-list":
+        result = get_3rd_parties_list(reco_client, int(demisto.args()["last_interaction_time_in_days"]))
+        return_results(result)
+    elif command == "reco-get-files-shared-with-3rd-parties":
+        result = get_files_shared_with_3rd_parties(reco_client,
+                                                   demisto.args()["domain"],
+                                                   int(demisto.args()["last_interaction_time_in_days"]))
+        return_results(result)
+    else:
+        raise NotImplementedError(f"{command} is not an existing reco command")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
