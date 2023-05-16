@@ -3652,7 +3652,7 @@ script:
   - arguments:
     - description: |
         Unique ID of a specific user.
-        User ID could be either of the `dummy/dummy` format, or `dummy`
+        User ID could be either of the `foo/dummy` format, or just `dummy`
       name: user_id
     - description: Limit the number of users that will appear in the list. By default, the limit is 50 users.(limit should be used when no specific host is requested)
       name: limit
