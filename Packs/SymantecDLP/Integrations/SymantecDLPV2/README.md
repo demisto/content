@@ -1053,7 +1053,7 @@ Returns details for all SDLP users from the Enforce console. Requires SDLP 16.0.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecDLP.Users | Unknown | List of SDLP users and details | 
+| SymantecDLP.Users | Unknown | List of SDLP users and details. | 
 
 #### Command example
 ```!symantec-dlp-list-users```
