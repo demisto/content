@@ -57,7 +57,7 @@ def test_azure_sql_db_list_command(mocker):
     results = azure_sql_db_list_command(client, args)
     assert '### Database List' in results.readable_output
     assert results.outputs[0].get('name') == 'integration-db'
-    
+
 
 def test_azure_sql_db_list_command_with_not_found(mocker):
     """
