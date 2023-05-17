@@ -10,6 +10,10 @@ import errno
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
 
+RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
+RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
+RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
+
 # flake8: noqa
 
 """
@@ -8453,7 +8457,10 @@ def domain_command(reliability):
         })
 
 
-def get_whois_ip(ip, retry_count: int, rate_limit_timeout: int, rate_limit_errors_suppressed: bool):
+def get_whois_ip(ip,
+                 retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
+                 rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
+                 rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT):
     from urllib.request import build_opener, ProxyHandler
     from ipwhois import IPWhois
     proxy_opener = None
@@ -8475,7 +8482,10 @@ def get_whois_ip(ip, retry_count: int, rate_limit_timeout: int, rate_limit_error
         raise e
 
 
-def ip_command(ips, reliability, retry_count: int, rate_limit_timeout: int, rate_limit_errors_suppressed: bool):
+def ip_command(ips, reliability,
+               retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
+               rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
+               rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT):
     results = []
     for ip in argToList(ips):
         response = get_whois_ip(ip, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout,
@@ -8616,11 +8626,8 @@ def main():
     ip = demisto_args.get('ip')
     demisto_params = demisto.params()
     rate_limit_retry_count: int = int(demisto_args.get('rate_limit_retry_count') or demisto_params.get('rate_limit_retry_count') or 3)
-    print(f"*** {demisto_params.get('rate_limit_retry_count')=}, {demisto_args.get('rate_limit_retry_count')=}, {rate_limit_retry_count=}")
     rate_limit_wait_seconds: int = int(demisto_args.get('rate_limit_wait_seconds') or demisto_params.get('rate_limit_wait_seconds') or 120)
-    print(f"*** {demisto_params.get('rate_limit_wait_seconds')=}, {demisto_args.get('rate_limit_wait_seconds')=}, {rate_limit_wait_seconds=}")
     rate_limit_errors_suppressed: bool = bool(demisto_args.get('rate_limit_errors_suppressed') or demisto_params.get('rate_limit_errors_suppressed') or False)
-    print(f"*** {demisto_params.get('rate_limit_errors_suppressed')=}, {demisto_args.get('rate_limit_errors_suppressed')=}, {rate_limit_errors_suppressed=}")
 
     import time
     time.sleep(60)
@@ -8642,12 +8649,9 @@ def main():
             demisto_args = demisto.args()
             ip = demisto_args.get('ip')
             demisto_params = demisto.params()
-            rate_limit_retry_count: int = int(demisto_params.get('rate_limit_retry_count') or demisto_args.get('rate_limit_retry_count') or 3)
-            print(f"*** {demisto_params.get('rate_limit_retry_count')=}, {demisto_args.get('rate_limit_retry_count')=}, {rate_limit_retry_count=}")
-            rate_limit_wait_seconds: int = int(demisto_params.get('rate_limit_wait_seconds') or demisto_args.get('rate_limit_wait_seconds') or 120)
-            print(f"*** {demisto_params.get('rate_limit_wait_seconds')=}, {demisto_args.get('rate_limit_wait_seconds')=}, {rate_limit_wait_seconds=}")
-            rate_limit_errors_suppressed: bool = bool(demisto_params.get('rate_limit_errors_suppressed') or demisto_args.get('rate_limit_errors_suppressed') or False)
-            print(f"*** {demisto_params.get('rate_limit_errors_suppressed')=}, {demisto_args.get('rate_limit_errors_suppressed')=}, {rate_limit_errors_suppressed=}")
+            rate_limit_retry_count: int = int(demisto_params.get('rate_limit_retry_count') or demisto_args.get('rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+            rate_limit_wait_seconds: int = int(demisto_params.get('rate_limit_wait_seconds') or demisto_args.get('rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
+            rate_limit_errors_suppressed: bool = bool(demisto_params.get('rate_limit_errors_suppressed') or demisto_args.get('rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
             ret_value = ip_command(ip, reliability, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
                                    rate_limit_errors_suppressed=rate_limit_errors_suppressed)
             if ret_value:
