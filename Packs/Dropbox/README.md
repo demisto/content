@@ -1,6 +1,12 @@
+# Dropbox
+This pack includes Cortex XSIAM content. 
 Collect events from Dropbox's logs.
 This integration was integrated and tested with version 2 of Dropbox API
 
+## Time Zone support for XSIAM
+For supporting Time Zone parsing, time should be set to GMT+00:00;
+1. Open your Dropbox account section.
+2. At the **General**, under **Prefrences**, make sure **Automatic time zone** is set to GMT+00:00 time zone.
 ## Configure Dropbox Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
