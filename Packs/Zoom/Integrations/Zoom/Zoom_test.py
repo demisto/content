@@ -3,6 +3,7 @@ import Zoom
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
+import datetime
 
 
 def test_zoom_list_users_command__limit(mocker):
@@ -935,3 +936,523 @@ def test_zoom_fetch_recording_command__not_able_to_delete(mocker):
     res = zoom_fetch_recording_command(
         client=client, meeting_id="000000", delete_after="true")
     assert res[2].readable_output == 'Failed to delete file recording_000000_29c7tc.None. mockerror'
+
+
+def test_zoom_list_user_channels_command(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a list public channels
+        Then -
+            Validate that a func has been called
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount", client_id="mockclient", client_secret="mocksecret")
+    channel_id = "channel_id"
+    user_id = "user_id"
+
+    expected_url_suffix = f'users/{user_id}/channels/{channel_id}' if channel_id else f'users/{user_id}/channels'
+
+    expected_raw_data = {
+        "channels": [
+            {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
+                "channel_url": "https://test1.com", "next_page_token": "token1"},
+            {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
+                "channel_url": "https://test1.com", "next_page_token": "token2"}
+        ]
+    }
+
+    zoom_list_user_channels_mock = mocker.patch.object(client, "zoom_list_user_channels")
+    zoom_list_user_channels_mock.return_value = expected_raw_data
+
+    from Zoom import zoom_list_user_channels_command
+
+    result = zoom_list_user_channels_command(
+        client,
+        channel_id=channel_id,
+        user_id=user_id
+    )
+
+    zoom_list_user_channels_mock.assert_called_with(
+        user_id=user_id,
+        page_size=50,
+        next_page_token=None,
+        url_suffix=expected_url_suffix,
+        page_number=1
+    )
+
+    assert result.outputs['channels'] == expected_raw_data
+    assert result.outputs['channels']['channels'][0]['id'] == expected_raw_data['channels'][0]['id']
+    assert result.outputs['channels']['channels'][0]['jid'] == expected_raw_data['channels'][0]['jid']
+
+
+def test_zoom_create_channel_command(mocker):
+    """
+    Given -
+        client
+    When -
+        creating a Zoom channel
+    Then -
+        Validate that the zoom_create_channel function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
+    # Mock the response from zoom_create_channel
+    response = {
+        "id": "channel_id",
+        "name": "TestChannel3",
+        "type": "1",
+        "channel_url": "https://zoom.us/channel/channel_id"
+    }
+    zoom_create_channel_mock = mocker.patch.object(Client, "zoom_create_channel", return_value=response)
+
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    from Zoom import zoom_create_channel_command
+
+    # Set up the inputs
+    user_id = "u12345"
+    member_emails = ["user2@example.com", "user1@example.com"]
+    add_member_permissions = "All channel members can add"
+    posting_permissions = "All members can post"
+    new_members_can_see_prev_msgs = True
+    channel_name = "TestChannel"
+    channel_type = "Private channel"
+
+    zoom_create_channel_command(client=client,
+                                user_id=user_id,
+                                member_emails=member_emails,
+                                add_member_permissions=add_member_permissions,
+                                posting_permissions=posting_permissions,
+                                new_members_can_see_prev_msgs=new_members_can_see_prev_msgs,
+                                channel_name=channel_name,
+                                channel_type=channel_type)
+
+    # Verify the API call
+    expected_url_suffix = f"/chat/users/{user_id}/channels"
+    expected_json_data = {
+        "channel_settings": {
+            "add_member_permissions": 1,
+            "new_members_can_see_previous_messages_files": True,
+            "posting_permissions": 1,
+        },
+        "members": [
+            {"email": "user2@example.com"},
+            {"email": "user1@example.com"}
+        ],
+        "name": "TestChannel",
+        "type": 1
+    }
+    zoom_create_channel_mock.assert_called_with(expected_url_suffix, expected_json_data)
+
+
+def test_zoom_delete_channel_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    channel_id = "channel_id"
+    user_id = "user_id"
+    expected_url_suffix = f"/chat/users/{user_id}/channels/{channel_id}"
+
+    zoom_delete_channel_mock = mocker.patch.object(client, "zoom_delete_channel")
+    from Zoom import zoom_delete_channel_command
+
+    zoom_delete_channel_command(client, channel_id=channel_id, user_id=user_id)
+
+    zoom_delete_channel_mock.assert_called_with(expected_url_suffix)
+
+
+def test_zoom_update_channel_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    add_member_permissions = "All channel members can add"
+    posting_permissions = "All members can post"
+    new_members_can_see_prev_msgs = True
+    channel_name = "TestChannel"
+    channel_id = "channel_id"
+    user_id = "user_id"
+
+    expected_url_suffix = f"/chat/users/{user_id}/channels/{channel_id}"
+    expected_json_data = {
+        "name": channel_name,
+        "channel_settings": {
+            "add_member_permissions": 1,
+            "new_members_can_see_previous_messages_files": new_members_can_see_prev_msgs,
+            "posting_permissions": 1,
+        }
+    }
+
+    zoom_update_channel_mock = mocker.patch.object(client, "zoom_update_channel")
+    from Zoom import zoom_update_channel_command
+
+    zoom_update_channel_command(
+        client,
+        add_member_permissions=add_member_permissions,
+        posting_permissions=posting_permissions,
+        new_members_can_see_prev_msgs=new_members_can_see_prev_msgs,
+        channel_name=channel_name,
+        channel_id=channel_id,
+        user_id=user_id
+    )
+
+    zoom_update_channel_mock.assert_called_with(expected_url_suffix, expected_json_data)
+
+
+def test_zoom_invite_to_channel_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    channel_id = "channel_id"
+    user_id = "user_id"
+    members = ["user1@example.com", "user2@example.com"]
+    expected_url_suffix = f"/chat/users/{user_id}/channels/{channel_id}/members"
+    expected_json_data = {
+        "members": [
+            {"email": "user1@example.com"},
+            {"email": "user2@example.com"}
+        ]
+    }
+    from Zoom import zoom_invite_to_channel_command
+
+    zoom_invite_to_channel_mock = mocker.patch.object(client, "zoom_invite_to_channel")
+
+    # Convert MagicMock to dictionary
+    zoom_invite_to_channel_mock.return_value = expected_json_data
+
+    zoom_invite_to_channel_command(
+        client,
+        channel_id=channel_id,
+        user_id=user_id,
+        members=members
+    )
+
+    zoom_invite_to_channel_mock.assert_called_with(expected_json_data, expected_url_suffix)
+
+
+def test_zoom_remove_from_channel_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    channel_id = "channel_id"
+    member_id = "member_id"
+    user_id = "user_id"
+    expected_url_suffix = f"/chat/users/{user_id}/channels/{channel_id}/members/{member_id}"
+
+    zoom_remove_from_channel_mock = mocker.patch.object(client, "zoom_remove_from_channel")
+    from Zoom import zoom_remove_from_channel_command
+
+    zoom_remove_from_channel_command(
+        client,
+        channel_id=channel_id,
+        member_id=member_id,
+        user_id=user_id
+    )
+
+    zoom_remove_from_channel_mock.assert_called_with(expected_url_suffix)
+
+
+# def test_zoom_send_file_command(mocker, monkeypatch):
+#     client = Client(base_url='https://test.com', account_id="mockaccount",
+#                     client_id="mockclient", client_secret="mocksecret")
+
+#     user_id = "user_id"
+#     to_channel = "channel_id"
+#     entry_id = "entry_id"
+
+#     expected_upload_url = f'https://file.zoom.us/v2/chat/users/{user_id}/messages/files'
+#     expected_file_info = {
+#         'name': 'test_file.txt',
+#         'path': '/path/to/test_file.txt'
+#     }
+#     expected_json_data = {
+#         'to_channel': to_channel
+#     }
+#     expected_upload_response = {
+#         'id': 'file_id'
+#     }
+
+#     zoom_remove_from_channel_mock = mocker.patch.object(client, "zoom_remove_from_channel")
+
+
+#     mock_getFilePath = mocker.Mock(return_value=expected_file_info)
+#     monkeypatch.setattr('demisto.getFilePath', mock_getFilePath)
+
+#     zoom_send_file_mock = mocker.patch.object(client, "zoom_send_file", return_value=expected_upload_response)
+
+#     from Zoom import zoom_send_file_command
+
+#     results = zoom_send_file_command(
+#         client,
+#         user_id=user_id,
+#         to_channel=to_channel,
+#         entry_id=entry_id
+#     )
+
+#     mock_getFilePath.assert_called_with(entry_id)
+#     zoom_send_file_mock.assert_called_with(expected_upload_url, expected_file_info, expected_json_data)
+
+#     assert results.outputs == expected_upload_response
+
+
+def test_zoom_list_account_public_channels_command(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a list public channels
+        Then -
+            Validate that a func has been called
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount", client_id="mockclient", client_secret="mocksecret")
+    page_size = 50
+    channel_id = "channel_id"
+    next_page_token = "next_page_token"
+    page_number = 2
+
+    expected_url_suffix = f'channels/{channel_id}' if channel_id else 'channels'
+    expected_raw_data = {
+        "channels": [
+            {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
+                "channel_url": "https://test1.com", "next_page_token": "token1"},
+            {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
+                "channel_url": "https://test1.com", "next_page_token": "token2"}
+        ]
+    }
+
+    zoom_list_channels_mock = mocker.patch.object(client, "zoom_list_channels")
+    zoom_list_channels_mock.return_value = expected_raw_data
+
+    from Zoom import zoom_list_account_public_channels_command
+
+    result = zoom_list_account_public_channels_command(
+        client,
+        page_size=page_size,
+        channel_id=channel_id,
+        next_page_token=next_page_token,
+        page_number=page_number
+    )
+
+    zoom_list_channels_mock.assert_called_with(
+        page_size=page_size,
+        next_page_token=next_page_token,
+        url_suffix=expected_url_suffix,
+        page_number=page_number
+    )
+
+    assert result.outputs == expected_raw_data
+    assert result.outputs['channels'][0]['id'] == expected_raw_data['channels'][0]['id']
+    assert result.outputs['channels'][0]['jid'] == expected_raw_data['channels'][0]['jid']
+
+
+def test_zoom_list_account_public_channels_command__limit(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a limit of results
+        Then -
+            Validate that a func that runs a pagination has been called
+    """
+    manual_manual_list_channel_paginatio_mock = mocker.patch.object(Zoom, "manual_list_channel_pagination")
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    from Zoom import zoom_list_account_public_channels_command
+    zoom_list_account_public_channels_command(client=client, user_id="blabla", limit=5)
+    assert manual_manual_list_channel_paginatio_mock.called
+
+
+def test_zoom_send_message_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    expected_request_payload = {
+        'message': 'Hello from @dima!',
+        'to_channel': 'channel1',
+        'at_items': [
+            {
+                'at_contact': '"user2@example.com"',
+                'at_type': 1,
+                'start_position': 11,
+                'end_position': 16
+            }
+        ],
+        'rich_text': [
+            {'start_position': None,
+             'end_position': None,
+             'format_type': None,
+             'format_attr': None
+             }
+        ],
+        'file_ids': []
+    }
+
+    expected_response = {
+        'id': 'message_id',
+        'contact': "user2@example.com",
+        'channel_name': 'channel_name'
+    }
+
+    mock_send_chat_message = mocker.patch.object(client, 'zoom_send_message')
+    mock_send_chat_message.return_value = expected_response
+    from Zoom import zoom_send_message_command
+
+    result = zoom_send_message_command(client,
+                                       user_id='user1',
+                                       at_contact='user2@example.com',
+                                       at_type='Mention a contact',
+                                       start_position=11,
+                                       end_position=16,
+                                       message='Hello from @dima!',
+                                       to_channel='channel1',
+
+                                       )
+
+    assert result.outputs == expected_response
+    assert mock_send_chat_message.call_args[0][1] == expected_request_payload
+
+
+def test_arg_to_datetime_str():
+    # Test relative timestamps
+    now = datetime.datetime.now()
+    two_weeks_ago = now - datetime.timedelta(weeks=2)
+
+    from Zoom import arg_to_datetime_str
+
+    assert arg_to_datetime_str('now').replace(microsecond=0) == now.replace(microsecond=0)
+    assert arg_to_datetime_str('2 weeks ago').replace(microsecond=0) == two_weeks_ago.replace(microsecond=0)
+
+    # Test specific datetime format
+    dt_str = '2023-03-13T01:22:00'
+    dt = datetime.datetime(2023, 3, 13, 1, 22, 0)
+    assert arg_to_datetime_str(dt_str) == dt
+    # Test error format
+
+    with pytest.raises(DemistoException) as e:
+        dt_str = '2023-30-80T01:22:00'
+        arg_to_datetime_str(dt_str)
+    assert e.value.message == f"Invalid datetime format: {dt_str}"
+
+    with pytest.raises(DemistoException) as e:
+        dt_str = '1 treek ago'
+        arg_to_datetime_str(dt_str)
+    assert e.value.message == f"Invalid datetime format: {dt_str}"
+
+
+def test_zoom_list_messages_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount", client_id="mockclient", client_secret="mocksecret")
+    page_size = 50
+    channel_id = "channel_id"
+    user_id = "user_id"
+    limit = 100
+    page_number = 2
+    to_contact = "contact@example.com"
+    to_channel = "channel_id"
+    date_arg = "2023-03-07T00:49:01Z"
+    include_deleted_and_edited_message = True
+    search_type = "message"
+    search_key = "keyword"
+    exclude_child_message = False
+
+    expected_raw_data = {
+        "messages": [
+            {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
+                "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
+            {"id": "message_id_2", "message": "Message 2", "sender": "sender_2",
+                "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
+        ]
+    }
+
+    client.zoom_list_user_messages = mocker.MagicMock(return_value=expected_raw_data)
+    from Zoom import zoom_list_messages_command
+
+    result = zoom_list_messages_command(
+        client,
+        page_size=page_size,
+        channel_id=channel_id,
+        user_id=user_id,
+        next_page_token='next_page_token',
+        limit=limit,
+        page_number=page_number,
+        to_contact=to_contact,
+        to_channel=to_channel,
+        date_arg=date_arg,
+        include_deleted_and_edited_message=include_deleted_and_edited_message,
+        search_type=search_type,
+        search_key=search_key,
+        exclude_child_message=exclude_child_message
+    )
+
+    assert result.outputs == expected_raw_data
+    assert result.outputs['messages'][0]['id'] == expected_raw_data['messages'][0]['id']
+    assert result.outputs['messages'][0]['message'] == expected_raw_data['messages'][0]['message']
+    assert result.outputs['messages'][0]['sender'] == expected_raw_data['messages'][0]['sender']
+    assert result.outputs['messages'][0]['sender_display_name'] == expected_raw_data['messages'][0]['sender_display_name']
+    assert result.outputs['messages'][0]['date_time'] == expected_raw_data['messages'][0]['date_time']
+
+
+def test_zoom_update_message_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "generate_oauth_token")
+
+    user_id = "user1"
+    message_id = "2d12042d-1823-4b0c-b26d-3f5ef7a89d68"
+    message = "Hello! this is message for all"
+    to_channel = "channel1"
+    to_contact = "user2@example.com"
+    # entry_ids = ["file_entry_id1", "file_entry_id2"]
+
+    expected_payload = {
+        "message": message,
+        "file_ids": [],
+        "to_channel": to_channel,
+        "to_contact": to_contact
+    }
+
+    zoom_update_message_mock = mocker.patch.object(client, "zoom_update_message")
+
+    from Zoom import zoom_update_message_command
+
+    result = zoom_update_message_command(
+        client,
+        user_id=user_id,
+        message_id=message_id,
+        message=message,
+        to_channel=to_channel,
+        to_contact=to_contact
+        # entry_ids=entry_ids
+    )
+
+    # Test case: Update message with to_channel
+    zoom_update_message_mock.assert_called_with(f"/chat/users/{user_id}/messages/{message_id}", expected_payload)
+
+    assert result.readable_output == 'Message 2d12042d-1823-4b0c-b26d-3f5ef7a89d68 was successfully updated'
+
+
+def test_zoom_delete_message_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "generate_oauth_token")
+
+    user_id = "user1"
+    message_id = "2d12042d-1823-4b0c-b26d-3f5ef7a89d68"
+    to_channel = "channel1"
+    # entry_ids = ["file_entry_id1", "file_entry_id2"]
+
+    zoom_delete_message_mock = mocker.patch.object(client, "zoom_delete_message")
+
+    from Zoom import zoom_delete_message_command
+
+    result_to_channel = zoom_delete_message_command(
+        client,
+        user_id=user_id,
+        message_id=message_id,
+        to_channel=to_channel,
+        # entry_ids=entry_ids
+    )
+    # Test case: Update message with to_channel
+    zoom_delete_message_mock.assert_called_with(f"/chat/users/{user_id}/messages/{message_id}?to_channel={to_channel}")
+
+    assert result_to_channel.readable_output == 'Message 2d12042d-1823-4b0c-b26d-3f5ef7a89d68 was deleted successfully'

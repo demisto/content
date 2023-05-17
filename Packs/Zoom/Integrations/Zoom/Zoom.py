@@ -3,6 +3,7 @@ from ZoomApiModule import *
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
+from datetime import datetime
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
@@ -197,7 +198,10 @@ class Client(Zoom_Client):
             method='PATCH',
             url_suffix=url_suffix,
             headers={'authorization': f'Bearer {self.access_token}'},
-            json_data=json_data)
+            json_data=json_data,
+            resp_type='response',
+            return_empty_response=True
+        )
 
     def zoom_list_user_channels(self, user_id: str, page_size: int, next_page_token: str = None, url_suffix: str = None,
                                 page_number: int = None):
@@ -281,7 +285,6 @@ class Client(Zoom_Client):
             url_suffix=url_suffix,
             json_data=json_data,
             headers={'authorization': f'Bearer {self.access_token}'},
-            resp_type='response',
             return_empty_response=True
         )
 
@@ -450,7 +453,7 @@ def remove_extra_info_list_users(limit, raw_data):
     return all_info
 
 
-def remove_extra_info_list_channels(limit, raw_data):
+def remove_extra_info_list(name, limit, raw_data):
     """_summary_
     Due to the fact that page_size must be const,
     Extra information may be provided to me, such as:
@@ -463,7 +466,7 @@ def remove_extra_info_list_channels(limit, raw_data):
     """
     all_info = []
     for page in raw_data:
-        channel_info = page.get("channels", [])
+        channel_info = page.get(name, [page])
         for channel in channel_info:
             all_info.append(channel)
             if len(all_info) >= limit:
@@ -841,6 +844,9 @@ def check_authentication_type_parameters(api_key: str, api_secret: str,
 
 
 def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
+    """
+    Lists public channels associated with a Zoom account.
+    """
     # PREPROCESSING
     client = client
     page_size = arg_to_number(args.get('page_size', 50))
@@ -860,32 +866,38 @@ def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
             raw_data = manual_list_channel_pagination(
                 client=client, next_page_token=next_page_token, limit=limit, url_suffix=url_suffix)
 
-            minimal_needed_info = remove_extra_info_list_channels(limit, raw_data)
-
-            md = tableToMarkdown('Channels', minimal_needed_info, ['id', 'jid', 'type', 'name', 'channel_url'])
-
-            raw_data = raw_data[0]
+            data = remove_extra_info_list('channels', limit, raw_data)
     else:
         # only one request is needed
         raw_data = client.zoom_list_channels(page_size=page_size, next_page_token=next_page_token,
                                              url_suffix=url_suffix, page_number=page_number)
         # parsing the data according to the different given arguments
         if channel_id:
-            md = tableToMarkdown('channels', [raw_data], ['id', 'jid', 'type', 'name', 'channel_url'])
+            data = [raw_data]
         else:
-            md = tableToMarkdown('channels', raw_data.get("channels"), ['id', 'jid', 'type', 'name', 'channel_url'])
+            data = raw_data.get("channels")
+    outputs = []
+    for i in data:
+        outputs.append({'Channel JID': i.get('jid'),
+                        'Channel ID': i.get('id'),
+                        'Channel name': i.get('name'),
+                        'Channel type': i.get('type'),
+                        'Channel url': i.get('channel_url'),
+                        'Channel next token': i.get('next_page_token', None)})
+    md = tableToMarkdown('Channels', outputs, removeNull=True)
 
     return CommandResults(
         outputs_prefix='Zoom.Channel',
         readable_output=md,
-        outputs={
-            'channels': raw_data.get('channel'),
-        },
+        outputs=raw_data,
         raw_response=raw_data
     )
 
 
 def zoom_list_user_channels_command(client, **args) -> CommandResults:
+    """
+    Lists channels associated with a specific Zoom user.
+    """
     # PREPROCESSING
     client = client
     page_size = arg_to_number(args.get('page_size', 50))
@@ -894,7 +906,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
     next_page_token = args.get('next_page_token')
     limit = arg_to_number(args.get('limit'))
     page_number = arg_to_number(args.get('page_number', 1))
-
+    data = []
     url_suffix = f'users/{user_id}/channels/{channel_id}' if channel_id else f'users/{user_id}/channels'
     if limit:
         if "page_size" in args or "page_number" in args or next_page_token:
@@ -905,9 +917,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
             raw_data = manual_list_user_channel_pagination(client=client, user_id=user_id,
                                                            next_page_token=next_page_token, limit=limit,
                                                            url_suffix=url_suffix)
-            minimal_needed_info = remove_extra_info_list_channels(limit, raw_data)
-            md = tableToMarkdown('Channels', minimal_needed_info, ['user_id', 'id', 'jid', 'type', 'name', 'channel_url'])
-            raw_data = raw_data[0]
+            data = remove_extra_info_list('channels', limit, raw_data)
     else:
         # only one request is needed
         raw_data = client.zoom_list_user_channels(user_id=user_id, page_size=page_size,
@@ -915,20 +925,32 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
                                                   page_number=page_number)
         # parsing the data according to the different given arguments
         if channel_id:
-            md = tableToMarkdown('Channels', [raw_data], ['user id', 'id', 'jid', 'type', 'name', 'channel_url'])
+            data = [raw_data]
         else:
-            md = tableToMarkdown('Channels', raw_data.get("channels"), ['user_id', 'id', 'jid', 'type', 'name', 'channel_url'])
+            data = raw_data.get('channels')
+    outputs = []
+    for i in data:
+        outputs.append({'User id': user_id,
+                        'Channel ID': i.get('id'),
+                        'Channel name': i.get('name'),
+                        'Channel type': i.get('type'),
+                        'Channel url': i.get('channel_url')})
+    md = tableToMarkdown('Channels', outputs)
+
     return CommandResults(
         outputs_prefix='Zoom.Channel',
         readable_output=md,
         outputs={
-            'channels': raw_data.get('channel')
+            'channels': raw_data
         },
         raw_response=raw_data
     )
 
 
 def zoom_create_channel_command(client, **args) -> CommandResults:
+    """
+        Create a new zoom channel
+    """
     client = client
     user_id = args.get('user_id')
     member_emails = argToList(args.get('member_emails'))
@@ -941,10 +963,7 @@ def zoom_create_channel_command(client, **args) -> CommandResults:
     channel_type = args.get('channel_type', None)
     channel_type_num = CHANNEL_TYPE_MAPPING.get(channel_type)
     json_all_data = {}
-    email_json = {}
-
-    for email in member_emails:
-        email_json.update({"email": email},)
+    email_json = [{"email": email} for email in member_emails]
 
     # special section for recurring meeting with fixed time
     json_all_data.update({
@@ -953,38 +972,53 @@ def zoom_create_channel_command(client, **args) -> CommandResults:
             "new_members_can_see_previous_messages_files": new_members_can_see_prev_msgs,
             "posting_permissions": posting_permissions_num,
         },
-        "members": [
-            email_json
-        ],
         "name": channel_name,
-        "type": channel_type_num
+        "type": channel_type_num,
+        "members": email_json
     })
 
     json_data = remove_None_values_from_dict(json_all_data)
     url_suffix = f"/chat/users/{user_id}/channels"
     raw_data = client.zoom_create_channel(url_suffix, json_data)
-    md = tableToMarkdown('Channel details', [raw_data], ['id', 'name', 'type', 'channel_url'])
+    # md = tableToMarkdown('Channel details', [raw_data], ['id', 'name', 'type', 'channel_url'])
+
+    outputs = []
+    outputs.append({'User id': user_id,
+                    'Channel ID': raw_data.get('id'),
+                    'Channel name': raw_data.get('name'),
+                    'Channel type': raw_data.get('type'),
+                    'Channel url': raw_data.get('channel_url')})
+
+    human_readable = tableToMarkdown('Channel details',
+                                     outputs,
+                                     removeNull=True)
 
     return CommandResults(
         outputs_prefix='Zoom.Channel',
-        readable_output=md,
+        readable_output=human_readable,
         outputs=raw_data,
         raw_response=raw_data
     )
 
 
 def zoom_delete_channel_command(client, **args) -> CommandResults:
+    """
+       Delete a Zoom channel
+    """
     client = client
     channel_id = args.get('channel_id')
     user_id = args.get('user_id')
     url_suffix = f'/chat/users/{user_id}/channels/{channel_id}'
     client.zoom_delete_channel(url_suffix)
     return CommandResults(
-        readable_output=f'channel {channel_id} was deleted successfully',
+        readable_output=f'Channel {channel_id} was deleted successfully',
     )
 
 
 def zoom_update_channel_command(client, **args) -> CommandResults:
+    """
+        Update a Zoom channel
+    """
     client = client
     add_member_permissions = args.get('add_member_permissions', None)
     add_member_permissions_num = MEMBER_PER_MISSIONS_MAPPING.get(add_member_permissions)
@@ -1007,38 +1041,47 @@ def zoom_update_channel_command(client, **args) -> CommandResults:
 
     json_data = remove_None_values_from_dict(json_all_data)
     url_suffix = f"/chat/users/{user_id}/channels/{channel_id}"
-    raw_data = client.zoom_update_channel(url_suffix, json_data)
+    client.zoom_update_channel(url_suffix, json_data)
 
     return CommandResults(
         readable_output=f"Channel {channel_id} was updated successfully",
-        raw_response=raw_data
     )
 
 
 def zoom_invite_to_channel_command(client, **args) -> CommandResults:
-    client = client
+    """
+        invite users to Zoom channel
+    """
     channel_id = args.get('channel_id')
     user_id = args.get('user_id')
     members = argToList(args.get('members'))
     url_suffix = f'/chat/users/{user_id}/channels/{channel_id}/members'
-    json_m = {}
-    for email in members:
-        json_m.update({'email': email},)
-    members_json = {'members': [json_m]}
+    json_members = [{"email": email} for email in members]
 
-    demisto.debug(members_json)
+    members_json = {'members': json_members}
+
     raw_data = client.zoom_invite_to_channel(members_json, url_suffix)
-    md = tableToMarkdown('Channel details', [raw_data], ['ids', 'added_at'])
+
+    outputs = [{
+        'User id': raw_data.get('ids'),
+        'Channel ID': channel_id,
+        'Added at date and time': raw_data.get('added_at')
+    }]
+
+    human_readable = tableToMarkdown('Channel details', outputs, removeNull=True)
 
     return CommandResults(
         outputs_prefix='Zoom.Channel',
-        readable_output=md,
+        readable_output=human_readable,
         outputs=raw_data,
         raw_response=raw_data
     )
 
 
 def zoom_remove_from_channel_command(client, **args) -> CommandResults:
+    """
+        Remove a user from Zoom channel
+    """
     client = client
     channel_id = args.get('channel_id')
     member_id = args.get('member_id')
@@ -1046,11 +1089,14 @@ def zoom_remove_from_channel_command(client, **args) -> CommandResults:
     url_suffix = f'/chat/users/{user_id}/channels/{channel_id}/members/{member_id}'
     client.zoom_remove_from_channel(url_suffix)
     return CommandResults(
-        readable_output=f'channel {channel_id} was deleted successfully',
+        readable_output=f'Channel {channel_id} was deleted successfully',
     )
 
 
 def zoom_send_file_command(client, **args) -> CommandResults:
+    """
+        Send file in Zoom
+    """
     client = client
     user_id = args.get('user_id')
     to_channel = args.get('to_channel')
@@ -1074,6 +1120,9 @@ def zoom_send_file_command(client, **args) -> CommandResults:
 
 
 def zoom_send_message_command(client, **args) -> CommandResults:
+    """
+        Send  Zoom chat message
+    """
     client = client
     at_contact = args.get('at_contact', None)
     at_type = AT_TYPE.get(args.get('at_type', None))
@@ -1126,7 +1175,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         'Contact': to_contact
     }
 
-    md = tableToMarkdown('Message', data)
+    md = tableToMarkdown('Message', data, removeNull=True)
     return CommandResults(
         outputs_prefix='Zoom.ChatMessage',
         readable_output=md,
@@ -1136,6 +1185,9 @@ def zoom_send_message_command(client, **args) -> CommandResults:
 
 
 def zoom_delete_message_command(client, **args) -> CommandResults:
+    """
+        Delete Zoom chat message
+    """
     client = client
     message_id = args.get('message_id')
     to_contact = args.get('to_contact', None)
@@ -1156,6 +1208,9 @@ def zoom_delete_message_command(client, **args) -> CommandResults:
 
 
 def zoom_update_message_command(client, **args) -> CommandResults:
+    """
+        Update Zoom chat message
+    """
     client = client
     message_id = args.get('message_id')
     to_contact = args.get('to_contact', None)
@@ -1185,85 +1240,161 @@ def zoom_update_message_command(client, **args) -> CommandResults:
     )
 
 
+def zoom_get_user_id_by_email(client, email):
+    """
+    Retrieves the user ID associated with the given email address.
+
+    :param client: The Zoom client object.,
+    email: The email address of the user.
+
+    :return: The user ID associated with the email address.
+    :rtype: str
+    """
+
+    user_url_suffix = 'users'
+    users = client.zoom_list_users(page_size=50, url_suffix=user_url_suffix).get('users', [])
+    for user in users:
+        if user['email'] == email:
+            return user['id']
+    raise DemistoException(USER_NOT_FOUND)
+
+
+def arg_to_datetime_str(arg):
+    """
+    Converts the provided argument to a datetime object.
+
+    :param arg: The argument to be converted. It can be a relative timestamp, "now", "today", or a datetime string
+                in the format "YYYY-MM-DDTHH:MM:SS".
+    :type arg: str
+
+    :return: The converted datetime object.
+    :rtype: datetime.datetime
+
+    :raises DemistoException: If the argument is an invalid datetime format.
+    """
+    if not arg:
+        return None
+
+    # Relative timestamp regex pattern
+    relative_timestamp_pattern = r'^(\d+)\s+(year|month|week|day|hour|minute|second)s?\s+ago$'
+    # Check if the argument is "now"
+    if arg == 'now':
+        return datetime.now()
+
+    # Check if the argument is "today"
+    if arg == 'today':
+        now = datetime.now()
+        return datetime(now.year, now.month, now.day)
+
+    # Check if the argument matches relative timestamp pattern
+    match = re.match(relative_timestamp_pattern, arg)
+    if match:
+        amount = int(match.group(1))
+        unit = match.group(2)
+        delta = None
+
+        if unit == 'year':
+            delta = timedelta(days=amount * 365)
+        elif unit == 'month':
+            delta = timedelta(days=amount * 30)
+        elif unit == 'week':
+            delta = timedelta(weeks=amount)
+        elif unit == 'day':
+            delta = timedelta(days=amount)
+        elif unit == 'hour':
+            delta = timedelta(hours=amount)
+        elif unit == 'minute':
+            delta = timedelta(minutes=amount)
+        elif unit == 'second':
+            delta = timedelta(seconds=amount)
+
+        if delta:
+            return datetime.now() - delta
+    try:
+        dt = datetime.strptime(arg, '%Y-%m-%dT%H:%M:%S')
+        return dt
+    except ValueError:
+        raise DemistoException(f"Invalid datetime format: {arg}")
+    # Transform the argument to the required format
+
+
 def zoom_list_messages_command(client, **args) -> CommandResults:
-    # PREPROCESSING
+    """
+    Lists messages from Zoom chat.
+
+    :raises DemistoException: If a required argument is missing.
+    """
+
     client = client
-    page_size = arg_to_number(args.get('page_size', 50))
-    channel_id = args.get('channel_id')
-    user_id = args.get('user_id', None)
-    next_page_token = args.get('next_page_token')
-    limit = arg_to_number(args.get('limit'))
-    page_number = arg_to_number(args.get('page_number', 1))
+    user_id = args.get('user_id')
     to_contact = args.get('to_contact')
     to_channel = args.get('to_channel')
-    date_arg = arg_to_datetime(args.get('date'))
-    from_arg = arg_to_datetime(args.get('from'))
-    to_arg = arg_to_datetime(args.get('to'))
+    date_arg = arg_to_datetime_str(args.get('date'))
+    from_arg = arg_to_datetime_str(args.get('from'))
+    to_arg = arg_to_datetime_str(args.get('to'))
     include_deleted_and_edited_message = args.get('include_deleted_and_edited_message')
     search_type = args.get('search_type')
     search_key = args.get('search_key')
     exclude_child_message = args.get('exclude_child_message', False)
+    limit = arg_to_number(args.get('limit', 50))
+    page_size = limit if limit and limit <= 50 else 50
 
-    if "to_contact" not in args and "to_channel" not in args:
+    if not to_contact and not to_channel:
         raise DemistoException(MISSING_ARGUMENT)
 
-    found_user = False
-    if re.match(emailRegex, user_id):
-        user_url_suffix = 'users'
-        user_raw_data = client.zoom_list_users(page_size=page_size, next_page_token=next_page_token,
-                                               url_suffix=user_url_suffix, page_number=page_number)
-        for page in user_raw_data:
-            users_info = page.get("users", [])
-            for user in users_info:
-                if user_id == user.email:
-                    user_id = user.id
-                    found_user = True
-                    break
-        if not found_user:
-            raise DemistoException(USER_NOT_FOUND)
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
 
-    url_suffix = f'/chat/users/{user_id}/messages'
-    if limit:
-        if "page_size" in args or "page_number" in args or next_page_token:
-            # arguments collision
-            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
-        else:
-            # multiple requests are needed
-            raw_data = client.zoom_list_user_messages(user_id=user_id, page_size=page_size,
-                                                      next_page_token=next_page_token, url_suffix=url_suffix,
-                                                      to_contact=to_contact,
-                                                      to_channel=to_channel, date_arg=date_arg, from_arg=from_arg,
-                                                      to_arg=to_arg,
-                                                      include_deleted_and_edited_message=include_deleted_and_edited_message,
-                                                      search_type=search_type, search_key=search_key,
-                                                      exclude_child_message=exclude_child_message)
-            minimal_needed_info = remove_extra_info_list_channels(limit, raw_data)
-            md = tableToMarkdown('messages', minimal_needed_info, ['user_id', 'id', 'jid', 'type', 'name', 'channel_url'])
-            raw_data = raw_data[0]
-    else:
-        # only one request is needed
-        raw_data = client.zoom_list_user_messages(user_id=user_id, page_size=page_size,
-                                                  next_page_token=next_page_token, url_suffix=url_suffix,
+    url_suffix = f'users/{user_id}/messages'
+    all_messages: List = []
+    next_page_token = None
+    while True:
+        raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,
+                                                  user_id=user_id,
                                                   to_contact=to_contact,
-                                                  to_channel=to_channel, date_arg=date_arg, from_arg=from_arg,
+                                                  to_channel=to_channel,
+                                                  date_arg=date_arg,
+                                                  from_arg=from_arg,
                                                   to_arg=to_arg,
                                                   include_deleted_and_edited_message=include_deleted_and_edited_message,
-                                                  search_type=search_type, search_key=search_key,
-                                                  exclude_child_message=exclude_child_message)
-        # parsing the data according to the different given arguments
-        if channel_id:
-            md = tableToMarkdown('Messages', [raw_data], ['from to', 'page size', 'message id',
-                                 'message text', 'message sender', 'sender display name', 'date time'])
+                                                  search_type=search_type,
+                                                  search_key=search_key,
+                                                  exclude_child_message=exclude_child_message,
+                                                  next_page_token=next_page_token,
+                                                  page_size=page_size)
+        data = raw_data.get('messages', [])
+        if limit and len(all_messages) + len(data) > limit:
+            remaining_limit = limit - len(all_messages)
+            data = data[:remaining_limit]
+
+        all_messages.extend(data)
+
+        if limit and len(all_messages) >= limit:
+            all_messages = all_messages[:limit]
+            break
+        next_page_token = raw_data.get('next_page_token', None)
+        if next_page_token and next_page_token != '':
+            next_page_token = raw_data['next_page_token']
         else:
-            md = 'messages'
-            # md = tableToMarkdown('Messages', raw_data.get("messages"),['from to', 'page size', 'message id', 'message text',
-            # 'message sender', 'sender display name', 'date time'])
+            break
+    outputs = []
+    for i in all_messages:
+        outputs.append({
+            'User id': user_id,
+            'Message Id': i.get('id'),
+            'Message text': i.get('message'),
+            'Message sender': i.get('sender'),
+            'Sender display name': i.get('sender_display_name'),
+            'Date Time': i.get('date_time'),
+            'From': str(from_arg),
+            'To': str(to_arg)})
+
+    md = tableToMarkdown('Messages', outputs)
+
     return CommandResults(
         outputs_prefix='Zoom.ChatMessage',
         readable_output=md,
-        outputs={
-            'messages': raw_data.get('messages')
-        },
+        outputs={'messages': all_messages},
         raw_response=raw_data
     )
 
