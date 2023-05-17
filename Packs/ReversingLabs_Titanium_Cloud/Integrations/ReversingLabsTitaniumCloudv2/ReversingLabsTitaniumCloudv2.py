@@ -1264,6 +1264,44 @@ def url_latest_analyses_feed_command():
     return_results(results)
 
 
+def url_analyses_feed_from_date_command():
+    url_ti = URLThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    time_format = demisto.getArg("timeFormat")
+    start_time = demisto.getArg("startTime")
+    results_per_page = int(demisto.getArg("resultsPerPage"))
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = url_ti.get_url_analysis_feed_from_date_aggregated(
+            time_format=time_format,
+            start_time=start_time,
+            results_per_page=results_per_page,
+            max_results=max_results
+        )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        exit(0)
+    except Exception as e:
+        return_error(str(e))
+
+    analyses = tableToMarkdown("URL analyses from specified date", response)
+    markdown = f"## ReversingLabs URL Analyses Feed from date {start_time}\n {analyses}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"url_analyses_feed_from_date": response},
+        readable_output=markdown
+    )
+
+    return_results(results)
+
+
 def main():
     command = demisto.command()
 
@@ -1341,6 +1379,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-url-latest-analyses-feed":
         url_latest_analyses_feed_command()
+
+    elif command == "reversinglabs-titaniumcloud-url-analyses-feed-from-date":
+        url_analyses_feed_from_date_command()
 
     else:
         return_error(f"Command {command} does not exist")
