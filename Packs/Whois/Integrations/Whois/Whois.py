@@ -1,11 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+# from CommonServerUserPython import *
 import re
 import socket
 import sys
 from codecs import encode, decode
-import socks
+# import socks
 import errno
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
@@ -7296,7 +7296,10 @@ def whois_request(domain, server, port=43, is_refer_server=False):
 def whois_request_get_response(socket, domain):
     socket.send(("%s\r\n" % domain).encode("utf-8"))
     buff = b""
+    i = 0
     while True:
+        print(f'*** {i}, socket.recv')
+        i += 1
         data = socket.recv(1024)
         if len(data) == 0:
             break
@@ -8450,7 +8453,7 @@ def domain_command(reliability):
         })
 
 
-def get_whois_ip(ip):
+def get_whois_ip(ip, retry_count: int, rate_limit_timeout: int, rate_limit_errors_suppressed: bool):
     from urllib.request import build_opener, ProxyHandler
     from ipwhois import IPWhois
     proxy_opener = None
@@ -8462,13 +8465,21 @@ def get_whois_ip(ip):
     else:
         ip_obj = IPWhois(ip)
 
-    return ip_obj.lookup_rdap(depth=1)
+    try:
+        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+    except urllib.error.HTTPError as e:
+        if rate_limit_errors_suppressed:
+            demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
+            return
+        demisto.error(f'HTTPError when trying to lookup rdap info. Error: {e}')
+        raise e
 
 
-def ip_command(ips, reliability):
+def ip_command(ips, reliability, retry_count: int, rate_limit_timeout: int, rate_limit_errors_suppressed: bool):
     results = []
     for ip in argToList(ips):
-        response = get_whois_ip(ip)
+        response = get_whois_ip(ip, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout,
+                                rate_limit_errors_suppressed=rate_limit_errors_suppressed)
 
         dbot_score = Common.DBotScore(
             indicator=ip,
@@ -8501,7 +8512,31 @@ def ip_command(ips, reliability):
         )
 
         results.append(result)
-    return results
+    # return results
+
+    related_feed = {
+        "value": response.get('network', {}).get('cidr'),
+        "indicator_type": 'CIDR'
+    }
+
+    indicator = {
+        "ip": ip,
+        "asn": response.get('asn'),
+        "geo_country": network_data.get('country'),
+        "organization_name": network_data.get('name'),
+        "dbot_score": dbot_score,
+        "feed_related_indicators": [related_feed]
+    }
+
+    return {
+        "outputs_prefix": 'Whois.IP',
+        "outputs_key_field": 'query',
+        "outputs": response,
+        "readable_output": tableToMarkdown('Whois results:', readable_data),
+        "raw_response": response,
+        "indicator": indicator,
+        "reliability": reliability,
+    }
 
 
 def whois_command(reliability):
@@ -8577,6 +8612,19 @@ def setup_proxy():
 
 
 def main():
+    demisto_args = demisto.args()
+    ip = demisto_args.get('ip')
+    demisto_params = demisto.params()
+    rate_limit_retry_count: int = int(demisto_args.get('rate_limit_retry_count') or demisto_params.get('rate_limit_retry_count') or 3)
+    print(f"*** {demisto_params.get('rate_limit_retry_count')=}, {demisto_args.get('rate_limit_retry_count')=}, {rate_limit_retry_count=}")
+    rate_limit_wait_seconds: int = int(demisto_args.get('rate_limit_wait_seconds') or demisto_params.get('rate_limit_wait_seconds') or 120)
+    print(f"*** {demisto_params.get('rate_limit_wait_seconds')=}, {demisto_args.get('rate_limit_wait_seconds')=}, {rate_limit_wait_seconds=}")
+    rate_limit_errors_suppressed: bool = bool(demisto_args.get('rate_limit_errors_suppressed') or demisto_params.get('rate_limit_errors_suppressed') or False)
+    print(f"*** {demisto_params.get('rate_limit_errors_suppressed')=}, {demisto_args.get('rate_limit_errors_suppressed')=}, {rate_limit_errors_suppressed=}")
+
+    import time
+    time.sleep(60)
+
     LOG('command is {}'.format(str(demisto.command())))
     command = demisto.command()
 
@@ -8591,7 +8639,21 @@ def main():
 
     try:
         if command == 'ip':
-            return_results(ip_command(demisto.args().get('ip'), reliability))
+            demisto_args = demisto.args()
+            ip = demisto_args.get('ip')
+            demisto_params = demisto.params()
+            rate_limit_retry_count: int = int(demisto_params.get('rate_limit_retry_count') or demisto_args.get('rate_limit_retry_count') or 3)
+            print(f"*** {demisto_params.get('rate_limit_retry_count')=}, {demisto_args.get('rate_limit_retry_count')=}, {rate_limit_retry_count=}")
+            rate_limit_wait_seconds: int = int(demisto_params.get('rate_limit_wait_seconds') or demisto_args.get('rate_limit_wait_seconds') or 120)
+            print(f"*** {demisto_params.get('rate_limit_wait_seconds')=}, {demisto_args.get('rate_limit_wait_seconds')=}, {rate_limit_wait_seconds=}")
+            rate_limit_errors_suppressed: bool = bool(demisto_params.get('rate_limit_errors_suppressed') or demisto_args.get('rate_limit_errors_suppressed') or False)
+            print(f"*** {demisto_params.get('rate_limit_errors_suppressed')=}, {demisto_args.get('rate_limit_errors_suppressed')=}, {rate_limit_errors_suppressed=}")
+            ret_value = ip_command(ip, reliability, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
+                                   rate_limit_errors_suppressed=rate_limit_errors_suppressed)
+            if ret_value:
+                return_results()
+            else:
+                return_error(f'Failed to lookup ip {ip}')
         else:
             org_socket = socket.socket
             setup_proxy()
