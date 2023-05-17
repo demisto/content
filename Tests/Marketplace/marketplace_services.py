@@ -817,6 +817,7 @@ class Pack(object):
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
             id_set (dict): The content id set dict.
+            is_override (bool): Whether the flow overrides the packs on cloud storage.
         Returns:
             dict: release notes entry of changelog
             bool: Whether the pack is not updated
@@ -826,6 +827,7 @@ class Pack(object):
         entry_result = {}
 
         if new_version:
+            logging.debug(f"Creating changelog entry for a new version for pack {self.name} and version {version_display_name}")
             pull_request_numbers = self.get_pr_numbers_for_version(version_display_name)
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
@@ -833,12 +835,14 @@ class Pack(object):
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         elif initial_release:
+            logging.debug(f"Creating changelog entry for an initial version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
                             Changelog.RELEASED: self._create_date,
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         elif self.is_modified and not is_override:
+            logging.debug(f"Creating changelog entry for an existing version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
@@ -1578,6 +1582,7 @@ class Pack(object):
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
             marketplace (str): The marketplace to which the upload is made.
+            is_override (bool): Whether the flow overrides the packs on cloud storage.
 
         Returns:
             bool: whether the operation succeeded.
