@@ -2,7 +2,7 @@ from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
-    ReanalyzeFile
+    ReanalyzeFile, ImpHashSimilarity
 
 VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
@@ -1145,6 +1145,44 @@ def reanalyze_sample_command():
     return_results(results)
 
 
+def imphash_similarity_command():
+    imphash_similarity = ImpHashSimilarity(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    imphash = demisto.getArg("imphash")
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = imphash_similarity.get_imphash_index_aggregated(
+            imphash=imphash,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = imphash_similarity_output(response=response, imphash=imphash)
+
+    return_results(results)
+
+
+def imphash_similarity_output(response, imphash):
+    hashes = tableToMarkdown("SHA-1 list", response, headers="Hashes")
+    markdown = f"## Imphash Similarity for {imphash}\n {hashes}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"imphash_similarity": response},
+        readable_output=markdown
+    )
+
+    return results
+
+
+
 def main():
     command = demisto.command()
 
@@ -1213,6 +1251,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-reanalyze-sample":
         reanalyze_sample_command()
+
+    elif command == "reversinglabs-titaniumcloud-imphash-similarity":
+        imphash_similarity_command()
 
     else:
         return_error(f"Command {command} does not exist")

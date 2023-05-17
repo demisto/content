@@ -531,6 +531,26 @@ script:
       - contextPath: ReversingLabs.reanalyze_sample
         description: ''
         type: Unknown
+  - name: reversinglabs-titaniumcloud-imphash-similarity
+    description: Accepts an imphash and returns a list of SHA-1 hashes of files sharing that imphash.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: imphash
+        description: Imphash string
+        isArray: false
+        required: true
+        secret: false
+      - name: maxResults
+        description: Maximum number of returned results
+        defaultValue: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.imphash_similarity
+        description: ''
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58984
   feed: false
   isfetch: false
