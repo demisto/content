@@ -85,8 +85,11 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers, auth):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def get_incidents_request(self, creation_date: str = None, status_id: List[str] = None, severity: List[int] = None,
-                              incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE, order_by: bool = None, raw_filter: str = None):
+    def get_incidents_request(
+        self, creation_date: str = None, status_id: List[str] = None, severity: List[int] = None,
+        incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE,
+        order_by: bool = None, raw_filter: str = None
+    ):
         """Returns incidents list
         in the input (dummy).
 
@@ -104,7 +107,8 @@ class Client(BaseClient):
                 data = json.loads(raw_filter)
                 data["limit"] = limit
             except ValueError as e:
-                raise ValueError(f"The provided filter must be in JSON format as detailed at https://apidocs.securitycloud.symantec.com/#/: "
+                raise ValueError(f"The provided filter must be in JSON format as detailed"
+                                 f" at https://apidocs.securitycloud.symantec.com/#/: "
                                  f"\nError: {e}")
         else:
             data = {"limit": limit, "select": INCIDENTS_LIST_BODY}
@@ -265,7 +269,8 @@ class Client(BaseClient):
         """
 
         headers = self._headers
-        response = self._http_request(method='GET', url_suffix='/ProtectManager/webservices/v2/senderRecipientPattern/list',
+        response = self._http_request(method='GET',
+                                      url_suffix='/ProtectManager/webservices/v2/senderRecipientPattern/list',
                                       headers=headers)
 
         return response
@@ -274,7 +279,7 @@ class Client(BaseClient):
         self,
         pattern_id: str,
         pattern_name: str | None,
-        pattern_description: str| None,
+        pattern_description: str | None,
         new_ips: List[str] = None,
         new_users: List[str] = None
     ) -> Dict[str, str]:
@@ -299,7 +304,8 @@ class Client(BaseClient):
         if new_users:
             data['userPatterns'] = new_users  # type: ignore[assignment]
 
-        response = self._http_request(method='PUT', url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
+        response = self._http_request(method='PUT',
+                                      url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
                                       headers=headers, json_data=data)
         return response
 
@@ -336,7 +342,8 @@ class Client(BaseClient):
         if new_domains:
             data['urlDomains'] = new_domains  # type: ignore[assignment]
 
-        response = self._http_request(method='PUT', url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
+        response = self._http_request(method='PUT',
+                                      url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
                                       headers=headers, json_data=data)
         return response
 
@@ -346,8 +353,8 @@ class Client(BaseClient):
         """
 
         headers = self._headers
-        response = self._http_request(method='GET', url_suffix=f'/ProtectManager/webservices/'
-                                                               f'v2/incidents/{incident_id}/messageBody',
+        response = self._http_request(method='GET',
+                                      url_suffix=f'/ProtectManager/webservices/v2/incidents/{incident_id}/messageBody',
                                       headers=headers)
         return response
 
@@ -714,10 +721,16 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     raw_filter = args.get('raw_filter')
     try:
         incidents_result = client.get_incidents_request(
-            creation_date, status_ids, severities_dlp, incident_types_dlp, limit * page, None, raw_filter)  # type: ignore
+            creation_date,
+            status_ids,
+            severities_dlp,
+            incident_types_dlp,
+            limit * page,  # type: ignore[operator]
+            raw_filter=raw_filter
+        )
     except DemistoException as e:
         if '400' in str(e):
-            return_error = 'Error 400: Bad filter. Ensure the filter meets the requirements shown at https://apidocs.securitycloud.symantec.com/#/doc?id=incidentlists.'
+            pass
         else:
             raise e
     incidents_result = get_incidents_of_current_page(limit, page, page_size,

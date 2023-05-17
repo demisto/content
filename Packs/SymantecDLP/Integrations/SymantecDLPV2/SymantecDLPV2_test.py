@@ -595,7 +595,6 @@ def test_get_report_filters_command(requests_mock):
 
 @pytest.mark.parametrize('exception_error', ['error, 401 unauthorized', 'error occurred'])
 def test_get_report_filters_command_error(mocker, exception_error):
-
     """
     Given:
         api error
@@ -636,11 +635,11 @@ def test_list_users_command(requests_mock):
     from SymantecDLPV2 import Client, list_users_command
 
     mocked_response = [
-            {
-                "userId": 241, "userName": "User1", "emailAddress": "test@gmail.com",
-                "accountDisabled": "no", "roles": ["API Web"]
-            }
-        ]
+        {
+            "userId": 241, "userName": "User1", "emailAddress": "test@gmail.com",
+            "accountDisabled": "no", "roles": ["API Web"]
+        }
+    ]
 
     requests_mock.get(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/users',
@@ -673,24 +672,24 @@ def test_get_sender_recipient_pattern_command(requests_mock):
     from SymantecDLPV2 import Client, get_sender_recipient_pattern_command
 
     mocked_response = {
-           "id": 503,
-           "name": "XSOAR Sender Block Example",
-           "description": "demo",
-           "ruleType": 4,
-           "modifiedDate": "05/16/23 12:20 PM",
-           "modifiedBy": {
-              "id": 343,
-              "name": "AdminUsername "
-           },
-           "userPatterns": [
-              "domain-jsmith",
-              "domain-jdoe"
-           ],
-           "ipAddresses": [
-              "1.1.1.1",
-              "2.2.2.2"
-           ]
-        }
+        "id": 503,
+        "name": "XSOAR Sender Block Example",
+        "description": "demo",
+        "ruleType": 4,
+        "modifiedDate": "05/16/23 12:20 PM",
+        "modifiedBy": {
+            "id": 343,
+            "name": "AdminUsername "
+        },
+        "userPatterns": [
+            "domain-jsmith",
+            "domain-jdoe"
+        ],
+        "ipAddresses": [
+            "1.1.1.1",
+            "2.2.2.2"
+        ]
+    }
 
     requests_mock.get(
         'https://SymantecDLPV2.com/ProtectManager/webservices/v2/senderRecipientPattern/1234',
