@@ -1776,8 +1776,8 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     assert requests_get_mocker.call_args.kwargs.get('auth') is None, \
         "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
     assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
-           f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
-                                                      " Header argument should be passed to 'requests.get' function"
+        f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
+        " Header argument should be passed to 'requests.get' function"
 
 
 @pytest.mark.parametrize(
