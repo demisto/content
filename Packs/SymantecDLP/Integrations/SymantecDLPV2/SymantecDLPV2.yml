@@ -104,7 +104,7 @@ script:
       name: page
     - description: The number of results per page to display.
       name: page_size
-    - description: Full filter string as described in the SDLP API docs
+    - description: Full filter string as described in the SDLP API docs.
       name: raw_filter
     description: Returns a list of incidents.
     name: symantec-dlp-list-incidents
