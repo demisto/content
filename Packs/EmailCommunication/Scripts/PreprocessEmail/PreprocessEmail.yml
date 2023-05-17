@@ -7,7 +7,7 @@ args:
   name: files
 - name: CreateIncidentUntaggedEmail
   required: false
-  description: Allow the creation for email that we can't find existing incident for it.
+  description: Allow the creation of an email for which we can't find an existing incident.
   defaultValue: 'true'
 comment: |-
   Preprocessing script for email communication layout.

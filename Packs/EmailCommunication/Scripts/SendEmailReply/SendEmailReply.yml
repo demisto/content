@@ -26,7 +26,7 @@ args:
   defaultValue: n/a
 - name: subject_include_incident_id
   required: false
-  description: Include the Incident id within the email subject.
+  description: Include the Incident ID within the email subject.
   defaultValue: 'false'
 comment: |-
   Send email reply

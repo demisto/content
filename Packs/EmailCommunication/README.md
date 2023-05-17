@@ -27,7 +27,7 @@ This pack includes, out of the box, a full layout, scripts, and incident fields.
 ---
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***preprocessing.support.default.arguments*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *preprocessing.support.default.arguments* and set the value to *true*.
+2. In the **Server Configuration** section, verify that the *preprocessing.support.default.arguments* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *preprocessing.support.default.arguments* key and set the value to *true*.
 
 ---
 For more information about the pack, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/email-communication)
