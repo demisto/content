@@ -57,6 +57,23 @@ def test_azure_sql_db_list_command(mocker):
     results = azure_sql_db_list_command(client, args)
     assert '### Database List' in results.readable_output
     assert results.outputs[0].get('name') == 'integration-db'
+    
+
+def test_azure_sql_db_list_command_with_not_found(mocker):
+    """
+    Given:
+        - Wrong server_name
+    When:
+        - Retrieving list of all databases related to the server using the azure_sql_db_list command
+    Then
+        - Assert that a failure message is received
+    """
+    from AzureSQLManagement import azure_sql_db_list_command
+    failure_message = 'Can not perform requested operation on nested resource. Parent resource \'sqlintegratio\' not found.'
+    client = mock_client(mocker, failure_message)
+    args = {'server_name': 'sqlintegratio'}
+    result = azure_sql_db_list_command(client, args)
+    assert result.readable_output == failure_message
 
 
 def test_azure_sql_db_audit_policy_list_command(mocker):
