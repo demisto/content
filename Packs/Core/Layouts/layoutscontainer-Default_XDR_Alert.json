@@ -1014,7 +1014,7 @@
                                 "id": "81881100-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 8,
                                 "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
-                                "name": "Scan Host",
+                                "name": "Choose host to scan",
                                 "scriptId": "Cortex Core - IR|||core-endpoint-scan",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1083,7 +1083,7 @@
                                 "id": "82800590-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 9,
                                 "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
-                                "name": "Abort Host Scan",
+                                "name": "Abort host scan",
                                 "scriptId": "Cortex Core - IR|||core-endpoint-scan-abort",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1097,7 +1097,7 @@
                                 "hexColor": null,
                                 "id": "75e16e50-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 10,
-                                "name": "Isolate Host",
+                                "name": "Choose host to isolate",
                                 "scriptId": "Cortex Core - IR|||core-isolate-endpoint",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1111,7 +1111,7 @@
                                 "hexColor": null,
                                 "id": "77403b00-b04a-11ed-95eb-6fbf73c92c07",
                                 "index": 11,
-                                "name": "Unisolate Host",
+                                "name": "Choose host to unisolate",
                                 "scriptId": "Cortex Core - IR|||core-unisolate-endpoint",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1148,7 +1148,7 @@
                                 "id": "1c425e90-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 0,
                                 "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
-                                "name": "Retrieve File",
+                                "name": "Choose file to retrieve",
                                 "scriptId": "Cortex Core - IR|||core-retrieve-files",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1164,7 +1164,7 @@
                                 "id": "1dcd4450-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 1,
                                 "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
-                                "name": "Check File Existence",
+                                "name": "Check file existence",
                                 "scriptId": "Cortex Core - IR|||core-run-script-file-exists",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1178,7 +1178,7 @@
                                 "hexColor": null,
                                 "id": "16dc8890-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 2,
-                                "name": "Delete File",
+                                "name": "Choose file to delete",
                                 "scriptId": "Cortex Core - IR|||core-run-script-delete-file",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1192,7 +1192,7 @@
                                 "hexColor": null,
                                 "id": "1887c790-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 3,
-                                "name": "Quarantine File",
+                                "name": "Choose file to quarantine",
                                 "scriptId": "Cortex Core - IR|||core-quarantine-files",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1208,7 +1208,7 @@
                                 "id": "84fa8930-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 4,
                                 "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
-                                "name": "Kill Process",
+                                "name": "Choose process to kill",
                                 "scriptId": "Cortex Core - IR|||core-run-script-kill-process",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1222,7 +1222,7 @@
                                 "hexColor": null,
                                 "id": "1a75b4e0-b04f-11ed-95eb-6fbf73c92c07",
                                 "index": 5,
-                                "name": "Restore File",
+                                "name": "Choose file to restore",
                                 "scriptId": "Cortex Core - IR|||core-restore-file",
                                 "sectionItemType": "button",
                                 "startCol": 0
