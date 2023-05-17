@@ -1371,7 +1371,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the boards' ID.
+      description: The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the boards' IDs.
       isArray: false
       name: board_id
       required: false

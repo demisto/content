@@ -442,7 +442,7 @@ Scope: `read:jira-work`
 | --- | --- | --- |
 | query | The JQL query string. | Required |
 | start_at | The index (integer) of the first issue to return (0-based). | Optional |
-| startAt | Please ue start_at. | Optional |
+| startAt | Deprecated. Please use start_at. | Optional |
 | max_results | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated. | Optional |
 | maxResults | Deprecated. Please use max_results. | Optional |
 | headers | Displays the headers in human readable format. | Optional |
@@ -1654,7 +1654,7 @@ Scope: `write:board-scope:jira-software`
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issues | The issues to move to backlog. | Required |
-| board_id | The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the boards' ID. | Optional |
+| board_id | The board ID. Can only be used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the boards' IDs. | Optional |
 | rank_before_issue | To rank the issues before the stated issue (supports issue key and ID). This argument can be used when supplying the board ID. | Optional |
 | rank_after_issue | To rank the issues after the stated issue (supports issue key and ID). This argument can be used when supplying the board ID. | Optional |
 
@@ -2745,7 +2745,8 @@ In order for the mirroring to work properly, please keep the timezone of the Jir
 * **dbotMirrorTags** - Determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Jira, and entries coming from Jira (Attachments or comments entries)
   * You can set the tags for incoming entries in the instance configuration, using **Attachment Entry Tag from Jira**, and **Comment Entry Tag from Jira**.
   * You can set the tags for outgoing entries in the instance configuration, using **Attachment Entry Tag to Jira**, and **Comment Entry Tag to Jira**.
-* **Jira Issue Type** - Shows the status of the Jira issue. You can press on it in the **JiraV3 Incident Layout** to see the available statuses that you can transition into, and press on one of them to change the status of the issue. ![Show Jira statuses](doc_files/jira-status.png)
+* **Jira Issue Type** - Shows the type of the Jira issue.
+* **JiraV3 Status** - Shows the status of the Jira issue. You can press on it in the **JiraV3 Incident Layout** to see the available statuses that you can transition into, and press on one of them to change the status of the issue. ![Show Jira statuses](doc_files/jira-status.png)
 * **Jira Estimate** - Shows the estimate of the Jira issue. The field can also be edited and mirrored out. Use the format 2w 4d 6h 45m (w - weeks, d - days, h - hours, m - minutes). Please add the `Time Tracking` field to the screen in your Jira projects in order for this field to work properly.
 * **Jira Component** - Shows the components of the Jira issue. The field can also be edited and mirrored out.
 * **Source Created By** - Shows the display name, and email of the user who created the Jira issue.
@@ -2807,6 +2808,32 @@ match.
 7. Navigate back to the issue in Jira, and within approximately one minute, the changes will be reflected there as well.
 8. Change a Jira field you've configured in the incoming mapper.
 9. Go back to Cortex XSOAR and within approximately one minute, the changes will be reflected there as well.
+
+#### Simple Comment and Attachment Mirroring flow
+
+##### Mirror out Comment
+
+1. Press on the `Press to add comment to Jira issue` button in the `Add Comment` section.
+2. Add a comment and the tag that was configured in the **Comment Entry Tag to Jira** parameter.
+3. Once the comment is mirrored out to Jira, it will include the sentence **Mirrored from Cortex XSOAR**, to differentiate between comments mirrored from XSOAR, and normal comments.
+![Mirrored out comment](doc_files/mirrored-out-comment.png)
+
+##### Mirror in Comment
+
+1. Add a comment inside the Jira issue.
+2. The newly added comment will be mirrored in to XSOAR as a note, with the addition of the sentence **Jira Author: {Author name}**, to know the author of the comment, and tagged with the tag configured in **Comment Entry Tag from Jira** parameter.
+![Mirrored in comment](doc_files/mirrored-in-comment.png)
+
+##### Mirror out Attachment
+
+1. Add an attachment to the incident, and add the tag that was configured in the **Attachment Entry Tag to Jira** parameter.
+2. Once the attachment is reflected in Jira, the name of the file will have **_mirrored_from_xsoar** in it, to differentiate between attachments mirrored from XSOAR, and normal attachments.
+![Mirror out attachment](doc_files/mirror-out-attachment.png)
+
+##### Mirror in Attachment
+
+1. Once an attachment is mirrored in from Jira into XSOAR, the attachment will be tagged with the tag configured in **Attahcment Entry Tag from Jira** parameter.
+![Mirror in attachment](doc_files/mirror-in-attachment.png)
 
 **Notes**
 
@@ -2913,7 +2940,7 @@ In the *jira-get-id-by-attribute* command:
 
 * *is_jirav2api* - The command does not require this argument anymore.
 
-#### The behavior of the following arguments was changed
+#### The behavior of the following arguments were changed
 
 In the *jira-create-issue* command:
 
@@ -2922,3 +2949,7 @@ In the *jira-create-issue* command:
 In the *jira-edit-issue* command:
 
 * *issueJson* - This argument will override the other arguments supplied to the command.
+
+In the *jira-get-issue* command:
+
+* *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
