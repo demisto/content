@@ -22,6 +22,10 @@
     "tests": [
         {
             "integrations": "Cortex XDR - IR",
+            "playbookID": "Test_Playbook-Cortex_XDR_Malware_-_Incident Enrichment"
+        },
+        {
+            "integrations": "Cortex XDR - IR",
             "playbookID": "Test_Playbook_-_Cortex_XDR_-_Retrieve_File_by_sha256"
         },
         {
