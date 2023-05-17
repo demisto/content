@@ -1111,7 +1111,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "upload_incident_to_alert"
-resolved_reference = "c93555b48399d3bc1970a7eefed3e1e54e4aad94"
+resolved_reference = "c4392dddcfc91fe9566b0e4d3b2352c997c8cf2e"
 
 [[package]]
 name = "deprecated"
@@ -2841,13 +2841,13 @@ PyOpenSSL = "*"
 
 [[package]]
 name = "neo4j"
-version = "5.8.0"
+version = "5.8.1"
 description = "Neo4j Bolt driver for Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "neo4j-5.8.0.tar.gz", hash = "sha256:af5e70801f63eaaff8fa90bfdc943c144fb6857438590782b30d0ed745229b9e"},
+    {file = "neo4j-5.8.1.tar.gz", hash = "sha256:79c947f402e9f8624587add7b8af742b38cbcdf364d48021c5bff9220457965b"},
 ]
 
 [package.dependencies]
