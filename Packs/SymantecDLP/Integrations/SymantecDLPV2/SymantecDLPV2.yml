@@ -73,7 +73,7 @@ name: Symantec Data Loss Prevention v2
 script:
   commands:
   - arguments:
-    - description: The earliest time from which to get incidents. Supports ISO (e.g 2021-12-28T00:00:00Z) and free text (e.g. '2 days').
+    - description: The earliest time from which to get incidents. Supports ISO (e.g., 2021-12-28T00:00:00Z) and free text (e.g., '2 days').
       name: creation_date
     - description: The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status` command.
       isArray: true
