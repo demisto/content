@@ -719,21 +719,29 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     page = arg_to_number(args.get('page', 1))
     page_size = arg_to_number(args.get('page_size'))
     raw_filter = args.get('raw_filter')
-    incidents_result = client.get_incidents_request(
-        creation_date,
-        status_ids,
-        severities_dlp,
-        incident_types_dlp,
-        limit * page,  # type: ignore[operator]
-        raw_filter=raw_filter
-    )
+    try:
+        incidents_result = client.get_incidents_request(
+            creation_date,
+            status_ids,
+            severities_dlp,
+            incident_types_dlp,
+            limit * page,  # type: ignore[operator]
+            raw_filter=raw_filter
+        )
+    except DemistoException as error:
+        if raw_filter:
+            raise DemistoException(f'Please make sure the {raw_filter=} is correct, {error=}')
+        raise
 
     incidents_result = get_incidents_of_current_page(limit, page, page_size,
                                                      incidents_list=incidents_result['incidents'])
     if raw_filter:
         list_incidents_hr = incidents_result
         context_incidents_list = incidents_result
-        output_headers = list(incidents_result[0].keys())
+        if incidents_result:
+            output_headers = list(incidents_result[0].keys())
+        else:
+            output_headers = None
     else:
         list_incidents_hr = get_readable_output_incidents_list(incidents_result)
         context_incidents_list = get_context_incidents_list(incidents_result)
