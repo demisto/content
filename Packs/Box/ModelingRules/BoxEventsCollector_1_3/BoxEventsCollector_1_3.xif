@@ -21,7 +21,6 @@ filter
     xdm.event.type = event_type,
     xdm.source.ipv4 = ip_address;
 
-// Second Filter
 filter
     event_type in ("ADMIN_LOGIN","FAILED_LOGIN","LOGIN")
 | alter
