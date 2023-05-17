@@ -151,7 +151,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: none
-      description: "This argument can get the following values:\nall - All custom attributes are needed \nnone - None of the custom attributes are needed\nspecific attributes - A comma-separated list of custom attribute names. For example: ca1,ca2,ca3\ncustom attribute group name - A comma-separated list of custom attribute group names. For example: cag1, cag2, cag3.\nThis value retrieves all custom attributes in the mentioned group. The value \"none\" is default."
+      description: "This argument can get the following values:\nall - All custom attributes are needed. \nnone - None of the custom attributes are needed.\nspecific attributes - A comma-separated list of custom attribute names. For example: ca1,ca2,ca3.\ncustom attribute group name - A comma-separated list of custom attribute group names. For example: cag1, cag2, cag3.\nThis value retrieves all custom attributes in the mentioned group. The value \"none\" is default."
       name: custom_attributes
       predefined:
       - all
