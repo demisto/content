@@ -551,7 +551,7 @@ def get_project_id(project_key='', project_name=''):
         result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
     except DemistoException as de:
 
-        if de.message.find('Status code: 404') < 0:
+        if 'Status code: 404' not in de.message:
             raise de
 
         demisto.debug(f'The error message we got after first api call: {de.message}')
