@@ -48,13 +48,13 @@ name: Stamus
 script:
   commands:
   - arguments:
-    - name: key
+    - name: indicator_key
       default: false
       description: '[Indicator of Compromise key]'
       isArray: false
       required: true
       secret: false
-    - name: value
+    - name: indicator_value
       default: false
       description: '[Indicator of Compromise value]'
       isArray: false
