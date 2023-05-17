@@ -4,52 +4,16 @@ ignore=IN124
 [file:incidentfield-Dataminr-Pulse-Alert-Type.json]
 ignore=IF115
 
-[file:incidentfield-Dataminr-Pulse-Alert-Type-Color.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Available-Related-Alerts.json]
-ignore=IF115
-
 [file:incidentfield-Dataminr-Pulse-Categories.json]
 ignore=IF115
 
 [file:incidentfield-Dataminr-Pulse-Companies.json]
 ignore=IF115
 
-[file:incidentfield-Dataminr-Pulse-Event-Location-Coordinates.json]
-ignore=IF115
-
 [file:incidentfield-Dataminr-Pulse-Event-Location-Name.json]
 ignore=IF115
 
-[file:incidentfield-Dataminr-Pulse-Event-Location-Places.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Event-Location-Radius.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Event-Map-Large-URL.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Event-Map-Small-URL.json]
-ignore=IF115
-
 [file:incidentfield-Dataminr-Pulse-Event-Time.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Event-Volume.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Expand-Alert-URL.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Expand-Map-URL.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Header-Color.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Header-Label.json]
 ignore=IF115
 
 [file:incidentfield-Dataminr-Pulse-Metadata-Cyber-Addresses.json]
@@ -85,19 +49,10 @@ ignore=IF115
 [file:incidentfield-Dataminr-Pulse-Parent-Alert-ID.json]
 ignore=IF115
 
-[file:incidentfield-Dataminr-Pulse-Post-Languages.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Post-Link.json]
-ignore=IF115
-
 [file:incidentfield-Dataminr-Pulse-Post-Media.json]
 ignore=IF115
 
 [file:incidentfield-Dataminr-Pulse-Post-Timestamp.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Publisher-Category-Color.json]
 ignore=IF115
 
 [file:incidentfield-Dataminr-Pulse-Publisher-Category-ID.json]
@@ -109,40 +64,10 @@ ignore=IF115
 [file:incidentfield-Dataminr-Pulse-Publisher-Category-Short-Name.json]
 ignore=IF115
 
-[file:incidentfield-Dataminr-Pulse-Related-Terms.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Related-Terms-Query-URL.json]
-ignore=IF115
-
 [file:incidentfield-Dataminr-Pulse-Sectors.json]
 ignore=IF115
 
 [file:incidentfield-Dataminr-Pulse-Source-Channels.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Source-Display-Name.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Source-Entity-Name.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Source-Verified.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Sub-Caption-Bullets-content.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Sub-Caption-Bullets-Media.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-Sub-Caption-Bullets-Source.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-User-Recent-Images.json]
-ignore=IF115
-
-[file:incidentfield-Dataminr-Pulse-User-Top-Hashtags.json]
 ignore=IF115
 
 [file:incidentfield-Dataminr-Pulse-Watchlists-Matched-By-Type.json]
