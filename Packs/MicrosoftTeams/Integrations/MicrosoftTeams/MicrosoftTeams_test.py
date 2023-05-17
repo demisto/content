@@ -2202,7 +2202,7 @@ def test_get_chat_id_and_type(mocker, requests_mock):
     create_chat_mock = mocker.patch('MicrosoftTeams.create_chat', return_value=test_data.get('create_oneOnOne_chat'))
 
     assert get_chat_id_and_type("test_admin") == \
-           ("19:82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces", 'oneOnOne')
+        ("19:82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces", 'oneOnOne')
     assert create_chat_mock.call_args.args == ('oneOnOne', [('user_id', 'Member')])
     assert get_user_mock.call_count == 1
     assert create_chat_mock.call_count == 1

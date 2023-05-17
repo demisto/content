@@ -15,7 +15,7 @@ from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-REVIEWERS = ['GuyAfik', 'merit-maita', 'samuelFain']
+REVIEWERS = ['thefrieddan1', 'michal-dagan', 'RotemAmit']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
