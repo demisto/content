@@ -593,11 +593,6 @@ def get_server_url(url):
     return url
 
 
-def return_message(msg):
-    demisto.results(msg)
-    sys.exit(0)
-
-
 def validate_user_body_params(args, command_type):
     numbers_args_ls = ["group_id", "user_id", "responsible_asset_id"]
 
@@ -654,12 +649,12 @@ def list_scans_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_message('No scans found')
+        return_error('No scans found')
 
     scans_dicts = get_elements(res['response'], manageable)
 
     if len(scans_dicts) == 0:
-        return_message('No scans found')
+        return_error('No scans found')
 
     headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner']
 
@@ -672,16 +667,13 @@ def list_scans_command(client: Client, args: Dict[str, Any]):
         'Owner': s['owner'].get('username')
     } for s in scans_dicts]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Scans', mapped_scans, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Scan(val.ID===obj.ID)': createContext(mapped_scans, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_scans, removeNull=True),
+        outputs_prefix='TenableSC.Scan',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Scans', mapped_scans, headers, removeNull=True)
+    )
 
 
 def list_policies_command(client: Client, args: Dict[str, Any]):
@@ -690,12 +682,12 @@ def list_policies_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_message('No policies found')
+        return_error('No policies found')
 
     policies = get_elements(res['response'], manageable)
 
     if len(policies) == 0:
-        return_message('No policies found')
+        return_error('No policies found')
 
     headers = ['ID', 'Name', 'Description', 'Tag', 'Type', 'Group', 'Owner', 'LastModified']
 
@@ -710,28 +702,25 @@ def list_policies_command(client: Client, args: Dict[str, Any]):
         'LastModified': timestamp_to_utc(p['modifiedTime'])
     } for p in policies]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Scan Policies', mapped_policies, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.ScanPolicy(val.ID===obj.ID)': createContext(mapped_policies, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_policies, removeNull=True),
+        outputs_prefix='TenableSC.ScanPolicy',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Scan Policies', mapped_policies, headers, removeNull=True)
+    )
 
 
 def list_repositories_command(client: Client, args: Dict[str, Any]):
     res = client.get_repositories()
 
     if not res or 'response' not in res or not res['response']:
-        return_message('No repositories found')
+        return_error('No repositories found')
 
     repositories = res['response']
 
     if len(repositories) == 0:
-        return_message('No repositories found')
+        return_error('No repositories found')
 
     headers = [
         'ID',
@@ -741,16 +730,13 @@ def list_repositories_command(client: Client, args: Dict[str, Any]):
 
     mapped_repositories = [{'ID': r['id'], 'Name': r['name'], 'Description': r['description']} for r in repositories]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Scan Repositories', mapped_repositories, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.ScanRepository(val.ID===obj.ID)': createContext(mapped_repositories, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_repositories, removeNull=True),
+        outputs_prefix='TenableSC.ScanRepository',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Scan Repositories', mapped_repositories, headers, removeNull=True)
+    )
 
 
 def list_credentials_command(client: Client, args: Dict[str, Any]):
@@ -759,12 +745,12 @@ def list_credentials_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_message('No credentials found')
+        return_error('No credentials found')
 
     credentials = get_elements(res['response'], manageable)
 
     if len(credentials) == 0:
-        return_message('No credentials found')
+        return_error('No credentials found')
 
     headers = ['ID', 'Name', 'Description', 'Type', 'Tag', 'Group', 'Owner', 'LastModified']
 
@@ -779,16 +765,13 @@ def list_credentials_command(client: Client, args: Dict[str, Any]):
         'LastModified': timestamp_to_utc(c['modifiedTime'])
     } for c in credentials]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Credentials', mapped_credentials, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Credential(val.ID===obj.ID)': createContext(mapped_credentials, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_credentials, removeNull=True),
+        outputs_prefix='TenableSC.Credential',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Credentials', mapped_credentials, headers, removeNull=True)
+    )
 
 
 def list_assets_command(client: Client, args: Dict[str, Any]):
@@ -797,12 +780,12 @@ def list_assets_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_message('No assets found')
+        return_error('No assets found')
 
     assets = get_elements(res['response'], manageable)
 
     if len(assets) == 0:
-        return_message('No assets found')
+        return_error('No assets found')
 
     headers = ['ID', 'Name', 'Tag', 'Owner', 'Group', 'Type', 'HostCount', 'LastModified']
 
@@ -817,16 +800,13 @@ def list_assets_command(client: Client, args: Dict[str, Any]):
         'LastModified': timestamp_to_utc(a['modifiedTime'])
     } for a in assets]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Assets', mapped_assets, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_assets, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_assets, removeNull=True),
+        outputs_prefix='TenableSC.Asset',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Assets', mapped_assets, headers, removeNull=True)
+    )
 
 
 def get_asset_command(client: Client, args: Dict[str, Any]):
@@ -835,7 +815,7 @@ def get_asset_command(client: Client, args: Dict[str, Any]):
     res = client.get_asset(asset_id)
 
     if not res or 'response' not in res:
-        return_message('Asset not found')
+        return_error('Asset not found')
 
     asset = res['response']
 
@@ -860,16 +840,13 @@ def get_asset_command(client: Client, args: Dict[str, Any]):
         'IPs': ips
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Asset', mapped_asset, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_asset, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_asset, removeNull=True),
+        outputs_prefix='TenableSC.Asset',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Asset', mapped_asset, headers, removeNull=True)
+    )
 
 
 def create_asset_command(client: Client, args: Dict[str, Any]):
@@ -900,16 +877,13 @@ def create_asset_command(client: Client, args: Dict[str, Any]):
         'Tags'
     ]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Asset created successfully', mapped_asset, headers=headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_asset, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_asset, removeNull=True),
+        outputs_prefix='TenableSC.Asset',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Asset created successfully', mapped_asset, headers=headers, removeNull=True)
+    )
 
 
 def delete_asset_command(client: Client, args: Dict[str, Any]):
@@ -920,13 +894,10 @@ def delete_asset_command(client: Client, args: Dict[str, Any]):
     if not res:
         return_error('Error: Could not delete the asset')
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Asset successfully deleted'
-    })
+    return CommandResults(
+        raw_response=res,
+        readable_output='Asset successfully deleted'
+    )
 
 
 def list_report_definitions_command(client: Client, args: Dict[str, Any]):
@@ -935,7 +906,7 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_message('No report definitions found')
+        return_error('No report definitions found')
 
     reports = get_elements(res['response'], manageable)
     # Remove duplicates, take latest
@@ -943,7 +914,7 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
                                 filter(lambda e: e['name'] == n, reports)) for n in {r['name'] for r in reports}]
 
     if len(reports) == 0:
-        return_message('No report definitions found')
+        return_error('No report definitions found')
 
     headers = ['ID', 'Name', 'Description', 'Type', 'Group', 'Owner']
 
@@ -960,22 +931,19 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
     for r in mapped_reports:
         del r['Description']
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'TenableSC.ReportDefinition(val.ID===obj.ID)': createContext(mapped_reports, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_reports, removeNull=True),
+        outputs_prefix='TenableSC.ReportDefinition',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=hr
+    )
 
 
 def list_zones_command(client: Client, args: Dict[str, Any]):
     res = client.get_zones()
     if not res or 'response' not in res:
-        return_message('No zones found')
+        return_error('No zones found')
     zones = res['response']
     if len(zones) == 0:
         zones = [{
@@ -1013,16 +981,13 @@ def list_zones_command(client: Client, args: Dict[str, Any]):
     if mapped_scanners_total:
         hr += tableToMarkdown('Tenable.sc Scanners', mapped_scanners_total, headers, removeNull=True)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'TenableSC.ScanZone(val.ID===obj.ID)': createContext(mapped_zones, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_zones, removeNull=True),
+        outputs_prefix='TenableSC.ScanZone',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=hr
+    )
 
 
 def get_elements(elements, manageable):
@@ -1096,16 +1061,13 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
         'Reports': demisto.dt(scan['reports'], 'id')
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Scan created successfully', mapped_scan, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Scan(val.ID===obj.ID)': createContext(mapped_scan, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_scan, removeNull=True),
+        outputs_prefix='TenableSC.Scan',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Scan created successfully', mapped_scan, headers, removeNull=True)
+    )
 
 
 def launch_scan_command(client: Client, args: Dict[str, Any]):
@@ -1129,32 +1091,33 @@ def launch_scan_command(client: Client, args: Dict[str, Any]):
         'Status': scan_result['status']
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Scan', mapped_scan, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_scan, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_scan, removeNull=True),
+        outputs_prefix='TenableSC.ScanResults',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Scan', mapped_scan, headers, removeNull=True)
+    )
 
 
-def launch_scan_report_command(client: Client, args: Dict[str, Any]):
-    res = launch_scan(client, args)
-    scan_id = res.get("response", {}).get("scanResult", {}).get("id")
-    poll_scan_status(client, {"scan_results_id": scan_id})
-
-
-@polling_function('tenable-sc-poll-scan-status')
-def poll_scan_status(client: Client, args: Dict[str, Any]):
+@polling_function('tenable-sc-launch-scan-report', requires_polling_arg=False,
+                  poll_message="Scan is still running.")
+def launch_scan_report_command(args: Dict[str, Any], client: Client):
+    first_execution = not args.get("scan_results_id")
+    if first_execution:
+        res = launch_scan(client, args)
+        scan_results_id = res.get("response", {}).get("scanResult", {}).get("id")
+        args["scan_results_id"] = scan_results_id
+        demisto.info(f"Running poll command for results id: {scan_results_id}")
+    else:
+        scan_results_id = args.get("scan_results_id")
+        args["hide_polling_output"] = True
     scan_results, _ = get_scan_status(client, args)
     is_scan_incomplete = scan_results[0].get("status") != "Completed"
     if is_scan_incomplete:
-        return PollResult(continue_to_poll=True, response=scan_results)
+        return PollResult(continue_to_poll=True, response=scan_results, args_for_next_run=args)
     else:
-        return PollResult(get_scan_report_command(client, {"scan_results_id": scan_results}))
+        return PollResult(get_scan_report_command(client, args))
 
 
 def launch_scan(client: Client, args: Dict[str, Any]):
@@ -1185,16 +1148,13 @@ def get_scan_status_command(client: Client, args: Dict[str, Any]):
         'Description': scan_result['description']
     } for scan_result in scans_results]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Scan Status', mapped_scans_results, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_scans_results, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_scans_results, removeNull=True),
+        outputs_prefix='TenableSC.ScanResults',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Scan Status', mapped_scans_results, headers, removeNull=True)
+    )
 
 
 def get_scan_status(client: Client, args: Dict[str, Any]):
@@ -1204,7 +1164,7 @@ def get_scan_status(client: Client, args: Dict[str, Any]):
     for scan_results_id in scan_results_ids:
         res = client.get_scan_results(scan_results_id)
         if not res or 'response' not in res or not res['response']:
-            return_message('Scan results not found')
+            return_error('Scan results not found')
 
         scans_results.append(res['response'])
     return scans_results, res
@@ -1217,7 +1177,7 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
     res = client.get_scan_report(scan_results_id)
 
     if not res or 'response' not in res or not res['response']:
-        return_message('Scan results not found')
+        return_error('Scan results not found')
 
     scan_results = res['response']
 
@@ -1259,16 +1219,13 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
                 hr += tableToMarkdown('Vulnerabilities', vulnerabilities, vuln_headers, removeNull=True)
                 mapped_results['Vulnerability'] = vulnerabilities
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_results, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_results, removeNull=True),
+        outputs_prefix='TenableSC.ScanResults',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=hr
+    )
 
 
 def list_plugins_command(client: Client, args: Dict[str, Any]):
@@ -1279,7 +1236,7 @@ def list_plugins_command(client: Client, args: Dict[str, Any]):
     res = client.list_plugins(name, plugin_type, cve)
 
     if not res or 'response' not in res:
-        return_message('No plugins found')
+        return_error('No plugins found')
 
     plugins = res['response']
 
@@ -1292,16 +1249,13 @@ def list_plugins_command(client: Client, args: Dict[str, Any]):
         'Family': p['family'].get('name')
     } for p in plugins]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Plugins', mapped_plugins, headers=headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Plugin(val.ID===obj.ID)': createContext(mapped_plugins, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_plugins, removeNull=True),
+        outputs_prefix='TenableSC.Plugin',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Plugins', mapped_plugins, headers=headers, removeNull=True)
+    )
 
 
 def get_vulnerabilities(client: Client, scan_results_id):
@@ -1400,7 +1354,7 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
     vuln_response = client.get_vulnerability(vuln_id)
 
     if not vuln_response or 'response' not in vuln_response:
-        return_message('Vulnerability not found')
+        return_error('Vulnerability not found')
 
     vuln = vuln_response['response']
     vuln['severity'] = results[0]['severity']  # The vulnerability severity is the same in all the results
@@ -1507,13 +1461,11 @@ def delete_scan_command(client: Client, args: Dict[str, Any]):
     if not res:
         return_error('Error: Could not delete the scan')
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Scan successfully deleted'
-    })
+    return CommandResults(
+        outputs_prefix='TenableSC.Plugin',
+        raw_response=res,
+        readable_output='Scan successfully deleted'
+    )
 
 
 def get_device_command(client: Client, args: Dict[str, Any]):
@@ -1525,7 +1477,7 @@ def get_device_command(client: Client, args: Dict[str, Any]):
     res = client.get_device(uuid, ip, dns_name, repo)
 
     if not res or 'response' not in res:
-        return_message('Device not found')
+        return_error('Device not found')
 
     device = res['response']
 
@@ -1593,7 +1545,7 @@ def list_users_command(client: Client, args: Dict[str, Any]):
     res = client.get_users('id,username,firstname,lastname,title,email,createdTime,modifiedTime,lastLogin,role', user_id)
 
     if not res or 'response' not in res:
-        return_message('No users found')
+        return_error('No users found')
 
     users = res['response']
 
@@ -1607,7 +1559,7 @@ def list_users_command(client: Client, args: Dict[str, Any]):
             users = list(filter(lambda u: u['email'] == email, users))
 
     if len(users) == 0:
-        return_message('No users found')
+        return_error('No users found')
 
     headers = [
         'ID',
@@ -1635,16 +1587,13 @@ def list_users_command(client: Client, args: Dict[str, Any]):
         'Role': u['role'].get('name')
     } for u in users]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Users', mapped_users, headers=headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.User(val.ID===obj.ID)': createContext(mapped_users, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_users, removeNull=True),
+        outputs_prefix='TenableSC.User',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Users', mapped_users, headers=headers, removeNull=True)
+    )
 
 
 def get_system_licensing_command(client: Client, args: Dict[str, Any]):
@@ -1667,17 +1616,13 @@ def get_system_licensing_command(client: Client, args: Dict[str, Any]):
         'ActiveIPS'
     ]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Licensing information',
-                                         mapped_licensing, headers=headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Status': createContext(mapped_licensing, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_licensing, removeNull=True),
+        outputs_prefix='TenableSC.Status',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Licensing information', mapped_licensing, headers=headers, removeNull=True)
+    )
 
 
 def get_system_information_command(client: Client, args: Dict[str, Any]):
@@ -1719,17 +1664,13 @@ def get_system_information_command(client: Client, args: Dict[str, Any]):
         'LastCheck'
     ]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': sys_res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc System information',
-                                         mapped_information, headers=headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.System(val.BuildID===obj.BuildID)': createContext(mapped_information, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_information, removeNull=True),
+        outputs_prefix='TenableSC.System',
+        raw_response=sys_res,
+        outputs_key_field='BuildID',
+        readable_output=tableToMarkdown('Tenable.sc System information', mapped_information, headers=headers, removeNull=True)
+    )
 
 
 def list_alerts_command(client: Client, args: Dict[str, Any]):
@@ -1738,12 +1679,12 @@ def list_alerts_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_message('No alerts found')
+        return_error('No alerts found')
 
     alerts = get_elements(res['response'], manageable)
 
     if len(alerts) == 0:
-        return_message('No alerts found')
+        return_error('No alerts found')
 
     headers = ['ID', 'Name', 'Actions', 'State', 'LastTriggered', 'LastEvaluated', 'Group', 'Owner']
     mapped_alerts = [{
@@ -1757,16 +1698,13 @@ def list_alerts_command(client: Client, args: Dict[str, Any]):
         'Owner': a['owner'].get('username')
     } for a in alerts]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Alerts', mapped_alerts, headers=headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Alert(val.ID===obj.ID)': createContext(mapped_alerts, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_alerts, removeNull=True),
+        outputs_prefix='TenableSC.Alert',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Alerts', mapped_alerts, headers=headers, removeNull=True)
+    )
 
 
 def get_alert_command(client: Client, args: Dict[str, Any]):
@@ -1774,7 +1712,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
     res = client.get_alerts(alert_id=alert_id)
 
     if not res or 'response' not in res or not res['response']:
-        return_message('Alert not found')
+        return_error('Alert not found')
 
     alert = res['response']
     query_res = client.get_query(alert['query'].get('id'))
@@ -1823,16 +1761,13 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
 
     mapped_alert['Condition'] = mapped_condition
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'TenableSC.Alert(val.ID===obj.ID)': createContext(mapped_alert, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(mapped_alert, removeNull=True),
+        outputs_prefix='TenableSC.Alert',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=hr
+    )
 
 
 def fetch_incidents(client: Client, first_fetch: str = '3 days'):
@@ -1874,7 +1809,7 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
     limit = int(args.get('limit', '50'))
     res = client.list_groups(show_users)
     if not res or not res.get('response', []):
-        return_message('No groups found')
+        return_error('No groups found')
     groups = res.get('response', [])
     if len(groups) > limit:
         groups = groups[:limit]
@@ -1900,16 +1835,14 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
             group_id = group.get('id')
             hr += f"{tableToMarkdown(f'Group id:{group_id}', users, headers, removeNull=True)}\n"
     groups = mapped_groups
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'TenableSC.Group(val.ID===obj.ID)': createContext(groups, removeNull=True)
-        }
-    })
+
+    return CommandResults(
+        outputs=createContext(groups, removeNull=True),
+        outputs_prefix='TenableSC.Group',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=hr
+    )
 
 
 def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
@@ -1921,7 +1854,7 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
         limit = 200
 
     if not res or 'response' not in res or not res['response']:
-        return_message('Scan results not found')
+        return_error('Scan results not found')
 
     elements = get_elements(res['response'], get_manageable_results)
 
@@ -1949,16 +1882,13 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
     hr = tableToMarkdown(readable_title, scan_results, headers, removeNull=True,
                          metadata='Total number of elements is {}'.format(len(elements)))
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'TenableSC.ScanResults(val.ID===obj.ID)': createContext(scan_results, removeNull=True)
-        }
-    })
+    return CommandResults(
+        outputs=createContext(scan_results, removeNull=True),
+        outputs_prefix='TenableSC.ScanResults',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=hr
+    )
 
 
 def create_user_command(client: Client, args: Dict[str, Any]):
@@ -1978,7 +1908,7 @@ def update_user_command(client: Client, args: Dict[str, Any]):
 
 def process_update_and_create_user_response(res, hr_header):
     if not res or not res.get('response', {}):
-        return_message("User wasn't created successfully.")
+        return_error("User wasn't created successfully.")
     headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
                "User Group Name", "User  LDAP  Name"]
     response = res.get("response", {})
@@ -1994,28 +1924,24 @@ def process_update_and_create_user_response(res, hr_header):
         "User Group Name": response.get("group", {}).get("name"),
         "User  LDAP  Name": response.get("ldap", {}).get("name")
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(hr_header, mapped_response, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.User(val.ID===obj.ID)': createContext(response, removeNull=True)
-        }
-    })
+
+    return CommandResults(
+        outputs=createContext(response, removeNull=True),
+        outputs_prefix='TenableSC.User',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown(hr_header, mapped_response, headers, removeNull=True)
+    )
 
 
 def delete_user_command(client: Client, args: Dict[str, Any]):
     user_id = args.get('user_id')
     res = client.delete_user(user_id)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': f"User {user_id} is deleted."
-    })
+
+    return CommandResults(
+        raw_response=res,
+        readable_output="User {user_id} is deleted."
+    )
 
 
 def list_plugin_family_command(client: Client, args: Dict[str, Any]):
@@ -2024,7 +1950,7 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
     plugin_id = args.get('plugin_id', '')
     res = client.list_plugin_family(plugin_id, is_active)
     if not res or not res.get('response', []):
-        return_message('No plugins found')
+        return_error('No plugins found')
     plugins = res.get('response')
     if isinstance(plugins, dict):
         is_active = "false" if plugins.get("type") == "passive" else "true"
@@ -2036,17 +1962,14 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
         for mapped_plugin in mapped_plugins:
             mapped_plugin["Is Active"] = is_active
     headers = ["Plugin ID", "Plugin Name", "Is Active"]
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Plugin families:', mapped_plugins, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.PluginFamily(val.ID===obj.ID)': createContext(plugins, removeNull=True,
-                                                                     keyTransform=capitalize_first_letter)
-        }
-    })
+
+    return CommandResults(
+        outputs=createContext(plugins, removeNull=True, keyTransform=capitalize_first_letter),
+        outputs_prefix='TenableSC.PluginFamily',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Plugin families:', mapped_plugins, headers, removeNull=True)
+    )
 
 
 def create_policy_command(client: Client, args: Dict[str, Any]):
@@ -2081,17 +2004,14 @@ def create_policy_command(client: Client, args: Dict[str, Any]):
     headers = ["Policy type", "Policy Id", "name", "Description", "Created Time", "Plugin Families", "Policy  Status",
                "Policy UUID", "Policy can Manage", "Creator Username", "Owner ID", "policyTemplate id",
                "policyTemplate Name"]
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Policy was created successfully:', mapped_created_policy, headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Query(val.ID===obj.ID)': createContext(created_policy, removeNull=True,
-                                                              keyTransform=capitalize_first_letter)
-        }
-    })
+
+    return CommandResults(
+        outputs=createContext(created_policy, removeNull=True, keyTransform=capitalize_first_letter),
+        outputs_prefix='TenableSC.Query',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Policy was created successfully:', mapped_created_policy, headers, removeNull=True)
+    )
 
 
 def list_query_command(client: Client, args: Dict[str, Any]):
@@ -2102,22 +2022,20 @@ def list_query_command(client: Client, args: Dict[str, Any]):
         res, hr, ec = get_query(client, query_id)
     else:
         res, hr, ec = list_queries(client, type, limit)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': {
-            'TenableSC.Query(val.ID===obj.ID)': createContext(ec, removeNull=True, keyTransform=capitalize_first_letter)
-        }
-    })
+
+    return CommandResults(
+        outputs=createContext(ec, removeNull=True, keyTransform=capitalize_first_letter),
+        outputs_prefix='TenableSC.Query',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=hr
+    )
 
 
 def get_query(client: Client, query_id):
     res = client.get_query(query_id)
     if not res or not res.get('response', []):
-        return_message(f"The query {query_id} wasn't found")
+        return_error(f"The query {query_id} wasn't found")
     query = res.get('response')
     mapped_query = {
         "Query Id": query_id,
@@ -2133,7 +2051,7 @@ def get_query(client: Client, query_id):
 def list_queries(client: Client, type, limit):
     res = client.list_queries(type)
     if not res or not res.get('response', []):
-        return_message("No queries found.")
+        return_error("No queries found.")
     queries = res.get('response')
     manageable_queries = queries.get("manageable", [])
     usable_queries = queries.get("usable", [])
@@ -2201,9 +2119,7 @@ def main():
         'tenable-sc-launch-scan': launch_scan_command,
         'tenable-sc-get-scan-status': get_scan_status_command,
         'tenable-sc-get-scan-report': get_scan_report_command,
-        'tenable-sc-get-vulnerability': get_vulnerability_command,
         'tenable-sc-delete-scan': delete_scan_command,
-        'tenable-sc-get-device': get_device_command,
         'tenable-sc-list-users': list_users_command,
         'tenable-sc-list-alerts': list_alerts_command,
         'tenable-sc-get-alert': get_alert_command,
@@ -2216,9 +2132,9 @@ def main():
         'tenable-sc-delete-user': delete_user_command,
         'tenable-sc-list-plugin-family': list_plugin_family_command,
         'tenable-sc-create-policy': create_policy_command,
-        'tenable-sc-list-query': list_query_command,
-        'tenable-sc-launch-scan-report': launch_scan_report_command,
-        'tenable-sc-poll-scan-status': poll_scan_status
+        'tenable-sc-list-query': list_query_command
+        # 'tenable-sc-get-vulnerability': get_vulnerability_command,
+        # 'tenable-sc-get-device': get_device_command,
     }
 
     try:
@@ -2237,8 +2153,14 @@ def main():
         elif command == 'fetch-incidents':
             first_fetch = params.get('fetch_time').strip()
             fetch_incidents(client, first_fetch)
+        elif command == 'tenable-sc-launch-scan-report':
+            return_results(launch_scan_report_command(args, client))
+        elif command == 'tenable-sc-get-vulnerability':
+            return_results(get_vulnerability_command(client, args))
+        elif command == 'tenable-sc-get-device':
+            return_results(get_device_command(client, args))
         else:
-            command_dict[command](client, args)
+            return_results(command_dict[command](client, args))
     except Exception as e:
         return_error(
             f'Failed to execute {command} command. Error: {str(e)}'

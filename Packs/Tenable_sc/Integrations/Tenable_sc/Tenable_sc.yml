@@ -2553,7 +2553,15 @@ script:
       name: diagnostic_password
       required: false
       secret: false
+    - default: false
+      description: Deprecated. Scan results id.
+      isArray: false
+      name: scan_results_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
+    polling: true
     description: Lists queries.
     execution: false
     name: tenable-sc-launch-scan-report
