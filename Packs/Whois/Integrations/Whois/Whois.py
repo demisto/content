@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-# from CommonServerUserPython import *
+from CommonServerUserPython import *
 import re
 import socket
 import sys
@@ -7300,10 +7300,7 @@ def whois_request(domain, server, port=43, is_refer_server=False):
 def whois_request_get_response(socket, domain):
     socket.send(("%s\r\n" % domain).encode("utf-8"))
     buff = b""
-    i = 0
     while True:
-        print(f'*** {i}, socket.recv')
-        i += 1
         data = socket.recv(1024)
         if len(data) == 0:
             break
@@ -8522,31 +8519,7 @@ def ip_command(ips, reliability,
         )
 
         results.append(result)
-    # return results
-
-    related_feed = {
-        "value": response.get('network', {}).get('cidr'),
-        "indicator_type": 'CIDR'
-    }
-
-    indicator = {
-        "ip": ip,
-        "asn": response.get('asn'),
-        "geo_country": network_data.get('country'),
-        "organization_name": network_data.get('name'),
-        "dbot_score": dbot_score,
-        "feed_related_indicators": [related_feed]
-    }
-
-    return {
-        "outputs_prefix": 'Whois.IP',
-        "outputs_key_field": 'query',
-        "outputs": response,
-        "readable_output": tableToMarkdown('Whois results:', readable_data),
-        "raw_response": response,
-        "indicator": indicator,
-        "reliability": reliability,
-    }
+    return results
 
 
 def whois_command(reliability):
@@ -8629,9 +8602,6 @@ def main():
     rate_limit_wait_seconds: int = int(demisto_args.get('rate_limit_wait_seconds') or demisto_params.get('rate_limit_wait_seconds') or 120)
     rate_limit_errors_suppressed: bool = bool(demisto_args.get('rate_limit_errors_suppressed') or demisto_params.get('rate_limit_errors_suppressed') or False)
 
-    import time
-    time.sleep(60)
-
     LOG('command is {}'.format(str(demisto.command())))
     command = demisto.command()
 
@@ -8655,7 +8625,7 @@ def main():
             ret_value = ip_command(ip, reliability, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
                                    rate_limit_errors_suppressed=rate_limit_errors_suppressed)
             if ret_value:
-                return_results()
+                return_results(ret_value)
             else:
                 return_error(f'Failed to lookup ip {ip}')
         else:
