@@ -76,9 +76,10 @@ class Client:
                                                params=params,
                                                resp_type=resp_type)
         except DemistoException as e:
-            if 'Error in API call [404] - Not Found' in e.message:
-                message = e.message.split('"message":')[1].split('"')[1]
-                return message
+            if 'Error in API call [404] - Not Found' not in e.message:
+                raise DemistoException(e)
+            message = e.message.split('"message":')[1].split('"')[1]
+            return message
 
     @logger
     def azure_sql_servers_list(self, resource_group_name: str = None):
