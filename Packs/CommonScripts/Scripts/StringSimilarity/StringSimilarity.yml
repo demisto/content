@@ -1,0 +1,30 @@
+args:
+- description: The text to match for strings
+  name: text
+  required: true
+- description: A list of strings to match in the text
+  isArray: true
+  name: list_of_strings
+  required: true
+- defaultValue: "0.5"
+  description: The similiarity threshold to show results for, a value between 0 < x >1
+  name: similiarity_threshold
+comment: This automation calculates the similarity ratio between a Text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+commonfields:
+  id: stringSimilarity
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+enabled: true
+name: stringSimilarity
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
