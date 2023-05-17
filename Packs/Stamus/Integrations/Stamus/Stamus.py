@@ -201,6 +201,9 @@ FIELDS_SUBSTITUTION_DICT = {'http.user_agent': 'http_user_agent', 'http.user_age
 
 
 def linearize_host_id(host: dict) -> list:
+    """Host Insights structure is nested and this function convert it to
+    a suite of events.
+    """
     host_info = []
     host_data = host['host_id']
     item_data = {'ip': host['ip']}
