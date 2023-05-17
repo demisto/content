@@ -1,0 +1,37 @@
+{
+	"Cache": null,
+	"cacheVersn": 0,
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"definitionId": "",
+	"fromServerVersion": "",
+	"id": "771d8d3c-3e32-4a57-8809-653a6fab354d",
+	"isPredefined": false,
+	"itemVersion": "",
+	"name": "Use Case Development",
+	"packID": "",
+	"packName": "",
+	"params": {
+		"keys": [
+			"sum|openDuration"
+		],
+		"yAxisLabel": ""
+	},
+	"query": "-category:job type:\"Use Case Builder\" and usecasedevelopmentstage:\"In Development\"",
+	"toServerVersion": "",
+	"version": -1,
+	"widgetType": "duration"
+}

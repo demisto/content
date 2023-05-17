@@ -1,0 +1,26 @@
+commonfields:
+  id: UseCasePlaybookAutoGenerator
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ""
+    packName: Use Case Builder 4-21
+    prevname: ""
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: UseCasePlaybookAutoGenerator
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- UseCaseGenerator
+type: python

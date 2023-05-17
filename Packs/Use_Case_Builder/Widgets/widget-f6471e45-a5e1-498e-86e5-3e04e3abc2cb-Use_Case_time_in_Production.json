@@ -1,0 +1,32 @@
+{
+	"Cache": null,
+	"cacheVersn": 0,
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"definitionId": "",
+	"fromServerVersion": "",
+	"id": "f6471e45-a5e1-498e-86e5-3e04e3abc2cb",
+	"isPredefined": false,
+	"itemVersion": "",
+	"name": "Use Case time in Production",
+	"packID": "",
+	"packName": "",
+	"params": {},
+	"query": "usecaseproductiontimer.runStatus:running and type:\"Use Case Builder\"",
+	"toServerVersion": "",
+	"version": -1,
+	"widgetType": "duration"
+}

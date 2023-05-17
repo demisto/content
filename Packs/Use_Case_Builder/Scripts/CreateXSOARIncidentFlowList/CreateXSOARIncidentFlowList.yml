@@ -1,0 +1,25 @@
+commonfields:
+  id: CreateXSOARIncidentFlowList
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ""
+    packName: generator
+    prevname: ""
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.11.57293
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: CreateXSOARIncidentFlowList
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

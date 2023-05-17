@@ -1,0 +1,26 @@
+commonfields:
+  id: PlaybookAutoGeneratorDynamicSectionMessage
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ""
+    packName: Use Case Builder 4-21
+    prevname: ""
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.11.54132
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: PlaybookAutoGeneratorDynamicSectionMessage
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python

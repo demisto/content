@@ -1,0 +1,32 @@
+{
+	"Cache": null,
+	"cacheVersn": 0,
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"definitionId": "",
+	"fromServerVersion": "",
+	"id": "73e20f61-9424-4d77-8dfb-03ea6cb976d3",
+	"isPredefined": false,
+	"itemVersion": "",
+	"name": "Use Case Time Spent in Testing",
+	"packID": "",
+	"packName": "",
+	"params": {},
+	"query": "usecasetestingtimer.runStatus:running",
+	"toServerVersion": "",
+	"version": -1,
+	"widgetType": "duration"
+}

@@ -1,0 +1,36 @@
+{
+	"Cache": null,
+	"cacheVersn": 0,
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"definitionId": "",
+	"fromServerVersion": "",
+	"id": "7fa10cdb-238f-4c0b-8499-018fee6a7914",
+	"isPredefined": false,
+	"itemVersion": "",
+	"name": "Use Case Backlog Time",
+	"packID": "",
+	"packName": "",
+	"params": {
+		"keys": [
+			"sum|usecasebacklogtimer.totalDuration"
+		]
+	},
+	"query": "-category:job type:\"Use Case Builder\"",
+	"toServerVersion": "",
+	"version": -1,
+	"widgetType": "duration"
+}

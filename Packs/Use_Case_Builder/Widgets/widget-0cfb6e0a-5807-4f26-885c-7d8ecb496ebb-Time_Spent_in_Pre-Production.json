@@ -1,0 +1,32 @@
+{
+	"Cache": null,
+	"cacheVersn": 0,
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"definitionId": "",
+	"fromServerVersion": "",
+	"id": "0cfb6e0a-5807-4f26-885c-7d8ecb496ebb",
+	"isPredefined": false,
+	"itemVersion": "",
+	"name": "Time Spent in Pre-Production",
+	"packID": "",
+	"packName": "",
+	"params": {},
+	"query": "usecasepreproductiontimer.totalDuration",
+	"toServerVersion": "",
+	"version": -1,
+	"widgetType": "duration"
+}
