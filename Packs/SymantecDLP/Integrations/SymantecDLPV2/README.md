@@ -906,7 +906,7 @@ Fetches the original message from an incident. Requires SDLP 15.8.
 ### symantec-dlp-get-report-filters
 
 ***
-Retrieve the filter criteria for a saved search in the Enforce console by report ID. Requires SDLP 16.0.
+Retrieves the filter criteria for a saved search in the Enforce console by report ID. Requires SDLP 16.0.
 
 #### Base Command
 
