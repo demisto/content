@@ -144,7 +144,8 @@ var sendRequest = function(method, uri, body, raw) {
             Method: method,
             Headers: headers,
             Body: body,
-            SaveToFile: raw
+            SaveToFile: raw,
+            redirect: 'follow'
         },
         params.insecure,
         params.proxy
@@ -169,23 +170,6 @@ var sendRequest = function(method, uri, body, raw) {
         }
     }
 };
-/* helper functions */
-function generate_uuidv4() {
-    var d = new Date().getTime();//Timestamp
-    var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16;//random number between 0 and 16
-        if(d > 0){//Use timestamp until depleted
-            r = (d + r)%16 | 0;
-            d = Math.floor(d/16);
-        } else {//Use microseconds since page-load if supported
-            r = (d2 + r)%16 | 0;
-            d2 = Math.floor(d2/16);
-        }
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    });
-}
-
 
 function reduce_one_entry(data, keep_fields) {
     var new_d = {};
@@ -319,9 +303,105 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 };
 
 
+/* helper functions */
 
-// note to shelly for cr: after a talk with Moishy (when available) this function would be change 
-var fileUploadCommand = function(incident_id, file_content, file_name, entryID, target ) {
+var upload_file= function(incident_id, file_content, file_name) {
+    var body = {
+        file: 
+        {
+            value: file_content,
+            options: {
+                filename: file_name,
+                contentType: 'application/json'
+            }
+        },
+    
+    };
+    var res = sendRequest('POST', `/entry/upload/${incident_id}`, JSON.stringify(body));
+    if (isError(res[0])) {
+        throw res[0].Contents;
+    }
+    return res;
+};
+
+var deleteContext_ = function (incident_id, key_to_delete) {
+    log('deleteContext_ func');
+    log(investigation.id);
+    var raw = JSON.stringify({
+        "args": null,
+        "id": "",
+        "investigationId": `${incident_id}`,
+        "data": `!DeleteContext key=${key_to_delete}\n`,
+        "markdown": false,
+        "version": 0
+    });
+   var result =  sendRequest('POST', '/entry', raw);
+   log(result);
+   for(let key in res){
+        log(key +" : " + result[key]+`\n`);
+   }
+   return res;
+};
+
+
+var deleteFile = function (entry_id, delete_artifact = true) {
+    const body_content = JSON.stringify({
+        id: entry_id,
+        deleteArtifact: delete_artifact});
+    
+    return sendRequest( 'POST', '/entry/delete/v2', body_content);
+}
+
+/** 
+create_attachment_data_json(file_path, field_name) {
+    const attachment_path = file_path;
+    
+    const file_data = {
+        fieldName: field_name,
+        files: {
+            [attachment_path]: {
+                path: attachment_path
+            }
+        },
+        originalAttachments: [
+            {
+                path: attachment_path
+            }
+        ]
+    };
+    
+    return file_data;
+}
+    
+delete_attachment(incident_id, file_path, field_name = 'attachment') {
+    const json_data = this.create_attachment_data_json(file_path, field_name);
+    
+    return this._http_request({
+        method: 'POST',
+        url_suffix: `/incident/remove/${incident_id}`,
+        json_data: json_data
+    });
+}
+
+get_file(entry_id) {
+    return this._http_request({
+        method: 'GET',
+        url_suffix: `/entry/download/${entry_id}`
+    });
+}
+
+get_current_user() {
+    return this._http_request({
+        method: 'GET',
+        url_suffix: '/user'
+    });
+}
+
+
+ */
+
+
+var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
     /**
      * Upload a new file
     Arguments:
@@ -329,7 +409,6 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
         @param {String} file_content -- content of the file to upload
         @param {String} file_name  -- name of the file in the dest incident
         @param {String} entryID  -- entry ID of the file
-        @param {String} target -- upload the file as an attachment or an war room entry
     Returns:
         CommandResults -- Readable output
     Note:
@@ -339,31 +418,25 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
     if ((!file_name) && (!entryID)) {
         throw 'Either file_name or entry_id argument must be provided.';
     }
-    var service = (target == 'Incident Attachment') ? 'incident' : 'entry';
-    fileId = file_name ? saveFile(file_content) : entryID;
-    var body = {
-            file: 
-            {
-                value: file_content,
-                options: {
-                    filename: file_name,
-                    contentType: 'application/octet-stream'
-                }
-            },
+
+    let response = {};
+    if ((!entryID)) {
+        response = upload_file(incident_id, file_content, file_name);
+    } else {
+        var file_content = entrytoa(entryID);
+        log(file_content);
         
-    };
-    
-    var res = sendRequest('POST', `/${service}/upload/${incident_id}`, JSON.stringify(body));
-    if (isError(res[0])) {
-        throw res[0].Contents;
-    }
-    var response = res['response'];
+        if (file_name === null) {
+            file_name = dq(invContext, "InfoFile(val.EntryID == '" + entryID + "').Name");
+            if (!file_name) {
+                throw "Impossible to detect a filename in the path, use the argument 'fileName' to set one!";
+            }
+        }
+        var body = JSON.stringify({"AttachmentName": file_name, "AttachmentBytes": file_content});
+        response = sendRequest('POST', `/entry/upload/${incident_id}`, JSON.stringify(body));
+            }
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
-    // in case the file uploaded as war room entry
-    if (target === 'war room entry') {
-        md += ` Entry ID is ${response.entries[0].id}`;
-    }
-    
+    fileId = file_name ? saveFile(file_content) : entryID;
     return {
         Type: entryTypes.file,
         FileID: fileId,
@@ -374,7 +447,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID, 
 };
 
 
-var get_incident_id = function (entry_id) {
+var getIncidentId = function (entry_id) {
     /**
      * gets the incident id of entry_id.
     Arguments:
@@ -383,48 +456,24 @@ var get_incident_id = function (entry_id) {
             incident id   
     """
      */
-    const res = entry_id.match(/(\d+)@(\d+)/);
+    //const res = entry_id.match(/(\d+)@(\d+)/);
+    const regex = /(\d+)@(\d+)/g;
+    const matches = [...entry_id.matchAll(regex)];
+    log(matches);
+    log(matches[0]);
+    if (matches.length > 0) {
+      const incidentId = matches[0][1];
+      return incidentId;
+    }
+
     if (!res) {
         throw new Error("EntryID unknown or malformatted!");
     }
-    return res[0][1];
+    
 };
-       
 
-function deleteContext(keyToDelete) {
-    /**
-     * Deletes a Files from context data.
-    Arguments:
-        @param {String} keyToDelete  -- the kew from context data to delete.
-    """
-     */
-    const body = {
-      data: `!DeleteContext key=${keyToDelete}`,
 
-    };
-    var res =  executeCommand("DeleteContext", {key: 'File'});  
-    return res;
-  }
-
-function deleteFile(entryId) {
-    /**
-     * Deletes a specific file.
-    Arguments:
-        @param {String} entryId  -- entry ID of the file
-    Returns:
-        response from the API.
-    """
-     */
-    body = {
-        "id": entryId,
-        "deleteArtifact": 'File'
-    }
-    var response =  sendRequest('POST', '/entry/delete/v2', JSON.stringify(body) );
-    return response;
-  }
-  
-
-function fileDeleteCommand(entryId) {
+var fileDeleteCommand = function(entryId) {
     /**
      * Deletes a specific file.
     Arguments:
@@ -433,29 +482,52 @@ function fileDeleteCommand(entryId) {
         Message that the file was deleted successfully + entry_id
     """
      */ 
-    files =  sendRequest('GET', 'entry/File' );
-    
+    // getting the context data
+    files =  invContext['File'];
     files = (files instanceof Array)? files:[files];
-    try{
-        deleteFile(entryId);
-
-    }
-    catch (e) {
-        throw new Error(`File already deleted or not found!\n${e}`);
-    }
-    incident_id = get_incident_id(entryId)
-    deleteContext(incident_id, "File")
     var new_files = []
+    var not_found = true
     for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
-        if (files[i].entryId != entryId) {
+        if (files[i]['EntryID'] != entryId) {
+
             new_files.push(files[i]);
         }
+        else{
+            not_found= false 
+        }
+        
       }
-    var response =  sendRequest('POST', '/entry//v2', JSON.stringify(body) );
-    return {
-        HumanReadable: `File ${entryId} was deleted successfully`,
-        outputs: new_files
-    };
+    if(not_found){
+        throw new Error(`File already deleted or not found.`);
+    }
+    log('ok')
+    //deleteFile(entryId)
+    var myHeaders = {
+        "Authorization": "4C1D7C9EA90325377B361DF97C954C77",
+        "Content-Type": "application/json",
+        "Cookie": "XSRF-TOKEN=ariw0a2K61jTIPwVT31zAl3Kgq5WF5Vj2SQOoLbpqb2P+na1vph3wYNkBlpzg0smoBYqOH2mM4Tz/n9ixqbuG7juUfKKsvP+EIIpBxY0clcKoOyJexyMR0mpRFHlIu9K89rY1J3h0cCEEU4GOnt8TF/eZiW+nzfoBTIag0+oQg4="
+      };
+      
+      var raw = JSON.stringify({
+        "args": null,
+        "id": "",
+        "investigationId": "1",
+        "data": "!DeleteContext key=File\n",
+        "markdown": false,
+        "version": 0
+      });
+      
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      
+      var result = sendRequest("POST", "https://10.180.189.73/entry", requestOptions, false);
+      log(result.response);
+      
+
 }
 
 
@@ -468,10 +540,21 @@ function coreApiFileCheckCommand(entryId) {
         Returns:
             Dictionary with EntryID as key and boolean if the file exists as value.
     */
-    response = sendRequest('GET',`/entry/download/${entryId}`)
-    console.log(JSON.stringify(response));
+    files =  invContext['File'];
+    var not_found = true
+    if ((!files instanceof Array)&&((files['EntryID'] == entryId))){
+        not_found= false;
+    }
+    else{
+        for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
+            if (files[i]['EntryID'] == entryId) {
+                not_found= false ;
+            }
+            
+          }
+    }
 
-    if (Object.keys(response).length > 0) {
+    if (!not_found) {
         return {
             HumanReadable: `File ${entryId} exists`,
             outputs_prefix: 'IsFileExists',
@@ -570,7 +653,7 @@ switch (command) {
     case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
     case 'core-api-file-upload':
-        return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entryID, args.target)
+        return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entryID)
     case 'core-api-file-delete':
         return fileDeleteCommand(args.entry_id);
     case 'core-api-file-attachment-delete':

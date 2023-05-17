@@ -268,20 +268,11 @@ script:
       description: "The War Room entry ID of the pack zip file."
       required: false
       isArray: false
-    - name: target
-      description: "Where to upload the file."
-      required: false
-      isArray: false
-      defaultValue: 'War Room Entry'
-      auto: PREDEFINED
-      predefined:
-        - 'War Room Entry'
-        - 'Incident Attachment'
     description: This command uploads to the incident a file that the user provided according to the entry_id or the content of the file
   - name: core-api-file-delete
     arguments:
     - name: entry_id
-      description: "The War Room entry ID of the pack zip file."
+      description: "The War Room entry ID of the file."
       required: true
       isArray: false
     description: This command deletes a file from Xsoar by entry_id.
