@@ -60,10 +60,33 @@ class Client(BaseClient):
                 self.login()
 
     def send_request_new(self, path, method='get', body={}, params={}, headers=None):
+        """
+        Send the requests for access & secret keys authentication method.
+        Args:
+            path (str): The url suffix.
+            method (str): The request method.
+            body (dict): The request body.
+            params (dict): The request params.
+            headers (dict): The request headers.
+        Returns:
+            Dict: The response.
+        """
         headers = headers or self.headers
         return self._http_request(method, url_suffix=path, params=params, data=json.dumps(body), headers=headers)
 
     def send_request_old(self, path, method='get', body=None, params=None, headers=None, try_number=1):
+        """
+        Send the requests for username & password authentication method.
+        Args:
+            path (str): The url suffix.
+            method (str): The request method.
+            body (dict): The request body.
+            params (dict): The request params.
+            headers (dict): The request headers.
+            try_number (int): The request retries counter.
+        Returns:
+            Dict: The response.
+        """
         body = body if body is not None else {}
         params = params if params is not None else {}
         headers = headers if headers is not None else self.headers
@@ -95,6 +118,9 @@ class Client(BaseClient):
         return res.json()
 
     def login(self):
+        """
+        Set the token for username & password authentication method.
+        """
         login_body = {
             'username': self.user_name,
             'password': self.password
@@ -118,6 +144,13 @@ class Client(BaseClient):
         demisto.setIntegrationContext({'token': self.token})
 
     def send_login_request(self, login_body):
+        """
+        Send the request to login for username & password authentication method.
+        Args:
+            login_body (dict): The request body.
+        Returns:
+            Dict: The response.
+        """
         url = f'{self.url}/token'
 
         headers = {
@@ -136,51 +169,73 @@ class Client(BaseClient):
         return res.json()
 
     def logout(self):
+        """
+        Send the request to logout for username & password authentication method.
+        """
         self.send_request(path='token', method='delete')
 
-    def create_scan(self, name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
-                    ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
-                    dhcp_track, rollover_type, dependent, start_time="", repeat_rule_freq="", repeat_rule_interval="",
-                    repeat_rule_by_day="", enabled=True, time_zone=""):
-
-        scan_type = 'policy' if policy_id else 'plugin'
-
-        body = {
-            'name': name,
-            'type': scan_type,
-            'repository': {
-                'id': repo_id
-            }
+    def create_scan(self, args):
+        """
+        Send the request for create_scan_command and create_remediation_scan_command.
+        Args:
+            args (dict): The demisto.args() object.
+        Returns:
+            Dict: The response.
+        """
+        create_scan_mapping_dict = {
+            'name': 'name',
+            'pluginID': 'plugin_id',
+            'description': 'description',
+            'dhcpTracking': 'dhcp_tracking',
+            'timeoutAction': 'timeout_action',
+            'scanningVirtualHosts': 'scan_virtual_hosts',
+            'rolloverType': 'rollover_type',
+            'ipList': 'ip_list'
         }
+        body = {key: args.get(value) for key, value in create_scan_mapping_dict.items() if args.get(value)}
 
-        if policy_id:
-            body['policy'] = {
-                'id': policy_id
-            }
+        scan_type = args.get("scan_type")
+        body["type"] = scan_type if scan_type else ('policy' if args.get("policy_id") else 'plugin')
 
-        if plugin_id:
-            body['pluginID'] = plugin_id
+        if repo_id := args.get("repository_id"):
+            body["repository"] = {'id': repo_id}
 
-        if description:
-            body['description'] = description
+        if policy_id := args.get("policy_id"):
+            body["policy"] = {'id': policy_id}
 
-        if zone_id:
-            body['zone'] = {
-                'id': zone_id
-            }
+        if zone_id := args.get("zone_id"):
+            body["zone"] = {'id': zone_id}
 
-        if dhcp_track:
-            body['dhcpTracking'] = dhcp_track
+        if report_ids := args.get("report_ids"):
+            body['reports'] = [{'id': r_id, 'reportSource': 'individual'} for r_id in argToList(report_ids)]
 
-        if schedule:
+        if asset_ids := args.get("asset_ids"):
+            if str(asset_ids).startswith('All'):
+                manageable = True if asset_ids == 'AllManageable' else False
+                res = self.get_assets(None)
+                assets = get_elements(res['response'], manageable)
+                asset_ids = list(map(lambda a: a['id'], assets))
+            body['assets'] = [{'id': a_id} for a_id in argToList(asset_ids)]
+
+        if credentials := args.get("credentials"):
+            body['credentials'] = [{'id': c_id} for c_id in argToList(credentials)]
+
+        if max_scan_time := args.get('max_scan_time'):
+            body['maxScanTime'] = max_scan_time * 3600
+
+        if schedule := args.get('schedule'):
             body['schedule'] = {
                 'type': schedule
             }
 
-            if dependent:
+            if dependent := args.get('dependent_id'):
                 body['schedule']['dependentID'] = dependent
 
             if schedule == 'ical':
+                start_time = args.get("start_time")
+                repeat_rule_freq = args.get("repeat_rule_freq", "")
+                repeat_rule_interval = int(args.get("repeat_rule_interval", 0))
+                repeat_rule_by_day = argToList(args.get("repeat_rule_by_day"), "")
                 timestamp_format = "%Y%m%dT%H%M%S"
                 expected_format = "%Y-%m-%d:%H:%M:%S"
                 try:
@@ -188,7 +243,7 @@ class Client(BaseClient):
                     start_time = datetime.strftime(start_time, timestamp_format)
                 except Exception:
                     start_time = parse_date_range(start_time, date_format=timestamp_format)[0]
-                if time_zone and start_time:
+                if time_zone := args.get("time_zone") and start_time:
                     body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
                 else:
                     return_error("Please make sure to provide both time_zone and start_time.")
@@ -200,45 +255,31 @@ class Client(BaseClient):
                 elif any([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
                     return_error("Please make sure to provide repeat_rule_freq, repeat_rule_interval with or without "
                                  "repeat_rule_by_day, or don't provide any of them.")
-                body['schedule']['enabled'] = enabled
-
-        if report_ids:
-            body['reports'] = [{'id': r_id, 'reportSource': 'individual'} for r_id in argToList(report_ids)]
-
-        if asset_ids:
-            if str(asset_ids).startswith('All'):
-                manageable = True if asset_ids == 'AllManageable' else False
-                res = self.get_assets(None)
-                assets = get_elements(res['response'], manageable)
-                asset_ids = list(map(lambda a: a['id'], assets))
-            body['assets'] = [{'id': a_id} for a_id in argToList(asset_ids)]
-
-        if credentials:
-            body['credentials'] = [{'id': c_id} for c_id in argToList(credentials)]
-
-        if timeout_action:
-            body['timeoutAction'] = timeout_action
-
-        if scan_virtual_hosts:
-            body['scanningVirtualHosts'] = scan_virtual_hosts
-
-        if rollover_type:
-            body['rolloverType'] = rollover_type
-
-        if ips:
-            body['ipList'] = ips
-
-        if max_scan_time:
-            body['maxScanTime'] = max_scan_time * 3600
+                body['schedule']['enabled'] = argToBoolean(args.get("enabled", True))
 
         return self.send_request(path='scan', method='post', body=body)
 
     def get_scan_results(self, scan_results_id):
+        """
+        Send the request for get_scan_status.
+        Args:
+            scan_results_id (str): The ID of the scan results to search.
+        Returns:
+            Dict: The response.
+        """
         path = 'scanResult/' + scan_results_id
 
         return self.send_request(path)
 
     def launch_scan(self, scan_id, scan_target):
+        """
+        Send the request for launch_scan_command and launch_scan_report_command.
+        Args:
+            scan_id (str): The ID of the scan to launch.
+            scan_target (str): Optional body parameters.
+        Returns:
+            Dict: The response.
+        """
         path = 'scan/' + scan_id + '/launch'
         body = None
         if scan_target:
@@ -250,11 +291,25 @@ class Client(BaseClient):
         return self.send_request(path, 'post', body=body)
 
     def get_query(self, query_id):
+        """
+        Send the request for get_alert_command and list_query_command.
+        Args:
+            query_id (str): The ID of the query to retrieve.
+        Returns:
+            Dict: The response.
+        """
         path = f'query/{query_id}'
 
         return self.send_request(path)
 
     def list_queries(self, type):
+        """
+        Send the request for list_query_command and list_queries.
+        Args:
+            type (str): The query type to retrieve.
+        Returns:
+            Dict: The response.
+        """
         path = 'query'
         params = {}
         if type:
@@ -263,6 +318,11 @@ class Client(BaseClient):
         return self.send_request(path=path, method="GET", params=params)
 
     def get_all_scan_results(self):
+        """
+        Send the request for get_all_scan_results_command.
+        Returns:
+            Dict: The response.
+        """
         params = {
             'fields': 'name,description,details,status,scannedIPs,startTime,scanDuration,importStart,'
             'finishTime,completedChecks,owner,ownerGroup,repository'
@@ -270,6 +330,14 @@ class Client(BaseClient):
         return self.send_request(path='scanResult', params=params)
 
     def get_alerts(self, fields=None, alert_id=None):
+        """
+        Send the request for list_alerts_command and get_alert_command.
+        Args:
+            fields (str): The fields to include in the response.
+            alert_id (str): The ID of the alert to search.
+        Returns:
+            Dict: The response.
+        """
         path = 'alert'
         params = {}  # type: Dict[str, Any]
 
@@ -284,9 +352,21 @@ class Client(BaseClient):
         return self.send_request(path, params=params)
 
     def get_system_licensing(self):
+        """
+        Send the request for get_system_licensing_command.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path='status')
 
     def get_scans(self, fields):
+        """
+        Send the request for list_scans_command.
+        Args:
+            fields (str): The fields to include in the response.
+        Returns:
+            Dict: The response.
+        """
         params = None
 
         if fields:
@@ -297,6 +377,13 @@ class Client(BaseClient):
         return self.send_request(path='scan', params=params)
 
     def get_policies(self, fields):
+        """
+        Send the request for list_policies_command.
+        Args:
+            fields (str): The fields to include in the response.
+        Returns:
+            Dict: The response.
+        """
         params = None
 
         if fields:
@@ -307,9 +394,21 @@ class Client(BaseClient):
         return self.send_request(path='policy', params=params)
 
     def get_repositories(self):
+        """
+        Send the request for list_repositories_command.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path='repository')
 
     def get_assets(self, fields):
+        """
+        Send the request for list_assets_command and create_scan.
+        Args:
+            fields (str): The fields to include in the response.
+        Returns:
+            Dict: The response.
+        """
         params = None
 
         if fields:
@@ -320,6 +419,13 @@ class Client(BaseClient):
         return self.send_request(path='asset', params=params)
 
     def get_credentials(self, fields):
+        """
+        Send the request for list_credentials_command.
+        Args:
+            fields (str): The fields to include in the response.
+        Returns:
+            Dict: The response.
+        """
         params = None
 
         if fields:
@@ -330,6 +436,13 @@ class Client(BaseClient):
         return self.send_request(path='credential', params=params)
 
     def get_asset(self, asset_id):
+        """
+        Send the request for list_assets_command.
+        Args:
+            asset_id (str): The ID of the asset to search.
+        Returns:
+            Dict: The response.
+        """
         params = {
             'fields': 'id,name,description,status,createdTime,modifiedTime,viewableIPs,ownerGroup,tags,owner'
         }
@@ -337,6 +450,17 @@ class Client(BaseClient):
         return self.send_request(path=f'asset/{asset_id}', params=params)
 
     def create_asset(self, name, description, owner_id, tags, ips):
+        """
+        Send the request for create_asset_command.
+        Args:
+            name (str): The name for the asset.
+            description (str): The description for the asset.
+            owner_id (str): The Id of the owner of the asset.
+            tags (str): The tags for the asset.
+            ips (str): The IP list for the asset.
+        Returns:
+            Dict: The response.
+        """
         body = {
             'name': name,
             'definedIPs': ips,
@@ -355,9 +479,23 @@ class Client(BaseClient):
         return self.send_request(path='asset', method='post', body=body)
 
     def delete_asset(self, asset_id):
+        """
+        Send the request for delete_asset_command.
+        Args:
+            asset_id (str): The ID of the asset to delete.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path=f'asset/{asset_id}', method='delete')
 
     def get_report_definitions(self, fields):
+        """
+        Send the request for list_report_definitions_command.
+        Args:
+            fields (str): The fields to include in the response.
+        Returns:
+            Dict: The response.
+        """
         params = None
 
         if fields:
@@ -368,9 +506,21 @@ class Client(BaseClient):
         return self.send_request(path='reportDefinition', params=params)
 
     def get_zones(self):
+        """
+        Send the request for list_zones_command.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path='zone')
 
     def get_scan_report(self, scan_results_id):
+        """
+        Send the request for get_scan_report_command and launch_scan_report_command.
+        Args:
+            scan_results_id (str): The ID of the scan_results to search for.
+        Returns:
+            Dict: The response.
+        """
         path = 'scanResult/' + scan_results_id
 
         params = {
@@ -380,7 +530,15 @@ class Client(BaseClient):
 
         return self.send_request(path, params=params)
 
-    def create_query(self, scan_id, tool, query_filters=None):
+    def create_query(self, scan_id, tool):
+        """
+        Send the request for get_vulnerabilities.
+        Args:
+            scan_id (str): The ID of the scan_results to create the query for.
+            tool (str): the tool to use.
+        Returns:
+            Dict: The response.
+        """
         path = 'query'
 
         body = {
@@ -390,12 +548,16 @@ class Client(BaseClient):
             'scanID': scan_id
         }
 
-        if query_filters:
-            body['filters'] = query_filters
-
         return self.send_request(path, method='post', body=body)
 
     def delete_query(self, query_id):
+        """
+        Send the request for get_vulnerabilities.
+        Args:
+            query_id (str): The ID of the query to delete.
+        Returns:
+            Dict: The response.
+        """
         if not query_id:
             return_error('query id returned None')
         path = 'query/' + str(query_id)
@@ -420,33 +582,30 @@ class Client(BaseClient):
 
         return self.send_request(path, method='post', body=body)
 
-    def list_plugins(self, name, plugin_type, cve):
-        params = {
-            'fields': 'id,type,name,description,family'
-        }
-
-        if cve:
-            params['filterField'] = 'xrefs:CVE'
-            params['op'] = 'eq'
-            params['value'] = cve
-
-        if plugin_type:
-            params['type'] = plugin_type
-
-        return self.send_request(path='plugin', params=params)
-
     def get_system_diagnostics(self):
+        """
+        Send the request for get_system_information_command.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path='system/diagnostics')
 
     def get_system(self):
+        """
+        Send the request for get_system_information_command.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path='system')
 
-    def change_scan_status(self, scan_results_id, status):
-        path = 'scanResult/' + scan_results_id + '/' + status
-
-        return self.send_request(path, method='post')
-
     def list_groups(self, show_users):
+        """
+        Send the request for list_groups_command.
+        Args:
+            show_users (str): Optional filtering argument.
+        Returns:
+            Dict: The response.
+        """
         params = {}
         if show_users:
             params['fields'] = 'users'
@@ -454,6 +613,13 @@ class Client(BaseClient):
         return self.send_request(path='group', method='get', params=params)
 
     def get_vulnerability(self, vuln_id):
+        """
+        Send the request for get_vulnerability_command.
+        Args:
+            vuln_id (str): The ID of the vulnerability to search.
+        Returns:
+            Dict: The response.
+        """
         path = f'plugin/{vuln_id}'
 
         params = {
@@ -464,9 +630,26 @@ class Client(BaseClient):
         return self.send_request(path, params=params)
 
     def delete_scan(self, scan_id):
+        """
+        Send the request for delete_scan_command.
+        Args:
+            scan_id (str): The ID of the scan to delete.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path=f'scan/{scan_id}', method='delete')
 
     def get_device(self, uuid, ip, dns_name, repo):
+        """
+        Send the request for get_device_command.
+        Args:
+            uuid (str): The UUID of the device to search.
+            ip (str): Optional filtering argument.
+            dns_name (str): Optional filtering argument.
+            repo (str): Optional filtering argument.
+        Returns:
+            Dict: The response.
+        """
         path = 'repository/' + repo + '/' if repo else ''
         path += 'deviceInfo'
         params = {
@@ -483,6 +666,14 @@ class Client(BaseClient):
         return self.send_request(path, params=params)
 
     def get_users(self, fields, user_id):
+        """
+        Send the request for list_users_command.
+        Args:
+            fields (str): The fields to include in the response.
+            user_id (str): The ID of the user to search.
+        Returns:
+            Dict: The response.
+        """
         path = 'user'
 
         if user_id:
@@ -498,19 +689,68 @@ class Client(BaseClient):
         return self.send_request(path, params=params)
 
     def create_user(self, args):
+        """
+        Send the request for create_user_command.
+        Args:
+            args (Dict): The demisto.args() object.
+        Returns:
+            Dict: The response.
+        """
         body = create_user_request_body(args)
 
         return self.send_request(path='user', body=body, method='POST')
 
     def update_user(self, args, user_id):
+        """
+        Send the request for update_user_command.
+        Args:
+            args (Dict): The demisto.args() object.
+            user_id (str): The ID of the user to update.
+        Returns:
+            Dict: The response.
+        """
         body = create_user_request_body(args)
 
         return self.send_request(path=f'user/{user_id}', body=body, method='PATCH')
 
+    def update_asset(self, args, asset_id):
+        """
+        Send the request for update_asset_command.
+        Args:
+            args (Dict): The demisto.args() object.
+            asset_id (str): The ID of the asset to update.
+        Returns:
+            Dict: The response.
+        """
+        body = {
+            "name": args.get("name"),
+            "description": args.get("description"),
+            "tags": args.get("tags"),
+            "ownerID": args.get("owner_id"),
+            "definedIPs": args.get("ip_list")
+        }
+        remove_nulls_from_dictionary(body)
+        return self.send_request(path=f'asset/{asset_id}', body=body, method='PATCH')
+
     def delete_user(self, user_id):
+        """
+        Send the request for delete_user_command.
+        Args:
+            user_id (str): The ID of the user to delete.
+        Returns:
+            Dict: The response.
+        """
         return self.send_request(path=f'user/{user_id}', method='DELETE')
 
     def list_plugin_family(self, plugin_id, is_active):
+        """
+        Send the request for list_plugin_family_command.
+        Args:
+            plugin_id (str): The id of the plugin to get.
+            is_active (str): Wether to filter by active / passive plugins.
+        Returns:
+            Dict: The response.
+        """
         path = "pluginFamily"
         if plugin_id:
             path += f"/{plugin_id}"
@@ -521,24 +761,35 @@ class Client(BaseClient):
                 path += "?fields=passive"
         return self.send_request(path=path, method='GET')
 
-    def create_policy(self, policy_name, policy_description, policy_template_id, port_scan_range, tcp_scanner, syn_scanner,
-                      udp_scanner, syn_firewall_detection, family_id, plugins_id):
+    def create_policy(self, args):
+        """
+        Send the request for create_policy_command.
+        Args:
+            args (Dict): the demisto.args() object.
+        Returns:
+            Dict: The response.
+        """
         body = {
-            "name": policy_name,
-            "description": policy_description,
+            "name": args.get("policy_name"),
+            "description": args.get("policy_description"),
             "context": "scan",
-            "families": [{"id": family_id, "plugins": [{"id": id for id in plugins_id.split(',')}]}],
             "preferences": {
-                "portscan_range": port_scan_range,
-                "tcp_scanner": tcp_scanner,
-                "syn_scanner": syn_scanner,
-                "udp_scanner": udp_scanner,
-                "syn_firewall_detection": syn_firewall_detection
+                "portscan_range": args.get("port_scan_range", 'default'),
+                "tcp_scanner": args.get("tcp_scanner"),
+                "syn_scanner": args.get("syn_scanner"),
+                "udp_scanner": args.get("udp_scanner"),
+                "syn_firewall_detection": args.get("syn_firewall_detection", 'Automatic (normal)')
             },
             "policyTemplate": {
-                "id": policy_template_id
+                "id": args.get("policy_template_id", '1')
             },
         }
+        family = {"id": args.get("family_id", "")}
+        if plugins_id := args.get("plugins_id"):
+            family["plugins"] = [{"id": id for id in plugins_id.split(',')}]
+        body["families"] = [family]
+        remove_nulls_from_dictionary(body)
+
         return self.send_request(path="policy", method='POST', body=body)
 
 
@@ -553,6 +804,13 @@ def capitalize_first_letter(str):
 
 
 def create_user_request_body(args):
+    """
+    Create user request body for update or create user commands.
+    Args:
+        args (Dict): the demisto.args() object.
+    Returns:
+        Dict: The request body.
+    """
     user_query_mapping_dict: dict[str, str] = {
         "firstname": "first_name",
         "lastname": "last_name",
@@ -588,12 +846,27 @@ def create_user_request_body(args):
 
 
 def get_server_url(url):
+    """
+    Retrieve the server url.
+    Args:
+        url (str): The server url.
+    Returns:
+        str: The server url.
+    """
     url = re.sub('/[\/]+$/', '', url)
     url = re.sub('\/$', '', url)
     return url
 
 
 def validate_user_body_params(args, command_type):
+    """
+    Validate all given arguments are valid according to the command type (update or create).
+    Args:
+        args (Dict): the demisto.args() object.
+        command_type (Dict): the command type the function is called from (update or create)
+    Returns:
+        None: return error if arguments are invalid.
+    """
     numbers_args_ls = ["group_id", "user_id", "responsible_asset_id"]
 
     time_zone = args.get("time_zone")
@@ -629,6 +902,14 @@ def validate_user_body_params(args, command_type):
 
 
 def timestamp_to_utc(timestamp_str, default_returned_value=''):
+    """
+    Convert timestamp string to UTC date time.
+    Args:
+        timestamp_str (str): timestamp string.
+        default_returned_value (str): the default return value
+    Returns:
+        str: UTC date time string.
+    """
     if timestamp_str and (int(timestamp_str) > 0):  # no value is when timestamp_str == '-1'
         return datetime.utcfromtimestamp(int(timestamp_str)).strftime(
             '%Y-%m-%dT%H:%M:%SZ')
@@ -636,6 +917,14 @@ def timestamp_to_utc(timestamp_str, default_returned_value=''):
 
 
 def scan_duration_to_demisto_format(duration, default_returned_value=''):
+    """
+    Convert duration to demisto format time.
+    Args:
+        duration (str): Scan duration in tenable sc format.
+        default_returned_value (str): the default return value
+    Returns:
+        Int / str: the scan duration in demisto format.
+    """
     if duration:
         return float(duration) / 60
     return default_returned_value
@@ -645,6 +934,14 @@ def scan_duration_to_demisto_format(duration, default_returned_value=''):
 
 
 def list_scans_command(client: Client, args: Dict[str, Any]):
+    """
+    List scans.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_scans('id,name,description,policy,ownerGroup,owner')
     manageable = args.get('manageable', 'false').lower()
 
@@ -677,6 +974,14 @@ def list_scans_command(client: Client, args: Dict[str, Any]):
 
 
 def list_policies_command(client: Client, args: Dict[str, Any]):
+    """
+    List policies.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_policies('id,name,description,tags,modifiedTime,owner,ownerGroup,policyTemplate')
 
     manageable = args.get('manageable', 'false').lower()
@@ -712,6 +1017,14 @@ def list_policies_command(client: Client, args: Dict[str, Any]):
 
 
 def list_repositories_command(client: Client, args: Dict[str, Any]):
+    """
+    List repositories.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_repositories()
 
     if not res or 'response' not in res or not res['response']:
@@ -740,6 +1053,14 @@ def list_repositories_command(client: Client, args: Dict[str, Any]):
 
 
 def list_credentials_command(client: Client, args: Dict[str, Any]):
+    """
+    List credentials.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_credentials('id,name,description,type,ownerGroup,owner,tags,modifiedTime')
 
     manageable = args.get('manageable', 'false').lower()
@@ -775,6 +1096,14 @@ def list_credentials_command(client: Client, args: Dict[str, Any]):
 
 
 def list_assets_command(client: Client, args: Dict[str, Any]):
+    """
+    List assets.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_assets('id,name,description,ipCount,type,tags,modifiedTime,groups,owner')
 
     manageable = args.get('manageable', 'false').lower()
@@ -810,6 +1139,14 @@ def list_assets_command(client: Client, args: Dict[str, Any]):
 
 
 def get_asset_command(client: Client, args: Dict[str, Any]):
+    """
+    Retrieve an asset by a given asset ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     asset_id = args.get('asset_id')
 
     res = client.get_asset(asset_id)
@@ -820,7 +1157,7 @@ def get_asset_command(client: Client, args: Dict[str, Any]):
     asset = res['response']
 
     ips = []  # type: List[str]
-    ip_lists = [v['ipList'] for v in asset['viewableIPs']]
+    ip_lists = [v['ipList'] for v in asset.get('viewableIPs', '')]
 
     for ip_list in ip_lists:
         # Extract IPs
@@ -850,6 +1187,14 @@ def get_asset_command(client: Client, args: Dict[str, Any]):
 
 
 def create_asset_command(client: Client, args: Dict[str, Any]):
+    """
+    Create an asset.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     name = args.get('name')
     description = args.get('description')
     owner_id = args.get('owner_id')
@@ -887,6 +1232,14 @@ def create_asset_command(client: Client, args: Dict[str, Any]):
 
 
 def delete_asset_command(client: Client, args: Dict[str, Any]):
+    """
+    Delete an asset by a given asset ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response and the human readable section.
+    """
     asset_id = args.get('asset_id')
 
     res = client.delete_asset(asset_id)
@@ -901,6 +1254,14 @@ def delete_asset_command(client: Client, args: Dict[str, Any]):
 
 
 def list_report_definitions_command(client: Client, args: Dict[str, Any]):
+    """
+    Lists report defenitions.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_report_definitions('id,name,description,modifiedTime,type,ownerGroup,owner')
 
     manageable = args.get('manageable', 'false').lower()
@@ -941,6 +1302,14 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
 
 
 def list_zones_command(client: Client, args: Dict[str, Any]):
+    """
+    Lists zones
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_zones()
     if not res or 'response' not in res:
         return_error('No zones found')
@@ -991,6 +1360,14 @@ def list_zones_command(client: Client, args: Dict[str, Any]):
 
 
 def get_elements(elements, manageable):
+    """
+    Extracts a list from the given dictionary by given filter
+    Args:
+        elements (Dict): The dictionary to extract from
+        manageable (str): Wether to retrieve manageable or usable list
+    Returns:
+        List: The desired extracted list.
+    """
     if manageable == 'false':
         return elements.get('usable')
 
@@ -998,29 +1375,19 @@ def get_elements(elements, manageable):
 
 
 def create_scan_command(client: Client, args: Dict[str, Any]):
-    name = args.get('name')
-    repo_id = args.get('repository_id')
-    policy_id = args.get('policy_id')
-    plugin_id = args.get('plugin_id')
-    description = args.get('description')
-    zone_id = args.get('zone_id')
+    """
+    Creates a scan.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     schedule = args.get('schedule')
     asset_ids = args.get('asset_ids')
     ips = args.get('ip_list')
-    scan_virtual_hosts = args.get('scan_virtual_hosts')
-    report_ids = args.get('report_ids')
-    credentials = args.get('credentials')
-    timeout_action = args.get('timeout_action')
-    max_scan_time = args.get('max_scan_time')
-    dhcp_track = args.get('dhcp_tracking')
-    rollover_type = args.get('rollover_type')
     dependent = args.get('dependent_id')
     time_zone = args.get("time_zone")
-    start_time = args.get("start_time")
-    repeat_rule_freq = args.get("repeat_rule_freq", "")
-    repeat_rule_interval = int(args.get("repeat_rule_interval", 0))
-    repeat_rule_by_day = argToList(args.get("repeat_rule_by_day"), "")
-    enabled = argToBoolean(args.get("enabled", True))
 
     if time_zone and time_zone not in pytz.all_timezones:
         return_error("Invalid time zone ID. Please choose one of the following: "
@@ -1031,10 +1398,7 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     if schedule == 'dependent' and not dependent:
         return_error('Error: Dependent schedule must include a dependent scan ID')
 
-    res = client.create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
-                             ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
-                             dhcp_track, rollover_type, dependent, start_time, repeat_rule_freq, repeat_rule_interval,
-                             repeat_rule_by_day, enabled, time_zone)
+    res = client.create_scan(args)
 
     if not res or 'response' not in res:
         return_error('Error: Could not retrieve the scan')
@@ -1071,6 +1435,14 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
 
 
 def launch_scan_command(client: Client, args: Dict[str, Any]):
+    """
+    Launches a scan by a given scan ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = launch_scan(client, args)
 
     scan_result = res['response']['scanResult']
@@ -1100,9 +1472,19 @@ def launch_scan_command(client: Client, args: Dict[str, Any]):
     )
 
 
-@polling_function('tenable-sc-launch-scan-report', requires_polling_arg=False,
-                  poll_message="Scan is still running.")
+@polling_function(name='tenable-sc-launch-scan-report',
+                  requires_polling_arg=False,
+                  poll_message="Scan in progress.",
+                  timeout=arg_to_number(demisto.args().get("timeout_in_seconds", '10800')))
 def launch_scan_report_command(args: Dict[str, Any], client: Client):
+    """
+    Polling command. Launch a scan by a given scan ID, following the scan status and retrieve the scan report.
+    Args:
+        args (Dict): demisto.args() object.
+        client (Client): The tenable.sc client object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     first_execution = not args.get("scan_results_id")
     if first_execution:
         res = launch_scan(client, args)
@@ -1121,6 +1503,14 @@ def launch_scan_report_command(args: Dict[str, Any], client: Client):
 
 
 def launch_scan(client: Client, args: Dict[str, Any]):
+    """
+    Launching a scan with a given scan ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        Dict: The response for the launch scan request.
+    """
     scan_id = args.get('scan_id')
     target_address = args.get('diagnostic_target')
     target_password = args.get('diagnostic_password')
@@ -1137,6 +1527,14 @@ def launch_scan(client: Client, args: Dict[str, Any]):
 
 
 def get_scan_status_command(client: Client, args: Dict[str, Any]):
+    """
+    Return information about the scan status by a given scan results ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     scans_results, res = get_scan_status(client, args)
 
     headers = ['ID', 'Name', 'Status', 'Description']
@@ -1158,6 +1556,15 @@ def get_scan_status_command(client: Client, args: Dict[str, Any]):
 
 
 def get_scan_status(client: Client, args: Dict[str, Any]):
+    """
+    Return information about the scan status by a given scan results ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        Dict: The relevant extracted section from the response.
+        Dict: The response.
+    """
     scan_results_ids = argToList(args.get('scan_results_id'))
 
     scans_results = []
@@ -1171,6 +1578,14 @@ def get_scan_status(client: Client, args: Dict[str, Any]):
 
 
 def get_scan_report_command(client: Client, args: Dict[str, Any]):
+    """
+    Return scan report information by a given scan results ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     scan_results_id = args.get('scan_results_id')
     vulnerabilities_to_get = argToList(args.get('vulnerability_severity', []))
 
@@ -1228,37 +1643,15 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_plugins_command(client: Client, args: Dict[str, Any]):
-    name = args.get('name'),
-    cve = args.get('cve'),
-    plugin_type = args.get('type')
-
-    res = client.list_plugins(name, plugin_type, cve)
-
-    if not res or 'response' not in res:
-        return_error('No plugins found')
-
-    plugins = res['response']
-
-    headers = ['ID', 'Name', 'Type', 'Description', 'Family']
-    mapped_plugins = [{
-        'ID': p['id'],
-        'Name': p['name'],
-        'Type': p['type'],
-        'Description': p['description'],
-        'Family': p['family'].get('name')
-    } for p in plugins]
-
-    return CommandResults(
-        outputs=createContext(mapped_plugins, removeNull=True),
-        outputs_prefix='TenableSC.Plugin',
-        raw_response=res,
-        outputs_key_field='ID',
-        readable_output=tableToMarkdown('Tenable.sc Plugins', mapped_plugins, headers=headers, removeNull=True)
-    )
-
-
 def get_vulnerabilities(client: Client, scan_results_id):
+    """
+    Lists vulnerabilities from a scan by a given scan results ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        scan_results_id (str): The ID of the scan results to get the information from.
+    Returns:
+        List: Sorted vulnerabilities list.
+    """
     query = client.create_query(scan_results_id, 'vulnipdetail')
 
     if not query or 'response' not in query:
@@ -1304,6 +1697,14 @@ def get_vulnerabilities(client: Client, scan_results_id):
 
 
 def get_vulnerability_command(client: Client, args: Dict[str, Any]):
+    """
+    Return information about a vulnerability by a given vulnerability ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     vuln_id = args.get('vulnerability_id')
     scan_results_id = args.get('scan_results_id')
     sort_field = args.get('sort_field')
@@ -1426,25 +1827,30 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
         'ID': scan_results_id,
         'Vulnerability': mapped_vuln,
     }
-
-    context = {}
-
-    context['TenableSC.ScanResults.Vulnerability(val.ID===obj.ID)'] = createContext(scan_result['Vulnerability'], removeNull=True)
+    command_results = [
+        CommandResults(
+            outputs=createContext(scan_result['Vulnerability'], removeNull=True),
+            outputs_prefix='TenableSC.ScanResults.Vulnerability',
+            raw_response=vuln_response,
+            outputs_key_field='ID',
+            readable_output=hr
+        )
+    ]
 
     if len(cves_output) > 0:
-        context['CVE(val.ID===obj.ID)'] = createContext(cves_output)
+        command_results.append(CommandResults(outputs=createContext(cves_output), outputs_prefix='CVE', outputs_key_field='ID'))
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': vuln_response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': context
-    })
+    return command_results
 
 
 def get_vulnerability_hosts_from_analysis(results):
+    """
+    Lists the vulnerability hosts from given analysis.
+    Args:
+        results (Dict): The analysis results.
+    Returns:
+        List: list of all the vulnerability hosts extracted from the results.
+    """
     return [{
         'IP': host['ip'],
         'MAC': host['macAddress'],
@@ -1454,6 +1860,14 @@ def get_vulnerability_hosts_from_analysis(results):
 
 
 def delete_scan_command(client: Client, args: Dict[str, Any]):
+    """
+    Deletes a scan.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     scan_id = args.get('scan_id')
 
     res = client.delete_scan(scan_id)
@@ -1462,13 +1876,20 @@ def delete_scan_command(client: Client, args: Dict[str, Any]):
         return_error('Error: Could not delete the scan')
 
     return CommandResults(
-        outputs_prefix='TenableSC.Plugin',
         raw_response=res,
         readable_output='Scan successfully deleted'
     )
 
 
 def get_device_command(client: Client, args: Dict[str, Any]):
+    """
+    Returns device info by a given device UUID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     uuid = args.get('uuid')
     ip = args.get('ip')
     dns_name = args.get('dns_name')
@@ -1524,20 +1945,33 @@ def get_device_command(client: Client, args: Dict[str, Any]):
         'OS': mapped_device['OS']
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tenable.sc Device', mapped_device, headers=headers, removeNull=True),
-        'EntryContext': {
-            'TenableSC.Device(val.UUID===obj.UUID)': createContext(mapped_device, removeNull=True),
-            'Endpoint(val.IP===obj.IP)': createContext(endpoint, removeNull=True)
-        }
-    })
+    command_results = [
+        CommandResults(
+            outputs=createContext(mapped_device, removeNull=True),
+            outputs_prefix='TenableSC.Device',
+            raw_response=res,
+            outputs_key_field='UUID',
+            readable_output=tableToMarkdown('Tenable.sc Device', mapped_device, headers=headers, removeNull=True)
+        ),
+        CommandResults(
+            outputs=createContext(endpoint, removeNull=True),
+            outputs_prefix='Endpoint',
+            outputs_key_field='IP'
+        )
+    ]
+
+    return command_results
 
 
 def list_users_command(client: Client, args: Dict[str, Any]):
+    """
+    Lists all users.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     user_id = args.get('id')
     username = args.get('username')
     email = args.get('email')
@@ -1597,6 +2031,14 @@ def list_users_command(client: Client, args: Dict[str, Any]):
 
 
 def get_system_licensing_command(client: Client, args: Dict[str, Any]):
+    """
+    Returns system licensing information.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_system_licensing()
 
     if not res or 'response' not in res:
@@ -1626,6 +2068,14 @@ def get_system_licensing_command(client: Client, args: Dict[str, Any]):
 
 
 def get_system_information_command(client: Client, args: Dict[str, Any]):
+    """
+    Return system information.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     sys_res = client.get_system()
 
     if not sys_res or 'response' not in sys_res:
@@ -1674,6 +2124,14 @@ def get_system_information_command(client: Client, args: Dict[str, Any]):
 
 
 def list_alerts_command(client: Client, args: Dict[str, Any]):
+    """
+    Lists all alerts.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_alerts(fields='id,name,description,didTriggerLastEvaluation,lastTriggered,'
                             'action,lastEvaluated,ownerGroup,owner')
     manageable = args.get('manageable', 'false').lower()
@@ -1708,6 +2166,14 @@ def list_alerts_command(client: Client, args: Dict[str, Any]):
 
 
 def get_alert_command(client: Client, args: Dict[str, Any]):
+    """
+    Return information about an alert by a given alert ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     alert_id = args.get('alert_id')
     res = client.get_alerts(alert_id=alert_id)
 
@@ -1771,6 +2237,12 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
 
 
 def fetch_incidents(client: Client, first_fetch: str = '3 days'):
+    """
+    fetches incidents and upload them to demisto.incidents().
+    Args:
+        client (Client): The tenable.sc client object.
+        first_fetch (str): The first_fetch integration param.
+    """
     incidents = []
     last_run = demisto.getLastRun()
     if not last_run:
@@ -1805,6 +2277,14 @@ def fetch_incidents(client: Client, first_fetch: str = '3 days'):
 
 
 def list_groups_command(client: Client, args: Dict[str, Any]):
+    """
+    Lists all groups
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     show_users = argToBoolean(args.get("show_users", True))
     limit = int(args.get('limit', '50'))
     res = client.list_groups(show_users)
@@ -1846,6 +2326,14 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
 
 
 def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
+    """
+    Lists all scan results.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     res = client.get_all_scan_results()
     get_manageable_results = args.get('manageable', 'false').lower()  # 'true' or 'false'
     page = int(args.get('page', '0'))
@@ -1892,6 +2380,14 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
 
 
 def create_user_command(client: Client, args: Dict[str, Any]):
+    """
+    Create a user.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     validate_user_body_params(args, "create")
     res = client.create_user(args)
     hr_header = f'User {args.get("user_name")} was created successfully.'
@@ -1899,14 +2395,30 @@ def create_user_command(client: Client, args: Dict[str, Any]):
 
 
 def update_user_command(client: Client, args: Dict[str, Any]):
+    """
+    Update a user by given user ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     user_id = args.get('user_id')
     validate_user_body_params(args, "update")
     res = client.update_user(args, user_id)
-    hr_header = f'user {args.get("user_id")} was updated succesfully.'
+    hr_header = f'user {args.get("user_id")} was updated successfully.'
     process_update_and_create_user_response(res, hr_header)
 
 
 def process_update_and_create_user_response(res, hr_header):
+    """
+    Process the response returned from the update and create user requests
+    Args:
+        res (Dict): The response returned from the request
+        hr_header (Dict): The header to add to the hr section.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     if not res or not res.get('response', {}):
         return_error("User wasn't created successfully.")
     headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
@@ -1935,6 +2447,14 @@ def process_update_and_create_user_response(res, hr_header):
 
 
 def delete_user_command(client: Client, args: Dict[str, Any]):
+    """
+   Delete a user by a given user ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and human readable section.
+    """
     user_id = args.get('user_id')
     res = client.delete_user(user_id)
 
@@ -1945,6 +2465,14 @@ def delete_user_command(client: Client, args: Dict[str, Any]):
 
 
 def list_plugin_family_command(client: Client, args: Dict[str, Any]):
+    """
+    return info about a query / list of queries.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     is_active = args.get('is_active')
     limit = int(args.get('limit', '50'))
     plugin_id = args.get('plugin_id', '')
@@ -1973,18 +2501,15 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
 
 
 def create_policy_command(client: Client, args: Dict[str, Any]):
-    policy_name = args.get("policy")
-    policy_description = args.get("policy_description")
-    policy_template_id = args.get("policy_template_id", '1')
-    port_scan_range = args.get("port_scan_range", 'default')
-    tcp_scanner = args.get("tcp_scanner")
-    syn_scanner = args.get("syn_scanner")
-    udp_scanner = args.get("udp_scanner")
-    syn_firewall_detection = args.get("syn_firewall_detection", 'Automatic (normal)')
-    family_id = args.get("family_id")
-    plugins_id = args.get("plugins_id")
-    res = client.create_policy(policy_name, policy_description, policy_template_id, port_scan_range, tcp_scanner, syn_scanner,
-                               udp_scanner, syn_firewall_detection, family_id, plugins_id)
+    """
+    Creates a policy.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
+    res = client.create_policy(args)
     created_policy = res.get("response")
     mapped_created_policy = {
         "Policy type": res.get("type"),
@@ -2014,14 +2539,39 @@ def create_policy_command(client: Client, args: Dict[str, Any]):
     )
 
 
+def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
+    """
+    Creates remediation scan.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
+    args["policy_template_id"] = '1'
+    res = client.create_policy(args)
+    args["scan_type"] = "policy"
+    args["schedule"] = "now"
+    # You can use either the asset_ids parameter or the ip_list parameter to specify assets, but you cannot use both parameters in a single request.
+    created_policy = res.get("response")
+    client.create_scan()
+
+
 def list_query_command(client: Client, args: Dict[str, Any]):
+    """
+    return info about a query / list of queries.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
     type = args.get('type')
-    limit = int(args.get('limit', '50'))
     query_id = args.get('query_id', '')
     if query_id:
         res, hr, ec = get_query(client, query_id)
     else:
-        res, hr, ec = list_queries(client, type, limit)
+        res, hr, ec = list_queries(client, type)
 
     return CommandResults(
         outputs=createContext(ec, removeNull=True, keyTransform=capitalize_first_letter),
@@ -2032,7 +2582,37 @@ def list_query_command(client: Client, args: Dict[str, Any]):
     )
 
 
+def update_asset_command(client: Client, args: Dict[str, Any]):
+    """
+    Update an asset by a given asset ID.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response and human readable.
+    """
+    asset_id = args.get('asset_id')
+    res = client.update_asset(args, asset_id)
+    if not res or not res.get('response', []):
+        return_error(f"Couldn't update asset {asset_id}")
+
+    return CommandResults(
+        raw_response=res,
+        readable_output=f'asset {asset_id} was updated successfully.'
+    )
+
+
 def get_query(client: Client, query_id):
+    """
+    get a query by ID and return the processed results.
+    Args:
+        client (Client): The tenable.sc client object.
+        query_id (str): The query ID to search.
+    Returns:
+        Dict: The response from the server.
+        str: The processed human readable.
+        Dict: The relevant section from the response.
+    """
     res = client.get_query(query_id)
     if not res or not res.get('response', []):
         return_error(f"The query {query_id} wasn't found")
@@ -2048,7 +2628,17 @@ def get_query(client: Client, query_id):
     return res, hr, query
 
 
-def list_queries(client: Client, type, limit):
+def list_queries(client: Client, type):
+    """
+    Lists queries and return the processed results.
+    Args:
+        client (Client): The tenable.sc client object.
+        type (str): query time to filter by.
+    Returns:
+        Dict: The response from the server.
+        str: The processed human readable.
+        Dict: The relevant section from the response.
+    """
     res = client.list_queries(type)
     if not res or not res.get('response', []):
         return_error("No queries found.")
@@ -2111,7 +2701,6 @@ def main():
         'tenable-sc-list-zones': list_zones_command,
         'tenable-sc-list-report-definitions': list_report_definitions_command,
         'tenable-sc-list-assets': list_assets_command,
-        'tenable-sc-list-plugins': list_plugins_command,
         'tenable-sc-get-asset': get_asset_command,
         'tenable-sc-create-asset': create_asset_command,
         'tenable-sc-delete-asset': delete_asset_command,
@@ -2132,9 +2721,11 @@ def main():
         'tenable-sc-delete-user': delete_user_command,
         'tenable-sc-list-plugin-family': list_plugin_family_command,
         'tenable-sc-create-policy': create_policy_command,
-        'tenable-sc-list-query': list_query_command
-        # 'tenable-sc-get-vulnerability': get_vulnerability_command,
-        # 'tenable-sc-get-device': get_device_command,
+        'tenable-sc-list-query': list_query_command,
+        'tenable-sc-update-asset': update_asset_command,
+        'tenable-sc-get-vulnerability': get_vulnerability_command,
+        'tenable-sc-get-device': get_device_command,
+        'tenable-sc-create-remediation-scan': create_remediation_scan_command
     }
 
     try:
@@ -2155,10 +2746,6 @@ def main():
             fetch_incidents(client, first_fetch)
         elif command == 'tenable-sc-launch-scan-report':
             return_results(launch_scan_report_command(args, client))
-        elif command == 'tenable-sc-get-vulnerability':
-            return_results(get_vulnerability_command(client, args))
-        elif command == 'tenable-sc-get-device':
-            return_results(get_device_command(client, args))
         else:
             return_results(command_dict[command](client, args))
     except Exception as e:

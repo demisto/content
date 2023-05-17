@@ -695,7 +695,7 @@ script:
     - default: false
       description: 'A comma-separated list of days of the week to run the schedule at. Possible values are: SU, MO, TU, WE, TH, FR, SA.'
       isArray: yes
-      name: repeat_rule_interval
+      name: repeat_rule_by_day
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1247,7 +1247,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Available only for sec man. list all groups.
+    description: Demands sec man authentication. list all groups.
     execution: false
     name: tenable-sc-list-groups
     outputs:
@@ -2172,7 +2172,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The query time to retrieve. When no type is set all queries are returned.
+      description: The query type to retrieve. When no type is set all queries are returned.
       isArray: false
       name: type
       required: false
@@ -2536,6 +2536,279 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Asset name.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the asset we wish to update.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: The asset description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The asset owner ID.
+      isArray: false
+      name: owner_id
+      required: false
+      secret: false
+    - default: false
+      description: The asset tag.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of the asset IPs list.
+      isArray: false
+      name: ip_list
+      required: false
+      secret: false
+    deprecated: false
+    polling: true
+    description: Demands sec man authentication. Update an asset.
+    execution: false
+    name: tenable-sc-update-asset
+    outputs:
+  - arguments:
+    - default: false
+      description: The name of the policy you wish to create.
+      isArray: false
+      name: policy_name
+      required: false
+      secret: false
+    - default: false
+      description: The description of the policy you wish to create.
+      isArray: false
+      name: policy_description
+      required: false
+      secret: false
+    - default: false
+      description: 'Possible values: default, all or a comma separated list of values - 21,23,25,80,110.'
+      isArray: false
+      name: port_scan_range
+      required: false
+      secret: false
+    - default: false
+      description: Only possible if you are using Linux or FreeBSD. On Windows or macOS, the scanner does not do a TCP scan and instead uses the SYN scanner..If you enable this option, you can also set the syn_firewall_detection.
+      isArray: false
+      name: tcp_scanner
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'no'
+      predefined:
+      - 'no'
+      - 'yes'
+    - default: false
+      description: Identifies open TCP ports on the target hosts. If you enable this option, you can also set the syn_firewall_detection option.
+      isArray: false
+      name: syn_scanner
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'yes'
+      predefined:
+      - 'no'
+      - 'yes'
+    - default: false
+      description: Enabling the UDP port scanner may dramatically increase the scan time and produce unreliable results. Consider using the netstat or SNMP port enumeration options instead if possible.
+      isArray: false
+      name: udp_scanner
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'no'
+      predefined:
+      - 'no'
+      - 'yes'
+    - default: false
+      description: Default is Automatic (normal). Rely on local port enumeration first before relying on network port scans.
+      isArray: false
+      name: syn_firewall_detection
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: Automatic (normal)
+      predefined:
+      - Automatic (normal)
+      - Do not detect RST rate limitation(soft)
+      - Ignore closed ports(aggressive)
+      - Disabled(softer)    
+    - default: false
+      description: Can be retrieved from the result of  tenable-sc-list-plugin-family command .
+      isArray: false
+      name: family_id
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of plugin_ids, Can be retrieved from the result of  tenable-sc-list-plugin-family command  with family_id as argument.
+      isArray: false
+      name: plugins_id
+      required: true
+      secret: false
+    - default: false
+      description: Scan name.
+      isArray: false
+      name: scan_name
+      required: true
+      secret: false
+    - default: false
+      description: Scan description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Default is 1. Scan Repository ID, can be retrieved from list-repositories command.
+      isArray: false
+      name: repository_id
+      required: true
+      secret: false
+      defaultValue: '1'
+    - default: false
+      description: 'The timezone for the given start_time, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html.'
+      isArray: false
+      name: time_zone
+      required: false
+      secret: false
+    - default: false
+      description: The scan start time, should be in the format of YYYY-MM-DD:HH:MM:SS or relative timestamp (i.e now, 3 days).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: to specify repeating events based on an interval of a repeat_rule_freq or more.
+      isArray: false
+      name: repeat_rule_freq
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - HOURLY 
+      - DAILY
+      - WEEKLY 
+      - MONTHLY 
+      - YEARLY
+    - default: false
+      description: 'the number of repeat_rule_freq between each interval (for example: If repeat_rule_freq=DAILY and repeat_rule_interval=8 it means every eight days.)'
+      isArray: false
+      name: repeat_rule_interval
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of days of the week to run the schedule at. Possible values are: SU, MO, TU, WE, TH, FR, SA.'
+      isArray: yes
+      name: repeat_rule_by_day
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Either no assets or comma separated asset IDs to scan, can be retrieved from list-assets command.
+      isArray: true
+      name: asset_ids
+      predefined:
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default is false. Whether to includes virtual hosts, default false.
+      isArray: false
+      name: scan_virtual_hosts
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+      defaultValue: false
+    - default: false
+      description: Comma separated IPs to scan e.g 10.0.0.1,10.0.0.2 .
+      isArray: false
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of report definition IDs to create post-scan, can be retrieved from list-report-definitions command.
+      isArray: true
+      name: report_ids
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated credentials IDs to use, can be retrieved from list-credentials command.
+      isArray: true
+      name: credentials
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default is import. Default. discard - do not import any of the results obtained by the scan to the database. import - Import the results of the current scan and discard the information for any unscanned targets. rollover-Import the results from the scan into the database and create a rollover scan that may be launched at a later time to complete the scan.
+      isArray: false
+      name: timeout_action
+      predefined:
+      - discard
+      - import
+      - rollover
+      required: false
+      defaultValue: import
+      secret: false
+    - default: false
+      description: Maximum scan run time in hours, default is 1.
+      isArray: false
+      name: max_scan_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default is false. Track hosts which have been issued new IP address, (e.g. DHCP).
+      isArray: false
+      name: dhcp_tracking
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+      defaultValue: false
+    - auto: PREDEFINED
+      default: false
+      description: The "enabled" field can only be set to "false" for schedules of type "ical". For all other schedules types, "enabled" is set to "true".
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+      defaultValue: 'true'
+    - auto: PREDEFINED
+      default: false
+      description: Default is nextDay. Create a rollover scan scheduled to launch the next day at the same start time as the just completed scan. template-Create a rollover scan as a template for users to launch manually This field is required if the timeout_action is set to rollover.
+      isArray: false
+      name: rollover_type
+      required: false
+      secret: false
+      defaultValue: nextDay
+    deprecated: false
+    description: This command is prerequisite for creating remediation scan. creates policy.
+    execution: false
+    name: tenable-sc-create-remediation-scan
+    outputs:
+
+
+
+
+
+
+
+  - arguments:
+    - default: false
       description: The id of the scan we wish to get the report on. Can be retrieved from list-scans command.
       isArray: false
       name: scan_id
@@ -2560,12 +2833,19 @@ script:
       required: false
       secret: false
       deprecated: true
+    - description: Default is 3 hours. The timeout in seconds until polling ends.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      defaultValue: 10800
     deprecated: false
     polling: true
     description: Lists queries.
     execution: false
     name: tenable-sc-launch-scan-report
     outputs:
+
+    
 
 
   isfetch: true
