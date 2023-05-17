@@ -322,12 +322,6 @@ def main() -> None:
     proxy = params.get('proxy', False)
     verify_certificate = not params.get('insecure', False)
 
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    timestamp = int(first_fetch_time.timestamp())
     headers = {'Authorization': f'Token {api_token}'}
 
     try:
@@ -345,6 +339,12 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
+            first_fetch_time = arg_to_datetime(
+                arg=params.get('first_fetch', '3 days'),
+                arg_name='First fetch time',
+                required=True
+            )
+            timestamp = int(first_fetch_time.timestamp())
             last_fetch = demisto.getLastRun().get('timestamp', None)
             timestamp = timestamp if last_fetch is None else int(last_fetch)
 
