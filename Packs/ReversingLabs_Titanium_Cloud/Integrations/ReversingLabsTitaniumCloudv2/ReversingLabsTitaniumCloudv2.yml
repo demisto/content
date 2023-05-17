@@ -551,6 +551,68 @@ script:
       - contextPath: ReversingLabs.imphash_similarity
         description: ''
         type: Unknown
+  - name: reversinglabs-titaniumcloud-url-downloaded-files
+    description: Returns a list of files downloaded from the provided URL.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: url
+        description: URL string
+        isArray: false
+        required: true
+        secret: false
+      - name: extendedResults
+        description: Return extended results
+        defaultValue: true
+        isArray: false
+        required: false
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: classification
+        description: Return only results with this classification
+        isArray: false
+        required: false
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'MALICIOUS'
+          - 'SUSPICIOUS'
+          - 'KNOWN'
+          - 'UNKNOWN'
+      - name: lastAnalysis
+        description: Return results from the last analysis
+        defaultValue: false
+        isArray: false
+        required: false
+        secret: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: analysisId
+        description: Return results from a specific analysis
+        isArray: false
+        required: false
+        secret: false
+      - name: resultsPerPage
+        description: Number of results per query
+        defaultValue: 1000
+        isArray: false
+        required: false
+        secret: false
+      - name: maxResults
+        description: Maximum number of results
+        defaultValue: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.url_downloaded_files
+        description: ''
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58984
   feed: false
   isfetch: false

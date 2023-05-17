@@ -1000,7 +1000,7 @@ def yara_matches_feed_output(response_json, time_value):
     range_from = feed.get("time_range", {}).get("from")
     range_to = feed.get("time_range", {}).get("to")
 
-    markdown = f"""## YARA Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
+    markdown = f"""## ReversingLabs YARA Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
     **From**: {range_from}
     **To**: {range_to}
     """
@@ -1104,7 +1104,7 @@ def yara_retro_matches_feed_output(response_json, time_value):
     range_from = feed.get("time_range", {}).get("from")
     range_to = feed.get("time_range", {}).get("to")
 
-    markdown = f"""## YARA Retro Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
+    markdown = f"""## ReversingLabs YARA Retro Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
     **From**: {range_from}
     **To**: {range_to}
     """
@@ -1171,7 +1171,7 @@ def imphash_similarity_command():
 
 def imphash_similarity_output(response, imphash):
     hashes = tableToMarkdown("SHA-1 list", response, headers="Hashes")
-    markdown = f"## Imphash Similarity for {imphash}\n {hashes}"
+    markdown = f"## ReversingLabs Imphash Similarity for {imphash}\n {hashes}"
 
     results = CommandResults(
         outputs_prefix="ReversingLabs",
@@ -1181,6 +1181,48 @@ def imphash_similarity_output(response, imphash):
 
     return results
 
+
+def url_downloaded_files_command():
+    url_ti = URLThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    url = demisto.getArg("url")
+    extended = argToBoolean(demisto.getArg("extendedResults"))
+    classification = demisto.getArg("classification")
+    last_analysis = argToBoolean(demisto.getArg("lastAnalysis"))
+    analysis_id = demisto.getArg("analysisId")
+    if analysis_id:
+        analysis_id = int(analysis_id)
+    results_per_page = int(demisto.getArg("resultsPerPage"))
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = url_ti.get_downloaded_files_aggregated(
+            url_input=url,
+            extended=extended,
+            classification=classification,
+            last_analysis=last_analysis,
+            analysis_id=analysis_id,
+            results_per_page=results_per_page,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    files = tableToMarkdown("Downloaded files", response)
+    markdown = f"## ReversingLabs Files Downloaded from URL {url}\n {files}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"url_downloaded_files": response},
+        readable_output=markdown
+    )
+
+    return_results(results)
 
 
 def main():
@@ -1254,6 +1296,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-imphash-similarity":
         imphash_similarity_command()
+
+    elif command == "reversinglabs-titaniumcloud-url-downloaded-files":
+        url_downloaded_files_command()
 
     else:
         return_error(f"Command {command} does not exist")
