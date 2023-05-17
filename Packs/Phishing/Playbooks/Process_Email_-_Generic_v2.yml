@@ -1975,6 +1975,7 @@ tasks:
       id: 6ed6697b-5d7a-4700-8b04-41bf375be00f
       version: -1
       name: Check Whether to add attachments
+      description: ""
       type: condition
       iscommand: false
       brand: ''
