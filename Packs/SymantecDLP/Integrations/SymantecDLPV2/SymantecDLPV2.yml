@@ -580,7 +580,7 @@ script:
     - description: 'Comma-separated list of emails for the pattern. Note: These email values will replace the existing values in the pattern.'
       isArray: true
       name: emails
-    - description: 'Comma separated list of domains for the pattern. NOTE: These domain values will replace the existing values in the pattern.'
+    - description: 'Comma-separated list of domains for the pattern. Note: These domain values will replace the existing values in the pattern.'
       isArray: true
       name: domains
     - description: 'Name of the sender pattern NOTE: This value will change the name of the pattern if different from the existing name.'
