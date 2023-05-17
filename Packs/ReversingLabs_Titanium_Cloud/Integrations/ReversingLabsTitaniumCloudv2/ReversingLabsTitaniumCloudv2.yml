@@ -613,6 +613,27 @@ script:
       - contextPath: ReversingLabs.url_downloaded_files
         description: ''
         type: Unknown
+  - name: reversinglabs-titaniumcloud-url-latest-analyses-feed
+    description: Returns the latest URL analysis reports.
+    deprecated: false
+    execution: false
+    arguments:
+      - name: resultsPerPage
+        description: Number of results per query
+        defaultValue: 1000
+        isArray: false
+        required: false
+        secret: false
+      - name: maxResults
+        description: Maximum number of results
+        defaultValue: 5000
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ReversingLabs.url_latest_analyses_feed
+        description: ''
+        type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58984
   feed: false
   isfetch: false

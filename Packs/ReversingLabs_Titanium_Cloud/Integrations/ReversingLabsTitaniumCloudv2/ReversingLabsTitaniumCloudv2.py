@@ -1230,6 +1230,40 @@ def url_downloaded_files_command():
     return_results(results)
 
 
+def url_latest_analyses_feed_command():
+    url_ti = URLThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    results_per_page = int(demisto.getArg("resultsPerPage"))
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = url_ti.get_latest_url_analysis_feed_aggregated(
+            results_per_page=results_per_page,
+            max_results=max_results
+        )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        exit(0)
+    except Exception as e:
+        return_error(str(e))
+
+    analyses = tableToMarkdown("Latest URL analyses", response)
+    markdown = f"## ReversingLabs Latest URL Analyses Feed\n {analyses}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"url_latest_analyses_feed": response},
+        readable_output=markdown
+    )
+
+    return_results(results)
+
+
 def main():
     command = demisto.command()
 
@@ -1304,6 +1338,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-url-downloaded-files":
         url_downloaded_files_command()
+
+    elif command == "reversinglabs-titaniumcloud-url-latest-analyses-feed":
+        url_latest_analyses_feed_command()
 
     else:
         return_error(f"Command {command} does not exist")
