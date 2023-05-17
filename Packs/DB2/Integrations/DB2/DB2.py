@@ -98,7 +98,7 @@ class Client:
         Returns:
             A dict with the keys and values.
         """
-
+        demisto.info('test')
         connect_parameters_tuple_list = parse_qsl(connect_parameters, keep_blank_values=True)
         connect_parameters_dict = dict()
         for key, value in connect_parameters_tuple_list:
