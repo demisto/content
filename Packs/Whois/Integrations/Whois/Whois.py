@@ -8595,13 +8595,6 @@ def setup_proxy():
 
 
 def main():
-    demisto_args = demisto.args()
-    ip = demisto_args.get('ip')
-    demisto_params = demisto.params()
-    rate_limit_retry_count: int = int(demisto_args.get('rate_limit_retry_count') or demisto_params.get('rate_limit_retry_count') or 3)
-    rate_limit_wait_seconds: int = int(demisto_args.get('rate_limit_wait_seconds') or demisto_params.get('rate_limit_wait_seconds') or 120)
-    rate_limit_errors_suppressed: bool = bool(demisto_args.get('rate_limit_errors_suppressed') or demisto_params.get('rate_limit_errors_suppressed') or False)
-
     LOG('command is {}'.format(str(demisto.command())))
     command = demisto.command()
 
