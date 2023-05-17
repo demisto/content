@@ -8,5 +8,5 @@ For supporting Time Zone parsing, time should be set to UTC +0000 [Product docum
 3. Click **Account Settings**.
 4. The **Account** tab should open by default. Locate the **General Options** section.
 5. Select your preferred timezone from the pulldown menu under **Time Zone**.
-6. Be sure to click **Save Changes** in the top right to save your settings.
+6. Click **Save Changes** in the top right to save your settings.
 </~XSIAM>
