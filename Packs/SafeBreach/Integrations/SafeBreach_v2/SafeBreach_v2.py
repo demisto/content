@@ -1,11 +1,10 @@
 """ IMPORTS """
-import traceback
 from ast import literal_eval
-from typing import List, Dict, Optional, Any, Union
 from CommonServerPython import *
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 """"" MAPPERS """
 CATEGORY_MAPPER: Dict[str, List[int]] = {
     'Network Access': [1, 2, 3, 4, 19, 20, 21, 22],
@@ -121,7 +120,7 @@ class Client:
                                  url_suffix='/nodes?details=true&deleted=true&assets=true')
 
     def get_simulation(self, simulation_id):
-        return self.http_request(method='GET', endpoint_url='api/data', url_suffix=f"/executions/{simulation_id}")
+        return self.http_request(method='GET', endpoint_url='api/data', url_suffix=f'/executions/{simulation_id}')
 
     def get_test_status(self, test_id):
         return self.http_request('GET', endpoint_url='/api/data', url_suffix=f'/testsummaries/{test_id}')
