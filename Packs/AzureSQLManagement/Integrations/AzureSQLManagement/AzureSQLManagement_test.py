@@ -42,6 +42,26 @@ def test_azure_sql_servers_list_command(mocker):
     assert results_2.outputs[0].get('name') == 'integration'
 
 
+def test_azure_sql_servers_list_command_with_not_found(mocker):
+    """
+        Given:
+            - A wrong resource group name.
+        When:
+            - Retrieving list of all sql servers using azure_sql_servers_list command.
+        Then
+            - Assert that we get the failure message.
+        """
+    from AzureSQLManagement import azure_sql_servers_list_command
+    failure_message = 'Resource group \'resource-group\' could not be found.'
+    args = {
+        'resource_group_name': 'resource-group',
+        'list_by_resource_group': 'true'
+    }
+    client = mock_client(mocker, failure_message)
+    result = azure_sql_servers_list_command(client, args, 'resource-group')
+    assert result.readable_output == failure_message
+
+
 def test_azure_sql_db_list_command(mocker):
     """
         Given:
