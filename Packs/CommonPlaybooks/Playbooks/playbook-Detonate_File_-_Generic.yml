@@ -1,5 +1,5 @@
 id: 03bb29d7-1d15-4b64-8006-0cc4ce51365d
-version: 19
+version: 28
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -39,14 +39,14 @@ tasks:
       - "20"
       - "21"
       - "22"
-      - "24"
       - "11"
+      - "26"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2845,
+          "x": 2830,
           "y": 50
         }
       }
@@ -776,76 +776,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 0c60345f-148a-4925-8a03-d5002703d0d8
-    type: condition
-    task:
-      id: 0c60345f-148a-4925-8a03-d5002703d0d8
-      version: -1
-      name: Check if OPSWAT-filescan pack exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "26"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: OPSWAT Filescan
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 6090,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8ec2b20a-a2b4-46b2-84db-256088ebf6e2
+    taskid: 6eee8d6f-cf93-492e-857b-e40ff9119171
     type: regular
     task:
-      id: 8ec2b20a-a2b4-46b2-84db-256088ebf6e2
+      id: 6eee8d6f-cf93-492e-857b-e40ff9119171
       version: -1
       name: Detonate File - OPSWAT
-      description: Scan file resource.
+      description: Detonates a file using the OPSWAT-Filescan Integration. Returns
+        relevant reports to the War Room and file reputations to the context data.
       script: OPSWAT Filescan|||opswat-filescan-scan-file
       type: regular
       iscommand: true
@@ -861,25 +801,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6310,
+          "x": 6270,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 000ef5dc-40a7-461e-8860-13f1fea883ff
+    taskid: de2e02d1-0bc3-45dc-8484-08de21e236dc
     type: condition
     task:
-      id: 000ef5dc-40a7-461e-8860-13f1fea883ff
+      id: de2e02d1-0bc3-45dc-8484-08de21e236dc
       version: -1
       name: Check if file exists
+      description: Checks if there is a file to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -901,8 +842,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6202.5,
-          "y": 370
+          "x": 6060,
+          "y": 330
         }
       }
     note: false
@@ -918,7 +859,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 6640,
+        "width": 6600,
         "x": 50,
         "y": 50
       }

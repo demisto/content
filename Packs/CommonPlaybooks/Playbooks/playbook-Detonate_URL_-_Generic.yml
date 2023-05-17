@@ -1,5 +1,5 @@
 id: b85e5232-9df0-4ca2-8d25-ebf8f6431e46
-version: 5
+version: 19
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -44,7 +44,7 @@ tasks:
       - "27"
       - "28"
       - "29"
-      - "30"
+      - "31"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -811,73 +811,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 6704dd90-1fd0-4b0a-8b33-0d41170cdf36
-    type: condition
-    task:
-      id: 6704dd90-1fd0-4b0a-8b33-0d41170cdf36
-      version: -1
-      name: Check if OPSWAT-filescan pack exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: OPSWAT Filescan
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 7277.5,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: cfd34a47-4c5f-4905-8f39-aca1ca735832
+    taskid: 1abb6283-2a97-4409-8344-027a49c5ef5e
     type: condition
     task:
-      id: cfd34a47-4c5f-4905-8f39-aca1ca735832
+      id: 1abb6283-2a97-4409-8344-027a49c5ef5e
       version: -1
       name: Check if URL exists
+      description: Checks if there is a URL to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -895,12 +837,14 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 7390,
-          "y": 380
+          "y": 360
         }
       }
     note: false
@@ -912,13 +856,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 74bc9fff-7881-423e-891f-91e85d7458be
+    taskid: 2fee63e9-6482-4101-8272-d42cf3a950aa
     type: regular
     task:
-      id: 74bc9fff-7881-423e-891f-91e85d7458be
+      id: 2fee63e9-6482-4101-8272-d42cf3a950aa
       version: -1
       name: Detonate URL - OPSWAT
-      description: Scan URL resource.
+      description: Detonates a URL using the OPSWAT-Filescan Integration. Returns
+        relevant reports to the War Room and URL reputations to the context data.
       script: OPSWAT Filescan|||opswat-filescan-scan-url
       type: regular
       iscommand: true
@@ -941,7 +886,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
