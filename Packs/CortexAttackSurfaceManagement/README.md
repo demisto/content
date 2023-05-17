@@ -39,6 +39,10 @@ Automated remediation is only possible when the right conditions are met.  These
   - RDP Server
   - Telnet Server
   - Unencrypted FTP Server
+  - Mysql Server
+  - Mongo Server
+  - Postgres Server
+  - Elasticsearch Server
   - Unclaimed S3 Bucket*
 - Asset is a cloud compute instance:
   - AWS EC2 Instance
