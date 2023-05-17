@@ -520,17 +520,9 @@ def test_main_untagged_email(mocker):
     - Validate that no relevant incident was created
     """
 
-    def execute_command(name, _):
-        if name == 'getList':
-            return [{
-                'Type': 'JSON',
-                'Contents': '{"CreateIncidentUntaggedEmail": false}',
-            }]
-        return None
-
     from PreprocessEmail import main
     mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {}})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'args', return_value={"CreateIncidentUntaggedEmail": False})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'results')
     main()
