@@ -3169,36 +3169,41 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
 
 
 @pytest.mark.parametrize(
-    "command, func_http, args, excepted_calls",
+    "command, func_http, args, excepted_calls, path_test_data",
     [
         (
             "user",
             "list_risky_users",
             {"user_id": "test"},
             {"risk_score_user_or_host": 1, "list_risky_users": 0},
+            "./test_data/list_risky_users_hosts.json"
+
         ),
         (
             "user",
             "list_risky_users",
             {},
             {"risk_score_user_or_host": 0, "list_risky_users": 1},
+            "./test_data/list_risky_users.json"
         ),
         (
             "host",
             "list_risky_hosts",
             {"host_id": "test"},
             {"risk_score_user_or_host": 1, "list_risky_hosts": 0},
+            "./test_data/list_risky_users_hosts.json"
         ),
         (
             "host",
             "list_risky_hosts",
             {},
             {"risk_score_user_or_host": 0, "list_risky_hosts": 1},
+            "./test_data/list_risky_hosts.json"
         ),
     ],
 )
 def test_list_risky_users_or_hosts_command(
-    mocker, command: str, func_http: str, args: dict[str, str], excepted_calls: dict[str, int]
+    mocker, command: str, func_http: str, args: dict[str, str], excepted_calls: dict[str, int], path_test_data: str
 ):
     """
     Test case to verify the behavior of the 'list_risky_users_or_hosts_command' function.
@@ -3213,16 +3218,17 @@ def test_list_risky_users_or_hosts_command(
     Returns:
         None
     """
-
+    test_data = load_test_data(path_test_data)
     client = CoreClient("test", {})
 
     risk_by_user_or_host = mocker.patch.object(
-        CoreClient, "risk_score_user_or_host", return_value={}
+        CoreClient, "risk_score_user_or_host", return_value=test_data
     )
-    list_risky_users = mocker.patch.object(CoreClient, func_http, return_value={})
+    list_risky_users = mocker.patch.object(CoreClient, func_http, return_value=test_data)
 
-    list_risky_users_or_host_command(client=client, command=command, args=args)
+    result = list_risky_users_or_host_command(client=client, command=command, args=args)
 
+    assert result.outputs == test_data["reply"]
     assert (
         risk_by_user_or_host.call_count
         == excepted_calls["risk_score_user_or_host"]
