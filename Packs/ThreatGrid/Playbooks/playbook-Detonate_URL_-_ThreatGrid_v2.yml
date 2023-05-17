@@ -223,6 +223,7 @@ inputs:
 outputs: []
 quiet: true
 fromversion: 5.0.0
+description: Detonate one or more URLs using the ThreatGrid integration.
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
