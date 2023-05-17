@@ -1,6 +1,7 @@
 {
   "core_packs_list": [
     "AutoFocus",
+    "SplunkPy",
     "Base",
     "CommonDashboards",
     "CommonPlaybooks",
