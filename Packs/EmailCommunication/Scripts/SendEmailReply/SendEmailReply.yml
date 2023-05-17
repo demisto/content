@@ -24,6 +24,10 @@ args:
   - n/a
   description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only
   defaultValue: n/a
+- name: subject_include_incident_id
+  required: false
+  description: Include the Incident ID within the email subject.
+  defaultValue: 'false'
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
@@ -39,7 +43,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.11.58677
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
