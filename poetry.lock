@@ -384,18 +384,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.134"
+version = "1.26.135"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.134-py3-none-any.whl", hash = "sha256:a49b47621c71adfa952127222809ae50867ae4fd249bb932eb1a98519baefa40"},
-    {file = "boto3-1.26.134.tar.gz", hash = "sha256:2da4a4caa789312ae73d29be9d3e79ce3328e3aaf7e9de0da6f243455ad3aae6"},
+    {file = "boto3-1.26.135-py3-none-any.whl", hash = "sha256:ba7ca9215a1026620741273da10d0d3cceb9f7649f7c101e616a287071826f9d"},
+    {file = "boto3-1.26.135.tar.gz", hash = "sha256:23523d5d6aa51bba2461d67f6eb458d83b6a52d18e3d953b1ce71209b66462ec"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.134,<1.30.0"
+botocore = ">=1.29.135,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -404,14 +404,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.134"
+version = "1.29.135"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.134-py3-none-any.whl", hash = "sha256:8a070ee14a430bd3c9cd16fd142e5c2900749060490698b2b981d6d9dadf5f1f"},
-    {file = "botocore-1.29.134.tar.gz", hash = "sha256:0e907b0cab771ab7c9e25efd6b6bc0041ec1b17eb0bab316fd012ef2f8fd99ba"},
+    {file = "botocore-1.29.135-py3-none-any.whl", hash = "sha256:06502a4473924ef60ac0de908385a5afab9caee6c5b49cf6a330fab0d76ddf5f"},
+    {file = "botocore-1.29.135.tar.gz", hash = "sha256:0c61d4e5e04fe5329fa65da6b31492ef9d0d5174d72fc2af69de2ed0f87804ca"},
 ]
 
 [package.dependencies]
@@ -1111,7 +1111,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "upload_incident_to_alert"
-resolved_reference = "9be7e1580bc698a1440d45d2f19257e2895c6ed9"
+resolved_reference = "c93555b48399d3bc1970a7eefed3e1e54e4aad94"
 
 [[package]]
 name = "deprecated"
@@ -1255,14 +1255,14 @@ files = [
 
 [[package]]
 name = "docutils"
-version = "0.20"
+version = "0.20.1"
 description = "Docutils -- Python Documentation Utilities"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "docutils-0.20-py3-none-any.whl", hash = "sha256:a428f10de4de4774389734c986a01b4af2d802d26717108b0f1b9356862937c5"},
-    {file = "docutils-0.20.tar.gz", hash = "sha256:f75a5a52fbcacd81b47e42888ad2b380748aaccfb3f13af0fe69deb759f01eb6"},
+    {file = "docutils-0.20.1-py3-none-any.whl", hash = "sha256:96f387a2c5562db4476f09f13bbab2192e764cac08ebbf3a34a95d9b1e4a59d6"},
+    {file = "docutils-0.20.1.tar.gz", hash = "sha256:f08a4e276c3a1583a86dce3e34aba3fe04d02bba2dd51ed16106244e8a923e3b"},
 ]
 
 [[package]]
@@ -5390,14 +5390,14 @@ files = [
 
 [[package]]
 name = "tldextract"
-version = "3.4.1"
+version = "3.4.2"
 description = "Accurately separates a URL's subdomain, domain, and public suffix, using the Public Suffix List (PSL). By default, this includes the public ICANN TLDs and their exceptions. You can optionally support the Public Suffix List's private domains as well."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tldextract-3.4.1-py3-none-any.whl", hash = "sha256:26f646987b01ae2946e7491cce4aaf54129f3489a196a274e6c843ec72968313"},
-    {file = "tldextract-3.4.1.tar.gz", hash = "sha256:fa9e50c4a03bede2a1d95dca620d661678484626858ccf388cf9671a0dd497a4"},
+    {file = "tldextract-3.4.2-py3-none-any.whl", hash = "sha256:1f168f0a1c000a757aefed94a5bda10349c58976cb2ef1cc17c6e3b213440521"},
+    {file = "tldextract-3.4.2.tar.gz", hash = "sha256:98e36b0aa3a6d8fd084d80d75ae1372da02027efb556c146a59dfd14457071ba"},
 ]
 
 [package.dependencies]
