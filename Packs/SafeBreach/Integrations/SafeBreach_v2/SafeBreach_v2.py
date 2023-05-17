@@ -1,11 +1,11 @@
 """ IMPORTS """
+import traceback
 from ast import literal_eval
+from typing import List, Dict, Optional, Any, Union
 from CommonServerPython import *
 
 # disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
-
+requests.packages.urllib3.disable_warnings()
 """"" MAPPERS """
 CATEGORY_MAPPER: Dict[str, List[int]] = {
     'Network Access': [1, 2, 3, 4, 19, 20, 21, 22],
@@ -96,7 +96,7 @@ class Client:
         self.proxies = proxies
 
     def http_request(self, method, endpoint_url, url_suffix, body=None):
-        full_url = urljoin(self.base_url, f'{endpoint_url}/v1/accounts/' + f'{self.account_id}{url_suffix}')
+        full_url = urljoin(self.base_url, endpoint_url + '/v1/accounts/' + str(self.account_id) + url_suffix)
         return requests.request(
             method,
             full_url,
@@ -111,7 +111,7 @@ class Client:
 
     def get_remediation_data(self, insight_id):
         return self.http_request('GET', endpoint_url='/api/data',
-                                 url_suffix=f'/insights/{insight_id}/remediation')
+                                 url_suffix='/insights/{0}/remediation'.format(insight_id))
 
     def get_insights(self):
         return self.http_request(method='GET', endpoint_url='/api/data', url_suffix='/insights?type=actionBased')
@@ -124,10 +124,10 @@ class Client:
         return self.http_request(method='GET', endpoint_url='api/data', url_suffix=f"/executions/{simulation_id}")
 
     def get_test_status(self, test_id):
-        return self.http_request('GET', endpoint_url='/api/data', url_suffix=f'/testsummaries/{test_id}')
+        return self.http_request('GET', endpoint_url='/api/data', url_suffix=f'/matrixsummaries/{test_id}')
 
     def test_connection(self):
-        return self.http_request('GET', endpoint_url='/api/siem', url_suffix='/config/')
+        return self.http_request('GET', endpoint_url='/api/orch', url_suffix='status')
 
 
 ''' Helper functions '''
@@ -540,7 +540,6 @@ def insight_rerun_command(client: Client, args: dict):
         insight_ids = literal_eval(insight_ids)
     if isinstance(insight_ids, int):
         insight_ids = [insight_ids]
-    insight_ids = [int(id) for id in insight_ids]
 
     # Filter all insight according to given.
     active_insight_ids = list(map(lambda i: i['ruleId'], raw_insights))
@@ -722,29 +721,29 @@ def get_test_status_command(client: Client, args: Dict):
                 break
             tries += 1
 
-        if response.status_code < 200 or response.status_code >= 300:
+        if response.status_code < 200 or response.status_code >= 300 or not response.json():
             raise ValueError(f'Failed to get status of test: {test_id}')
         try:
             response = response.json()
         except ValueError:
             raise ValueError('Response body does not contain valid json')
         t = {
-            'Test Id': response.get('id'),
-            'Name': response.get('matrixName'),
-            'Status': response.get('status'),
-            'Start Time': response.get('startTime'),
-            'End Time': response.get('endTime'),
-            'Total Simulation Number': response.get('blocked', 0) + response.get('notBlocked', 0)
+            'Test Id': response['id'],
+            'Name': response['matrixName'],
+            'Status': response['status'],
+            'Start Time': response['startTime'],
+            'End Time': response['endTime'],
+            'Total Simulation Number': response['blocked'] + response['notBlocked']
         }
         readable_output = tableToMarkdown(name='Test Status', t=t, headers=list(t.keys()), removeNull=True)
         safebreach_context = {
             "SafeBreach.Test(val.Id == obj.Id)": {
-                'Id': response.get('id'),
-                'Name': response.get('matrixName'),
-                'Status': response.get('status'),
-                'StartTime': response.get('startTime'),
-                'EndTime': response.get('endTime'),
-                'TotalSimulationNumber': response.get('blocked', 0) + response.get('notBlocked', 0)
+                'Id': response['id'],
+                'Name': response['matrixName'],
+                'Status': response['status'],
+                'StartTime': response['startTime'],
+                'EndTime': response['endTime'],
+                'TotalSimulationNumber': response['blocked'] + response['notBlocked']
             }
         }
         return_outputs(readable_output=readable_output, outputs=safebreach_context)
@@ -778,8 +777,8 @@ def get_safebreach_simulation_command(client: Client, args: Dict):
     mitre_techniques, mitre_groups, mitre_software = get_mitre_details(simulation)
     try:
         simulation_context = {
-            'Id': simulation.get('id'),
-            'FinalStatus': simulation.get('finalStatus').lower().capitalize(),
+            'Id': simulation['id'],
+            'FinalStatus': simulation['siemDetectionSummary'].lower().capitalize(),
             'Result': fetch_simulation_result(simulation),
             'DetectedAction': simulation.get('siemDetectionStatus').lower().capitalize(),
             'SimulationRunId': simulation.get('jobId'),
@@ -829,11 +828,9 @@ def get_safebreach_simulation_command(client: Client, args: Dict):
         t = {
             'Id': simulation_id,
             'Name': f'(#{simulation.get("moveId")}) {simulation.get("moveName")}',
-           # 'Status': simulation.get('siemDetectionSummary').lower().capitalize(),
-            'Status': simulation.get('status').lower().capitalize(),
+            'Status': simulation.get('siemDetectionSummary').lower().capitalize(),
             'Result': simulation.get('status').lower().capitalize(),
-           # 'Detected Action': simulation.get('siemDetectionStatus').lower().capitalize(),
-            'Detected Action': simulation.get('status').lower().capitalize(),
+            'Detected Action': simulation.get('siemDetectionStatus').lower().capitalize(),
             'Attacker': get_node_display_name('attacker', simulation),
             'Target': get_node_display_name('target', simulation),
         }
@@ -909,22 +906,29 @@ def rerun_simulation_command(client: Client, args: dict):
         return_error('Error in rerun_simulation', e)
 
 
-def safebreach_test_module(client: Client) -> str:
+def safebreach_test_module(url: str, api_key: str, verify: bool) -> str:
     """A simple test module
        Arguments:
            url {String} -- SafeBreach Management URL.
        Returns:
            str -- "ok" if succeeded, else raises a error.
        """
-    response = client.test_connection()
-    massage = response.reason.lower()
-    if response.status_code == 401:
-        massage = 'API Key is invalid, try again'
-    elif response.status_code == 404:
-        massage = 'URL is invalid, try again'
+    full_url = url + '/api/orch/v1/status'
+    response = requests.request(
+        'GET',
+        full_url,
+        verify=verify,
+        headers={'Accept': 'application/json', 'x-apitoken': api_key}
+    )
+    if response.status_code == 201:
+        return 'ok'
+    elif response.status_code == 401:
+        return 'API Key is invalid, try again'
+    elif response.status_code == 200:
+        return 'URL is invalid, try again'
     elif response.status_code < 200 or response.status_code >= 300:
-        massage = 'Test connection failed'
-    return massage
+        return ('Test connection failed')
+    return 'ok'
 
 
 def main():
@@ -970,7 +974,7 @@ def main():
             return_outputs(hr, {}, entry_result)
 
         elif command == 'test-module':
-            results = safebreach_test_module(client)
+            results = safebreach_test_module(url, api_key, verify_certificate)
             return_outputs(results)
         else:
             return_error(f'Command: {command} is not supported.')
