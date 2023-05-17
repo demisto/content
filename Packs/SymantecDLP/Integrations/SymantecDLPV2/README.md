@@ -877,7 +877,7 @@ Fetches the original message from an incident. Requires SDLP 15.8.
 | InfoFile.Extension | String | The extension of the original message file. | 
 | InfoFile.Name | String | The name of the original message file. | 
 | InfoFile.Info | String | The info of the original message file. | 
-| InfoFile.Size | Number | The size of the original message file | 
+| InfoFile.Size | Number | The size of the original message file. | 
 | InfoFile.Type | String | The type of the original message file | 
 
 #### Command example
