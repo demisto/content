@@ -586,7 +586,7 @@ script:
     - description: 'Name of the sender pattern. Note: This value will change the name of the pattern if different from the existing name.'
       name: name
       required: true
-    - description: 'Description of the sender pattern. '
+    - description: 'Description of the sender pattern.'
       name: description
     description: Updates a recipient pattern in the Enforce console. Requires SDLP 16.0.
     execution: true
