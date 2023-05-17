@@ -126,9 +126,6 @@ json5 = "^0.9.10"
 
 [tool.ruff]
 select = [
-    "E", # pycodestyle:error
-    "F", # pyflakes
-
     "ANN206", # missing-return-type-class-method
 
     "B002", # unary-prefix-increment
@@ -166,6 +163,10 @@ select = [
     "C418", # unnecessary-literal-within-dict-call
 
     "D419", # empty-docstring
+
+    "E", # pycodestyle:error
+
+    "F", # pyflakes
 
     "G004", # logging-f-string
     "G010", # logging-warn
@@ -378,7 +379,7 @@ ignore = [
 
     "F403", # undefined-local-with-import-star
     "F405", # undefined-local-with-import-star-usage
-    
+
     "W605", # invalid-escape-sequence
 ]
 extend-exclude = ["CommonServerPython", "test_data"]
