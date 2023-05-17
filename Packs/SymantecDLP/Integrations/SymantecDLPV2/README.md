@@ -1209,7 +1209,7 @@ Updates a sender pattern in the Enforce console. Requires SDLP 16.0.
 | --- | --- | --- |
 | pattern_id | ID number of the pattern to update. | Required | 
 | ips | Comma-separated list of IP addresses for the pattern. Note: These IP values will replace the existing values in the pattern. | Optional | 
-| users | Comma separated list of emails, Windows names, or screen names for the pattern. NOTE: These user values will replace the existing values in the pattern . | Optional | 
+| users | Comma-separated list of emails, Windows names, or screen names for the pattern. Note: These user values will replace the existing values in the pattern. | Optional | 
 | name | Name of the sender pattern NOTE: This value will change the name of the pattern if different from the existing name. | Required | 
 | description | Description of the sender pattern. . | Optional | 
 
