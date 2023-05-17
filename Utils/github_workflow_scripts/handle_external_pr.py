@@ -132,9 +132,9 @@ def get_highest_support_label(packs_support_levels: Set[str]):
     """
     Get the highest support level.
 
-    xsoar - highest support level of review, support level with the highest dev standards
-    partner - support level of review for partner packs
-    community - usually an individual contributor, lowest support level possible
+    xsoar - highest support level of review, support level with the highest dev standards.
+    partner - support level of review for partner packs.
+    community - usually an individual contributor, lowest support level possible.
     """
     if 'xsoar' in packs_support_levels:
         return XSOAR_SUPPORT_LEVEL_LABEL
