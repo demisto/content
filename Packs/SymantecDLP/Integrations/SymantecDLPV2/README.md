@@ -922,7 +922,7 @@ Retrieves the filter criteria for a saved search in the Enforce console by repor
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecDLP.ReportFilter | Unknown | The filter criteria for a saved search in the Enforce console | 
+| SymantecDLP.ReportFilter | Unknown | The filter criteria for a saved search in the Enforce console. | 
 
 #### Command example
 ```!symantec-dlp-get-report-filters report_id=1```
