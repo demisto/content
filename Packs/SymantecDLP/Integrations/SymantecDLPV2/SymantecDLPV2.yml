@@ -73,7 +73,7 @@ name: Symantec Data Loss Prevention v2
 script:
   commands:
   - arguments:
-    - description: The earliest time from which to get incidents. Supports ISO (e.g., 2021-12-28T00:00:00Z) and free text (e.g., '2 days').
+    - description: The earliest time from which to get incidents. Supports ISO (e.g 2021-12-28T00:00:00Z) and free text (e.g. '2 days').
       name: creation_date
     - description: The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status` command.
       isArray: true
@@ -96,7 +96,7 @@ script:
       - Discover
       - Endpoint
     - defaultValue: '50'
-      description: The limit for the number of incidents listed per page.
+      description: The limit for number of incidents listed per page.
       name: limit
     - defaultValue: '1'
       description: |-
@@ -104,7 +104,7 @@ script:
       name: page
     - description: The number of results per page to display.
       name: page_size
-    - description: Full filter string as described in the SDLP API docs.
+    - description: Full filter string as described in the SDLP API docs
       name: raw_filter
     description: Returns a list of incidents.
     name: symantec-dlp-list-incidents
@@ -151,14 +151,14 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: none
-      description: "This argument can get the following values:\nall - All custom attributes are needed. \nnone - None of the custom attributes are needed.\nspecific attributes - A comma-separated list of custom attribute names. For example: ca1,ca2,ca3.\ncustom attribute group name - A comma-separated list of custom attribute group names. For example: cag1, cag2, cag3.\nThis value retrieves all custom attributes in the mentioned group. The value \"none\" is default."
+      description: "This argument can get the following values:\nall - All custom attributes are needed \nnone - None of the custom attributes are needed\nspecific attributes - A comma-separated list of custom attribute names. For example: ca1,ca2,ca3\ncustom attribute group name - A comma-separated list of custom attribute group names. For example: cag1, cag2, cag3.\nThis value retrieves all custom attributes in the mentioned group. The value \"none\" is default."
       name: custom_attributes
       predefined:
       - all
       - none
       - specific attributes
       - custom attribute group name
-    - description: 'A comma-separated list of custom attribute names or custom attribute group names. For example: item1,item2,item3.'
+    - description: 'A comma-separated list of custom attribute names or custom attribute group names. For example: item1,item2,item3'
       isArray: true
       name: custom_data
     description: Returns details of the specified incident.
@@ -497,22 +497,22 @@ script:
     name: symantec-dlp-get-incident-original-message
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the original message file.
+      description: The EntryID of the original message file
       type: String
     - contextPath: InfoFile.Extension
-      description: The extension of the original message file.
+      description: The extension of the original message file
       type: String
     - contextPath: InfoFile.Name
-      description: The name of the original message file
+      description: The name of the original message file.
       type: String
     - contextPath: InfoFile.Info
-      description: The info of the original message file
+      description: The info of the original message file.
       type: String
     - contextPath: InfoFile.Size
-      description: The size of the original message file
+      description: The size of the original message file.
       type: Number
     - contextPath: InfoFile.Type
-      description: The type of the original message file
+      description: The type of the original message file.
       type: String
   - arguments:
     - description: Report ID for which to retrieve filters.
@@ -522,17 +522,17 @@ script:
     name: symantec-dlp-get-report-filters
     outputs:
     - contextPath: SymantecDLP.ReportFilter
-      description: The filter criteria for a saved search in the Enforce console
+      description: The filter criteria for a saved search in the Enforce console.
       type: Unknown
   - arguments: []
     description: Returns details for all SDLP users from the Enforce console. Requires SDLP 16.0.
     name: symantec-dlp-list-users
     outputs:
     - contextPath: SymantecDLP.Users
-      description: List of SDLP users and details
+      description: List of SDLP users and details.
       type: Unknown
   - arguments:
-    - description: Pattern ID for which to retrieve pattern details
+    - description: Pattern ID for which to retrieve pattern details.
       name: pattern_id
       required: true
     description: Returns a sender/recipient pattern. Requires SDLP 16.0.
@@ -549,13 +549,13 @@ script:
       description: ' The list of all sender/recipient patterns returned from the Enforce console.'
       type: Unknown
   - arguments:
-    - description: ID number of the pattern to update
+    - description: ID number of the pattern to update.
       name: pattern_id
       required: true
-    - description: 'Comma separated list of IP address for the pattern. NOTE: These IP values will replace the existing values in the pattern.'
+    - description: 'Comma separated list of IP addresses for the pattern. NOTE: These IP values will replace the existing values in the pattern.'
       isArray: true
       name: ips
-    - description: 'Comma separated list of emails, Windows names, or screen names for the pattern. NOTE: These user values will replace the existing values in the pattern '
+    - description: 'Comma-separated list of emails, Windows names, or screen names for the pattern. Note: These user values will replace the existing values in the pattern.'
       isArray: true
       name: users
     - description: 'Name of the sender pattern NOTE: This value will change the name of the pattern if different from the existing name.'
@@ -571,7 +571,7 @@ script:
       description: Results of updating the sender pattern from the Enforce Console.
       type: Unknown
   - arguments:
-    - description: ID number of the pattern to update
+    - description: ID number of the pattern to update.
       name: pattern_id
       required: true
     - description: 'Comma-separated list of IP addresses for the pattern. Note: These IP values will replace the existing values in the pattern.'
