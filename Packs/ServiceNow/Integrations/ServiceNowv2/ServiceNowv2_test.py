@@ -17,7 +17,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
-    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
+    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, parse_dict_ticket_fields
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -1992,3 +1992,26 @@ def test_send_request_with_str_error_response(mocker, mock_json, expected_result
     with pytest.raises(Exception) as e:
         client.send_request(path='table')
     assert str(e.value) == expected_results
+
+
+@pytest.mark.parametrize('mock_response, ticket, expected_results',
+                         [({'result': [{'email': 'test_email'}]}, {'caller_id': {'value': 'caller_id_value'}}, 'test_email')])
+def test_parse_dict_ticket_fields_result_extraction(mocker, mock_response, ticket, expected_results):
+    """
+    Given:
+     - a client and a mock response.
+     - case 1: a mock response where there is a caller_id.value field.
+
+    When:
+     - Running parse_dict_ticket_fields function.
+
+    Then:
+     - Verify that the extraction of the data from the response happened correctly.
+     - case 1: Shouldn't throw any error for attempting to use 'get' on a list.
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+    mocker.patch.object(client, 'send_request', return_value=mock_response)
+    ticket = parse_dict_ticket_fields(client, ticket)
+    assert ticket.get("caller_id") == expected_results

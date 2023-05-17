@@ -2317,18 +2317,22 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
 
     if assignment_group:
         group_result = client.get('sys_user_group', assignment_group.get('value'))
-        group = group_result.get('result', {})
-        group_name = group.get('name')
-        ticket['assignment_group'] = group_name
+        result = group_result.get('result', [])
+        if result:
+            group = result[0]
+            group_name = group.get('name')
+            ticket['assignment_group'] = group_name
 
     user_assigned = check_assigned_to_field(client, assigned_to)
     ticket['assigned_to'] = user_assigned
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['caller_id'] = user_email
+        result = user_result.get('result', [])
+        if result:
+            user = result[0]
+            user_email = user.get('email')
+            ticket['caller_id'] = user_email
 
     return ticket
 
