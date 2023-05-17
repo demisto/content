@@ -19,7 +19,7 @@ This script uses the [Rasterize](https://xsoar.pan.dev/docs/reference/integratio
 ---
 This script is used in the following playbooks and scripts.
 
-* Phishing - Machine Learning Analysis
+Phishing - Machine Learning Analysis
 
 ## Inputs
 ---
