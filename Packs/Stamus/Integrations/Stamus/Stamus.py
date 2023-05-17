@@ -279,7 +279,7 @@ def fetch_incidents(client: Client, timestamp: int) -> tuple[dict[str, int], lis
 
         timestamp = int(datetime.strptime(alert['timestamp'], DATE_FORMAT).timestamp())
         if timestamp > next_run['timestamp']:
-            next_run['timestamp'] = timestamp
+            next_run['timestamp'] = timestamp + 1
 
     return next_run, incidents
 
