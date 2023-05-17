@@ -179,6 +179,8 @@ def test_asset_format(mocker):
     from GenerateASMReport import asset_format
 
     result = asset_format({"name": "name", "type": "type", "ips": ["1.1.1.1"], "domain": "acme.com",
+                           "first_observed": 1680850320000, "last_observed": 1683306120000,
+                           "explainers": ["this explains stuff"],
                            "details": {"ip_ranges": {'range': {"FIRST_IP": "1.1.1.1", "LAST_IP": "2.2.2.2",
                                                                "EXPLAINERS": ["Associated with acme.com"]}}}})
     assert result == [
@@ -213,5 +215,17 @@ def test_asset_format(mocker):
         {
             "Field": "IP Range Attribution Details",
             "Value": "Associated with acme.com"
+        },
+        {
+            "Field": "First Observed",
+            "Value": "2023-04-07"
+        },
+        {
+            "Field": "Last Observed",
+            "Value": "2023-05-05"
+        },
+        {
+            "Field": "Explainers",
+            "Value": "this explains stuff"
         }
     ]

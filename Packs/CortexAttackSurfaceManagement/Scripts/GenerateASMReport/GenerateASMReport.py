@@ -61,23 +61,25 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     # Service Summary
     try:
-        service_raw = execute_command('asm-get-external-service',
-                                      {'service_id': args.get("asm_service_id", "Asset ID")})["reply"]["details"][0]
+        service_request = execute_command('asm-get-external-service', {'service_id': args.get("asm_service_id", "Asset ID")})
+        # If response is list, only use the first entry.
+        if isinstance(service_request, list) and len(service_request) > 1:
+            service_raw = service_request[0]["reply"]["details"][0]
+        else:
+            service_raw = service_request["reply"]["details"][0]
     except Exception:
         service_raw = {}
-    # If response is list, only use the first entry.
-    if isinstance(service_raw, list):
-        service_raw = service_raw[0]
 
     # Asset details
     try:
-        asset_raw = execute_command('asm-get-asset-internet-exposure',
-                                    {'asm_id': args.get("asm_asset_id", "Asset ID")})["reply"]["details"][0]
+        asset_request = execute_command('asm-get-asset-internet-exposure', {'asm_id': args.get("asm_asset_id", "Asset ID")})
+        # If response is list, only use the first entry.
+        if isinstance(asset_request, list) and len(asset_request) > 1:
+            asset_raw = asset_request[0]["reply"]["details"][0]
+        else:
+            asset_raw = asset_request["reply"]["details"][0]
     except Exception:
         asset_raw = {}
-    # If response is list, only use the first entry.
-    if isinstance(asset_raw, list):
-        asset_raw = asset_raw[0]
 
     # See examples here for template: https://github.com/demisto/sane-reports/tree/master/templates
     if args.get('report_type') == "summary":
