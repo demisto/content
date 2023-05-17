@@ -3460,6 +3460,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             print_debug_msg(f'Events were already fetched {num_events} for offense {offense_id}, '
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')
+            # delete the offense from the queue
             offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
             offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
             offenses_queried.pop(offense_id, None)
