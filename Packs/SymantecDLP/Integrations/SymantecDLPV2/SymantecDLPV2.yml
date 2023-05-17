@@ -96,7 +96,7 @@ script:
       - Discover
       - Endpoint
     - defaultValue: '50'
-      description: The limit for number of incidents listed per page.
+      description: The limit for the number of incidents listed per page.
       name: limit
     - defaultValue: '1'
       description: |-
