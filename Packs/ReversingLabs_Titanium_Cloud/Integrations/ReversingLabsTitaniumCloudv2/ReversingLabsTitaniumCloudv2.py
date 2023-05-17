@@ -3,6 +3,8 @@ from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, 
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
     ReanalyzeFile, ImpHashSimilarity
+from ReversingLabs.SDK.helper import NotFoundError
+
 
 VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
@@ -1210,6 +1212,9 @@ def url_downloaded_files_command():
             results_per_page=results_per_page,
             max_results=max_results
         )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        exit(0)
     except Exception as e:
         return_error(str(e))
 
