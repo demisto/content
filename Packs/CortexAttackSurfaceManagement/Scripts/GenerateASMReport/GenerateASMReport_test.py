@@ -1,6 +1,7 @@
 import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import EntryType
+import pytest
 
 
 def util_load_json(path):
@@ -63,7 +64,14 @@ def test_build_template(mocker):
     }
 
 
-def test_build_report(mocker):
+@pytest.mark.parametrize(
+    "alert_id, report_type",
+    [
+        ("1234", "summary"),
+        ("1234", "analysis"),
+    ]
+)
+def test_build_report(mocker, alert_id, report_type):
     """Tests build_report command function.
 
         Given:
@@ -78,7 +86,7 @@ def test_build_report(mocker):
     template = util_load_json("test_data/template.json")
     sanepdf_raw = util_load_json("test_data/sanepdf_raw.json")
     mocker.patch.object(demisto, "executeCommand", return_value=sanepdf_raw)
-    result = build_report(template, "1234", "summary")
+    result = build_report(template, alert_id, report_type)
     assert isinstance(result, dict)
     assert result["Type"] == EntryType.ENTRY_INFO_FILE
 
