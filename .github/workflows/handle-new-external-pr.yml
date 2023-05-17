@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
 
+env:
+  CHANGED_FILES_DELIMITER: ";"
+
 jobs:
   handle_new_external_pr:
     runs-on: ubuntu-latest
@@ -32,7 +35,9 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v14.6  # disable-secrets-detection
+        uses: tj-actions/changed-files@v35.9.0
+        with:
+          separator: ${{ env.CHANGED_FILES_DELIMITER }}
 
       - name: Update External PR
         env:
@@ -43,7 +48,7 @@ jobs:
           cd Utils/github_workflow_scripts
           pipenv sync
           
-          pipenv run ./handle_external_pr.py --changed_files "${{ steps.changed-files.outputs.all_changed_files }}"
+          pipenv run ./handle_external_pr.py --changed_files "${{ steps.changed-files.outputs.all_changed_files }}" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
           echo "Finished Handling External PR"
       - name: Send Notification
         env:

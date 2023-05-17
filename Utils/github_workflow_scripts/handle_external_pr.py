@@ -33,11 +33,19 @@ CONTRIBUTION_LABEL = 'Contribution'
 
 
 def parse_changed_files_names() -> argparse.Namespace:
+    """
+    Arg parser to retrieve the changed files along with the delimiter to separate between them.
+    """
     parser = argparse.ArgumentParser(description="Parse the changed files names.")
     parser.add_argument(
         "-c",
         "--changed_files",
         help="The files that are passed to handle external PR (passed as one string).",
+    )
+    parser.add_argument(
+        "-d",
+        "--delimiter",
+        help="The delimiter that is used to separate between all the changes files",
     )
     args = parser.parse_args()
 
@@ -79,7 +87,16 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
 
 def get_packs_support_level_label(file_paths: List[str]) -> str:
     """
-    Get The pack support level for the contribution.
+    Get The contributions' support level label.
+
+    The review level of a contribution PR (and thus the support level label) is determined according
+    to the support level of the edited/new pack that was contributed.
+    If the contribution PR contains more than one pack, the review level
+    (and thus the support level label) is determined according to the pack with the highest support level.
+
+    The strictest review (support) level is XSOAR, then partner, and the least strict level is community.
+
+    The support level of a certain pack is defined in the pack_metadata.json file.
 
     Args:
         file_paths(str): file paths
@@ -112,6 +129,13 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
 
 
 def get_highest_support_label(packs_support_levels: Set[str]):
+    """
+    Get the highest support level.
+
+    xsoar - highest support level of review, support level with the highest dev standards
+    partner - support level of review for partner packs
+    community - usually an individual contributor, lowest support level possible
+    """
     if 'xsoar' in packs_support_levels:
         return XSOAR_SUPPORT_LEVEL_LABEL
     elif 'partner' in packs_support_levels:
@@ -149,7 +173,7 @@ def main():
     pr = content_repo.get_pull(pr_number)
 
     parser_args = parse_changed_files_names()
-    changed_files_list = parser_args.changed_files.split(' ')
+    changed_files_list = parser_args.changed_files.split(parser_args.delimiter)
     print(f'{changed_files_list=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
