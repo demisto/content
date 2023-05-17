@@ -178,7 +178,7 @@ tasks:
     task:
       id: 3e883fee-f4e5-4c0d-8b79-0b0385109651
       version: -1
-      name: Enevent to SIEM
+      name: Send Event to SIEM
       description: '[Send event to SIEM]'
       type: regular
       iscommand: false
@@ -206,7 +206,7 @@ tasks:
     task:
       id: 8e53acab-c40b-4d0d-862d-f06e4ec62bfc
       version: -1
-      name: get event details
+      name: Get Event Details
       type: title
       iscommand: false
       brand: ""
