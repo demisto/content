@@ -160,7 +160,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Recorded Future
+                        simple: Recorded Future v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
