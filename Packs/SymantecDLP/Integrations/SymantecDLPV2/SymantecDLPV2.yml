@@ -577,7 +577,7 @@ script:
     - description: 'Comma-separated list of IP addresses for the pattern. Note: These IP values will replace the existing values in the pattern.'
       isArray: true
       name: ips
-    - description: 'Comma separated list of emails for the pattern. NOTE: These email values will replace the existing values in the pattern.'
+    - description: 'Comma-separated list of emails for the pattern. Note: These email values will replace the existing values in the pattern.'
       isArray: true
       name: emails
     - description: 'Comma separated list of domains for the pattern. NOTE: These domain values will replace the existing values in the pattern.'
