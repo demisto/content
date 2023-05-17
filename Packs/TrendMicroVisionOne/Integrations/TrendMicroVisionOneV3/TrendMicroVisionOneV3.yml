@@ -388,13 +388,16 @@ script:
     description: Retrieves information about a specific endpoint
     name: trendmicro-visionone-get-endpoint-info
     outputs:
-    - contextPath: VisionOne.Endpoint_Info.loginAccount
+    - contextPath: VisionOne.Endpoint_Info.status
+      description: Status of the request
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.logonAccount
       description: Account currently logged on to the endpoint
       type: string
-    - contextPath: VisionOne.Endpoint_Info.endpointName
+    - contextPath: VisionOne.Endpoint_Info.hostname
       description: Hostname
       type: string
-    - contextPath: VisionOne.Endpoint_Info.macAddress
+    - contextPath: VisionOne.Endpoint_Info.macAddr
       description: MAC address
       type: string
     - contextPath: VisionOne.Endpoint_Info.ip

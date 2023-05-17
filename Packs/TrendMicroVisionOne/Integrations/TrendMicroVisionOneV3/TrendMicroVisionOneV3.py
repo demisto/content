@@ -843,14 +843,27 @@ def get_endpoint_info(
     final_results += additional_endpoints
     if not final_results:
         return_error("No endpoint found for the query provided.")
+    endpoint_data = {
+        "status": "success",
+        "logonAccount": final_results[0].get("loginAccount", "").get("value", ""),
+        "hostname": final_results[0].get("endpointName", "").get("value", ""),
+        "macAddr": final_results[0].get("macAddress", {}).get("value", ""),
+        "ip": final_results[0].get("ip", {}).get("value", [])[0],
+        "osName": final_results[0].get("osName", ""),
+        "osVersion": final_results[0].get("osVersion", ""),
+        "osDescription": final_results[0].get("osDescription", ""),
+        "productCode": final_results[0].get("productCode", ""),
+        "agentGuid": final_results[0].get("agentGuid", ""),
+        "installedProductCodes": final_results[0].get("installedProductCodes", [])[0],
+    }
 
     results = CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_ENDPOINT_INFO_COMMAND], final_results, removeNull=True
+            table_name[GET_ENDPOINT_INFO_COMMAND], endpoint_data, removeNull=True
         ),
         outputs_prefix="VisionOne.Endpoint_Info",
-        outputs_key_field="endpointName",
-        outputs=final_results,
+        outputs_key_field="hostname",
+        outputs=endpoint_data,
     )
     return results
 

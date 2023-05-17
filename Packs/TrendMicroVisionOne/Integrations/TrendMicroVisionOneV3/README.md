@@ -406,9 +406,10 @@ Retrieves information about a specific endpoint
 
 | **Path**                                      | **Type** | **Description**                                                   |
 | --------------------------------------------- | -------- | ----------------------------------------------------------------- |
-| VisionOne.Endpoint_Info.loginAccount          | string   | Account currently logged on to the endpoint                       |
-| VisionOne.Endpoint_Info.endpointName          | string   | Hostname                                                          |
-| VisionOne.Endpoint_Info.macAddress            | string   | MAC address                                                       |
+| VisionOne.Endpoint_Info.status                | string   | Status of the request                                             |
+| VisionOne.Endpoint_Info.logonAccount          | string   | Account currently logged on to the endpoint                       |
+| VisionOne.Endpoint_Info.hostname              | string   | Hostname                                                          |
+| VisionOne.Endpoint_Info.macAddr               | string   | MAC address                                                       |
 | VisionOne.Endpoint_Info.ip                    | string   | IP address                                                        |
 | VisionOne.Endpoint_Info.osName                | string   | Operating System name                                             |
 | VisionOne.Endpoint_Info.osVersion             | string   | Operating System version                                          |
