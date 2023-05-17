@@ -1,6 +1,5 @@
 import pytest
-import json
-import os
+
 
 @pytest.mark.parametrize(
     'support_levels, expected_support_level', [
