@@ -500,7 +500,7 @@ script:
       description: The EntryID of the original message file.
       type: String
     - contextPath: InfoFile.Extension
-      description: The extension of the original message file
+      description: The extension of the original message file.
       type: String
     - contextPath: InfoFile.Name
       description: The name of the original message file
