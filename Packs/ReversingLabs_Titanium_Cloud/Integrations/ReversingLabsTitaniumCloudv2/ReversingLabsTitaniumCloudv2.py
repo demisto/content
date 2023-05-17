@@ -1261,7 +1261,14 @@ def url_latest_analyses_feed_command():
         readable_output=markdown
     )
 
-    return_results(results)
+    file_results = fileResult(
+        "ReversingLabs Latest URL Analyses Feed",
+        json.dumps(response, indent=4),
+        file_type=EntryType.ENTRY_INFO_FILE
+
+    )
+
+    return_results([results, file_results])
 
 
 def url_analyses_feed_from_date_command():
@@ -1291,7 +1298,7 @@ def url_analyses_feed_from_date_command():
         return_error(str(e))
 
     analyses = tableToMarkdown("URL analyses from specified date", response)
-    markdown = f"## ReversingLabs URL Analyses Feed from date {start_time}\n {analyses}"
+    markdown = f"## ReversingLabs URL Analyses Feed From Date {start_time}\n {analyses}"
 
     results = CommandResults(
         outputs_prefix="ReversingLabs",
@@ -1299,7 +1306,14 @@ def url_analyses_feed_from_date_command():
         readable_output=markdown
     )
 
-    return_results(results)
+    file_results = fileResult(
+        f"ReversingLabs URL Analyses Feed From Date {start_time}",
+        json.dumps(response, indent=4),
+        file_type=EntryType.ENTRY_INFO_FILE
+
+    )
+
+    return_results([results, file_results])
 
 
 def main():
