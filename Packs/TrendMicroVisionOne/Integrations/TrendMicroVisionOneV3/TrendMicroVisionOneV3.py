@@ -453,7 +453,6 @@ class Client(BaseClient):
         return results
 
     def lookup_type(self, param: Any) -> str:
-
         # Regex expression for validating IPv4
         regex = (
             "(([0-9]|[1-9][0-9]|1[0-9][0-9]|"
@@ -499,6 +498,21 @@ class Client(BaseClient):
         # Otherwise use hostname type
         return "endpointName"
 
+    def get_paginated_results(self, response, headers) -> list:
+        """
+        Get the paginated results after initial API call
+        :return: additional items list using skipToken.
+        :rtype: ``list``
+        """
+        url = response.get("nextLink", "")
+        results = []
+        while url:
+            req = urllib.request.Request(url=url, headers=headers)
+            resp = json.loads(urllib.request.urlopen(req).read())
+            url = resp.get("nextLink", "")
+            results += resp["items"]
+        return results
+
     def exception_list_count(self) -> int:
         """
         Gets the count of object present in exception list
@@ -506,10 +520,17 @@ class Client(BaseClient):
         :return: number of exception object.
         :rtype: ``int``
         """
-        response = self.http_request(GET, ADD_OBJECT_TO_EXCEPTION_LIST)
-        list_of_exception = response.get("items")
-        exception_count = len(list_of_exception)
-        return exception_count
+        token = self.api_key
+        headers = {"Authorization": "Bearer " + token}
+        query_params = {"top": 200}
+        response = self.http_request(
+            GET, ADD_OBJECT_TO_EXCEPTION_LIST, params=query_params, headers=headers
+        )
+        exception_count = self.get_paginated_results(response, headers)
+        final_results = []
+        final_results += response.get("items", [])
+        final_results += exception_count
+        return len(final_results)
 
     def suspicious_list_count(self) -> int:
         """
@@ -517,14 +538,21 @@ class Client(BaseClient):
         :return: number of suspicious object.
         :rtype: ``int``
         """
-        response = self.http_request(GET, ADD_OBJECT_TO_SUSPICIOUS_LIST)
-        list_of_exception = response.get("items")
-        suspicious_count = len(list_of_exception)
-        return suspicious_count
+        token = self.api_key
+        headers = {"Authorization": "Bearer " + token}
+        query_params = {"top": 200}
+        response = self.http_request(
+            GET, ADD_OBJECT_TO_SUSPICIOUS_LIST, params=query_params, headers=headers
+        )
+        suspicious_count = self.get_paginated_results(response, headers)
+        final_results = []
+        final_results += response.get("items", [])
+        final_results += suspicious_count
+        return len(final_results)
 
     def get_workbench_histories(
         self, start, end, dateTimeTarget, orderBy, investigationStatus
-    ) -> str:
+    ) -> list:
         if not check_datetime_aware(start):
             start = start.astimezone()
         if not check_datetime_aware(end):
@@ -551,8 +579,12 @@ class Client(BaseClient):
 
         response = self.http_request(
             GET, WORKBENCH_HISTORIES, params=query_params, headers=headers
-        ).get("items")
-        return response
+        )
+        additional_alerts = self.get_paginated_results(response, headers)
+        final_results = []
+        final_results += response.get("items", [])
+        final_results += additional_alerts
+        return final_results
 
     def incident_severity_to_dbot_score(self, severity: str):
         """
