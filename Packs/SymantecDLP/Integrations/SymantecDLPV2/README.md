@@ -873,7 +873,7 @@ Fetches the original message from an incident. Requires SDLP 15.8.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryID | String | The EntryID of the original message file | 
+| InfoFile.EntryID | String | The EntryID of the original message file. | 
 | InfoFile.Extension | String | The extension of the original message file | 
 | InfoFile.Name | String | The name of the original message file | 
 | InfoFile.Info | String | The info of the original message file | 
