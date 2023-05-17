@@ -7786,13 +7786,13 @@ def response_to_context(reponse_obj):
     :return: A response with all keys (if there're any) starts with a capital letter.
     :rtype: ``Any``
     """
-    predefined_keys: Dict[str, str] = {"id": "ID", "uuid": "UUID"}
+    predefined_keys = {"id": "ID", "uuid": "UUID"}
     parsed_dict = {}
     key = ""
     if isinstance(reponse_obj, dict):
         for key, value in reponse_obj.items():
             if key in predefined_keys:
-                key = predefined_keys.get(key, "")
+                key = predefined_keys.get(key, "")  # type: ignore
             else:
                 key = string_to_context_key(key)
             if isinstance(value, dict):
