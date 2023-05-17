@@ -295,9 +295,9 @@ class Client(BaseClient):
         }
 
         if new_ips:
-            data['ipAddresses'] = new_ips
+            data['ipAddresses'] = new_ips  # type: ignore[assignment]
         if new_users:
-            data['userPatterns'] = new_users
+            data['userPatterns'] = new_users  # type: ignore[assignment]
 
         response = self._http_request(method='PUT', url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
                                       headers=headers, json_data=data)
@@ -330,11 +330,11 @@ class Client(BaseClient):
         }
 
         if new_ips:
-            data['ipAddresses'] = new_ips
+            data['ipAddresses'] = new_ips  # type: ignore[assignment]
         if new_emails:
-            data['emailAddresses'] = new_emails
+            data['emailAddresses'] = new_emails  # type: ignore[assignment]
         if new_domains:
-            data['urlDomains'] = new_domains
+            data['urlDomains'] = new_domains  # type: ignore[assignment]
 
         response = self._http_request(method='PUT', url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
                                       headers=headers, json_data=data)
@@ -877,7 +877,7 @@ def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
         original_message_file = results.content
 
         try:
-            original_filename = results.headers.get('Content-Disposition').split('=')[1]
+            original_filename = results.headers.get('Content-Disposition').split('=')[1]  # type: ignore[union-attr]
         except (TypeError, IndexError, AttributeError):
             original_filename = 'unknown'
         return fileResult(original_filename, original_message_file)
