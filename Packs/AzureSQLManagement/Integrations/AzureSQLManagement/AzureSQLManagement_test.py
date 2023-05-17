@@ -115,6 +115,25 @@ def test_azure_sql_db_audit_policy_list_command(mocker):
     assert results.outputs[0].get('type') == 'Microsoft.Sql/servers/databases/auditingSettings'
 
 
+def test_azure_sql_db_audit_policy_list_command_with_not_found(mocker):
+    """
+        Given:
+            - server_name
+            - A wrong db_name
+        When:
+            - Retrieving list of all audit policies related to the server and database using
+            azure_sql_db_audit_policy_list command
+        Then
+            - Assert a failure message is received
+        """
+    from AzureSQLManagement import azure_sql_db_audit_policy_list_command
+    args = {'server_name': 'server_name', 'db_name': 'db'}
+    failure_message = 'Can not perform requested operation on nested resource. Parent resource \'server_name/db\' not found.'
+    client = mock_client(mocker, failure_message)
+    result = azure_sql_db_audit_policy_list_command(client, args, 'resourceGroupName')
+    assert result.readable_output == failure_message
+
+
 def test_azure_sql_db_threat_policy_get_command(mocker):
     """
         Given:

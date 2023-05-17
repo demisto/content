@@ -604,19 +604,19 @@ def test_connection(client: Client) -> CommandResults:
 
 
 @logger
-def start_auth(client: Client) -> CommandResults:
+def start_auth(client: Client) -> CommandResults:  # pragma: no cover
     result = client.ms_client.start_auth('!azure-sql-auth-complete')
     return CommandResults(readable_output=result)
 
 
 @logger
-def complete_auth(client: Client) -> CommandResults:
+def complete_auth(client: Client) -> CommandResults:  # pragma: no cover
     client.ms_client.get_access_token()
     return CommandResults(readable_output='✅ Authorization completed successfully.')
 
 
 @logger
-def reset_auth(client: Client) -> CommandResults:
+def reset_auth(client: Client) -> CommandResults:  # pragma: no cover
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
                                           '**!azure-sql-auth-start** and **!azure-sql-auth-complete**.')
