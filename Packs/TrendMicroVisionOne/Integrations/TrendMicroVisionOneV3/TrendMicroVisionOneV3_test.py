@@ -938,17 +938,16 @@ def test_get_endpoint_information(mocker):
     args = {"endpoint": "hostname"}
     client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     result = get_endpoint_info(client, args)
-    assert result.outputs["status"] == "success"
-    assert isinstance(result.outputs["agentGuid"], str)
-    assert isinstance(result.outputs["logonAccount"], list)
-    assert isinstance(result.outputs["hostname"], str)
-    assert isinstance(result.outputs["macAddr"], list)
-    assert isinstance(result.outputs["ip"], str)
-    assert isinstance(result.outputs["osName"], str)
-    assert isinstance(result.outputs["osVersion"], str)
-    assert isinstance(result.outputs["osDescription"], str)
-    assert isinstance(result.outputs["productCode"], str)
-    assert isinstance(result.outputs["installedProductCodes"], str)
+    assert isinstance(result.outputs[0]["agentGuid"], str)
+    assert isinstance(result.outputs[0]["loginAccount"]["value"], list)
+    assert isinstance(result.outputs[0]["endpointName"]["value"], str)
+    assert isinstance(result.outputs[0]["macAddress"]["value"], list)
+    assert isinstance(result.outputs[0]["ip"]["value"], list)
+    assert isinstance(result.outputs[0]["osName"], str)
+    assert isinstance(result.outputs[0]["osVersion"], str)
+    assert isinstance(result.outputs[0]["osDescription"], str)
+    assert isinstance(result.outputs[0]["productCode"], str)
+    assert isinstance(result.outputs[0]["installedProductCodes"], list)
 
 
 # Mock function for add note.

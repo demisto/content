@@ -837,38 +837,20 @@ def get_endpoint_info(
     response = client.http_request(
         GET, GET_ENDPOINT_INFO_ENDPOINT, params=query_params, headers=headers
     )
-
-    endpoint_info = response.get("items", [])
-    if not endpoint_info:
+    additional_endpoints = client.get_paginated_results(response, headers)
+    final_results = []
+    final_results += response.get("items", [])
+    final_results += additional_endpoints
+    if not final_results:
         return_error("No endpoint found for the query provided.")
-
-    message = {
-        "status": "success",
-        "logonAccount": response.get("items", [])[0]
-        .get("loginAccount", "")
-        .get("value", ""),
-        "hostname": response.get("items", [])[0]
-        .get("endpointName", "")
-        .get("value", ""),
-        "macAddr": response.get("items", [])[0].get("macAddress", {}).get("value", ""),
-        "ip": response.get("items", [])[0].get("ip", {}).get("value", [])[0],
-        "osName": response.get("items", [])[0].get("osName", ""),
-        "osVersion": response.get("items", [])[0].get("osVersion", ""),
-        "osDescription": response.get("items", [])[0].get("osDescription", ""),
-        "productCode": response.get("items", [])[0].get("productCode", ""),
-        "agentGuid": response.get("items", [])[0].get("agentGuid", ""),
-        "installedProductCodes": response.get("items", [])[0].get(
-            "installedProductCodes", []
-        )[0],
-    }
 
     results = CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_ENDPOINT_INFO_COMMAND], message, removeNull=True
+            table_name[GET_ENDPOINT_INFO_COMMAND], final_results, removeNull=True
         ),
         outputs_prefix="VisionOne.Endpoint_Info",
-        outputs_key_field="message",
-        outputs=message,
+        outputs_key_field="endpointName",
+        outputs=final_results,
     )
     return results
 
