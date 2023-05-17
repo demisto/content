@@ -26,6 +26,7 @@ filter
     xdm.observer.vendor = "dropbox",
     xdm.observer.product = "dropbox";
 
+// Another check input
 filter
     json_extract_scalar(event_category, "$['.tag']") = "logins"
 | alter actor_type = json_extract_scalar(actor, "$['.tag']")
