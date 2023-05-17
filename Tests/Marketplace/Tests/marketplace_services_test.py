@@ -1218,6 +1218,26 @@ This is visible
 
         assert not version_changelog
 
+    def test_create_changelog_entry_pack_with_override(self, dummy_pack):
+        """
+            Given:
+                - release notes, display version and build number
+            When:
+                - overriding the packs in bucket so pack is marked as modified
+            Then:
+                - return an empty dict
+        """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False,
+                                                                  is_override=True)
+
+        assert not version_changelog
+
     def test_create_filtered_changelog_entry_modified_unrelated_entities(self, dummy_pack: Pack):
         """
            Given:

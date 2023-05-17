@@ -1242,7 +1242,8 @@ def main():
             index_folder_path,
             build_number,
             modified_rn_files_paths,
-            marketplace, id_set
+            marketplace, id_set,
+            is_override=override_all_packs
         )
 
         if not task_status:
