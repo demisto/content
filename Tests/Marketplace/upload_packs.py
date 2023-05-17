@@ -1038,6 +1038,34 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
+def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
+                                               current_marketplace_packs: List[Pack]):
+    """
+    Delete from index packs that not relevant in the current marketplace from index.
+    Args:
+        index_folder_path (str): full path to downloaded index folder.
+        current_marketplace_packs: List[Pack]: pack list from `create-content-artifacts` step which are filtered by marketplace.
+    Returns:
+        set: unique collection of the deleted packs names.
+    """
+    packs_in_index = set(os.listdir(index_folder_path))
+    current_marketplace_pack_names = {pack.name for pack in current_marketplace_packs}
+    packs_to_be_deleted = packs_in_index - current_marketplace_pack_names
+    deleted_packs = set()
+    for pack_name in packs_to_be_deleted:
+
+        try:
+            index_pack_path = os.path.join(index_folder_path, pack_name)
+            if os.path.exists(os.path.join(index_pack_path, 'metadata.json')):  # verify it's a pack dir
+                shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
+                deleted_packs.add(pack_name)
+        except Exception:
+            logging.error(f'Fail to delete from index the pack {pack_name} which is not in current marketplace')
+
+    logging.info(f'Packs not supported in current marketplace and was deleted from index: {deleted_packs}')
+    return deleted_packs
+
+
 def option_handler():
     """Validates and parses script arguments.
 
@@ -1147,6 +1175,8 @@ def main():
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
+    packs_deleted_from_index: set[str] = delete_from_index_packs_not_in_marketplace(index_folder_path,
+                                                                                    all_content_packs)
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
@@ -1178,7 +1208,7 @@ def main():
             pack.cleanup()
             continue
 
-        if marketplace not in pack.marketplaces:
+        if pack.name in packs_deleted_from_index:
             logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
             pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name  # type: ignore[misc]
             pack.cleanup()
