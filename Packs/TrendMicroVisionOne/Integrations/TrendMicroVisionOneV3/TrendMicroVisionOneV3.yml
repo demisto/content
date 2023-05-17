@@ -388,16 +388,13 @@ script:
     description: Retrieves information about a specific endpoint
     name: trendmicro-visionone-get-endpoint-info
     outputs:
-    - contextPath: VisionOne.Endpoint_Info.status
-      description: Status of the request
-      type: string
-    - contextPath: VisionOne.Endpoint_Info.logonAccount
+    - contextPath: VisionOne.Endpoint_Info.loginAccount
       description: Account currently logged on to the endpoint
       type: string
-    - contextPath: VisionOne.Endpoint_Info.hostname
+    - contextPath: VisionOne.Endpoint_Info.endpointName
       description: Hostname
       type: string
-    - contextPath: VisionOne.Endpoint_Info.macAddr
+    - contextPath: VisionOne.Endpoint_Info.macAddress
       description: MAC address
       type: string
     - contextPath: VisionOne.Endpoint_Info.ip
@@ -407,7 +404,7 @@ script:
       description: Operating System name
       type: string
     - contextPath: VisionOne.Endpoint_Info.osVersion
-      description: Operating System nersion
+      description: Operating System version
       type: string
     - contextPath: VisionOne.Endpoint_Info.osDescription
       description: Description of the Operating System
@@ -841,7 +838,7 @@ script:
       type: string
     description: Updates the status of a workbench alert
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.11.59070
   isFetchSamples: true
   isfetch: true
   runonce: false
