@@ -1273,7 +1273,7 @@ Updates a recipient pattern in the Enforce console. Requires SDLP 16.0.
 | emails | Comma-separated list of emails for the pattern. Note: These email values will replace the existing values in the pattern. | Optional | 
 | domains | Comma-separated list of domains for the pattern. Note: These domain values will replace the existing values in the pattern. | Optional | 
 | name | Name of the sender pattern. Note: This value will change the name of the pattern if different from the existing name. | Required | 
-| description | Description of the sender pattern. . | Optional | 
+| description | Description of the sender pattern. | Optional | 
 
 #### Context Output
 
