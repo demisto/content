@@ -158,7 +158,7 @@ script:
       - none
       - specific attributes
       - custom attribute group name
-    - description: 'A comma-separated list of custom attribute names or custom attribute group names. For example: item1,item2,item3'
+    - description: 'A comma-separated list of custom attribute names or custom attribute group names. For example: item1,item2,item3.'
       isArray: true
       name: custom_data
     description: Returns details of the specified incident.
