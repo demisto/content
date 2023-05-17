@@ -1330,6 +1330,7 @@ def test_integration_context_during_run(test_case_data, mocker):
         incident_type=None,
         mirror_direction=mirror_direction,
         first_fetch='3 days',
+        mirror_options=MIRROR_OFFENSE_AND_EVENTS,
     )
     expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
@@ -1364,6 +1365,7 @@ def test_integration_context_during_run(test_case_data, mocker):
         incident_type=None,
         mirror_direction=mirror_direction,
         first_fetch='3 days',
+        mirror_options=MIRROR_OFFENSE_AND_EVENTS,
     )
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():
