@@ -891,7 +891,7 @@ def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
 
 def get_report_filters_command(client: Client, args: Dict[str, Any]):
     """
-    Fetch the original message
+    Get report filters
     """
     try:
         report_id = args.get('report_id', '')

@@ -496,9 +496,24 @@ script:
     description: Fetches the original message from an incident. Requires SDLP 15.8.
     name: symantec-dlp-get-incident-original-message
     outputs:
-    - contextPath: File
-      description: Original message file from the incident
-      type: Unknown
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the original message file
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The extension of the original message file
+      type: String
+    - contextPath: InfoFile.Name
+      description: The name of the original message file
+      type: String
+    - contextPath: InfoFile.Info
+      description: The info of the original message file
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the original message file
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The type of the original message file
+      type: String
   - arguments:
     - description: Report ID for which to retrieve filters.
       name: report_id
