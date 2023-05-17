@@ -554,7 +554,7 @@ def get_project_id(project_key='', project_name=''):
         if 'Status code: 404' not in de.message:
             raise de
 
-        demisto.debug(f'The error message we got after first api call: {de.message}')
+        demisto.debug('Exception after first api call: {de.message}')
         demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
                       f'Trying another endpoint: {BASE_URL}/api/latest/project.')
 
