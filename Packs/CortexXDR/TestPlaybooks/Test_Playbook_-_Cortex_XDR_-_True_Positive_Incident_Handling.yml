@@ -1296,10 +1296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "294":
     id: "294"
-    taskid: 5c547669-81c1-4198-881c-6e3f64ff07e5
+    taskid: 08776200-c0ae-47a4-80d5-e8e86d1d6d1a
     type: regular
     task:
-      id: 5c547669-81c1-4198-881c-6e3f64ff07e5
+      id: 08776200-c0ae-47a4-80d5-e8e86d1d6d1a
       version: -1
       name: Completed Task Manually - Open Jira ticket
       description: commands.local.cmd.task.complete
@@ -1327,8 +1327,6 @@ tasks:
           root: CreatedIncidentID
       isAutoRun:
         simple: "true"
-      parentPlaybookID:
-        simple: Cortex XDR - True Positive Incident Handling
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1347,10 +1345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "295":
     id: "295"
-    taskid: 17d4639e-fe02-4c30-8877-1b3b1c2db609
+    taskid: 06e2d1c6-9018-443e-8908-60741dc56fc3
     type: regular
     task:
-      id: 17d4639e-fe02-4c30-8877-1b3b1c2db609
+      id: 06e2d1c6-9018-443e-8908-60741dc56fc3
       version: -1
       name: Completed Task Manually - Open Snow ticket
       description: commands.local.cmd.task.complete
@@ -1376,8 +1374,6 @@ tasks:
           root: CreatedIncidentID
       isAutoRun:
         simple: "true"
-      parentPlaybookID:
-        simple: Cortex XDR - True Positive Incident Handling
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1960,4 +1956,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.5.0
+fromversion: 6.8.0
