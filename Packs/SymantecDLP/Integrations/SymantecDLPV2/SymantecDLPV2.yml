@@ -497,7 +497,7 @@ script:
     name: symantec-dlp-get-incident-original-message
     outputs:
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the original message file
+      description: The EntryID of the original message file.
       type: String
     - contextPath: InfoFile.Extension
       description: The extension of the original message file
