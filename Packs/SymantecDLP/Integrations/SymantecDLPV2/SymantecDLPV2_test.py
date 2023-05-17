@@ -593,6 +593,35 @@ def test_get_report_filters_command(requests_mock):
     assert result.outputs == {'test': 'test', 'filterString': '{"test": "test"}'}
 
 
+@pytest.mark.parametrize('exception_error', ['error, 401 unauthorized', 'error occurred'])
+def test_get_report_filters_command_error(mocker, exception_error):
+
+    """
+    Given:
+        api error
+
+    When:
+        running get_report_filters_command
+
+    Then:
+        Make sure an exception is raised
+    """
+    from SymantecDLPV2 import Client, get_report_filters_command
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    mocker.patch.object(client, '_http_request', side_effect=DemistoException(exception_error))
+
+    with pytest.raises(DemistoException):
+        get_report_filters_command(client, {'incident_id': '1234'})
+
+
 def test_list_users_command(requests_mock):
     """
     Given:
@@ -784,13 +813,13 @@ def test_update_sender_pattern_command(requests_mock):
     assert result.outputs_prefix == 'SymantecDLP.SenderUpdate'
 
 
-def test_recipient_pattern_command(requests_mock):
+def test_update_recipient_pattern_command(requests_mock):
     """
     Given:
         pattern id
 
     When:
-        running update_sender_pattern_command
+        running update_recipient_pattern_command
 
     Then:
         Make sure the context output is returned as expected
@@ -841,7 +870,7 @@ def test_get_message_body_command(requests_mock):
         pattern id
 
     When:
-        running update_sender_pattern_command
+        running get_message_body_command
 
     Then:
         Make sure the context output is returned as expected
@@ -863,3 +892,31 @@ def test_get_message_body_command(requests_mock):
 
     result = get_message_body_command(client, {'incident_id': '1234'})
     assert result.outputs == {'IncidentID': '1234', 'MessageBody': {'test': 'test'}}
+
+
+@pytest.mark.parametrize('exception_error', ['error, 401 unauthorized', 'error occurred'])
+def test_get_message_body_error(mocker, exception_error):
+    """
+    Given:
+        api error
+
+    When:
+        running get_message_body_command
+
+    Then:
+        Make sure an exception is raised
+    """
+    from SymantecDLPV2 import Client, get_message_body_command
+
+    client = Client(
+        base_url="https://SymantecDLPV2.com",
+        auth=("test", "pass"),
+        verify=False,
+        proxy=False,
+        headers={"Content-type": "application/json"}
+    )
+
+    mocker.patch.object(client, '_http_request', side_effect=DemistoException(exception_error))
+
+    with pytest.raises(DemistoException):
+        get_message_body_command(client, {'incident_id': '1234'})
