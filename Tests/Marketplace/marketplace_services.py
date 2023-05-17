@@ -3539,32 +3539,43 @@ class Pack(object):
             logging.exception(f"Failed uploading {self.name} pack preview image.")
         return None
 
-    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
+    def upload_preview_images(self, storage_bucket, storage_base_path):
         """ Uploads pack preview images to gcs.
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
             storage_base_path (str): The target destination of the upload in the target bucket.
-            diff_files_list (list): The list of all modified/added files found in the diff
         Returns:
             bool: whether the operation succeeded.
         """
         pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
 
-        try:
-            for file in diff_files_list:
-                if self.is_valid_preview_image(file.a_path):
-                    logging.info(f"adding preview image {file.a_path} to pack preview images")
-                    image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
-                    image_name = os.path.basename(file.a_path)
-                    image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
-                    pack_image_blob = storage_bucket.blob(image_storage_path)
-                    with open(file.a_path, "rb") as image_file:
-                        pack_image_blob.upload_from_file(image_file)
-                    self._uploaded_preview_images.append(file.a_path)
-            return True
-        except Exception as e:
-            logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
-            return False
+        for _dir in [PackFolders.XSIAM_REPORTS.value, PackFolders.XSIAM_DASHBOARDS.value]:
+            local_preview_image_dir = os.path.join(PACKS_FOLDER, self.name, _dir)
+            if not os.path.isdir(local_preview_image_dir):
+                logging.debug(f"Could not find content items with preview images for pack {self.name}")
+                continue
+
+            preview_image_relative_paths = glob.glob(os.path.join(local_preview_image_dir, '*.png'))
+            if not preview_image_relative_paths:
+                logging.debug(f"Could not find preview images in pack {local_preview_image_dir}")
+                continue
+
+            logging.info(f"Found preview image: {preview_image_relative_paths}")
+            preview_image_relative_path: str = preview_image_relative_paths[0]
+            image_name = os.path.basename(preview_image_relative_path)
+            image_storage_path = os.path.join(pack_storage_root_path, _dir, image_name)
+            pack_image_blob = storage_bucket.blob(image_storage_path)
+
+            try:
+                with open(preview_image_relative_path, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+            except Exception as e:
+                logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
+                return False
+
+            self._uploaded_preview_images.append(preview_image_relative_path)
+
+        return True
 
     def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's preview image from the build bucket to the production bucket
@@ -3623,7 +3634,7 @@ class Pack(object):
 
         return task_status
 
-    def is_valid_preview_image(self, file_path: str) -> bool:
+    def does_preview_image_exist(self, file_path: str) -> bool:
         """ Indicates whether a file_path is a valid preview image or not:
             - The file exists (is not removed in the latest upload)
             - Belong to the current pack
