@@ -205,6 +205,7 @@ def generate_indicator(data: dict) -> Common.CVE:
 
     else:
         tags = [data.get('cwe', '')]
+        relationships = []
 
     cvss_table = []
 
