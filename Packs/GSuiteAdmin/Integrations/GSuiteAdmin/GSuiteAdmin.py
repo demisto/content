@@ -1,4 +1,6 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
 
 import urllib.parse
@@ -6,6 +8,7 @@ import urllib3
 import hashlib
 import copy
 from typing import List, Dict, Any, Callable, NamedTuple
+
 from GSuiteApiModule import *  # noqa: E402
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -65,6 +68,9 @@ HR_MESSAGES: Dict[str, str] = {
     'MOBILE_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - Mobile Devices List',
     'CHROMEOS_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - ChromeOS Devices List',
     'CHROMEOS_DEVICE_ACTION_SUCCESS': 'ChromeOS device with resource id - {} updated.',
+    'CHROMEBROWSER_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - ChromeBrowser Devices List',
+    'CHROMEBROWSER_DEVICE_MOVEOU_SUCCESS': 'Google Workspace Admin - ChromeBrowser Devices with resource id - {} updated',
+    'USER_SIGNOUT': 'User with user key {} Signed out successfully.',
 }
 
 URL_SUFFIX: Dict[str, str] = {
@@ -73,6 +79,7 @@ URL_SUFFIX: Dict[str, str] = {
     'MOBILE_UPDATE': 'admin/directory/v1/customer/{}/devices/mobile/{}/action',
     'MOBILE_DELETE': 'admin/directory/v1/customer/{}/devices/mobile/{}',
     'USER_ALIAS': 'admin/directory/v1/users/{}/aliases',
+    'USER_SIGNOUT': 'admin/directory/v1/users/{}/signOut',
     'GROUP_CREATE': 'admin/directory/v1/groups',
     'GROUP_GET': 'admin/directory/v1/groups/{}',
     'ROLE_ASSIGNMENT': 'admin/directory/v1/customer/{}/roleassignments',
@@ -83,7 +90,8 @@ URL_SUFFIX: Dict[str, str] = {
     'MOBILE_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/mobile',
     'CHROMEOS_DEVICE_ACTION': 'admin/directory/v1/customer/{}/devices/chromeos/{}/action',
     'CHROMEOS_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/chromeos',
-
+    'CHROMEBROWSER_DEVICES_LIST': 'admin/directory/v1.1beta1/customer/{}/devices/chromebrowsers',
+    'CHROMEBROWSER_DEVICE_MOVEOU': 'admin/directory/v1.1beta1/customer/{}/devices/chromebrowsers/moveChromeBrowsersToOu',
 }
 SCOPES: Dict[str, List[str]] = {
     'DIRECTORY_USER': ['https://www.googleapis.com/auth/admin.directory.user'],
@@ -100,11 +108,14 @@ COMMAND_SCOPES: Dict[str, List[str]] = {
     'MOBILE_UPDATE': ['https://www.googleapis.com/auth/admin.directory.device.mobile.action'],
     'USER_ALIAS_ADD': ['https://www.googleapis.com/auth/admin.directory.user.alias',
                        'https://www.googleapis.com/auth/admin.directory.user'],
+    'USER_SIGNOUT': ['https://www.googleapis.com/auth/admin.directory.user.security'],
     'ROLE_ASSIGNMENT': ['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
                         *SCOPES['ROLE_MANAGEMENT']],
     'MOBILE_DEVICES_LIST': ['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly'],
     'CHROMEOS_DEVICE_ACTION': ['https://www.googleapis.com/auth/admin.directory.device.chromeos'],
     'CHROMEOS_DEVICES_LIST': ['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'],
+    'CHROMEBROWSER_DEVICES_LIST': ['https://www.googleapis.com/auth/admin.directory.device.chromebrowsers.readonly'],
+    'CHROMEBROWSER_DEVICE_MOVEOU': ['https://www.googleapis.com/auth/admin.directory.device.chromebrowsers'],
 }
 
 OUTPUT_PREFIX: Dict[str, str] = {
@@ -120,7 +131,9 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'DATA_TRANSFER_LIST_PAGE_TOKEN': 'GSuite.PageToken.DataTransfer',
     'CUSTOM_USER_SCHEMA': 'GSuite.UserSchema',
     'MOBILE_DEVICES_LIST': 'GSuite.MobileDevices',
-    'CHROMEOS_DEVICES_LIST': 'GSuite.ChromeOSDevices'
+    'CHROMEOS_DEVICES_LIST': 'GSuite.ChromeOSDevices',
+    'CHROMEBROWSER_DEVICES_LIST': 'GSuite.ChromeBrowserDevices',
+    'CHROMEBROWSER_DEVICE_MOVEOU': 'GSuite.ChromeBrowserDevicesOU'
 }
 
 
@@ -142,6 +155,12 @@ ChromeOSDevicesConfig = DevicesCommandConfig(table_headers=['Serial Number', 'Us
                                              table_title=HR_MESSAGES.get('CHROMEOS_DEVICES_LIST_SUCCESS', ''),
                                              response_devices_list_key='chromeosdevices',
                                              outputs_prefix=OUTPUT_PREFIX.get('CHROMEOS_DEVICES_LIST', ''),
+                                             )
+
+ChromeBrowserDevicesConfig = DevicesCommandConfig(table_headers=['Serial Number', 'User Name', 'Model Name', 'OS', 'Status'],
+                                             table_title=HR_MESSAGES.get('CHROMEBROWSER_DEVICES_LIST_SUCCESS', ''),
+                                             response_devices_list_key='chromebrowserdevices',
+                                             outputs_prefix=OUTPUT_PREFIX.get('CHROMEBROWSER_DEVICES_LIST', ''),
                                              )
 
 
@@ -1057,6 +1076,24 @@ def user_delete_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
+def user_signout_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+    Signs a user out of all sessions.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: CommandResults.
+    """
+    client.set_authorized_http(scopes=SCOPES['USER_SECURITY'])
+    user_key = args.get('user_key', '')
+    url_suffix = URL_SUFFIX.get('USER_SIGNOUT', '').format(urllib.parse.quote(user_key))
+    client.http_request(url_suffix=url_suffix, method='POST')
+
+    return CommandResults(readable_output=HR_MESSAGES['USER_SIGNOUT'].format(user_key))
+
+
+@logger
 def user_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     updates a user.
@@ -1151,6 +1188,23 @@ def chromeos_device_action_request(client: Client, customer_id: str, resource_id
         method='POST', url_suffix=URL_SUFFIX.get('CHROMEOS_DEVICE_ACTION', '').format(urllib.parse.quote(customer_id),
                                                                                       urllib.parse.quote(resource_id)),
         body=json_body)
+    return response
+
+
+def chromebrowser_device_moveou_request(client: Client, customer_id: str, resource_id: str, org_unit_path: str):
+    json_body = {}
+    json_body['org_unit_path'] = org_unit_path
+    json_body['resource_ids'] = resource_id
+
+    response = client.http_request(method='POST', url_suffix=URL_SUFFIX.get(
+        'CHROMEBROWSER_DEVICE_MOVEOU', '').format(urllib.parse.quote(customer_id)), body=json_body)
+    return response
+
+
+def chromebrowser_device_list_request(client: Client, customer_id: str, query_params: dict = {}):
+    response = client.http_request(
+        url_suffix=URL_SUFFIX.get('CHROMEBROWSER_DEVICES_LIST', '').format(urllib.parse.quote(customer_id)),
+        params=query_params)
     return response
 
 
@@ -1329,7 +1383,7 @@ def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> C
     command_results = CommandResults(
         readable_output=markdown,
         outputs=outputs,
-        raw_response=raw_response,
+        raw_response=raw_response
     )
 
     return command_results
@@ -1352,6 +1406,26 @@ def chromeos_device_list_create_query_parameters(projection: str, query: str, in
                                  sortOrder=sort_order.lower(),
                                  orgUnitPath=org_unit_path,
                                  includeChildOrgunits=str(include_child_org_units)
+                                 )
+    return query_params
+
+
+def chromebrowser_device_list_create_query_parameters(projection: str, query: str, include_child_org_units: bool, order_by: str,
+                                                 sort_order: str, org_unit_path: str) -> dict:  # pragma: no cover
+    """This function takes in the arguments from the user and creates a dictionary that will hold
+    the query arguments for the chromeos-device-list request.
+
+    Args:
+        args (dict): The arguments from the user
+
+    Returns:
+        dict: A dictionary that will hold the query arguments of the request.
+    """
+    query_params = assign_params(projection=projection.lower(),
+                                 query=query,
+                                 orderBy=order_by.lower(),
+                                 sortOrder=sort_order.lower(),
+                                 orgUnitPath=org_unit_path
                                  )
     return query_params
 
@@ -1384,8 +1458,18 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         client=client,
         customer_id=args.get('customer_id', ''),
         response_devices_list_key=ChromeOSDevicesConfig.response_devices_list_key,
-        query_params=query_params,
+        query_params=query_params
     )
+
+    customer_id = args.get('customer_id', '')
+    result = chromeos_device_list_request(client, customer_id=customer_id, query_params=query_params)
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Devices", result),
+        outputs={"ChromeOSDevices": result},
+        raw_response=result
+    )
+    return_results(command_results)
+    """
     try:
         markdown = ''
         if 'limit' in pagination_args:
@@ -1393,6 +1477,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         else:
             pagination_result = device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
         context_data: list[dict] = pagination_result.get('data', [{}])
+
         raw_response: list = pagination_result.get('raw_response', [])
         next_page_token: str = pagination_result.get('next_page_token', '')
         if not context_data:
@@ -1418,7 +1503,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         command_results = CommandResults(
             readable_output=markdown,
             outputs=outputs,
-            raw_response=raw_response,
+            raw_response=raw_response
         )
         return command_results
     except DemistoException as e:
@@ -1426,6 +1511,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         if('INVALID_OU_ID' in error_message):
             raise DemistoException(MESSAGES.get('INVALID_ORG_UNIT_PATH', ''))
         raise DemistoException(error_message)
+    """
 
 
 @logger
@@ -1460,13 +1546,125 @@ def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) 
     return command_results
 
 
+@logger
+def gsuite_chromebrowser_device_moveou_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """Executes an action that affects a ChromeBrowser Device.
+
+    Args:
+        client (Client): A Client instance.
+        args (Dict[str, str]): The arguments of the command.
+
+    Raises:
+        DemistoException: If customer_id or resource_id are invalid.
+
+    Returns:
+        CommandResults: CommandResults that hold the data to return to the engine.
+    """
+    try:
+        client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEBROWSER_DEVICE_MOVEOU', []))
+        chromebrowser_device_moveou_request(client=client, customer_id=args.get('customer_id', ''),
+                                       resource_id=args.get('resource_id', ''),
+                                       org_unit_path=args.get('org_unit_path', ''))
+
+    except DemistoException as e:
+        error_message = str(e)
+        if('Delinquent account' in error_message):
+            raise DemistoException(MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', ''))
+        raise DemistoException(error_message)
+    command_results = CommandResults(
+        readable_output=HR_MESSAGES.get('CHROMEBROWSER_DEVICE_MOVEOU_SUCCESS', '').format(args.get('resource_id')),
+    )
+    return command_results
+
+
+def gsuite_chromebrowser_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:  # pragma: no cover
+    """Retrieves a paginated list that includes company-owned ChromeBrowserDevices.
+
+    Args:
+        client (Client): A Client instance.
+        args (Dict[str, str]): The arguments of the command.
+
+    Returns:
+        List[CommandResults]: List of CommandResults that hold the data to return to the engine.
+    """
+    client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEBROWSER_DEVICES_LIST', []))
+    query_params = chromebrowser_device_list_create_query_parameters(projection=args.get('projection', 'full'),
+                                                                query=args.get('query', ''),
+                                                                include_child_org_units=argToBoolean(args.get(
+                                                                    'include_child_org_units', False)),
+                                                                order_by=args.get('order_by', ''),
+                                                                sort_order=args.get('sort_order', ''),
+                                                                org_unit_path=args.get('org_unit_path', ''),
+                                                                )
+    pagination_args = prepare_pagination_arguments(page_token=args.get('page_token', ''),
+                                                   page_size=arg_to_number(args.get('page_size', '')),
+                                                   limit=arg_to_number(args.get('limit', '')))
+    mutual_pagination_args = assign_params(
+        request_by_device_type=chromebrowser_device_list_request,
+        client=client,
+        customer_id=args.get('customer_id', ''),
+        response_devices_list_key=ChromeBrowserDevicesConfig.response_devices_list_key,
+        query_params=query_params
+    )
+
+    result = chromebrowser_device_list_request(client, customer_id=customer_id
+    command_results=CommandResults(
+        readable_output=tableToMarkdown("Devices", result),
+        outputs={"ChromeBrowserDevices": result},
+        raw_response=result
+    )
+    return_results(command_results)
+    """
+    try:
+        markdown = ''
+        if 'limit' in pagination_args:
+            pagination_result = device_list_automatic_pagination(**mutual_pagination_args, **pagination_args)
+        else:
+            pagination_result = device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
+        context_data: list[dict] = pagination_result.get('data', [{}])
+
+        raw_response: list = pagination_result.get('raw_response', [])
+        next_page_token: str = pagination_result.get('next_page_token', '')
+        if not context_data:
+            markdown = 'No results were found with the respected arguments'
+
+        else:
+            human_readable = devices_to_human_readable(
+                devices_data=context_data,
+                keys=['serialNumber', 'annotatedUser', 'model', 'osVersion', 'status', 'deviceId'],
+                keys_mapping={'annotatedUser': 'User Name', 'osVersion': 'OS'})
+            num_of_devices = len(context_data)
+            markdown = tableToMarkdown(ChromeOSDevicesConfig.table_title, human_readable,
+                                       metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
+        outputs: Dict[str, Any] = {}
+        if context_data:
+            outputs[(f'{ChromeOSDevicesConfig.outputs_prefix}.'
+                     'ChromeOSListObjects(val.resourceId && val.resourceId == obj.resourceId)')] = context_data
+
+        if next_page_token:
+            markdown += f'### Next Page Token:\n{next_page_token}'
+            outputs[f'{ChromeOSDevicesConfig.outputs_prefix}.PageToken(val.NextPageToken)'] = {'NextPageToken': next_page_token}
+
+        command_results = CommandResults(
+            readable_output=markdown,
+            outputs=outputs,
+            raw_response=raw_response
+        )
+        return command_results
+    except DemistoException as e:
+        error_message = str(e)
+        if('INVALID_OU_ID' in error_message):
+            raise DemistoException(MESSAGES.get('INVALID_ORG_UNIT_PATH', ''))
+        raise DemistoException(error_message)
+    """
+
 def main() -> None:
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: Dict[str, Callable]={
         'gsuite-custom-user-schema-update': custom_user_schema_update_command,
         'gsuite-custom-user-schema-create': custom_user_schema_create_command,
         'gsuite-datatransfer-list': datatransfer_list_command,
@@ -1486,38 +1684,41 @@ def main() -> None:
         'gsuite-user-update': user_update_command,
         'gsuite-mobiledevice-list': gsuite_mobile_device_list_command,
         'gsuite-chromeosdevice-action': gsuite_chromeos_device_action_command,
-        'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command
+        'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command,
+        'gsuite-chromebrowserdevice-list': gsuite_chromebrowser_device_list_command,
+        'gsuite-user-signout': user_signout_command,
+        'gsuite-chromebrowserdevice-moveou': gsuite_chromebrowser_device_moveou_command,
 
     }
-    command = demisto.command()
+    command=demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
+        params=demisto.params()
+        service_account_dict=GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+        verify_certificate=not params.get('insecure', False)
+        proxy=params.get('proxy', False)
 
-        headers = {
+        headers={
             'Content-Type': 'application/json'
         }
 
-        args = GSuiteClient.strip_dict(demisto.args())
+        args=GSuiteClient.strip_dict(demisto.args())
 
-        admin_email = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
+        admin_email=args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
 
         if admin_email and not is_email_valid(admin_email):
             raise ValueError(MESSAGES['INVALID_ADMIN_EMAIL'])
 
         # prepare client class object
-        client = Client(service_account_dict=service_account_dict, base_url='https://admin.googleapis.com/',
+        client=Client(service_account_dict=service_account_dict, base_url='https://admin.googleapis.com/',
                         verify=verify_certificate, proxy=proxy, headers=headers,
                         admin_email=admin_email
                         )
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result=test_module(client)
             demisto.results(result)
 
         elif command in commands:
