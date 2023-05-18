@@ -209,10 +209,12 @@ def generate_indicator(data: dict) -> Common.CVE:
     if cpe:
         cpe = re.split('(?<!\\\):', cpe[0])
         tags, relationships = parse_cpe(cpe, cve_id)
-        tags.append(data.get('cwe', ''))
+        if data.get('cwe', ''):
+            tags.append(data.get('cwe', ''))
 
     else:
-        tags = [data.get('cwe', '')]
+        if data.get('cwe', ''):
+            tags = [data.get('cwe', '')]
         relationships = []
 
     cvss_table = []

@@ -61,7 +61,7 @@ Returns CVE information by CVE ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | The CVE ID. For example: CVE-2014-1234. | Required |
+| cve_id | A comma separated list of CVE IDs to search | Required |
 
 #### Context Output
 

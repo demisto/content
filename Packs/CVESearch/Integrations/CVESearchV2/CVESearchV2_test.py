@@ -50,11 +50,23 @@ test_data = [
 
 
 def test_indicator_creation():
+    """
+    Given:
+        A valid response from the server
+
+    When:
+        indicator_creation is being called.
+
+    Then:
+        return a Common.CVE indicator type.
+    """
+
     with open(os.path.join(Path.cwd(), 'test_data', 'response.json')) as js:
         response = json.load(js)
 
     with open(os.path.join(Path.cwd(), 'test_data', 'indicator.json')) as js:
         correct_indicator = json.load(js)
+
     indicator = generate_indicator(response).to_context()
     assert indicator == correct_indicator
 
@@ -84,6 +96,17 @@ def test_indicator_creation():
      []),
 ])
 def test_parse_cpe(cpe, expected_output, expected_relationships):
+    """
+    Given:
+        A CPE represented as a list of strings
+
+    When:
+        when parse_cpe is called
+
+    Then:
+        return a tuple of a list of tags (no empty strings) and a list of EntityRelationship objects.
+    """
+
     cpe = re.split('(?<!\\\):', cpe)
     tags, relationships = parse_cpe(cpe, 'CVE-2022-1111')
     assert tags == expected_output
