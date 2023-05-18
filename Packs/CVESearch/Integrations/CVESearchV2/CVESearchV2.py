@@ -31,15 +31,16 @@ class Client(BaseClient):
 
 
 def cve_to_context(cve) -> Dict[str, str]:
-    """Returning a cve structure with the following fields:
+    """
+    Returning a cve structure with the following fields:
     * ID: The cve ID.
     * CVSS: The cve score scale/
     * Published: The date the cve was published.
     * Modified: The date the cve was modified.
     * Description: the cve's description
 
-        Args:
-            cve: The cve response from CVE-Search web site
+    Args:
+        cve: The cve response from CVE-Search web site
     Returns:
         The cve structure.
     """
@@ -56,6 +57,7 @@ def cve_to_context(cve) -> Dict[str, str]:
 def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
@@ -68,7 +70,9 @@ def test_module(client: Client):
 
 
 def cve_latest_command(client: Client, limit) -> List[CommandResults]:
-    """Returns the 30 latest updated CVEs.
+    """
+    Returns the 30 latest updated CVEs.
+
     Args:
          limit int: The amount of CVEs to display
     Returns:
@@ -101,7 +105,9 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
 
 
 def cve_command(client: Client, args: dict) -> Union[List[CommandResults], CommandResults]:
-    """Search for cve with the given ID and returns the cve data if found.
+    """
+    Search for cve with the given ID and returns the cve data if found.
+
     Args:
            client: Integration client
            args :The demisto args containing the cve_id
@@ -137,14 +143,15 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
 
 def parse_cpe(cpe: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
     """
+    Parses a CPE to return the correct tags and relationships needed for the CVE.
 
-        Args:
-            cpe: A string representing a single CPE, see "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf"
+    Args:
+        cpe: A list representing a single CPE, see "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf"
 
-        Returns:
-            A list of tags and a list of EntityRelationships.
+    Returns:
+        A tuple consisting of a list of tags and a list of EntityRelationships.
 
-        """
+    """
 
     cpe_parts = {
         "a": "Application",
@@ -188,6 +195,7 @@ def parse_cpe(cpe: list[str], cve_id: str) -> tuple[list[str], list[EntityRelati
 def generate_indicator(data: dict) -> Common.CVE:
     """
     Generating a single cve indicator with dbot score from cve data.
+
     Args:
         data: The cve data
 
@@ -236,8 +244,10 @@ def generate_indicator(data: dict) -> Common.CVE:
 
 
 def valid_cve_id_format(cve_id: str) -> bool:
-    """Validates that the given cve_id is a valid cve ID.
-     For more details see: https://cve.mitre.org/cve/identifiers/syntaxchange.html
+    """
+    Validates that the given cve_id is a valid cve ID.
+    For more details see: https://cve.mitre.org/cve/identifiers/syntaxchange.html
+
     Args:
         cve_id: ID to validate
     Returns:

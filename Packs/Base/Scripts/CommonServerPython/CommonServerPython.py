@@ -3601,6 +3601,13 @@ class Common(object):
 
     class CPE:
         """
+        Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
+
+        :type cpe: ``str``
+        :param cpe: a single CPE string
+
+        :return: None
+        :rtype: ``None``
 
         """
         def __init__(self, cpe=None):
