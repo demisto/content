@@ -11,11 +11,11 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: access key
+- display: Access key
   name: creds_keys
   required: false
   type: 9
-  displaypassword: secret key
+  displaypassword: Secret key
   section: Connect
 - display: Username
   hiddenusername: true
@@ -694,7 +694,7 @@ script:
       secret: false
     - default: false
       description: 'A comma-separated list of days of the week to run the schedule at. Possible values are: SU, MO, TU, WE, TH, FR, SA.'
-      isArray: yes
+      isArray: true
       name: repeat_rule_by_day
       required: false
       secret: false
@@ -2704,7 +2704,7 @@ script:
       secret: false
     - default: false
       description: 'A comma-separated list of days of the week to run the schedule at. Possible values are: SU, MO, TU, WE, TH, FR, SA.'
-      isArray: yes
+      isArray: true
       name: repeat_rule_by_day
       required: false
       secret: false

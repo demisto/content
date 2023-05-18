@@ -1,7 +1,7 @@
 id: tenable-sc-scan
 version: -1
 name: Launch Scan - Tenable.sc
-description: Deprecated. use tenable-sc-launch-scan-report command instead.
+description: Deprecated. Use tenable-sc-launch-scan-report command instead.
 deprecated: true
 fromversion: 5.0.0
 starttaskid: "0"
