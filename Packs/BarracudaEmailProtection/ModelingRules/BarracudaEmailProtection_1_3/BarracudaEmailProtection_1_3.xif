@@ -2,8 +2,7 @@
 alter 
     payload = arrayindex(regextract(_raw_log, "\[\d\]: (\{.*?$)"), 0) |
 alter
-     xdm.event.description = payload
-    ,xdm.target.domain = json_extract_scalar(payload, "$.dst_domain")
+     xdm.target.domain = json_extract_scalar(payload, "$.dst_domain")
     ,xdm.email.sender = arrayindex(regextract(json_extract_scalar(payload, "$.hdr_from"), "\<(.*?)\>"), 0) 
     ,xdm.email.subject = json_extract_scalar(payload, "$.subject")
     ,xdm.email.message_id = json_extract_scalar(payload, "$.message_id")
