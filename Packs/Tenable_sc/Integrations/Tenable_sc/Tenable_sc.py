@@ -183,8 +183,6 @@ class Client(BaseClient):
             Dict: The response.
         """
         create_scan_mapping_dict = {
-            'name': 'name',
-            'pluginID': 'plugin_id',
             'description': 'description',
             'dhcpTracking': 'dhcp_tracking',
             'timeoutAction': 'timeout_action',
@@ -196,6 +194,10 @@ class Client(BaseClient):
 
         scan_type = args.get("scan_type")
         body["type"] = scan_type if scan_type else ('policy' if args.get("policy_id") else 'plugin')
+
+        body['name'] = args.get('name') or args.get('scan_name')
+
+        body["pluginID"] = args.get('plugin_id') or args.get('plugins_id')
 
         if repo_id := args.get("repository_id"):
             body["repository"] = {'id': repo_id}
@@ -1383,20 +1385,7 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     Returns:
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
-    schedule = args.get('schedule')
-    asset_ids = args.get('asset_ids')
-    ips = args.get('ip_list')
-    dependent = args.get('dependent_id')
-    time_zone = args.get("time_zone")
-
-    if time_zone and time_zone not in pytz.all_timezones:
-        return_error("Invalid time zone ID. Please choose one of the following: "
-                     "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
-    if not asset_ids and not ips:
-        return_error('Error: Assets and/or IPs must be provided')
-
-    if schedule == 'dependent' and not dependent:
-        return_error('Error: Dependent schedule must include a dependent scan ID')
+    validate_create_scan_inputs(args)
 
     res = client.create_scan(args)
 
@@ -1432,6 +1421,30 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
         outputs_key_field='ID',
         readable_output=tableToMarkdown('Scan created successfully', mapped_scan, headers, removeNull=True)
     )
+
+
+def validate_create_scan_inputs(args):
+    """
+    Validate all given arguments are valid for create scan command.
+    Args:
+        args (Dict): the demisto.args() object.
+    Returns:
+        None: return error if arguments are invalid.
+    """
+    schedule = args.get('schedule')
+    asset_ids = args.get('asset_ids')
+    ips = args.get('ip_list')
+    dependent = args.get('dependent_id')
+    time_zone = args.get("time_zone")
+
+    if time_zone and time_zone not in pytz.all_timezones:
+        return_error("Invalid time zone ID. Please choose one of the following: "
+                     "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
+    if not asset_ids and not ips:
+        return_error('Error: Assets and/or IPs must be provided')
+
+    if schedule == 'dependent' and not dependent:
+        return_error('Error: Dependent schedule must include a dependent scan ID')
 
 
 def launch_scan_command(client: Client, args: Dict[str, Any]):
@@ -1602,24 +1615,24 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
     vuln_headers = ['ID', 'Name', 'Family', 'Severity', 'Total']
 
     mapped_results = {
-        'Scan Type': res['type'],
-        'ID': scan_results['id'],
-        'Name': scan_results['name'],
-        'Status': scan_results['status'],
-        'Description': scan_results['description'],
-        'Policy': scan_results['details'],
+        'Scan Type': res.get('type', ''),
+        'ID': scan_results.get('id', ''),
+        'Name': scan_results.get('name', ''),
+        'Status': scan_results.get('status', ''),
+        'Description': scan_results.get('description', ''),
+        'Policy': scan_results.get('details', ''),
         'Group': scan_results.get('ownerGroup', {}).get('name'),
-        'Checks': scan_results.get('completedChecks'),
-        'StartTime': timestamp_to_utc(scan_results['startTime']),
-        'EndTime': timestamp_to_utc(scan_results['finishTime']),
-        'Duration': scan_duration_to_demisto_format(scan_results['scanDuration']),
-        'ImportTime': timestamp_to_utc(scan_results['importStart']),
-        'ScannedIPs': scan_results['scannedIPs'],
-        'Owner': scan_results['owner'].get('username'),
-        'RepositoryName': scan_results['repository'].get('name'),
+        'Checks': scan_results.get('completedChecks', ''),
+        'StartTime': timestamp_to_utc(scan_results.get('startTime', '')),
+        'EndTime': timestamp_to_utc(scan_results.get('finishTime', '')),
+        'Duration': scan_duration_to_demisto_format(scan_results.get('scanDuration', '')),
+        'ImportTime': timestamp_to_utc(scan_results.get('importStart', '')),
+        'ScannedIPs': scan_results.get('scannedIPs', ''),
+        'Owner': scan_results.get('owner', {}).get('username', ''),
+        'RepositoryName': scan_results.get('repository', {}).get('name', ''),
         'Import Status': scan_results.get('importStatus', ''),
-        'Is Scan Running ': scan_results['running'],
-        'Completed IPs': scan_results['progress']['completedIPs']
+        'Is Scan Running ': scan_results.get('running', ''),
+        'Completed IPs': scan_results.get('progress', {}).get('completedIPs', '')
     }
 
     hr = tableToMarkdown('Tenable.sc Scan ' + mapped_results['ID'] + ' Report',
@@ -2549,35 +2562,21 @@ def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
     args["policy_template_id"] = '1'
-    res = client.create_policy(args)
     args["scan_type"] = "policy"
     args["schedule"] = "now"
-    # You can use either the asset_ids parameter or the ip_list parameter to specify assets, but you cannot use both parameters in a single request.
+    validate_create_scan_inputs(args)
+    res = client.create_policy(args)
     created_policy = res.get("response")
     args["policy_id"] = created_policy.get("id")
     res = client.create_scan(args)
     if not res or 'response' not in res:
         return_error('Error: Could not retrieve the scan')
 
-    scan = res['response']
+    scan = res.get('response', {})
 
-    headers = [
-        'Scan ID',
-        'Scan Name',
-        'Scan Description',
-        'Scan Type',
-        'Dhcp Tracking status',
-        'Created Time',
-        'Modified Time',
-        'Max Scan Time',
-        'Policy id ',
-        'Policy context',
-        'Policy description',
-        'Schedule type',
-        'Start Time',
-        'Group',
-        'Owner',
-    ]
+    headers = ['Scan ID', 'Scan Name', 'Scan Description', 'Scan Type', 'Dhcp Tracking status', 'Created Time', 'Modified Time',
+               'Max Scan Time', 'Policy id ', 'Policy context', 'Policy description', 'Schedule type', 'Start Time', 'Group',
+               'Owner']
 
     mapped_scan = {
         'Scan ID': scan['id'],
@@ -2597,16 +2596,13 @@ def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
         'Owner': scan["owner"]["username"],
     }
 
-
     return CommandResults(
-        outputs=createContext(mapped_scan, removeNull=True),
+        outputs=createContext(scan, removeNull=True),
         outputs_prefix='TenableSC.Scan',
         raw_response=res,
         outputs_key_field='ID',
-        readable_output=tableToMarkdown('Scan created successfully', mapped_scan, headers, removeNull=True)
+        readable_output=tableToMarkdown('Remediation scan created successfully', mapped_scan, headers, removeNull=True)
     )
-
-
 
 
 def list_query_command(client: Client, args: Dict[str, Any]):
