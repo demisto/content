@@ -2,7 +2,7 @@ import pytest
 import json
 import dateparser
 from unittest.mock import MagicMock, patch
-from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main, parse_mintime
+from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main, parse_mintime, validate_request_order_array
 
 
 @pytest.fixture
@@ -16,9 +16,7 @@ def ret_fresh_client():
         "retries": "5",
         "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
     }
-    p = Params(**demisto_params, mintime={})
-    demisto_params['params'] = p
-    return Client(demisto_params)   # type: ignore
+    return Client(Params(**demisto_params, mintime={}))   # type: ignore
 
 
 global_demisto_params = {
@@ -30,8 +28,8 @@ global_demisto_params = {
     "retries": "5",
     "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
 }
-global_demisto_params['params'] = Params(**global_demisto_params, mintime={})
-client = Client(global_demisto_params)     # type: ignore
+
+client = Client(Params(**global_demisto_params, mintime={}))     # type: ignore
 
 get_events = GetEvents(
     client=client,
@@ -245,3 +243,20 @@ def test_handle_administration_logs(ret_fresh_client):
         ret_events = client.handle_administration_logs()
 
     assert administration_response == ret_events
+
+
+@pytest.mark.parametrize('log_type_list, expected_res', [(['AUTHENTICATION'], True),
+                                                         (['AUTHENTICATION', 'TELEPHONY'], True),
+                                                         ([], True),
+                                                         (['banana'], 'banana'),
+                                                         (['AUTHENTICATION', 'TELEPONY'], 'TELEPONY')])
+def test_validate_request_order_array(log_type_list, expected_res):
+    """
+    Given:
+        A list of log types from the user.
+    When:
+        calling a command.
+    Then:
+        Validate that the log types are spelled correctly.
+    """
+    assert expected_res == validate_request_order_array(log_type_list)

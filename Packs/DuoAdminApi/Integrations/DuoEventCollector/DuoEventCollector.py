@@ -4,6 +4,7 @@ import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 from CommonServerPython import *
 
+
 VENDOR = "duo"
 PRODUCT = "duo"
 
@@ -24,6 +25,9 @@ class Params(BaseModel):
     mintime: dict
     limit: str = '1000'
     retries: str = Field(default='5')
+    host: str
+    integration_key: str
+    secret_key: dict
 
     def set_next_offset_value(self, mintime, log_type: LogType) -> None:
         self.mintime[log_type] = mintime
@@ -35,10 +39,10 @@ class Client:
     """
 
     def __init__(self, params: Params):
-        self.params = params.get('params')
-        self.admin_api = create_api_call(params.get('host'),
-                                         params.get('integration_key'),
-                                         (params.get('secret_key')).get('password'))
+        self.params = params
+        self.admin_api = create_api_call(self.params.host,
+                                         self.params.integration_key,
+                                         str(self.params.secret_key.get('password')))
 
     def call(self, request_order: list) -> tuple:
         retries = int(self.params.retries)
@@ -138,7 +142,8 @@ class GetEvents:
     """
     A class to handle the flow of the integration
     """
-    def __init__(self, client: Client, request_order=None) -> None:  # pragma: no cover
+
+    def __init__(self, client: Client, request_order=None) -> None:
         if request_order is None:
             request_order = []
         self.client = client
@@ -250,7 +255,15 @@ def parse_mintime(last_run) -> tuple:
     return last_run_v1, last_run_v2
 
 
-def main():  # pragma: no cover
+def validate_request_order_array(logs_type_array):
+    """Validates that all the inputs of the log_type_array are valid."""
+    for value in logs_type_array:
+        if value not in [LogType.ADMINISTRATION, LogType.AUTHENTICATION, LogType.TELEPHONY]:
+            return value
+    return True
+
+
+def main():
     try:
         demisto_params = demisto.params() | demisto.args()
 
@@ -258,12 +271,20 @@ def main():  # pragma: no cover
 
         logs_type_array = demisto_params.get('logs_type_array',
                                              f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}')
+        logs_type_array = [log_type.upper() for log_type in logs_type_array]
         request_order = last_run.get('request_order', logs_type_array.split(','))
+        if unvalid_log_type := validate_request_order_array(request_order) is not True:
+            DemistoException(f'One of the vales for logs_type_array is unvlid the value is {unvalid_log_type}')
+
         demisto.debug(f'The request order is : {request_order}')
 
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
-            last_run = after.timestamp()
+            if after is not None:
+                last_run = after.timestamp()
+            else:
+                DemistoException('Please Check your "after" parameter is valid')
+
             v1_mintime, v2_mintime = parse_mintime(last_run)
             last_run = {LogType.AUTHENTICATION.value: {'min_time': v2_mintime, 'next_offset': []},
                         LogType.ADMINISTRATION.value: v1_mintime,
@@ -272,8 +293,7 @@ def main():  # pragma: no cover
             last_run = last_run['after']
 
         demisto.debug(f'The last run is : {last_run}')
-        demisto_params['params'] = Params(**demisto_params, mintime=last_run)
-        client = Client(demisto_params)
+        client = Client(Params(**demisto_params, mintime=last_run))
 
         get_events = GetEvents(client, request_order)
 
