@@ -8933,25 +8933,25 @@ def test_replace_spaces_in_credential(credential, expected):
 
 TEST_RESPONSE_TO_CONTEXT_DATA = [
     (
-        {"id": "111"}, {"ID": "111"}
+        {"id": "111"}, {"ID": "111"}, {}
     ),
     (
-        {"test": [1]}, {"Test": [1]}
+        {"test": [1]}, {"Test": [1]}, {}
     ),
     (
-        {"test1": [{'test2': "val"}]}, {"Test1": [{'Test2': "val"}]}
+        {"test1": [{'test2': "val"}]}, {"Test1": [{'Test2': "val"}]}, {}
     ),
     (
-        {"test1": {'test2': "val"}}, {"Test1": {'Test2': "val"}}
+        {"test1": {'test2': "val"}}, {"Test1": {'Test2': "val"}}, {}
     ),
     (
-        [{"test1": {'test2': "val"}}], [{"Test1": {'Test2': "val"}}]
+        [{"test1": {'test2': "val"}}], [{"Test1": {'Test2': "val"}}], {}
     ),
     (
-        "test", "test"
+        "test", "test", {}
     ),
     (
-        {"test_func": "test"}, {"TestFunc": "test"}
+        {"test_func": "test"}, {"TestFunc": "test"}, {}
     ),
     (
         {"testid": "test"}, {"TestID": "test"}, {"testid": "TestID"}
@@ -8964,7 +8964,7 @@ TEST_RESPONSE_TO_CONTEXT_DATA = [
 
 
 @pytest.mark.parametrize('response, expected_results, user_predefiend_keys', TEST_RESPONSE_TO_CONTEXT_DATA)
-def test_response_to_context(response, expected_results, user_predefiend_keys=None):
+def test_response_to_context(response, expected_results, user_predefiend_keys):
     """
     Given:
         A response and user_predefiend_keys dict.
@@ -8996,4 +8996,4 @@ def test_response_to_context(response, expected_results, user_predefiend_keys=No
         Case 9: Should change the first key according to the user_predefiend_keys dict,
                 the second key according to predefined_keys, and the third regularly.
     """
-    assert response_to_context(response) == expected_results
+    assert response_to_context(response, user_predefiend_keys) == expected_results
