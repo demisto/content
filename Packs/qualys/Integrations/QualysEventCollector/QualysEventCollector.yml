@@ -33,6 +33,12 @@ configuration:
   name: first_fetch
   required: true
   type: 0
+- display: Host Detections Fetch Interval in minutes
+  additionalinfo: Time between fetches of host detections (for example 12 hours, 60 minutes, etc).
+  name: host_detections_fetch_interval
+  required: true
+  defaultvalue: 12 hours
+  type: 0
 description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys Event Collector
 name: QualysEventCollector
@@ -61,9 +67,35 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets events from Qualys.
+    description: Gets activity logs from Qualys.
     execution: false
-    name: qualys-get-events
+    name: qualys-get-activity-logs
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+        - 'true'
+        - 'false'
+      required: true
+    - default: false
+      description: Maximum results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Date to return results from.
+      isArray: false
+      name: vm_scan_date_after
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets host detections from Qualys.
+    execution: false
+    name: qualys-get-host-detections
   dockerimage: demisto/python3:3.10.10.49934
   isfetchevents: true
   runonce: false
