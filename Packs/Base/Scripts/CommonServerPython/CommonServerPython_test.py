@@ -8952,15 +8952,22 @@ TEST_RESPONSE_TO_CONTEXT_DATA = [
     ),
     (
         {"test_func": "test"}, {"TestFunc": "test"}
+    ),
+    (
+        {"testid": "test"}, {"TestID": "test"}, {"testid": "TestID"}
+    ),
+    (
+        {"testid": "test", "id": "test_id", "test": "test_val"}, {"TestID": "test", "ID": "test_id", "Test": "test_val"},
+        {"testid": "TestID"}
     )
 ]
 
 
-@pytest.mark.parametrize('response, expected_results', TEST_RESPONSE_TO_CONTEXT_DATA)
-def test_response_to_context(response, expected_results):
+@pytest.mark.parametrize('response, expected_results, user_predefiend_keys', TEST_RESPONSE_TO_CONTEXT_DATA)
+def test_response_to_context(response, expected_results, user_predefiend_keys=None):
     """
     Given:
-        A response
+        A response and user_predefiend_keys dict.
         Case 1: a response dict with a key "id".
         Case 2: a response dict with a list as a value.
         Case 3: a response dict with a list of dicts as a value.
@@ -8968,6 +8975,12 @@ def test_response_to_context(response, expected_results):
         Case 5: a response list.
         Case 6: a response string.
         Case 7: a response dict with a key with underscore.
+        Case 8: a response dict and a user_predefiend_keys dict,
+                where the key of the response dict is in the user_predefiend_keys dict.
+        Case 9: a response dict with 3 keys and a user_predefiend_keys dict,
+                where one key of the response dict is in the user_predefiend_keys dict.
+                where one key of the response dict is in the predefined_keys dict.
+                where one key of the response is not in any predefined dict.
     When:
         Running response_to_context function.
     Then:
@@ -8979,5 +8992,8 @@ def test_response_to_context(response, expected_results):
         Case 5: Should modify the dict inside the list.
         Case 6: Should return the input as is.
         Case 7: Should remove the underscore and capitalize the first letters of both words.
+        Case 8: Should change the key according to the user_predefiend_keys dict.
+        Case 9: Should change the first key according to the user_predefiend_keys dict,
+                the second key according to predefined_keys, and the third regularly.
     """
     assert response_to_context(response) == expected_results
