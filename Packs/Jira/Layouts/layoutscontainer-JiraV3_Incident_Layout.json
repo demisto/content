@@ -502,27 +502,18 @@
                         "y": 8
                     },
                     {
-                        "displayType": "ROW",
                         "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-field-changed-caseinfoid-27ad88f0-dd80-11ed-81e2-81334dc9b698",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "jiraattachments",
-                                "height": 22,
-                                "id": "387864c0-dd80-11ed-81e2-81334dc9b698",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "i": "caseinfoid-field-changed-caseinfoid-85f5a250-f4bc-11ed-a4d4-2da8963fb242",
+                        "items": [],
                         "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Attachments",
+                        "query": "JiraV3ConvertAttachmentsToTable",
+                        "queryType": "script",
                         "static": false,
+                        "type": "dynamic",
                         "w": 1,
                         "x": 0,
                         "y": 4
@@ -1491,8 +1482,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
-    "description": "",
-    "marketplaces": [
-        "xsoar"
-    ]
+    "description": ""
 }

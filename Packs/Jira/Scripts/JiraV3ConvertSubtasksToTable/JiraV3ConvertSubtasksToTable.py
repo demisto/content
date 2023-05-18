@@ -37,7 +37,7 @@ def main():  # pragma: no cover
         ):
             return_results(convert_to_table(context))
         else:
-            raise DemistoException('No data to present')
+            return CommandResults(readable_output='No data to present')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

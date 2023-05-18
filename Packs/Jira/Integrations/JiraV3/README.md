@@ -1,5 +1,5 @@
 Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both on-prem, and cloud instances.
-This integration was integrated and tested with: Jira Cloud V3 (for Cloud), Jira Software (for Cloud), Jira Server 9.6.0 (for OnPrem), Jira Agile 9.6.0 (for OnPrem)
+This integration was integrated and tested with: Jira Cloud Platform V3 (for Cloud), Jira Software Cloud (for Cloud), Jira Server Platform 9.6.0 (for OnPrem), Jira Software Server 9.6.0 (for OnPrem)
 
 Some changes have been made that might affect your existing content.
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-atlassian-jira-v3).
@@ -130,7 +130,10 @@ If `Fetch attachments` is enabled, The fetched incidents will include the attach
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-**Notes**: For OnPrem, all the commands use the **WRITE** scope, for Cloud, the required scopes for each command will be mentioned under the name of the command.
+**Notes**:
+
+1. For OnPrem, all the commands use the **WRITE** scope, for Cloud, the required scopes for each command will be mentioned under the name of the command.
+2. For the commands that are shared between Jira V2 and V3, we still support the arguments from V2, but are configured to be hidden, and are prioritized when supplied to the commands, to not break backwards compatibility.
 
 ### jira-issue-get-attachment
 
@@ -229,6 +232,8 @@ Scope: `read:jira-work`
 | --- | --- | --- |
 | issue_id | The issue ID (Issue ID or key is required). | Optional |
 | issue_key | The issue key (Issue ID or key is required). | Optional |
+| issueId | Deprecated. Please use issue_id or issue_key. | Optional |
+| field | Deprecated. Please use fields. | Optional |
 | fields | The fields to retrieve from the issue. For example field="customfield_164,labels". | Optional |
 
 #### Context Output
@@ -551,6 +556,12 @@ Scope: `read:jira-work`
 
 #### Human Readable Output
 
+>### Issue XSOAR-19
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | 2023-03-01T11:59:18.202+0200 | Example User(<example@example.com>) | Dummy description |  | 21490 | Task | XSOAR-19 |  | Highest | XSOARJiraV3 | Example User(<example@example.com>) | To Do | something | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21490 |
+
 >### Issue XSOAR-18
 >
 >|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
@@ -747,7 +758,7 @@ Scope: `write:jira-work`
 | --- | --- | --- |
 | parent_issue_key | The parent issue key (if you're editing a sub-task). This argument is only relevant for Jira Cloud. | Optional |
 | parent_issue_id | The parent issue ID (if you're editing a sub-task). This argument is only relevant for Jira Cloud. | Optional |
-| action | Whether to append or rewrite the values. The default value is `rewrite`. Only the `labels`, and `components` arguments support the action append. Possible values are: append, rewrite. Default is rewrite. | Optional |
+| action | Whether to append or rewrite the values. The default value is `rewrite`. Only issue fields of type string or array support appending. If the field is of type string, then the new appended value will be: 'old value, new value', where they will be separated by a comma. Possible values are: append, rewrite. Default is rewrite. | Optional |
 | issueId | Deprecated. Please use issue_id or issue_key. | Optional |
 | issue_id | The issue ID (Issue ID or key is required). | Optional |
 | issue_key | The issue key (Issue ID or key is required). | Optional |
@@ -960,9 +971,9 @@ Scope: `read:jira-work`
 | issue_key | The issue key (Issue ID or key is required). | Optional |
 | headers | Displays the headers in human readable format. | Optional |
 | get_attachments | If "true", retrieves the issue attachments and downloads the file to the War Room. Possible values are: true, false. Default is false. | Optional |
-| getAttachments | Deprecated. Please use get_attachments. Possible values are: true, false. Default is false. | Optional |
+| getAttachments | Deprecated. Please use get_attachments. Possible values are: true, false. | Optional |
 | expand_links | If "true", expands the issue links (the linked issues and subtasks). Possible values are: true, false. Default is false. | Optional |
-| expandLinks | Deprecated. Please use expand_links. Possible values are: true, false. Default is false. | Optional |
+| expandLinks | Deprecated. Please use expand_links. Possible values are: true, false. | Optional |
 
 **Note**: When supplying the `all` value to the `fields` argument, then all the issue fields will be returned, and every issue field that was not parsed by the code, will be parsed in the following format: `{customfield_1: SOME_NESTED_VALUE}` -> `{customfield_1: {issueFieldDisplayName: THE_DISPLAY_NAME_OF_THE_FIELD, rawData: SOME_NESTED_VALUE}}`
 
@@ -1019,37 +1030,6 @@ Scope: `read:jira-work`
             "Name": "dummy_attachment_content.txt",
             "Size": 13264,
             "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
-        },
-        {
-            "EntryID": "10847@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
-            "Extension": "txt",
-            "Info": "text/plain; charset=utf-8",
-            "Name": "dummy_attachment_content.txt",
-            "Size": 13264,
-            "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
-        },
-        {
-            "EntryID": "10848@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
-            "Info": "text/plain",
-            "Name": "dummy_file_name",
-            "Size": 13,
-            "Type": "ASCII text, with no line terminators"
-        },
-        {
-            "EntryID": "10849@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
-            "Extension": "pdf",
-            "Info": "application/pdf",
-            "Name": "dummy.pdf",
-            "Size": 13264,
-            "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
-        },
-        {
-            "EntryID": "10850@33e912c0-76a9-4a08-8cc6-1b20b1980b20",
-            "Extension": "pdf",
-            "Info": "application/pdf",
-            "Name": "dummy.pdf",
-            "Size": 13264,
-            "Type": "PDF document, version 1.4, 1 pages (zip deflate encoded)"
         }
     ],
     "Ticket": [
@@ -1066,30 +1046,6 @@ Scope: `read:jira-work`
                     "created": "2023-05-07T20:00:59.121+0300",
                     "filename": "dummy_attachment_content.txt",
                     "id": "16504",
-                    "size": 13264
-                },
-                {
-                    "created": "2023-05-04T21:11:51.286+0300",
-                    "filename": "dummy_attachment_content.txt",
-                    "id": "16475",
-                    "size": 13264
-                },
-                {
-                    "created": "2023-04-30T20:19:42.760+0300",
-                    "filename": "dummy_file_name",
-                    "id": "16467",
-                    "size": 13
-                },
-                {
-                    "created": "2023-05-04T21:32:57.042+0300",
-                    "filename": "dummy.pdf",
-                    "id": "16478",
-                    "size": 13264
-                },
-                {
-                    "created": "2023-05-04T21:29:49.246+0300",
-                    "filename": "dummy.pdf",
-                    "id": "16477",
                     "size": 13264
                 }
             ],
@@ -1122,102 +1078,6 @@ Scope: `read:jira-work`
                 "rawData": {
                     "isWatching": true,
                     "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-35/watchers",
-                    "watchCount": 1
-                }
-            }
-        },
-        {
-            "Assignee": "",
-            "Attachments": [],
-            "Components": [],
-            "Created": "2023-04-10T06:55:43.409+0300",
-            "Creator": "Example User(example@example.com)",
-            "Description": "",
-            "DueDate": "",
-            "Id": "21538",
-            "Key": "PROJECTKEY-70",
-            "Labels": [],
-            "LastSeen": "",
-            "LastUpdate": "2023-04-13T00:13:02.152+0300",
-            "Priority": "Medium",
-            "ProjectName": "Company Snoozing App",
-            "Status": "Selected for Development",
-            "Summary": "Test Test",
-            "customfield_10019": {
-                "issueFieldDisplayName": "Rank",
-                "rawData": "0|i00kpz:"
-            },
-            "watches": {
-                "issueFieldDisplayName": "Watchers",
-                "rawData": {
-                    "isWatching": true,
-                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-70/watchers",
-                    "watchCount": 1
-                }
-            }
-        },
-        {
-            "Assignee": "Example User(example@example.com)",
-            "Attachments": [],
-            "Components": [
-                "dummy-comp",
-                "New-Component"
-            ],
-            "Created": "2023-05-04T21:48:09.978+0300",
-            "Creator": "Example User(example@example.com)",
-            "Description": "Dummy description",
-            "DueDate": "2023-01-01",
-            "Id": "21583",
-            "Key": "PROJECTKEY-114",
-            "Labels": [
-                "label1",
-                "label2"
-            ],
-            "LastSeen": "2023-05-08T17:25:12.597+0300",
-            "LastUpdate": "2023-05-04T21:48:10.514+0300",
-            "Priority": "Highest",
-            "ProjectName": "Company Snoozing App",
-            "Status": "Backlog",
-            "Summary": "Dummy Summary",
-            "customfield_10019": {
-                "issueFieldDisplayName": "Rank",
-                "rawData": "0|i00ktr:"
-            },
-            "watches": {
-                "issueFieldDisplayName": "Watchers",
-                "rawData": {
-                    "isWatching": true,
-                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/PROJECTKEY-114/watchers",
-                    "watchCount": 1
-                }
-            }
-        },
-        {
-            "Assignee": "",
-            "Attachments": [],
-            "Components": [],
-            "Created": "2023-02-02T17:59:40.530+0200",
-            "Creator": "Example User(example@example.com)",
-            "Description": "",
-            "DueDate": "",
-            "Id": "21431",
-            "Key": "TSTPRD-6",
-            "Labels": [],
-            "LastSeen": "2023-05-07T19:04:54.053+0300",
-            "LastUpdate": "2023-05-07T19:47:49.296+0300",
-            "Priority": "Medium",
-            "ProjectName": "TestProd",
-            "Status": "To Do",
-            "Summary": "Hire UX designers DO NOT DELETE OR MOVE",
-            "customfield_10019": {
-                "issueFieldDisplayName": "Rank",
-                "rawData": "0|i00kky:zzzr"
-            },
-            "watches": {
-                "issueFieldDisplayName": "Watchers",
-                "rawData": {
-                    "isWatching": true,
-                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/TSTPRD-6/watchers",
                     "watchCount": 1
                 }
             }
@@ -1264,6 +1124,12 @@ Scope: `read:jira-work`
 ```
 
 #### Human Readable Output
+
+>### Issue COMPANYSA-35
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | hi | 2023-05-24 | 21487 | Story | COMPANYSA-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | In Progress | XSOAR Meeting, Ammended summary | https:<span>//</span>api.atlassian.com/ex/jira/15d0e445-bd38-483c-b3fd-d15f562f369b/rest/api/3/issue/21487 |
 
 >### Issue XSOAR-19
 >
@@ -2931,6 +2797,14 @@ Add a new custom field and add it to the incident type&#39;s layout:
 ## Breaking changes from the previous version of this integration - Atlassian Jira V3
 
 The following sections list the changes in this version.
+
+### Commands
+
+#### The following commands were removed in this version
+
+* *jira-get-specific-field* - This command was removed, and its functionality is implemented using the *fields* argument in the *jira-get-issue* command.
+
+* *jira-append-to-field* - This command was removed, and its functionality is implemented using the *action* argument when supplying it the value `append` in the *jira-edit-issue* command.
 
 ### Arguments
 

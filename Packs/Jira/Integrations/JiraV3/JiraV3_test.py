@@ -1,5 +1,6 @@
 import io
 import json
+from more_itertools import side_effect
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -473,13 +474,39 @@ class TestJiraEditIssueCommand:
         """
         from JiraV3 import edit_issue_command
         client = jira_base_client_mock()
-        args = {'issue_key': 'dummy_key', 'description': 'dummy description', 'project_key': 'dummy_project_key',
-                'project_id': 'dummy_project_id',
-                'labels': 'label1,label2', 'components': 'comp1,comp2',
-                'customfield_1': 'dummy custom field', 'action': 'append'}
-        expected_issue_fields = {'update': {'labels': [{'add': 'label1'}, {'add': 'label2'}], 'components': [
-            {'add': {'name': 'comp1'}}, {'add': {'name': 'comp2'}}]}}
-        mocker.patch.object(client, 'get_issue', return_value={})
+        args = {'issue_key': 'dummy_key', 'components': 'comp1,comp2', 'labels': 'label1,label2',
+                'summary': 'appended summary', 'action': 'append'}
+        expected_issue_fields = {'fields': {'components':
+                                            [{'name': 'current-comp1'}, {'name': 'current-comp2'},
+                                             {'name': 'comp1'}, {'name': 'comp2'}],
+                                            'labels': ['current-label1', 'current-label2', 'label1', 'label2'],
+                                            'summary': 'current summary, appended summary'}}
+        mocker.patch.object(client, 'get_issue', side_effect=[{
+            'fields': {'components': [{'name': 'current-comp1'}, {'name': 'current-comp2'}],
+                       'labels': ['current-label1', 'current-label2'], 'summary': 'current summary'}
+        }, {}])
+        edit_issue_mocker = mocker.patch.object(client, 'edit_issue', return_value=requests.Response())
+        edit_issue_command(client=client, args=args)
+        assert expected_issue_fields == edit_issue_mocker.call_args[1].get('json_data')
+
+    def test_create_custom_issue_fields_for_update_with_action_append(self, mocker):
+        """
+        Given:
+            - A Jira client, and custom issue fields (supplied using the issue_json argument) to edit the Jira issue,
+            with the append action.
+        When
+            - Calling the edit issue command.
+        Then
+            - Validate that the edit_issue method (which is in charge of calling the endpoint with the relevant data
+            to edit the issue) was called with the correct json data.
+        """
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        args = {'issue_key': 'dummy_key',
+                'issue_json': '{"fields": {"customfield_1": "new data", "customfield_2": ["new data"]}}', 'action': 'append'}
+        expected_issue_fields = {'fields': {'customfield_1': 'old data, new data', 'customfield_2': ['old data', 'new data']}}
+        mocker.patch.object(client, 'get_issue', side_effect=[{
+            'fields': {'customfield_1': 'old data', 'customfield_2': ['old data']}}, {}])
         edit_issue_mocker = mocker.patch.object(client, 'edit_issue', return_value=requests.Response())
         edit_issue_command(client=client, args=args)
         assert expected_issue_fields == edit_issue_mocker.call_args[1].get('json_data')
@@ -606,7 +633,7 @@ class TestJiraEditCommentCommand:
 
 
 class TestJiraListIssueFieldsCommand:
-    @pytest.mark.parametrize('pagination_args', [
+    @ pytest.mark.parametrize('pagination_args', [
         ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
     ])
     def test_get_id_offset_command(self, mocker, pagination_args):
@@ -635,7 +662,7 @@ class TestJiraListIssueFieldsCommand:
 
 
 class TestJiraIssueToBacklogCommand:
-    @pytest.mark.parametrize('args', [
+    @ pytest.mark.parametrize('args', [
         ({'rank_before_issue': 'key1', 'issues': 'issue1,issue2'}), ({'rank_after_issue': 'key1', 'issues': 'issue1,issue2'})
     ])
     def test_using_rank_without_board_id_error(self, args):
@@ -1428,6 +1455,34 @@ class TestJiraUpdateRemoteSystem:
 
 
 class TestJiraGetRemoteData:
+    def test_entries_returned_when_configured_not_to_return(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command, and
+            the user configured not to return comments nor attachments
+        Then
+            - Validate that no entries are returned
+        """
+        from JiraV3 import (get_updated_remote_data, ATTACHMENT_MIRRORED_FROM_XSOAR)
+        attachments_entries = [{'File': 'dummy_file_name', 'FileID': 'id1'},
+                               {'File': f'dummy_file_name{ATTACHMENT_MIRRORED_FROM_XSOAR}', 'FileID': 'id2'}]
+        comments_entries = [
+            {'Comment': 'Comment 1', 'Updated': '2023-01-01', 'UpdatedUser': 'User 1'},
+            {'Comment': 'Comment 2', 'Updated': '2023-05-01', 'UpdatedUser': 'User 2'},
+            {'Comment': 'Comment 3', 'Updated': '2023-05-01', 'UpdatedUser': 'User 3'}, ]
+        client = jira_base_client_mock()
+        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=attachments_entries)
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
+        updated_incident: Dict[str, Any] = {}
+        parsed_entries = get_updated_remote_data(client=client, issue={}, updated_incident=updated_incident, issue_id='1234',
+                                                 mirror_resolved_issue=False, attachment_tag_from_jira='attachment from jira',
+                                                 comment_tag_from_jira='', user_timezone_name='',
+                                                 incident_modified_date=None,
+                                                 fetch_comments=False, fetch_attachments=False)
+        assert parsed_entries == []
+
     def test_get_attachment_entries(self, mocker):
         """
         Given:
@@ -1450,7 +1505,8 @@ class TestJiraGetRemoteData:
         parsed_entries = get_updated_remote_data(client=client, issue={}, updated_incident=updated_incident, issue_id='1234',
                                                  mirror_resolved_issue=False, attachment_tag_from_jira='attachment from jira',
                                                  comment_tag_from_jira='', user_timezone_name='',
-                                                 incident_modified_date=None)
+                                                 incident_modified_date=None,
+                                                 fetch_comments=False, fetch_attachments=True)
         expected_extracted_attachments = [{"path": "id1", "name": "dummy_file_name"},
                                           {"path": "id2", "name": "dummy_file_name_mirrored_from_xsoar"}]
         expected_parsed_entries = [{"File": "dummy_file_name", "FileID": "id1", "Tags": ["attachment from jira"]}]
@@ -1483,10 +1539,11 @@ class TestJiraGetRemoteData:
         parsed_entries = get_updated_remote_data(client=client, issue={}, updated_incident=updated_incident, issue_id='1234',
                                                  mirror_resolved_issue=False, attachment_tag_from_jira='',
                                                  comment_tag_from_jira='comment from jira', user_timezone_name=user_timezone,
-                                                 incident_modified_date=dateparser.parse('2023-04-01'))
+                                                 incident_modified_date=dateparser.parse('2023-04-01'),
+                                                 fetch_comments=True, fetch_attachments=False)
         expected_extracted_attachments = [
-            {"Comment": "Comment 1 Mirrored from Cortex XSOAR", "Updated": "2023-01-01", "UpdatedUser": "User 1"},
-            {"Comment": "Comment 2 Mirrored from Cortex XSOAR", "Updated": "2023-05-01", "UpdatedUser": "User 2"},
+            {"Comment": f'Comment 1 {COMMENT_MIRRORED_FROM_XSOAR}', "Updated": "2023-01-01", "UpdatedUser": "User 1"},
+            {"Comment": f'Comment 2 {COMMENT_MIRRORED_FROM_XSOAR}', "Updated": "2023-05-01", "UpdatedUser": "User 2"},
             {"Comment": "Comment 3", "Updated": "2023-05-01", "UpdatedUser": "User 3"}]
         expected_parsed_entries = [
             {"Type": 1, "Contents": "Comment 3\nJira Author: None",
@@ -1521,7 +1578,7 @@ class TestJiraGetRemoteData:
         parsed_entries = get_updated_remote_data(client=client, issue=issue, updated_incident=issue, issue_id='1234',
                                                  mirror_resolved_issue=True, attachment_tag_from_jira='',
                                                  comment_tag_from_jira=' from jira', user_timezone_name='',
-                                                 incident_modified_date=None)
+                                                 incident_modified_date=None, fetch_comments=False, fetch_attachments=False)
         if should_be_closed:
             close_reason = "Issue was marked as \"Resolved\", or status was changed to \"Done\""
             closed_entry = [{"Type": 1, "Contents": {"dbotIncidentClose": True,
@@ -1555,7 +1612,8 @@ class TestJiraGetRemoteData:
         mocker.patch('JiraV3.get_updated_remote_data', return_value=expected_parsed_entries)
         remote_data_response = get_remote_data_command(client=client, args={'id': '1234', 'lastUpdate': '2023-01-01'},
                                                        attachment_tag_from_jira='',
-                                                       comment_tag_from_jira='', mirror_resolved_issue=True)
+                                                       comment_tag_from_jira='', mirror_resolved_issue=True,
+                                                       fetch_comments=True, fetch_attachments=True)
         assert remote_data_response.entries == expected_parsed_entries
 
 

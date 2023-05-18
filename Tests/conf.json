@@ -1760,12 +1760,6 @@
             "is_mockable": false
         },
         {
-            "integrations": "Jira V3",
-            "playbookID": "JiraV3 Test",
-            "timeout": 500,
-            "is_mockable": false
-        },
-        {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
         },
