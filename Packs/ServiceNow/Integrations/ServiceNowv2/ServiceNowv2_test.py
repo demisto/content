@@ -123,12 +123,9 @@ def test_split_fields():
     assert expected_custom_sys_params == split_fields(
         "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001")
 
-    try:
+    with pytest.raises(Exception) as err:
         split_fields('a')
-    except Exception as err:
-        assert "must contain a '=' to specify the keys and values" in str(err)
-        return
-    assert False
+    assert "must contain a '=' to specify the keys and values" in str(err)
 
 
 def test_split_fields_with_special_delimiter():
@@ -147,12 +144,9 @@ def test_split_fields_with_special_delimiter():
     expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text<;/a>"}
     assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text<;/a>", ',')
 
-    try:
+    with pytest.raises(Exception) as e:
         split_fields('a')
-    except Exception as err:
-        assert "must contain a '=' to specify the keys and values" in str(err)
-        return
-    assert False
+    assert "must contain a '=' to specify the keys and values" in str(e)
 
 
 def test_convert_to_notes_result():
@@ -1117,10 +1111,9 @@ def test_test_module(mocker):
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
 
-    try:
+    with pytest.raises(Exception) as e:
         module(client)
-    except Exception as e:
-        assert 'Test button cannot be used when using OAuth 2.0' in e.args[0]
+    assert 'Test button cannot be used when using OAuth 2.0' in str(e)
 
 
 def test_oauth_test_module(mocker):
@@ -1141,10 +1134,9 @@ def test_oauth_test_module(mocker):
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
-    try:
+    with pytest.raises(Exception) as e:
         oauth_test_module(client)
-    except Exception as e:
-        assert 'command should be used only when using OAuth 2.0 authorization.' in e.args[0]
+    assert 'command should be used only when using OAuth 2.0 authorization.' in str(e)
 
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
@@ -1171,10 +1163,9 @@ def test_oauth_login_command(mocker):
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
-    try:
+    with pytest.raises(Exception) as e:
         login_command(client, args={'username': 'username', 'password': 'password'})
-    except Exception as e:
-        assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in e.args[0]
+    assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in str(e)
 
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',

@@ -2176,7 +2176,7 @@ def fetch_incidents(client: Client) -> list:
                 continue
             parse_dict_ticket_fields(client, ticket)
         except Exception:
-            pass
+            demisto.debug(f"failed parsing timestamp {ticket[client.timestamp_field]}) or the ticket fields")
 
         incidents.append({
             'name': f"ServiceNow Incident {ticket.get(client.incident_name)}",
