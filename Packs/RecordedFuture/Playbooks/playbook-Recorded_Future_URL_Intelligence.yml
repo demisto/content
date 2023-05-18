@@ -240,7 +240,7 @@ tasks:
       recordedfutureriskrules:
         simple: ${RecordedFuture.URL.concatRules}
       value:
-        simple: ${RecordedFuture.URL.name}
+        simple: ${inputs.URL}
     separatecontext: false
     view: |-
       {
