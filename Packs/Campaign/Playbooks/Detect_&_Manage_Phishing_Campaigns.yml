@@ -1194,7 +1194,7 @@ inputs:
   value:
     simple: "2"
   required: false
-  description: The minimum number of unique recipients of similar email incidents to consider as a campaign. as a campaign.
+  description: The minimum number of unique recipients of similar email incidents to consider as a campaign. 
   playbookInputQuery:
 - key: fieldsToDisplay
   value:
