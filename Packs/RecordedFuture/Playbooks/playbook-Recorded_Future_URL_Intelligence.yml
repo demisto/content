@@ -48,9 +48,6 @@ tasks:
       - "24"
       "yes":
       - "35"
-    scriptarguments:
-      value:
-        simple: inputs.url
     separatecontext: false
     conditions:
     - label: "yes"
