@@ -234,7 +234,7 @@ tasks:
       recordedfutureriskrules:
         simple: ${RecordedFuture.URL.rules}
       value:
-        simple: ${RecordedFuture.URL.name}
+        simple: ${inputs.URL}
     separatecontext: false
     view: |-
       {
