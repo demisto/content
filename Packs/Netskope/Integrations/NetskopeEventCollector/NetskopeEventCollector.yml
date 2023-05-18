@@ -31,7 +31,7 @@ configuration:
     - v2
 - additionalinfo: 'For API version v1, the first fetch can only be: 60 Minutes, 24
     Hours, 7 days, 30 days, 60 days and 90 days.'
-  defaultvalue: 7 days
+  defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
   name: first_fetch
