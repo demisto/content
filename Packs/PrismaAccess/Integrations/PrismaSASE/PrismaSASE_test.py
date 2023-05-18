@@ -5,7 +5,7 @@ Tests module for Prisma SASE integration.
 import json
 import pytest
 import CommonServerPython
-
+from CommonServerPython import DemistoException
 from PrismaSASE import Client
 
 
@@ -89,6 +89,24 @@ def test_list_security_rules_command(mocker, args):
     result = list_security_rules_command(client, args)
     assert result.outputs_prefix == 'PrismaSase.SecurityRule'
     assert result.outputs == mock_response.get('data')
+
+
+def test_list_security_rules_command__when_object_not_found(mocker):
+    """
+    Given:
+        - A security rule ID that does not exist in the API.
+    When:
+        - Running list-security-rules command.
+    Then:
+        - Ensure the command returns an error message as a human-readable output.
+    """
+    from PrismaSASE import list_security_rules_command
+    client = create_mocked_client()
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'list_security_rules', side_effect=DemistoException("Error in API call [404]"))
+    with pytest.raises(DemistoException):
+        res = list_security_rules_command(client, {"id": "1234567"})
+        assert res == "The item you're searching for does not exist within the API."
 
 
 @pytest.mark.parametrize(
