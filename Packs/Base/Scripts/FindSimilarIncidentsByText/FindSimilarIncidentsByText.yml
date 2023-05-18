@@ -76,6 +76,7 @@ args:
   required: false
   secret: false
 comment: |-
+  Deprecated. Use DBotFindSimilarIncidents instead.
   Find similar incidents by text comparison - the algorithm based on TF-IDF method.
   To read more about this method: https://en.wikipedia.org/wiki/Tf%E2%80%93idf
 
@@ -116,3 +117,4 @@ runonce: true
 tests:
 - No test
 fromversion: 5.0.0
+deprecated: true
