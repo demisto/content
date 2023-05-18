@@ -82,13 +82,13 @@ class Client(BaseClient):
                                   params=params,
                                   resp_type='response')
 
-    def query_log(self, log_id: str, params: dict) -> Response:
+    def query_log(self, log_id: str, params: dict) -> dict:
         return self._http_request(method='GET',
                                   url_suffix=f'log_search/query/logs/{log_id}',
                                   headers=self._headers,
                                   params=params)
 
-    def query_log_set(self, log_set_id: str, params: dict) -> Response:
+    def query_log_set(self, log_set_id: str, params: dict) -> dict:
         return self._http_request(method='GET',
                                   url_suffix=f'log_search/query/logsets/{log_set_id}',
                                   headers=self._headers,
@@ -631,7 +631,18 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
     return command_results
 
 
-def handle_query_log_results(client: Client, result):
+def handle_query_log_results(client: Client, result: dict) -> Tuple[list, list]:
+    """This function get the first result of the query, then handles if the query has in progress, and handle pagination.
+
+    Args:
+        client (Client): Rapid7 Client
+        result (dict): The first result of the query
+
+    Returns:
+        Tuple[list, list]:
+            data_for_readable_output: The data for the readable output was contains all the events
+            raw_responcse: The raw response from the all the requests that returned events
+    """
     data_for_readable_output = []
     raw_responcse = []
 
