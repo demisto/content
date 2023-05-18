@@ -1272,7 +1272,7 @@ def test_zoom_send_message_command(mocker):
         'to_channel': 'channel1',
         'at_items': [
             {
-                'at_contact': '"user2@example.com"',
+                'at_contact': 'user2@example.com',
                 'at_type': 1,
                 'start_position': 11,
                 'end_position': 16

@@ -243,6 +243,7 @@ class Client(Zoom_Client):
     def zoom_send_file(self, url_suffix: str, file_info, json_data):
 
         files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
+
         response = self.error_handled_http_request(
             method='POST',
             full_url=url_suffix,
@@ -253,15 +254,17 @@ class Client(Zoom_Client):
         return response
 
     def zoom_upload_file(self, url_suffix: str, file_info):
-
-        files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
-        response = self.error_handled_http_request(
-            method='POST',
-            full_url=url_suffix,
-            headers={'Authorization': f'Bearer {self.access_token}'},
-            files=files
-        )
-        return response
+        return self._http_request('POST',
+                                  headers={'Authorization': f'Bearer {self.access_token}'},
+                                  files=file_info,
+                                  full_url=url_suffix)
+        # response = self.error_handled_http_request(
+        #     method='POST',
+        #     full_url=url_suffix,
+        #     headers={'Authorization': f'Bearer {self.access_token}'},
+        #     files=files
+        # )
+        # return response
 
     def zoom_send_message(self, url_suffix: str, json_data):
         return self.error_handled_http_request(
@@ -1142,10 +1145,16 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     url_suffix = f'/chat/users/{user_id}/messages'
     uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
     zoom_file_id: List = []
+    demisto.debug(f'file id args {entry_ids}')
     for id in entry_ids:
         file_info = demisto.getFilePath(id)
-        res = client.zoom_upload_file(uplaod_file_url, file_info)
+        get_file_path_res = demisto.getFilePath(id)
+        file_path = get_file_path_res["path"]
+        file_data = {'file': open(file_path, 'rb')}
+        demisto.debug(f'file_info {file_info}')
+        res = client.zoom_upload_file(uplaod_file_url, file_data)
         zoom_file_id.append(res.get('id'))
+    demisto.debug('uplod the file without error')
     json_data_all = {
         "at_items": [
             {

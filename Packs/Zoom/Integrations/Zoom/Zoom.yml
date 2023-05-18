@@ -657,14 +657,22 @@ script:
       name: member_emails
       required: true
       isArray: true
-    - description: Type of member premissions
-      name: Who can add new channel members
+    - description: >
+        Who can add new channel members:
+        * 1 - All channel members can add new members.
+        * 2 - Only channel owner and administrators can add new members.
+        Note: This setting can only be modified by the channel owner.Default: 1 Allowed: 1┃2 
+      name: add_member_permissions
       required: false
       auto: PREDEFINED
       predefined:
       - All channel members can add
       - Only channel owner and admins can add
-    - description: The channel members' posting permissions
+    - description: > 
+        The channel members' posting permissions:
+        * 1 — All chat channel members can post to the channel.
+        * 2 — Only the channel owner and administrators can post to the channel.
+        * 3 — Only the channel owner, administrators and certain members can post to the channel.Default: 1 Allowed: 1┃2┃3
       name: posting_permissions
       required: false
       auto: PREDEFINED
@@ -680,10 +688,15 @@ script:
       - "false"
       defaultValue: true
       required: false
-    - description: The name of the channel.
+    - description: The name of the channel. Constraints Max 128 chars
       name: channel_name
       required: true
-    - description: The type of the channel.
+    - description: >
+        The type of the channel. The value can be one of the following:
+        1: Private channel. In this type of channel, members must be invited to join a channel.
+        2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization.
+        3: Public channel. Anyone can search for this channel and join the channel.
+        4: New chat. This is an instant channel which can be created by adding members to a new chat.Allowed: 1┃2┃3┃4
       name: channel_type
       required: true
       auto: PREDEFINED
@@ -694,22 +707,31 @@ script:
       - New chat
     outputs:
     - contextPath: Zoom.Channel.id
-      description: The ID of the created channel
+      description: the channel's unique identifier.
+      type: string
+    - contextPath: Zoom.Channel.jid
+      description: The channel JID.
       type: string
     - contextPath: Zoom.Channel.name
-      description: The name of the created channel
+      description: The channel name.
       type: string
     - contextPath: Zoom.Channel.type
-      description: created channel type
       type: string
+      description: > 
+          The type of the channel. The value can be one of the following:
+          1: Private channel. In this type of channel, members must be invited to join a channel.
+          2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization.
+          3: Public channel. Anyone can search for this channel and join the channel.
+          4: Group chat. This is an instant channel which can be created by adding members to a new chat.
+          Allowed: 1┃2┃3┃4
     - contextPath: Zoom.Channel.url
-      description: created channel url
+      description: The URL of the Zoom Chat channel.
       type: string
   - arguments:
-    - description: The channel ID  to delete
+    - description: Unique Identifier of a channel.
       name: channel_id
       required: true
-    - description: Zoom User id
+    - description: User Unique Identifier
       name: user_id
       required: true
     description: Deletes a specific Zoom channel
@@ -719,20 +741,28 @@ script:
     description: Update an existing channel in zoom account
     execution: true
     arguments:
-    - description: ID of the channel to be update
+    - description: The channel ID.
       name: channel_id
       required: true
-    - description: User id of user that channel is created for
+    - description: User unique identifier
       name: user_id
       required: true
-    - description: Type of member permissions
+    - description: >
+          Who can add new channel members:
+          * 1 - All channel members can add new members.
+          * 2 - Only channel owner and administrators can add new members.
+          Note: This setting can only be modified by the channel owner.Allowed: 1┃2
       name: add_member_permissions
       required: false
       auto: PREDEFINED
       predefined:
       - All channel members can add
       - Only channel owner and admins can add
-    - description: Posting permissions in the Channel
+    - description: > 
+        The channel members' posting permissions:
+        * 1 — All chat channel members can post to the channel.
+        * 2 — Only the channel owner and administrators can post to the channel.
+        * 3 — Only the channel owner, administrators and certain members can post to the channel.Allowed: 1┃2┃3
       name: posting_permissions
       required: false
       auto: PREDEFINED
@@ -740,7 +770,7 @@ script:
       - All members can post
       - Only the owner and admins can post
       - Only the owner, admins and certain members can post
-    - description: Whether existing channel members can view messages and files previously posted in the channel
+    - description: Whether new channel members can view messages and files previously posted in the channel.
       name: new_members_can_see_prev_msgs
       auto: PREDEFINED
       predefined:
@@ -748,45 +778,53 @@ script:
       - "false"
       defaultValue: true
       required: false
-    - description: The channel name
+    - description: A new name for the channel.
       name: channel_name
       required: false
     outputs: []
   - name: zoom-invite-to-channel
-    description: Invites members that are in a user's contact list to a channel.
+    description: >
+      Invites members that are in a user's contact list to a channel. A channel can have one or multiple members.
+      The maximum number of members that can be added at once with this API is 5.
     arguments:
     - name: channel_id
-      description: A channel ID.
+      description: Channel ID the channel's unique identifier.
       required: true
       type: string
-    - description: User id of user that channel is created for
+    - description: User unique identifier.
       name: user_id
       required: true
     - name: members
-      description: A members email to invited to the channel
+      description: The member's email address.
       required: true
       isArray: true
       type: string
     outputs:
     - contextPath: Zoom.Channel.ids
-      description: The users ID that invited to the channel
+      description: > 
+        The comma-separated user IDs of the members added to the channel. 
+        The user IDs of those who are not from the same account will be omitted from the list.
       type: string
     - contextPath: Zoom.Channel.added_at
-      description: The date and time of the invite
+      description: The date and time when the members are added to the channel.
+      type: string
+    - contextPath: Zoom.Channel.member_ids
+      description: The comma-separated member IDs of the members added to the channel.
       type: string
   - name: zoom-remove-from-channel
     description: Removes a member from a chat channel. A channel can have one or many members.
     arguments:
     - name: channel_id
-      description: A channel ID.
+      description: The unique identifier of the channel from where you would like to remove a member
       required: true
       type: string
     - name: user_id
-      description: A user ID.
+      description: User unique identifier
       required: true
       type: string
     - name: member_id
-      description: User id or email
+      description: > 
+          The email address or user ID or member ID of the member whom you would like to be remove from the channel.
       required: true
       isArray: false
       type: string
@@ -795,7 +833,7 @@ script:
     description: Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
     arguments:
     - name: to_channel
-      description: The channel ID of the channel to which to send the chat file..
+      description: The channel ID of the channel to which to send the chat file.
       required: false
       type: string
     - description: The user's ID.
@@ -811,50 +849,83 @@ script:
       type: string
     outputs: []
   - name: zoom-send-message
-    description: Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
+    description: Sends chat messages on Zoom to either an individual user who is in your contact list or to a channel of which you are a member. 
     arguments:
     - name: user_id
-      description: User ID
+      description: Unique identifier of the user.
       type: string
       required: true
     - name: at_contact
-      description: Email address of the contact
+      description: >
+        This field is required if the value of at_type field is set to 1.
+        Email address of the contact.
       required: false
       type: string
     - name: at_type
-      description: The type of mention
+      description: >
+        The type of mention. You can use one of the following values:
+        1: Mention a contact.
+        2: Mention "all" to notify everyone in the channel.
+        Allowed: 1┃2
       required: false
       type: string
+      auto: PREDEFINED
+      predefined:
+      - Mention a contact
+      - Mention "all" to notify everyone in the channel
     - name: end_position
-      description: The end position of the mention
+      description: The end position of the mention.
       required: false
       type: string
     - name: start_position
-      description: The start position of the mention
+      description: The start position of the mention("@") in the message string.
       required: false
       type: string
     - name: rt_start_position
-      description: Start position of the rich text
+      description: The start position of the rich text in the message string.
       required: false
       type: string
     - name: rt_end_position
-      description: End position of the rich text
+      description: The end position of the rich text.
       required: false
       type: string
     - name: format_type
-      description: The type of rich text
+      description: 
+        The type of rich text. There is some special logic which is the same as on the Zoom client.
+        1. AddLink's position can not cross multi lines.
+        2. A BulletedList will clear the formatting of a NumberedList, Quote, or LeftIndent after it.
+        3. Likewise, a NumberedList will clear the formatting of a BulletedList, Quote, or LeftIndent after it.
+        4. Only AddLink, NumberedList and BulletedList can apply to a message which already applied a Quote.
+        5. A Quote will clear the formatting of all styles after it except AddLink, NumberedList, BulletedList, or Italic.
+        6. An AddLink will clear the formatting of BackgroundColor, FontColor, or Underline after it.
+        7. BackgroundColor, FontColor and Underline can not apply to a message which already applied AddLink.
+        8. BulletedList, NumberedList, LeftIndent, Paragraph, and Quote will automatically expand to apply to the whole line.
       required: false
       type: string
+      auto: PREDEFINED
+      predefined:
+        - FontSize
+        - FontColor
+        - BackgroundColor
+        - LeftIndent
+        - Paragraph
+        - AddLink
     - name: format_attr
-      description: The attribute value for the rich text
+      description: > 
+        This field is required if the value of the format_type field is listed below:
+        1.FontSize value: s for small, m for medium, or l for large font size.
+        2.FontColor and BackgroundColor value: only supports RGB value. For example: FFC0CB
+        3.LeftIndent value: a positive pixel length.
+        4.Paragraph value: h1 for Heading 1, h2 for Heading 2, or h3 for Heading 3.
+        5.AddLink value: must be a valid URL, with an http or https prefix. For example: https://example.com
       required: false
       type: string
     - name: message
-      description: The message to be sent
-      required: false
+      description: The message to be sent.Constraints Max 1024 chars
+      required: true
       type: string
-    - name: file_ids
-      description: A list of file IDs to send
+    - name: entry_ids
+      description: A list of the file IDs to send. This field only accepts a maximum of six file IDs. Max Items 6
       required: false
       type: string
       isArray: true
@@ -863,42 +934,52 @@ script:
       required: false
       type: string
     - name: to_channel
-      description: The channel ID of the channel where the message will be sent
+      description: The channel ID of the channel where you would like to send a message.
       required: false
       type: string
     - name: to_contact
-      description: The email address of the contact to whom the message will be sent
+      description: The email address or user ID or member ID of the person you wish to send a message.
       required: false
       type: string
+    outputs:
+    - contextPath: Zoom.ChatMessage.id
+      description:  Unique Identifier of the message.
+      type: number
   - name: zoom-delete-message
-    description: Deletes a Zoom message.
+    description: Deletes a chat message previously sent to a contact or a channel. 
     arguments:
     - name: user_id
-      description: User ID or email.
+      description: Unique identifier of the user.
       required: true
       type: string
     - name: message_id
-      description: ID of the message to delete.
+      description: Unique Identifier of the message.
       required: true
       type: string
     - name: to_channel
-      description: ID of the channel to send the message to.
+      description: >
+        The channel ID where the message was sent. You must provide this parameter or the to_channel parameter.
       required: false
       type: string
     - name: to_contact
-      description: Email address of the contact to send the message to.
+      description: >
+        he member ID or user ID or email address of a chat contact to whom the message was sent. 
+        You must provide this parameter or the to_channel parameter.
       required: false
       type: string
     outputs: []
   - name: zoom-update-message
-    description: Edits a Zoom message.
+    description: >
+      Edits a chat message that you previously sent to either a contact or a channel in Zoom by providing the ID of the message as the value of the messageId parameter. 
+      You can get the ID from the List User's Chat Messages API. 
+      Additionally, as a query parameter, you must provide either the contact's email address of the contact or the Channel ID of the channel where the message was sent.
     arguments:
     - name: user_id
-      description: User ID.
+      description: Unique identifier of the user.
       required: true
       type: string
     - name: message_id
-      description: ID of the message to edit.
+      description: Unique Identifier of the message.
       required: true
       type: string
     - name: message
@@ -906,12 +987,17 @@ script:
       required: true
       type: string
     - name: to_channel
-      description: ID of the channel to send the message to.
+      description: > 
+        The channel ID of the channel where you sent the message.
+        You must provide either to_contact or to_channel parameter in the API request.
+        Channel ID can be retrieved from List User's Channels API.
       required: false
       type: string
     - name: to_contact
-      description: Email address of the contact to send the message to.
-      required: false
+      description: >
+        The email address or user ID or member ID of the contact to whom the message was sent. 
+        You must provide either this parameter or the to_channel parameter in the API request.
+      required: false 
       type: string
     - name: entry_ids
       description: A list of XSOAR file entry IDs to send.
@@ -920,22 +1006,29 @@ script:
       type: string
     outputs: []
   - name: zoom-list-messages
-    description: List the existing channels
+    description: >
+      Searches chat messages or shared files between a user and an individual contact or a chat channel. 
     arguments:
     - name: user_id
-      description: User ID or email.
+      description: Unique identifier of the user.
       required: true
       type: string
     - name: to_contact
-      description: Contact email.
+      description: >
+        This field allows you to query by the email address or user ID or member ID of a chat contact with whom the user communicated.
+        The API only returns messages sent and/or received between the user and the queried contact.
       required: false
       type: string
     - name: to_channel
-      description: Channel ID.
+      description: >
+        This field queries by the channel ID of a channel in which the user had chat conversations.
+        The API only returns messages sent and/or received by the user in the queried channel.
       required: false
       type: string
     - name: date
-      description: Date from which to retrieve the chat messages. Format %Y-%m-%dT%H:%M:%S.
+      description: > 
+        The query date from which to retrieve the chat messages. This value defaults to the current date.
+        Format %Y-%m-%dT%H:%M:%S.
       required: false
       type: string
     - name: from
@@ -952,20 +1045,32 @@ script:
       defaultValue: false
       type: boolean
     - name: search_type
-      description: Type of search. Dropdown message, file.
+      description: >
+        Allowed: message ┃ file
+        The type of search:
+        message — Search messages.
+        file — Search files.
       required: false
       type: string
+      auto: PREDEFINED
+      predefined:
+        - message
+        - file
     - name: search_key
       description: Key for search in messages.
       required: false
       type: string
     - name: exclude_child_message
-      description: Exclude child messages. Default false.
+      description: >
+        Default: false
+        This parameter is used to exclude returning all child messages in a chat, leaving only the parent messages.
       required: false
       type: boolean
       defaultValue: false
     - name: next_page_token
-      description: API argument  next_page_token.
+      description: >
+        The next page token paginates through a large set of results. A next page token is returned whenever the set of available results exceeds the current page size.
+        This token's expiration period is 15 minutes.
       required: false
       type: string
     - name: page_size
@@ -980,12 +1085,135 @@ script:
       description: Total amount of results to show.
       required: false
       type: number
-
     outputs:
-    - contextPath: Zoom.ChatMessage
-      description: Total page count available
-      type: number
-  dockerimage: demisto/pyjwt3:1.0.0.58911
+    - contextPath: Zoom.ChatMessage.date
+      type: date
+      description: The queried date value.
+    - contextPath: Zoom.ChatMessage.id
+      description: the channel's unique identifier.
+      type: string
+    - contextPath: Zoom.Channel.jid
+      description: The channel JID.
+      type: string
+    - contextPath: Zoom.Channel.name
+      description: The channel name.
+      type: string
+    - contextPath: Zoom.Channel.type
+      type: string
+      description: > 
+          The type of the channel. The value can be one of the following:
+          1: Private channel. In this type of channel, members must be invited to join a channel.
+          2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization.
+          3: Public channel. Anyone can search for this channel and join the channel.
+          4: Group chat. This is an instant channel which can be created by adding members to a new chat.
+          Allowed: 1┃2┃3┃4
+    - contextPath: Zoom.ChatMessage.date
+      type: date
+      description: The queried date value.
+    - contextPath: Zoom.ChatMessage.from
+      type: date-time
+      description: The queried from value. (Returned only if the from query parameter is used)
+    - contextPath: Zoom.ChatMessage.messages
+      type: array of object
+      description: Information about received messages and files.
+    - contextPath: Zoom.ChatMessage.messages.bot_message
+      type: object
+      description: The chatbot's message in JSON format.
+    - contextPath: Zoom.ChatMessage.messages.bot_message.date_time
+      type: date-time
+      description: The date and time when the message was sent.
+    - contextPath: Zoom.ChatMessage.messages.files
+      type: array of object
+      description: Information about chat files (if multiple files exist).
+    - contextPath: Zoom.ChatMessage.messages.files.download_url
+      type: string
+      description: The download URL of the chat file.
+    - contextPath: Zoom.ChatMessage.messages.files.file_id
+      type: string
+      description: The unique ID of the chat file. 
+    - contextPath: Zoom.ChatMessage.messages.files.file_name
+      type: string
+      description: The name and file extension of the chat file.
+    - contextPath: Zoom.ChatMessage.messages.files.file_size
+      type: integer
+      description: The size of the chat file in bytes.
+    - contextPath: Zoom.ChatMessage.messages.rich_text
+      type: array of object
+      description: Rich text formatting information.
+    - contextPath: Zoom.ChatMessage.messages.rich_text.start_position
+      type: integer
+      description: The start position of the rich text in the message string.
+    - contextPath: Zoom.ChatMessage.messages.rich_text.end_position
+      type: integer
+      description: The end position of the rich text.
+    - contextPath: Zoom.ChatMessage.messages.rich_text.format_type
+      type: enum
+      description: The type of rich text format. 
+    - contextPath: Zoom.ChatMessage.messages.rich_text.format_attr
+      type: string
+      description: The attribute values of a specific format_type.
+    - contextPath: Zoom.ChatMessage.messages.rich_text.download_url
+      type: string
+      description: The download URL of the first file.
+    - contextPath: Zoom.ChatMessage.messages.rich_text.file_id
+      type: string
+      description: The unique ID of the first file.
+    - contextPath: Zoom.ChatMessage.messages.rich_text.file_name
+      type: string
+      description: The name of the first file.
+    - contextPath: Zoom.ChatMessage.messages.rich_text.file_size
+      type: integer
+      description: The size of the first file in bytes. 
+    - contextPath: Zoom.ChatMessage.messages.id
+      type: string
+      description: Unique identifier of the message. 
+    - contextPath: Zoom.ChatMessage.messages.message
+      type: string
+      description: The message content.
+    - contextPath: Zoom.ChatMessage.messages.reply_main_message_id
+      type: string
+      description: The unique identifier of a reply message. (Returned only for reply messages)
+    - contextPath: Zoom.ChatMessage.messages.reply_main_message_timestamp
+      type: integer
+      description: The timestamp of when the reply message was sent. (Returned only for reply messages)
+    - contextPath: Zoom.ChatMessage.messages.sender
+      type: string
+      description: The email address of the message sender. Empty if the sender does not belong to the same account as the current user or is not a contact.
+    - contextPath: Zoom.ChatMessage.messages.sender_member_id
+      type: string
+      description: The member ID of the message sender.
+    - contextPath: Zoom.ChatMessage.messages.sender_display_name
+      type: string
+      description: The display name of the message sender.
+    - contextPath: Zoom.ChatMessage.messages.status
+      type: enum
+      description: Indicates the status of the message. Allowed values Deleted, Edited, Normal. (Returned only when include_deleted_and_edited_message query parameter is set to true)  
+    - contextPath: Zoom.ChatMessage.messages.timestamp
+      type: integer
+      description: The timestamp of the message in microseconds.
+    - contextPath: Zoom.ChatMessage.at_items
+      type: array of object
+      description: Information about mentions.
+    - contextPath: Zoom.ChatMessage.at_items.at_contact 
+      type: string
+      description: The user ID of the mentioned contact. Empty if the contact does not belong to the same account as the current user.   
+    - contextPath: Zoom.ChatMessage.at_items.at_contact_member_id
+      type: string
+      description: The member ID of the mentioned contact.
+    - contextPath: Zoom.ChatMessage.at_items.at_type
+      type: integer
+      description: The type of mention. Allowed values 1 (Contact), 2 (Channel). 
+    - contextPath: Zoom.ChatMessage.at_items.end_position
+      type: integer
+      description: The end position of the mention.
+    - contextPath: Zoom.ChatMessage.at_items.start_position
+      type: integer
+      description: The start position of the mention.
+    - contextPath: Zoom.ChatMessage.next_page_token
+      type: string
+      description: The next page token for pagination.
+      
+  dockerimage: demisto/pyjwt3:1.0.0.59487
   runonce: false
   script: "-"
   subtype: python3
