@@ -996,7 +996,7 @@ tasks:
       id: 009dbbe0-1090-4d46-84c9-a2596df628f7
       version: -1
       name: Is the Demsito Lock integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
