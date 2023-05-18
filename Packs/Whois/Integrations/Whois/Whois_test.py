@@ -474,3 +474,4 @@ def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_r
     mocker.patch.object(demisto, 'params', return_value={param_key: param_value})
 
     assert expected_res == Whois.get_param_or_arg(param_key, arg_key)
+
