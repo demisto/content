@@ -16,10 +16,10 @@ args:
   defaultValue: "false"
 comment: 'Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
 commonfields:
-  id: URLEncode_fix
+  id: URLEncode
   version: -1
 enabled: true
-name: URLEncode_fix
+name: URLEncode
 script: '-'
 subtype: python3
 system: false
