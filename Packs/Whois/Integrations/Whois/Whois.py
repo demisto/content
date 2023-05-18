@@ -1,11 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+# from CommonServerUserPython import *
 import re
 import socket
 import sys
 from codecs import encode, decode
-import socks
+# import socks
 import errno
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
@@ -8479,13 +8479,18 @@ def get_whois_ip(ip,
         raise e
 
 
-def ip_command(ips, reliability,
-               retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
-               rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
-               rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT):
+def get_param_or_arg(param_key: str, arg_key: str):
+    return demisto.params().get(param_key) or demisto.args().get(arg_key)
+
+
+def ip_command(ips, reliability):
+    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count', 'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+    rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds', 'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
+    rate_limit_errors_suppressed: bool = bool(get_param_or_arg('rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
+
     results = []
     for ip in argToList(ips):
-        response = get_whois_ip(ip, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout,
+        response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
                                 rate_limit_errors_suppressed=rate_limit_errors_suppressed)
 
         dbot_score = Common.DBotScore(
@@ -8611,12 +8616,7 @@ def main():
         if command == 'ip':
             demisto_args = demisto.args()
             ip = demisto_args.get('ip')
-            demisto_params = demisto.params()
-            rate_limit_retry_count: int = int(demisto_params.get('rate_limit_retry_count') or demisto_args.get('rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
-            rate_limit_wait_seconds: int = int(demisto_params.get('rate_limit_wait_seconds') or demisto_args.get('rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
-            rate_limit_errors_suppressed: bool = bool(demisto_params.get('rate_limit_errors_suppressed') or demisto_args.get('rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
-            ret_value = ip_command(ip, reliability, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
-                                   rate_limit_errors_suppressed=rate_limit_errors_suppressed)
+            ret_value = ip_command(ip, reliability)
             if ret_value:
                 return_results(ret_value)
             else:
@@ -8640,5 +8640,9 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ('__builtin__', 'builtins', '__main__'):
-    main()
+# if __name__ in ('__builtin__', 'builtins', '__main__'):
+    # main()
+
+
+whois_result = get_whois("google.com", is_recursive=False)
+print(f'*** {whois_result=}')
