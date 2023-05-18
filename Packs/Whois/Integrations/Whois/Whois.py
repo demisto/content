@@ -1,11 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-# from CommonServerUserPython import *
+from CommonServerUserPython import *
 import re
 import socket
 import sys
 from codecs import encode, decode
-# import socks
+import socks
 import errno
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
