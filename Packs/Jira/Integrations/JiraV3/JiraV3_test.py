@@ -1,6 +1,5 @@
 import io
 import json
-from more_itertools import side_effect
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -241,7 +240,7 @@ class TestJiraGetIssueCommand:
             - Validate that the file has been created, is of the correct type, has the correct file name, and was created
             with the correct content.
         """
-        import os
+        from pathlib import Path
         from JiraV3 import create_file_info_from_attachment
         client = jira_base_client_mock()
         raw_response_attachment_metadata = util_load_json('test_data/get_issue_test/raw_response_attachment_metadata.json')
@@ -255,8 +254,8 @@ class TestJiraGetIssueCommand:
         assert file_result_mocker.call_args[1].get('data') == dummy_attachment_content
         assert file_info_res.get('Type') == EntryType.ENTRY_INFO_FILE
         assert file_info_res.get('File', '') == file_name
-        assert os.path.exists(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
-        os.remove(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}")
+        assert Path.exists(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
+        Path.unlink(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
 
     @ pytest.mark.parametrize('get_attachments', [
         (True), (False)
