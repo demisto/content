@@ -3237,14 +3237,14 @@ def test_list_risky_users_or_hosts_command(
 
 
 @pytest.mark.parametrize(
-    "command ,id",
+    "command ,id_",
     [
         ('user', "user_id"),
         ('host', "host_id"),
     ],
 )
 def test_list_risky_users_hosts_command_raise_exception(
-    mocker, command: str, id: str
+    mocker, command: str, id_: str
 ):
     """
     Test case to verify if the 'list_risky_users_or_host_command' function raises the expected exception.
@@ -3252,7 +3252,7 @@ def test_list_risky_users_hosts_command_raise_exception(
     Args:
         mocker (Any): The mocker object to patch the 'risk_score_user_or_host' method.
         command (str): The command to be tested ('user' or 'host').
-        id (str): The ID parameter for the command.
+        id_ (str): The ID parameter for the command.
 
     Raises:
         DemistoException: If the expected exception is not raised or the error message doesn't match.
@@ -3281,7 +3281,7 @@ def test_list_risky_users_hosts_command_raise_exception(
         DemistoException,
         match="Error: id test was not found. Full error message: id 'test' was not found"
     ):
-        list_risky_users_or_host_command(client, command, {id: "test"})
+        list_risky_users_or_host_command(client, command, {id_: "test"})
 
 
 def test_list_user_groups_command(mocker):
@@ -3401,7 +3401,7 @@ def test_list_users_command(mocker):
     mocker.patch.object(CoreClient, "list_users", return_value=test_data)
 
     results = list_users_command(client=client, args={})
-    assert test_data["reply"] == results.outputs  # type:ignore[operator]
+    assert test_data["reply"] == results.outputs
 
 
 @pytest.mark.parametrize(
