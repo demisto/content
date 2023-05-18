@@ -1823,6 +1823,12 @@ def get_current_concurrent_searches(context_data: dict) -> int:
                if status not in list(QueryStatus)])
 
 
+def delete_offense_from_context(offense_id: str, context_data: dict, context_version: Any):
+    for key in (MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY):
+        context_data[key].pop(offense_id, None)
+    safely_update_context_data(context_data, context_version, offense_ids=[offense_id])
+
+
 def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str, events_limit: int, events: list[dict]) -> bool:
     """
     This function checks if all events were fetched for a specific offense.
@@ -3461,13 +3467,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')
             # delete the offense from the queue
-            offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
-            offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
-            offenses_queried.pop(offense_id, None)
-            offenses_finished.pop(offense_id, None)
-            context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried,
-                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
-            safely_update_context_data(context_data, context_version, offense_ids=[offense_id])
+            delete_offense_from_context(offense_id, context_data, context_version)
         else:
             events, status = get_remote_events(client,
                                                offense_id,
