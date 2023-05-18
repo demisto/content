@@ -6,7 +6,7 @@ import json
 import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
 
 ''' GLOBALS/PARAMS '''
 
@@ -49,7 +49,7 @@ def login():
     # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
         if cookie.name.startswith('ccsrftoken'):
-            csrftoken = cookie.value[1:-1]
+            csrftoken = cookie.value[1:-1]  # type: ignore[index]
             session.headers.update({'X-CSRFTOKEN': csrftoken})
     if "logindisclaimer" in response.text:
         params = {'confirm': '1'}
