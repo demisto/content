@@ -7777,7 +7777,7 @@ def string_to_context_key(string):
         raise Exception('The key is not a string: {}'.format(string))
 
 
-def response_to_context(reponse_obj, user_predefiend_keys):
+def response_to_context(reponse_obj, user_predefiend_keys=None):
     """
     Recursively creates a data dictionary where all key starts with capital letters.
     If a key include underscores,  removes underscores, capitalize every word.
