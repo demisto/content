@@ -237,7 +237,7 @@ tasks:
       recordedfutureriskrules:
         simple: ${RecordedFuture.IP.rules}
       value:
-        simple: ${RecordedFuture.IP.name}
+        simple: ${inputs.IP}
     separatecontext: false
     view: |-
       {
