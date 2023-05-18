@@ -213,7 +213,11 @@ def main():
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
-
+    response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                        path='/contentpacks/marketplace/sync',
+                                                                        method='POST',
+                                                                        accept='application/json',
+                                                                        _request_timeout=None)
     success = reset_base_pack_version(client) and uninstall_all_packs(client,
                                                                       host) and wait_for_uninstallation_to_complete(
         client)
