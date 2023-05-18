@@ -1,9 +1,10 @@
-from typing import Union
-import demistomock as demisto
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
-    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics
+    URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
+    ReanalyzeFile, ImpHashSimilarity
+from ReversingLabs.SDK.helper import NotFoundError
+
 
 VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
@@ -892,6 +893,429 @@ def certificate_analytics_command():
     return_results([results, file_results])
 
 
+def yara_ruleset_command():
+    yara = YARAHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    yara_action = demisto.getArg("yaraAction")
+    ruleset_name = demisto.getArg("rulesetName")
+    ruleset_text = demisto.getArg("rulesetText")
+    sample_available = demisto.getArg("sampleAvailable")
+
+    if yara_action == "CREATE RULESET":
+        if ruleset_text:
+            ruleset_text = str(ruleset_text)
+        else:
+            return_error("When using the CREATE RULESET action, the rulesetText argument is required.")
+
+        if sample_available:
+            sample_available = argToBoolean(sample_available)
+
+        try:
+            response = yara.create_ruleset(
+                ruleset_name=ruleset_name,
+                ruleset_text=ruleset_text,
+                sample_available=sample_available
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "create_yara_ruleset"
+
+    elif yara_action == "DELETE RULESET":
+        try:
+            response = yara.delete_ruleset(
+                ruleset_name=ruleset_name
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "delete_yara_ruleset"
+
+    elif yara_action == "GET RULESET INFO":
+        try:
+            response = yara.get_ruleset_info(
+                ruleset_name=ruleset_name
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "get_yara_ruleset_info"
+
+    elif yara_action == "GET RULESET TEXT":
+        try:
+            response = yara.get_ruleset_text(
+                ruleset_name=ruleset_name
+            )
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "get_yara_ruleset_text"
+
+    else:
+        return_error(f"Yara ruleset action {yara_action} does not exist.")
+
+    response_json = response.json()
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={output_key: response_json},
+        readable_output=response_json
+    )
+
+    return_results(results)
+
+
+def yara_matches_feed_command():
+    yara = YARAHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    time_format = demisto.getArg("timeFormat")
+    time_value = demisto.getArg("timeValue")
+
+    try:
+        response = yara.yara_matches_feed(
+            time_format=time_format,
+            time_value=time_value
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = yara_matches_feed_output(response_json=response_json, time_value=time_value)
+
+    return_results(results)
+
+
+def yara_matches_feed_output(response_json, time_value):
+    feed = response_json.get("rl", {}).get("feed", {})
+    entries = tableToMarkdown("Entries", feed.get("entries", []))
+    last_timestamp = feed.get("last_timestamp")
+    range_from = feed.get("time_range", {}).get("from")
+    range_to = feed.get("time_range", {}).get("to")
+
+    markdown = f"""## ReversingLabs YARA Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
+    **From**: {range_from}
+    **To**: {range_to}
+    """
+    markdown = f"{markdown}\n {entries}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"yara_matches_feed": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def yara_retro_actions_command():
+    retro = YARARetroHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    retro_action = demisto.getArg("yaraRetroAction")
+    ruleset_name = demisto.getArg("rulesetName")
+
+    if retro_action == "ENABLE RETRO HUNT":
+        try:
+            response = retro.enable_retro_hunt(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "enable_yara_retro"
+
+    elif retro_action == "START RETRO HUNT":
+        try:
+            response = retro.start_retro_hunt(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "start_yara_retro"
+
+    elif retro_action == "CHECK STATUS":
+        try:
+            response = retro.check_status(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "check_yara_retro_status"
+
+    elif retro_action == "CANCEL RETRO HUNT":
+        try:
+            response = retro.cancel_retro_hunt(ruleset_name=ruleset_name)
+        except Exception as e:
+            return_error(str(e))
+
+        output_key = "cancel_yara_retro"
+
+    else:
+        return_error(f"YARA Retro action {retro_action} does not exist.")
+
+    response_json = response.json()
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={output_key: response_json},
+        readable_output=response_json
+    )
+
+    return_results(results)
+
+
+def yara_retro_matches_feed_command():
+    yara = YARARetroHunting(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    time_format = demisto.getArg("timeFormat")
+    time_value = demisto.getArg("timeValue")
+
+    try:
+        response = yara.yara_retro_matches_feed(
+            time_format=time_format,
+            time_value=time_value
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = yara_retro_matches_feed_output(response_json=response_json, time_value=time_value)
+
+    return_results(results)
+
+
+def yara_retro_matches_feed_output(response_json, time_value):
+    feed = response_json.get("rl", {}).get("feed", {})
+    entries = tableToMarkdown("Entries", feed.get("entries", []))
+    last_timestamp = feed.get("last_timestamp")
+    range_from = feed.get("time_range", {}).get("from")
+    range_to = feed.get("time_range", {}).get("to")
+
+    markdown = f"""## ReversingLabs YARA Retro Matches Feed for time value {time_value}\n **Last timestamp**: {last_timestamp}
+    **From**: {range_from}
+    **To**: {range_to}
+    """
+    markdown = f"{markdown}\n {entries}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"yara_retro_matches_feed": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def reanalyze_sample_command():
+    reanalyze = ReanalyzeFile(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    sample_hash = demisto.getArg("hash")
+
+    try:
+        response = reanalyze.reanalyze_samples(
+            sample_hashes=sample_hash
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"reanalyze_sample": response.text},
+        readable_output=response.text
+    )
+
+    return_results(results)
+
+
+def imphash_similarity_command():
+    imphash_similarity = ImpHashSimilarity(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    imphash = demisto.getArg("imphash")
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = imphash_similarity.get_imphash_index_aggregated(
+            imphash=imphash,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = imphash_similarity_output(response=response, imphash=imphash)
+
+    return_results(results)
+
+
+def imphash_similarity_output(response, imphash):
+    hashes = tableToMarkdown("SHA-1 list", response, headers="Hashes")
+    markdown = f"## ReversingLabs Imphash Similarity for {imphash}\n {hashes}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"imphash_similarity": response},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def url_downloaded_files_command():
+    url_ti = URLThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    url = demisto.getArg("url")
+    extended = argToBoolean(demisto.getArg("extendedResults"))
+    classification = demisto.getArg("classification")
+    last_analysis = argToBoolean(demisto.getArg("lastAnalysis"))
+    analysis_id = demisto.getArg("analysisId")
+    if analysis_id:
+        analysis_id = int(analysis_id)
+    results_per_page = int(demisto.getArg("resultsPerPage"))
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = url_ti.get_downloaded_files_aggregated(
+            url_input=url,
+            extended=extended,
+            classification=classification,
+            last_analysis=last_analysis,
+            analysis_id=analysis_id,
+            results_per_page=results_per_page,
+            max_results=max_results
+        )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        exit(0)
+    except Exception as e:
+        return_error(str(e))
+
+    files = tableToMarkdown("Downloaded files", response)
+    markdown = f"## ReversingLabs Files Downloaded from URL {url}\n {files}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"url_downloaded_files": response},
+        readable_output=markdown
+    )
+
+    return_results(results)
+
+
+def url_latest_analyses_feed_command():
+    url_ti = URLThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    results_per_page = int(demisto.getArg("resultsPerPage"))
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = url_ti.get_latest_url_analysis_feed_aggregated(
+            results_per_page=results_per_page,
+            max_results=max_results
+        )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        exit(0)
+    except Exception as e:
+        return_error(str(e))
+
+    analyses = tableToMarkdown("Latest URL analyses", response)
+    markdown = f"## ReversingLabs Latest URL Analyses Feed\n {analyses}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"url_latest_analyses_feed": response},
+        readable_output=markdown
+    )
+
+    file_results = fileResult(
+        "ReversingLabs Latest URL Analyses Feed",
+        json.dumps(response, indent=4),
+        file_type=EntryType.ENTRY_INFO_FILE
+
+    )
+
+    return_results([results, file_results])
+
+
+def url_analyses_feed_from_date_command():
+    url_ti = URLThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT
+    )
+
+    time_format = demisto.getArg("timeFormat")
+    start_time = demisto.getArg("startTime")
+    results_per_page = int(demisto.getArg("resultsPerPage"))
+    max_results = int(demisto.getArg("maxResults"))
+
+    try:
+        response = url_ti.get_url_analysis_feed_from_date_aggregated(
+            time_format=time_format,
+            start_time=start_time,
+            results_per_page=results_per_page,
+            max_results=max_results
+        )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        exit(0)
+    except Exception as e:
+        return_error(str(e))
+
+    analyses = tableToMarkdown("URL analyses from specified date", response)
+    markdown = f"## ReversingLabs URL Analyses Feed From Date {start_time}\n {analyses}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"url_analyses_feed_from_date": response},
+        readable_output=markdown
+    )
+
+    file_results = fileResult(
+        f"ReversingLabs URL Analyses Feed From Date {start_time}",
+        json.dumps(response, indent=4),
+        file_type=EntryType.ENTRY_INFO_FILE
+
+    )
+
+    return_results([results, file_results])
+
+
 def main():
     command = demisto.command()
 
@@ -945,6 +1369,33 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-certificate-analytics":
         certificate_analytics_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-ruleset-actions":
+        yara_ruleset_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-matches-feed":
+        yara_matches_feed_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-retro-hunt-actions":
+        yara_retro_actions_command()
+
+    elif command == "reversinglabs-titaniumcloud-yara-retro-matches-feed":
+        yara_retro_matches_feed_command()
+
+    elif command == "reversinglabs-titaniumcloud-reanalyze-sample":
+        reanalyze_sample_command()
+
+    elif command == "reversinglabs-titaniumcloud-imphash-similarity":
+        imphash_similarity_command()
+
+    elif command == "reversinglabs-titaniumcloud-url-downloaded-files":
+        url_downloaded_files_command()
+
+    elif command == "reversinglabs-titaniumcloud-url-latest-analyses-feed":
+        url_latest_analyses_feed_command()
+
+    elif command == "reversinglabs-titaniumcloud-url-analyses-feed-from-date":
+        url_analyses_feed_from_date_command()
 
     else:
         return_error(f"Command {command} does not exist")
