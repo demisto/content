@@ -1,6 +1,9 @@
-import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+import urllib3
+
+
 from typing import Dict, Any, List
 from requests import Response  # Used to typing Response as a return from functions
 
@@ -268,31 +271,29 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
 
 def get_api_error(response):
-    if response.status_code == 500 and "text/plain" in response.headers["Content-Type"]:
+    if response.status_code == 500:
         raise NotFoundError("The endpoint could not be contacted at this time.")
-    elif response.status_code == 500 and response is not None:
+    elif response.status_code == 400 and response is not None:
         try:
             json_response = response.json()
             error_code = json_response.get("reply", {}).get("err_code", {})
-            error_message = json_response.get("reply", {}).get("message", {})
+            error_message = json_response.get("reply", {}).get("err_msg", {})
+            extra_message = json_response.get("reply", {}).get("err_extra", {})
+            rcs_err_msg = f"{error_message}. {extra_message}"
         except Exception as err:
             print(f"Unexpected {err=}, {type(err)=}")
         else:
             if error_code:
-                rcs_err_msg = json_response.get("reply", {}).get("err_msg", {})
+                rcs_err_msg = f"{error_message}. {extra_message}"
                 raise ProcessingError(
-                    f"Received error message: '{rcs_err_msg}'. Please check you that your inputs are correct."
+                    f"Received error message: '{rcs_err_msg}'."
                 )
-            elif error_message:
-                raise ProcessingError(f"Received error message: '{error_message}'")
-            else:
-                raise NotFoundError("The endpoint could not be contacted at this time.")
 
 
 """ COMMAND FUNCTIONS """
 
 
-def list_remediation_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_remediation_rule_command(args: Dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-remediation-rule command: Returns list of remediation path rules.
 
@@ -353,7 +354,7 @@ def list_remediation_rule_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def list_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
     """
     asm-list-external-service command: Returns list of external services.
 
@@ -409,7 +410,7 @@ def list_external_service_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def get_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_service_command(args: Dict[str, Any], client: Client) -> CommandResults:
     """
     asm-get-external-service command: Returns details of single external service.
     Returns error if more than one service_id was provided in comma separated format.
@@ -449,7 +450,7 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def list_external_ip_address_range_command(
-    client: Client, args: Dict[str, Any]
+    args: Dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-list-external-ip-address-range command: Returns list of external ip ranges.
@@ -482,7 +483,7 @@ def list_external_ip_address_range_command(
 
 
 def get_external_ip_address_range_command(
-    client: Client, args: Dict[str, Any]
+    args: Dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-get-external-ip-address-range command: Returns details of single external ip range.
@@ -523,7 +524,7 @@ def get_external_ip_address_range_command(
 
 
 def list_asset_internet_exposure_command(
-    client: Client, args: Dict[str, Any]
+    args: Dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-list-asset-internet-exposure command: Returns list of external internet exposures.
@@ -584,7 +585,7 @@ def list_asset_internet_exposure_command(
 
 
 def get_asset_internet_exposure_command(
-    client: Client, args: Dict[str, Any]
+    args: Dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-get-asset-internet-exposure command: Returns details of single external internet exposure.
@@ -625,7 +626,7 @@ def get_asset_internet_exposure_command(
 
 
 def start_remediation_confirmation_scan_command(
-    client: Client, args: Dict[str, Any]
+    args: Dict[str, Any], client: Client
 ) -> CommandResults:
     """
     asm-start-remediation_confirmation_scan command: Starts a new scan or gets an existing scan ID.
@@ -678,41 +679,75 @@ def start_remediation_confirmation_scan_command(
     return command_results
 
 
-def get_remediation_confirmation_scan_status_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+@polling_function(name=demisto.command(), interval=120, timeout=100)
+def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], client: Client):
     """
-    asm-get-remediation-confirmation-scan-status command: Get status of an existing remediation confirmation scan.
+    asm-get-remediation-confirmation-scan-status command: Polls for status of an existing remediation confirmation scan.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()`` (not used in this function).
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains the ID of the Remediation Confirmation Scan.
+        PollResult: A ``PollResult`` object that is then passed to ``return_results``,
+        that contains the ID of the Remediation Confirmation Scan and a success or failure message.
     """
     scan_id = str(args.get("scan_id"))
-
     response = client.get_remediation_confirmation_scan_status(scan_id=scan_id)
-
     json_response = response.json()
-    formatted_outputs = json_response.get("reply", {})
+    scan_status = json_response.get('reply').get('status')
 
-    markdown = tableToMarkdown(
-        "Status of Remediation Confirmation Scan",
-        formatted_outputs,
-        removeNull=True,
-        headerTransform=string_to_table_header,
-    )
-    command_results = CommandResults(
-        outputs_prefix="ASM.RemediationScan",
-        outputs_key_field="",
-        outputs=formatted_outputs,
-        raw_response=json_response,
-        readable_output=markdown,
-    )
-    return command_results
+    if scan_status == "SUCCESS":
+        formatted_outputs = json_response.get("reply", {})
+        markdown = tableToMarkdown(
+            "Status of Remediation Confirmation Scan",
+            formatted_outputs,
+            removeNull=True,
+            headerTransform=string_to_table_header,
+        )
+        command_results = CommandResults(
+            outputs_prefix="ASM.RemediationScan",
+            outputs_key_field="",
+            outputs=formatted_outputs,
+            raw_response=json_response,
+            readable_output=markdown,
+        )
+        return PollResult(command_results)
+    elif scan_status == "IN_PROGRESS":
+        return PollResult(
+            response=None,
+            partial_result=CommandResults(
+                outputs_prefix="ASM.RemediationScan",
+                outputs_key_field="scan_id",
+                readable_output="Waiting for remediation confirmation scan to finish..."
+            ),
+            continue_to_poll=True,
+            args_for_next_run={"scan_id": scan_id, "status": scan_status, **args}
+        )
+    else:
+        return PollResult(response="The remediation confirmation scan timed out or failed.",
+                          partial_result=CommandResults(
+                              outputs_prefix="ASM.RemediationScan",
+                              outputs_key_field="scan_id",
+                              readable_output=""
+                          ),
+                          continue_to_poll=True)
+
+    # elif scan_status == "FAILED_TIMEOUT":
+    #     return PollResult(response="The remediation confirmation scan timed out after 3 hours.",
+    #                       partial_result=CommandResults(
+    #                           outputs_prefix="ASM.RemediationScan",
+    #                           outputs_key_field="scan_id",
+    #                           readable_output=""
+    #                       ))
+    # elif scan_status == "FAILED_ERROR":
+    #     return PollResult(response="The remediation confirmation scan encountered an error, please check you asset or retry later.",
+    #                       partial_result=CommandResults(
+    #                           outputs_prefix="ASM.RemediationScan",
+    #                           outputs_key_field="scan_id",
+    #                           readable_output=""
+    #                       ))
+    # return PollResult(response="The remediation confirmation scan was inconclusive, please retry later.")
 
 
 def test_module(client: Client) -> None:
@@ -785,7 +820,7 @@ def main() -> None:
         if command == "test-module":
             test_module(client)
         elif command in commands:
-            return_results(commands[command](client, args))
+            return_results(commands[command](args, client))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
