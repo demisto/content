@@ -242,7 +242,7 @@ tasks:
       recordedfutureriskrules:
         simple: ${RecordedFuture.CVE.concatRules}
       value:
-        simple: ${RecordedFuture.CVE.name}
+        simple: ${inputs.CVE}
     separatecontext: false
     view: |-
       {
