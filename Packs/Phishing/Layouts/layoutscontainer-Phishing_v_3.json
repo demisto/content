@@ -506,7 +506,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Email Body",
-                        "query": "fca467ab-ca38-4d68-8e3c-2b75a60382e0",
+                        "query": "DisplayHtmlWithImages",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
