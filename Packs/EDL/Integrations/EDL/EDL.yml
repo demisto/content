@@ -214,8 +214,8 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators.
-  defaultvalue: '2000'
+- additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators. Value can be up to 10,000 due to performance limitations.
+  defaultvalue: '10000'
   display: XSOAR Indicator Page Size
   hidden: false
   name: page_size
