@@ -1214,7 +1214,7 @@ def url_downloaded_files_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        exit(0)
+        sys.exit()
     except Exception as e:
         return_error(str(e))
 
@@ -1248,7 +1248,7 @@ def url_latest_analyses_feed_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        exit(0)
+        sys.exit()
     except Exception as e:
         return_error(str(e))
 
@@ -1293,7 +1293,7 @@ def url_analyses_feed_from_date_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        exit(0)
+        sys.exit()
     except Exception as e:
         return_error(str(e))
 
