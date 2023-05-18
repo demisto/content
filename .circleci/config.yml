@@ -138,6 +138,9 @@ references:
         ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
         ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH true
         ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_list.json $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_mpv2_list.json $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_xpanse_list.json $CIRCLE_BRANCH true
 
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection

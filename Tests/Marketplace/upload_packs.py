@@ -928,9 +928,10 @@ def get_images_data(packs_list: list, readme_images_dict: dict):
         The images data structure
     """
     images_data = {}
+    pack_image_data: dict = {}
 
     for pack in packs_list:
-        pack_image_data: dict = {pack.name: {}}
+        pack_image_data[pack.name] = {}
         if pack.uploaded_author_image:
             pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
         if pack.uploaded_integration_images:
@@ -1241,7 +1242,8 @@ def main():
             index_folder_path,
             build_number,
             modified_rn_files_paths,
-            marketplace, id_set
+            marketplace, id_set,
+            is_override=override_all_packs
         )
 
         if not task_status:
@@ -1265,7 +1267,7 @@ def main():
             continue
 
         # uploading preview images. The path contains pack version
-        task_status = pack.upload_preview_images(storage_bucket, storage_base_path, diff_files_list)
+        task_status = pack.upload_preview_images(storage_bucket, storage_base_path)
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
