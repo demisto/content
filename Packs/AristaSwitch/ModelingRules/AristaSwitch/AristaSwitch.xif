@@ -1,0 +1,28 @@
+/*****************************************************/
+/* Arista Networks EOS Switch Utility Rules          */
+/*****************************************************/
+[RULE: arista_switch_common_fields_modeling]
+/* Modeling for fields that are common to all of arista EOS event types.  */
+/* Log Format: timestamp hostname process: [seq number:] %FACILITY-Severity-Mnemonic: Message text */ 
+alter 
+    dvc_process_tuple = split(arrayindex(regextract(_raw_log, "<\d+>.+?\s+(\S+\s+\w+)\:\s"),0)),
+    facility_severity_mnemonic_tuple = split(arrayindex(regextract(_raw_log, "%(\S+\-\d\-\w+):"), 0), "-"),
+    message = arrayindex(regextract(_raw_log, "<\d+>.+ \S+ \w+: \S+: (.+)"), 0),  
+    // extract alternative token for the facility in case it is not in the expected format of 
+    alternative_facility1 = arrayindex(regextract(_raw_log, "<\d+>.+? \S+ \w+: \d+: %{0,1}(\S+): .+"), 0), //if log includes sequence number 
+    alternative_facility2 = arrayindex(regextract(_raw_log, "<\d+>.+? \S+ \w+: %{0,1}(\S+): .+"), 0) // if log does not include a sequence a number
+| alter
+    dvc = arrayindex(dvc_process_tuple, 0),
+    process = arrayindex(dvc_process_tuple, 1), 
+    tuple_facility = arrayindex(facility_severity_mnemonic_tuple, 0), 
+    severity = arrayindex(facility_severity_mnemonic_tuple, 1), 
+    mnemonic = arrayindex(facility_severity_mnemonic_tuple, 2)
+| alter 
+    facility = coalesce(tuple_facility, alternative_facility1, alternative_facility2)
+| alter 
+    xdm.observer.name = dvc, facility)
+    xdm.event.type = concat(facility, ".", process),
+    xdm.event.id = coalesce(mnemonic, 
+    xdm.event.description = message,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.alert.severity = severity;
