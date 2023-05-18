@@ -2642,7 +2642,7 @@ def update_asset_command(client: Client, args: Dict[str, Any]):
     asset_id = args.get('asset_id')
     res = client.update_asset(args, asset_id)
     if not res or not res.get('response', []):
-        return_error(f"Couldn't update asset {asset_id}")
+        return_error("Couldn't update asset.")
 
     return CommandResults(
         raw_response=res,
