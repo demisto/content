@@ -8,6 +8,8 @@ from urllib.parse import quote, unquote
 def main(args):
     value = args.get('value')
     decoded_value = unquote(value)
+    if argToBoolean(args.get('ignore_safe')):
+        return quote(decoded_value, safe='')
     return quote(decoded_value, safe=args.get('safe', '/'))
 
 

@@ -1,22 +1,25 @@
 args:
-- default: false
-  description: The URL to encode.
-  isArray: false
-  name: value
+- name: value
   required: true
-  secret: false
-- default: false
-  description: The optional safe parameter specifies additional ASCII characters that should not be quoted — its default value is "/". To ignore default safe argument pass "" as input.
-  isArray: false
-  name: safe
-  required: false
-  secret: false
+  description: The URL to encode.
+- name: safe
+  default: true
+  description: The optional safe parameter specifies additional ASCII characters that
+    should not be encoded. Default value is "/".
+  defaultValue: /
+- name: ignore_safe
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether to ignore safe argument encoding. Default is "false".
+  defaultValue: "false"
 comment: 'Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
 commonfields:
-  id: URLEncode
+  id: URLEncode_fix
   version: -1
 enabled: true
-name: URLEncode
+name: URLEncode_fix
 script: '-'
 subtype: python3
 system: false
