@@ -8,3 +8,5 @@
 !azure-sql-auth-complete
 !azure-sql-auth-test
 !azure-sql-auth-reset
+!azure-sql-subscriptions-list
+!azure-sql-resource-group-list tag="Name:name"
