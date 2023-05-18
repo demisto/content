@@ -113,7 +113,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """This method is used to test the connectivity of each instance, each child will implement
         their own connectivity test
         """
-        pass
 
     def http_request_with_access_token(self, method: str, headers: Dict[str, str] | None = None, url_suffix='', params=None,
                                        data=None, json_data=None, resp_type='json', ok_codes=None, full_url='',
@@ -179,7 +178,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             DemistoException: If both an authorization code and refresh token were given, only one must be supplied.
             DemistoException: If neither an authorization code nor a refresh token were given.
         """
-        pass
 
     @abstractmethod
     def oauth_start(self) -> str:
@@ -190,7 +188,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             str: The callback URL that the user will use in order to authenticate
         himself
         """
-        pass
 
     @abstractmethod
     def oauth_complete(self, code: str) -> None:
@@ -202,7 +199,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Args:
             code (str): A code string that was acquired after interacting with the callback URL
         """
-        pass
 
     # Query Requests
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
@@ -740,7 +736,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             Dict[str, Any]: The results of the API, which will hold the content of the attachment.
         """
-        pass
 
     # User Requests
     @abstractmethod
@@ -754,7 +749,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         Returns:
             List[Dict[str, Any]]: The results of the API, which will hold the users that match the attribute.
         """
-        pass
 
     def get_user_info(self) -> Dict[str, Any]:
         """This method is in charge of returning the user info of the current user.
