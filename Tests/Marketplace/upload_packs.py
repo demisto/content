@@ -1039,21 +1039,26 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
 
 
 def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
-                                               current_marketplace_packs: List[Pack]):
+                                               current_marketplace_packs: List[Pack],
+                                               private_packs: List[dict]):
     """
     Delete from index packs that not relevant in the current marketplace from index.
     Args:
         index_folder_path (str): full path to downloaded index folder.
         current_marketplace_packs: List[Pack]: pack list from `create-content-artifacts` step which are filtered by marketplace.
+        private_packs: List[dict]: list of private packs info
     Returns:
         set: unique collection of the deleted packs names.
     """
     packs_in_index = set(os.listdir(index_folder_path))
+    private_packs_names = {p.get('id', '') for p in private_packs}
     current_marketplace_pack_names = {pack.name for pack in current_marketplace_packs}
     packs_to_be_deleted = packs_in_index - current_marketplace_pack_names
     deleted_packs = set()
     for pack_name in packs_to_be_deleted:
 
+        if pack_name in private_packs_names:
+            continue
         try:
             index_pack_path = os.path.join(index_folder_path, pack_name)
             if os.path.exists(os.path.join(index_pack_path, 'metadata.json')):  # verify it's a pack dir
@@ -1175,13 +1180,14 @@ def main():
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
-    packs_deleted_from_index: set[str] = delete_from_index_packs_not_in_marketplace(index_folder_path,
-                                                                                    all_content_packs)
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
     )
 
+    packs_deleted_from_index: set[str] = delete_from_index_packs_not_in_marketplace(index_folder_path,
+                                                                                    all_content_packs,
+                                                                                    private_packs)
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
