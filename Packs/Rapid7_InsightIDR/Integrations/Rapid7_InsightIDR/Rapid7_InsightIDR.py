@@ -632,7 +632,7 @@ def insight_idr_query_log_set_command(client: Client, log_set_id: str, query: st
 
 
 def handle_query_log_results(client: Client, result: dict) -> Tuple[list, list]:
-    """This function get the first result of the query, then handles if the query has in progress, and handle pagination.
+    """This function get the first result of the query, then handles if the query is still in progress, and handle pagination.
 
     Args:
         client (Client): Rapid7 Client
@@ -640,8 +640,8 @@ def handle_query_log_results(client: Client, result: dict) -> Tuple[list, list]:
 
     Returns:
         Tuple[list, list]:
-            data_for_readable_output: The data for the readable output was contains all the events
-            raw_responcse: The raw response from the all the requests that returned events
+            data_for_readable_output: The data for the readable output which contains all the events
+            raw_responcse: Raw response from all events returned by the requests
     """
     data_for_readable_output = []
     raw_responcse = []
