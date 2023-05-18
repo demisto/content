@@ -8,9 +8,9 @@ from urllib.parse import quote, unquote
 def main(args):
     value = args.get('value')
     decoded_value = unquote(value)
-    if argToBoolean(args.get('ignore_safe', 'false')):
+    if argToBoolean(args.get('ignore_safe_character', 'false')):
         return quote(decoded_value, safe='')
-    return quote(decoded_value, safe=args.get('safe', '/'))
+    return quote(decoded_value, safe=args.get('safe_character', '/'))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

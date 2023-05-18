@@ -2,17 +2,17 @@ args:
 - name: value
   required: true
   description: The URL to encode.
-- name: safe
+- name: safe_character
   default: true
-  description: The optional safe parameter specifies additional ASCII characters that
+  description: The optional safe_character argument allows to specify ASCII characters that
     should not be encoded. Default value is "/".
   defaultValue: /
-- name: ignore_safe
+- name: ignore_safe_character
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Whether to ignore safe argument encoding. Default is "false".
+  description: Whether to ignore safe_character argument encoding - all characters will be encoded. Default is "false".
   defaultValue: "false"
 comment: 'Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
 commonfields:
