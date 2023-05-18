@@ -7218,7 +7218,8 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
                              re.IGNORECASE)
             if match is not None:
                 referral_server = match.group(2)
-                if referral_server != server and "://" not in referral_server: # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                if referral_server != server and "://" not in referral_server:
                     # Referral to another WHOIS server...
                     try:
                         return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
@@ -7324,8 +7325,10 @@ states_ca = {}  # type: dict
 class WhoisException(Exception):
     pass
 
+
 class WhoisWarnningException(Exception):
     pass
+
 
 def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
@@ -7696,7 +7699,7 @@ class InvalidDateHandler:
 
     def __init__(self, year, month, day):
         self.year = year
-        self.month = month 
+        self.month = month
         self.day = day
 
     def strftime(self, *args):
@@ -8484,9 +8487,12 @@ def get_param_or_arg(param_key: str, arg_key: str):
 
 
 def ip_command(ips, reliability):
-    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count', 'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
-    rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds', 'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
-    rate_limit_errors_suppressed: bool = bool(get_param_or_arg('rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
+    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
+                                      'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+    rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
+                                       'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
+    rate_limit_errors_suppressed: bool = bool(get_param_or_arg(
+        'rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
 
     results = []
     for ip in argToList(ips):
@@ -8541,7 +8547,7 @@ def whois_command(reliability):
         context_res.update(dbot_score)
         context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
 
-        if verbose: 
+        if verbose:
             demisto.info('Verbose response')
             whois_result['query'] = query
             json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)

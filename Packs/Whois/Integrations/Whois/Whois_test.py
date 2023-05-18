@@ -407,7 +407,7 @@ def test_get_raw_response_with_a_refer_server_that_fails(mocker):
         the test enables a socket connection, while the second server fails and raises an exception.
         """
         if curr_server[0] == "test_server":
-            return None
+            return
         else:
             raise Exception
 
@@ -441,7 +441,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker):
         """
         This function is a mocker for the function socket.connect()
         """
-        return None
+        return
 
     mock_response1 = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
     mock_response2 = "Domain Name: test_refer_server\n"
@@ -456,11 +456,11 @@ def test_get_raw_response_with_non_recursive_data_query(mocker):
 
 @pytest.mark.parametrize('param_key, param_value, arg_key, arg_value, expected_res',
                          [
-                           ("param_key", "param_value", "arg_key", "arg_value", "param_value"),
-                           ("param_key", None, "arg_key", "arg_value", "arg_value"),
-                           ("param_key", "param_value", "arg_key", None, "param_value"),
-                           ("param_key", None, "arg_key", None, None),
-                           ])
+                             ("param_key", "param_value", "arg_key", "arg_value", "param_value"),
+                             ("param_key", None, "arg_key", "arg_value", "arg_value"),
+                             ("param_key", "param_value", "arg_key", None, "param_value"),
+                             ("param_key", None, "arg_key", None, None),
+                         ])
 def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_res, mocker):
     """
     Given:
