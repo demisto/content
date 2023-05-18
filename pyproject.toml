@@ -148,7 +148,7 @@ select = [
     "B028", # no-explicit-stacklevel
     "B029", # except-with-empty-tuple
     "B030", # except-with-non-exception-classes
-    "B031", # reuse-of-groupby-generator
+    # "B031", # reuse-of-groupby-generator # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
     "B032", # unintentional-type-annotation
 
     "C400", # unnecessary-generator-list
@@ -160,7 +160,7 @@ select = [
     "C411", # unnecessary-list-call
     "C413", # unnecessary-call-around-sorted
     "C415", # unnecessary-subscript-reversal
-    "C418", # unnecessary-literal-within-dict-call
+    # "C418", # unnecessary-literal-within-dict-call # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
 
     "D419", # empty-docstring
 
@@ -220,7 +220,7 @@ select = [
     "PLE0116", # continue-in-finally
     "PLE0117", # nonlocal-without-binding
     "PLE0118", # load-before-global-declaration
-    "PLE0302", # unexpected-special-method-signature
+    # "PLE0302", # unexpected-special-method-signature # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
     "PLE0604", # invalid-all-object
     "PLE0605", # invalid-all-format
     "PLE1142", # await-outside-async
@@ -287,8 +287,8 @@ select = [
 
     "RUF006", # asyncio-dangling-task
     "RUF007", # pairwise-over-zipped
-    "RUF008", # mutable-dataclass-default
-    "RUF009", # function-call-in-dataclass-default-argument
+    # "RUF008", # mutable-dataclass-default # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    # "RUF009", # function-call-in-dataclass-default-argument # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
 
     "S102", # exec-builtin
     "S103", # bad-file-permissions
@@ -311,12 +311,12 @@ select = [
     "S506", # unsafe-yaml-load
     "S508", # snmp-insecure-version
     "S509", # snmp-weak-cryptography
-    "S602", # subprocess-popen-with-shell-equals-true
-    "S603", # subprocess-without-shell-equals-true
-    "S604", # call-with-shell-equals-true
-    "S605", # start-process-with-a-shell
-    "S606", # start-process-with-no-shell
-    "S607", # start-process-with-partial-path
+    # "S602", # subprocess-popen-with-shell-equals-true # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    # "S603", # subprocess-without-shell-equals-true # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    # "S604", # call-with-shell-equals-true # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    # "S605", # start-process-with-a-shell # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    # "S606", # start-process-with-no-shell # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    # "S607", # start-process-with-partial-path # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
     "S608", # hardcoded-sql-expression
     "S612", # logging-config-insecure-listen
     "S701", # jinja2-autoescape-false
@@ -332,7 +332,7 @@ select = [
     "SIM222", # expr-or-true
     "SIM223", # expr-and-false
     "SIM401", # if-else-block-instead-of-dict-get
-    "SIM910", # dict-get-with-none-default
+    # "SIM910", # dict-get-with-none-default # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
 
     "T201", # print
     "T203", # p-print
@@ -408,7 +408,6 @@ show_error_codes = true
 follow_imports = "silent"
 pretty = true
 allow_redefinition = true
-junit_xml = ".report_mypy.xml"
 exclude = [
     "test_data",
     "tests_data",
