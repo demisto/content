@@ -2134,7 +2134,11 @@ def main():  # pragma: no cover
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {str(e)}')
+        # special handling for 404 error, which is returned when the item is not found
+        if "404" in e.message:
+            return_results("The item you're searching for does not exist within the API.")
+        else:
+            return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
