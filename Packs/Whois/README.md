@@ -11,9 +11,9 @@ Automating the process of checking the domain registration age according to the 
 ##### Troubleshooting
 
 ###### `ip` command timeout
-The `ip` command can timeout when there are exssesive calls to the whois service, which will rate limits these calls.
-In that case, the default behavior is to try 3 times, with a 120 seconds wait between retries.
-You can use the following args to mitigate this:
+The ***ip*** command can timeout when there are excessive calls to the whois service, which rate limits these calls.
+In that case, the default behavior is to try 3 times, with a 120 second wait between retries.
+You can use the following arguments to mitigate this:
   - *rate_limit_retry_count* - Default: 3 times.
   - *rate_limit_wait_seconds* - Default: 120 seconds.
   - *rate_limit_errors_suppressed* - Default: False.
