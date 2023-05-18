@@ -156,7 +156,7 @@ def generate_readable_output(data):
     output = []
     types = list(set(map(lambda i: i['type'], data)))
     for type in types:
-        same_type = list(set(x['value'] for x in data if x['type'] == type))
+        same_type = list({x['value'] for x in data if x['type'] == type})
         output.append({f'{type} ({len(same_type)})': ', '.join(map(str, same_type))})
     return output
 
@@ -341,7 +341,7 @@ def get_indicators_command(client: Client, insight_category: list, insight_data_
     raw_insights: Any = client.get_insights().json()
 
     # Filter insight by category
-    insights: Any = list([item for item in raw_insights if int(item.get('ruleId')) in insights_ids])
+    insights: Any = [item for item in raw_insights if int(item.get('ruleId')) in insights_ids]
     for insight in insights:
         # Fetch remediation data for each insight
         processed_data: List[Dict[str, Any]] = get_remediation_data_command(client,
@@ -644,7 +644,7 @@ def get_insights_command(client: Client, args: Dict, no_output_mode: bool) -> Li
         # Verify that insight_ids holds List[int]
         if isinstance(insight_ids, list):
             insight_ids = list(map(int, insight_ids))
-        insights = list([item for item in insights if int(item.get('ruleId')) in insight_ids])
+        insights = [item for item in insights if int(item.get('ruleId')) in insight_ids]
     insight_output = []
     insight_readable = []
     headers = []
