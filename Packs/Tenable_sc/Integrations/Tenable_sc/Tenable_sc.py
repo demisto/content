@@ -1617,7 +1617,7 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
         'ScannedIPs': scan_results['scannedIPs'],
         'Owner': scan_results['owner'].get('username'),
         'RepositoryName': scan_results['repository'].get('name'),
-        'Import Status': scan_results['importStatus'],
+        'Import Status': scan_results.get('importStatus', ''),
         'Is Scan Running ': scan_results['running'],
         'Completed IPs': scan_results['progress']['completedIPs']
     }
@@ -2554,7 +2554,59 @@ def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
     args["schedule"] = "now"
     # You can use either the asset_ids parameter or the ip_list parameter to specify assets, but you cannot use both parameters in a single request.
     created_policy = res.get("response")
-    client.create_scan()
+    args["policy_id"] = created_policy.get("id")
+    res = client.create_scan(args)
+    if not res or 'response' not in res:
+        return_error('Error: Could not retrieve the scan')
+
+    scan = res['response']
+
+    headers = [
+        'Scan ID',
+        'Scan Name',
+        'Scan Description',
+        'Scan Type',
+        'Dhcp Tracking status',
+        'Created Time',
+        'Modified Time',
+        'Max Scan Time',
+        'Policy id ',
+        'Policy context',
+        'Policy description',
+        'Schedule type',
+        'Start Time',
+        'Group',
+        'Owner',
+    ]
+
+    mapped_scan = {
+        'Scan ID': scan['id'],
+        'Scan Name': scan['name'],
+        'Scan Description': scan['description'],
+        'Scan Type': scan['type'],
+        'Dhcp Tracking status': scan["dhcpTracking"],
+        'Created Time': timestamp_to_utc(scan['createdTime']),
+        'Modified Time': scan["modifiedTime"],
+        'Max Scan Time': scan["maxScanTime"],
+        'Policy id ': scan["policy"]["id"],
+        'Policy context': scan["policy"]["context"],
+        'Policy description': scan["policy"]["description"],
+        'Schedule type': scan["schedule"]["type"],
+        'Start Time': scan["schedule"]["start"],
+        'Group': scan["ownerGroup"]["name"],
+        'Owner': scan["owner"]["username"],
+    }
+
+
+    return CommandResults(
+        outputs=createContext(mapped_scan, removeNull=True),
+        outputs_prefix='TenableSC.Scan',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Scan created successfully', mapped_scan, headers, removeNull=True)
+    )
+
+
 
 
 def list_query_command(client: Client, args: Dict[str, Any]):
