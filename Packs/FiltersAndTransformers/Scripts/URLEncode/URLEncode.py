@@ -12,7 +12,8 @@ def main():
         decoded_value = unquote(value)
         if argToBoolean(args.get('ignore_safe_character', 'false')):
             return_results(quote(decoded_value, safe=''))
-        return_results(quote(decoded_value, safe=args.get('safe_character', '/')))
+        else:
+            return_results(quote(decoded_value, safe=args.get('safe_character', '/')))
     except Exception as exc:
         return_error(str(exc), error=exc)
 
