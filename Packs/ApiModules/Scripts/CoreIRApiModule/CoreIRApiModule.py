@@ -3261,7 +3261,8 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
-        except Exception:
+        except Exception as e:
+            demisto.debug(e)
             continue
         # remove original_alert_json field and add its content to alert.
         alert.update(
@@ -3413,8 +3414,8 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
-        except Exception:
-            continue
+        except Exception as e:
+            demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
         alert.update(alert.pop('original_alert_json', None))
         if demisto.get(alert, 'messageData.dynamicAnalysis'):
