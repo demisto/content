@@ -634,9 +634,9 @@ def get_incident_extra_data_command(client, args):
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
-    account_context_output = assign_params(**{
-        'Username': incident.get('users', '')
-    })
+    account_context_output = assign_params(
+        Username=incident.get('users', '')
+    )
     endpoint_context_output = []
 
     for alert in incident.get('alerts') or []:
@@ -1611,10 +1611,7 @@ def main():  # pragma: no cover
         elif command == 'xdr-list-roles':
             return_results(list_roles_command(client, args))
 
-        elif command == 'xdr-set-user-role':
-            return_results(change_user_role_command(client, args))
-
-        elif command == 'xdr-remove-user-role':
+        elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
             return_results(change_user_role_command(client, args))
 
     except Exception as err:
