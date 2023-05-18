@@ -135,5 +135,5 @@ XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
     FileType.TRIGGER,
-    FileType.CORRELATION_RULE
+    FileType.CORRELATION_RULE,
 }
