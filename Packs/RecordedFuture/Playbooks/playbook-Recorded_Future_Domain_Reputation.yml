@@ -239,7 +239,7 @@ tasks:
       recordedfutureriskrules:
         simple: ${RecordedFuture.Domain.rules}
       value:
-        simple: ${RecordedFuture.Domain.name}
+        simple: ${inputs.Domain}
     separatecontext: false
     view: |-
       {
