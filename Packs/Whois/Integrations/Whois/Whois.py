@@ -8640,9 +8640,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-# if __name__ in ('__builtin__', 'builtins', '__main__'):
-    # main()
-
-
-whois_result = get_whois("google.com", is_recursive=False)
-print(f'*** {whois_result=}')
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()
