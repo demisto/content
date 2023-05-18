@@ -1,6 +1,7 @@
 {
     "support": "xsoar",
     "marketplaces": [
-      "marketplacev2"
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -47,6 +47,7 @@ Test Collection Unit-Test cases
       playbook ID "myOtherTestPlaybook".
 - `T` Reputation test collection test. one indicator type of reputation, and 3 test playbooks defined in the conf.json file
       under the "reputation_tests" list. Should collect all 3 tests.
+- `PR1` has a pack with components for XSOAR and XSIAM, but the component for XSIAM is only parsing rule.
 """
 
 
@@ -238,6 +239,7 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.MR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      (Path('MyXSIAMPack/ModelingRules/HarryRule'),)),
 
+    # only parsing rule component exists, expect the pack to be collected for installation
     (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      None),
 )
