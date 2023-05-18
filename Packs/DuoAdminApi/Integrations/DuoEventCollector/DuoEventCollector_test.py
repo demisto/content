@@ -87,17 +87,17 @@ def test_parse_events(event, expected_res):
     parse_events(event) == expected_res
 
 
-# def test_call():
-#     mock_admin_api = MagicMock()
-#     mock_response = load_json('./test_data/telephonyV2.json')
-#     mock_admin_api.get_telephony_log.return_value = mock_response
-#     client.admin_api = mock_admin_api
-#     client.params.mintime = {LogType.TELEPHONY: {'min_time': '16843543575', 'next_offset': []}}
-#     _, metadata = client.call(['TELEPHONY'])
-#     assert metadata == {
-#         "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
-#         "total_objects": 3
-#     }
+def test_call():
+    mock_admin_api = MagicMock()
+    mock_response = load_json('./test_data/authenticationV2.json')
+    mock_admin_api.get_authentication_log.return_value = mock_response
+    client.admin_api = mock_admin_api
+    client.params.mintime = {LogType.AUTHENTICATION: {'min_time': '16843543575', 'next_offset': []}}
+    _, metadata = client.call([LogType.AUTHENTICATION])
+    assert metadata == {
+        "next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"],
+        "total_objects": 1
+    }
 
 
 def test_setLastRun_when_no_new_events(ret_fresh_client, mocker):

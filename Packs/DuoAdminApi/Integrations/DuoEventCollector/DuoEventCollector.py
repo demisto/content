@@ -25,7 +25,7 @@ class Params(BaseModel):
     limit: str = '1000'
     retries: str = Field(default='5')
 
-    def set_next_offset_value(self, mintime, log_type: LogType) -> None:  # pragma: no cover
+    def set_next_offset_value(self, mintime, log_type: LogType) -> None:
         self.mintime[log_type] = mintime
 
 
@@ -34,13 +34,13 @@ class Client:
     A class for the client request handling
     """
 
-    def __init__(self, params: Params):  # pragma: no cover type: ignore
+    def __init__(self, params: Params):
         self.params = params.get('params')
-        self.admin_api = create_api_call(params.get('host'),  # type: ignore[attr-defined]
-                                         params.get('integration_key'),  # type: ignore[attr-defined]
-                                         (params.get('secret_key')).get('password'))  # type: ignore[attr-defined]
+        self.admin_api = create_api_call(params.get('host'),
+                                         params.get('integration_key'),
+                                         (params.get('secret_key')).get('password'))
 
-    def call(self, request_order: list) -> tuple:  # pragma: no cover
+    def call(self, request_order: list) -> tuple:
         retries = int(self.params.retries)
         response_metadata = None
         while retries != 0:
@@ -149,12 +149,12 @@ class GetEvents:
         temp.rotate(-1)
         self.request_order = list(temp)
 
-    def make_sdk_call(self) -> tuple:  # pragma: no cover
+    def make_sdk_call(self) -> tuple:
         events, metadata = self.client.call(self.request_order)  # type: ignore
         events = events[: int(self.client.params.limit)]
         return events, metadata
 
-    def _iter_events(self) -> None:    # type: ignore  # pragma: no cover
+    def _iter_events(self) -> None:    # type: ignore
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """
@@ -190,7 +190,7 @@ class GetEvents:
             self.client.params.limit = str(int(self.client.params.limit) - len(stored_events))
         return stored_events
 
-    def get_last_run(self):    # pragma: no cover
+    def get_last_run(self):
         """
         Get the info from the last run, it returns the time to query from
         """
@@ -263,7 +263,7 @@ def main():  # pragma: no cover
 
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
-            last_run = after.timestamp()  # type: ignore
+            last_run = after.timestamp()
             v1_mintime, v2_mintime = parse_mintime(last_run)
             last_run = {LogType.AUTHENTICATION.value: {'min_time': v2_mintime, 'next_offset': []},
                         LogType.ADMINISTRATION.value: v1_mintime,
