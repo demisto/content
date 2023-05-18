@@ -24,6 +24,6 @@
 !jira-board-epic-list board_id=14
 !jira-sprint-issue-list sprint_id=4
 !jira-sprint-issue-move issues=TSTPRD-4 sprint_id=4
-!jira-epic-issue-list epic_key=COMPANYSA-1 jql_query="status!=done"
+!jira-epic-issue-list epic_key=COMPANYSA-35 jql_query="status!=done"
 !jira-issue-link-type-get
 !jira-issue-to-issue-link inward_issue=COMPANYSA-31 outward_issue=XSOAR-19 link_type="Post-Incident Reviews" comment="Dummy Link"
