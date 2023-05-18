@@ -1,14 +1,15 @@
 id: Azure SQL - Test
 version: -1
 name: Azure SQL - Test
+description: Test playbook for Azure SQL Management integration.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2f3487b2-9fba-4d77-85b5-46a9217d8e4c
+    taskid: a3d8db9f-7d85-462c-8c6f-6a3fb0db8d9a
     type: start
     task:
-      id: 2f3487b2-9fba-4d77-85b5-46a9217d8e4c
+      id: a3d8db9f-7d85-462c-8c6f-6a3fb0db8d9a
       version: -1
       name: ""
       iscommand: false
@@ -18,6 +19,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,12 +32,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 01baab5e-251c-4688-83c6-f25087cb152f
+    taskid: df42b92f-2ceb-40a7-84d5-4c9fd635a9b2
     type: regular
     task:
-      id: 01baab5e-251c-4688-83c6-f25087cb152f
+      id: df42b92f-2ceb-40a7-84d5-4c9fd635a9b2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -49,11 +53,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -66,12 +67,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e5ddb0a5-e4a7-45bb-811f-8e16f6694276
+    taskid: 9c5d0407-98ec-417b-8cfa-f29e17654a3a
     type: regular
     task:
-      id: e5ddb0a5-e4a7-45bb-811f-8e16f6694276
+      id: 9c5d0407-98ec-417b-8cfa-f29e17654a3a
       version: -1
       name: Get servers list
       description: List of all servers.
@@ -83,6 +86,7 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -95,12 +99,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 58085d19-335e-4129-8616-54ae535751b5
+    taskid: 497484e6-c375-4c7d-85b6-f89df9879e1e
     type: condition
     task:
-      id: 58085d19-335e-4129-8616-54ae535751b5
+      id: 497484e6-c375-4c7d-85b6-f89df9879e1e
       version: -1
       name: Check server_name equals sqlintegration
       type: condition
@@ -121,6 +127,7 @@ tasks:
           right:
             value:
               simple: sqlintegration
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -133,12 +140,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 8f727450-12c7-4683-8943-f91820b1712d
+    taskid: 34d89d0a-32d2-43d7-8f81-aa946acd091e
     type: regular
     task:
-      id: 8f727450-12c7-4683-8943-f91820b1712d
+      id: 34d89d0a-32d2-43d7-8f81-aa946acd091e
       version: -1
       name: Get Data Bases list
       description: List of all DataBases for server.
@@ -153,6 +162,7 @@ tasks:
       server_name:
         simple: ${AzureSQL.Server.name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -165,12 +175,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 114ce35d-c419-4209-81d0-fa4d9c4c9d90
+    taskid: 14960e96-6487-45b0-8829-e90d13b478af
     type: condition
     task:
-      id: 114ce35d-c419-4209-81d0-fa4d9c4c9d90
+      id: 14960e96-6487-45b0-8829-e90d13b478af
       version: -1
       name: Check db_name equals sql-integration-db
       type: condition
@@ -201,6 +213,7 @@ tasks:
           right:
             value:
               simple: sql-integration-db
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -213,12 +226,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 738e3086-8498-49e5-885b-9f834900fe64
+    taskid: e17c44db-ecee-40ca-8df1-798f8cf1bb79
     type: title
     task:
-      id: 738e3086-8498-49e5-885b-9f834900fe64
+      id: e17c44db-ecee-40ca-8df1-798f8cf1bb79
       version: -1
       name: Done
       type: title
@@ -226,11 +241,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 3350
+          "y": 4120
         }
       }
     note: false
@@ -238,12 +254,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 48d1c5fd-d264-4a98-8412-1924f4c60fe4
+    taskid: b0f26837-836e-4b51-81fb-32101b95ed34
     type: regular
     task:
-      id: 48d1c5fd-d264-4a98-8412-1924f4c60fe4
+      id: b0f26837-836e-4b51-81fb-32101b95ed34
       version: -1
       name: Get DataBase audit policy
       description: Auditing settings of a database.
@@ -270,6 +288,7 @@ tasks:
       server_name:
         simple: ${AzureSQL.Server.name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -282,12 +301,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8d9b87c8-1f30-4c1b-817f-938436af40da
+    taskid: 9ac139b6-b19e-4beb-85b9-396a36e837df
     type: condition
     task:
-      id: 8d9b87c8-1f30-4c1b-817f-938436af40da
+      id: 9ac139b6-b19e-4beb-85b9-396a36e837df
       version: -1
       name: Check policy name equals Default, and check policy type
       type: condition
@@ -321,6 +342,7 @@ tasks:
           right:
             value:
               simple: Microsoft.Sql/servers/databases/auditingSettings
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -333,12 +355,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 872693a7-a0b6-4421-8271-8b7c074bfbf7
+    taskid: c78956e4-b5e7-4de4-88ab-80030e6e198b
     type: regular
     task:
-      id: 872693a7-a0b6-4421-8271-8b7c074bfbf7
+      id: c78956e4-b5e7-4de4-88ab-80030e6e198b
       version: -1
       name: Update DataBase audit policy - set retention days to 5
       description: Create or update database's auditing policy.
@@ -350,7 +374,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      audit_actions_groups: {}
       db_name:
         complex:
           root: AzureSQL.DB.name
@@ -365,18 +388,14 @@ tasks:
                   simple: sql-integration-db
       is_azure_monitor_target_enabled:
         simple: "true"
-      is_storage_secondary_key_in_use: {}
-      queue_delay_ms: {}
       retention_days:
         simple: "5"
       server_name:
         simple: ${AzureSQL.Server.name}
       state:
         simple: Enabled
-      storage_account_access_key: {}
-      storage_account_subscription_id: {}
-      storage_endpoint: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -389,12 +408,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 6aa81deb-9e06-42ee-8e07-edba10d46870
+    taskid: 7e1dd790-bda7-4612-8207-9b54d3380004
     type: condition
     task:
-      id: 6aa81deb-9e06-42ee-8e07-edba10d46870
+      id: 7e1dd790-bda7-4612-8207-9b54d3380004
       version: -1
       name: Check retention days equals 5
       type: condition
@@ -420,6 +441,7 @@ tasks:
           right:
             value:
               simple: "5"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -432,12 +454,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9c1701e7-a387-4e72-8316-6201fa2671aa
+    taskid: c1be1318-6278-4c6d-8744-3e330a02acc0
     type: regular
     task:
-      id: 9c1701e7-a387-4e72-8316-6201fa2671aa
+      id: c1be1318-6278-4c6d-8744-3e330a02acc0
       version: -1
       name: Update DataBase audit policy - set retention days to 0
       description: Create or update database's auditing policy.
@@ -449,7 +473,6 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      audit_actions_groups: {}
       db_name:
         complex:
           root: AzureSQL.DB.name
@@ -464,18 +487,14 @@ tasks:
                   simple: sql-integration-db
       is_azure_monitor_target_enabled:
         simple: "true"
-      is_storage_secondary_key_in_use: {}
-      queue_delay_ms: {}
       retention_days:
         simple: "0"
       server_name:
         simple: ${AzureSQL.Server.name}
       state:
         simple: Enabled
-      storage_account_access_key: {}
-      storage_account_subscription_id: {}
-      storage_endpoint: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -488,12 +507,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 81a71563-34bd-45a8-8ce9-84b6731552c9
+    taskid: 9e3bff8a-6ac2-4d23-8893-4545f44093a2
     type: condition
     task:
-      id: 81a71563-34bd-45a8-8ce9-84b6731552c9
+      id: 9e3bff8a-6ac2-4d23-8893-4545f44093a2
       version: -1
       name: Check retention days equals 0
       type: condition
@@ -519,6 +540,7 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -531,12 +553,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: daf0fed2-160c-4f8e-8ff1-e0e982a0c5da
+    taskid: 03f3950f-cfae-47cd-8981-cad250e7a409
     type: regular
     task:
-      id: daf0fed2-160c-4f8e-8ff1-e0e982a0c5da
+      id: 03f3950f-cfae-47cd-8981-cad250e7a409
       version: -1
       name: Get DataBase threat policy
       description: Threat detection policies of a database
@@ -563,6 +587,7 @@ tasks:
       server_name:
         simple: ${AzureSQL.Server.name}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -575,12 +600,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 28e9f2f6-3de5-40fe-8a7a-95157b93b80f
+    taskid: aee96609-2db2-49cf-8336-ee6560ef6993
     type: condition
     task:
-      id: 28e9f2f6-3de5-40fe-8a7a-95157b93b80f
+      id: aee96609-2db2-49cf-8336-ee6560ef6993
       version: -1
       name: Check Threat Policy type
       type: condition
@@ -606,6 +633,7 @@ tasks:
           right:
             value:
               simple: Microsoft.Sql/servers/databases/securityAlertPolicies
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -618,12 +646,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: be634148-810a-4841-819e-94cd7deeef33
+    taskid: 5eab2591-70fa-4f96-8afd-abe531797c6f
     type: regular
     task:
-      id: be634148-810a-4841-819e-94cd7deeef33
+      id: 5eab2591-70fa-4f96-8afd-abe531797c6f
       version: -1
       name: Update DataBase threat policy - set retention days to 5
       description: Create or update database's threat detection policy.
@@ -647,19 +677,14 @@ tasks:
               right:
                 value:
                   simple: sql-integration-db
-      disabled_alerts: {}
-      email_account_admins: {}
-      email_addresses: {}
       retention_days:
         simple: "5"
       server_name:
         simple: ${AzureSQL.Server.name}
       state:
         simple: Enabled
-      storage_account_access_key: {}
-      storage_endpoint: {}
-      use_server_default: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -672,12 +697,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 071fdca7-5a88-438f-8b91-2179672963a8
+    taskid: ef57386f-d78b-4bc8-89af-fbae153ba0b9
     type: condition
     task:
-      id: 071fdca7-5a88-438f-8b91-2179672963a8
+      id: ef57386f-d78b-4bc8-89af-fbae153ba0b9
       version: -1
       name: Check retention days equals 5
       type: condition
@@ -698,6 +725,7 @@ tasks:
           right:
             value:
               simple: "5"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -710,12 +738,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7df9723b-d815-4caa-8d9b-961177861e63
+    taskid: a4d3bf94-7354-4e99-8082-bfc40cf689ed
     type: regular
     task:
-      id: 7df9723b-d815-4caa-8d9b-961177861e63
+      id: a4d3bf94-7354-4e99-8082-bfc40cf689ed
       version: -1
       name: Update DataBase threat policy - set retention days to 0
       description: Create or update database's threat detection policy.
@@ -739,19 +769,14 @@ tasks:
               right:
                 value:
                   simple: sql-integration-db
-      disabled_alerts: {}
-      email_account_admins: {}
-      email_addresses: {}
       retention_days:
         simple: "0"
       server_name:
         simple: ${AzureSQL.Server.name}
       state:
         simple: Enabled
-      storage_account_access_key: {}
-      storage_endpoint: {}
-      use_server_default: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -764,12 +789,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: c4b60585-276b-4d7e-897c-e1c371b11ff6
+    taskid: 60e27f41-0b82-4d79-8d8b-325a58a8e31d
     type: condition
     task:
-      id: c4b60585-276b-4d7e-897c-e1c371b11ff6
+      id: 60e27f41-0b82-4d79-8d8b-325a58a8e31d
       version: -1
       name: Check retention days equals 0
       type: condition
@@ -777,7 +804,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -790,6 +817,7 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -802,12 +830,160 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 236dd9d6-2be6-4062-89dc-0195ec5e120c
+    type: regular
+    task:
+      id: 236dd9d6-2be6-4062-89dc-0195ec5e120c
+      version: -1
+      name: Subscriptions List command
+      description: Gets all subscriptions for a tenant.
+      script: '|||azure-sql-subscriptions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 4203bc09-8d6e-45f2-8b9e-38590ad2b34b
+    type: condition
+    task:
+      id: 4203bc09-8d6e-45f2-8b9e-38590ad2b34b
+      version: -1
+      name: Verify subscription list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureSQL.Subscription.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5fb3b9c2-3b9d-4770-83dc-3bfe0064ad52
+    type: regular
+    task:
+      id: 5fb3b9c2-3b9d-4770-83dc-3bfe0064ad52
+      version: -1
+      name: Resource Group list command
+      description: Gets all the resource groups for a subscription.
+      script: '|||azure-sql-resource-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      tag:
+        simple: Owner:Demisto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 512c0c97-da81-4fda-810d-27f95c652691
+    type: condition
+    task:
+      id: 512c0c97-da81-4fda-810d-27f95c652691
+      version: -1
+      name: Verify Resource group list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureSQL.ResourceGroup.tags.Owner
+            iscontext: true
+          right:
+            value:
+              simple: Demisto
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3385,
+        "height": 4155,
         "width": 390,
         "x": 460,
         "y": 30
@@ -817,4 +993,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Test playbook for Azure SQL Management integration.
