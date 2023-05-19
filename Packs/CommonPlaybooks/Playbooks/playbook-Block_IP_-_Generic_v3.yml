@@ -3311,8 +3311,8 @@ tasks:
       id: e0a5eadb-97eb-4117-8771-4ec381dd65dc
       version: -1
       name: Update Indicator Tag for EDL
-      description: commands.local.cmd.set.indicators
-      script: Builtin|||setIndicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
       brand: Builtin
@@ -3330,7 +3330,9 @@ tasks:
               separator:
                 value:
                   simple: ','
-      tags:
+      field:
+        simple: tags
+      fieldValue:
         complex:
           root: inputs.Tag
     separatecontext: false

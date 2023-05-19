@@ -1,0 +1,9 @@
+[MODEL: dataset=recorded_future_intelligence_cloud_raw]
+alter
+    xdm.event.operation_sub_type = json_extract_scalar(rule, "$.name"),
+    xdm.event.id = json_extract_scalar(rule, "$.id"),
+    xdm.event.description = json_extract_scalar(review, "$.note"),
+    xdm.source.user.username = json_extract_scalar(rule, "$.owner_name"),
+    xdm.source.user.identifier = json_extract_scalar(rule, "$.owner_id"),
+    xdm.event.type = type,
+    xdm.source.user.ou = json_extract_scalar(rule, "$.organisation_name");
