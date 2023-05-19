@@ -1,0 +1,21 @@
+{
+    "name": "Use Case Builder",
+    "description": "To stream line the use case development process and get you into production faster!",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Joe Cosgrove",
+    "url": "",
+    "email": "",
+    "created": "2023-05-19T16:28:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "joe-cosgrove"
+    ]
+}
