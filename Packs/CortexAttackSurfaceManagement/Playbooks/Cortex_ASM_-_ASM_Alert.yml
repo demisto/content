@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -80
+          "y": 300
         }
       }
     note: false
@@ -50,8 +50,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 5900
+          "x": 30,
+          "y": 6630
         }
       }
     note: false
@@ -76,13 +76,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "100"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 60
+          "y": 440
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "120"
+      - "101"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -175,8 +175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2330
+          "x": 950,
+          "y": 2860
         }
       }
     note: false
@@ -200,14 +200,14 @@ tasks:
       description: 'Send an email'
     nexttasks:
       '#none#':
-      - "86"
+      - "129"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 4175
+          "x": 50,
+          "y": 4780
         }
       }
     note: false
@@ -237,8 +237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1250,
-          "y": 2340
+          "x": -1430,
+          "y": 2840
         }
       }
     note: false
@@ -268,122 +268,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 4835
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: d3d1f946-9f9e-4460-86f4-df31a6046530
-    type: condition
-    task:
-      id: d3d1f946-9f9e-4460-86f4-df31a6046530
-      version: -1
-      name: Service exposure still observable?
-      description: Determines if service was still observable.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "17"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: alert.asmservicedetection
-                accessor: ScanResult
-            iscontext: true
-          right:
-            value:
-              simple: Closed
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 0667d597-b2fa-4717-8b01-828c679b34b0
-    type: title
-    task:
-      id: 0667d597-b2fa-4717-8b01-828c679b34b0
-      version: -1
-      name: continue
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1740,
-          "y": 2340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 4c1488d4-0d9f-4f70-891b-0c9f476312ec
-    type: regular
-    task:
-      id: 4c1488d4-0d9f-4f70-891b-0c9f476312ec
-      version: -1
-      name: Close alert (service not observed)
-      description: Close the current alert because service is no longer observed.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      closeNotes:
-        simple: Alert status set to 'Resolved - No Longer Observed' by Active Response Module
-      closeReason:
-        simple: Resolved - No Longer Observed
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -910,
-          "y": 5410
+          "y": 5455
         }
       }
     note: false
@@ -395,10 +281,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 69be963e-3719-4710-8b09-945f1bd9d4a4
+    taskid: 8caa3a33-93a8-4f6d-86b1-10a15f24908c
     type: condition
     task:
-      id: 69be963e-3719-4710-8b09-945f1bd9d4a4
+      id: 8caa3a33-93a8-4f6d-86b1-10a15f24908c
       version: -1
       name: Service exposure still observable?
       description: Determines if service was still observable and also if automated remediation was done.
@@ -425,7 +311,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Closed
+              simple: REMEDIATED
         - operator: isEqualString
           left:
             value:
@@ -440,8 +326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 4470
+          "x": 50,
+          "y": 5100
         }
       }
     note: false
@@ -453,12 +339,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f9fa16ff-b86c-4b20-8694-cb9c88eb9090
+    taskid: 5558e530-85ff-4549-8e9f-9fe80fded75f
     type: collection
     task:
-      id: f9fa16ff-b86c-4b20-8694-cb9c88eb9090
+      id: 5558e530-85ff-4549-8e9f-9fe80fded75f
       version: -1
-      name: What to do if NMAP scan is inconclusive?
+      name: What to do if Remediation Scan is inconclusive?
       description: Determines if alert should be closed or kept open for auto-closure based on analyst input.
       type: collection
       iscommand: false
@@ -471,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 4650
+          "x": 290,
+          "y": 5270
         }
       }
     note: false
@@ -491,7 +377,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
+        completeafterv2: true
         completeaftersla: false
     form:
       questions:
@@ -512,7 +398,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Select a next step
-      description: The post migration NMAP scan wasn't conclusive, decide next steps.
+      description: The post migration Remediation Confirmation Scan wasn't conclusive, decide next steps.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -540,8 +426,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -530,
-          "y": 1580
+          "x": -210,
+          "y": 2045
         }
       }
     note: false
@@ -612,8 +498,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 1580
+          "x": 320,
+          "y": 2025
         }
       }
     note: false
@@ -683,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 1580
+          "x": 760,
+          "y": 1825
         }
       }
     note: false
@@ -754,8 +640,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 1420
+          "x": 50,
+          "y": 1850
         }
       }
     note: false
@@ -847,8 +733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 1910
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -880,8 +766,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 1750
+          "x": 50,
+          "y": 2310
         }
       }
     note: false
@@ -978,8 +864,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 2070
+          "x": 50,
+          "y": 2630
         }
       }
     note: false
@@ -1009,8 +895,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 3240
+          "x": 500,
+          "y": 3750
         }
       }
     note: false
@@ -1076,8 +962,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2450
+          "x": 1390,
+          "y": 2950
         }
       }
     note: false
@@ -1169,8 +1055,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2760
+          "x": 1390,
+          "y": 3260
         }
       }
     note: false
@@ -1222,8 +1108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 3070
+          "x": 1390,
+          "y": 3570
         }
       }
     note: false
@@ -1253,8 +1139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2330
+          "x": 1390,
+          "y": 2830
         }
       }
     note: false
@@ -1286,8 +1172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2915
+          "x": 1390,
+          "y": 3415
         }
       }
     note: false
@@ -1317,8 +1203,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 2340
+          "x": -1030,
+          "y": 2870
         }
       }
     note: false
@@ -1350,8 +1236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -480,
-          "y": 3245
+          "x": -390,
+          "y": 3920
         }
       }
     note: false
@@ -1405,8 +1291,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -480,
-          "y": 3425
+          "x": -390,
+          "y": 4095
         }
       }
     note: false
@@ -1458,8 +1344,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 3860
+          "x": 470,
+          "y": 4440
         }
       }
     note: false
@@ -1491,8 +1377,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 3410
+          "x": 230,
+          "y": 3945
         }
       }
     note: false
@@ -1552,8 +1438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 3560
+          "x": 230,
+          "y": 4130
         }
       }
     note: false
@@ -1614,8 +1500,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 3860
+          "x": 50,
+          "y": 4550
         }
       }
     note: false
@@ -1684,60 +1570,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 5110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "86":
-    id: "86"
-    taskid: be116371-fcc0-4038-829f-95d3535da4d6
-    type: playbook
-    task:
-      id: be116371-fcc0-4038-829f-95d3535da4d6
-      version: -1
-      name: Cortex ASM - Detect Service
-      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
-      playbookName: Cortex ASM - Detect Service
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      ASMRuleID:
-        complex:
-          root: alert
-          accessor: asmattacksurfaceruleid
-      RemoteIP:
-        complex:
-          root: alert
-          accessor: remoteip
-      RemotePort:
-        complex:
-          root: alert
-          accessor: remoteport
-      ScanNumber:
-        simple: "2"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 90,
-          "y": 4310
+          "x": 50,
+          "y": 5780
         }
       }
     note: false
@@ -1767,8 +1601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 3240
+          "x": 50,
+          "y": 3750
         }
       }
     note: false
@@ -1835,8 +1669,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2600
+          "x": 950,
+          "y": 3100
         }
       }
     note: false
@@ -1899,8 +1733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2600
+          "x": 1390,
+          "y": 3100
         }
       }
     note: false
@@ -1992,8 +1826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 4960
+          "x": 50,
+          "y": 5600
         }
       }
     note: false
@@ -2048,8 +1882,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 2760
+          "x": 950,
+          "y": 3260
         }
       }
     note: false
@@ -2115,8 +1949,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 3070
+          "x": 950,
+          "y": 3430
         }
       }
     note: false
@@ -2158,58 +1992,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "100":
-    id: "100"
-    taskid: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
-    type: playbook
-    task:
-      id: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
-      version: -1
-      name: Cortex ASM - Detect Service
-      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
-      playbookName: Cortex ASM - Detect Service
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      ASMRuleID:
-        complex:
-          root: alert
-          accessor: asmattacksurfaceruleid
-      RemoteIP:
-        complex:
-          root: alert
-          accessor: remoteip
-      RemotePort:
-        complex:
-          root: alert
-          accessor: remoteport
-      ScanNumber:
-        simple: "1"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "102":
     id: "102"
     taskid: 4cfe6be2-06e2-4f81-82b4-a8024bf71a2f
@@ -2226,23 +2008,23 @@ tasks:
       '#default#':
       - "36"
       Automated Remediation:
-      - "12"
+      - "120"
       Manual Remediation:
-      - "63"
+      - "126"
       Notification Email:
-      - "60"
+      - "123"
       Prompt All Options:
-      - "31"
+      - "127"
       Prompt All Options - S3:
-      - "108"
+      - "128"
       Prompt no AR:
-      - "34"
+      - "124"
       Prompt no ServiceNow:
-      - "35"
+      - "121"
       Prompt no ServiceNow - S3:
-      - "109"
+      - "125"
       ServiceNow Ticket:
-      - "10"
+      - "122"
     separatecontext: false
     conditions:
     - label: Automated Remediation
@@ -2381,7 +2163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1220
+          "y": 1230
         }
       }
     note: false
@@ -2432,8 +2214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3860
+          "x": 800,
+          "y": 4320
         }
       }
     note: false
@@ -2463,8 +2245,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -740,
-          "y": 1430
+          "x": -530,
+          "y": 1895
         }
       }
     note: false
@@ -2535,8 +2317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1580
+          "x": -810,
+          "y": 1775
         }
       }
     note: false
@@ -2679,8 +2461,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 5270
+          "x": 50,
+          "y": 5960
         }
       }
     note: false
@@ -2716,8 +2498,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 5660
+          "x": -140,
+          "y": 6350
         }
       }
     note: false
@@ -2753,8 +2535,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 5660
+          "x": 250,
+          "y": 6350
         }
       }
     note: false
@@ -2799,8 +2581,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 5460
+          "x": -370,
+          "y": 6150
         }
       }
     note: false
@@ -2845,8 +2627,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 5460
+          "x": 480,
+          "y": 6150
         }
       }
     note: false
@@ -2899,8 +2681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -480,
-          "y": 3600
+          "x": -390,
+          "y": 4300
         }
       }
     note: false
@@ -2912,10 +2694,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: ecd767d9-f7a7-443b-83bb-b6363e3b5c83
+    taskid: 46a8e681-4479-415f-8e31-df37d4aada6c
     type: regular
     task:
-      id: ecd767d9-f7a7-443b-83bb-b6363e3b5c83
+      id: 46a8e681-4479-415f-8e31-df37d4aada6c
       version: -1
       name: Send remediation notification email to service owners
       description: Send an email to service owners about the status of automated remediation action taken.
@@ -2928,11 +2710,23 @@ tasks:
       - "11"
     scriptarguments:
       htmlBody:
-        complex:
-          root: inputs.RemediationNotificationHTMLBody
+        simple: |-
+          <!DOCTYPE html>
+          <html lang="en">
+          <body>
+              <p>
+                  Infosec identified a security risk on an external service potentially owned by your
+                  team:<br><b>${alert.name}</b>
+              </p>
+              <p>
+                  <b>Alert Details:</b> ${alert.details}<br>
+                  <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
+                  <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+              </p>
+          </body>
+          </html>
       subject:
-        complex:
-          root: inputs.RemediationNotificationSubject
+        simple: A new security risk was addressed on an external service owned by your team
       to:
         complex:
           root: alert.asmserviceowner
@@ -2951,8 +2745,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
-          "y": 3790
+          "x": -580,
+          "y": 4590
         }
       }
     note: false
@@ -2974,7 +2768,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'This playbook contains all the cloud provider sub playbooks for remediation'
     nexttasks:
       '#none#':
       - "64"
@@ -2983,8 +2777,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1250,
-          "y": 2495
+          "x": -1430,
+          "y": 2990
         }
       }
     note: false
@@ -2996,24 +2790,52 @@ tasks:
     isautoswitchedtoquietmode: false
   "120":
     id: "120"
-    taskid: 03f0b59b-af2b-4ede-8bda-aa7857c79c82
-    type: playbook
+    taskid: 404d8bad-c006-424a-8eb7-6a536bf865ab
+    type: title
     task:
-      id: 03f0b59b-af2b-4ede-8bda-aa7857c79c82
+      id: 404d8bad-c006-424a-8eb7-6a536bf865ab
       version: -1
-      name: Cortex ASM - Remediation Path Rules
-      playbookName: Cortex ASM - Remediation Path Rules
-      type: playbook
+      name: Automated Remediation
+      type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 2bdb4a9e-2e38-4560-80de-52908d6873e6
+    type: playbook
+    task:
+      id: 2bdb4a9e-2e38-4560-80de-52908d6873e6
+      version: -1
+      name: Cortex ASM - Remediation Path Rules
+      description: This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.
+      playbookName: Cortex ASM - Remediation Path Rules
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
       - "102"
     scriptarguments:
-      BypassDevCheck:
-        complex:
-          root: inputs.BypassDevCheck
       ExternallyDetectedProviders:
         complex:
           root: ASM.ExternalService
@@ -3039,24 +2861,308 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 2a27baf5-66ab-4fc1-8620-057e146bb7e4
+    type: title
+    task:
+      id: 2a27baf5-66ab-4fc1-8620-057e146bb7e4
+      version: -1
+      name: Prompt No ServiceNow
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 135c1652-e5f6-4024-84c2-5505be739fc0
+    type: title
+    task:
+      id: 135c1652-e5f6-4024-84c2-5505be739fc0
+      version: -1
+      name: ServiceNow
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: f17998a9-f920-494b-8b51-d422f58f1421
+    type: title
+    task:
+      id: f17998a9-f920-494b-8b51-d422f58f1421
+      version: -1
+      name: Notification Email
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 43e51396-1570-4aac-8b16-9e7b821abd2e
+    type: title
+    task:
+      id: 43e51396-1570-4aac-8b16-9e7b821abd2e
+      version: -1
+      name: Prompt No AR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 4e557494-58a9-42dc-872b-b5f80ee50683
+    type: title
+    task:
+      id: 4e557494-58a9-42dc-872b-b5f80ee50683
+      version: -1
+      name: Prompt No ServiceNow S3
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "109"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: fdb7c488-ed57-48f2-87b7-50b33081c417
+    type: title
+    task:
+      id: fdb7c488-ed57-48f2-87b7-50b33081c417
+      version: -1
+      name: Manual Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 39e3bd9e-527a-4bcd-841b-7f72aceb752f
+    type: title
+    task:
+      id: 39e3bd9e-527a-4bcd-841b-7f72aceb752f
+      version: -1
+      name: Prompt All Options
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 4dfd4f22-1b01-4f95-8a0e-e0307ba2b461
+    type: title
+    task:
+      id: 4dfd4f22-1b01-4f95-8a0e-e0307ba2b461
+      version: -1
+      name: Prompt All Options - S3
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "108"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 2b7b50b4-fc66-4ddd-839f-2a5241a1df90
+    type: playbook
+    task:
+      id: 2b7b50b4-fc66-4ddd-839f-2a5241a1df90
+      version: -1
+      name: Cortex ASM - Detect Service
+      playbookName: Cortex ASM - Detect Service
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "102_12_Automated Remediation": 0.79,
+      "102_121_Prompt no ServiceNow": 0.62,
+      "102_127_Prompt All Options": 0.9,
+      "102_128_Prompt All Options - S3": 0.85,
       "110_111_Close Now": 0.88,
       "110_112_ Automated-Remediation": 0.88,
-      "16_6_yes": 0.6,
+      "116_11_#default#": 0.37,
       "48_10_ServiceNow ticket": 0.82,
       "48_12_Automated remediation": 0.87,
       "48_60_Notification email": 0.88,
-      "48_63_Manual remediation": 0.54
+      "48_63_Manual remediation": 0.54,
+      "72_103_manual from RPR": 0.71,
+      "72_69_manual from data collection": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 6045,
-        "width": 3490,
-        "x": -1740,
-        "y": -80
+        "height": 6395,
+        "width": 3200,
+        "x": -1430,
+        "y": 300
       }
     }
   }
@@ -3077,42 +3183,6 @@ inputs:
 
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.
-  playbookInputQuery:
-- key: RemediationNotificationSubject
-  value:
-    simple: |-
-      A new security risk was addressed on an external service owned by your team
-  required: true
-  description: Subject of the notification (email or ticket) sent to the service owner after remediation.
-  playbookInputQuery:
-- key: RemediationNotificationHTMLBody
-  value:
-    simple: |-
-      <!DOCTYPE html>
-      <html lang="en">
-      <body>
-          <p>
-              Infosec identified a security risk on an external service potentially owned by your
-              team:<br><b>${alert.name}</b>
-          </p>
-          <p>
-              <b>Alert Details:</b> ${alert.details}<br>
-              <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
-              <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
-          </p>
-      </body>
-      </html>
-  required: true
-  description: 'Body of the notification (email or ticket) sent to the service owner after remediation.'
-  playbookInputQuery:
-- key: BypassDevCheck
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Determine whether to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
-
-    Set to "True" if you want to bypass.  Default is "False".
   playbookInputQuery:
 outputs: []
 tests:
