@@ -464,12 +464,12 @@ def url_report_output(url, response_json):
     reputation_statistics = reputations.get("statistics")
     reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
 
-    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n ## Analysis\n ### Statistics\n **Unknown**: {analysis_statistics.get("unknown")}
+    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n ## Analysis\n 
+    ### Statistics\n **Unknown**: {analysis_statistics.get("unknown")}
     **Suspicious**: {analysis_statistics.get("suspicious")}
     **Malicious**: {analysis_statistics.get("malicious")}
     **Goodware**: {analysis_statistics.get("goodware")}
     **Total**: {analysis_statistics.get("total")}
-    
     \n**First analysis**: {analysis.get("first_analysis")}
     **Analysis count**: {analysis.get("analysis_count")}
     """
