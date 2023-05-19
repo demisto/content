@@ -1482,5 +1482,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar"
+    ],
     "description": ""
 }
