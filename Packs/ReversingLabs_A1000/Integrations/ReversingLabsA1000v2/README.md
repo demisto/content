@@ -1,5 +1,5 @@
 ReversingLabs A1000 advanced Malware Analysis Platform.
-This integration was integrated and tested with version xx of ReversingLabs A1000 v2
+This integration was integrated and tested with versions 8.0.0 and up of ReversingLabs A1000.
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-reversinglabs-a1000-v2).
