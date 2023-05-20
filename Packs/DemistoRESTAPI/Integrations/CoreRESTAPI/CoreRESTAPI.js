@@ -26,6 +26,7 @@ getTenantAccountName = function () {
             account_name = 'acc_' + tenant_name
         }
     }
+    log(account_name);
     return account_name
 }
 
@@ -55,8 +56,11 @@ getAdvancedAuthMethodHeaders = function(key, auth_id, content_type,) {
             }
     }
 
-getRequestURL = function (uri) {
+getRequestURL = function (uri, keep_xsoar_suffix=true) {
     var requestUrl = serverURL;
+    if (!keep_xsoar_suffix && serverURL.endsWith('/xsoar')){
+        requestUrl = requestUrl.substring(0, requestUrl.length - 6);
+    }
     if (params.use_tenant){
         requestUrl += '/' + getTenantAccountName();
     }
@@ -118,9 +122,8 @@ sendMultipart = function (uri, entryID, body) {
 
 };
 
-var sendRequest = function(method, uri, body, raw) {
-    var requestUrl = getRequestURL(uri)
-    
+var sendRequest = function(method, uri, body, raw, keep_xsoar_suffix=true) {
+    var requestUrl = getRequestURL(uri, keep_xsoar_suffix);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
@@ -144,15 +147,17 @@ var sendRequest = function(method, uri, body, raw) {
             Method: method,
             Headers: headers,
             Body: body,
-            SaveToFile: raw,
-            redirect: 'follow'
+            SaveToFile: raw
         },
         params.insecure,
         params.proxy
     );
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        //var response = JSON.parse(res.Body);
+        
+            
+        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\n Body: ' + JSON.stringify(res) + '.';
     }
     if (raw) {
         return res;
@@ -324,10 +329,9 @@ var upload_file= function(incident_id, file_content, file_name) {
     return res;
 };
 
-var deleteContext_ = function (incident_id, key_to_delete) {
+var deleteContext = function (incident_id, key_to_delete) {
     log('deleteContext_ func');
-    log(investigation.id);
-    var raw = JSON.stringify({
+    var body = JSON.stringify({
         "args": null,
         "id": "",
         "investigationId": `${incident_id}`,
@@ -335,12 +339,7 @@ var deleteContext_ = function (incident_id, key_to_delete) {
         "markdown": false,
         "version": 0
     });
-   var result =  sendRequest('POST', '/entry', raw);
-   log(result);
-   for(let key in res){
-        log(key +" : " + result[key]+`\n`);
-   }
-   return res;
+   return sendRequest('POST', '/entry', body,true ,false);
 };
 
 
@@ -349,7 +348,7 @@ var deleteFile = function (entry_id, delete_artifact = true) {
         id: entry_id,
         deleteArtifact: delete_artifact});
     
-    return sendRequest( 'POST', '/entry/delete/v2', body_content);
+    return sendRequest( 'POST', '/entry/delete/v2', body_content,true , false);
 }
 
 /** 
@@ -400,21 +399,20 @@ get_current_user() {
 
  */
 
-
+/**
+ * Upload a new file
+Arguments:
+    @param {String} incident_id  -- incident id to upload the file to
+    @param {String} file_content -- content of the file to upload
+    @param {String} file_name  -- name of the file in the dest incident
+    @param {String} entryID  -- entry ID of the file
+Returns:
+    CommandResults -- Readable output
+Note:
+    You can give either the entryID or file_name.
+"""
+ */
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
-    /**
-     * Upload a new file
-    Arguments:
-        @param {String} incident_id  -- incident id to upload the file to
-        @param {String} file_content -- content of the file to upload
-        @param {String} file_name  -- name of the file in the dest incident
-        @param {String} entryID  -- entry ID of the file
-    Returns:
-        CommandResults -- Readable output
-    Note:
-        You can give either the entryID or file_name.
-    """
-     */
     if ((!file_name) && (!entryID)) {
         throw 'Either file_name or entry_id argument must be provided.';
     }
@@ -424,7 +422,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
         response = upload_file(incident_id, file_content, file_name);
     } else {
         var file_content = entrytoa(entryID);
-        log(file_content);
+        //log(file_content);
         
         if (file_name === null) {
             file_name = dq(invContext, "InfoFile(val.EntryID == '" + entryID + "').Name");
@@ -433,6 +431,8 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
             }
         }
         var body = JSON.stringify({"AttachmentName": file_name, "AttachmentBytes": file_content});
+        //// use multipart !!!! 
+        // sendMultipart
         response = sendRequest('POST', `/entry/upload/${incident_id}`, JSON.stringify(body));
             }
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
@@ -447,43 +447,23 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
 };
 
 
-var getIncidentId = function (entry_id) {
-    /**
-     * gets the incident id of entry_id.
-    Arguments:
-        @param {String} entry_id  -- the entry_id of the file which it's incident id needs to be returned.
-    Returns:
-            incident id   
-    """
-     */
-    //const res = entry_id.match(/(\d+)@(\d+)/);
-    const regex = /(\d+)@(\d+)/g;
-    const matches = [...entry_id.matchAll(regex)];
-    log(matches);
-    log(matches[0]);
-    if (matches.length > 0) {
-      const incidentId = matches[0][1];
-      return incidentId;
-    }
-
-    if (!res) {
-        throw new Error("EntryID unknown or malformatted!");
-    }
-    
-};
+  
 
 
+/**
+ * Deletes a specific file.
+Arguments:
+    @param {String} entryId  -- entry ID of the file
+Returns:
+    Message that the file was deleted successfully + entry_id
+"""
+ */ 
+// getting the context data
 var fileDeleteCommand = function(entryId) {
-    /**
-     * Deletes a specific file.
-    Arguments:
-        @param {String} entryId  -- entry ID of the file
-    Returns:
-        Message that the file was deleted successfully + entry_id
-    """
-     */ 
-    // getting the context data
     files =  invContext['File'];
+    if (!files){
+        throw new Error(`Files not found.`);
+    }
     files = (files instanceof Array)? files:[files];
     var new_files = []
     var not_found = true
@@ -500,72 +480,48 @@ var fileDeleteCommand = function(entryId) {
     if(not_found){
         throw new Error(`File already deleted or not found.`);
     }
-    log('ok')
-    //deleteFile(entryId)
-    var myHeaders = {
-        "Authorization": "4C1D7C9EA90325377B361DF97C954C77",
-        "Content-Type": "application/json",
-        "Cookie": "XSRF-TOKEN=ariw0a2K61jTIPwVT31zAl3Kgq5WF5Vj2SQOoLbpqb2P+na1vph3wYNkBlpzg0smoBYqOH2mM4Tz/n9ixqbuG7juUfKKsvP+EIIpBxY0clcKoOyJexyMR0mpRFHlIu9K89rY1J3h0cCEEU4GOnt8TF/eZiW+nzfoBTIag0+oQg4="
-      };
-      
-      var raw = JSON.stringify({
-        "args": null,
-        "id": "",
-        "investigationId": "1",
-        "data": "!DeleteContext key=File\n",
-        "markdown": false,
-        "version": 0
-      });
-      
-      var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
-      
-      var result = sendRequest("POST", "https://10.180.189.73/entry", requestOptions, false);
-      log(result.response);
-      
+    for(let key in new_files){
+        log(key +" : " + new_files[key]+`\n`);
+    }
+    //var res_deleteFile = deleteFile(entryId);
+    var res_deleteContext = deleteContext(investigation.id, 'File');
+
+    for(let key in new_files){
+        log(key +" : " + new_files[key]+`\n`);
+    }
+    return  {new_files};
+
 
 }
 
 
-
-function coreApiFileCheckCommand(entryId) {
-    /**
-     This command checks if the file is existing.
-        Arguments:
-            @param {String} entryId  -- entry ID of the file
-        Returns:
-            Dictionary with EntryID as key and boolean if the file exists as value.
-    */
-    files =  invContext['File'];
-    var not_found = true
-    if ((!files instanceof Array)&&((files['EntryID'] == entryId))){
-        not_found= false;
-    }
-    else{
+/**
+ This command checks if the file is existing.
+    Arguments:
+        @param {String} entryId  -- entry ID of the file
+    Returns:
+        Dictionary with EntryID as key and boolean if the file exists as value.
+*/
+function coreApiFileCheckCommand(EntryID) {
+    files =  invContext['File']instanceof Array? invContext['File']:[invContext['File']];
+    var file_found = false;
+    var human_readable = `File ${EntryID} isn't exists`;
+    if (typeof files['0'] !== 'undefined') {
         for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
-            if (files[i]['EntryID'] == entryId) {
-                not_found= false ;
+            if (files[i]['EntryID'] == EntryID) {
+                file_found= true ;
+                human_readable = `File ${EntryID} exists`;
             }
-            
-          }
-    }
 
-    if (!not_found) {
-        return {
-            HumanReadable: `File ${entryId} exists`,
-            outputs_prefix: 'IsFileExists',
-            outputs: response
-        };
+          }    
     }
-    else{
-        return {
-            HumanReadable: `File ${entryId}  isn't exists`,
-        }; 
+    return {
+        Type: entryTypes.note,
+        Contents: {[EntryID]: [file_found]},
+        HumanReadable: human_readable,
+        EntryContext: {[`IsFileExists(val.${EntryID}==${EntryID})`]: createContext({[EntryID]: [file_found]})}
     }
+        
 
 }
 
@@ -602,11 +558,25 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
     return `Attachment ${attachment_path} deleted !`;
 
 
-}
+};
+
+//var testModule = function (){
+//    
+//    var res= sendRequest('GET','user');
+//    log('now ok?');
+//    // if (res.Body["Status"] == -1){ //="connect: connection timed out"){
+//    //     throw new Error(`timeout. Please verify the Core Server URL argument\n${e}`);
+//    // }
+//    // else if (res["status"]==401 && res["id"] == "unauthorized"){
+//    //     throw new Error(`Authorization failed. Please verify the API Key \n${e}`);
+//    // }
+//    return 'ok';
+//};
 
 
 switch (command) {
     case 'test-module':
+        //return testModule();
         sendRequest('GET','user');
         return 'ok';
     case 'demisto-api-post':

@@ -296,6 +296,9 @@ script:
       required: true
       isArray: false
     description: This command checks if the file is existing in Xsoar by entry_id
+    outputs:
+    - description: Dictionary with EntryID as key and boolean if the file exists as value
+      contextPath: IsFileExists
   runonce: false
 tests:
 - No tests
