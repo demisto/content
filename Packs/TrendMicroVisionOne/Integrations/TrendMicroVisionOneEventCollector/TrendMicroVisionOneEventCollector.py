@@ -18,6 +18,7 @@ DEFAULT_MAX_LIMIT = 1000
 
 class Client(BaseClient):
 
+    API_VERSION = 'v3.0'
     def __init__(self, base_url: str, api_key: str, proxy: bool, verify: bool):
         self.base_url = base_url
         self.api_key = api_key
@@ -65,14 +66,17 @@ class Client(BaseClient):
         limit: int = DEFAULT_MAX_LIMIT
     ) -> List[Dict]:
         """
-        Implements a generic method with pagination to retrieve logs.
+        Implements a generic method with pagination to retrieve logs from trend micro vision one.
 
         Args:
-            url_suffix (str): The URL suffix for the api endpoint.
+            url_suffix (str): the URL suffix for the api endpoint.
             method (str): the method of the api endpoint.
             params (dict): query parameters for the api request.
             headers (dict): any custom headers for the api request.
             limit (str): the maximum number of events to retrieve.
+
+        Returns:
+            List[Dict]: a list of the requested logs.
         """
         events = []
 
@@ -88,6 +92,42 @@ class Client(BaseClient):
             events.extend(current_items)
 
         return events[:limit]
+
+    def get_workbench_logs(
+        self,
+        start_datetime: str,
+        end_datetime: str | None = None,
+        order_by: str | None = None,
+        limit: int = DEFAULT_MAX_LIMIT
+    ):
+        """
+        Implements a generic method with pagination to retrieve logs from trend micro vision one.
+
+        Args:
+            start_datetime (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the start
+                                  of the data retrieval time range.
+            end_datetime (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the end
+                                of the data retrieval time range.
+            order_by (str): Parameter to be used for sorting records. Records are returned in descending
+                            order by default.
+            limit (str): the maximum number of workbench events to retrieve.
+
+        Returns:
+            List[Dict]: The workbench events that were found.
+        """
+        # will retrieve all the events that are more or equal to start_datetime, does not support miliseconds
+        params = {'startDateTime': start_datetime}
+
+        if end_datetime:
+            params['endDateTime'] = end_datetime
+        if order_by:
+            params['orderBy'] = order_by
+
+        return self.get_events(
+            url_suffix=f'/{self.API_VERSION}/workbench/alerts',
+            params=params,
+            limit=limit
+        )
 
 
 ''' HELPER FUNCTIONS '''
