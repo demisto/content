@@ -34,6 +34,6 @@ def test_bmc_container_palette(bmc_container):
     assert len(bmc_container.PALETTE) == 1024
 
 
-def test_bmc_container_import(bmc_container, capfd):    
+def test_bmc_container_import_empty_file(bmc_container, capfd):    
     with capfd.disabled():
         assert bmc_container.b_import("test_data/empty_file") is False
