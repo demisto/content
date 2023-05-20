@@ -320,7 +320,6 @@ var upload_file= function(incident_id, file_content, file_name) {
                 contentType: 'application/json'
             }
         },
-    
     };
     var res = sendRequest('POST', `/entry/upload/${incident_id}`, JSON.stringify(body));
     if (isError(res[0])) {
@@ -351,25 +350,6 @@ var deleteFile = function (entry_id, delete_artifact = true) {
 }
 
 /** 
-create_attachment_data_json(file_path, field_name) {
-    const attachment_path = file_path;
-    
-    const file_data = {
-        fieldName: field_name,
-        files: {
-            [attachment_path]: {
-                path: attachment_path
-            }
-        },
-        originalAttachments: [
-            {
-                path: attachment_path
-            }
-        ]
-    };
-    
-    return file_data;
-}
     
 delete_attachment(incident_id, file_path, field_name = 'attachment') {
     const json_data = this.create_attachment_data_json(file_path, field_name);
@@ -378,13 +358,6 @@ delete_attachment(incident_id, file_path, field_name = 'attachment') {
         method: 'POST',
         url_suffix: `/incident/remove/${incident_id}`,
         json_data: json_data
-    });
-}
-
-get_file(entry_id) {
-    return this._http_request({
-        method: 'GET',
-        url_suffix: `/entry/download/${entry_id}`
     });
 }
 
@@ -420,20 +393,24 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     if ((!entryID)) {
         response = upload_file(incident_id, file_content, file_name);
     } else {
-        var file_content = entrytoa(entryID);
-        //log(file_content);
-        
+        log(file_name);
+        file_content = entrytoa(entryID);
         if (file_name === null) {
-            file_name = dq(invContext, "InfoFile(val.EntryID == '" + entryID + "').Name");
-            if (!file_name) {
-                throw "Impossible to detect a filename in the path, use the argument 'fileName' to set one!";
+            file_name = dq(invContext, "File(val.EntryID == '" + entryID + "').Name");
+        }
+        if (file_name === 'undefined') {
+            file_name = dq(invContext, "File(val.EntryID == '" + entryID + "').Name");
+        }
+        if (Array.isArray(file_name)) {
+            if (file_name.length > 0) {
+                file_name = file_name[0];
+            } else {
+                file_name = undefined;
             }
         }
-        var body = JSON.stringify({"AttachmentName": file_name, "AttachmentBytes": file_content});
-        //// use multipart !!!! 
-        // sendMultipart
-        response = sendRequest('POST', `/entry/upload/${incident_id}`, JSON.stringify(body));
-            }
+        //sendMultipart();
+        response = upload_file(incident_id, file_content, file_name);
+        }
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
     fileId = file_name ? saveFile(file_content) : entryID;
     return {
@@ -548,8 +525,9 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
                 "path": attachment_path
             }
         ]};
+    log(field_name);
     try{
-        sendRequest('DELETE', `/entry/File`, JSON.stringify(body));
+        sendRequest('POST', `/incident/remove/${incident_id}`, JSON.stringify(body),true ,false);
     }
     catch (e) {
         throw new Error(`File already deleted or not found.\n${e}`);
@@ -611,7 +589,7 @@ switch (command) {
     case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
     case 'core-api-file-upload':
-        return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entryID)
+        return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entry_id)
     case 'core-api-file-delete':
         return fileDeleteCommand(args.entry_id);
     case 'core-api-file-attachment-delete':
