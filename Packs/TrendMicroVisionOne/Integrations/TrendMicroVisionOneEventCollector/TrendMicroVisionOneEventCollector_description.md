@@ -1,8 +1,37 @@
-## BaseIntegration Help
+Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
 
-Markdown file for integration configuration  help snippet. In this file add:
+This integration fetches the following logs/alerts from Trend Micro Vision One and requires the following permissions:
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+| **Log Type**                    | **Action Role Permission Required** | **Api Documentation** |
+|---------------------------------|-------------------------------------|-----------------------|
+| Workbench logs                  | Workbench                           | https://automation.trendmicro.com/xdr/api-v3#tag/Workbench                  |
+| Observed Attack Techniques Logs | Observed Attack Techniques          | https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques                  |
+| Search Detection Logs           | Search                              | https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get                 |
+| Audit Logs                      | Audit Logs                          | https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs                 | 
+
+
+***
+You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in Trend Micro Vision One.
+
+1. Navigate to **Administration** > **User Accounts**.
+2. Click on the **Add Account** button.
+3. Fill in the **Add Account** details assigning the role you created in the previous step and choosing **APIs only** as the access level.
+4. Complete the account creation process by following the steps in the email sent.
+5. This will generate an **Authentication token** that can then be used to configure the Cortex XSIAM integration.
+
+***
+**Built-in Roles:**
+Trend Vision One has built-in roles with fixed permissions that Master Administrators can assign to accounts.
+
+The following table provides a brief description of each role. 
+
+
+| **Role**                          | **Description**                                                                                              |
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------- 
+| Master Administrator              | Can access all apps and Trend Vision Onefeatures                                                             |
+| Operator (formerly Administrator) | Can configure system settings and connect products                                                           |
+| Auditor                           | Has "View" access to specific Trend Vision Oneapps and features                                              |
+| Senior Analyst                    | Can investigate XDR alerts, take response actions, approve Managed XDR requests, and manage detection models |
+| Analyst                           | Can investigate XDR alerts and take response actions                                                         |
+
