@@ -195,7 +195,7 @@ script:
         description: File name of download
       - name: description
         description: Description of file entry
-    description: Download files from core server
+    description: Download files from Core server
   - name: core-api-multipart
     arguments:
       - name: uri
@@ -206,7 +206,7 @@ script:
         description: File entry ID
       - name: body
         description: Request body
-    description: Send HTTP Multipart request to upload files to core server
+    description: Send HTTP Multipart request to upload files to Core server
   - name: core-delete-incidents
     arguments:
     - name: ids
@@ -219,7 +219,7 @@ script:
       required: false
       isArray: true
       defaultValue: id,name,type,severity,status
-    description: Delete core incidents
+    description: Delete Core incidents
     execution: true
   - name: core-api-install-packs
     arguments:
