@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+DEFAULT_MAX_LIMIT = 1000
 ''' CLIENT CLASS '''
 
 
@@ -26,10 +26,11 @@ class Client(BaseClient):
 
     def http_request(
         self,
-        url_suffix: str,
+        url_suffix: str | None = None,
         method: str = 'GET',
         params: Dict | None = None,
         headers: Dict | None = None,
+        next_link: str | None = None
     ) -> Any:
         """
         Implements a generic http request to Trend Micro Vision One api.
@@ -39,19 +40,54 @@ class Client(BaseClient):
             method (str): the method of the api endpoint.
             params (dict): query parameters for the api request.
             headers (dict): any custom headers for the api request.
+            next_link (str): the next link for the api request (used mainly for pagination)
         """
         request_headers = headers or {
             "Authorization": f"Bearer {self.api_key}"
         }
 
+        url = next_link or f"{self.base_url}{url_suffix}"
+        demisto.debug(f'Sending the http request with {url=}, {params=}')
+
         return self._http_request(
                 method=method,
-                full_url=f"{self.base_url}{url_suffix}",
+                full_url=url,
                 params=params,
                 headers=request_headers,
             )
 
-    
+    def get_events(
+        self,
+        url_suffix: str,
+        method: str = 'GET',
+        params: Dict | None = None,
+        headers: Dict | None = None,
+        limit: int = DEFAULT_MAX_LIMIT
+    ) -> List[Dict]:
+        """
+        Implements a generic method with pagination to retrieve logs.
+
+        Args:
+            url_suffix (str): The URL suffix for the api endpoint.
+            method (str): the method of the api endpoint.
+            params (dict): query parameters for the api request.
+            headers (dict): any custom headers for the api request.
+            limit (str): the maximum number of events to retrieve.
+        """
+        events = []
+
+        response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
+        current_items = response.get('items') or []
+        demisto.debug(f'Received {current_items=} with {url_suffix=}')
+        events.extend(current_items)
+
+        while (next_link := response.get('nextLink')) and len(events) < limit:
+            response = self.http_request(method=method, params=params, headers=headers, next_link=next_link)
+            current_items = response.get('items') or []
+            demisto.debug(f'Received {current_items=} with {next_link=}')
+            events.extend(current_items)
+
+        return events[:limit]
 
 
 ''' HELPER FUNCTIONS '''
