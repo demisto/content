@@ -330,7 +330,6 @@ var upload_file= function(incident_id, file_content, file_name) {
 };
 
 var deleteContext = function (incident_id, key_to_delete) {
-    log('deleteContext_ func');
     var body = JSON.stringify({
         "args": null,
         "id": "",
@@ -447,8 +446,6 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
 };
 
 
-  
-
 
 /**
  * Deletes a specific file.
@@ -459,18 +456,21 @@ Returns:
 """
  */ 
 // getting the context data
-var fileDeleteCommand = function(entryId) {
+var fileDeleteCommand = function(EntryID) {
     files =  invContext['File'];
     if (!files){
         throw new Error(`Files not found.`);
     }
-    files = (files instanceof Array)? files:[files];
-    var new_files = []
+    files = (invContext['File'] instanceof Array)? invContext['File']:[invContext['File']];
+    if (files[0]=='undefined'){
+        throw new Error(`Files not found.`);
+        
+    }
+    var edit_content_data_files = []
     var not_found = true
     for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
-        if (files[i]['EntryID'] != entryId) {
-
-            new_files.push(files[i]);
+        if (files[i]['EntryID'] != EntryID) {
+            edit_content_data_files.push(files[i]);
         }
         else{
             not_found= false 
@@ -480,16 +480,16 @@ var fileDeleteCommand = function(entryId) {
     if(not_found){
         throw new Error(`File already deleted or not found.`);
     }
-    for(let key in new_files){
-        log(key +" : " + new_files[key]+`\n`);
-    }
-    //var res_deleteFile = deleteFile(entryId);
-    var res_deleteContext = deleteContext(investigation.id, 'File');
-
-    for(let key in new_files){
-        log(key +" : " + new_files[key]+`\n`);
-    }
-    return  {new_files};
+    deleteContext(investigation.id, 'File');
+    deleteFile(EntryID);
+    let context = {
+        'File(val.MD5==obj.MD5)': createContext(edit_content_data_files)
+    };
+    return  {Type: entryTypes.note,
+            Contents: '',
+            ContentsType: formats.json,
+            EntryContext: context,
+            HumanReadable: `File ${EntryID} was deleted successfully.`};
 
 
 }
@@ -498,7 +498,7 @@ var fileDeleteCommand = function(entryId) {
 /**
  This command checks if the file is existing.
     Arguments:
-        @param {String} entryId  -- entry ID of the file
+        @param {String} EntryID  -- entry ID of the file
     Returns:
         Dictionary with EntryID as key and boolean if the file exists as value.
 */
@@ -525,17 +525,16 @@ function coreApiFileCheckCommand(EntryID) {
 
 }
 
-
+/**
+ This command checks if the file is existing.
+    Arguments:
+        @param {String} incident_id  -- incident id to upload the file to
+        @param {String} attachment_path -- the file path
+        @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
+    Returns:
+        Show a message that the file was deleted successfully
+*/
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
-    /**
-     This command checks if the file is existing.
-        Arguments:
-            @param {String} incident_id  -- incident id to upload the file to
-            @param {String} attachment_path -- the file path
-            @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
-        Returns:
-            Show a message that the file was deleted successfully
-    */
     body =  {
         "fieldName": field_name,
         "files": {
@@ -560,18 +559,7 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
 
 };
 
-//var testModule = function (){
-//    
-//    var res= sendRequest('GET','user');
-//    log('now ok?');
-//    // if (res.Body["Status"] == -1){ //="connect: connection timed out"){
-//    //     throw new Error(`timeout. Please verify the Core Server URL argument\n${e}`);
-//    // }
-//    // else if (res["status"]==401 && res["id"] == "unauthorized"){
-//    //     throw new Error(`Authorization failed. Please verify the API Key \n${e}`);
-//    // }
-//    return 'ok';
-//};
+
 
 
 switch (command) {
