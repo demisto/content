@@ -1,19 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -33,29 +17,41 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def __init__(self, base_url: str, api_key: str, proxy: bool, verify: bool):
+        self.base_url = base_url
+        self.api_key = api_key
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+    def http_request(
+        self,
+        url_suffix: str,
+        method: str = 'GET',
+        params: Dict | None = None,
+        headers: Dict | None = None,
+    ) -> Any:
         """
+        Implements a generic http request to Trend Micro Vision One api.
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        Args:
+            url_suffix (str): The URL suffix for the api endpoint.
+            method (str): the method of the api endpoint.
+            params (dict): query parameters for the api request.
+            headers (dict): any custom headers for the api request.
+        """
+        request_headers = headers or {
+            "Authorization": f"Bearer {self.api_key}"
+        }
+
+        return self._http_request(
+                method=method,
+                full_url=f"{self.base_url}{url_suffix}",
+                params=params,
+                headers=request_headers,
+            )
+
+    
 
 
 ''' HELPER FUNCTIONS '''
