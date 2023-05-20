@@ -103,6 +103,9 @@ class Client(BaseClient):
         """
         Implements a generic method with pagination to retrieve logs from trend micro vision one.
 
+        docs:
+        https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get
+
         Args:
             start_datetime (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the start
                                   of the data retrieval time range.
@@ -126,6 +129,46 @@ class Client(BaseClient):
         return self.get_events(
             url_suffix=f'/{self.API_VERSION}/workbench/alerts',
             params=params,
+            limit=limit
+        )
+
+    def get_observed_attack_techniques_logs(
+        self,
+        detected_start_datetime: str,
+        detected_end_datetime: str,
+        top: int = DEFAULT_MAX_LIMIT,
+        limit: int = DEFAULT_MAX_LIMIT
+    ):
+        """
+        Implements a generic method with pagination to retrieve logs from trend micro vision one.
+
+        docs:
+       https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get
+
+        Note: The data retrieval time range cannot be greater than 365 days.
+
+        Args:
+            detected_start_datetime (str): Timestamp in ISO 8601 format that indicates the start of the event detection
+                                           data retrieval time range. If no value is specified, detectedStartDateTime
+                                           defaults to 1 hour before the time the request is made.
+            detected_end_datetime (str): Timestamp in ISO 8601 format that indicates the end of the event
+                                         detection data retrieval time range. If no value is specified,
+                                         detectedEndDateTime defaults to the time the request is made.
+            top (int): Number of records displayed on a single page.
+            limit (str): the maximum number of workbench events to retrieve.
+
+        Returns:
+            List[Dict]: The observe attack techniques that were found.
+        """
+        # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
+        # The data retrieval time range cannot be greater than 365 days.
+        return self.get_events(
+            url_suffix=f'/{self.API_VERSION}/oat/detections',
+            params={
+                'detectedStartDateTime': detected_start_datetime,
+                'detectedEndDateTime': detected_end_datetime,
+                'top': top
+            },
             limit=limit
         )
 
