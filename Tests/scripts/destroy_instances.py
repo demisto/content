@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 import subprocess
 from typing import Optional
+import shutil
+import sys
 
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from Tests.scripts.utils.log_util import install_logging
@@ -50,7 +52,8 @@ def shutdown(server_ip: str, ttl: Optional[int] = None):
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()
 
 
 def main():

@@ -10,7 +10,7 @@ echo -e "Top level folders to scan (used by flake8):\n${all_1_depth_dirs}\n"
 echo -e "Folders to be used for lint scan (used by pylint and mypy):\n${all_dirs}\n"
 
 # run mypy
-./Tests/scripts/mypy.sh $all_dirs || errors=$?
+./Tests/scripts/mypy.sh $all_1_depth_dirs || errors=$?
 
 # run pylint
 ./Tests/scripts/pylint.sh $all_dirs || errors=$?
@@ -18,6 +18,7 @@ echo -e "Folders to be used for lint scan (used by pylint and mypy):\n${all_dirs
 # run flake8
 python3 -m flake8 *.py || errors=$?
 python3 -m flake8 $all_1_depth_dirs || errors=$?
+./Tests/scripts/pyflake.sh $all_1_depth_dirs || errors=$?
 
 
 echo 'Linter exit code:' $errors
