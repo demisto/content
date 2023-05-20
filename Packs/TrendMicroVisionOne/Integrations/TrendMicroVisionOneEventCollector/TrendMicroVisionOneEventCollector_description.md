@@ -5,7 +5,7 @@ This integration fetches the following logs/alerts from Trend Micro Vision One a
 
 | **Log Type**                    | **Action Role Permission Required** | **Api Documentation** |
 |---------------------------------|-------------------------------------|-----------------------|
-| Workbench logs                  | Workbench                           | https://automation.trendmicro.com/xdr/api-v3#tag/Workbench                  |
+| Workbench logS                  | Workbench                           | https://automation.trendmicro.com/xdr/api-v3#tag/Workbench                  |
 | Observed Attack Techniques Logs | Observed Attack Techniques          | https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques                  |
 | Search Detection Logs           | Search                              | https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get                 |
 | Audit Logs                      | Audit Logs                          | https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs                 | 
@@ -35,3 +35,5 @@ The following table provides a brief description of each role.
 | Senior Analyst                    | Can investigate XDR alerts, take response actions, approve Managed XDR requests, and manage detection models |
 | Analyst                           | Can investigate XDR alerts and take response actions                                                         |
 
+***
+Please be sure to select the correct domain for **Your server URL** integration parameter, you can see the list [here](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) section [3] under "Obtain the domain name for your region."
