@@ -1063,7 +1063,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{str(err)}")
+        return_error(f'Failed to execute "{command}" command. \nError:\n"{str(err)}"')
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
