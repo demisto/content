@@ -17,10 +17,11 @@ configuration:
   name: credentials
   required: false
   type: 9
+  additionalinfo: The api key of Trend Micro Vision One API Key, refer to the help section or to the README.md on how to retrieve the api key.
   hiddenusername: true
   section: Connect
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is being executed for a single log-type (total of 4)
+  additionalinfo: The maximum number of events to fetch every time fetch is being executed for a single log-type (Workbench, Observed Attack Techniques, Search Detections and Aduit logs)
   defaultvalue: 1000
   name: max_fetch
   required: false
@@ -29,7 +30,7 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
-  name: after
+  name: first_fetch
   required: false
   type: 0
   section: Collect
@@ -48,33 +49,41 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: Palo Alto Networks Trend Micro Vision One Event Collector integration for XSIAM
+description: Palo Alto Networks Trend Micro Vision One Event Collector integration for XSIAM, collects the Workbench, Observed Attack Techniques, Search Detections and Aduit logs.
 display: 'Trend Micro Vision One Event Collector'
 name: TrendMicroVisionOneEventCollector
 script:
   commands:
-  - name: limit
-    description: The maximum number of events to retrieve.
-    defaultValue: '50'
-  - auto: PREDEFINED
-    defaultValue: 'False'
-    description: Set this argument to True in order to create events, otherwise the command will only display them.
-    name: should_push_events
-    predefined:
-    - 'True'
-    - 'False'
-  - name: log_type
-    defaultValue: 'False'
-    description: The log type to retrieve.
-    predefined:
-    - 'all'
-    - 'audit_logs',
-    - 'oat_detection_logs'
-    - 'search_detection_logs'
-    - 'workbench_logs'
+  - deprecated: false
+    description: Returns a list of logs.
+    name: trend-micro-vision-one-get-events
+    arguments:
+    - description: The maximum number of logs to retrieve.
+      defaultValue: '50'
+      name: limit
+      secret: false
+    - description: From which time to retrieve the log(s) (<number> <time unit>, for example 12 hours, 1 day, 3 months).
+      defaultValue: 3 days
+      name: from_time
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to push the fetched events to XSIAM or not.
+      name: should_push_events
+      predefined:
+      - 'false'
+      - 'true'
+    - name: log_type
+      defaultValue: 'all'
+      description: The log type to retrieve.
+      predefined:
+      - 'all'
+      - 'audit_logs'
+      - 'oat_detection_logs'
+      - 'search_detection_logs'
+      - 'workbench_logs'
     outputs:
     - contextPath: TrendMicroVisionOne.Events
-      description: 'Trend Micro Vision One events'
+      description: Trend Micro Vision One events.
       type: Unknown
   isfetch: false
   isfetchevents: true
