@@ -128,9 +128,9 @@ script:
       type: String
   - arguments:
     - default: true
-      description: A comma-separated list of CVE names.
+      description: A comma-separated list of CVE ID.
       isArray: true
-      name: cve
+      name: cve_id
       required: true
       secret: false
     deprecated: false
@@ -1245,7 +1245,7 @@ script:
     - contextPath: ThreatVault.ATP.PCAP.Name
       description: Threatvault ATP PCAP Name
       type: string
-  dockerimage: demisto/crypto:1.0.0.58095
+  dockerimage: demisto/crypto:1.0.0.59835
   isfetch: true
   runonce: false
   script: ''

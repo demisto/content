@@ -166,7 +166,7 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      cve:
+      cve_id:
         simple: CVE-2020-2040
     separatecontext: false
     continueonerrortype: ""

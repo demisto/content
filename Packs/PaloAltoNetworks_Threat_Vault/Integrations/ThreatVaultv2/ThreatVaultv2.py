@@ -550,7 +550,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
 
 def cve_command(client: Client, args: Dict) -> List[CommandResults]:
 
-    cves = argToList(args.get("cve"))
+    cves = argToList(args.get("cve_id"))
     command_results_list: List[CommandResults] = []
 
     for cve in cves:

@@ -114,7 +114,7 @@ def test_commands_failure(command, demisto_args, expected_results):
         ),
         (
             cve_command,
-            {"cve": "1234567890"},
+            {"cve_id": "1234567890"},
             "CVE 1234567890 vulnerability reputation is unknown to Threat Vault.",
             None,
         ),
@@ -684,7 +684,7 @@ def test_file_command(mocker, args, resp, expected_results):
 
 CVE_COMMAND_ARGS = [
     (
-        {"cve": "CVE-2011-1272"},
+        {"cve_id": "CVE-2011-1272"},
         [
             {
                 "data": {
@@ -718,7 +718,7 @@ CVE_COMMAND_ARGS = [
         },
     ),
     (
-        {"cve": "CVE-2011-1272,CVE-2011-1272"},
+        {"cve_id": "CVE-2011-1272,CVE-2011-1272"},
         [
             {
                 "data": {
