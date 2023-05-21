@@ -1926,7 +1926,7 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     return results
 
 
-def main():
+def main():  # pragma: no cover
     try:
         """GLOBAL VARS"""
         params = demisto.params()
