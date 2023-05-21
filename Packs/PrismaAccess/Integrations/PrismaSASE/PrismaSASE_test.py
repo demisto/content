@@ -106,7 +106,8 @@ def test_list_security_rules_command__when_object_not_found(mocker):
     mocker.patch.object(client, 'list_security_rules', side_effect=DemistoException("Error in API call [404]"))
     with pytest.raises(DemistoException):
         res = list_security_rules_command(client, {"id": "1234567"})
-        assert res == "The item you're searching for does not exist within the API."
+        assert res == "The item you're searching for does not exist within the Prisma SASE API."
+
 
 
 @pytest.mark.parametrize(

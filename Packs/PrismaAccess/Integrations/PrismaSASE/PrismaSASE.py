@@ -1214,8 +1214,8 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        # A dict containing a list of results is returned by the API.
-        # A single dict is returned when filtering the request by name.
+        # A dict containing a list of results (data) is returned from the API.
+        # When filtering by name the key 'data' does not exist in the response, therefore we return the entire response.
         outputs = outputs.get('data', outputs)
 
     address_to_xsoar_format(outputs)
@@ -1317,7 +1317,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         raw_response = client.list_security_rules(query_params=query_params, tsg_id=tsg_id)  # type: ignore
         # A dict containing a list of results is returned by the API.
         # A single dict is returned when filtering the request by name.
-        outputs = raw_response.get('data') or raw_response
+        outputs = raw_response.get('data', raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
@@ -2056,7 +2056,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                           outputs=outputs)
 
 
-def main():  # pragma: no cover
+def main():  # pragma: no cover  # sourcery skip: remove-redundant-if
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
@@ -2133,10 +2133,11 @@ def main():  # pragma: no cover
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     # Log exceptions
-    except Exception as e:
+    except DemistoException as e:
         # special handling for 404 error, which is returned when the item is not found
-        if "404" in e.message:
-            return_results("The item you're searching for does not exist within the API.")
+        if "404" and "Object Not Present" in e.message:
+            return_results("The item you're searching for does not exist within the Prisma SASE API.")
+
         else:
             return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
