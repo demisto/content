@@ -17,6 +17,8 @@ OAT_DETECTION_LOGS_TIME = 'oat_detection_logs_time'
 WORKBENCH_LOGS_TIME = 'workbench_logs_time'
 SEARCH_DETECTION_LOGS_TIME = 'search_detection_logs_time'
 AUDIT_LOGS_TIME = 'audit_logs_time'
+PRODUCT = 'vision_one'
+VENDOR = 'trend_micro'
 ''' CLIENT CLASS '''
 
 
@@ -529,10 +531,10 @@ def fetch_events(
     Args:
         client (Client): the client object
         first_fetch (str): the first fetch time
-        limit (int): the maximum number of search detection logs to return.
+        limit (int): the maximum number of logs to fetch from each type
 
     Returns:
-        Tuple[List[Dict], Dict]: events & updated last run for all the logs.
+        Tuple[List[Dict], Dict]: events & updated last run for all the log types.
     """
     last_run = demisto.getLastRun()
 
@@ -590,22 +592,88 @@ def test_module(client: Client, first_fetch: str) -> str:
     return 'ok'
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_events_command(client: Client, args: Dict) -> CommandResults:
+    """
+    implements the trend-micro-vision-one-get-events command, mainly used for debugging.
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    Args:
+        client (Client): the client object.
+        args (dict): the command arguments.
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    Returns:
+        CommandResults: command results object.
+    """
+    limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_LIMIT
+    should_push_events = argToBoolean(args.get('should_push_events'))
+    log_type = args.get('log_type') or 'all'
+    from_time = args.get('from_time')
+    to_time = args.get('to_time')
+
+    def parse_workbench_logs() -> List[Dict]:
+        workbench_logs = client.get_workbench_logs(start_datetime=from_time, end_datetime=to_time, limit=limit)
+        return [
+            {
+                "Id": log.get('id'),
+                'Time': log.get('createdDateTime')
+            } for log in workbench_logs
+        ]
+
+    def parse_observed_attack_techniques_logs() -> List[Dict]:
+        observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
+            detected_start_datetime=from_time, detected_end_datetime=to_time, top=limit, limit=limit
+        )
+        return [
+            {
+                "Id": log.get('uuid'),
+                'Time': log.get('detectedDateTime')
+            } for log in observed_attack_techniques_logs
+        ]
+
+    def parse_search_detection_logs() -> List[Dict]:
+        search_detection_logs = client.get_search_detection_logs(
+            start_datetime=from_time, end_datetime=to_time, top=limit, limit=limit
+        )
+        return [
+            {
+                "Id": log.get('uuid'),
+                'Time': log.get('eventTimeDT')
+            } for log in search_detection_logs
+        ]
+
+    def parse_audit_logs() -> List[Dict]:
+        audit_logs = client.get_audit_logs(
+            start_datetime=from_time, end_datetime=to_time, limit=limit
+        )
+        return [
+            {
+                "Id": log.get('uuid'),
+                'Time': log.get('loggedDateTime')
+            } for log in audit_logs
+        ]
+
+    if log_type == 'all':
+        events = parse_workbench_logs() + parse_observed_attack_techniques_logs() + \
+                 parse_search_detection_logs() + parse_audit_logs()
+    else:
+        log_type_to_parse_func = {
+            'audit_logs': parse_audit_logs,
+            'oat_detection_logs': parse_observed_attack_techniques_logs,
+            'search_detection_logs': parse_search_detection_logs,
+            'workbench_logs': parse_workbench_logs()
+        }
+        events = log_type_to_parse_func[log_type]
+
+    if should_push_events:
+        send_events_to_xsiam(
+            events=events, vendor=VENDOR, product=PRODUCT
+        )
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+        outputs_key_field='Id',
+        outputs=events,
+        outputs_prefix='TrendMicroVisionOne.Events',
+        readable_output=tableToMarkdown(f'events for {log_type=}', events, removeNull=True)
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''

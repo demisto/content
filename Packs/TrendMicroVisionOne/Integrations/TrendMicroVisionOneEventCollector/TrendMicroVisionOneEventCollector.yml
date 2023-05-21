@@ -62,9 +62,12 @@ script:
       defaultValue: '50'
       name: limit
       secret: false
-    - description: From which time to retrieve the log(s) (<number> <time unit>, for example 12 hours, 1 day, 3 months).
-      defaultValue: 3 days
+    - description: From which time to retrieve the log(s), a date in ISO8601 format.
       name: from_time
+      required: true
+    - description: To which time to retrieve the log(s), a date in ISO8601 format.
+      name: to_time
+      required: true
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to push the fetched events to XSIAM or not.
