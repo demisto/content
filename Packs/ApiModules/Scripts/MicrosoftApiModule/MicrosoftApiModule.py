@@ -850,8 +850,8 @@ and paste it in your instance configuration under the **Authorization code** par
 def reset_auth() -> CommandResults:
     """
     The command reset the integration context
-    * after running the command will need to regenerate the access token by giving new token/auth-code
-    :return:
+    * after running the command the user will need to regenerate the access token by giving new token/auth-code
+    :return: Message about resetting the authorization process.
     """
     demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
     set_integration_context({})
