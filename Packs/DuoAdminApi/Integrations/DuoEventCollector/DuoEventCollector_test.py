@@ -249,7 +249,8 @@ def test_handle_administration_logs(ret_fresh_client):
                                                          (['AUTHENTICATION', 'TELEPHONY'], True),
                                                          ([], True),
                                                          (['banana'], 'banana'),
-                                                         (['AUTHENTICATION', 'TELEPONY'], 'TELEPONY')])
+                                                         (['AUTHENTICATION', 'TELEPONY'], 'TELEPONY'),
+                                                         (['AUTHENTICATION', 'TELEPONY', 'ADMIN'], 'TELEPONY,ADMIN')])
 def test_validate_request_order_array(log_type_list, expected_res):
     """
     Given:

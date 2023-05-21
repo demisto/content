@@ -6,7 +6,7 @@
         "browser_version": "67.0.3396.99",
         "flash_version": "uninstalled",
         "hostname": null,
-        "ip": "169.232.89.219",
+        "ip": "111.111.11.111",
         "is_encryption_enabled": true,
         "is_firewall_enabled": true,
         "is_password_set": true,
@@ -42,7 +42,7 @@
         "name": "Microsoft Azure Active Directory"
       },
       "auth_device": {
-        "ip": "192.168.225.254",
+        "ip": "111.111.111.111",
         "key": "DP5BJ05HI4WRBVI4Q7JF",
         "location": {
           "city": "Ann Arbor",

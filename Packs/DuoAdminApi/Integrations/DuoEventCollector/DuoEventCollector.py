@@ -264,10 +264,11 @@ def validate_request_order_array(logs_type_array: list) -> Any:
     for value in logs_type_array:
         if value not in [LogType.ADMINISTRATION, LogType.AUTHENTICATION, LogType.TELEPHONY]:
             wrong_values.append(value)
-   if not wrong_values:
-       return True
-  else:
-      return ','.join(wrong_values)
+
+    if not wrong_values:
+        return True
+    else:
+        return ','.join(wrong_values)
 
 
 def main():
