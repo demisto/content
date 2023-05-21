@@ -2,13 +2,13 @@
 /* Arista Networks EOS Switch Utility Rules          */
 /*****************************************************/
 [RULE: arista_switch_common_fields_modeling]
-/* Modeling for fields that are common to all of arista EOS event types.  */
+/* Modeling for fields that are common to all of arista EOS event types. */
 /* Log Format: timestamp hostname process: [seq number:] %FACILITY-Severity-Mnemonic: Message text */ 
 alter 
-    dvc_process_tuple = split(arrayindex(regextract(_raw_log, "<\d+>.+?\s+(\S+\s+\w+)\:\s"),0)),
+    dvc_process_tuple = split(arrayindex(regextract(_raw_log, "<\d+>.+?\s+(\S+\s+\S+):\s+"),0)),
     facility_severity_mnemonic_tuple = split(arrayindex(regextract(_raw_log, "%(\S+\-\d\-\w+):"), 0), "-"),
     message = arrayindex(regextract(_raw_log, "<\d+>.+ \S+ \w+: \S+: (.+)"), 0),  
-    // extract alternative token for the facility in case it is not in the expected format of %FACILITY-Severity-Mnemonic
+    // extract alternative token for the facility in case it is not in the expected format of %FACILITY-Severity-Mnemonic:
     alternative_facility1 = arrayindex(regextract(_raw_log, "<\d+>.+? \S+ \w+: \d+: %{0,1}(\S+): .+"), 0), //if log includes sequence number 
     alternative_facility2 = arrayindex(regextract(_raw_log, "<\d+>.+? \S+ \w+: %{0,1}(\S+): .+"), 0) // if log does not include a sequence a number
 | alter
@@ -25,4 +25,71 @@ alter
     xdm.event.id = coalesce(mnemonic, facility),
     xdm.event.description = message,
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
-    xdm.alert.severity = severity;
+    xdm.alert.severity = severity,
+    xdm.alert.description = _raw_log;
+
+[MODEL: dataset="arista_switch_raw"]
+
+/*** AAA (Authentication, Authorization, and Accounting) Events ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "AAA" 
+| alter 
+    username = arrayindex(regextract(message, "user (\S+)"), 0),
+    src =  arrayindex(regextract(message, "\[from:\s*(\S+)\]"), 0),  
+    service =  arrayindex(regextract(message, "service:{0,1}\s*\'{0,1}([^\]\']+)"), 0),
+    reason = arrayindex(regextract(message, "reason:\s*([^\|]+?)\]"), 0), // relevant only for mnemonic="LOGIN_FAILED" 
+    auth_method = arrayindex(regextract(message, "Authentication method \'([^\']+)\'"), 0) // relevant only for mnemonic="AUTHN_FALLBACK" 
+| alter 
+    src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ipv6 = if(src ~= "\w{1,3}\:", src, null),
+    src_hostname = if(src !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" and src !~= "\w{1,3}\:", src, null)
+| alter 
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.host.hostname = src_hostname,
+    xdm.source.process.name = service, 
+    xdm.source.user.username = username,
+    xdm.event.outcome = if(mnemonic IN ("LOGIN", "LOGOUT"), XDM_CONST.OUTCOME_SUCCESS, mnemonic="AUTHN_FALLBACK", XDM_CONST.OUTCOME_PARTIAL, mnemonic="LOGIN_FAILED", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = reason, // relevant only for mnemonic="LOGIN_FAILED" 
+    xdm.auth.auth_method = auth_method, // relevant only for mnemonic="AUTHN_FALLBACK" 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION); 
+    
+/*** extractions for Accounting events ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "ACCOUNTING" 
+| alter 
+    message_header = split(arrayindex(regextract(message, "\S+\s+\S+\s+\S+\s+\S+\s+\S+"), 0)),
+    task_id = arrayindex(regextract(message, "task_id=(\d+)"), 0),
+    elapsed_time = arrayindex(regextract(message, "elapsed_time=(\S+)"), 0),
+    service = arrayindex(regextract(message, "service=(\S+)"), 0),
+    privilege_level = arrayindex(regextract(message, "priv\-lvl=(\d+)"), 0),
+    cmd = arrayindex(regextract(message, "cmd=(.+?)[\w+=]*"), 0)
+| alter 
+    dvc = arrayindex(message_header, 0), // the target switch hostname 
+    username = arrayindex(message_header, 1), // user who logged in to the switch 
+    login_process = arrayindex(message_header, 2), // eg. ssh 
+    src =  arrayindex(message_header, 3), // the source remote host that initiated the login 
+    process_phase =  arrayindex(message_header, 4) // indicates whether the process started (starts) or completed (stop)
+| alter 
+    src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    src_ipv6 = if(src ~= "\w{1,3}\:", src, null),
+    src_hostname = if(src !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" and src !~= "\w{1,3}\:", src, null),
+    dst_ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    dst_ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null),
+    dst_hostname = if(dvc !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" and dvc !~= "\w{1,3}\:", dvc, null)
+| alter 
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.source.host.hostname = src_hostname,
+    xdm.source.user.username = username, 
+    xdm.source.process.name = login_process,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.host.hostname = dst_hostname,
+    xdm.target.process.name = service, 
+    xdm.target.process.identifier = task_id, 
+    xdm.target.process.command_line = cmd,
+    xdm.event.duration = to_number(elapsed_time),
+    xdm.event.is_completed = if(process_phase = "stop", true, false),
+    xdm.auth.privilege_level = if(privilege_level in ("0", "1"), XDM_CONST.PRIVILEGE_LEVEL_USER , privilege_level = "15", XDM_CONST.PRIVILEGE_LEVEL_ADMIN , privilege_level),
+    xdm.auth.auth_method = login_process;
