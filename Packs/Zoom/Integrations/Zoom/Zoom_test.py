@@ -981,9 +981,9 @@ def test_zoom_list_user_channels_command(mocker):
         page_number=1
     )
 
-    assert result.outputs['channels'] == expected_raw_data
-    assert result.outputs['channels']['channels'][0]['id'] == expected_raw_data['channels'][0]['id']
-    assert result.outputs['channels']['channels'][0]['jid'] == expected_raw_data['channels'][0]['jid']
+    assert result.outputs == expected_raw_data
+    assert result.outputs['channels'][0]['id'] == expected_raw_data['channels'][0]['id']
+    assert result.outputs['channels'][0]['jid'] == expected_raw_data['channels'][0]['jid']
 
 
 def test_zoom_create_channel_command(mocker):
