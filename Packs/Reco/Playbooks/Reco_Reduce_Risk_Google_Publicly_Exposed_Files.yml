@@ -1,11 +1,7 @@
 id: Reco - Reduce Risk - Google Publicly Exposed Files
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Reco - Reduce Risk - Google Publicly Exposed Files
-description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims
-  to identify and mitigate the risk associated with publicly exposed sensitive files
-  on Google Drive. It follows a sequence of tasks to detect such files, analyze their
-  locations, and remove the "anyone with link" permission to enhance data security.
+description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims to identify and mitigate the risk associated with publicly exposed sensitive files on Google Drive. It follows a sequence of tasks to detect such files, analyze their locations, and remove the "anyone with link" permission to enhance data security.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -45,8 +42,7 @@ tasks:
       id: b783179a-792a-48ed-8961-97425bbea658
       version: -1
       name: Reco Get Assets With Public Link
-      description: Reco Get Assets With Public Link - Retrieves all sensitive assets
-        with public links from Reco.
+      description: Reco Get Assets With Public Link - Retrieves all sensitive assets with public links from Reco.
       script: '|||reco-get-sensitive-assets-with-public-link'
       type: regular
       iscommand: true
@@ -78,8 +74,7 @@ tasks:
       id: 60401348-fd9c-4f68-8faf-c4a225fe797f
       version: -1
       name: Location is User Drive
-      description: Location is User Drive - Checks if the location of the assets is
-        a user drive or a shared drive.
+      description: Location is User Drive - Checks if the location of the assets is a user drive or a shared drive.
       type: condition
       iscommand: false
       brand: ""
@@ -223,8 +218,7 @@ tasks:
       id: 429b438f-713d-4066-8399-89aabe8f7f5d
       version: -1
       name: Get Organizer Owner
-      description: Get Organizer Owner - Sets the organizer's email address as a value
-        in the context.
+      description: Get Organizer Owner - Sets the organizer's email address as a value in the context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -272,8 +266,7 @@ tasks:
       id: 18e024ac-d04c-49dc-8554-c1a7f3d20049
       version: -1
       name: Google Drive Delete Anyone with Link Permission
-      description: Google Drive Delete Anyone with Link Permission - Deletes the anyone
-        with link permission for a file.
+      description: Google Drive Delete Anyone with Link Permission - Deletes the anyone with link permission for a file.
       script: '|||google-drive-file-permission-delete'
       type: regular
       iscommand: true
@@ -315,8 +308,7 @@ tasks:
       id: e9acb131-199d-4743-819d-650bf4851b83
       version: -1
       name: Delete Anyone With Link Permission
-      description: Delete Anyone With Link Permission - Deletes the anyone with link
-        permission for a file using the owner's email address.
+      description: Delete Anyone With Link Permission - Deletes the anyone with link permission for a file using the owner's email address.
       script: '|||google-drive-file-permission-delete'
       type: regular
       iscommand: true
@@ -360,8 +352,7 @@ tasks:
       id: d84303c9-e585-4fa8-8761-15e3e3d67b31
       version: -1
       name: Error Delete Permission
-      description: Error Delete Permission - Represents an error state when deleting
-        a permission.
+      description: Error Delete Permission - Represents an error state when deleting a permission.
       type: title
       iscommand: false
       brand: ""
@@ -426,6 +417,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -453,6 +445,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -486,6 +479,9 @@ inputs:
   value: {}
   required: true
   description: Admin email address to impersonate in case of shared drive
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
