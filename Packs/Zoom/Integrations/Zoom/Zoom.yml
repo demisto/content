@@ -1212,7 +1212,7 @@ script:
       type: string
       description: The next page token for pagination.
       
-  dockerimage: demisto/pyjwt3:1.0.0.59487
+  dockerimage: demisto/pyjwt3:1.0.0.59980
   runonce: false
   script: "-"
   subtype: python3

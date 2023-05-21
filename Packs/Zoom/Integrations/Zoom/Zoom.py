@@ -463,27 +463,6 @@ def remove_extra_info_list(name, limit, raw_data):
     return all_info
 
 
-def remove_extra_info_list(name, limit, raw_data):
-    """_summary_
-    Due to the fact that page_size must be const,
-    Extra information may be provided to me, such as:
-    In the case of limit = 301, manual_list_users_pagination will return 600 users (MAX_RECORDS * 2),
-    The last 299 must be removed.
-
-    Args:
-        limit (int): the number of records the user asked for
-        raw_data (dict):the entire response from the pagination function
-    """
-    all_info = []
-    for page in raw_data:
-        channel_info = page.get(name, [page])
-        for channel in channel_info:
-            all_info.append(channel)
-            if len(all_info) >= limit:
-                return all_info
-    return all_info
-
-
 def remove_extra_info_meeting_list(limit, raw_data):
     """
     Due to the fact that page_size must be const,
