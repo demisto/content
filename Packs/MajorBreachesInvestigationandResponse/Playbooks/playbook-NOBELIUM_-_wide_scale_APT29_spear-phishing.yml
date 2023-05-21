@@ -1741,6 +1741,6 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}
