@@ -109,7 +109,6 @@ def test_list_security_rules_command__when_object_not_found(mocker):
         assert res == "The item you're searching for does not exist within the Prisma SASE API."
 
 
-
 @pytest.mark.parametrize(
     # Write and define the expected
     "args",
