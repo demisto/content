@@ -109,13 +109,13 @@ class Client:
         if not self.params.mintime[LogType.TELEPHONY].get('next_offset'):
             response = self.admin_api.get_telephony_log(
                 mintime=self.params.mintime[LogType.TELEPHONY].get('min_time'),
-                api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
+                api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc')
         else:
             next_offset = self.params.mintime[LogType.TELEPHONY].get('next_offset')
             mintime = next_offset[0]
             response = self.admin_api.get_telephony_log(
                 next_offset=next_offset, mintime=mintime,
-                api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
+                api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc')
 
         response_metadata = response.get('metadata', {})
         events = response.get('items')
@@ -252,7 +252,7 @@ def parse_events(authentication_evetns: list):
 
 
 def parse_mintime(last_run: float) -> tuple:
-    """Returns the last run percision of 10 digits for v1 and 13 digits for v2"""
+    """Returns the last run precision of 10 digits(seconds) for v1 and 13 digits(milliseconds) for v2"""
     last_run_v1 = int(last_run)
     last_run_v2 = int(last_run * 1000)
     return last_run_v1, last_run_v2
@@ -260,10 +260,14 @@ def parse_mintime(last_run: float) -> tuple:
 
 def validate_request_order_array(logs_type_array: list) -> Any:
     """Validates that all the inputs of the log_type_array are valid."""
+    wrong_values = []
     for value in logs_type_array:
         if value not in [LogType.ADMINISTRATION, LogType.AUTHENTICATION, LogType.TELEPHONY]:
-            return value
-    return True
+            wrong_values.append(value)
+   if not wrong_values:
+       return True
+  else:
+      return ','.join(wrong_values)
 
 
 def main():
@@ -278,7 +282,7 @@ def main():
         request_order = last_run.get('request_order', logs_type_array.split(','))
         request_order = [log_type.upper() for log_type in request_order]
         if unvalid_log_type := validate_request_order_array(request_order) is not True:
-            DemistoException(f'One of the vales for logs_type_array is unvlid the value is {unvalid_log_type}')
+            DemistoException(f'We found invalid values for logs_type_array, the values are {unvalid_log_type}')
 
         demisto.debug(f'The request order is : {request_order}')
 
