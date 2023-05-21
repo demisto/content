@@ -115,6 +115,7 @@ def test_setLastRun_when_no_new_events(ret_fresh_client, ret_fresh_parameters, m
     client = ret_fresh_client
     mocker.patch.object(demisto, 'params', return_value=ret_fresh_parameters)
     mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(Client, 'call', side_effect=[(['event1'], {
         "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
         "total_objects": 3
