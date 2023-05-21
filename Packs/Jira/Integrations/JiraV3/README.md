@@ -1,4 +1,4 @@
-Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both on-prem, and cloud instances.
+Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 This integration was integrated and tested with: Jira Cloud Platform V3 (for Cloud), Jira Software Cloud (for Cloud), Jira Server Platform 9.6.0 (for OnPrem), Jira Software Server 9.6.0 (for OnPrem).
 
 Some changes have been made that might affect your existing content.
@@ -13,7 +13,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain. | True |
+    | Server URL | The base URL. For a Cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain. | True |
     | Cloud ID | This field is used to configure the Jira Cloud. |  |
     | Callback URL |  | True |
     | Client ID |  | True |
@@ -59,7 +59,7 @@ Go to your [Developer console](https://developer.atlassian.com/console/myapps/) 
 #### Cloud ID
 
 Go to your [Admin page](https://admin.atlassian.com/), and choose the `Jira Software` product by clicking the three dots and choosing **Manage users**. Your Cloud ID will appear in the URL:
-`https://admin.atlassian.com/s/{cloud_id}/users`
+`https://admin.atlassian.com/s/{Cloud_id}/users`
 (If you do not have it, click **Products** and add the `Jira Software` product to your products list.)
 
 #### Cloud Scopes
@@ -118,7 +118,7 @@ When you enable incidents fetching, you have the option to configure a query whi
 
 * `id` of Jira issues
 * `created time` of Jira issues
-* `updated time` of Jira issues (using this field may cause to duplicates, so be wary)
+* `updated time` of Jira issues (using this field may cause duplicates, so be wary)
 
 If `created time`, or `updated time` is selected when fetching incidents for the first time, then the `Time range for initial data fetch` argument is used in the fetch query.
 By default, 50 issues are fetched for each call.
@@ -259,39 +259,15 @@ Scope: `read:jira-work`
         "Assignee": "Example User(example@example.com)",
         "Attachments": [
             {
-                "created": "2023-04-24T15:46:18.919+0300",
-                "filename": "1682340338180_home_screen_background_mirrored_from_xsoar.png",
-                "id": "16466",
-                "size": 212597
-            },
-            {
-                "created": "2023-05-07T20:00:59.121+0300",
-                "filename": "dummy_attachment_content.txt",
-                "id": "16504",
-                "size": 13264
-            },
-            {
                 "created": "2023-05-04T21:11:51.286+0300",
                 "filename": "dummy_attachment_content.txt",
                 "id": "16475",
                 "size": 13264
             },
             {
-                "created": "2023-04-30T20:19:42.760+0300",
-                "filename": "dummy_file_name",
-                "id": "16467",
-                "size": 13
-            },
-            {
                 "created": "2023-05-04T21:32:57.042+0300",
                 "filename": "dummy.pdf",
                 "id": "16478",
-                "size": 13264
-            },
-            {
-                "created": "2023-05-04T21:29:49.246+0300",
-                "filename": "dummy.pdf",
-                "id": "16477",
                 "size": 13264
             }
         ],
@@ -419,7 +395,7 @@ Scope: `read:jira-user`
 {
     "Jira": {
         "User": {
-            "AccountId": "557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76",
+            "AccountId": "12345",
             "Attribute": "Tomer"
         }
     }
@@ -428,7 +404,7 @@ Scope: `read:jira-user`
 
 #### Human Readable Output
 
->The account ID that holds the attribute `Tomer`: 557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76
+>The account ID that holds the attribute `Tomer`: 12345
 
 ### jira-issue-query
 
@@ -799,7 +775,7 @@ Scope: `write:jira-work`
 
 #### Command example
 
-```!jira-edit-issue action=rewrite issue_key=PROJECTKEY-35 assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 description="Edited subbscription" due_date="2023-01-01" environment="Windows XP" labels="label1,label2" priority="Highest" security=Anyone status="Backlog" summary="Edited Summary"```
+```!jira-edit-issue action=rewrite issue_key=PROJECTKEY-35 assignee_id=12345 description="Edited subbscription" due_date="2023-01-01" environment="Windows XP" labels="label1,label2" priority="Highest" security=Anyone status="Backlog" summary="Edited Summary"```
 
 #### Context Example
 
@@ -809,33 +785,9 @@ Scope: `write:jira-work`
         "Assignee": "Example User(example@example.com)",
         "Attachments": [
             {
-                "created": "2023-04-24T15:46:18.919+0300",
-                "filename": "1682340338180_home_screen_background_mirrored_from_xsoar.png",
-                "id": "16466",
-                "size": 212597
-            },
-            {
                 "created": "2023-05-07T20:00:59.121+0300",
                 "filename": "dummy_attachment_content.txt",
                 "id": "16504",
-                "size": 13264
-            },
-            {
-                "created": "2023-05-04T21:11:51.286+0300",
-                "filename": "dummy_attachment_content.txt",
-                "id": "16475",
-                "size": 13264
-            },
-            {
-                "created": "2023-04-30T20:19:42.760+0300",
-                "filename": "dummy_file_name",
-                "id": "16467",
-                "size": 13
-            },
-            {
-                "created": "2023-05-04T21:32:57.042+0300",
-                "filename": "dummy.pdf",
-                "id": "16478",
                 "size": 13264
             },
             {
@@ -929,7 +881,7 @@ Scope: `write:jira-work`
 
 #### Command example
 
-```!jira-create-issue summary="Dummy Summary" assignee_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 components="dummy-comp,New-Component" description="Dummy description" due_date="2023-01-01" environment="Windows XP" issue_type_name="Sub-task" labels="label1,label2" parent_issue_key=PROJECTKEY-35 priority=Highest project_name="Company Snoozing App" reporter_id=557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76 security=Assignee```
+```!jira-create-issue summary="Dummy Summary" assignee_id=12345 components="dummy-comp,New-Component" description="Dummy description" due_date="2023-01-01" environment="Windows XP" issue_type_name="Sub-task" labels="label1,label2" parent_issue_key=PROJECTKEY-35 priority=Highest project_name="Company Snoozing App" reporter_id=12345 security=Assignee```
 
 #### Context Example
 
@@ -2694,6 +2646,7 @@ match.
 
 1. Add an attachment to the incident, and add the tag that was configured in the **Attachment Entry Tag to Jira** parameter.
 2. Once the attachment is reflected in Jira, the name of the file will have **_mirrored_from_xsoar** in it, to differentiate between attachments mirrored from XSOAR, and normal attachments.
+
 ![Mirror out attachment](doc_files/mirror-out-attachment.png)
 
 ##### Mirror in Attachment

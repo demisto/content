@@ -1497,7 +1497,7 @@ def create_issue_fields_for_appending(client: JiraBaseClient, issue_args: Dict[s
         else:
             raise DemistoException(
                 ('Only strings and arrays support appending when editing an issue,'
-                    f' the field that caused this error is "{issue_field}", with {type(value)}'))
+                    f' the field that caused this error is "{issue_field}", of type {type(value)}'))
     return {'fields': issue_fields}
 
 
