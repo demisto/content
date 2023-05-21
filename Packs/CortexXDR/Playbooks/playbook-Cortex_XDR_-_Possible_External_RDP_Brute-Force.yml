@@ -97,9 +97,30 @@ tasks:
       '#none#':
       - "109"
     scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "1"
       Username:
         complex:
           root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1174,6 +1195,15 @@ tasks:
       entityID:
         complex:
           root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
       timeRange:
         simple: 6 hours
     separatecontext: true
