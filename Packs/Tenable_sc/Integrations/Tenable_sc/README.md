@@ -1,5 +1,14 @@
-With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
-This integration was integrated and tested with version xx of Tenable.sc
+Use the Tenable.sc integration to get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
+All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
+It is important to know what data is manageable for the user in order to work with the integration.
+This integration was integrated and tested with Tenable.sc v5.7.0.
+
+## Use cases:
+    * Create and run scans.
+    * Launch and manage scan results and the found vulnerabilities.
+    * Create and view assets.
+    * View policies, repositories, credentials, users and more system information.
+    * View and real-time receiving of alerts.
 
 ## Configure Tenable.sc on Cortex XSOAR
 
@@ -7,18 +16,18 @@ This integration was integrated and tested with version xx of Tenable.sc
 2. Search for Tenable.sc.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | True |
-    | Access key | False |
-    | Secret key | False |
-    | Username | False |
-    | Password | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. https://192.168.0.1) | The server URL. | True |
+    | Access key | follow the readme for steps to generate one. | False |
+    | Secret key |  | False |
+    | Username | The Username is either admin or secman \(depend on the role you wish to log into\) and your password to the tenable server. | False |
+    | Password |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The timestamp to start the fetch from. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -53,6 +62,9 @@ Requires security manager authentication. Get a list of Tenable.sc existing scan
 | TenableSC.Scan.Group | string | Scan policy owner group name. | 
 | TenableSC.Scan.Owner | string | Scan policy owner user name. | 
 
+#### Human Readable Output
+
+
 ### tenable-sc-launch-scan
 
 ***
@@ -79,6 +91,8 @@ Requires security manager authentication. Launch an existing scan from Tenable.s
 | TenableSC.ScanResults.OwnerID | string | Scan owner ID. | 
 | TenableSC.ScanResults.JobID | string | Job ID. | 
 | TenableSC.ScanResults.Status | string | Scan status. | 
+
+#### Human Readable Output
 
 ### tenable-sc-get-vulnerability
 
@@ -130,6 +144,8 @@ Requires security manager authentication. Get details about a given vulnerabilit
 | TenableSC.ScanResults.Vulnerability.Host.Port | number | Vulnerability Host Port. | 
 | TenableSC.ScanResults.Vulnerability.Host.Protocol | string | Vulnerability Host Protocol. | 
 
+#### Human Readable Output
+
 ### tenable-sc-get-scan-status
 
 ***
@@ -153,6 +169,8 @@ Requires security manager authentication. Get the status of a specific scan in T
 | TenableSC.ScanResults.Name | string | Scan Name. | 
 | TenableSC.ScanResults.Description | Unknown | Scan description. | 
 | TenableSC.ScanResults.ID | Unknown | Scan results ID. | 
+
+#### Human Readable Output
 
 ### tenable-sc-get-scan-report
 
@@ -194,6 +212,8 @@ Requires security manager authentication. Get a single report with Tenable.sc sc
 | TenableSC.ScanResults.Duration | number | Scan duration in minutes. | 
 | TenableSC.ScanResults.ImportTime | date | Scan import time. | 
 
+#### Human Readable Output
+
 ### tenable-sc-list-credentials
 
 ***
@@ -221,6 +241,8 @@ Requires security manager authentication. Get a list of Tenable.sc credentials.
 | TenableSC.Credential.Group | string | Credential owner group name. | 
 | TenableSC.Credential.Owner | string | Credential owner user name. | 
 | TenableSC.Credential.LastModified | date | Credential last modified time. | 
+
+#### Human Readable Output
 
 ### tenable-sc-list-policies
 
@@ -250,6 +272,8 @@ Requires security manager authentication. Get a list of Tenable.sc scan policies
 | TenableSC.ScanPolicy.LastModified | date | Scan policy last modified time. | 
 | TenableSC.ScanPolicy.Type | string | Scan policy type. | 
 
+#### Human Readable Output
+
 ### tenable-sc-list-report-definitions
 
 ***
@@ -276,6 +300,8 @@ Requires security manager authentication. Get a list of Tenable.sc report defini
 | TenableSC.ReportDefinition.Group | string | Report definition owner group name. | 
 | TenableSC.ReportDefinition.Owner | string | Report definition owner user name. | 
 
+#### Human Readable Output
+
 ### tenable-sc-list-repositories
 
 ***
@@ -296,6 +322,8 @@ There are no input arguments for this command.
 | TenableSC.ScanRepository.Name | string | Scan Repository name. | 
 | TenableSC.ScanRepository.ID | number | Scan Repository ID. | 
 | TenableSC.ScanRepository.Description | string | Scan Repository. | 
+
+#### Human Readable Output
 
 ### tenable-sc-list-zones
 
@@ -323,6 +351,16 @@ There are no input arguments for this command.
 | TenableSC.ScanZone.Scanner.ID | number | Scanner ID. | 
 | TenableSC.ScanZone.Scanner.Description | string | Scanner description. | 
 | TenableSC.ScanZone.Scanner.Status | number | Scanner status. | 
+
+#### Human Readable Output
+
+### Tenable.sc Scan Zones
+|ID|Name|IPList|activeScanners|
+|---|---|---|---|
+| 1 | Default Scan Zone | ip | 1 |
+### Tenable.sc Scanners\n|ID|Name|Status|
+|---|---|---|
+| 2 | RHEL6 Scanner | 1 |
 
 ### Requires security manager authentication. tenable-sc-create-scan
 
@@ -373,6 +411,8 @@ Create a scan on Tenable.sc
 | TenableSC.Scan.OwnerName | string | Scan owner Username. | 
 | TenableSC.Scan.Reports | unknown | Scan report definition IDs. | 
 
+#### Human Readable Output
+
 ### tenable-sc-delete-scan
 
 ***
@@ -391,6 +431,8 @@ Requires security manager authentication. Delete a scan in Tenable.sc
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
 ### tenable-sc-list-assets
 
 ***
@@ -418,6 +460,8 @@ Requires security manager authentication. Get a list of Tenable.sc Assets.
 | TenableSC.Asset.Owner | string | Asset owner username. | 
 | TenableSC.Asset.Group | string | Asset group. | 
 | TenableSC.Asset.LastModified | date | Asset last modified time. | 
+
+#### Human Readable Output
 
 ### tenable-sc-create-asset
 
@@ -447,6 +491,8 @@ Requires security manager authentication. Create an Asset in Tenable.sc with pro
 | TenableSC.Asset.OwnerName | string | Asset owner name. | 
 | TenableSC.Asset.Tags | string | Asset tags. | 
 
+#### Human Readable Output
+
 ### tenable-sc-get-asset
 
 ***
@@ -475,6 +521,8 @@ Requires security manager authentication. Get details for a given asset in Tenab
 | TenableSC.Asset.Group | string | Asset owner group. | 
 | TenableSC.Asset.IPs | unknown | Asset viewable IPs. | 
 
+#### Human Readable Output
+
 ### tenable-sc-delete-asset
 
 ***
@@ -493,6 +541,8 @@ Requires security manager authentication. Delete the Asset with the given ID fro
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
 ### tenable-sc-list-alerts
 
 ***
@@ -521,6 +571,8 @@ Requires security manager authentication. List alerts from Tenable.sc.
 | TenableSC.Alert.LastEvaluated | date | Alert last evaluated time. | 
 | TenableSC.Alert.Group | string | Alert owner group name. | 
 | TenableSC.Alert.Owner | string | Alert owner user name. | 
+
+#### Human Readable Output
 
 ### tenable-sc-get-alert
 
@@ -552,6 +604,8 @@ Requires security manager authentication. Get information about a given alert in
 | TenableSC.Alert.Condition.Filter.Values | Unknown | Alert query filter values. | 
 | TenableSC.Alert.Action.Type | string | Alert action type. | 
 | TenableSC.Alert.Action.Values | Unknown | Alert action values. | 
+
+#### Human Readable Output
 
 ### tenable-sc-get-device
 
@@ -594,6 +648,8 @@ Requires security manager authentication. Gets the specified device information.
 | Endpoint.MACAddress | string | Endpoint mac address. | 
 | Endpoint.OS | string | Endpoint OS. | 
 
+#### Human Readable Output
+
 ### tenable-sc-list-users
 
 ***
@@ -626,6 +682,8 @@ Results may vary based on the authentication type (admin or security manager). L
 | TenableSC.User.Login | date | User last login. | 
 | TenableSC.User.Role | string | User role name. | 
 
+#### Human Readable Output
+
 ### tenable-sc-get-system-licensing
 
 ***
@@ -646,6 +704,8 @@ There are no input arguments for this command.
 | TenableSC.Status.ActiveIPS | number | Number of active IP addresses. | 
 | TenableSC.Status.LicensedIPS | Unknown | Number of licensed IP addresses. | 
 | TenableSC.Status.License | Unknown | License status. | 
+
+#### Human Readable Output
 
 ### tenable-sc-get-system-information
 
@@ -673,6 +733,8 @@ There are no input arguments for this command.
 | TenableSC.System.DiskStatus | boolean | Server disk status. | 
 | TenableSC.System.DiskThreshold | number | System left space on disk. | 
 | TenableSC.System.LastCheck | date | System last check time. | 
+
+#### Human Readable Output
 
 ### tenable-sc-get-all-scan-results
 
@@ -710,6 +772,8 @@ Requires security manager authentication. Returns all scan results in Tenable.sc
 | TenableSC.ScanResults.Owner | string | Scan owner name. | 
 | TenableSC.ScanResults.RepositoryName | string | Scan repository name. | 
 
+#### Human Readable Output
+
 ### tenable-sc-list-groups
 
 ***
@@ -738,6 +802,8 @@ Requires security manager authentication. list all groups.
 | TenableSC.Group.Users.ID | string | Group's user's id. | 
 | TenableSC.Group.Users.UUID | string | Group's user's uuid. | 
 | TenableSC.Group.Users.Username | string | Group's user's user name. | 
+
+#### Human Readable Output
 
 ### tenable-sc-create-user
 
@@ -828,6 +894,8 @@ This command can be executed with both authentication types (admin or security m
 | TenableSC.User.Username | String | User username. | 
 | TenableSC.User.UUID | String | User UUID. | 
 
+#### Human Readable Output
+
 ### tenable-sc-update-user
 
 ***
@@ -917,6 +985,8 @@ update user details by given user_id.
 | TenableSC.User.Username | String | User username. | 
 | TenableSC.User.UUID | String | User UUID. | 
 
+#### Human Readable Output
+
 ### tenable-sc-delete-user
 
 ***
@@ -935,6 +1005,8 @@ This command can be executed with both authentication types (admin or security m
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
 ### tenable-sc-list-plugin-family
 
 ***
@@ -961,6 +1033,8 @@ Requires security manager authentication. list plugin families / return informat
 | TenableSC.PluginFamily.Count | String | Number of plugins in family. | 
 | TenableSC.PluginFamily.Plugins | String | The plugins list. | 
 | TenableSC.PluginFamily.Type | String | PluginFamily type. | 
+
+#### Human Readable Output
 
 ### tenable-sc-create-policy
 
@@ -1033,6 +1107,8 @@ Requires security manager authentication. This command is prerequisite for creat
 | TenableSC.ScanPolicy.TargetGroup.ID | Number | Policy target group ID. | 
 | TenableSC.ScanPolicy.TargetGroup.Name | String | Policy target group name. | 
 | TenableSC.ScanPolicy.UUID | String | Policy UUID. | 
+
+#### Human Readable Output
 
 ### tenable-sc-list-query
 
@@ -1170,6 +1246,8 @@ Requires security manager authentication. Lists queries.
 | TenableSC.Query.Tool | String | Relevant only when query_id is given. Query tool | 
 | TenableSC.Query.Type | String | Relevant only when query_id is given. Query type. | 
 
+#### Human Readable Output
+
 ### tenable-sc-update-asset
 
 ***
@@ -1193,6 +1271,11 @@ Requires security manager authentication. Update an asset.
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+
+asset <asset_id> was updated successfully.
+
 ### tenable-sc-create-remediation-scan
 
 ***
@@ -1314,6 +1397,8 @@ Requires security manager authentication. This command is prerequisite for creat
 | TenableSC.Scan.Zone.ID | Number | Scan zone ID. | 
 | TenableSC.Scan.Zone.Name | String | Scan zone name. | 
 
+#### Human Readable Output
+
 ### tenable-sc-launch-scan-report
 
 ***
@@ -1356,3 +1441,11 @@ Requires security manager authentication. Polling command. Launch a scan by give
 | TenableSC.ScanResults.Owner | string | Scan owner user name | 
 | TenableSC.ScanResults.Duration | number | Scan duration in minutes | 
 | TenableSC.ScanResults.ImportTime | date | Scan import time | 
+
+#### Human Readable Output
+
+#### Human Readable Output
+
+
+## Troubleshooting
+For errors within Tenable.sc, the cause is generally specified, e.g., The currently logged in used is not an administrator, Unable to retrieve Asset #2412. Asset #2412 does not exist or Invalid login credentials. However there might be connection errors, for example when the server URL provided is incorrect.

@@ -1,0 +1,73 @@
+{
+    "test_case_1": {
+        "args": {"limit": "1", "show_users": "True"},
+        "mock_response": {
+            "error_code":0, "error_msg":"", "response": [{"id":"0", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"}]},
+            {"id":"1", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid2"}]}],
+            "timestamp":1684672117,"type":"regular","warnings":[]
+        },
+        "expected_hr": "### Tenable.sc groups\n|ID|\n|---|\n| 0 |\n### Group id:0\n|Username|Firstname|\n|---|---|\n| test | test |\n\n",
+        "expected_ec": [{
+            "Id": "0",
+            "Users": [
+              {
+                "Firstname": "test",
+                "Id": "1",
+                "Lastname": "",
+                "Username": "test",
+                "Uuid": "uuid"
+              }
+            ]
+        }
+      ]
+    },
+    "test_case_2": {
+        "args": {"show_users": "False"},
+        "mock_response": {
+            "error_code":0, "error_msg":"", "response": [{"id":"0", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"}]},
+            {"id":"1", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid2"}]}],
+            "timestamp":1684672117,"type":"regular","warnings":[]
+        },
+        "expected_hr": "### Tenable.sc groups\n|ID|\n|---|\n| 0 |\n| 1 |\n",
+        "expected_ec": [{
+            "Id": "0"
+        },
+        {
+            "Id": "1"
+        }
+      ]
+    },
+    "test_case_3": {
+        "args": {"show_users": "True"},
+        "mock_response": {
+            "error_code":0, "error_msg":"", "response": [{"id":"0", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"}]},
+            {"id":"1", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid2"}]}],
+            "timestamp":1684672117,"type":"regular","warnings":[]
+        },
+        "expected_hr": "### Tenable.sc groups\n|ID|\n|---|\n| 0 |\n| 1 |\n### Group id:0\n|Username|Firstname|\n|---|---|\n| test | test |\n\n### Group id:1\n|Username|Firstname|\n|---|---|\n| test | test |\n\n",
+        "expected_ec": [{
+            "Id": "0",
+            "Users": [
+              {
+                "Firstname": "test",
+                "Id": "1",
+                "Lastname": "",
+                "Username": "test",
+                "Uuid": "uuid"
+              }
+            ]
+        },{
+            "Id": "1",
+            "Users": [
+              {
+                "Firstname": "test",
+                "Id": "1",
+                "Lastname": "",
+                "Username": "test",
+                "Uuid": "uuid2"
+              }
+            ]
+        }
+      ]
+    }
+}

@@ -1327,26 +1327,29 @@ def list_zones_command(client: Client, args: Dict[str, Any]):
     headers = ['ID', 'Name', 'Description', 'IPList', 'activeScanners']
 
     mapped_zones = [{
-        'ID': z['id'],
-        'Name': z['name'],
-        'Description': z['description'],
-        'IPList': z['ipList'],
-        'activeScanners': z['activeScanners']
+        'ID': z.get('id', ""),
+        'Name': z.get('name', ""),
+        'Description': z.get('description', ""),
+        'IPList': z.get('ipList', ""),
+        'activeScanners': z.get('activeScanners', "")
     } for z in zones]
 
     hr = tableToMarkdown('Tenable.sc Scan Zones', mapped_zones, headers, removeNull=True)
 
-    mapped_scanners_total = []
+    mapped_scanners_total, found_ids = [], []
     for index, zone in enumerate(zones):
         if scanners := zone.get('scanners'):
             mapped_scanners = [{
-                'ID': s['id'],
-                'Name': s['name'],
-                'Description': s['description'],
-                'Status': s['status']
-            } for s in scanners]
+                'ID': scanner['id'],
+                'Name': scanner['name'],
+                'Description': scanner['description'],
+                'Status': scanner['status']
+            } for scanner in scanners]
             mapped_zones[index]['Scanner'] = mapped_scanners
-            mapped_scanners_total.extend(mapped_scanners)
+            for scanner in mapped_scanners:
+                if scanner.get("ID") not in found_ids:
+                    found_ids.append(scanner.get("ID"))
+                    mapped_scanners_total.append(scanner)
         headers = ['ID', 'Name', 'Description', 'Status']
 
     if mapped_scanners_total:
@@ -2022,17 +2025,17 @@ def list_users_command(client: Client, args: Dict[str, Any]):
     ]
 
     mapped_users = [{
-        'ID': u['id'],
-        'Username': u['username'],
-        'FirstName': u['firstname'],
-        'LastName': u['lastname'],
-        'Title': u['title'],
-        'Email': u['email'],
-        'Created': timestamp_to_utc(u['createdTime']),
-        'Modified': timestamp_to_utc(u['modifiedTime']),
-        'LastLogin': timestamp_to_utc(u['lastLogin']),
-        'Role': u['role'].get('name')
-    } for u in users]
+        'ID': user['id'],
+        'Username': user['username'],
+        'FirstName': user['firstname'],
+        'LastName': user['lastname'],
+        'Title': user['title'],
+        'Email': user['email'],
+        'Created': timestamp_to_utc(user['createdTime']),
+        'Modified': timestamp_to_utc(user['modifiedTime']),
+        'LastLogin': timestamp_to_utc(user['lastLogin']),
+        'Role': user['role'].get('name')
+    } for user in users]
 
     return CommandResults(
         outputs=createContext(mapped_users, removeNull=True),
@@ -2330,7 +2333,7 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
     groups = mapped_groups
 
     return CommandResults(
-        outputs=createContext(groups, removeNull=True),
+        outputs=createContext(response_to_context(groups), removeNull=True),
         outputs_prefix='TenableSC.Group',
         raw_response=res,
         outputs_key_field='ID',
@@ -2451,7 +2454,7 @@ def process_update_and_create_user_response(res, hr_header):
     }
 
     return CommandResults(
-        outputs=createContext(response, removeNull=True),
+        outputs=createContext(response_to_context(response), removeNull=True),
         outputs_prefix='TenableSC.User',
         raw_response=res,
         outputs_key_field='ID',
@@ -2505,7 +2508,7 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
     headers = ["Plugin ID", "Plugin Name", "Is Active"]
 
     return CommandResults(
-        outputs=createContext(plugins, removeNull=True, keyTransform=capitalize_first_letter),
+        outputs=createContext(response_to_context(plugins), removeNull=True),
         outputs_prefix='TenableSC.PluginFamily',
         raw_response=res,
         outputs_key_field='ID',
@@ -2544,7 +2547,7 @@ def create_policy_command(client: Client, args: Dict[str, Any]):
                "policyTemplate Name"]
 
     return CommandResults(
-        outputs=createContext(created_policy, removeNull=True, keyTransform=capitalize_first_letter),
+        outputs=createContext(response_to_context(created_policy), removeNull=True),
         outputs_prefix='TenableSC.Query',
         raw_response=res,
         outputs_key_field='ID',
@@ -2597,7 +2600,7 @@ def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
     }
 
     return CommandResults(
-        outputs=createContext(scan, removeNull=True),
+        outputs=createContext(response_to_context(scan), removeNull=True),
         outputs_prefix='TenableSC.Scan',
         raw_response=res,
         outputs_key_field='ID',
@@ -2622,7 +2625,7 @@ def list_query_command(client: Client, args: Dict[str, Any]):
         res, hr, ec = list_queries(client, type)
 
     return CommandResults(
-        outputs=createContext(ec, removeNull=True, keyTransform=capitalize_first_letter),
+        outputs=createContext(response_to_context(ec), removeNull=True),
         outputs_prefix='TenableSC.Query',
         raw_response=res,
         outputs_key_field='ID',
@@ -2788,6 +2791,7 @@ def main():
         )
 
         if command == 'test-module':
+            list_users_command(client, args)
             demisto.results('ok')
         elif command == 'fetch-incidents':
             first_fetch = params.get('fetch_time').strip()

@@ -11,12 +11,14 @@ configuration:
   required: true
   type: 0
   section: Connect
+  additionalinfo: The server URL.
 - display: Access key
   name: creds_keys
   required: false
   type: 9
   displaypassword: Secret key
   section: Connect
+  additionalinfo: follow the readme for steps to generate one.
 - display: Username
   hiddenusername: true
   hiddenpassword: true
@@ -24,6 +26,7 @@ configuration:
   required: false
   type: 9
   section: Connect
+  additionalinfo: The Username is either admin or secman (depend on the role you wish to log into) and your password to the tenable server.
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -52,6 +55,7 @@ configuration:
   required: false
   type: 0
   section: Collect
+  additionalinfo: The timestamp to start the fetch from.
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
@@ -70,7 +74,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get a list of Tenable.sc existing scans
+    description: Requires security manager role. Get a list of Tenable.sc existing scans
     execution: false
     name: tenable-sc-list-scans
     outputs:
@@ -112,7 +116,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Launch an existing scan from Tenable.sc
+    description: Requires security manager role. Launch an existing scan from Tenable.sc
     execution: false
     name: tenable-sc-launch-scan
     outputs:
@@ -195,7 +199,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get details about a given vulnerability from a given Tenable.sc scan
+    description: Requires security manager role. Get details about a given vulnerability from a given Tenable.sc scan
     execution: false
     name: tenable-sc-get-vulnerability
     outputs:
@@ -276,7 +280,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get the status of a specific scan in Tenable.sc.
+    description: Requires security manager role. Get the status of a specific scan in Tenable.sc.
     execution: false
     name: tenable-sc-get-scan-status
     outputs:
@@ -307,7 +311,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get a single report with Tenable.sc scan results.
+    description: Requires security manager role. Get a single report with Tenable.sc scan results.
     execution: false
     name: tenable-sc-get-scan-report
     outputs:
@@ -381,7 +385,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get a list of Tenable.sc credentials.
+    description: Requires security manager role. Get a list of Tenable.sc credentials.
     execution: false
     name: tenable-sc-list-credentials
     outputs:
@@ -422,7 +426,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get a list of Tenable.sc scan policies.
+    description: Requires security manager role. Get a list of Tenable.sc scan policies.
     execution: false
     name: tenable-sc-list-policies
     outputs:
@@ -463,7 +467,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get a list of Tenable.sc report definitions.
+    description: Requires security manager role. Get a list of Tenable.sc report definitions.
     execution: false
     name: tenable-sc-list-report-definitions
     outputs:
@@ -486,7 +490,7 @@ script:
       description: Report definition owner user name.
       type: string
   - deprecated: false
-    description: Requires security manager authentication. Get a list of Tenable.sc scan repositories.
+    description: Requires security manager role. Get a list of Tenable.sc scan repositories.
     execution: false
     name: tenable-sc-list-repositories
     outputs:
@@ -500,7 +504,7 @@ script:
       description: Scan Repository.
       type: string
   - deprecated: false
-    description: Requires admin authentication. Get a list of Tenable.sc scan zones.
+    description: Requires admin role. Get a list of Tenable.sc scan zones.
     execution: false
     name: tenable-sc-list-zones
     outputs:
@@ -712,7 +716,7 @@ script:
     deprecated: false
     description: Create a scan on Tenable.sc
     execution: false
-    name: Requires security manager authentication. tenable-sc-create-scan
+    name: Requires security manager role. tenable-sc-create-scan
     outputs:
     - contextPath: TenableSC.Scan.ID
       description: Scan ID.
@@ -743,7 +747,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Delete a scan in Tenable.sc
+    description: Requires security manager role. Delete a scan in Tenable.sc
     execution: false
     name: tenable-sc-delete-scan
   - arguments:
@@ -759,7 +763,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get a list of Tenable.sc Assets.
+    description: Requires security manager role. Get a list of Tenable.sc Assets.
     execution: false
     name: tenable-sc-list-assets
     outputs:
@@ -819,7 +823,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Create an Asset in Tenable.sc with provided IP addresses.
+    description: Requires security manager role. Create an Asset in Tenable.sc with provided IP addresses.
     execution: false
     name: tenable-sc-create-asset
     outputs:
@@ -843,7 +847,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get details for a given asset in Tenable.sc.
+    description: Requires security manager role. Get details for a given asset in Tenable.sc.
     execution: false
     name: tenable-sc-get-asset
     outputs:
@@ -879,7 +883,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Delete the Asset with the given ID from Tenable.sc.
+    description: Requires security manager role. Delete the Asset with the given ID from Tenable.sc.
     execution: true
     name: tenable-sc-delete-asset
   - arguments:
@@ -895,7 +899,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. List alerts from Tenable.sc.
+    description: Requires security manager role. List alerts from Tenable.sc.
     execution: false
     name: tenable-sc-list-alerts
     outputs:
@@ -934,7 +938,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Get information about a given alert in Tenable.sc.
+    description: Requires security manager role. Get information about a given alert in Tenable.sc.
     execution: false
     name: tenable-sc-get-alert
     outputs:
@@ -991,7 +995,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Gets the specified device information.
+    description: Requires security manager role. Gets the specified device information.
     execution: false
     name: tenable-sc-get-device
     outputs:
@@ -1072,7 +1076,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Results may vary based on the authentication type (admin or security manager). List users in Tenable.sc.
+    description: Results may vary based on the role type (admin or security manager). List users in Tenable.sc.
     execution: false
     name: tenable-sc-list-users
     outputs:
@@ -1107,7 +1111,7 @@ script:
       description: User role name.
       type: string
   - deprecated: false
-    description: Requires admin authentication. Retrieve licensing information from Tenable.sc
+    description: Requires admin role. Retrieve licensing information from Tenable.sc
     execution: false
     name: tenable-sc-get-system-licensing
     outputs:
@@ -1121,7 +1125,7 @@ script:
       description: License status.
       type: Unknown
   - deprecated: false
-    description: Requires admin authentication. Get the system information and diagnostics from Tenable.sc.
+    description: Requires admin role. Get the system information and diagnostics from Tenable.sc.
     execution: false
     name: tenable-sc-get-system-information
     outputs:
@@ -1179,7 +1183,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. Returns all scan results in Tenable.sc.
+    description: Requires security manager role. Returns all scan results in Tenable.sc.
     execution: false
     name: tenable-sc-get-all-scan-results
     outputs:
@@ -1245,7 +1249,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. list all groups.
+    description: Requires security manager role. list all groups.
     execution: false
     name: tenable-sc-list-groups
     outputs:
@@ -1434,7 +1438,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: This command can be executed with both authentication types (admin or security manager) based on the roll_id you with to choose. Creates a new user.
+    description: This command can be executed with both roles (admin or security manager) based on the roll_id you with to choose. Creates a new user.
     execution: false
     name: tenable-sc-create-user
     outputs:
@@ -1896,7 +1900,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: This command can be executed with both authentication types (admin or security manager). Delete a user by given user_id.
+    description: This command can be executed with both roles (admin or security manager). Delete a user by given user_id.
     execution: false
     name: tenable-sc-delete-user
     outputs:
@@ -1916,7 +1920,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: default is none. none - both active and passive Plugin Families are returned. true - Only active Plugin Families will be returned. false - Only passive Plugin Families will be returned. Ignored when plugin_id is given.
+      description: Default is none. none - both active and passive Plugin Families are returned. true - Only active Plugin Families will be returned. false - Only passive Plugin Families will be returned. Ignored when plugin_id is given.
       isArray: false
       name: is_active
       predefined:
@@ -1925,7 +1929,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager authentication. list plugin families / return information about a plugin family given ID.
+    description: Requires security manager role. list plugin families / return information about a plugin family given ID.
     execution: false
     name: tenable-sc-list-plugin-family
     outputs:
@@ -2029,7 +2033,7 @@ script:
       - Ignore closed ports(aggressive)
       - Disabled(softer)
     deprecated: false
-    description: Requires security manager authentication. This command is prerequisite for creating remediation scan. creates policy.
+    description: Requires security manager role. This command is prerequisite for creating remediation scan. creates policy.
     execution: false
     name: tenable-sc-create-policy
     outputs:
@@ -2183,7 +2187,7 @@ script:
       - ticket
       - user
     deprecated: false
-    description: Requires security manager authentication. Lists queries.
+    description: Requires security manager role. Lists queries.
     execution: false
     name: tenable-sc-list-query
     outputs:
@@ -2571,7 +2575,7 @@ script:
       secret: false
     deprecated: false
     polling: true
-    description: Requires security manager authentication. Update an asset.
+    description: Requires security manager role. Update an asset.
     execution: false
     name: tenable-sc-update-asset
     outputs:
@@ -2794,7 +2798,7 @@ script:
       secret: false
       defaultValue: nextDay
     deprecated: false
-    description: Requires security manager authentication. This command is prerequisite for creating remediation scan. creates policy.
+    description: Requires security manager role. This command is prerequisite for creating remediation scan. creates policy.
     execution: false
     name: tenable-sc-create-remediation-scan
     outputs:
@@ -3056,7 +3060,7 @@ script:
       defaultValue: 10800
     deprecated: false
     polling: true
-    description: Requires security manager authentication. Polling command. Launch a scan by given scan ID, follow its status return a report when the scan is over.
+    description: Requires security manager role. Polling command. Launch a scan by given scan ID, follow its status return a report when the scan is over.
     execution: false
     name: tenable-sc-launch-scan-report
     outputs:
