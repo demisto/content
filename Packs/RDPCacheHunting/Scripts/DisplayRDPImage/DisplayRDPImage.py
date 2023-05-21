@@ -16,7 +16,7 @@ def main():
     RDPImage = demisto.context().get('RDPImageEntryID')
     result = demisto.getFilePath(RDPImage)
     if not result:
-        return_error("Couldn't find entry id: {}".format(entry_id))
+        return_error(f'Couldn\'t find entry id: {RDPImage}')
     file_path = result['path']
     img_html = img2html(file_path)
     demisto.results({
@@ -29,4 +29,4 @@ def main():
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
 
-register_module_line('DisplayRDPImage', 'end', __line__())
+# register_module_line('DisplayRDPImage', 'end', __line__())
