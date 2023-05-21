@@ -13,12 +13,14 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_LIMIT = 1000
+OAT_DETECTION_LOGS_TIME = 'oat_detection_logs_time'
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
 
     API_VERSION = 'v3.0'
+
     def __init__(self, base_url: str, api_key: str, proxy: bool, verify: bool):
         self.base_url = base_url
         self.api_key = api_key
@@ -277,15 +279,54 @@ def get_datetime_range(
     else:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if log_type_time == 'oat_detection_logs_time':
+    if log_type_time == OAT_DETECTION_LOGS_TIME:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs
         end_time_datetime = last_run_time + timedelta(days=365)
     else:
         end_time_datetime = now
 
     start_time, end_time = last_run_time.strftime(date_format), end_time_datetime.strftime(date_format)
-    demisto.debug(f'{start_time=} and {end_time_datetime=} for {log_type_time=}')
+    demisto.debug(f'{start_time=} and {end_time=} for {log_type_time=}')
     return start_time, end_time
+
+
+def get_latest_log_created_time(
+    logs: List[Dict],
+    created_time_field: str,
+    log_type: str,
+    date_format: str = DATE_FORMAT,
+    increase_latest_log: bool = False
+) -> str:
+    """
+    Get the latest occurred time of a log from a list of logs.
+
+    Args:
+        logs (list[dict]): a list of logs.
+        created_time_field (str): The created time field for the logs.
+        log_type (str): the log type for debugging purposes.
+        date_format (str): the date format.
+        increase_latest_log (bool): Whether to increase the latest time of the log by a single second.
+
+    Returns:
+        str: latest occurred time of a log, empty string in case there aren't any logs.
+    """
+    if logs:
+        latest_log_time_datetime = datetime.strptime(logs[0][created_time_field], date_format)
+
+        for log in logs:
+            log_time = datetime.strptime(log[created_time_field], date_format)
+            if log_time > latest_log_time_datetime:
+                latest_log_time_datetime = log_time
+
+        if increase_latest_log:
+            latest_log_time_datetime = latest_log_time_datetime + timedelta(seconds=1)
+
+        latest_log_time = latest_log_time_datetime.strftime(date_format)
+        demisto.debug(f'{latest_log_time=} for {log_type=}')
+        return latest_log_time_datetime.strftime(date_format)
+
+    demisto.debug(f'No new logs for {log_type=}')
+    return ''
 
 
 ''' COMMAND FUNCTIONS '''
