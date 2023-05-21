@@ -1,0 +1,148 @@
+{
+    "cisco_esa_raw": {
+        "cefDeviceVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceEventClassId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
+            "type": "int",
+            "is_array": false
+        },
+        "deviceExternalId": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceHostName": {
+            "type": "string",
+            "is_array": false
+        },
+        "cfp1": {
+            "type": "string",
+            "is_array": false
+        },
+        "dvc": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESASenderGroup": {
+            "type": "string",
+            "is_array": false
+        },                                                        
+        "duser": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAHeloIP": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAHeloDomain": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESATLSOutProtocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESATLSOutCipher": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESATLSInProtocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESATLSInCipher": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAFriendlyFrom": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAReplyTo": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAMID": {
+            "type": "int",
+            "is_array": false
+        },
+        "cs6": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAASVerdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAAVVerdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAAMPVerdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAGMVerdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESACFVerdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAOFVerdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESADLPVerdict": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAURLDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAAttachmentDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "act": {
+            "type": "string",
+            "is_array": false
+        },
+        "ESAFinalActionDetails": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
