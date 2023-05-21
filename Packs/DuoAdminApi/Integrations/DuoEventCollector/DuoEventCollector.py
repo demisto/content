@@ -3,7 +3,7 @@ from enum import Enum
 import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 from CommonServerPython import *
-
+from typing import Generator
 
 VENDOR = "duo"
 PRODUCT = "duo"
@@ -96,6 +96,11 @@ class Client:
 
     def handle_telephony_logs_v2(self) -> tuple:
         """
+        *** This method uses the api_version=2 this endpoint is still not availabe for GA.
+            The api version 1 is about to get deprecated  then this method will replace the
+            handle_telephony_logs with some additional code changes. look at the handeling of
+            authentication logs for reference.
+
         Uses the V2 version of the API.
         For the first time the logs are retreived will work with mintime parameter.
         All other calls will be made with the next_offset parameter returned from the last fetch.
@@ -143,9 +148,7 @@ class GetEvents:
     A class to handle the flow of the integration
     """
 
-    def __init__(self, client: Client, request_order=None) -> None:
-        if request_order is None:
-            request_order = []
+    def __init__(self, client: Client, request_order: list) -> None:
         self.client = client
         self.request_order = request_order
 
@@ -155,11 +158,11 @@ class GetEvents:
         self.request_order = list(temp)
 
     def make_sdk_call(self) -> tuple:
-        events, metadata = self.client.call(self.request_order)  # type: ignore
+        events, metadata = self.client.call(self.request_order)
         events = events[: int(self.client.params.limit)]
         return events, metadata
 
-    def _iter_events(self) -> None:    # type: ignore
+    def _iter_events(self) -> Generator:
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """
@@ -181,13 +184,13 @@ class GetEvents:
                 demisto.debug('empty list, breaking')
                 break
 
-    def aggregated_results(self) -> List[dict]:  # pragma: no cover
+    def aggregated_results(self) -> List[dict]:
         """
         Function to group the events returned from the api
         """
 
         stored_events = []
-        for events in self._iter_events():  # type: ignore
+        for events in self._iter_events():
             demisto.debug(f'Got {len(events)}, events for {self.request_order[0]} logs')
             stored_events.extend(events)
             if len(stored_events) >= int(self.client.params.limit) or not events:
