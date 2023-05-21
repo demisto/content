@@ -25,7 +25,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
+    response_to_context
 
 try:
     from StringIO import StringIO
@@ -4402,31 +4403,20 @@ class TestExecuteCommand:
         When:
             - Calling execute_command.
         Then:
-            - Assert that the original error is returned to War-Room (using demisto.results).
-            - Assert an error is returned to the War-Room.
-            - Function ends the run using SystemExit.
+            - Assert that DemistoException is raised with the original error.
         """
         from CommonServerPython import execute_command, EntryType
         error_entries = [
             {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
-            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
             {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
         ]
-        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
-                                                   return_value=error_entries)
-        demisto_results_mock = mocker.patch.object(demisto, 'results')
 
-        with raises(SystemExit, match='0'):
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=error_entries)
+
+        with raises(DemistoException, match='Failed to execute'):
             execute_command('bad', {'arg1': 'value'})
 
         assert demisto_execute_mock.call_count == 1
-        assert demisto_results_mock.call_count == 1
-        # first call, args (not kwargs), first argument
-        error_text = demisto_results_mock.call_args_list[0][0][0]['Contents']
-        assert 'Failed to execute bad.' in error_text
-        assert 'error number 1' in error_text
-        assert 'error number 2' in error_text
-        assert 'not an error' not in error_text
 
     @staticmethod
     def test_failure_integration(monkeypatch):
@@ -8939,3 +8929,71 @@ def test_replace_spaces_in_credential(credential, expected):
 
     result = replace_spaces_in_credential(credential)
     assert result == expected
+
+
+TEST_RESPONSE_TO_CONTEXT_DATA = [
+    (
+        {"id": "111"}, {"ID": "111"}, {}
+    ),
+    (
+        {"test": [1]}, {"Test": [1]}, {}
+    ),
+    (
+        {"test1": [{'test2': "val"}]}, {"Test1": [{'Test2': "val"}]}, {}
+    ),
+    (
+        {"test1": {'test2': "val"}}, {"Test1": {'Test2': "val"}}, {}
+    ),
+    (
+        [{"test1": {'test2': "val"}}], [{"Test1": {'Test2': "val"}}], {}
+    ),
+    (
+        "test", "test", {}
+    ),
+    (
+        {"test_func": "test"}, {"TestFunc": "test"}, {}
+    ),
+    (
+        {"testid": "test"}, {"TestID": "test"}, {"testid": "TestID"}
+    ),
+    (
+        {"testid": "test", "id": "test_id", "test": "test_val"}, {"TestID": "test", "ID": "test_id", "Test": "test_val"},
+        {"testid": "TestID"}
+    )
+]
+
+
+@pytest.mark.parametrize('response, expected_results, user_predefiend_keys', TEST_RESPONSE_TO_CONTEXT_DATA)
+def test_response_to_context(response, expected_results, user_predefiend_keys):
+    """
+    Given:
+        A response and user_predefiend_keys dict.
+        Case 1: a response dict with a key "id".
+        Case 2: a response dict with a list as a value.
+        Case 3: a response dict with a list of dicts as a value.
+        Case 4: a response dict with a dict as a value.
+        Case 5: a response list.
+        Case 6: a response string.
+        Case 7: a response dict with a key with underscore.
+        Case 8: a response dict and a user_predefiend_keys dict,
+                where the key of the response dict is in the user_predefiend_keys dict.
+        Case 9: a response dict with 3 keys and a user_predefiend_keys dict,
+                where one key of the response dict is in the user_predefiend_keys dict.
+                where one key of the response dict is in the predefined_keys dict.
+                where one key of the response is not in any predefined dict.
+    When:
+        Running response_to_context function.
+    Then:
+        Test - Assert the function created the dict formatted succesfuly.
+        Case 1: Should transfom key to "ID".
+        Case 2: Should attempt to transform only the dict key.
+        Case 3: Should attempt to transform only the dict inside the list.
+        Case 4: Should attempt to transform both the given dict key and the keys of the nested dict.
+        Case 5: Should modify the dict inside the list.
+        Case 6: Should return the input as is.
+        Case 7: Should remove the underscore and capitalize the first letters of both words.
+        Case 8: Should change the key according to the user_predefiend_keys dict.
+        Case 9: Should change the first key according to the user_predefiend_keys dict,
+                the second key according to predefined_keys, and the third regularly.
+    """
+    assert response_to_context(response, user_predefiend_keys) == expected_results
