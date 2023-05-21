@@ -37,7 +37,7 @@ POSTING_PERMISSIONS_MAPPING = {
     'Only the owner, admins and certain members can post': 3
 }
 
-MEMBER_PER_MISSIONS_MAPPING = {
+MEMBER_PERMISSIONS_MAPPING = {
     'All channel members can add': 1,
     'Only channel owner and admins can add': 2
 }
@@ -52,14 +52,6 @@ AT_TYPE = {
     'Mention a contact': 1,
     'Mention "all" to notify everyone in the channel.': 2
 
-}
-FORMAT_TYPE = {
-    'FontSize': 1,
-    'FontColor': 2,
-    'BackgroundColor': 3,
-    'LeftIndent': 4,
-    'Paragraph': 5,
-    'AddLink': 6
 }
 
 WRONG_TIME_FORMAT = "Wrong time format. Use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
@@ -254,17 +246,11 @@ class Client(Zoom_Client):
         return response
 
     def zoom_upload_file(self, url_suffix: str, file_info):
+        files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
         return self._http_request('POST',
                                   headers={'Authorization': f'Bearer {self.access_token}'},
-                                  files=file_info,
+                                  files=files,
                                   full_url=url_suffix)
-        # response = self.error_handled_http_request(
-        #     method='POST',
-        #     full_url=url_suffix,
-        #     headers={'Authorization': f'Bearer {self.access_token}'},
-        #     files=files
-        # )
-        # return response
 
     def zoom_send_message(self, url_suffix: str, json_data):
         return self.error_handled_http_request(
@@ -451,6 +437,27 @@ def remove_extra_info_list_users(limit, raw_data):
         users_info = page.get("users", [])
         for user in users_info:
             all_info.append(user)
+            if len(all_info) >= limit:
+                return all_info
+    return all_info
+
+
+def remove_extra_info_list(name, limit, raw_data):
+    """_summary_
+    Due to the fact that page_size must be const,
+    Extra information may be provided to me, such as:
+    In the case of limit = 301, manual_list_users_pagination will return 600 users (MAX_RECORDS * 2),
+    The last 299 must be removed.
+
+    Args:
+        limit (int): the number of records the user asked for
+        raw_data (dict):the entire response from the pagination function
+    """
+    all_info = []
+    for page in raw_data:
+        channel_info = page.get(name, [page])
+        for channel in channel_info:
+            all_info.append(channel)
             if len(all_info) >= limit:
                 return all_info
     return all_info
@@ -935,6 +942,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
     for i in data:
         outputs.append({'User id': user_id,
                         'Channel ID': i.get('id'),
+                        'channel JID': i.get('jid'),
                         'Channel name': i.get('name'),
                         'Channel type': i.get('type'),
                         'Channel url': i.get('channel_url')})
@@ -943,9 +951,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
     return CommandResults(
         outputs_prefix='Zoom.Channel',
         readable_output=md,
-        outputs={
-            'channels': raw_data
-        },
+        outputs=raw_data,
         raw_response=raw_data
     )
 
@@ -958,7 +964,7 @@ def zoom_create_channel_command(client, **args) -> CommandResults:
     user_id = args.get('user_id')
     member_emails = argToList(args.get('member_emails'))
     add_member_permissions = args.get('add_member_permissions', None)
-    add_member_permissions_num = MEMBER_PER_MISSIONS_MAPPING.get(add_member_permissions)
+    add_member_permissions_num = MEMBER_PERMISSIONS_MAPPING.get(add_member_permissions)
     posting_permissions = args.get('posting_permissions', None)
     posting_permissions_num = POSTING_PERMISSIONS_MAPPING.get(posting_permissions)
     new_members_can_see_prev_msgs = args.get('new_members_can_see_prev_msgs', True)
@@ -1024,7 +1030,7 @@ def zoom_update_channel_command(client, **args) -> CommandResults:
     """
     client = client
     add_member_permissions = args.get('add_member_permissions', None)
-    add_member_permissions_num = MEMBER_PER_MISSIONS_MAPPING.get(add_member_permissions)
+    add_member_permissions_num = MEMBER_PERMISSIONS_MAPPING.get(add_member_permissions)
     posting_permissions = args.get('posting_permissions', None)
     posting_permissions_num = POSTING_PERMISSIONS_MAPPING.get(posting_permissions)
     new_members_can_see_prev_msgs = args.get('new_members_can_see_prev_msgs', True)
@@ -1092,7 +1098,7 @@ def zoom_remove_from_channel_command(client, **args) -> CommandResults:
     url_suffix = f'/chat/users/{user_id}/channels/{channel_id}/members/{member_id}'
     client.zoom_remove_from_channel(url_suffix)
     return CommandResults(
-        readable_output=f'Channel {channel_id} was deleted successfully',
+        readable_output=f'Member {member_id} was successfully removed from channel {channel_id}',
     )
 
 
@@ -1134,7 +1140,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     start_position = arg_to_number(args.get('start_position', None))
     rt_start_position = arg_to_number(args.get('rt_start_position', None))
     rt_end_position = arg_to_number(args.get('rt_end_position', None))
-    format_type = FORMAT_TYPE.get(args.get('format_type', None))
+    format_type = args.get('format_type', None)
     format_attr = args.get('format_attr', None)
     message = args.get('message', None)
     entry_ids = argToList(args.get('entry_ids', []))
@@ -1148,11 +1154,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     demisto.debug(f'file id args {entry_ids}')
     for id in entry_ids:
         file_info = demisto.getFilePath(id)
-        get_file_path_res = demisto.getFilePath(id)
-        file_path = get_file_path_res["path"]
-        file_data = {'file': open(file_path, 'rb')}
-        demisto.debug(f'file_info {file_info}')
-        res = client.zoom_upload_file(uplaod_file_url, file_data)
+        res = client.zoom_upload_file(uplaod_file_url, file_info)
         zoom_file_id.append(res.get('id'))
     demisto.debug('uplod the file without error')
     json_data_all = {
@@ -1228,12 +1230,14 @@ def zoom_update_message_command(client, **args) -> CommandResults:
     message = args.get('message')
     entry_ids = argToList(args.get('entry_ids', []))
 
-    zoom_file_id: List = []
     uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
+    zoom_file_id: List = []
+    demisto.debug(f'file id args {entry_ids}')
     for id in entry_ids:
         file_info = demisto.getFilePath(id)
         res = client.zoom_upload_file(uplaod_file_url, file_info)
         zoom_file_id.append(res.get('id'))
+    demisto.debug('uplod the file without error')
 
     url_suffix = f'/chat/users/{user_id}/messages/{message_id}'
     json_data = remove_None_values_from_dict(

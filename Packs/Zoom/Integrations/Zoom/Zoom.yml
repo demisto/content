@@ -634,7 +634,7 @@ script:
       required: true
       type: string
     outputs:
-    - contextPath: Zoom.Channels.id
+    - contextPath: Zoom.Channel.id
       description: The ID of the created channel
       type: string
     - contextPath: Zoom.Channel.name
@@ -845,7 +845,7 @@ script:
       type: string
     - name: entry_id
       description: XSOAR internal file Id.
-      required: false
+      required: true
       type: string
     outputs: []
   - name: zoom-send-message
@@ -958,7 +958,7 @@ script:
       type: string
     - name: to_channel
       description: >
-        The channel ID where the message was sent. You must provide this parameter or the to_channel parameter.
+        The channel ID where the message was sent. You must provide this parameter or the to_contact parameter.
       required: false
       type: string
     - name: to_contact
@@ -971,8 +971,7 @@ script:
   - name: zoom-update-message
     description: >
       Edits a chat message that you previously sent to either a contact or a channel in Zoom by providing the ID of the message as the value of the messageId parameter. 
-      You can get the ID from the List User's Chat Messages API. 
-      Additionally, as a query parameter, you must provide either the contact's email address of the contact or the Channel ID of the channel where the message was sent.
+      as a query parameter, you must provide either the contact's email address of the contact or the Channel ID of the channel where the message was sent.
     arguments:
     - name: user_id
       description: Unique identifier of the user.
