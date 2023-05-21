@@ -13,7 +13,7 @@ args:
   secret: false
 comment: This is a widget script returning MITRE indicators information for top indicators shown in incidents.
 commonfields:
-  id: MITREIndicatorsByOpenIncidentsV2
+  id: c
   version: -1
 enabled: true
 name: MITREIndicatorsByOpenIncidentsV2
