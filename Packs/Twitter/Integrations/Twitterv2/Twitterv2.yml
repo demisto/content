@@ -234,7 +234,7 @@ script:
     - contextPath: Twitter.User.pinned_tweets.quote_count
       description: Number of times this Tweet has been Retweeted with a comment.
       type: Number
-  isfetch: false
+  isfetch: true
   runonce: false
   script: '-'
   type: python
