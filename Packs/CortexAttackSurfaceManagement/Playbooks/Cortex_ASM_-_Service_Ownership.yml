@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 57e985be-0db1-4244-832b-b27213d31989
+    taskid: 53abbfb6-59c8-4f6b-84ef-ee27d96e7185
     type: start
     task:
-      id: 57e985be-0db1-4244-832b-b27213d31989
+      id: 53abbfb6-59c8-4f6b-84ef-ee27d96e7185
       version: -1
       name: ""
       iscommand: false
@@ -23,212 +23,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": -170
+          "x": 170,
+          "y": -380
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 911821d8-f053-4873-8384-d08acd8bbb6d
-    type: condition
-    task:
-      id: 911821d8-f053-4873-8384-d08acd8bbb6d
-      version: -1
-      name: Is service account defined?
-      description: Determine whether a service account was included among the potential service owners.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: alert.asmserviceowner
-                filters:
-                - - operator: startWith
-                    left:
-                      value:
-                        simple: alert.asmserviceowner.Source
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Service account on instance
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 400,
-          "y": 630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 4a61e141-236d-4725-8abb-9e8b143943f4
-    type: regular
-    task:
-      id: 4a61e141-236d-4725-8abb-9e8b143943f4
-      version: -1
-      name: Lookup project owner
-      description: Retrieves the IAM access control policy for the specified project.
-      script: GCP-IAM|||gcp-iam-project-iam-policy-get
-      type: regular
-      iscommand: true
-      brand: GCP-IAM
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      project_name:
-        complex:
-          root: alert.asmserviceowner
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: alert.asmserviceowner.Source
-                iscontext: true
-              right:
-                value:
-                  simple: Service account on instance
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: Email
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (?<=@)[^\.]+(?=\.iam\.gserviceaccount\.com)
-              unpack_matches: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: projects/
-              suffix: {}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": 870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: b5acafc7-f647-4210-881b-13d9d5f252f8
-    type: regular
-    task:
-      id: b5acafc7-f647-4210-881b-13d9d5f252f8
-      version: -1
-      name: Add project owner to service owner grid field
-      description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      gridfield:
-        simple: asmserviceowner
-      keys:
-        simple: Name,Email,Source,Timestamp
-      val1:
-        simple: n/a
-      val2:
-        complex:
-          root: GCPIAM.Policy.bindings
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: GCPIAM.Policy.bindings.role
-                iscontext: true
-              right:
-                value:
-                  simple: roles/owner
-          accessor: members
-          transformers:
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith: {}
-              toReplace:
-                value:
-                  simple: 'user:'
-      val3:
-        simple: Owner of GCP project where service account is defined
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": 1210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2b90887f-a6ba-47a6-875f-622c8285dffc
+    taskid: 0d99efe0-8385-4ba8-8c54-20595c5991f6
     type: regular
     task:
-      id: 2b90887f-a6ba-47a6-875f-622c8285dffc
+      id: 0d99efe0-8385-4ba8-8c54-20595c5991f6
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
@@ -247,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1380
+          "x": -140,
+          "y": 1070
         }
       }
     note: false
@@ -260,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7ca75c22-47ac-40a9-84f2-fc68e43d7d53
+    taskid: 814ef47f-56ba-4a23-875e-a174b7d13314
     type: regular
     task:
-      id: 7ca75c22-47ac-40a9-84f2-fc68e43d7d53
+      id: 814ef47f-56ba-4a23-875e-a174b7d13314
       version: -1
       name: Back up service owners gridfield
       description: |-
@@ -275,7 +86,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
       gridfield:
         simple: asmserviceownerunrankedraw
@@ -326,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 210
+          "x": -50,
+          "y": -20
         }
       }
     note: false
@@ -337,45 +148,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: b0bddb17-8cec-405c-8441-478959b9e8c4
-    type: regular
-    task:
-      id: b0bddb17-8cec-405c-8441-478959b9e8c4
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1bad13f3-b959-46d9-8b56-90282a3afdcf
+    taskid: 6367e85d-d9ef-4e06-8504-3d263cb7d2f3
     type: condition
     task:
-      id: 1bad13f3-b959-46d9-8b56-90282a3afdcf
+      id: 6367e85d-d9ef-4e06-8504-3d263cb7d2f3
       version: -1
       name: Is asmserviceowner populated?
       description: Determines if the asmserviceowner field exists and if the common fields within it also exists.
@@ -425,8 +203,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 0
+          "x": 170,
+          "y": -230
         }
       }
     note: false
@@ -438,10 +216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 97716817-0eab-418a-8517-40dc54d22f00
+    taskid: cb0bfb1c-7405-4ef1-8bc8-c7dc537571d2
     type: title
     task:
-      id: 97716817-0eab-418a-8517-40dc54d22f00
+      id: cb0bfb1c-7405-4ef1-8bc8-c7dc537571d2
       version: -1
       name: Done
       type: title
@@ -453,8 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 1600
+          "x": 240,
+          "y": 1260
         }
       }
     note: false
@@ -464,23 +242,155 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 1e322e1d-faef-420f-81bf-56d3d57eb27d
+  "14":
+    id: "14"
+    taskid: d64a41cc-a637-43c4-8eb2-d6d99f122b10
     type: condition
     task:
-      id: 1e322e1d-faef-420f-81bf-56d3d57eb27d
+      id: d64a41cc-a637-43c4-8eb2-d6d99f122b10
       version: -1
-      name: Is GCP - IAM enabled?
-      description: Determines if the GCP-IAM integration instance is configured.
+      name: What provider is this service?
+      description: Determines which cloud provider the service is in order to direct to the correct steps for gathering data to rank owners.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
+      - "10"
+      GCP:
       - "6"
+    separatecontext: false
+    conditions:
+    - label: GCP
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ASM.ExternalService
+                accessor: externally_detected_providers
+            iscontext: true
+          right:
+            value:
+              simple: Google
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 25035e9c-31cb-46bc-86b3-9faa72de87a8
+    type: condition
+    task:
+      id: 25035e9c-31cb-46bc-86b3-9faa72de87a8
+      version: -1
+      name: Was there a result?
+      description: Determines if there was a result from the previous command to continue cloud enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
       "yes":
-      - "2"
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 05ce1338-5084-49af-8745-a83af6781f93
+    type: regular
+    task:
+      id: 05ce1338-5084-49af-8745-a83af6781f93
+      version: -1
+      name: Get external service information
+      description: Get service details according to the service ID.
+      script: Cortex Attack Surface Management|||asm-get-external-service
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '[\"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 82bd90cf-7ff2-4062-867e-d620bedbbfea
+    type: condition
+    task:
+      id: 82bd90cf-7ff2-4062-867e-d620bedbbfea
+      version: -1
+      name: Is Cortex ASM enabled?
+      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to continue with cloud enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -498,7 +408,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: GCP-IAM
+                        simple: Cortex Attack Surface Management
                 - - operator: isEqualString
                     left:
                       value:
@@ -514,8 +424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 380
+          "x": -50,
+          "y": 630
         }
       }
     note: false
@@ -528,16 +438,20 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_6_#default#": 0.23,
-      "2_6_#default#": 0.28,
-      "9_10_#default#": 0.34
+      "14_10_#default#": 0.46,
+      "14_6_GCP": 0.47,
+      "15_10_#default#": 0.2,
+      "17_10_#default#": 0.22,
+      "17_14_yes": 0.64,
+      "9_10_#default#": 0.33,
+      "9_7_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 1835,
-        "width": 940,
-        "x": 180,
-        "y": -170
+        "height": 1705,
+        "width": 760,
+        "x": -140,
+        "y": -380
       }
     }
   }
@@ -545,4 +459,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0

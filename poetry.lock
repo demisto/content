@@ -991,14 +991,14 @@ files = [
 
 [[package]]
 name = "demisto-py"
-version = "3.2.9"
+version = "3.2.10"
 description = "A Python library for the Demisto API"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "demisto-py-3.2.9.tar.gz", hash = "sha256:afdc08684eddb7704e0cf31f59191926794b72ae715113d89e9aae72ae7d459b"},
-    {file = "demisto_py-3.2.9-py3-none-any.whl", hash = "sha256:25ec36ad517635cb79f60f6edc2a43b5a5e009d6c2d0709bc91739c54067e9a4"},
+    {file = "demisto-py-3.2.10.tar.gz", hash = "sha256:ae3ee25afe2fabee1e6120aafbb84615aa583ebe407b54ff10f2747bbdcc6514"},
+    {file = "demisto_py-3.2.10-py3-none-any.whl", hash = "sha256:70bd630374fc2c238e5aed1bedebdd8e8105161a62b696fd327ff2ed8893dca3"},
 ]
 
 [package.dependencies]
@@ -1011,14 +1011,14 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.14.3"
+version = "1.14.5"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.14.3-py3-none-any.whl", hash = "sha256:be31870dd922767a07d3f61a374ceb1d99d42771a30faa5a32cd17adce823e77"},
-    {file = "demisto_sdk-1.14.3.tar.gz", hash = "sha256:62f243b099edc91eb00af88fcead2a5ce0c6dcc83ca869910e0c08f946f5ca41"},
+    {file = "demisto_sdk-1.14.5-py3-none-any.whl", hash = "sha256:ac0a016e53bee6e964985e03c337a51598dd9e3a8663af74c7e40565320e2956"},
+    {file = "demisto_sdk-1.14.5.tar.gz", hash = "sha256:7298b9e699aa96d9869a328201811e7707a7e8edac6e94db3fc531aac6841d6b"},
 ]
 
 [package.dependencies]
@@ -1034,7 +1034,7 @@ coverage = ">=7.2.1,<8.0.0"
 cryptography = ">=36.0.2,<37.0.0"
 dateparser = ">=1.1.1,<2.0.0"
 decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.9,<4.0.0"
+demisto-py = ">=3.2.10,<4.0.0"
 dictdiffer = ">=0.9.0,<0.10.0"
 dictor = ">=0.1.9,<0.2.0"
 docker = ">=5.0.3,<6.0.0"
@@ -1272,22 +1272,6 @@ files = [
     {file = "dpkt-1.9.8-py3-none-any.whl", hash = "sha256:4da4d111d7bf67575b571f5c678c71bddd2d8a01a3d57d489faf0a92c748fbfd"},
     {file = "dpkt-1.9.8.tar.gz", hash = "sha256:43f8686e455da5052835fd1eda2689d51de3670aac9799b1b00cfd203927ee45"},
 ]
-
-[[package]]
-name = "duo-client"
-version = "5.0.0"
-description = "Reference client for Duo Security APIs"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "duo_client-5.0.0-py2.py3-none-any.whl", hash = "sha256:653ac3bc91fea4b7a11da5904e17da24131a3b814a5734f28ada100b5cf0c679"},
-    {file = "duo_client-5.0.0.tar.gz", hash = "sha256:a6428581634cd2a54497b731e83764220242c716dccb359f5037f1d489464ba1"},
-]
-
-[package.dependencies]
-setuptools = "*"
-six = "*"
 
 [[package]]
 name = "easygui"
@@ -5023,7 +5007,7 @@ starkbank-ecdsa = ">=2.0.1"
 name = "setuptools"
 version = "67.6.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -5147,7 +5131,7 @@ files = [
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 files = [
@@ -6453,4 +6437,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "31b093f941a2e6e6e5e601566ab210e4551ee3b075f85689b47477ea5e686afe"
+content-hash = "18ace6bf70ac1bc552150010c965d4ddbb5d603f956435713598a98c7c12e682"
