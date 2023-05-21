@@ -506,7 +506,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Email Body",
-                        "query": "DisplayHtmlWithImages",
+                        "query": "DisplayHTMLWithImages",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
