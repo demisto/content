@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_LIMIT = 1000
 OAT_DETECTION_LOGS_TIME = 'oat_detection_logs_time'
+WORKBENCH_LOGS_TIME = 'workbench_logs_time'
 ''' CLIENT CLASS '''
 
 
@@ -327,6 +328,41 @@ def get_latest_log_created_time(
 
     demisto.debug(f'No new logs for {log_type=}')
     return ''
+
+
+def get_workbench_logs(
+    client: Client,
+    last_run: Dict,
+    first_fetch: str,
+    date_format: str = DATE_FORMAT,
+    limit: int = DEFAULT_MAX_LIMIT
+) -> Tuple[List[Dict], str]:
+    """
+    Get the latest occurred time of a log from a list of logs.
+
+    Args:
+        client (Client): the client object
+        last_run (dict): The last run object
+        first_fetch (str): the first fetch time
+        date_format (str): the date format.
+        limit (int): the maximum number of workbench logs to return.
+
+    Returns:
+        Tuple[List[Dict], str]: workbench logs & latest time of the workbench log that was created.
+    """
+    start_time, end_time = get_datetime_range(
+        last_run=last_run, first_fetch=first_fetch, log_type_time=WORKBENCH_LOGS_TIME, date_format=date_format
+    )
+    workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
+    latest_workbench_log_time = get_latest_log_created_time(
+        logs=workbench_logs,
+        created_time_field='createdDateTime',
+        log_type='workbench',
+        date_format=date_format,
+        increase_latest_log=True
+    )
+
+    return workbench_logs, latest_workbench_log_time or end_time
 
 
 ''' COMMAND FUNCTIONS '''
