@@ -11,10 +11,11 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC
 DEFAULT_MAX_LIMIT = 1000
 OAT_DETECTION_LOGS_TIME = 'oat_detection_logs_time'
 WORKBENCH_LOGS_TIME = 'workbench_logs_time'
+SEARCH_DETECTION_LOGS_TIME = 'search_detection_logs_time'
 ''' CLIENT CLASS '''
 
 
@@ -236,6 +237,7 @@ class Client(BaseClient):
         Returns:
             List[Dict]: The audit logs that were found.
         """
+        # will retrieve all the events that are only more than detected_start_datetime, does not support miliseconds
         params = {'startDateTime': start_datetime, 'top': top}
 
         if end_datetime:
@@ -281,8 +283,13 @@ def get_datetime_range(
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
     if log_type_time == OAT_DETECTION_LOGS_TIME:
-        # Note: The data retrieval time range cannot be greater than 365 days for oat logs
-        end_time_datetime = last_run_time + timedelta(days=365)
+        # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
+        # it cannot exceed datetime.now, otherwise the api will return 400
+        one_year_from_last_run_time = last_run_time + timedelta(days=365)
+        if one_year_from_last_run_time > now:
+            end_time_datetime = now
+        else:
+            end_time_datetime = one_year_from_last_run_time
     else:
         end_time_datetime = now
 
@@ -338,7 +345,7 @@ def get_workbench_logs(
     limit: int = DEFAULT_MAX_LIMIT
 ) -> Tuple[List[Dict], str]:
     """
-    Get the latest occurred time of a log from a list of logs.
+    Get the workbench logs.
 
     Args:
         client (Client): the client object
@@ -364,6 +371,83 @@ def get_workbench_logs(
 
     return workbench_logs, latest_workbench_log_time or end_time
 
+
+def get_observed_attack_techniques_logs(
+    client: Client,
+    last_run: Dict,
+    first_fetch: str,
+    date_format: str = DATE_FORMAT,
+    limit: int = DEFAULT_MAX_LIMIT
+) -> Tuple[List[Dict], str]:
+    """
+    Get the observed attack techniques logs.
+
+    Args:
+        client (Client): the client object
+        last_run (dict): The last run object
+        first_fetch (str): the first fetch time
+        date_format (str): the date format.
+        limit (int): the maximum number of observed attack techniques logs to return.
+
+    Returns:
+        Tuple[List[Dict], str]: observed attack techniques logs & latest time of the technique log that was created.
+    """
+    start_time, end_time = get_datetime_range(
+        last_run=last_run, first_fetch=first_fetch, log_type_time=OAT_DETECTION_LOGS_TIME, date_format=date_format
+    )
+    observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
+        detected_start_datetime=start_time, detected_end_datetime=end_time, top=limit, limit=limit
+    )
+    latest_observed_attack_technique_log_time = get_latest_log_created_time(
+        logs=observed_attack_techniques_logs,
+        created_time_field='detectedDateTime',
+        log_type='observed attack techniques',
+        date_format=date_format,
+        increase_latest_log=True
+    )
+
+    return observed_attack_techniques_logs, latest_observed_attack_technique_log_time or end_time
+
+
+def get_search_detection_logs(
+    client: Client,
+    last_run: Dict,
+    first_fetch: str,
+    date_format: str = DATE_FORMAT,
+    limit: int = DEFAULT_MAX_LIMIT
+):
+    """
+    Get the search detection logs.
+
+    Args:
+        client (Client): the client object
+        last_run (dict): The last run object
+        first_fetch (str): the first fetch time
+        date_format (str): the date format.
+        limit (int): the maximum number of search detection logs to return.
+
+    Returns:
+        Tuple[List[Dict], str]: search detection logs & latest time of the search detection log that was created.
+    """
+    start_time, end_time = get_datetime_range(
+        last_run=last_run, first_fetch=first_fetch, log_type_time=SEARCH_DETECTION_LOGS_TIME, date_format=date_format
+    )
+    search_detection_logs = client.get_search_detection_logs(
+        start_datetime=start_time, end_datetime=end_time, top=limit, limit=limit
+    )
+    for log in search_detection_logs:
+        if event_time := log.get('eventTime'):
+            log['eventTime'] = timestamp_to_datestring(timestamp=event_time, date_format=date_format, is_utc=True)
+
+    latest_search_detection_log_time = get_latest_log_created_time(
+        logs=search_detection_logs,
+        created_time_field='eventTime',
+        log_type='search detection',
+        date_format=date_format,
+        increase_latest_log=True
+    )
+
+    return search_detection_logs, latest_search_detection_log_time or end_time
 
 ''' COMMAND FUNCTIONS '''
 
