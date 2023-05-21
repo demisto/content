@@ -1,13 +1,19 @@
 import pytest
 import json
 import dateparser
+import demistomock as demisto
 from unittest.mock import MagicMock, patch
 from DuoEventCollector import Client, GetEvents, LogType, Params, parse_events, main, parse_mintime, validate_request_order_array
 
 
 @pytest.fixture
-def ret_fresh_client():
-    demisto_params = {
+def ret_fresh_client(ret_fresh_parameters):
+    return Client(Params(**ret_fresh_parameters, mintime={}))   # type: ignore
+
+
+@pytest.fixture
+def ret_fresh_parameters():
+    return {
         "after": "1 month",
         "host": "api-a1fdb00d.duosecurity.com",
         "integration_key": "DI47EXXXXXXXWRYV2",
@@ -16,7 +22,6 @@ def ret_fresh_client():
         "retries": "5",
         "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
     }
-    return Client(Params(**demisto_params, mintime={}))   # type: ignore
 
 
 global_demisto_params = {
@@ -98,7 +103,7 @@ def test_call():
     }
 
 
-def test_setLastRun_when_no_new_events(ret_fresh_client, mocker):
+def test_setLastRun_when_no_new_events(ret_fresh_client, ret_fresh_parameters, mocker):
     """
     Given:
         receiving events from XSIAM for the first iteration and then no more events in the second call.
@@ -108,6 +113,8 @@ def test_setLastRun_when_no_new_events(ret_fresh_client, mocker):
         validate that the lastRun is being set to the last batch send from XSIAM.
     """
     client = ret_fresh_client
+    mocker.patch.object(demisto, 'params', return_value=ret_fresh_parameters)
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
     mocker.patch.object(Client, 'call', side_effect=[(['event1'], {
         "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
         "total_objects": 3
