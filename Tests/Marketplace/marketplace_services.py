@@ -2099,7 +2099,10 @@ class Pack(object):
                             continue
 
                     # check if content item has to version
-                    to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    try:
+                        to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    except Exception:
+                        logging.exception(f"Failed on {pack_file_path=}. {content_item=}")
 
                     if to_version and Version(to_version) < Version(Metadata.SERVER_DEFAULT_MIN_VERSION):
                         os.remove(pack_file_path)
