@@ -18,41 +18,47 @@ More information:
 Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Panorama Query Logs
-* QRadar Indicator Hunting V2
-* QRadarFullSearch
-* Splunk Indicator Hunting
-* Search Endpoints By Hash - Generic V2
-* Post Intrusion Ransomware Investigation
-* Palo Alto Networks - Hunting And Threat Detection
-* Block Indicators - Generic v2
+
+* Panorama Query Logs for Kaseya breach Threat IDs
 * PAN-OS - Block Domain - External Dynamic List
+* Block Indicators - Generic v3
+* Post Intrusion Ransomware Investigation
+* Search Endpoints By Hash - Generic V2
+* QRadar Indicator Hunting V2
+* QRadar Domain Indicators Hunting
+* Splunk Indicator Hunting
+* Palo Alto Networks - Hunting And Threat Detection
 
 ### Integrations
+
 * SplunkPy
 
 ### Scripts
+
+* isError
+* http
 * SearchIncidentsV2
 * ParseHTMLIndicators
-* http
-* isError
 
 ### Commands
-* expanse-get-issues
-* qradar-create-reference-set
-* extractIndicators
-* linkIncidents
-* closeInvestigation
-* qradar-create-reference-set-value
-* qradar-delete-reference-set
+
 * setIndicators
-* splunk-search
+* qradar-create-reference-set
+* linkIncidents
 * qradar-get-reference-by-name
+* qradar-delete-reference-set
+* splunk-search
+* closeInvestigation
+* extractIndicators
+* qradar-create-reference-set-value
+* expanse-get-issues
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -71,9 +77,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ReferenceListName | The reference list name to create in QRadar for the Domain Indicators Hunting. | KaseyaDomainIndicators | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](https://raw.githubusercontent.com/demisto/content/635f8522e5ceb9c1fa286ef9237a1161098c61f6/Packs/MajorBreachesInvestigationandResponse/doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.png)
+
+![Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack](../doc_files/Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack.png)
