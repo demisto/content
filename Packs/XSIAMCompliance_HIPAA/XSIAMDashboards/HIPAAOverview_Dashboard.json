@@ -3,7 +3,7 @@
     "dashboards_data": [
         {
             "name": "HIPAA Overview",
-            "description": null,
+            "description": "HIPAA",
             "status": "ENABLED",
             "layout": [
                 {
