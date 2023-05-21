@@ -15,8 +15,8 @@ def main():
         else:
             return_results(quote(decoded_value, safe=args.get('safe_character', '/')))
     except Exception as exc:
-        return_error(str(exc), error=exc)
+        return_error(f'Failed to execute URLEncode.\nError: {str(exc)}', error=exc)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    main()  # pragma: no cover

@@ -51,3 +51,19 @@ def test_URLEncode_with_safe_character(mocker):
     mocked_return_results = mocker.patch('URLEncode.return_results')
     main()
     mocked_return_results.assert_called_once_with('https%3A%2F%2Fwww.@google@com%2F')
+
+
+def test_URLEncode_fail(mocker):
+    """
+    Given
+    - an exception is raised.
+    When
+    - call URLEncode transformer.
+    Then
+    - return_error function is called with the relevant error message.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.google.com/'})
+    mocker.patch('URLEncode.return_results', side_effect=Exception("Mocked error"))
+    mocked_return_error = mocker.patch('URLEncode.return_error')
+    main()
+    mocked_return_error.assert_called_once()
