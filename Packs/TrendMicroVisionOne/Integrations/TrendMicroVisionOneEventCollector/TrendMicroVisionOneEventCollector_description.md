@@ -37,3 +37,7 @@ The following table provides a brief description of each role.
 
 ***
 Please be sure to select the correct domain for **Your server URL** integration parameter, you can see the list [here](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) section [3] under "Obtain the domain name for your region."
+
+***
+### Api Limitations
+* You cannot retrieve audit logs that are older than 180 days, hence if setting a first fetch that is more than 180 days, for audit-logs it will be maximum 180 days.

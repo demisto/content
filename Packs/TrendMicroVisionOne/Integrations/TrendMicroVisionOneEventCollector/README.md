@@ -55,6 +55,10 @@ The following table provides a brief description of each role.
 | Senior Analyst                    | Can investigate XDR alerts, take response actions, approve Managed XDR requests, and manage detection models |
 | Analyst                           | Can investigate XDR alerts and take response actions                                                         |
 
+
+### Api Limitations
+* You cannot retrieve audit logs that are older than 180 days, hence if setting a first fetch that is more than 180 days, for audit-logs it will be maximum 180 days.
+
 ## Commands
 
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.

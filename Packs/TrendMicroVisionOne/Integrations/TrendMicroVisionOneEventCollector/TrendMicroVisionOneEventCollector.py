@@ -16,6 +16,7 @@ DEFAULT_MAX_LIMIT = 1000
 OAT_DETECTION_LOGS_TIME = 'oat_detection_logs_time'
 WORKBENCH_LOGS_TIME = 'workbench_logs_time'
 SEARCH_DETECTION_LOGS_TIME = 'search_detection_logs_time'
+AUDIT_LOGS_TIME = 'audit_logs_time'
 ''' CLIENT CLASS '''
 
 
@@ -225,8 +226,12 @@ class Client(BaseClient):
         docs:
         https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs
 
+        Note:
+            start_datetime: You can retrieve data for response tasks that were created no later than 180 days ago.
+
         Args:
             start_datetime (str): Timestamp in ISO 8601 format that indicates the start of the data retrieval range.
+                                  You can retrieve data for response tasks that were created no later than 180 days ago.
             end_datetime (str): Timestamp in ISO 8601 format that indicates the end of the data retrieval time range.
                                 If no value is specified, 'endDateTime' defaults to the time the request is made.
             order_by (str): Parameter that allows you to sort the retrieved search results in ascending or
@@ -238,6 +243,7 @@ class Client(BaseClient):
             List[Dict]: The audit logs that were found.
         """
         # will retrieve all the events that are only more than detected_start_datetime, does not support miliseconds
+        # start_datetime can be maximum 180 days ago
         params = {'startDateTime': start_datetime, 'top': top}
 
         if end_datetime:
@@ -281,6 +287,16 @@ def get_datetime_range(
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
     else:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+
+    last_run_time_before_parse = last_run_time.strftime(date_format)
+    demisto.debug(f'{last_run_time_before_parse=}')
+
+    if log_type_time == AUDIT_LOGS_TIME:
+        if now - last_run_time > timedelta(days=180):
+            # cannot retrieve audit logs that are older than 180 days.
+            last_run_time = dateparser.parse(
+                '180 days ago', settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
+            )
 
     if log_type_time == OAT_DETECTION_LOGS_TIME:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
@@ -415,7 +431,7 @@ def get_search_detection_logs(
     first_fetch: str,
     date_format: str = DATE_FORMAT,
     limit: int = DEFAULT_MAX_LIMIT
-):
+) -> Tuple[List[Dict], str]:
     """
     Get the search detection logs.
 
@@ -448,6 +464,44 @@ def get_search_detection_logs(
     )
 
     return search_detection_logs, latest_search_detection_log_time or end_time
+
+
+def get_audit_logs(
+    client: Client,
+    last_run: Dict,
+    first_fetch: str,
+    date_format: str = DATE_FORMAT,
+    limit: int = DEFAULT_MAX_LIMIT
+) -> Tuple[List[Dict], str]:
+    """
+    Get the audit logs.
+
+    Args:
+        client (Client): the client object
+        last_run (dict): The last run object
+        first_fetch (str): the first fetch time
+        date_format (str): the date format.
+        limit (int): the maximum number of search detection logs to return.
+
+    Returns:
+        Tuple[List[Dict], str]: audit logs & latest time of the audit log that was created.
+    """
+    start_time, end_time = get_datetime_range(
+        last_run=last_run, first_fetch=first_fetch, log_type_time=AUDIT_LOGS_TIME, date_format=date_format
+    )
+    audit_logs = client.get_audit_logs(
+        start_datetime=start_time, end_datetime=end_time, limit=limit
+    )
+
+    latest_audit_log_time = get_latest_log_created_time(
+        logs=audit_logs,
+        created_time_field='loggedDateTime',
+        log_type='audit',
+        date_format=date_format,
+    )
+
+    return audit_logs, latest_audit_log_time or end_time
+
 
 ''' COMMAND FUNCTIONS '''
 
