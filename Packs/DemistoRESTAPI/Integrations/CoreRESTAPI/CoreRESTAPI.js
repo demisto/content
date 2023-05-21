@@ -307,6 +307,17 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 
 /* helper functions */
 
+/**
+ * deletes an entry  by entryID by the key_to_delete
+Arguments:
+    @param {String} file_content -- content of the file to upload
+    @param {String} file_name  -- name of the file in the dest incident
+    @param {String} key_to_delete  -- the name of the key to delete
+    @param {String} incident_id  -- the incident id
+Returns:
+    CommandResults
+"""
+ */
 var upload_file= function(incident_id, file_content, file_name) {
     var body = {
         file: 
@@ -325,6 +336,15 @@ var upload_file= function(incident_id, file_content, file_name) {
     return res;
 };
 
+/**
+ * deletes an entry  by entryID by the key_to_delete
+Arguments:
+    @param {String} key_to_delete  -- the name of the key to delete
+    @param {String} incident_id  -- the incident id
+Returns:
+    CommandResults
+"""
+ */
 var deleteContext = function (incident_id, key_to_delete) {
     var body = JSON.stringify({
         "args": null,
@@ -338,6 +358,15 @@ var deleteContext = function (incident_id, key_to_delete) {
 };
 
 
+/**
+ * deletes a file  by entryID
+Arguments:
+    @param {String} delete_artifact  -- in order to delete the artifact 
+    @param {String} entry_id  -- entry ID of the file
+Returns:
+    CommandResults
+"""
+ */
 var deleteFile = function (entry_id, delete_artifact = true) {
     const body_content = JSON.stringify({
         id: entry_id,
@@ -388,16 +417,13 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
 
     let response = {};
     var fileId = '';
-    log('what');
     if ((!entryID)) {
         response = upload_file(incident_id, file_content, file_name);
         fileId = saveFile(file_content);
     } else {
         file_content = entrytoa(entryID);
         if (file_name === undefined) {
-            log('ok');
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
-            log(`${file_name}`);
         }
         if (Array.isArray(file_name)) {
             if (file_name.length > 0) {
@@ -406,7 +432,6 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
                 file_name = undefined;
             }
         }
-        file_name = 'trythis';
         response = upload_file(incident_id, file_content, file_name);
         }
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
