@@ -734,7 +734,7 @@ Scope: `write:jira-work`
 | --- | --- | --- |
 | parent_issue_key | The parent issue key (if you're editing a sub-task). This argument is only relevant for Jira Cloud. | Optional |
 | parent_issue_id | The parent issue ID (if you're editing a sub-task). This argument is only relevant for Jira Cloud. | Optional |
-| action | Whether to append or rewrite the values. The default value is `rewrite`. Only issue fields of type string or array support appending. If the field is of type string, then the new appended value will be: 'old value, new value', where they will be separated by a comma. Possible values are: append, rewrite. Default is rewrite. | Optional |
+| action | Whether to append or rewrite the values. Only issue fields of type string or array support appending. If the field is of type string, then the new appended value will be: 'old value, new value', where they will be separated by a comma. Possible values are: append, rewrite. Default is rewrite. | Optional |
 | issueId | Deprecated. Please use issue_id or issue_key. | Optional |
 | issue_id | The issue ID (Issue ID or key is required). | Optional |
 | issue_key | The issue key (Issue ID or key is required). | Optional |
