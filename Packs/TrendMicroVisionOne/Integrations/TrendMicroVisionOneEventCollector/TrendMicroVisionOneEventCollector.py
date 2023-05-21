@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -143,7 +143,7 @@ class Client(BaseClient):
         Get the observed attack techniques logs.
 
         docs:
-       https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get
+        https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get
 
         Note: The data retrieval time range cannot be greater than 365 days.
 
@@ -247,9 +247,46 @@ class Client(BaseClient):
             limit=limit
         )
 
+
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def get_datetime_range(
+    last_run: Dict,
+    first_fetch: str,
+    log_type_time: str,
+    date_format: str = DATE_FORMAT
+) -> Tuple[str, str]:
+    """
+    Get a datetime range for any log type.
+
+    Args:
+        last_run (dict): The last run object.
+        first_fetch (str): First fetch time.
+        log_type_time (str): the name of the field in the last run for a specific log type.
+        date_format (str): The date format.
+
+    Returns:
+        Tuple[str, str]: start time and end time
+    """
+    last_run_time = last_run and log_type_time in last_run and last_run[log_type_time]
+    now = get_current_time()
+
+    if last_run_time:
+        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+    else:
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+
+    if log_type_time == 'oat_detection_logs_time':
+        # Note: The data retrieval time range cannot be greater than 365 days for oat logs
+        end_time_datetime = last_run_time + timedelta(days=365)
+    else:
+        end_time_datetime = now
+
+    start_time, end_time = last_run_time.strftime(date_format), end_time_datetime.strftime(date_format)
+    demisto.debug(f'{start_time=} and {end_time_datetime=} for {log_type_time=}')
+    return start_time, end_time
+
 
 ''' COMMAND FUNCTIONS '''
 
