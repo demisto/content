@@ -1037,6 +1037,7 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
 
     relevant_incidents = fetch_relevant_incidents(client, numeric_status_list, time_from,
                                                   date_to_timestamp(datetime.now()), last_run, max_fetch)
+    demisto.debug(f'###### [demisto.debug] relevant_incidents: {str(relevant_incidents)}')
     formatted_incidents = format_incidents(relevant_incidents)  # for Layout
 
     incidents = []
@@ -1564,14 +1565,19 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
 
         for attribute_name in REFORMAT_INCIDENT_FIELDS:  # formatting nested attributes.
             attribute_value_to_decompose = incident.get(attribute_name)
+            demisto.debug(f'###### [demisto.debug] attribute_value_to_decompose: {str(attribute_value_to_decompose)}')
             if attribute_value_to_decompose:
                 nested_attributes = attribute_value_to_decompose.split(',')
+                demisto.debug(f'###### [demisto.debug] nested_attributes: {str(nested_attributes)}')
                 for index, attrib in enumerate(nested_attributes):
+                    demisto.debug(f'###### [demisto.debug] index, attrib: {str(attrib)}, {str(index)}')
                     if attrib:
                         nested_attributes[index] = attrib.lstrip()
                         key, value = format_nested_incident_attribute(nested_attributes[index])
+                        demisto.debug(f'###### [demisto.debug] key, value: {str(key)}, {str(value)}')
                         if key:
                             formatted_key = build_readable_attribute_key(key, attribute_name)
+                            demisto.debug(f'###### [demisto.debug] formatted_key: {str(formatted_key)}')
                             incident[formatted_key] = value
     return relevant_incidents
 
@@ -1606,6 +1612,7 @@ def format_integer_field_to_verbal(incident: Dict[str, Any]) -> Dict[str, Any]:
     fields_to_format = ['incidentStatus', 'incidentReso', 'phIncidentCategory']
     for field in fields_to_format:
         incident[field + 'Verbal'] = get_verbal_of_integer_field(field, incident.get(field))
+        demisto.debug(f'###### [demisto.debug] incident[field + "Verbal"]: {str(incident[field + "Verbal"])}')
     return incident
 
 
