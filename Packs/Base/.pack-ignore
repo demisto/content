@@ -76,6 +76,7 @@ refang
 indicatorssearcher
 FeedIndicatorType
 str
+FileResult
 
 [tests_require_network]
 CommonServerPython
