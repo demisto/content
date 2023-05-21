@@ -101,7 +101,7 @@ class Client(BaseClient):
         limit: int = DEFAULT_MAX_LIMIT
     ):
         """
-        Implements a generic method with pagination to retrieve logs from trend micro vision one.
+        Get the workbench logs.
 
         docs:
         https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get
@@ -113,7 +113,7 @@ class Client(BaseClient):
                                 of the data retrieval time range.
             order_by (str): Parameter to be used for sorting records. Records are returned in descending
                             order by default.
-            limit (str): the maximum number of workbench events to retrieve.
+            limit (int): the maximum number of workbench events to retrieve.
 
         Returns:
             List[Dict]: The workbench events that were found.
@@ -140,7 +140,7 @@ class Client(BaseClient):
         limit: int = DEFAULT_MAX_LIMIT
     ):
         """
-        Implements a generic method with pagination to retrieve logs from trend micro vision one.
+        Get the observed attack techniques logs.
 
         docs:
        https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get
@@ -155,7 +155,7 @@ class Client(BaseClient):
                                          detection data retrieval time range. If no value is specified,
                                          detectedEndDateTime defaults to the time the request is made.
             top (int): Number of records displayed on a single page.
-            limit (str): the maximum number of workbench events to retrieve.
+            limit (int): the maximum number of observed attack techniques logs to retrieve.
 
         Returns:
             List[Dict]: The observe attack techniques that were found.
@@ -172,6 +172,39 @@ class Client(BaseClient):
             limit=limit
         )
 
+    def get_search_detection_logs(
+        self,
+        start_datetime: str,
+        end_datetime: str | None = None,
+        top: int = DEFAULT_MAX_LIMIT,
+        limit: int = DEFAULT_MAX_LIMIT
+    ):
+        """
+        Get the search detection logs.
+
+        docs:
+        https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get
+
+        Args:
+            start_datetime (str): Timestamp in ISO 8601 format that indicates the start of the data retrieval range.
+            end_datetime (str): Timestamp in ISO 8601 format that indicates the end of the data retrieval time range.
+                                If no value is specified, 'endDateTime' defaults to the time the request is made.
+            top (int): Number of records displayed on a page.
+            limit (int): the maximum number of search detection logs to retrieve.
+
+        Returns:
+            List[Dict]: The workbench events that were found.
+        """
+        params = {'startDateTime': start_datetime, 'top': top}
+
+        if end_datetime:
+            params['endDateTime'] = end_datetime
+
+        return self.get_events(
+            url_suffix=f'/{self.API_VERSION}/search/detections',
+            params=params,
+            limit=limit
+        )
 
 ''' HELPER FUNCTIONS '''
 
