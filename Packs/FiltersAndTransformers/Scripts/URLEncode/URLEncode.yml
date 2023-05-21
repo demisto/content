@@ -1,11 +1,10 @@
 args:
-- name: value
+- description: The URL to encode.
+  name: value
   required: true
-  description: The URL to encode.
 - name: safe_character
   default: true
-  description: The optional safe_character argument allows to specify ASCII characters that
-    should not be encoded. Default value is "/".
+  description: The optional safe_character argument allows to specify ASCII characters that should not be encoded. Default value is "/".
   defaultValue: /
 - name: ignore_safe_character
   auto: PREDEFINED
@@ -27,7 +26,7 @@ tags:
 - transformer
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.11.59070
+dockerimage: demisto/python3:3.10.11.59581
 tests:
 - URLEncode-Test
 fromversion: 5.0.0
