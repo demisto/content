@@ -150,10 +150,7 @@ var sendRequest = function(method, uri, body, raw) {
         params.proxy
     );
 
-    if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        //var response = JSON.parse(res.Body);
-        
-            
+    if (res.StatusCode < 200 || res.StatusCode >= 300) {            
         throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\n Body: ' + JSON.stringify(res) + '.';
     }
     if (raw) {
@@ -414,7 +411,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     if ((!file_name) && (!entryID)) {
         throw 'Either file_name or entry_id argument must be provided.';
     }
-    
+
     var fileId = '';
     if ((!entryID)) {
         response = upload_file(incident_id, file_content, file_name);
@@ -525,9 +522,9 @@ function coreApiFileCheckCommand(EntryID) {
 }
 
 /**
- This command checks if the file is existing.
+ This command deletes attachment from an incident.
     Arguments:
-        @param {String} incident_id  -- incident id to upload the file to
+        @param {String} incident_id  -- incident id to delete the file from
         @param {String} attachment_path -- the file path
         @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
     Returns:
