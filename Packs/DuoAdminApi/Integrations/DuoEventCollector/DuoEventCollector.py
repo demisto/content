@@ -3,7 +3,7 @@ from enum import Enum
 import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 from CommonServerPython import *
-from typing import Generator
+from typing import Generator, Any
 
 VENDOR = "duo"
 PRODUCT = "duo"
@@ -29,7 +29,7 @@ class Params(BaseModel):
     integration_key: str
     secret_key: dict
 
-    def set_next_offset_value(self, mintime, log_type: LogType) -> None:
+    def set_next_offset_value(self, mintime: Any, log_type: LogType) -> None:
         self.mintime[log_type] = mintime
 
 
@@ -251,14 +251,14 @@ def parse_events(authentication_evetns: list):
     return authentication_evetns
 
 
-def parse_mintime(last_run) -> tuple:
+def parse_mintime(last_run: float) -> tuple:
     """Returns the last run percision of 10 digits for v1 and 13 digits for v2"""
     last_run_v1 = int(last_run)
     last_run_v2 = int(last_run * 1000)
     return last_run_v1, last_run_v2
 
 
-def validate_request_order_array(logs_type_array):
+def validate_request_order_array(logs_type_array: list) -> Any:
     """Validates that all the inputs of the log_type_array are valid."""
     for value in logs_type_array:
         if value not in [LogType.ADMINISTRATION, LogType.AUTHENTICATION, LogType.TELEPHONY]:
@@ -274,8 +274,9 @@ def main():
 
         logs_type_array = demisto_params.get('logs_type_array',
                                              f'{LogType.AUTHENTICATION},{LogType.ADMINISTRATION},{LogType.TELEPHONY}')
-        logs_type_array = [log_type.upper() for log_type in logs_type_array]
+
         request_order = last_run.get('request_order', logs_type_array.split(','))
+        request_order = [log_type.upper() for log_type in request_order]
         if unvalid_log_type := validate_request_order_array(request_order) is not True:
             DemistoException(f'One of the vales for logs_type_array is unvlid the value is {unvalid_log_type}')
 
@@ -286,7 +287,7 @@ def main():
             if after is not None:
                 last_run = after.timestamp()
             else:
-                DemistoException('Please Check your "after" parameter is valid')
+                DemistoException('Please check your "after" parameter is valid')
 
             v1_mintime, v2_mintime = parse_mintime(last_run)
             last_run = {LogType.AUTHENTICATION.value: {'min_time': v2_mintime, 'next_offset': []},
@@ -321,6 +322,8 @@ def main():
                 demisto.debug(f'Sending {len(events)} events to XSIAM')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(get_events.get_last_run())
+        else:
+            raise NotImplementedError(f'The command {command} is not implemented')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
