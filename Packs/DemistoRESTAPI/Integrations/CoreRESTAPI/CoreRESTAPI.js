@@ -414,8 +414,7 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     if ((!file_name) && (!entryID)) {
         throw 'Either file_name or entry_id argument must be provided.';
     }
-
-    let response = {};
+    
     var fileId = '';
     if ((!entryID)) {
         response = upload_file(incident_id, file_content, file_name);

@@ -1,10 +1,10 @@
 Use Core REST APIs
 This integration was integrated and tested with version 6.11 of Core REST API
 
-## Configure Core REST API_mm on Cortex XSOAR
+## Configure Core REST API on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Core REST API_mm.
+2. Search for Core REST API.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -257,7 +257,7 @@ There is no context output for this command.
 ### core-api-download
 
 ***
-Download files from core server
+Download files from Core server
 
 #### Base Command
 
@@ -277,7 +277,7 @@ There is no context output for this command.
 ### core-api-multipart
 
 ***
-Send HTTP Multipart request to upload files to core server
+Send HTTP Multipart request to upload files to Core server
 
 #### Base Command
 
@@ -297,7 +297,7 @@ There is no context output for this command.
 ### core-delete-incidents
 
 ***
-Delete core incidents
+Delete Core incidents
 
 #### Base Command
 
@@ -349,10 +349,9 @@ This command uploads to the incident a file that the user provided according to 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident's id. | Required | 
-| file_name | The new file's name. | Required | 
+| file_name | The new file's name. | Optional | 
 | file_content | The new file's content. | Optional | 
 | entry_id | The War Room entry ID of the pack zip file. | Optional | 
-| target | Where to upload the file. Possible values are: War Room Entry, Incident Attachment. Default is War Room Entry. | Optional | 
 
 #### Context Output
 
@@ -370,7 +369,7 @@ This command deletes a file from Xsoar by entry_id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The War Room entry ID of the pack zip file. | Required | 
+| entry_id | The War Room entry ID of the file. | Required | 
 
 #### Context Output
 
@@ -390,17 +389,13 @@ This command deletes the attachment from the incident and from the XSOAR server
 | --- | --- | --- |
 | incident_id | The incident's id. | Required | 
 | file_path | The file's path. | Required | 
-| field_name | Name of the field (type attachment) you want to remove the attachment. Default is incident.attachment. | Optional | 
+| field_name | Name of the field (type attachment) you want to remove the attachment. Default is attachment. | Optional | 
 
-#### Context Output
-
-There is no context output for this command.
 #### Command example
-```!core-api-file-attachment-delete file_path=2@1 incident_id=1```
+```!core-api-file-attachment-delete file_path=1@1 incident_id=1```
 #### Human Readable Output
 
->Attachment 2@1 deleted !
-
+>Attachment 1@1 deleted.
 ### core-api-file-check
 
 ***
@@ -414,41 +409,10 @@ This command checks if the file is existing in Xsoar by entry_id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The War Room entry ID of the pack zip file. | Required | 
+| entry_id | The War Room entry ID of the file. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
-#### Command example
-```!core-api-file-check entry_id=111```
-#### Human Readable Output
-
->```
->{
->    "HumanReadable": "File 111 exists",
->    "outputs": {
->        "response": "<!doctype html><html lang=\"en\"><head><title>Cortex XSOAR</title><meta charset=\"utf-8\"><meta name=\"description\" content=\"Cortex XSOAR\"><meta name=\"keywords\" content=\"security,incident response,attack playback,forensics\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,maximum-scale=1\"><link rel=\"shortcut icon\" href=\"/favicon.ico?v=1645910757727\"><link href=\"/assets/light-bundle-1645910757727.css?v=1645910757727\" rel=\"stylesheet\"></head><body><div id=\"app\"></div><script src=\"/assets/light-bundle-1645910757727.js?v=1645910757727\"></script></body></html>"
->    },
->    "outputs_prefix": "IsFileExists"
->}
->```
-
-### core-api-file-rename
-
-***
-This command “rename” the given file by deleting the current file (by entry_id) and uploading a new file with the new name and the current content.
-
-#### Base Command
-
-`core-api-file-rename`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| entry_id | The War Room entry ID of the pack zip file. | Required | 
-| new_file_name | The new file's name. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
+| IsFileExists | unknown | Dictionary with EntryID as key and boolean if the file exists as value | 

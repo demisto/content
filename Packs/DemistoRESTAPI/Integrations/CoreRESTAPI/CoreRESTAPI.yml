@@ -292,7 +292,7 @@ script:
   - name: core-api-file-check
     arguments:
     - name: entry_id
-      description: "The War Room entry ID of the pack zip file."
+      description: "The War Room entry ID of the file."
       required: true
       isArray: false
     description: This command checks if the file is existing in Xsoar by entry_id
