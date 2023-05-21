@@ -335,15 +335,15 @@ def get_writer_creds():
         raise ValueError("writer_credentials are not set in your Devo Integration")
 
     write_credentials = check_type(WRITER_CREDENTIALS, dict)
-    assert write_credentials[
-        "key"
-    ], 'Required key: "key" is not present in writer credentials'
-    assert write_credentials[
-        "crt"
-    ], 'Required key: "crt" is not present in writer credentials'
-    assert write_credentials[
-        "chain"
-    ], 'Required key: "chain" is not present in writer credentials'
+    assert (
+        "key" in write_credentials
+    ), 'Required key: "key" is not present in writer credentials'
+    assert (
+        "crt" in write_credentials
+    ), 'Required key: "crt" is not present in writer credentials'
+    assert (
+        "chain" in write_credentials
+    ), 'Required key: "chain" is not present in writer credentials'
 
     # Limitation in Devo DS Connector SDK. Currently require filepaths for credentials.
     # Will accept file-handler type objects in the future.
