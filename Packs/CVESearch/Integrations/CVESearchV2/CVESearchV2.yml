@@ -83,7 +83,7 @@ script:
       type: String
     - contextPath: CVE.CVSS.Table
       description: The CVSS table of the CVE.
-      type: Dict
+      type: String
     - contextPath: CVE.Published
       description: The date the CVE was published.
       type: Date
@@ -101,10 +101,10 @@ script:
       type: List
     - contextPath: CVE.vulnerableconfigurations
       description: A dictionary of CPE strings with `cpe` key for a grid.
-      type: Dict
+      type: String
     - contextPath: CVE.vulnerableproduct
       description: A dictionary of CPE strings with `cpe` key for a grid.
-      type: Dict
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator value.
       type: String
