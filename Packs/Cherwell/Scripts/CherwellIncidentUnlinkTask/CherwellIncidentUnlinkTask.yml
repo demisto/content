@@ -21,7 +21,7 @@ script: '-'
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.58677
 subtype: python3
 tags: [Cherwell]
 dependson:
@@ -30,3 +30,5 @@ dependson:
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert
