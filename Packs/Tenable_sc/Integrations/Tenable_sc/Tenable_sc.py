@@ -565,24 +565,74 @@ class Client(BaseClient):
         path = 'query/' + str(query_id)
         self.send_request(path, method='delete')
 
-    def get_analysis(self, query, scan_results_id):
-        path = 'analysis'
+    def get_analysis(self, query=None, scan_results_id=None, args={}):
+        """
+        Send the request for get_vulnerability_command and get_vulnerabilities.
+        Args:
+            query (dict or str): This function can receive query argument either as a dict (as in get_vulnerability_command),
+                          or as an ID of an existing query (as in get_vulnerabilities).
+            scan_results_id (None or str): str if received from get_vulnerabilities, otherwise will be part of args.
+            args (dict): Either an empty dict if passed from get_vulnerabilities, otherwise, the demisto.results() object.
+        Returns:
+            Dict: The response.
+        """
+        body = self.create_get_vulnerability_request_body(args, query, scan_results_id)
 
-        # This function can receive 'query' argument either as a dict (as in get_vulnerability_command),
-        # or as an ID of an existing query (as in get_vulnerabilities).
-        # Here we form the query field in the request body as a dict, as required.
-        if not isinstance(query, dict):
-            query = {'id': query}
+        return self.send_request(path='analysis', method='post', body=body)
 
+    def create_get_vulnerability_request_body(self, args={}, query=None, scan_results_id=None):
+        """
+        Create the body for the request made in get_analysis.
+        Args:
+            query (dict or str): This function can receive query argument either as a dict (as in get_vulnerability_command),
+                          or as an ID of an existing query (as in get_vulnerabilities).
+            scan_results_id (None or str): str if received from get_vulnerabilities, otherwise will be part of args.
+            args (dict): Either an empty dict if passed from get_vulnerabilities, otherwise, the demisto.results() object.
+        Returns:
+            Dict: The prepared request body.
+        """
+        vuln_id = args.get('vulnerability_id')
+        scan_results_id = scan_results_id or args.get('scan_results_id')
+        sort_field = args.get('sort_field')
+        query_id = query or args.get('query_id')
+        if not isinstance(query_id, dict):
+            query = {'id': query_id}
+        sort_direction = args.get('sort_direction')
+        source_type = args.get('source_type', "individual")
+        page = int(args.get('page', '0'))
+        limit = int(args.get('limit', '50'))
+        if limit > 200:
+            limit = 200
         body = {
+            'tool': 'vulndetails',
             'type': 'vuln',
-            'query': query,
-            'sourceType': 'individual',
-            'scanID': scan_results_id,
-            'view': 'all'
+            'startOffset': page,  # Lower bound for the results list (must be specified)
+            'endOffset': page + limit,  # Upper bound for the results list (must be specified)
+            'sortField': sort_field,
+            'sortDir': sort_direction,
+            'sourceType': source_type,
+            'view': 'all',
         }
+        if source_type == 'individual':
+            if scan_results_id:
+                body['scanID'] = scan_results_id
+                vuln_filter = [{
+                    'filterName': 'pluginID',
+                    'operator': '=',
+                    'value': vuln_id
+                }]
+                query["filters"] = vuln_filter
+                query["tool"] = 'vulndetails'
+                query["type"] = 'vuln'
+            else:
+                return_error("When choosing source_type = individual - scan_results_id must be provided.")
+        else:
+            body['sourceType'] = source_type
+            if not query_id:
+                return_error(f"When choosing source_type = {source_type} - query_id must be provided.")
+        body["query"] = query
 
-        return self.send_request(path, method='post', body=body)
+        return body
 
     def get_system_diagnostics(self):
         """
@@ -667,7 +717,8 @@ class Client(BaseClient):
 
         return self.send_request(path, params=params)
 
-    def get_users(self, fields, user_id):
+    def get_users(self, fields='id,username,firstname,lastname,title,email,createdTime,modifiedTime,lastLogin,role',
+                  user_id=None):
         """
         Send the request for list_users_command.
         Args:
@@ -1673,7 +1724,7 @@ def get_vulnerabilities(client: Client, scan_results_id):
     if not query or 'response' not in query:
         return 'Could not get vulnerabilites query'
 
-    analysis = client.get_analysis(query['response']['id'], scan_results_id)
+    analysis = client.get_analysis(query=query['response']['id'], scan_results_id=scan_results_id)
 
     client.delete_query(query.get('response', {}).get('id'))
 
@@ -1723,42 +1774,8 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
     """
     vuln_id = args.get('vulnerability_id')
     scan_results_id = args.get('scan_results_id')
-    sort_field = args.get('sort_field')
-    query_id = args.get('query_id')
-    sort_direction = args.get('sort_direction')
-    source_type = args.get('source_type', "individual")
-    page = int(args.get('page', '0'))
-    limit = int(args.get('limit', '50'))
-    if limit > 200:
-        limit = 200
 
-    query = {
-        'tool': 'vulndetails',
-        'type': 'vuln',
-        'startOffset': page,  # Lower bound for the results list (must be specified)
-        'endOffset': page + limit,  # Upper bound for the results list (must be specified)
-        'sortField': sort_field,
-        'sortDir': sort_direction
-    }
-
-    if source_type == 'individual':
-        if scan_results_id:
-            query['scanID'] = scan_results_id
-            vuln_filter = [{
-                'filterName': 'pluginID',
-                'operator': '=',
-                'value': vuln_id
-            }]
-            query["filters"] = vuln_filter
-        else:
-            return_error("When choosing source_type = individual - scan_results_id must be provided.")
-    else:
-        if query_id:
-            query["id"] = query_id
-        else:
-            return_error(f"When choosing source_type = {source_type} - query_id must be provided.")
-
-    analysis = client.get_analysis(query, scan_results_id)
+    analysis = client.get_analysis(args=args)
 
     if not analysis or 'response' not in analysis:
         return_error('Error: Could not get vulnerability analysis')
@@ -1868,10 +1885,10 @@ def get_vulnerability_hosts_from_analysis(results):
         List: list of all the vulnerability hosts extracted from the results.
     """
     return [{
-        'IP': host['ip'],
-        'MAC': host['macAddress'],
-        'Port': host['port'],
-        'Protocol': host['protocol']
+        'IP': host.get('ip'),
+        'MAC': host.get('macAddress'),
+        'Port': host.get('port'),
+        'Protocol': host.get('protocol')
     } for host in results]
 
 
@@ -2497,7 +2514,8 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
         return_error('No plugins found')
     plugins = res.get('response')
     if isinstance(plugins, dict):
-        is_active = "false" if plugins.get("type") == "passive" else "true"
+        if plugin_type := plugins.get("type") in ["active", "passive"]:
+            is_active = "false" if plugin_type == "passive" else "true"
         plugins = [plugins]
     if len(plugins) > limit:
         plugins = plugins[:limit]
@@ -2506,7 +2524,6 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
         for mapped_plugin in mapped_plugins:
             mapped_plugin["Is Active"] = is_active
     headers = ["Plugin ID", "Plugin Name", "Is Active"]
-
     return CommandResults(
         outputs=createContext(response_to_context(plugins), removeNull=True),
         outputs_prefix='TenableSC.PluginFamily',
@@ -2730,6 +2747,24 @@ def list_queries(client: Client, type):
     return res, hr, queries
 
 
+def test_module(client: Client, args: Dict[str, Any]):
+    """
+    Lists queries and return the processed results.
+    Args:
+        client (Client): The tenable.sc client object.
+        type (str): query time to filter by.
+    Returns:
+        Dict: The response from the server.
+        str: The processed human readable.
+        Dict: The relevant section from the response.
+    """
+    try:
+        client.get_users()
+        return "ok"
+    except Exception:
+        raise Exception("Authorization Error: make sure your API Key and Secret Key are correctly set")
+
+
 def main():
     params = demisto.params()
     command = demisto.command()
@@ -2745,6 +2780,7 @@ def main():
     demisto.info(f'Executing command {command}')
 
     command_dict = {
+        'test-module': test_module,
         'tenable-sc-list-scans': list_scans_command,
         'tenable-sc-list-policies': list_policies_command,
         'tenable-sc-list-repositories': list_repositories_command,
@@ -2789,11 +2825,7 @@ def main():
             secret_key=secret_key,
             url=url
         )
-
-        if command == 'test-module':
-            list_users_command(client, args)
-            demisto.results('ok')
-        elif command == 'fetch-incidents':
+        if command == 'fetch-incidents':
             first_fetch = params.get('fetch_time').strip()
             fetch_incidents(client, first_fetch)
         elif command == 'tenable-sc-launch-scan-report':

@@ -96,7 +96,34 @@ def test_list_groups_command(mocker, test_case):
     args = test_data.get('args')
     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
     command_results = list_groups_command(client_mocker, args)
-    a = test_data.get('expected_hr')
-    b = command_results.readable_output
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3", "test_case_4"])
+def test_list_plugin_family_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr and ec outputs.
+        - Case 1: Args with limit=1 and is_active=true, and a response with 2 plugin families.
+        - Case 2: Empty args, and a response with 2 plugins.
+        - Case 3: Args with plugin_id, and a response with the plugin family information where the plugin type is malware.
+        - Case 4: Args with plugin_id, and a response with the plugin family information where the plugin type is active.
+
+        When:
+        - Running list_plugin_family_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC outputs are returned.
+        - Case 1: Should return a table with is_active column in the HR, and EC that include only the first plugin family.
+        - Case 2: Should return a table with name column in the HR, and EC that include both plugin families.
+        - Case 3: Should return a table with only id and name columns, and EC with plugin type in it.
+        - Case 4: Should return a table with all columns (id, name, and is_active), and EC with plugin type in it.
+    """
+    test_data = load_json("./test_data/test_list_plugin_family_command.json").get(test_case, {})
+    args = test_data.get('args')
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = list_plugin_family_command(client_mocker, args)
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs
