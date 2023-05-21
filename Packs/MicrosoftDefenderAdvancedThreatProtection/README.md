@@ -20,5 +20,22 @@ Microsoft Defender for Endpoint delivers continuous asset visibility, intelligen
 ## Authentication
 For more details about the authentication used for components in this content pack, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
+### Endpoint URL
+
+
+| **Environment Type** | **Endpoint URL**                            |
+|--------------------------|---------------------------------------------|
+ | Worldwide                | https://api.securitycenter.microsoft.com    |
+ | Us Geo Proximity         | https://api.securitycenter.microsoft.com    |
+ | Eu Geo Proximity         | https://api-eu.securitycenter.microsoft.com |
+ | UK Geo Proximity         | https://api-uk.securitycenter.microsoft.com |
+ | Us GCC                   | https://api-gcc.securitycenter.microsoft.us |
+ | Us GCC-High              | https://api-gcc.securitycenter.microsoft.us |
+ | DoD                      | https://api-gov.securitycenter.microsoft.us |
+
+To find the appropriate Endpoint URI, use the following resources:
+ - For Worldwide or Geo Proximity URLs, see [Supported Microsoft 365 Defender APIs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris)
+ - For Us Government & DoD URLs, see [Microsoft Defender for Endpoint for US Government customers](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api)
+
 ## Licence information
 Available for E3, E5, and standalone licenses.

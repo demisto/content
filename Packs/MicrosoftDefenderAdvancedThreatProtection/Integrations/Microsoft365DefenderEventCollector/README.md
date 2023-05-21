@@ -6,18 +6,18 @@ Microsoft 365 Defender event collector integration for Cortex XSIAM.
 2. Search for Microsoft 365 Defender Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
-    | Client (Application) ID | The client \(application\) ID to use to connect. | True |
-    | Client Secret |  | True |
-    | Tenant ID |  | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days) |  | False |
-    | Fetch alerts timeout | The time limit in seconds for fetch alerts to run. Leave this empty to cancel the timeout limit. | False |
-    | Number of alerts for each fetch. | Due to API limitations, the maximum is 10,000. | False |
-    | Fetch events |  | False |
-    | Verify SSL Certificate |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter** | **Description**                                                                                                                                  | **Required** |
+    | --- |--------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+    | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.com | True |
+    | Client (Application) ID | The client \(application\) ID to use to connect.                                                                                                 | True |
+    | Client Secret |                                                                                                                                                  | True |
+    | Tenant ID |                                                                                                                                                  | True |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days) |                                                                                                                                                  | False |
+    | Fetch alerts timeout | The time limit in seconds for fetch alerts to run. Leave this empty to cancel the timeout limit.                                                 | False |
+    | Number of alerts for each fetch. | Due to API limitations, the maximum is 10,000.                                                                                                   | False |
+    | Fetch events |                                                                                                                                                  | False |
+    | Verify SSL Certificate |                                                                                                                                                  | False |
+    | Use system proxy settings |                                                                                                                                                  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

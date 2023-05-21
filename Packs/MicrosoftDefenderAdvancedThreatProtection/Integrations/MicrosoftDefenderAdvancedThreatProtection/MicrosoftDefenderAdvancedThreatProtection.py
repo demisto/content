@@ -1,11 +1,12 @@
 import copy
 from itertools import product
 from json import JSONDecodeError
-from typing import Tuple, List, Dict, Callable
+from typing import Tuple, List, Dict, Callable, Optional, Any, Union
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
 from requests import Response
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -60,12 +61,6 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "NoSensorDataImpairedCommunication": "Online",
     "Unknown": None,
 }
-
-SECURITY_GCC_RESOURCE = 'https://api-gcc-securitycenter.microsoft.us'
-SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
-SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
-SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
-GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
 
@@ -1107,19 +1102,20 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 auth_type, redirect_uri, auth_code,
-                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+                 token_retrieval_url, grant_type, endpoint_type,
+                 redirect_uri, auth_code,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None):
+        self.endpoint_type = endpoint_type
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if
-            auth_type == 'Authorization Code' else None,
-            grant_type=AUTHORIZATION_CODE if auth_type == 'Authorization Code' else None,
+            token_retrieval_url=token_retrieval_url,
+            grant_type=grant_type,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope=Scopes.security_center_apt_service,
+            scope=urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type], "/windowsatpservice/.default"),
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
             auth_code=auth_code,
@@ -1130,25 +1126,41 @@ class MsClient:
             private_key=private_key,
             retry_on_rate_limit=True,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.security_center
+            managed_identities_resource_uri=MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         self.max_alerts_to_fetch = max_fetch
-        self.is_gcc = is_gcc
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
         if kwargs.pop('should_use_security_center', None):
-            kwargs['scope'] = Scopes.security_center_apt_service
-            kwargs['resource'] = {True: SECURITY_GCC_RESOURCE, False: SECURITY_CENTER_RESOURCE}[self.is_gcc]
+            kwargs['scope'] = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+                                      "/windowsatpservice/.default")
+            kwargs['resource'] = MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
         else:
-            kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
+            kwargs['scope'] = self.get_graph_scope()
         return self.ms_client.http_request(*args, **kwargs)
+
+    def get_graph_scope(self):
+        return "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else \
+            urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type], "/.default")
+
+    def get_graph_indicator_endpoint(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type],
+                       "/beta/security/tiIndicators")
+
+    def get_security_center_indicator_endpoint(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type],
+                       '/api/indicators')
+
+    def get_security_center_indicator_endpoint_batch(self):
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type],
+                       '/api/indicators/import')
 
     def offboard_machine(self, machine_id, comment):
         """ Offboard machine from defender.
@@ -1746,8 +1758,8 @@ class MsClient:
                 Returns:
                     List of responses.
                 """
-        cmd_url = urljoin(SECURITY_CENTER_INDICATOR_ENDPOINT,
-                          indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
+        cmd_url = urljoin(self.get_security_center_indicator_endpoint(),
+                          indicator_id) if indicator_id else self.get_security_center_indicator_endpoint()
         params = {'$top': limit}
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
@@ -1775,7 +1787,8 @@ class MsClient:
             List of responses.
         """
         results = {}
-        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id) if indicator_id else GRAPH_INDICATOR_ENDPOINT
+        cmd_url = urljoin(self.get_graph_indicator_endpoint(), indicator_id) \
+            if indicator_id else self.get_graph_indicator_endpoint()
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
@@ -1818,7 +1831,7 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        resp = self.indicators_http_request('POST', full_url=GRAPH_INDICATOR_ENDPOINT, json_data=body,
+        resp = self.indicators_http_request('POST', full_url=self.get_graph_indicator_endpoint(), json_data=body,
                                             url_suffix=None, should_use_security_center=False)
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
@@ -1869,16 +1882,16 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
-                                            url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=self.get_security_center_indicator_endpoint(),
+                                            json_data=body, url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
     def create_update_indicator_batch_security_center_api(self, body):
         """
         https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide
         """
-        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH, json_data=body,
-                                            url_suffix=None, should_use_security_center=True)
+        resp = self.indicators_http_request('POST', full_url=self.get_security_center_indicator_endpoint_batch(),
+                                            json_data=body, url_suffix=None, should_use_security_center=True)
         return resp
 
     def update_indicator(
@@ -1896,7 +1909,7 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id)
+        cmd_url = urljoin(self.get_graph_indicator_endpoint(), indicator_id)
         header = {'Prefer': 'return=representation'}
         body = {
             'targetProduct': 'Microsoft Defender ATP',
@@ -3980,7 +3993,7 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
         human readable
     """
     indicator_id = args.get('indicator_id', '')
-    client.delete_indicator(indicator_id, GRAPH_INDICATOR_ENDPOINT)
+    client.delete_indicator(indicator_id, client.get_graph_indicator_endpoint())
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
@@ -3995,7 +4008,7 @@ def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> Comma
           An indication of whether the indicator was deleted successfully.
     """
     indicator_id = args['indicator_id']
-    client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
+    client.delete_indicator(indicator_id, client.get_security_center_indicator_endpoint(), use_security_center=True)
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
 
@@ -4568,7 +4581,8 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> li
                                        modified=cve.get('updatedOn')
                                        )
             human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id} by software: {software_id}',
-                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers,
+                                             removeNull=True)
             results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
                                                outputs_key_field='id',
                                                outputs=cve,
@@ -5412,7 +5426,6 @@ def put_file_get_successful_action_results(client, res):
 
 def main():  # pragma: no cover
     params: dict = demisto.params()
-    base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     auth_id = params.get('_auth_id') or params.get('auth_id')
     enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
@@ -5427,12 +5440,21 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
-    is_gcc = params.get('is_gcc', False)
     auth_type = params.get('auth_type', 'Client Credentials')
     auth_code = params.get('auth_code', {}).get('password', '')
     redirect_uri = params.get('redirect_uri', '')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed = self_deployed or managed_identities_client_id is not None
+
+    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params.get("endpoint_type", "Worldwide"), "com")
+    is_gcc = params.get('is_gcc', False)
+    if is_gcc:  # Backward compatible.
+        endpoint_type = "gcc"
+
+    url = MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+
+    base_url: str = urljoin(url, '/api')
+
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
@@ -5443,23 +5465,33 @@ def main():  # pragma: no cover
             raise Exception('Authentication ID must be provided.')
         if not tenant_id:
             raise Exception('Tenant ID must be provided.')
-        if auth_code and redirect_uri:
-            if not self_deployed:
+        if auth_code:
+            if redirect_uri and not self_deployed:
                 raise Exception('In order to use Authorization Code, set Self Deployed: True.')
-        if auth_code and not redirect_uri:
-            raise Exception('In order to use Authorization Code auth flow, you should set: '
-                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
+            if not redirect_uri:
+                raise Exception('In order to use Authorization Code auth flow, you should set: '
+                                '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
     try:
+        if auth_type == 'Authorization Code':
+            token_retrieval_url = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
+                                          '/organizations/oauth2/v2.0/token')
+            grant_type = AUTHORIZATION_CODE
+        else:
+            token_retrieval_url = None
+            grant_type = None
+
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri,
+            token_retrieval_url=token_retrieval_url,
+            grant_type=grant_type,
+            auth_code=auth_code, redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id
         )
         if command == 'test-module':
@@ -5667,8 +5699,6 @@ def main():  # pragma: no cover
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -58,6 +58,50 @@ GRAPH_BASE_ENDPOINTS = {
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
 }
 
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
+    "Worldwide": "com",
+    "Us Geo Proximity": "geo-us",
+    "Eu Geo Proximity": "geo-eu",
+    "UK Geo Proximity": "geo-uk",
+    "Us GCC": "gcc",
+    "Us GCC-High": "gcc-high",
+    "DoD": "dod",
+}
+
+# https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
+# https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
+MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
+    "com": "https://api.securitycenter.microsoft.com",
+    "geo-us": "https://api.securitycenter.microsoft.com",
+    "geo-eu": "https://api-eu.securitycenter.microsoft.com",
+    "geo-uk": "https://api-uk.securitycenter.microsoft.com",
+    "gcc": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+    "dod": "https://api-gov.securitycenter.microsoft.us",
+}
+
+# https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'geo-us': 'https://login.microsoftonline.com',
+    'geo-eu': 'https://login.microsoftonline.com',
+    'geo-uk': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.us',
+    'gcc-high': 'https://login.microsoftonline.us',
+    'dod': 'https://login.microsoftonline.us',
+}
+
+# https://learn.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints
+MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS = {
+    'com': 'https://graph.microsoft.com',
+    'geo-us': 'https://graph.microsoft.com',
+    'geo-eu': 'https://graph.microsoft.com',
+    'geo-uk': 'https://graph.microsoft.com',
+    'gcc': 'https://graph.microsoft.com',
+    'gcc-high': 'https://graph.microsoft.us',
+    'dod': 'https://dod-graph.microsoft.us',
+}
+
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
@@ -98,7 +142,7 @@ class MicrosoftClient(BaseClient):
             contain the token url
             enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
             refresh_token: The current used refresh token.
-            refresh_token_param: The refresh token from the integration's parameters (i.e instance configuration).
+            refresh_token_param: The refresh token from the integration's parameters (i.e. instance configuration).
             scope: The scope of the application (only if self deployed)
             resource: The resource of the application (only if self deployed)
             multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
@@ -128,7 +172,6 @@ class MicrosoftClient(BaseClient):
             self.app_name = app_name
             self.auth_id = auth_id
             self.enc_key = enc_key
-            self.tenant_id = tenant_id
             self.refresh_token = refresh_token
             self.refresh_token_param = refresh_token_param
 
@@ -137,7 +180,6 @@ class MicrosoftClient(BaseClient):
                                                                   endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
             self.client_id = auth_id
             self.client_secret = enc_key
-            self.tenant_id = tenant_id
             self.auth_code = auth_code
             self.grant_type = grant_type
             self.resource = resource
@@ -156,6 +198,7 @@ class MicrosoftClient(BaseClient):
             else:
                 self.jwt = None
 
+        self.tenant_id = tenant_id
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
         self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
@@ -190,7 +233,7 @@ class MicrosoftClient(BaseClient):
             resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
             headers: Headers to add to the request.
             return_empty_response: Return the response itself if the return_code is 206.
-            scope: A scope to request. Currently will work only with self-deployed app.
+            scope: A scope to request. Currently, will work only with self-deployed app.
             resource (str): The resource identifier for which the generated token will have access to.
             overwrite_rate_limit_retry : Skip rate limit retry
         Returns:
@@ -821,7 +864,8 @@ class NotFoundError(Exception):
 
 
 def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
-    """"extract the Azure Managed Identities from the demisto params
+    """
+    Extract the Azure Managed Identities from the demisto params
 
     Args:
         params (dict): the demisto params
@@ -839,14 +883,15 @@ def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
     return None
 
 
-def generate_login_url(client: MicrosoftClient) -> CommandResults:
+def generate_login_url(client: MicrosoftClient,
+                       login_url: str = "https://login.microsoftonline.com/") -> CommandResults:
 
     assert client.tenant_id \
         and client.scope \
         and client.client_id \
         and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
 
-    login_url = f'https://login.microsoftonline.com/{client.tenant_id}/oauth2/v2.0/authorize?' \
+    login_url = f'{login_url}{client.tenant_id}/oauth2/v2.0/authorize?' \
                 f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}' \
                 f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
 

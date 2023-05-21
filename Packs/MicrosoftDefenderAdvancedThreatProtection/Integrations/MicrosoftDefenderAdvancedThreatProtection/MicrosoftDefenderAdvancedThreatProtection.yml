@@ -6,12 +6,30 @@ commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
-- defaultvalue: https://api.securitycenter.windows.com
-  display: Host URL (e.g., https://api.securitycenter.windows.com)
+- defaultvalue: https://api.securitycenter.microsoft.com
+  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
+  additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   name: url
   required: true
   type: 0
   section: Connect
+  hidden: true
+- additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+  display: Endpoint Type
+  name: endpoint_type
+  defaultvalue: Worldwide
+  options:
+  - Worldwide
+  - Us Geo Proximity
+  - Eu Geo Proximity
+  - UK Geo Proximity
+  - Us GCC
+  - Us GCC-High
+  - DoD
+  type: 15
+  section: Connect
+  advanced: true
+  required: true
 - display: ID
   name: _auth_id
   required: false
@@ -169,12 +187,13 @@ configuration:
   type: 0
   section: Collect
 - defaultvalue: 'false'
-  display: Using Microsoft GCC?
+  display: Using Microsoft GCC? (Deprecated)
   name: is_gcc
   required: false
   type: 8
   section: Connect
   advanced: true
+  hidden: true
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
