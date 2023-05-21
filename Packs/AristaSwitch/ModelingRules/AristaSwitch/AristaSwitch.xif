@@ -28,8 +28,8 @@ alter
     xdm.alert.severity = severity,
     xdm.alert.description = _raw_log;
 
-[MODEL: dataset="arista_switch_raw"]
 
+[MODEL: dataset="arista_switch_raw"]
 /*** AAA (Authentication, Authorization, and Accounting) Events ***/  
 call arista_switch_common_fields_modeling
 | filter facility = "AAA" 
@@ -54,7 +54,8 @@ call arista_switch_common_fields_modeling
     xdm.auth.auth_method = auth_method, // relevant only for mnemonic="AUTHN_FALLBACK" 
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION); 
     
-/*** extractions for Accounting events ***/  
+
+/*** Accounting Events ***/  
 call arista_switch_common_fields_modeling
 | filter facility = "ACCOUNTING" 
 | alter 
@@ -63,7 +64,7 @@ call arista_switch_common_fields_modeling
     elapsed_time = arrayindex(regextract(message, "elapsed_time=(\S+)"), 0),
     service = arrayindex(regextract(message, "service=(\S+)"), 0),
     privilege_level = arrayindex(regextract(message, "priv\-lvl=(\d+)"), 0),
-    cmd = arrayindex(regextract(message, "cmd=(.+?)[\w+=]*"), 0)
+    cmd = arrayindex(regextract(message, "cmd=(.+)[\w+=]*"), 0)
 | alter 
     dvc = arrayindex(message_header, 0), // the target switch hostname 
     username = arrayindex(message_header, 1), // user who logged in to the switch 
@@ -93,3 +94,24 @@ call arista_switch_common_fields_modeling
     xdm.event.is_completed = if(process_phase = "stop", true, false),
     xdm.auth.privilege_level = if(privilege_level in ("0", "1"), XDM_CONST.PRIVILEGE_LEVEL_USER , privilege_level = "15", XDM_CONST.PRIVILEGE_LEVEL_ADMIN , privilege_level),
     xdm.auth.auth_method = login_process;
+
+
+/*** BFD (Bidirectional Forwarding Detection) Event ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "BFD" 
+| alter 
+    peer_ip =  arrayindex(regextract(message, "ip:\s*([^,]+)"), 0),  
+    interface =  arrayindex(regextract(message, "intf:\s*([^,]+)"), 0),  
+    state = arrayindex(regextract(message, "changed state from \S+ to (\S+)"), 0),
+    reason = arrayindex(regextract(message, "diag (\S+)"), 0) // diagnostic code specifying the local system reason for the last change to Down state
+| alter 
+    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
+    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
+| alter 
+    // event specific mapping
+    xdm.target.ipv4 = peer_ipv4,
+    xdm.target.ipv6 = peer_ipv6,
+    xdm.target.interface = interface,
+    xdm.event.outcome = if(state = "Up", XDM_CONST.OUTCOME_SUCCESS, state="Down", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = reason, 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
