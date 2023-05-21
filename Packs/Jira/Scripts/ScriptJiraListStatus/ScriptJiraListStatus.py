@@ -11,7 +11,7 @@ def execute_jira_list_transitions_command(args: Dict[str, Any]) -> List[Dict[str
     Returns:
         List[Dict[str, Any]]: The results of the executed command.
     """
-    demisto.info(f'got the following args {args}')
+    demisto.debug(f'Got the following args {args}')
     res = demisto.executeCommand(
         "jira-list-transitions", args
     )
