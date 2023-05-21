@@ -136,6 +136,12 @@ script:
       name: timeout_in_seconds
     - description: The uploaded sample ID.
       name: sample_id
+    - description: Whether to mark the sample as private.
+      name: private
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
     - name: hide_polling_output
       description: Whether to hide the polling result (automatically filled by polling).
       deprecated: true
