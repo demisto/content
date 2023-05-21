@@ -99,7 +99,7 @@ class Client(BaseClient):
         end_datetime: str | None = None,
         order_by: str | None = None,
         limit: int = DEFAULT_MAX_LIMIT
-    ):
+    ) -> List[Dict]:
         """
         Get the workbench logs.
 
@@ -138,7 +138,7 @@ class Client(BaseClient):
         detected_end_datetime: str,
         top: int = DEFAULT_MAX_LIMIT,
         limit: int = DEFAULT_MAX_LIMIT
-    ):
+    ) -> List[Dict]:
         """
         Get the observed attack techniques logs.
 
@@ -178,7 +178,7 @@ class Client(BaseClient):
         end_datetime: str | None = None,
         top: int = DEFAULT_MAX_LIMIT,
         limit: int = DEFAULT_MAX_LIMIT
-    ):
+    ) -> List[Dict]:
         """
         Get the search detection logs.
 
@@ -193,8 +193,9 @@ class Client(BaseClient):
             limit (int): the maximum number of search detection logs to retrieve.
 
         Returns:
-            List[Dict]: The workbench events that were found.
+            List[Dict]: The search detection logs that were found.
         """
+        # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         params = {'startDateTime': start_datetime, 'top': top}
 
         if end_datetime:
@@ -202,6 +203,46 @@ class Client(BaseClient):
 
         return self.get_events(
             url_suffix=f'/{self.API_VERSION}/search/detections',
+            params=params,
+            limit=limit
+        )
+
+    def get_audit_logs(
+        self,
+        start_datetime: str,
+        end_datetime: str | None = None,
+        order_by: str | None = None,
+        top: int = 200,
+        limit: int = DEFAULT_MAX_LIMIT
+    ) -> List[Dict]:
+        """
+        Get the audit logs.
+
+        docs:
+        https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs
+
+        Args:
+            start_datetime (str): Timestamp in ISO 8601 format that indicates the start of the data retrieval range.
+            end_datetime (str): Timestamp in ISO 8601 format that indicates the end of the data retrieval time range.
+                                If no value is specified, 'endDateTime' defaults to the time the request is made.
+            order_by (str): Parameter that allows you to sort the retrieved search results in ascending or
+                            descending order. If no order is specified, the results are shown in ascending order.
+            top (int): Number of records displayed on a page.
+            limit (int): the maximum number of audit logs to retrieve.
+
+        Returns:
+            List[Dict]: The audit logs that were found.
+        """
+        params = {'startDateTime': start_datetime, 'top': top}
+
+        if end_datetime:
+            params['endDateTime'] = end_datetime
+
+        if order_by:
+            params['orderBy'] = order_by
+
+        return self.get_events(
+            url_suffix=f'/{self.API_VERSION}/audit/logs',
             params=params,
             limit=limit
         )
