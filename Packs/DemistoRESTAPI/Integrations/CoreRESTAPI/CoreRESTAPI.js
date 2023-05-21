@@ -56,11 +56,8 @@ getAdvancedAuthMethodHeaders = function(key, auth_id, content_type,) {
             }
     }
 
-getRequestURL = function (uri, keep_xsoar_suffix=true) {
+getRequestURL = function (uri) {
     var requestUrl = serverURL;
-    if (!keep_xsoar_suffix && serverURL.endsWith('/xsoar')){
-        requestUrl = requestUrl.substring(0, requestUrl.length - 6);
-    }
     if (params.use_tenant){
         requestUrl += '/' + getTenantAccountName();
     }
@@ -122,8 +119,8 @@ sendMultipart = function (uri, entryID, body) {
 
 };
 
-var sendRequest = function(method, uri, body, raw, keep_xsoar_suffix=true) {
-    var requestUrl = getRequestURL(uri, keep_xsoar_suffix);
+var sendRequest = function(method, uri, body, raw) {
+    var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
@@ -314,9 +311,9 @@ var upload_file= function(incident_id, file_content, file_name) {
     var body = {
         file: 
         {
-            value: file_content,
+            value: [file_content],
             options: {
-                filename: file_name,
+                filename: [file_name],
                 contentType: 'application/json'
             }
         },
@@ -337,7 +334,7 @@ var deleteContext = function (incident_id, key_to_delete) {
         "markdown": false,
         "version": 0
     });
-   return sendRequest('POST', '/entry', body,true ,false);
+   return sendRequest('POST', '/entry', body);
 };
 
 
@@ -346,7 +343,7 @@ var deleteFile = function (entry_id, delete_artifact = true) {
         id: entry_id,
         deleteArtifact: delete_artifact});
     
-    return sendRequest( 'POST', '/entry/delete/v2', body_content,true , false);
+    return sendRequest( 'POST', '/entry/delete/v2', body_content);
 }
 
 /** 
@@ -390,16 +387,17 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     }
 
     let response = {};
+    var fileId = '';
+    log('what');
     if ((!entryID)) {
         response = upload_file(incident_id, file_content, file_name);
+        fileId = saveFile(file_content);
     } else {
-        log(file_name);
         file_content = entrytoa(entryID);
-        if (file_name === null) {
-            file_name = dq(invContext, "File(val.EntryID == '" + entryID + "').Name");
-        }
-        if (file_name === 'undefined') {
-            file_name = dq(invContext, "File(val.EntryID == '" + entryID + "').Name");
+        if (file_name === undefined) {
+            log('ok');
+            file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
+            log(`${file_name}`);
         }
         if (Array.isArray(file_name)) {
             if (file_name.length > 0) {
@@ -408,11 +406,11 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
                 file_name = undefined;
             }
         }
-        //sendMultipart();
+        file_name = 'trythis';
         response = upload_file(incident_id, file_content, file_name);
         }
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
-    fileId = file_name ? saveFile(file_content) : entryID;
+    fileId = file_name ? fileId : entryID;
     return {
         Type: entryTypes.file,
         FileID: fileId,
@@ -527,7 +525,7 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
         ]
       });    
     try{
-        sendRequest('POST', `/incident/remove/${incident_id}`, body,false ,false);
+        sendRequest('POST', `/incident/remove/${incident_id}`, body);
     }
     catch (e) {
         throw new Error(`File already deleted or not found.\n${e}`);
