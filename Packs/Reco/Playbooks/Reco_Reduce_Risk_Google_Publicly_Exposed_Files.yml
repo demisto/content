@@ -1,7 +1,7 @@
 id: Reco - Reduce Risk - Google Publicly Exposed Files
 version: -1
 name: Reco - Reduce Risk - Google Publicly Exposed Files
-description: Get sensitive files publicly exposed with link from google drive and delete anyonewithLink permission
+description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims to identify and mitigate the risk associated with publicly exposed sensitive files on Google Drive. It follows a sequence of tasks to detect such files, analyze their locations, and remove the "anyone with link" permission to enhance data security.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: 532ac77b-8c76-473a-8c5d-8d552e4776f9
       version: -1
       name: Reco Get Assets With Public Link
-      description: Get all sensitive assets with public link from Reco
+      description: Reco Get Assets With Public Link - Retrieves all sensitive assets with public links from Reco.
       script: '|||reco-get-sensitive-assets-with-public-link'
       type: regular
       iscommand: true
@@ -74,7 +74,7 @@ tasks:
       id: 621d18d2-3ebf-4025-8509-dee865d92efe
       version: -1
       name: Location is User Drive
-      description: 'Location is User Drive or Shared Drive'
+      description: 'Location is User Drive - Checks if the location of the assets is a user drive or a shared drive.'
       type: condition
       iscommand: false
       brand: ""
@@ -120,7 +120,7 @@ tasks:
       id: aaccd818-99b8-45cf-8e92-fb0157909c1e
       version: -1
       name: Get Drive List
-      description: Lists the user's shared drives.
+      description: Get Drive List - Lists the user's shared drives.
       script: '|||google-drive-drives-list'
       type: regular
       iscommand: true
@@ -210,7 +210,7 @@ tasks:
       id: 0f974ee3-00ed-494e-8693-7efe9671d01b
       version: -1
       name: Get Organizer Owner
-      description: Set a value in context under the key you entered.
+      description: Get Organizer Owner - Sets the organizer's email address as a value in the context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -258,7 +258,7 @@ tasks:
       id: e7a79d92-c4a8-437c-80c3-b36c8f56ba82
       version: -1
       name: Google Drive Delete Anyone with Link Permission
-      description: Delete a permission.
+      description: Google Drive Delete Anyone with Link Permission - Deletes the anyone with link permission for a file.
       script: '|||google-drive-file-permission-delete'
       type: regular
       iscommand: true
@@ -300,7 +300,7 @@ tasks:
       id: b514077b-c460-4dd5-8c6a-586247251dae
       version: -1
       name: Delete Anyone With Link Permission
-      description: Delete a permission.
+      description: Delete Anyone With Link Permission - Deletes the anyone with link permission for a file using the owner's email address.
       script: '|||google-drive-file-permission-delete'
       type: regular
       iscommand: true
@@ -347,7 +347,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: Error Delete Permission - Represents an error state when deleting a permission.
     separatecontext: false
     continueonerrortype: ""
     view: |-
