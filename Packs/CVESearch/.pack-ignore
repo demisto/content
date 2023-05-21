@@ -12,6 +12,7 @@ ignore=RM104
 
 [file:CVESearchV2.yml]
 ignore=IN154
+ignore=BC102
 
 [known_words]
 CPE
