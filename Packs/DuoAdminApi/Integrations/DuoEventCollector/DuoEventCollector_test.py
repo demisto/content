@@ -171,12 +171,12 @@ def test_parse_mintime():
     Then:
         Validate that the v2 version returns as an int with 13 digits and v1 10 digits int
     """
-    date_string = "May 10th, 2023"
-    datetime_obj = dateparser.parse(date_string)
+    date_string = "May 10th, 2023+00:00"
+    datetime_obj = dateparser.parse(date_string, settings={"TIMEZONE": "UTC"})
     epocs_time = datetime_obj.timestamp()
     mintime_v1, mintime_v2 = parse_mintime(epocs_time)
-    assert mintime_v1 == 1683666000
-    assert mintime_v2 == 1683666000000
+    assert mintime_v1 == 1683676800
+    assert mintime_v2 == 1683676800000
 
 
 def test_handle_authentication_logs(ret_fresh_client):
