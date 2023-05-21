@@ -575,32 +575,19 @@ def fetch_events(
     return events, updated_last_run
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+def test_module(client: Client, first_fetch: str) -> str:
     """
+    Tests that the collector is able to retrieve all logs without any error.
 
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    Args:
+        client (Client): the client object
+        first_fetch (str): the first fetch time
+
+    Returns:
+        str: 'ok' in case of success, exception in case of an error.
+    """
+    fetch_events(client=client, first_fetch=first_fetch, limit=1)
+    return 'ok'
 
 
 # TODO: REMOVE the following dummy command function
