@@ -4065,6 +4065,7 @@ is calculated by the event's threat level ID.
 * Threat level ID with a value of 4 will be scored 0 (i.e., unknown).
 
 When configuring an instance, you should set: 
+
 * Malicious tag IDs with tag IDs that would be calculated as malicious.
 * Suspicious tag IDs with tag IDs that would be calculated as suspicious.
 
