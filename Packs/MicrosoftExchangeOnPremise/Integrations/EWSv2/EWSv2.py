@@ -28,13 +28,21 @@ from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016, EXCHANGE_2019)
+
+#remove!
+from exchangelib import Folder 
+Folder.FIELDS = [f for f in Folder.FIELDS if f.name != 'permission_set']
+
 # from future import utils as future_utils # removed for new docker, revert
 from requests.exceptions import ConnectionError
 
-#python3 change
-# # Define utf8 as default encoding 
-# reload(sys)
-# sys.setdefaultencoding('utf8')  # pylint: disable=E1101
+
+class exchangelibSSLAdapter(SSLAdapter):
+    def cert_verify(self, conn, url, verify, cert):
+        # pylint: disable=unused-argument
+        # We're overriding a method, so we have to keep the signature
+        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
+
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -335,7 +343,7 @@ if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
 # NOTE: Same method used in EWSMailSender
 # If you are modifying this probably also need to modify in the other file
 def exchangelib_cleanup():     # pragma: no cover
-    key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
+    key_protocols = list(exchangelib.protocol.CachingProtocol._protocol_cache.items())
     try:
         exchangelib.close_connections()
     except Exception as ex:
@@ -367,7 +375,7 @@ def get_auth_method(auth_method):     # pragma: no cover
 
 def get_build(version_str):      # pragma: no cover
     if version_str not in VERSIONS:
-        raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(list(VERSIONS.keys()))))
     return VERSIONS[version_str]
 
 
@@ -382,7 +390,7 @@ def get_endpoint_autodiscover(context_dict):      # pragma: no cover
 
 def get_version(version_str):
     if version_str not in VERSIONS:
-        raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
+        raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(list(VERSIONS.keys()))))
     return Version(VERSIONS[version_str])
 
 
@@ -410,7 +418,7 @@ def prepare_context(credentials):     # pragma: no cover
         except AutoDiscoverFailed:
             return_error("Auto discovery failed. Check credentials or configure manually")
         except Exception as e:
-            return_error(e.message)
+            return_error(str(e))
     else:
         SERVER_BUILD = get_build_autodiscover(context_dict)
         EWS_SERVER = get_endpoint_autodiscover(context_dict)
@@ -418,7 +426,7 @@ def prepare_context(credentials):     # pragma: no cover
 
 def prepare():     # pragma: no cover
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
     else:
         BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
 
@@ -574,17 +582,17 @@ def fix_2010():     # pragma: no cover
 
 def str_to_unicode(obj):      # pragma: no cover
     if isinstance(obj, dict):
-        obj = {k: str_to_unicode(v) for k, v in obj.iteritems()}
+        obj = {k: str_to_unicode(v) for k, v in list(obj.items())}
     elif isinstance(obj, list):
-        obj = map(str_to_unicode, obj)
+        obj = [str_to_unicode(k) for k in obj]
     elif isinstance(obj, str):
-        obj = unicode(obj, "utf-8")
+        obj = obj.encode("utf-8")
     return obj
 
 
 def filter_dict_null(d):      # pragma: no cover
     if isinstance(d, dict):
-        return dict((k, v) for k, v in d.items() if v is not None)
+        return dict((k, v) for k, v in list(d.items()) if v is not None)
     return d
 
 
@@ -608,7 +616,7 @@ def get_entry_for_object(title, context_key, obj, headers=None):      # pragma: 
         return "There is no output results"
     obj = filter_dict_null(obj)
     if isinstance(obj, list):
-        obj = map(filter_dict_null, obj)
+        obj = [filter_dict_null(k) for k in obj]
     if headers and isinstance(obj, dict):
         headers = list(set(headers).intersection(set(obj.keys())))
 
@@ -627,14 +635,14 @@ def get_entry_for_object(title, context_key, obj, headers=None):      # pragma: 
 def get_items_from_mailbox(account, item_ids):     # pragma: no cover
     if type(item_ids) is not list:
         item_ids = [item_ids]
-    items = map(lambda x: Item(item_id=x), item_ids)
+    items = [Item(id=x) for x in item_ids]
     result = list(account.fetch(ids=items))
     result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
     if len(result) != len(item_ids):
         raise Exception("One or more items were not found/malformed. Check the input item ids")
-    if exchangelib.__version__ != "1.12.0":  # Docker BC
-        for item in result:
-            item.folder = Folder(account=account)
+    # if exchangelib.__version__ != "1.12.0":  # Docker BC
+    #     for item in result:
+    #         item.folder = Folder(account=account)
     return result
 
 
@@ -660,6 +668,7 @@ def is_default_folder(folder_path, is_public):      # pragma: no cover
 
 def get_folder_by_path(account, path, is_public=False):     # pragma: no cover
     # handle exchange folder id
+    demisto.debug(f'args: {account=}, {path=}, {is_public=}')
     if len(path) == 120:
         folders_map = account.root._folders_map
         if path in folders_map:
@@ -667,7 +676,7 @@ def get_folder_by_path(account, path, is_public=False):     # pragma: no cover
 
     if is_public:
         folder_result = account.public_folders_root
-    elif path == u'AllItems':
+    elif path == 'AllItems':
         folder_result = account.root
     else:
         folder_result = account.inbox.parent  # Top of Information Store
@@ -816,7 +825,7 @@ class SearchMailboxes(EWSService):
     def parse_element(element):      # pragma: no cover
         to_recipients = element.find('{%s}ToRecipients' % TNS)
         if to_recipients:
-            to_recipients = map(lambda x: x.text if x is not None else None, to_recipients)
+            to_recipients = [x.text if x is not None else None for x in to_recipients]
 
         result = {
             ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'] if element.find('{%s}Id' % TNS) is not None else None,
@@ -840,7 +849,7 @@ class SearchMailboxes(EWSService):
         if self.protocol.version.build < EXCHANGE_2013:
             raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
         elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
-        return map(lambda x: self.parse_element(x), elements)
+        return [self.parse_element(x) for x in elements]
 
     def get_payload(self, query, mailboxes):     # pragma: no cover
         def get_mailbox_search_scope(mailbox_id):
@@ -884,7 +893,7 @@ class ExpandGroup(EWSService):
             if recursive_expansion == 'True':
                 group_members = {}  # type: dict
                 self.expand_group_recursive(email_address, group_members)
-                return group_members.values()
+                return list(group_members.values())
             else:
                 return self.expand_group(email_address)
         except ErrorNameResolutionNoResults:
@@ -900,7 +909,7 @@ class ExpandGroup(EWSService):
 
     def expand_group(self, email_address):      # pragma: no cover
         elements = self._get_elements(payload=self.get_payload(email_address))
-        return map(lambda x: self.parse_element(x), elements)
+        return [self.parse_element(x) for x in elements]
 
     def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=set()):      # pragma: no cover
         if email_address in non_dl_emails or email_address in dl_emails:
@@ -949,8 +958,8 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
     else:
         entry = get_searchable_mailboxes(protocol)
-        mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
-        mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)  # type: ignore
+        mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
+        mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
 
     try:
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
@@ -991,11 +1000,11 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         if not FETCH_ALL_HISTORY:
-            tz = EWSTimeZone.timezone('UTC')
+            tz = EWSTimeZone('UTC')
             first_fetch_datetime = dateparser.parse(FETCH_TIME)
-            first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
+            first_fetch_ews_datetime = first_fetch_datetime.astimezone(tz)
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
-    qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
+    qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by('datetime_received')
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
@@ -1027,11 +1036,11 @@ def keys_to_camel_case(value):
     if value is None:
         return None
     if isinstance(value, (list, set)):
-        return map(keys_to_camel_case, value)
+        return [keys_to_camel_case(v) for v in value]
     if isinstance(value, dict):
         return dict((keys_to_camel_case(k),
                      keys_to_camel_case(v) if isinstance(v, (list, dict)) else v)
-                    for (k, v) in value.items())
+                    for (k, v) in list(value.items()))
 
     return str_to_camel_case(value)
 
@@ -1074,17 +1083,17 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         return raw_dict
 
     raw_dict = {}
-    for field, value in item.__dict__.items():
-        if type(value) in [str, unicode, int, float, bool, Body, HTMLBody, None]:
+    for field, value in list(item.__dict__.items()):
+        if type(value) in [str, int, float, bool, Body, HTMLBody, None]:
             try:
-                if isinstance(value, basestring):
+                if isinstance(value, str):
                     value.encode('utf-8')  # type: ignore
                 raw_dict[field] = value
             except Exception:
                 pass
 
     if getattr(item, 'attachments', None):
-        raw_dict['attachments'] = map(lambda x: parse_attachment_as_dict(item.item_id, x), item.attachments)
+        raw_dict['attachments'] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
 
     for time_field in ['datetime_sent', 'datetime_created', 'datetime_received', 'last_modified_time',
                        'reminder_due_by']:
@@ -1101,7 +1110,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     for list_dict_field in ['headers', 'cc_recipients', 'to_recipients']:
         value = getattr(item, list_dict_field, None)
         if value:
-            raw_dict[list_dict_field] = map(lambda x: parse_object_as_dict(x), value)
+            raw_dict[list_dict_field] = [parse_object_as_dict(x) for x in value]
 
     if getattr(item, 'folder', None):
         raw_dict['folder'] = parse_folder_as_json(item.folder)
@@ -1115,12 +1124,11 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
                        'has_attachments', 'importance', 'message_id', 'last_modified_time',
                        'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read']
 
-        # Docker BC
-        if exchangelib.__version__ == "1.12.0":
-            if 'id' in raw_dict:
-                new_dict['item_id'] = raw_dict['id']
-        else:
-            fields_list.append('item_id')
+        # # Docker BC
+        # if exchangelib.__version__ == "1.12.0":
+        #     if 'id' in raw_dict:
+        #         new_dict['item_id'] = raw_dict['id']
+        fields_list.append('item_id')
 
         for field in fields_list:
             if field in raw_dict:
@@ -1130,7 +1138,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
                 new_dict[field] = raw_dict.get(field, {}).get('email_address')
         for field in ['to_recipients']:
             if field in raw_dict:
-                new_dict[field] = map(lambda x: x.get('email_address'), raw_dict[field])
+                new_dict[field] = [x.get('email_address') for x in raw_dict[field]]
         attachments = raw_dict.get('attachments')
         if attachments and len(attachments) > 0:
             file_attachments = [x for x in attachments if x[ATTACHMENT_TYPE] == FILE_ATTACHMENT_TYPE]
@@ -1221,7 +1229,7 @@ def parse_incident_from_item(item, is_fetch):     # pragma: no cover
                                     'name': get_attachment_name(attachment.name)
                                 })
                         except TypeError as e:
-                            if e.message != "must be string or buffer, not None":
+                            if str(e) != "must be string or buffer, not None":
                                 raise
                             continue
                     else:
@@ -1234,7 +1242,7 @@ def parse_incident_from_item(item, is_fetch):     # pragma: no cover
                             attached_email = email.message_from_string(attachment.item.mime_content)
                             if attachment.item.headers:
                                 attached_email_headers = []
-                                for h, v in attached_email.items():
+                                for h, v in list(attached_email.items()):
                                     if not isinstance(v, str):
                                         try:
                                             v = str(v)
@@ -1287,9 +1295,9 @@ def parse_incident_from_item(item, is_fetch):     # pragma: no cover
             # fetch history
             incident['dbotMirrorId'] = str(item.message_id)
 
-        if item.item_id:
-            labels.append({'type': 'Email/ID', 'value': item.item_id})
-            labels.append({'type': 'Email/itemId', 'value': item.item_id})
+        if item.id:
+            labels.append({'type': 'Email/ID', 'value': item.id})
+            labels.append({'type': 'Email/itemId', 'value': item.id})
 
         # handle conversion id
         if item.conversation_id:
@@ -1441,7 +1449,7 @@ def parse_attachment_as_dict(item_id, attachment):      # pragma: no cover
             }
 
     except TypeError as e:
-        if e.message != "must be string or buffer, not None":
+        if str(e) != "must be string or buffer, not None":
             raise
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
@@ -1532,7 +1540,7 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
                 if attachment.content:
                     entries.append(get_entry_for_file_attachment(item_id, attachment))
             except TypeError as e:
-                if e.message != "must be string or buffer, not None":
+                if str(e) != "must be string or buffer, not None":
                     raise
         else:
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
@@ -1619,7 +1627,7 @@ def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no c
 
 
 def prepare_args(d):      # pragma: no cover
-    d = dict((k.replace("-", "_"), v) for k, v in d.items())
+    d = dict((k.replace("-", "_"), v) for k, v in list(d.items()))
     if 'is_public' in d:
         if exchangelib.__version__ != "1.12.0":  # Docker BC
             raise Exception(PUBLIC_FOLDERS_ERROR)
@@ -1662,7 +1670,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     selected_all_fields = (selected_fields == 'all')
 
     if selected_all_fields:
-        restricted_fields = list(map(lambda x: x.name, Message.FIELDS))  # type: ignore
+        restricted_fields = list([x.name for x in Message.FIELDS])  # type: ignore
     else:
         restricted_fields = set(argToList(selected_fields))  # type: ignore
         restricted_fields.update(['id', 'message_id'])  # type: ignore
@@ -1679,13 +1687,12 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
             break
 
     items = items[:limit]
-    searched_items_result = map(
-        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
-                                        compact_fields=selected_all_fields), items)
+    searched_items_result = [parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
+                                        compact_fields=selected_all_fields) for item in items]
 
     if not selected_all_fields:
         searched_items_result = [
-            {k: v for (k, v) in i.iteritems()
+            {k: v for (k, v) in i.items()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
 
         for item in searched_items_result:
@@ -1752,16 +1759,16 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
 
     def parse_contact(contact):
         contact_dict = dict((k, v if not isinstance(v, EWSDateTime) else v.ewsformat())
-                            for k, v in contact.__dict__.items()
-                            if isinstance(v, basestring) or isinstance(v, EWSDateTime))
+                            for k, v in list(contact.__dict__.items())
+                            if isinstance(v, str) or isinstance(v, EWSDateTime))
         if isinstance(contact, Contact) and contact.physical_addresses:
-            contact_dict['physical_addresses'] = map(parse_physical_address, contact.physical_addresses)
+            contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
         if isinstance(contact, Contact) and contact.phone_numbers:
-            contact_dict['phone_numbers'] = map(parse_phone_number, contact.phone_numbers)
+            contact_dict['phone_numbers'] = list(map(parse_phone_number, contact.phone_numbers))
         if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
-            contact_dict['emailAddresses'] = map(lambda x: x.email, contact.email_addresses)
+            contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
         contact_dict = keys_to_camel_case(contact_dict)
-        contact_dict = dict((k, v) for k, v in contact_dict.items() if v)
+        contact_dict = dict((k, v) for k, v in list(contact_dict.items()) if v)
         del contact_dict['mimeContent']
         contact_dict['originMailbox'] = target_mailbox
         return contact_dict
@@ -1874,8 +1881,8 @@ def get_items(item_ids, target_mailbox=None):      # pragma: no cover
 
     items = get_items_from_mailbox(account, item_ids)
     items = [x for x in items if isinstance(x, Message)]
-    items_as_incidents = map(lambda x: parse_incident_from_item(x, False), items)
-    items_to_context = map(lambda x: parse_item_as_dict(x, account.primary_smtp_address, True, True), items)
+    items_as_incidents = [parse_incident_from_item(x, False) for x in items]
+    items_to_context = [parse_item_as_dict(x, account.primary_smtp_address, True, True) for x in items]
 
     return {
         'Type': entryTypes['note'],
@@ -1906,7 +1913,7 @@ def folder_to_context_entry(f):
         'changeKey': f.changekey
     }
 
-    if 'unread_count' in map(lambda x: x.name, Folder.FIELDS):
+    if 'unread_count' in [x.name for x in Folder.FIELDS]:
         f_entry['unreadCount'] = f.unread_count
     return f_entry
 
@@ -1996,7 +2003,7 @@ def get_compliance_search(search_name, show_only_recipients):     # pragma: no c
     if stdout[0] == 'Completed':
         if stdout[1] and stdout[1] != '{}':
             res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
-            res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
+            res = [{k: v for k, v in (s.split(': ') for s in x)} for x in res]
             entry = {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
@@ -2004,7 +2011,7 @@ def get_compliance_search(search_name, show_only_recipients):     # pragma: no c
                 'ReadableContentsFormat': formats['markdown'],
             }
             if show_only_recipients == 'True':
-                res = filter(lambda x: int(x['Item count']) > 0, res)
+                res = [x for x in res if int(x['Item count']) > 0]
 
                 entry['EntryContext'] = {
                     'EWS.ComplianceSearch(val.Name == obj.Name)': {
@@ -2129,7 +2136,7 @@ def get_item_as_eml(item_id, target_mailbox=None):     # pragma: no cover
         email_content = email.message_from_string(item.mime_content)
         if item.headers:
             attached_email_headers = []
-            for h, v in email_content.items():
+            for h, v in list(email_content.items()):
                 if not isinstance(v, str):
                     try:
                         v = str(v)
@@ -2286,7 +2293,7 @@ def test_module():     # pragma: no cover
                             "please read integration documentation and follow the instructions")
         folder.test_access()
     except ErrorFolderNotFound as e:
-        if "Top of Information Store" in e.message:
+        if "Top of Information Store" in str(e):
             raise Exception(
                 "Success to authenticate, but user probably has no permissions to read from the specific folder."
                 "Check user permissions. You can try !ews-find-folders command to "
@@ -2304,7 +2311,7 @@ def get_protocol():      # pragma: no cover
 
 
 def encode_and_submit_results(obj):
-    demisto.results(str_to_unicode(obj))
+    demisto.results(obj)
 
 
 def sub_main():     # pragma: no cover
@@ -2323,7 +2330,7 @@ def sub_main():     # pragma: no cover
             test_module()
         elif demisto.command() == 'fetch-incidents':
             incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
-            demisto.incidents(str_to_unicode(incidents) or [])
+            demisto.incidents(incidents)
         elif demisto.command() == 'ews-get-attachment':
             encode_and_submit_results(fetch_attachments_for_message(**args))
         elif demisto.command() == 'ews-delete-attachment':
@@ -2404,14 +2411,14 @@ def sub_main():     # pragma: no cover
                 sys.exit(0)
             error_message_simple = log_message + " Please retry your request."
 
-        # Other exception handling
-        if isinstance(e.message, Exception):
-            e.message = str(e.message)
+        # # Other exception handling
+        # if isinstance(e, Exception):
+        #     e.message = str(e)
 
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
                                    "Verify that the Hostname or IP address is correct.\n\n" \
-                                   "Additional information: {}".format(e.message)
+                                   "Additional information: {}".format(str(e))
         if isinstance(e, ErrorInvalidPropertyRequest):
             error_message_simple = "Verify that the Exchange version is correct."
         elif exchangelib.__version__ == "1.12.0":
@@ -2442,9 +2449,9 @@ def sub_main():     # pragma: no cover
                                    "Check proxy parameter. If you are using server URL - change to server IP address. "
 
         if not error_message_simple:
-            error_message = error_message_simple = str(e.message)
+            error_message = error_message_simple = str(e)
         else:
-            error_message = error_message_simple + "\n" + str(e.message)
+            error_message = error_message_simple + "\n" + str(e)
 
         stacktrace = traceback.format_exc()
         if stacktrace:
