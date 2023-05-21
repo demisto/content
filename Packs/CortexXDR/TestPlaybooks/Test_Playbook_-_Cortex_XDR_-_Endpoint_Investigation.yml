@@ -740,7 +740,7 @@ tasks:
       attackerExternalHost:
         simple: paloaltonetworks.com
       attackerRemoteIP:
-        simple: 172.31.9.245
+        simple: 8.8.8.8
       mitreTechniqueID:
         simple: TA0003
       timeRange:
