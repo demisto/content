@@ -512,29 +512,27 @@ function coreApiFileCheckCommand(EntryID) {
         Show a message that the file was deleted successfully
 */
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
-    body =  {
-        "fieldName": field_name,
-        "files": {
-            attachment_path: {
-                "id": attachment_path,
-                "path": attachment_path
-            }
+    incident_id = (incident_id=='undefined')? investigation.id: incident_id;
+    body = JSON.stringify({
+        fieldName: field_name,
+        files: {
+          [attachment_path]: {
+            path: attachment_path
+          }
         },
-        "originalAttachments": [
-            {
-                "path": attachment_path
-            }
-        ]};
-    log(field_name);
+        originalAttachments: [
+          {
+            path: attachment_path
+          }
+        ]
+      });    
     try{
-        sendRequest('POST', `/incident/remove/${incident_id}`, JSON.stringify(body),true ,false);
+        sendRequest('POST', `/incident/remove/${incident_id}`, body,false ,false);
     }
     catch (e) {
         throw new Error(`File already deleted or not found.\n${e}`);
     }
-    return `Attachment ${attachment_path} deleted !`;
-
-
+    return `Attachment ${attachment_path} deleted `;
 };
 
 
