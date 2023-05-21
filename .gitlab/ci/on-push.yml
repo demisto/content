@@ -541,7 +541,6 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
-    LOCK_MACHINE_NAME: "qa2-test-9997477507369"
 
   needs:
     - job: xsoar-prepare-testing-bucket
