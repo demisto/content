@@ -304,6 +304,7 @@ def lis_get_by_value(client: GwClient, args: Dict[Any, Any]) -> CommandResults: 
     """
     value = args["Value"]
     response = client.get_by_value(value=value)
+    print("test")
 
     ioc = list(filter(lambda x: x["Value"] == value, response["IOCs"]))[0]
     result = {
