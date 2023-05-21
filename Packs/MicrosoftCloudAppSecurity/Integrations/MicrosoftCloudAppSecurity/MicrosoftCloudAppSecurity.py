@@ -672,7 +672,7 @@ def arrange_alerts_by_incident_type(alerts: List[dict]):
     for alert in alerts:
         incident_types: Dict[str, Any] = {}
         for entity in alert['entities']:
-            if not entity['type'] in incident_types.keys():
+            if entity['type'] not in incident_types.keys():
                 incident_types[entity['type']] = []
             incident_types[entity['type']].append(entity)
         alert.update(incident_types)

@@ -328,6 +328,7 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
 #     assert err.value.args[0] == 'Error in authentication. Try checking the credentials you entered.'
 #
 
+
 def test_self_deployed_request(requests_mock):
     import urllib
     # Set

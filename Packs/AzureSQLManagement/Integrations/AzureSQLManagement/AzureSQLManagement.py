@@ -715,7 +715,7 @@ def main() -> None:
             return_results(complete_auth(client))
 
         elif command == 'azure-sql-auth-reset':
-            return_results(reset_auth(client))
+            return_results(reset_auth())
 
         elif command == 'azure-sql-auth-test':
             return_results(test_connection(client))

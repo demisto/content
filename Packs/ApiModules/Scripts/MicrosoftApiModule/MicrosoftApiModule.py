@@ -675,7 +675,7 @@ class MicrosoftClient(BaseClient):
             else:
                 err_str = inner_error
             if err_str:
-                if set(response.get("error_codes", [])).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                if set(response.get("error_codes", [""])).issubset(TOKEN_EXPIRED_ERROR_CODES):
                     err_str += "\nThere may be an issue with the *Authorization code* parameter. " \
                                "You can run the *<integration command prefix>-auth-reset* command " \
                                "to reset the authentication process."
