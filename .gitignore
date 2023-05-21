@@ -82,9 +82,7 @@ Packs/**/Scripts/**/.pytest.ini
 pytest_report.json
 test_runner.sh
 
+
 # log files
 demisto_sdk_debug.log
 demisto_sdk_debug.log.*
-
-# Modeling rules
-Packs/**/ModelingRules/**/**/*_testdata.json
