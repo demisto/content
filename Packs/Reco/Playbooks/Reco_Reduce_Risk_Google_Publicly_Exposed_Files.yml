@@ -1,20 +1,23 @@
 id: Reco - Reduce Risk - Google Publicly Exposed Files
-version: -1
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: Reco - Reduce Risk - Google Publicly Exposed Files
-description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims to identify and mitigate the risk associated with publicly exposed sensitive files on Google Drive. It follows a sequence of tasks to detect such files, analyze their locations, and remove the "anyone with link" permission to enhance data security.
+description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims
+  to identify and mitigate the risk associated with publicly exposed sensitive files
+  on Google Drive. It follows a sequence of tasks to detect such files, analyze their
+  locations, and remove the "anyone with link" permission to enhance data security.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4ee06ed4-56bf-487a-8119-a3f1062d09a7
+    taskid: c17ad849-da25-4a34-8114-bdc1d1d2230b
     type: start
     task:
-      id: 4ee06ed4-56bf-487a-8119-a3f1062d09a7
+      id: c17ad849-da25-4a34-8114-bdc1d1d2230b
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,13 +39,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 532ac77b-8c76-473a-8c5d-8d552e4776f9
+    taskid: b783179a-792a-48ed-8961-97425bbea658
     type: regular
     task:
-      id: 532ac77b-8c76-473a-8c5d-8d552e4776f9
+      id: b783179a-792a-48ed-8961-97425bbea658
       version: -1
       name: Reco Get Assets With Public Link
-      description: Reco Get Assets With Public Link - Retrieves all sensitive assets with public links from Reco.
+      description: Reco Get Assets With Public Link - Retrieves all sensitive assets
+        with public links from Reco.
       script: '|||reco-get-sensitive-assets-with-public-link'
       type: regular
       iscommand: true
@@ -68,13 +72,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 621d18d2-3ebf-4025-8509-dee865d92efe
+    taskid: 60401348-fd9c-4f68-8faf-c4a225fe797f
     type: condition
     task:
-      id: 621d18d2-3ebf-4025-8509-dee865d92efe
+      id: 60401348-fd9c-4f68-8faf-c4a225fe797f
       version: -1
       name: Location is User Drive
-      description: 'Location is User Drive - Checks if the location of the assets is a user drive or a shared drive.'
+      description: Location is User Drive - Checks if the location of the assets is
+        a user drive or a shared drive.
       type: condition
       iscommand: false
       brand: ""
@@ -114,10 +119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: aaccd818-99b8-45cf-8e92-fb0157909c1e
+    taskid: b8ccb6dc-4aca-4646-85ea-902f01e91e98
     type: regular
     task:
-      id: aaccd818-99b8-45cf-8e92-fb0157909c1e
+      id: b8ccb6dc-4aca-4646-85ea-902f01e91e98
       version: -1
       name: Get Drive List
       description: Get Drive List - Lists the user's shared drives.
@@ -126,13 +131,18 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "10"
       '#none#':
       - "4"
     scriptarguments:
+      use_domain_admin_access:
+        simple: "true"
       user_id:
         simple: ${inputs.admin_email_address}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
@@ -149,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5502c76f-59b4-4abf-8464-0f9413aa40c2
+    taskid: ef5b7deb-83f8-4876-8f93-b0d8c46a3683
     type: regular
     task:
-      id: 5502c76f-59b4-4abf-8464-0f9413aa40c2
+      id: ef5b7deb-83f8-4876-8f93-b0d8c46a3683
       version: -1
       name: Google Drive List Permissions Drive
       description: Lists a file's or shared drive's permissions.
@@ -161,6 +171,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
+      '#error#':
+      - "11"
       '#none#':
       - "5"
     scriptarguments:
@@ -187,7 +199,8 @@ tasks:
       user_id:
         simple: ${inputs.admin_email_address}
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
@@ -204,13 +217,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0f974ee3-00ed-494e-8693-7efe9671d01b
+    taskid: 429b438f-713d-4066-8399-89aabe8f7f5d
     type: regular
     task:
-      id: 0f974ee3-00ed-494e-8693-7efe9671d01b
+      id: 429b438f-713d-4066-8399-89aabe8f7f5d
       version: -1
       name: Get Organizer Owner
-      description: Get Organizer Owner - Sets the organizer's email address as a value in the context.
+      description: Get Organizer Owner - Sets the organizer's email address as a value
+        in the context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -252,13 +266,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e7a79d92-c4a8-437c-80c3-b36c8f56ba82
+    taskid: 18e024ac-d04c-49dc-8554-c1a7f3d20049
     type: regular
     task:
-      id: e7a79d92-c4a8-437c-80c3-b36c8f56ba82
+      id: 18e024ac-d04c-49dc-8554-c1a7f3d20049
       version: -1
       name: Google Drive Delete Anyone with Link Permission
-      description: Google Drive Delete Anyone with Link Permission - Deletes the anyone with link permission for a file.
+      description: Google Drive Delete Anyone with Link Permission - Deletes the anyone
+        with link permission for a file.
       script: '|||google-drive-file-permission-delete'
       type: regular
       iscommand: true
@@ -294,13 +309,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b514077b-c460-4dd5-8c6a-586247251dae
+    taskid: e9acb131-199d-4743-819d-650bf4851b83
     type: regular
     task:
-      id: b514077b-c460-4dd5-8c6a-586247251dae
+      id: e9acb131-199d-4743-819d-650bf4851b83
       version: -1
       name: Delete Anyone With Link Permission
-      description: Delete Anyone With Link Permission - Deletes the anyone with link permission for a file using the owner's email address.
+      description: Delete Anyone With Link Permission - Deletes the anyone with link
+        permission for a file using the owner's email address.
       script: '|||google-drive-file-permission-delete'
       type: regular
       iscommand: true
@@ -338,16 +354,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 68754054-c457-431c-8e7c-ede165633d76
+    taskid: d84303c9-e585-4fa8-8761-15e3e3d67b31
     type: title
     task:
-      id: 68754054-c457-431c-8e7c-ede165633d76
+      id: d84303c9-e585-4fa8-8761-15e3e3d67b31
       version: -1
       name: Error Delete Permission
+      description: Error Delete Permission - Represents an error state when deleting
+        a permission.
       type: title
       iscommand: false
       brand: ""
-      description: Error Delete Permission - Represents an error state when deleting a permission.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -366,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f8a0a6d3-6240-4a30-8529-9a2e883ef7dd
+    taskid: bc19b805-6f71-49d3-8509-9d3ed57862d6
     type: regular
     task:
-      id: f8a0a6d3-6240-4a30-8529-9a2e883ef7dd
+      id: bc19b805-6f71-49d3-8509-9d3ed57862d6
       version: -1
       name: Collect Deleted Permissions
       description: Append item(s) to the end of the list if they are not empty.
@@ -398,13 +415,67 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: adf5f94c-51be-486a-8168-1629f737344a
+    type: title
+    task:
+      id: adf5f94c-51be-486a-8168-1629f737344a
+      version: -1
+      name: Error in Get Drive List
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0e320aaf-d019-4d49-8da3-0800262b55cc
+    type: title
+    task:
+      id: 0e320aaf-d019-4d49-8da3-0800262b55cc
+      version: -1
+      name: Error in Get Drive List Permissions
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1655,
-        "width": 1130,
+        "width": 1430,
         "x": 120,
         "y": 70
       }
@@ -414,10 +485,7 @@ inputs:
 - key: admin_email_address
   value: {}
   required: true
-  description: ""
-  playbookInputQuery:
+  description: Admin email address to impersonate in case of shared drive
+  playbookInputQuery: null
 outputs: []
 quiet: true
-tests:
-- No tests (auto formatted)
-fromversion: 6.8.0
