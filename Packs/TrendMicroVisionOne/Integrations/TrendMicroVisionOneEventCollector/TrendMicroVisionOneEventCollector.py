@@ -506,6 +506,51 @@ def get_audit_logs(
 ''' COMMAND FUNCTIONS '''
 
 
+def fetch_events(
+    client: Client,
+    first_fetch: str,
+    limit: int = DEFAULT_MAX_LIMIT
+) -> Tuple[List[Dict], Dict]:
+    """
+    Get all the logs.
+
+    Args:
+        client (Client): the client object
+        first_fetch (str): the first fetch time
+        limit (int): the maximum number of search detection logs to return.
+
+    Returns:
+        Tuple[List[Dict], str]: audit logs & latest time of the audit log that was created.
+    """
+    last_run = demisto.getLastRun()
+
+    workbench_logs, latest_workbench_log_time = get_workbench_logs(
+        client=client, last_run=last_run, first_fetch=first_fetch, limit=limit
+    )
+    observed_attack_techniques_logs, latest_observed_attack_technique_log_time = get_observed_attack_techniques_logs(
+        client=client, last_run=last_run, first_fetch=first_fetch, limit=limit
+    )
+    search_detection_logs, latest_search_detection_log_time = get_search_detection_logs(
+        client=client, last_run=last_run, first_fetch=first_fetch, limit=limit
+    )
+    audit_logs, latest_audit_log_time = get_audit_logs(
+        client=client, last_run=last_run, first_fetch=first_fetch, limit=limit
+    )
+
+    events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+    demisto.info(f'Fetched the following {events=}')
+
+    updated_last_run = {
+        WORKBENCH_LOGS_TIME: latest_workbench_log_time,
+        OAT_DETECTION_LOGS_TIME: latest_observed_attack_technique_log_time,
+        SEARCH_DETECTION_LOGS_TIME: latest_search_detection_log_time,
+        AUDIT_LOGS_TIME: latest_audit_log_time
+    }
+    demisto.info(f'{updated_last_run=}')
+
+    return events, updated_last_run
+
+
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
