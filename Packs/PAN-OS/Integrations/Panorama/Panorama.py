@@ -13451,6 +13451,7 @@ def test_fetch_incidents_parameters(fetch_params):
 
 
 def main(): # pragma: no cover
+    demisto.info('test')
     try:
         args = demisto.args()
         params = demisto.params()
