@@ -227,6 +227,32 @@ class GwClient(GwRequests):
             )
 
 
+def is_valid_ip(ip: str) -> bool:
+    # Regular expression pattern to validate an IP address
+    pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
+    return re.match(pattern, ip) is not None
+
+
+def ip_command(client: GwClient, args: dict) -> CommandResults:
+    """Checks
+
+    Args:
+        client: Client to interact with the LIS API.
+        args: Command arguments.
+
+    Return
+
+    """
+    if "IP" in args:
+        value = args["IP"]
+        if isinstance(value, str) and is_valid_ip(value):
+            return lis_get_by_value(client, args)
+        else:
+            raise ValueError("Not a valid IPv4")
+    else:
+        raise ValueError("IP field not present in dictionnary")
+
+
 def test_module(client: GwClient) -> str:  # noqa: E501
     """tests API connectivity.
 
@@ -304,7 +330,6 @@ def lis_get_by_value(client: GwClient, args: Dict[Any, Any]) -> CommandResults: 
     """
     value = args["Value"]
     response = client.get_by_value(value=value)
-    print("test")
 
     ioc = list(filter(lambda x: x["Value"] == value, response["IOCs"]))[0]
     result = {
@@ -342,6 +367,10 @@ def main() -> None:
         if command == 'test-module':
             return_results(
                 test_module(client=client)
+            )
+        elif command == "ip":
+            return_results(
+                ip_command(client=client, args=args)
             )
         elif command == "gw-lis-get-by-minute":
             return_results(
