@@ -90,8 +90,7 @@ tasks:
       id: 1a6037b1-bf8a-495f-81e5-24b0f5f39edd
       version: -1
       name: Collect Hash indicators from cado-security
-      description: This script will extract indicators from HTML and will handle bad
-        TLD to avoid file extensions false positives.
+      description: This script will extract indicators from HTML and will handle bad TLD to avoid file extensions false positives.
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
@@ -106,7 +105,6 @@ tasks:
         simple: "False"
       url:
         simple: https://github.com/cado-security/DFIR_Resources_REvil_Kaseya/blob/main/IOCs/Hashes.txt
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -128,8 +126,7 @@ tasks:
       id: 8e48e9c6-9926-403a-8648-2246c62de21d
       version: -1
       name: Collect Domain indicators from cado-security
-      description: This script will extract indicators from HTML and will handle bad
-        TLD to avoid file extensions false positives.
+      description: This script will extract indicators from HTML and will handle bad TLD to avoid file extensions false positives.
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
@@ -145,7 +142,7 @@ tasks:
       url:
         simple: https://github.com/cado-security/DFIR_Resources_REvil_Kaseya/blob/main/IOCs/Domains.txt
     continueonerror: true
-    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -206,7 +203,7 @@ tasks:
       text:
         simple: ${http.parsedBlog.indicators}
     continueonerror: true
-    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -463,9 +460,7 @@ tasks:
       id: 6291ed6c-545c-416e-82f9-3c84f4619d81
       version: -1
       name: Splunk Indicator Hunting
-      description: This playbook queries Splunk for indicators such as file hashes,
-        IP addresses, domains, or urls. It outputs detected users, ip addresses, and
-        hostnames related to the indicators.
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
@@ -665,6 +660,7 @@ tasks:
         complex:
           root: inputs.QRadarSearchTimeRange
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -682,6 +678,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: 73c70889-e300-4363-8fb7-21d5ce04cfc7
@@ -778,6 +776,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: f1cff7ba-fe5a-4bf1-861f-d1a4278ad692
@@ -795,6 +795,7 @@ tasks:
       - "31"
       - "25"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -807,6 +808,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 59418814-acc1-4153-81d1-f8c6eecd7278
@@ -828,15 +831,9 @@ tasks:
       extend-context:
         simple: REvilXDRincidents=
       query:
-        simple: 'xdralerts.name:"network_ransom1" OR xdralerts.description: *malicious_dll_dropped_mpsvc.dll.1*
-          OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.2* OR  xdralerts.description:
-          *malicious_dll_dropped_mpsvc.dll.3* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.4*
-          OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.5* OR xdralerts.description:
-          *sync.malicious_dll_loaded_mpsvc.dll.1* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.2*
-          OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.3* OR xdralerts.description:
-          *sync.malicious_dll_loaded_mpsvc.dll.4* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.5*
-          OR xdralerts.description: *msmpeng_hijack* OR xdralerts.name: *msmpeng_hijack*'
+        simple: 'xdralerts.name:"network_ransom1" OR xdralerts.description: *malicious_dll_dropped_mpsvc.dll.1* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.2* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.3* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.4* OR  xdralerts.description: *malicious_dll_dropped_mpsvc.dll.5* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.1* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.2* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.3* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.4* OR xdralerts.description: *sync.malicious_dll_loaded_mpsvc.dll.5* OR xdralerts.description: *msmpeng_hijack* OR xdralerts.name: *msmpeng_hijack*'
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -849,6 +846,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: a290aeb4-21ad-41a8-8bef-a4777ef45d73
@@ -1066,8 +1065,7 @@ tasks:
       id: b38bd13d-29cc-471e-8343-7c432d70ba44
       version: -1
       name: Deploy Sigma rules
-      description: Sigma rules file has been downloaded as SigmaRules.yml and is available
-        for download directly from XSOAR.
+      description: Sigma rules file has been downloaded as SigmaRules.yml and is available for download directly from XSOAR.
       type: regular
       iscommand: false
       brand: ""
@@ -1156,162 +1154,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "41":
-    id: "41"
-    taskid: 9f57f175-65c9-4b3f-8c32-224f6655ae98
-    type: playbook
-    task:
-      id: 9f57f175-65c9-4b3f-8c32-224f6655ae98
-      version: -1
-      name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-
-      playbookName: Block Indicators - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      IP:
-        complex:
-          root: ExtractedIndicators
-          accessor: IP
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: ExtractedIndicators
-          accessor: URL
-          transformers:
-          - operator: uniq
-      URLListName:
-        simple: Demisto Remediation - URL EDL
-    separatecontext: true
-    loop:
-      iscommand: false
-      scriptArguments:
-        AutoCommit:
-          simple: "No"
-        CustomBlockRule:
-          simple: "True"
-        CustomURLCategory:
-          simple: Demisto Remediation - Malicious URLs
-        IP:
-          complex:
-            root: ExtractedIndicators
-            accessor: IP
-            transformers:
-            - operator: uniq
-        MD5:
-          complex:
-            root: ExtractedIndicators.File
-            filters:
-            - - operator: stringHasLength
-                left:
-                  value:
-                    simple: ExtractedIndicators.File
-                  iscontext: true
-                right:
-                  value:
-                    simple: "32"
-            transformers:
-            - operator: uniq
-        SHA256:
-          complex:
-            root: ExtractedIndicators.File
-            filters:
-            - - operator: stringHasLength
-                left:
-                  value:
-                    simple: ExtractedIndicators.File
-                  iscontext: true
-                right:
-                  value:
-                    simple: "64"
-            transformers:
-            - operator: uniq
-        URL:
-          complex:
-            root: ExtractedIndicators.URL
-            filters:
-            - - operator: notContainsGeneral
-                left:
-                  value:
-                    simple: ExtractedIndicators.URL
-                  iscontext: true
-                right:
-                  value:
-                    simple: github
-                ignorecase: true
-            - - operator: notContainsGeneral
-                left:
-                  value:
-                    simple: ExtractedIndicators.URL
-                  iscontext: true
-                right:
-                  value:
-                    simple: microsoft.com
-            transformers:
-            - operator: uniq
-        URLListName:
-          simple: Demisto Remediation - URL EDL
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
     taskid: fd34b606-d8dc-4518-8479-3ce2894c48e3
@@ -1320,8 +1164,7 @@ tasks:
       id: fd34b606-d8dc-4518-8479-3ce2894c48e3
       version: -1
       name: Block indicators automatically?
-      description: Checks whether IOCs associated with the incident can be blocked
-        automatically.
+      description: Checks whether IOCs associated with the incident can be blocked automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -1330,7 +1173,7 @@ tasks:
       - "43"
       "yes":
       - "62"
-      - "41"
+      - "90"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1526,8 +1369,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Based on the results returned by the Hunting phase, would you like
-          to run the Ransomware Investigation playbook?
+        simple: Based on the results returned by the Hunting phase, would you like to run the Ransomware Investigation playbook?
       methods: []
       format: ""
       bcc:
@@ -2832,6 +2674,206 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: b7f344e0-9709-44c6-8c11-c182507f92d2
+    type: playbook
+    task:
+      id: b7f344e0-9709-44c6-8c11-c182507f92d2
+      version: -1
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: "True"
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
