@@ -48,6 +48,16 @@ Returns the latest updated CVEs.
 | DBotScore.Type | String   | The indicator type. |
 | DBotScore.Vendor | String   | The vendor reporting the score of the indicator. |
 
+##### Human Readable Output
+
+|  |  |
+| --- | --- |
+| CVSS | The CVE CVSS Score |
+| Description | CVE Description |
+| ID | CVE ID |
+| Modified | The date the CVE was modified |
+| Published | The date the CVE was published |
+
 ### cve
 
 ***
@@ -68,10 +78,16 @@ Returns CVE information by CVE ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CVE.ID | String | The ID of the CVE. |
-| CVE.CVSS | number | The CVSS score of the CVE. |
+| CVE.CVSS.Score | Number | The CVSS score of the CVE. |
+| CVE.CVSS.Vector | String | The CVSS vector of the CVE. |
+| CVE.CVSS.Table | Dict | The CVSS table of the CVE. |
 | CVE.Published | Date | The date the CVE was published. |
 | CVE.Modified | Date | The date that the CVE was last modified. |
 | CVE.Description | String | The description of the CVE. |
+| CVE.vulnerableconfigurations | Dict | Vulnerable configurations in CPE format |
+| CVE.vulnerableproduct | Dict | Vulnerable products in CPE format |
+| CVE.Tags | List | A list of tags |
+| CVE.Relationships | List | List of relationships for the CVE |
 | DBotScore.Indicator | String | The indicator value. |
 | DBotScore.Score | Number | The indicator score. |
 | DBotScore.Type | String | The indicator type. |
@@ -95,3 +111,12 @@ Returns CVE information by CVE ID.
     ]
 }
 ```
+##### Human Readable Output
+
+|  |  |
+| --- | --- |
+| CVSS | 4.3 |
+| Description | XSS in livehelperchat in GitHub repository livehelperchat/livehelperchat prior to 3.97. This vulnerability has the potential to deface websites, result in compromised user accounts, and can run malicious code on web pages, which can lead to a compromise of the userâ€™s device. |
+| ID | CVE-2022-1234 |
+| Modified | 2022-04-13T15:03:00 |
+| Published |2022-04-06T04:15:00 |
