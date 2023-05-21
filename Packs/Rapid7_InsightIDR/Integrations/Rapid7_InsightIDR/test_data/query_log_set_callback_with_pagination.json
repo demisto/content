@@ -1,0 +1,21 @@
+{
+    "logs": [
+      "123"
+    ],
+    "leql": {
+      "statement": "where(931dde6c60>=800)",
+      "during": {
+        "from": 1609629856000,
+        "to": 1609629992000
+      }
+    },
+    "progress": 0,
+    "id": "123",
+    "events": [],
+    "links": [
+      {
+        "rel": "Self",
+        "href": "https://us.api.insight.rapid7.com/query/logs/123?per_page=1&sequence_number=1"
+      }
+    ]
+  }
