@@ -480,8 +480,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1682655061300",
@@ -509,8 +508,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1682655145897",
@@ -538,8 +536,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1682655228656",
@@ -567,8 +564,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683766565790",
@@ -611,8 +607,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683766803647",
@@ -655,8 +650,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683766863080",
@@ -677,8 +671,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683766920238",
@@ -728,8 +721,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683766946301",
@@ -750,8 +742,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683766964741",
@@ -772,8 +763,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683766983921",
@@ -794,8 +784,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683767003041",
@@ -831,8 +820,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683767022136",
@@ -853,8 +841,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683767040079",
@@ -875,8 +862,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683767058419",
@@ -897,8 +883,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683767072780",
@@ -919,8 +904,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         },
         {
             "widget_key": "xql_1683767483158",
@@ -941,8 +925,7 @@
             "additional_info": {
                 "query_tables": [],
                 "query_uses_library": false
-            },
-            "creator_mail": "rbhattarai@paloaltonetworks.com"
+            }
         }
     ]
 }
