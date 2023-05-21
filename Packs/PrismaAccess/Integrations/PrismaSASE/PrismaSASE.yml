@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id:  Palo Alto Networks - Prisma SASE
+  id: Palo Alto Networks - Prisma SASE
   version: -1
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
@@ -36,8 +36,8 @@ configuration:
   section: Connect
   advanced: true
 description: Provides commands for interaction with Prisma SASE API.
-display:  Palo Alto Networks - Prisma SASE
-name:  Palo Alto Networks - Prisma SASE
+display: Palo Alto Networks - Prisma SASE
+name: Palo Alto Networks - Prisma SASE
 script:
   commands:
   - arguments:
@@ -247,32 +247,32 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: pre
+    - defaultValue: 'pre'
       description: Security rule position.
       isArray: false
       name: position
+      auto: PREDEFINED
+      default: false
       predefined:
       - pre
       - post
-    - defaultValue: '50'
-      description: The maximum number of results to return.
-      isArray: false
+    - isArray: false
       name: limit
+      description: The maximum number of results to return.
+      defaultValue: '50'
       required: false
     - default: false
       isArray: false
       name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - default: false
+      description: Number of results per page to display.
       isArray: false
       name: page_size
-      description: Number of results per page to display.
-    - default: false
-      description: A specific security rule to return. If not specified, all security rules will be returned.
-      isArray: false
+    - description: A specific security rule to return. If not specified, all security rules will be returned.
       name: rule_id
+      default: false
+      isArray: false
       required: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
@@ -515,8 +515,8 @@ script:
       isArray: false
       name: overwrite
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false
@@ -798,10 +798,10 @@ script:
   - arguments:
     - description: The name of the object to use as a filter.
       name: name
-    - default: false
-      description: ID of the address object to delete.
-      isArray: false
+    - description: ID of the address object to delete.
       name: object_id
+      default: false
+      isArray: false
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
@@ -877,12 +877,13 @@ script:
       isArray: false
       name: tag_id
       required: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Shared
+    - defaultValue: 'Shared'
       description: The configuration folder group setting.
       isArray: false
       name: folder
+      required: false
+      auto: PREDEFINED
+      default: false
       predefined:
       - Shared
       - Mobile Users
@@ -890,20 +891,19 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - defaultValue: '50'
-      description: The maximum number of results to return.
-      isArray: false
+    - isArray: false
       name: limit
+      description: The maximum number of results to return.
+      defaultValue: '50'
       required: false
     - default: false
       isArray: false
       name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    - default: false
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
-      description: Number of results per page to display.
+      default: false
+      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false
@@ -1136,12 +1136,12 @@ script:
       isArray: false
       name: group_id
       required: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Shared
-      description: The configuration folder group setting.
+    - default: false
       isArray: false
       name: folder
+      description: The configuration folder group setting.
+      auto: PREDEFINED
+      defaultValue: Shared
       predefined:
       - Shared
       - Mobile Users
@@ -1158,10 +1158,10 @@ script:
       isArray: false
       name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    - default: false
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
-      description: Number of results per page to display.
+      default: false
+      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false
@@ -1348,12 +1348,12 @@ script:
       isArray: false
       name: id
       required: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Shared
-      description: The configuration folder group setting.
+    - default: false
       isArray: false
       name: folder
+      description: The configuration folder group setting.
+      auto: PREDEFINED
+      defaultValue: Shared
       predefined:
       - Shared
       - Mobile Users
@@ -1370,10 +1370,10 @@ script:
       isArray: false
       name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    - default: false
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
-      description: Number of results per page to display.
+      default: false
+      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false
@@ -1554,12 +1554,12 @@ script:
       isArray: false
       name: id
       required: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Shared
-      description: The configuration folder group setting.
+    - default: false
       isArray: false
       name: folder
+      description: The configuration folder group setting.
+      auto: PREDEFINED
+      defaultValue: Shared
       predefined:
       - Shared
       - Mobile Users
@@ -1576,10 +1576,10 @@ script:
       isArray: false
       name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    - default: false
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
-      description: Number of results per page to display.
+      default: false
+      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     deprecated: false
@@ -1889,7 +1889,7 @@ script:
     execution: false
     description: Get all predefined URL categories.
     name: prisma-sase-url-category-list
-  dockerimage: demisto/python3:3.10.11.58411
+  dockerimage: demisto/python3:3.10.11.59581
   feed: false
   isfetch: false
   longRunning: false
