@@ -13,7 +13,7 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 7. Follow the instructions in the rest of this guide to make sure that the PAN-OS device is connected to the EDL service.
 
 ***Important Notes:***
-- EDL is designed to spawn on two processes: nginx and python. Nginx is the process that listens on the configured port, while the python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the nginx process will listen on port 9009 and python on port 9010. When running without --network=host the python port is not exposed to the machine.
+- EDL is designed to spawn on two processes: NGNIX and Python. NGNIX is the process that listens on the configured port, while the Python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the NGNIX process will listen on port 9009 and Python on port 9010. When running without --network=host, the Python port is not exposed to the machine.
 - When constantly using different queries for the same EDL instance, it is recommended to use different instances of the EDL, and set each one with a default query for better performance.
 
 
