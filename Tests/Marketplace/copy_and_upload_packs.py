@@ -396,13 +396,13 @@ def main():
     for pack in packs_list:
         task_status = pack.load_user_metadata()
         if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue
 
         if marketplace not in pack.marketplaces:
             logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
-            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
+            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
@@ -413,28 +413,28 @@ def main():
         # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
-            pack.status = pack_status
+            pack.status = pack_status  # type: ignore[misc]
             pack.cleanup()
             continue
 
         task_status = pack.copy_integration_images(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         task_status = pack.copy_author_image(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
-            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         task_status = pack.copy_preview_images(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
-            pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
+            pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
@@ -442,19 +442,19 @@ def main():
             production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
             production_base_path, build_bucket_base_path)
         if skipped_pack_uploading:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         if not task_status:
-            pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         if pack.name in pc_successful_packs_dict:
-            pack.status = PackStatus.SUCCESS.name
+            pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
         elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
-            pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+            pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name  # type: ignore[misc]
 
     copy_readme_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
     # upload core packs json to bucket

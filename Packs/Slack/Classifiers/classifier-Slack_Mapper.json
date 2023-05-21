@@ -1,0 +1,80 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Slack Mapper",
+    "mapping": {
+        "Password Reset via Chatbot": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Message",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "error_if_no_match": {},
+                                    "ignore_case": {},
+                                    "multi_line": {},
+                                    "period_matches_newline": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "name=\"([^\"]+)\""
+                                        }
+                                    },
+                                    "unpack_matches": {}
+                                },
+                                "operator": "RegexExtractAll"
+                            }
+                        ]
+                    }
+                },
+                "Reporter Email Address": {
+                    "simple": "ReporterEmail"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ReporterEmail",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "Password reset request: "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "Slack - User Password Reset": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Reporter Email Address": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ReporterEmail",
+                        "transformers": []
+                    }
+                },
+                "Source Username": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Reporter",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Slack Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

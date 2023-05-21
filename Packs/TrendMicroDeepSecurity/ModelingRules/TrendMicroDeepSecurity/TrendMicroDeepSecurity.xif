@@ -1,0 +1,296 @@
+/*****************************************************/
+/* TM (Trend Micro) DS (Deep Security) Utility Rules */
+/*****************************************************/
+
+[RULE: tm_ds_common_fields_modeling]
+/* Model fields that are common to all of TM DS event types. */
+alter event_tags = regextract(TrendMicroDsTags, "[\w-]+")
+| alter 
+    xdm.observer.type = TrendMicroDsTenant,
+    xdm.observer.unique_identifier = TrendMicroDsTenantId,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.event.id  = cefDeviceEventClassId,
+    xdm.event.description  = cefName,
+    xdm.event.tags  = event_tags, 
+    xdm.alert.name = cefName,
+    xdm.alert.severity = cefSeverity,
+    xdm.source.agent.type = TrendMicroDsTenant, 
+    xdm.source.agent.identifier = TrendMicroDsTenantId
+;
+
+[RULE: tm_ds_agent_common_fields_modeling]
+/* Model fields that are common to all of agent (security) event types. */
+alter 
+    xdm.observer.name = coalesce(dvchost, dvc),
+    xdm.source.ipv4 = dvc, /* The IPv4 address of the agent. Does not appear if the source is an IPv6 address or hostname. (Uses dvchost instead.)*/
+    xdm.source.ipv6 = if(dvchost ~= ":", dvchost, null), /* The hostname or IPv6 address of the agent. Does not appear if the source is an IPv4 address. (Uses dvc field instead.) */
+    xdm.source.host.hostname = if(dvchost != null and dvchost !~= ":", dvchost, null),
+    xdm.source.host.device_id = to_string(cn1) // The agent computers internal unique identifier 
+;
+
+[RULE: tm_ds_network_common_fields_modeling]
+/* Model network fields that are common network event types, i.e., FW & IPS events. */
+alter 
+    outcome = uppercase(act),
+    src_ipv4 = if(src !~= ":", src, null),
+    src_ipv6 = if(src ~= ":", src, null),
+    dst_ipv4 = if(dst !~= ":", dst, null),
+    dst_ipv6 = if(dst ~= ":", dst, null),
+    icmp_type_n_code = regextract(cs4, "\S+")
+| alter 
+    xdm.observer.action = act, 
+    xdm.event.outcome = if(outcome ~= "DENY" or outcome ~= "BLOCK" or outcome ~= "DROP", XDM_CONST.OUTCOME_FAILED, outcome ~= "ALLOW" or outcome ~= "ACCEPT", XDM_CONST.OUTCOME_SUCCESS, outcome ~= "LOG" or outcome ~= "DETECT", XDM_CONST.OUTCOME_PARTIAL, to_string(act)),  
+    xdm.source.interface = smac,
+    xdm.source.port = spt,
+    xdm.source.ipv4 = if(src_ipv4 != null, src_ipv4,  src ~= ":", null, dvc),
+    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, dvchost ~= ":" and src = null, dvchost, null),
+    xdm.source.sent_packets = to_integer(cnt), // The number of times this event was sequentially repeated
+    xdm.source.sent_bytes = to_integer(out), // outbound bytes read
+    xdm.target.sent_bytes = to_integer(`in`), // inbound bytes read
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.port = dpt,
+    xdm.target.interface = dmac,
+    xdm.network.icmp.type = to_integer(arrayindex(icmp_type_n_code, 0)),
+    xdm.network.icmp.code = to_integer(arrayindex(icmp_type_n_code, 1))
+;
+
+[RULE: tm_ds_map_ip_protocol]
+/* Map IP protocol from cef proto field to XDM enum field. */
+alter ip_proto = uppercase(proto)
+| alter xdm.network.ip_protocol = if(ip_proto="HOPOPT",XDM_CONST.IP_PROTOCOL_HOPOPT, ip_proto="ICMP",XDM_CONST.IP_PROTOCOL_ICMP, ip_proto="IGMP",XDM_CONST.IP_PROTOCOL_IGMP, ip_proto="GGP",XDM_CONST.IP_PROTOCOL_GGP, ip_proto="IP",XDM_CONST.IP_PROTOCOL_IP, ip_proto="ST",XDM_CONST.IP_PROTOCOL_ST, ip_proto="TCP",XDM_CONST.IP_PROTOCOL_TCP, ip_proto="CBT",XDM_CONST.IP_PROTOCOL_CBT, ip_proto="EGP",XDM_CONST.IP_PROTOCOL_EGP, ip_proto="IGP",XDM_CONST.IP_PROTOCOL_IGP, ip_proto="BBN_RCC_MON",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, ip_proto="NVP_II",XDM_CONST.IP_PROTOCOL_NVP_II, ip_proto="PUP",XDM_CONST.IP_PROTOCOL_PUP, ip_proto="ARGUS",XDM_CONST.IP_PROTOCOL_ARGUS, ip_proto="EMCON",XDM_CONST.IP_PROTOCOL_EMCON, ip_proto="XNET",XDM_CONST.IP_PROTOCOL_XNET, ip_proto="CHAOS",XDM_CONST.IP_PROTOCOL_CHAOS, ip_proto="UDP",XDM_CONST.IP_PROTOCOL_UDP, ip_proto="MUX",XDM_CONST.IP_PROTOCOL_MUX, ip_proto="DCN_MEAS",XDM_CONST.IP_PROTOCOL_DCN_MEAS, ip_proto="HMP",XDM_CONST.IP_PROTOCOL_HMP, ip_proto="PRM",XDM_CONST.IP_PROTOCOL_PRM, ip_proto="XNS_IDP",XDM_CONST.IP_PROTOCOL_XNS_IDP, ip_proto="TRUNK_1",XDM_CONST.IP_PROTOCOL_TRUNK_1, ip_proto="TRUNK_2",XDM_CONST.IP_PROTOCOL_TRUNK_2, ip_proto="LEAF_1",XDM_CONST.IP_PROTOCOL_LEAF_1, ip_proto="LEAF_2",XDM_CONST.IP_PROTOCOL_LEAF_2, ip_proto="RDP",XDM_CONST.IP_PROTOCOL_RDP, ip_proto="IRTP",XDM_CONST.IP_PROTOCOL_IRTP, ip_proto="ISO_TP4",XDM_CONST.IP_PROTOCOL_ISO_TP4, ip_proto="NETBLT",XDM_CONST.IP_PROTOCOL_NETBLT, ip_proto="MFE_NSP",XDM_CONST.IP_PROTOCOL_MFE_NSP, ip_proto="MERIT_INP",XDM_CONST.IP_PROTOCOL_MERIT_INP, ip_proto="DCCP",XDM_CONST.IP_PROTOCOL_DCCP, ip_proto="3PC",XDM_CONST.IP_PROTOCOL_3PC, ip_proto="IDPR",XDM_CONST.IP_PROTOCOL_IDPR, ip_proto="XTP",XDM_CONST.IP_PROTOCOL_XTP, ip_proto="DDP",XDM_CONST.IP_PROTOCOL_DDP, ip_proto="IDPR_CMTP",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, ip_proto="TP",XDM_CONST.IP_PROTOCOL_TP, ip_proto="IL",XDM_CONST.IP_PROTOCOL_IL, ip_proto="IPV6",XDM_CONST.IP_PROTOCOL_IPV6, ip_proto="SDRP",XDM_CONST.IP_PROTOCOL_SDRP, ip_proto="IPV6_ROUTE",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, ip_proto="IPV6_FRAG",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, ip_proto="IDRP",XDM_CONST.IP_PROTOCOL_IDRP, ip_proto="RSVP",XDM_CONST.IP_PROTOCOL_RSVP, ip_proto="GRE",XDM_CONST.IP_PROTOCOL_GRE, ip_proto="DSR",XDM_CONST.IP_PROTOCOL_DSR, ip_proto="BNA",XDM_CONST.IP_PROTOCOL_BNA, ip_proto="ESP",XDM_CONST.IP_PROTOCOL_ESP, ip_proto="AH",XDM_CONST.IP_PROTOCOL_AH, ip_proto="I_NLSP",XDM_CONST.IP_PROTOCOL_I_NLSP, ip_proto="SWIPE",XDM_CONST.IP_PROTOCOL_SWIPE, ip_proto="NARP",XDM_CONST.IP_PROTOCOL_NARP, ip_proto="MOBILE",XDM_CONST.IP_PROTOCOL_MOBILE, ip_proto="TLSP",XDM_CONST.IP_PROTOCOL_TLSP, ip_proto="SKIP",XDM_CONST.IP_PROTOCOL_SKIP, ip_proto="IPV6_ICMP",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, ip_proto="IPV6_NONXT",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, ip_proto="IPV6_OPTS",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, ip_proto="CFTP",XDM_CONST.IP_PROTOCOL_CFTP, ip_proto="SAT_EXPAK",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, ip_proto="KRYPTOLAN",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, ip_proto="RVD",XDM_CONST.IP_PROTOCOL_RVD, ip_proto="IPPC",XDM_CONST.IP_PROTOCOL_IPPC, ip_proto="SAT_MON",XDM_CONST.IP_PROTOCOL_SAT_MON, ip_proto="VISA",XDM_CONST.IP_PROTOCOL_VISA, ip_proto="IPCV",XDM_CONST.IP_PROTOCOL_IPCV, ip_proto="CPNX",XDM_CONST.IP_PROTOCOL_CPNX, ip_proto="CPHB",XDM_CONST.IP_PROTOCOL_CPHB, ip_proto="WSN",XDM_CONST.IP_PROTOCOL_WSN, ip_proto="PVP",XDM_CONST.IP_PROTOCOL_PVP, ip_proto="BR_SAT_MON",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, ip_proto="SUN_ND",XDM_CONST.IP_PROTOCOL_SUN_ND, ip_proto="WB_MON",XDM_CONST.IP_PROTOCOL_WB_MON, ip_proto="WB_EXPAK",XDM_CONST.IP_PROTOCOL_WB_EXPAK, ip_proto="ISO_IP",XDM_CONST.IP_PROTOCOL_ISO_IP, ip_proto="VMTP",XDM_CONST.IP_PROTOCOL_VMTP, ip_proto="SECURE_VMTP",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, ip_proto="VINES",XDM_CONST.IP_PROTOCOL_VINES, ip_proto="TTP",XDM_CONST.IP_PROTOCOL_TTP, ip_proto="NSFNET_IGP",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, ip_proto="DGP",XDM_CONST.IP_PROTOCOL_DGP, ip_proto="TCF",XDM_CONST.IP_PROTOCOL_TCF, ip_proto="EIGRP",XDM_CONST.IP_PROTOCOL_EIGRP, ip_proto="OSPFIGP",XDM_CONST.IP_PROTOCOL_OSPFIGP, ip_proto="SPRITE_RPC",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, ip_proto="LARP",XDM_CONST.IP_PROTOCOL_LARP, ip_proto="MTP",XDM_CONST.IP_PROTOCOL_MTP, ip_proto="AX25",XDM_CONST.IP_PROTOCOL_AX25, ip_proto="IPIP",XDM_CONST.IP_PROTOCOL_IPIP, ip_proto="MICP",XDM_CONST.IP_PROTOCOL_MICP, ip_proto="SCC_SP",XDM_CONST.IP_PROTOCOL_SCC_SP, ip_proto="ETHERIP",XDM_CONST.IP_PROTOCOL_ETHERIP, ip_proto="ENCAP",XDM_CONST.IP_PROTOCOL_ENCAP, ip_proto="GMTP",XDM_CONST.IP_PROTOCOL_GMTP, ip_proto="IFMP",XDM_CONST.IP_PROTOCOL_IFMP, ip_proto="PNNI",XDM_CONST.IP_PROTOCOL_PNNI, ip_proto="PIM",XDM_CONST.IP_PROTOCOL_PIM, ip_proto="ARIS",XDM_CONST.IP_PROTOCOL_ARIS, ip_proto="SCPS",XDM_CONST.IP_PROTOCOL_SCPS, ip_proto="QNX",XDM_CONST.IP_PROTOCOL_QNX, ip_proto="AN",XDM_CONST.IP_PROTOCOL_AN, ip_proto="IPCOMP",XDM_CONST.IP_PROTOCOL_IPCOMP, ip_proto="SNP",XDM_CONST.IP_PROTOCOL_SNP, ip_proto="COMPAQ_PEER",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, ip_proto="IPX_IN_IP",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, ip_proto="VRRP",XDM_CONST.IP_PROTOCOL_VRRP, ip_proto="PGM",XDM_CONST.IP_PROTOCOL_PGM, ip_proto="L2TP",XDM_CONST.IP_PROTOCOL_L2TP, ip_proto="DDX",XDM_CONST.IP_PROTOCOL_DDX, ip_proto="IATP",XDM_CONST.IP_PROTOCOL_IATP, ip_proto="STP",XDM_CONST.IP_PROTOCOL_STP, ip_proto="SRP",XDM_CONST.IP_PROTOCOL_SRP, ip_proto="UTI",XDM_CONST.IP_PROTOCOL_UTI, ip_proto="SMP",XDM_CONST.IP_PROTOCOL_SMP, ip_proto="SM",XDM_CONST.IP_PROTOCOL_SM, ip_proto="PTP",XDM_CONST.IP_PROTOCOL_PTP, ip_proto="ISIS",XDM_CONST.IP_PROTOCOL_ISIS, ip_proto="FIRE",XDM_CONST.IP_PROTOCOL_FIRE, ip_proto="CRTP",XDM_CONST.IP_PROTOCOL_CRTP, ip_proto="CRUDP",XDM_CONST.IP_PROTOCOL_CRUDP, ip_proto="SSCOPMCE",XDM_CONST.IP_PROTOCOL_SSCOPMCE, ip_proto="IPLT",XDM_CONST.IP_PROTOCOL_IPLT, ip_proto="SPS",XDM_CONST.IP_PROTOCOL_SPS, ip_proto="PIPE",XDM_CONST.IP_PROTOCOL_PIPE, ip_proto="SCTP",XDM_CONST.IP_PROTOCOL_SCTP, ip_proto="FC",XDM_CONST.IP_PROTOCOL_FC, ip_proto="RSVP_E2E_IGNORE",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, ip_proto="MOBILITY",XDM_CONST.IP_PROTOCOL_MOBILITY, ip_proto="UDPLITE",XDM_CONST.IP_PROTOCOL_UDPLITE, ip_proto="MPLS_IN_IP",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP, ip_proto="MANET",XDM_CONST.IP_PROTOCOL_MANET, ip_proto="HIP",XDM_CONST.IP_PROTOCOL_HIP, ip_proto="SHIM6",XDM_CONST.IP_PROTOCOL_SHIM6, ip_proto="WESP",XDM_CONST.IP_PROTOCOL_WESP, ip_proto="ROHC",XDM_CONST.IP_PROTOCOL_ROHC, ip_proto="RESERVED",XDM_CONST.IP_PROTOCOL_RESERVED,ip_proto="0",XDM_CONST.IP_PROTOCOL_HOPOPT, ip_proto="1",XDM_CONST.IP_PROTOCOL_ICMP, ip_proto="2",XDM_CONST.IP_PROTOCOL_IGMP, ip_proto="3",XDM_CONST.IP_PROTOCOL_GGP, ip_proto="4",XDM_CONST.IP_PROTOCOL_IP, ip_proto="5",XDM_CONST.IP_PROTOCOL_ST, ip_proto="6",XDM_CONST.IP_PROTOCOL_TCP, ip_proto="7",XDM_CONST.IP_PROTOCOL_CBT, ip_proto="8",XDM_CONST.IP_PROTOCOL_EGP, ip_proto="9",XDM_CONST.IP_PROTOCOL_IGP, ip_proto="10",XDM_CONST.IP_PROTOCOL_BBN_RCC_MON, ip_proto="11",XDM_CONST.IP_PROTOCOL_NVP_II, ip_proto="12",XDM_CONST.IP_PROTOCOL_PUP, ip_proto="13",XDM_CONST.IP_PROTOCOL_ARGUS, ip_proto="14",XDM_CONST.IP_PROTOCOL_EMCON, ip_proto="15",XDM_CONST.IP_PROTOCOL_XNET, ip_proto="16",XDM_CONST.IP_PROTOCOL_CHAOS, ip_proto="17",XDM_CONST.IP_PROTOCOL_UDP, ip_proto="18",XDM_CONST.IP_PROTOCOL_MUX, ip_proto="19",XDM_CONST.IP_PROTOCOL_DCN_MEAS, ip_proto="20",XDM_CONST.IP_PROTOCOL_HMP, ip_proto="21",XDM_CONST.IP_PROTOCOL_PRM, ip_proto="22",XDM_CONST.IP_PROTOCOL_XNS_IDP, ip_proto="23",XDM_CONST.IP_PROTOCOL_TRUNK_1, ip_proto="24",XDM_CONST.IP_PROTOCOL_TRUNK_2, ip_proto="25",XDM_CONST.IP_PROTOCOL_LEAF_1, ip_proto="26",XDM_CONST.IP_PROTOCOL_LEAF_2, ip_proto="27",XDM_CONST.IP_PROTOCOL_RDP, ip_proto="28",XDM_CONST.IP_PROTOCOL_IRTP, ip_proto="29",XDM_CONST.IP_PROTOCOL_ISO_TP4, ip_proto="30",XDM_CONST.IP_PROTOCOL_NETBLT, ip_proto="31",XDM_CONST.IP_PROTOCOL_MFE_NSP, ip_proto="32",XDM_CONST.IP_PROTOCOL_MERIT_INP, ip_proto="33",XDM_CONST.IP_PROTOCOL_DCCP, ip_proto="34",XDM_CONST.IP_PROTOCOL_3PC, ip_proto="35",XDM_CONST.IP_PROTOCOL_IDPR, ip_proto="36",XDM_CONST.IP_PROTOCOL_XTP, ip_proto="37",XDM_CONST.IP_PROTOCOL_DDP, ip_proto="38",XDM_CONST.IP_PROTOCOL_IDPR_CMTP, ip_proto="39",XDM_CONST.IP_PROTOCOL_TP, ip_proto="40",XDM_CONST.IP_PROTOCOL_IL, ip_proto="41",XDM_CONST.IP_PROTOCOL_IPV6, ip_proto="42",XDM_CONST.IP_PROTOCOL_SDRP, ip_proto="43",XDM_CONST.IP_PROTOCOL_IPV6_ROUTE, ip_proto="44",XDM_CONST.IP_PROTOCOL_IPV6_FRAG, ip_proto="45",XDM_CONST.IP_PROTOCOL_IDRP, ip_proto="46",XDM_CONST.IP_PROTOCOL_RSVP, ip_proto="47",XDM_CONST.IP_PROTOCOL_GRE, ip_proto="48",XDM_CONST.IP_PROTOCOL_DSR, ip_proto="49",XDM_CONST.IP_PROTOCOL_BNA, ip_proto="50",XDM_CONST.IP_PROTOCOL_ESP, ip_proto="51",XDM_CONST.IP_PROTOCOL_AH, ip_proto="52",XDM_CONST.IP_PROTOCOL_I_NLSP, ip_proto="53",XDM_CONST.IP_PROTOCOL_SWIPE, ip_proto="54",XDM_CONST.IP_PROTOCOL_NARP, ip_proto="55",XDM_CONST.IP_PROTOCOL_MOBILE, ip_proto="56",XDM_CONST.IP_PROTOCOL_TLSP, ip_proto="57",XDM_CONST.IP_PROTOCOL_SKIP, ip_proto="58",XDM_CONST.IP_PROTOCOL_IPV6_ICMP, ip_proto="59",XDM_CONST.IP_PROTOCOL_IPV6_NONXT, ip_proto="60",XDM_CONST.IP_PROTOCOL_IPV6_OPTS, ip_proto="62",XDM_CONST.IP_PROTOCOL_CFTP, ip_proto="64",XDM_CONST.IP_PROTOCOL_SAT_EXPAK, ip_proto="65",XDM_CONST.IP_PROTOCOL_KRYPTOLAN, ip_proto="66",XDM_CONST.IP_PROTOCOL_RVD, ip_proto="67",XDM_CONST.IP_PROTOCOL_IPPC, ip_proto="69",XDM_CONST.IP_PROTOCOL_SAT_MON, ip_proto="70",XDM_CONST.IP_PROTOCOL_VISA, ip_proto="71",XDM_CONST.IP_PROTOCOL_IPCV, ip_proto="72",XDM_CONST.IP_PROTOCOL_CPNX, ip_proto="73",XDM_CONST.IP_PROTOCOL_CPHB, ip_proto="74",XDM_CONST.IP_PROTOCOL_WSN, ip_proto="75",XDM_CONST.IP_PROTOCOL_PVP, ip_proto="76",XDM_CONST.IP_PROTOCOL_BR_SAT_MON, ip_proto="77",XDM_CONST.IP_PROTOCOL_SUN_ND, ip_proto="78",XDM_CONST.IP_PROTOCOL_WB_MON, ip_proto="79",XDM_CONST.IP_PROTOCOL_WB_EXPAK, ip_proto="80",XDM_CONST.IP_PROTOCOL_ISO_IP, ip_proto="81",XDM_CONST.IP_PROTOCOL_VMTP, ip_proto="82",XDM_CONST.IP_PROTOCOL_SECURE_VMTP, ip_proto="83",XDM_CONST.IP_PROTOCOL_VINES, ip_proto="84",XDM_CONST.IP_PROTOCOL_TTP, ip_proto="85",XDM_CONST.IP_PROTOCOL_NSFNET_IGP, ip_proto="86",XDM_CONST.IP_PROTOCOL_DGP, ip_proto="87",XDM_CONST.IP_PROTOCOL_TCF, ip_proto="88",XDM_CONST.IP_PROTOCOL_EIGRP, ip_proto="89",XDM_CONST.IP_PROTOCOL_OSPFIGP, ip_proto="90",XDM_CONST.IP_PROTOCOL_SPRITE_RPC, ip_proto="91",XDM_CONST.IP_PROTOCOL_LARP, ip_proto="92",XDM_CONST.IP_PROTOCOL_MTP, ip_proto="93",XDM_CONST.IP_PROTOCOL_AX25, ip_proto="94",XDM_CONST.IP_PROTOCOL_IPIP, ip_proto="95",XDM_CONST.IP_PROTOCOL_MICP, ip_proto="96",XDM_CONST.IP_PROTOCOL_SCC_SP, ip_proto="97",XDM_CONST.IP_PROTOCOL_ETHERIP, ip_proto="98",XDM_CONST.IP_PROTOCOL_ENCAP, ip_proto="100",XDM_CONST.IP_PROTOCOL_GMTP, ip_proto="101",XDM_CONST.IP_PROTOCOL_IFMP, ip_proto="102",XDM_CONST.IP_PROTOCOL_PNNI, ip_proto="103",XDM_CONST.IP_PROTOCOL_PIM, ip_proto="104",XDM_CONST.IP_PROTOCOL_ARIS, ip_proto="105",XDM_CONST.IP_PROTOCOL_SCPS, ip_proto="106",XDM_CONST.IP_PROTOCOL_QNX, ip_proto="107",XDM_CONST.IP_PROTOCOL_AN, ip_proto="108",XDM_CONST.IP_PROTOCOL_IPCOMP, ip_proto="109",XDM_CONST.IP_PROTOCOL_SNP, ip_proto="110",XDM_CONST.IP_PROTOCOL_COMPAQ_PEER, ip_proto="111",XDM_CONST.IP_PROTOCOL_IPX_IN_IP, ip_proto="112",XDM_CONST.IP_PROTOCOL_VRRP, ip_proto="113",XDM_CONST.IP_PROTOCOL_PGM, ip_proto="115",XDM_CONST.IP_PROTOCOL_L2TP, ip_proto="116",XDM_CONST.IP_PROTOCOL_DDX, ip_proto="117",XDM_CONST.IP_PROTOCOL_IATP, ip_proto="118",XDM_CONST.IP_PROTOCOL_STP, ip_proto="119",XDM_CONST.IP_PROTOCOL_SRP, ip_proto="120",XDM_CONST.IP_PROTOCOL_UTI, ip_proto="121",XDM_CONST.IP_PROTOCOL_SMP, ip_proto="122",XDM_CONST.IP_PROTOCOL_SM, ip_proto="123",XDM_CONST.IP_PROTOCOL_PTP, ip_proto="124",XDM_CONST.IP_PROTOCOL_ISIS, ip_proto="125",XDM_CONST.IP_PROTOCOL_FIRE, ip_proto="126",XDM_CONST.IP_PROTOCOL_CRTP, ip_proto="127",XDM_CONST.IP_PROTOCOL_CRUDP, ip_proto="128",XDM_CONST.IP_PROTOCOL_SSCOPMCE, ip_proto="129",XDM_CONST.IP_PROTOCOL_IPLT, ip_proto="130",XDM_CONST.IP_PROTOCOL_SPS, ip_proto="131",XDM_CONST.IP_PROTOCOL_PIPE, ip_proto="132",XDM_CONST.IP_PROTOCOL_SCTP, ip_proto="133",XDM_CONST.IP_PROTOCOL_FC, ip_proto="134",XDM_CONST.IP_PROTOCOL_RSVP_E2E_IGNORE, ip_proto="135",XDM_CONST.IP_PROTOCOL_MOBILITY, ip_proto="136",XDM_CONST.IP_PROTOCOL_UDPLITE, ip_proto="137",XDM_CONST.IP_PROTOCOL_MPLS_IN_IP, ip_proto="138",XDM_CONST.IP_PROTOCOL_MANET, ip_proto="139",XDM_CONST.IP_PROTOCOL_HIP, ip_proto="140",XDM_CONST.IP_PROTOCOL_SHIM6, ip_proto="141",XDM_CONST.IP_PROTOCOL_WESP, ip_proto="142",XDM_CONST.IP_PROTOCOL_ROHC, ip_proto="255",XDM_CONST.IP_PROTOCOL_RESERVED,to_string(ip_proto))
+;
+
+[RULE: tm_ds_convert_cef_event_id_to_int]
+/* Utility rule for filtering events more effeciently */
+alter event_id = to_integer(cefDeviceEventClassId)
+;
+
+
+/*********************************************/
+/* DSM (Deep Security Manager) System Events */
+/*********************************************/
+[MODEL: dataset="trend_micro_deep_security_manager_raw"]
+filter cefDeviceProduct = "Deep Security Manager" 
+| call tm_ds_common_fields_modeling
+| alter 
+    target_type = uppercase(targetType)
+| alter 
+    xdm.event.type = "System",
+    xdm.alert.description = msg, 
+    xdm.source.user.username = suser,
+    xdm.source.ipv4 = if(src !~= ":", src, null),
+    xdm.source.ipv6 = if(src ~= ":", src, null),
+    xdm.target.resource.type = targetType,
+    xdm.target.resource.id = targetID, 
+    xdm.target.resource.value = `target`,
+    xdm.target.user.username = if(target_type ~= "USER", `target`, null),
+    xdm.target.user.identifier = if(target_type ~= "USER", targetID, null),
+    xdm.target.host.hostname =  if(target_type ~= "HOST", `target`, null),
+    xdm.target.host.device_id = if(target_type ~= "HOST", targetID, null)
+;
+
+
+/*********************************************/
+/* DSA (Deep Security Agent) Security Events */
+/*********************************************/
+[MODEL: dataset="trend_micro_deep_security_agent_raw"]
+
+/* FW Events := cefDeviceEventClassId in ([20-21], [100-199]) */
+call tm_ds_convert_cef_event_id_to_int
+| filter cefDeviceProduct  = "Deep Security Agent" 
+    and ((event_id in (20, 21) )
+    or (event_id >= 100 and event_id < 200))
+| alter xdm.event.type = "Firewall"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| call tm_ds_network_common_fields_modeling
+| call tm_ds_map_ip_protocol
+;
+
+/* IPS Events := cefDeviceEventClassId in ([10], [200-299], [500-899], [1000000-1999999]) */ 
+call tm_ds_convert_cef_event_id_to_int
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and ((event_id = 10)
+    or (event_id >= 200 and event_id < 300)
+    or (event_id >= 500 and event_id < 900)
+    or (event_id >= 1000000 and event_id < 2000000))
+| alter xdm.event.type = "IPS"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| call tm_ds_network_common_fields_modeling
+| call tm_ds_map_ip_protocol
+| alter
+    xdm.network.http.http_header.value = xff,
+    xdm.network.http.http_header.header = if(xff != null, "X-Forwarded-For", null)
+;
+
+/* Integrity Monitoring Events := cefDeviceEventClassId in ([30], [2000000-2999999]) */
+call tm_ds_convert_cef_event_id_to_int
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and ((event_id = 30) 
+    or (event_id >= 2000000 and event_id < 3000000))
+| alter xdm.event.type = "IntegrityMonitoring"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| alter 
+    operation = uppercase(act),
+    process_file_name =  if(sproc != null and sproc != "N/A", arrayindex(regextract(sproc, "[\/\\]([\w-\.]+)$"), 0), null)
+| alter 
+    process_extension =  arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
+| alter 
+    xdm.observer.action = act, // The action detected by the integrity rule: created/updated/deleted/renamed
+    xdm.event.operation= if(operation ~= "CREATE", XDM_CONST.OPERATION_TYPE_FILE_CREATE, operation ~= "UPDATE", XDM_CONST.OPERATION_TYPE_FILE_WRITE,  operation ~= "DELETE", XDM_CONST.OPERATION_TYPE_FILE_REMOVE, operation ~= "RENAME", XDM_CONST.OPERATION_TYPE_FILE_RENAME, to_string(act)),  
+    xdm.event.operation_sub_type = msg, // List of changed attribute names. Relevant only for act="renamed"
+    xdm.source.user.username = suser,
+    xdm.source.process.executable.path = sproc,
+    xdm.source.process.executable.filename = process_file_name,
+    xdm.source.process.executable.extension = process_extension,
+    xdm.target.file.path = filePath, 
+    xdm.target.file_before.path = oldfilePath
+;
+
+/* Log Inspection Events := cefDeviceEventClassId in ([40], [3000000-3999999]) */
+call tm_ds_convert_cef_event_id_to_int
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and ((event_id = 40) 
+    or (event_id >= 3000000 and event_id < 4000000))
+| alter xdm.event.type = "LogInspection" 
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| alter 
+    src_ipv4 = if(src !~= ":" and src ~= "\d", src, null),
+    src_ipv6 = if(src ~= ":", src, null)
+| alter 
+    xdm.alert.name = cs1, 
+    xdm.alert.description = msg, 
+    xdm.source.ipv4 = if(src_ipv4 != null, src_ipv4, src_ipv6 != null, null, dvc),
+    xdm.source.ipv6 = if(src_ipv6 != null, src_ipv6, src_ipv4 != null, null, dvchost ~= ":", dvchost, null),
+    xdm.source.host.hostname = if(shost != null, shost, dvchost !~= ":" and src = null, dvchost, null),
+    xdm.target.user.username = duser, 
+    xdm.target.resource.value = fname // Rule target entity: a file, directory path, registry key, etc.
+;
+    
+/* Anti-Malware Events := cefDeviceEventClassId in [4000000-4999999] */
+call tm_ds_convert_cef_event_id_to_int
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 4000000 and event_id < 5000000)
+| alter xdm.event.type = "AntiMalware"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| alter 
+    event_tags = regextract(TrendMicroDsTags, "[\w-]+"),
+    container_id = arrayindex(regextract(cs6, "[^\|]+\|[^\|]+\|\s*(\S+)"), 0), 
+    process_file_name =  arrayindex(regextract(filePath, "[\/\\]([\w-\.]+)$"), 0),
+    cve_list = regextract(TrendMicroDsCve, "[\w-]+"),
+    mitre_techniques_list = regextract(TrendMicroDsMitre, "\w+"),
+    malware_target_type = uppercase(TrendMicroDsMalwareTargetType),
+    spyware_infected_resource = cs3, /* Spyware item path. This field is only for spyware detection events.  */
+    spyware_infected_resource_type = if(cs4="10", "Files and Directories", cs4="11", "System Registry", cs4="12", "Internet Cookies", cs4="13", "Internet URL Shortcut", cs4="14", "Programs in Memory", cs4="15", "Program Startup Areas", cs4="16", "Browser Helper Object", cs4="17", "Layered Service Provider", cs4="18", "Hosts File", cs4="19", "Windows Policy Settings", cs4="20", "Browser", cs4="23", "Windows Shell Setting", cs4="24", "IE Downloaded Program Files", cs4="25", "Add/Remove Programs", cs4="26", "Services", "Other")
+| alter 
+    process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
+| alter 
+    xdm.observer.action = act,  /* Action performed by the Anti-Malware engine: Deny Access, Quarantine, Delete, Pass, Clean, Terminate, and Unspecified. */
+    xdm.event.operation = if(act in ("Deny Access", "Quarantine"), XDM_CONST.OPERATION_TYPE_FILE_SET_SECURITY, act in ("Delete", "Clean"), XDM_CONST.OPERATION_TYPE_FILE_REMOVE, act="Pass", XDM_CONST.OPERATION_TYPE_FILE_STATS, act="Terminate", XDM_CONST.OPERATION_TYPE_PROCESS_TERMINATE, to_string(act)),   
+    xdm.event.outcome = if(act="Delete", XDM_CONST.OUTCOME_SUCCESS, act in ("Clean", "Deny Access", "Quarantine", "Terminate"), XDM_CONST.OUTCOME_PARTIAL, act="Pass", XDM_CONST.OUTCOME_FAILED, act="Unspecified", XDM_CONST.OUTCOME_UNKNOWN, result != null, to_string(result), to_string(act)),  /* The result of the failed Anti-Malware action (Deleted, Quarantined). */
+    xdm.event.tags = arrayconcat(event_tags, cve_list),
+    xdm.alert.name = coalesce(TrendMicroDsRelevantDetectionNames, cefName), /* Indicates the most likely type of threat contained in the file after Predictive ML compared the analysis to other known threats(separated by ";" ) */ 
+    xdm.alert.original_threat_id = TrendMicroDsBehaviorRuleID, /* The behavior monitoring rule ID for internal malware case tracking. */ 
+    xdm.alert.category = TrendMicroDsBehaviorType, /* The type of behavior monitoring event detected. */ 
+    xdm.alert.mitre_techniques = mitre_techniques_list,
+    xdm.source.user.username = suser,
+    xdm.source.process.container_id = container_id,
+    xdm.source.process.name = TrendMicroDsProcess, 
+    xdm.source.process.command_line = TrendMicroDsCommandLine,
+    xdm.source.process.executable.size = to_integer(cn2),  /* The size of the quarantine file. */
+    xdm.source.process.executable.path = filePath, 
+    xdm.source.process.executable.filename = process_file_name,
+    xdm.source.process.executable.extension = process_extension,
+    xdm.source.process.executable.md5 = TrendMicroDsFileMD5,
+    xdm.source.process.executable.sha256 = TrendMicroDsFileSHA256, 
+    xdm.target.resource.type = coalesce(spyware_infected_resource_type, TrendMicroDsMalwareTargetType), /* The type of system resource that this malware was trying to affect, such as the file system, a process, or Windows registry. */
+    xdm.target.resource.value = coalesce(spyware_infected_resource, TrendMicroDsMalwareTarget), /* The file, process, or registry key (if any) that the malware was trying to affect. If the malware was trying to affect more than one, this field will contain the value "Multiple." */
+    xdm.target.file.path = if(malware_target_type ~= "FILE", TrendMicroDsMalwareTarget, null),
+    xdm.target.registry.key = if(malware_target_type ~= "REGISTRY", TrendMicroDsMalwareTarget, null),    
+    xdm.target.process.name = if(malware_target_type ~= "PROCESS", TrendMicroDsMalwareTarget, null)
+    ;
+
+/* Web_Reputation Events := cefDeviceEventClassId in [5000000-5999999] */
+call tm_ds_convert_cef_event_id_to_int
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 5000000 and event_id < 6000000)
+| alter xdm.event.type = "WebReputation"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| alter 
+    outcome = uppercase(msg)
+| alter 
+    xdm.target.url = request, 
+    xdm.observer.action = msg,
+    xdm.event.outcome = if(outcome ~= "BLOCKED", XDM_CONST.OUTCOME_FAILED, outcome ~= "PERMIT" or outcome ~= "ALLOW", XDM_CONST.OUTCOME_SUCCESS, to_string(msg)) 
+;
+
+/*  Application Control Events := cefDeviceEventClassId in [6000000-6999999] */
+call tm_ds_convert_cef_event_id_to_int 
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 6000000 and event_id < 7000000)
+| alter xdm.event.type = "ApplicationControl"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| alter
+    outcome = uppercase(act),
+    process_file_name = arrayindex(regextract(filePath, "[\/\\]([\w-\.]+)$"), 0)
+| alter 
+    process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
+| alter 
+    xdm.observer.action = act,
+    xdm.event.outcome = if(outcome ~= "BLOCKED", XDM_CONST.OUTCOME_FAILED, outcome ~= "ALLOWED", XDM_CONST.OUTCOME_SUCCESS,  outcome ~= "DETECT", XDM_CONST.OUTCOME_PARTIAL, to_string(act)),  
+    xdm.event.outcome_reason = cs1, 
+    xdm.source.user.identifier = suid, 
+    xdm.source.user.username = suser, 
+    xdm.source.process.executable.md5 = cs3, 
+    xdm.source.process.executable.sha256 = fileHash, 
+    xdm.source.process.executable.path = filePath, 
+    xdm.source.process.executable.filename = process_file_name,
+    xdm.source.process.executable.extension = process_extension,
+    xdm.source.process.executable.size = to_integer(fsize) 
+;
+
+/*  Application Control Events := cefDeviceEventClassId in [6000000-6999999] */
+call tm_ds_convert_cef_event_id_to_int 
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (event_id >= 6000000 and event_id < 7000000)
+| alter xdm.event.type = "ApplicationControl"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+| alter
+    outcome = uppercase(act),
+    process_file_name = arrayindex(regextract(filePath, "[\/\\]([\w-\.]+)$"), 0)
+| alter 
+    process_extension = arrayindex(regextract(process_file_name, "\.(\S+)$"), 0)
+| alter 
+    xdm.observer.action = act,
+    xdm.event.outcome = if(outcome ~= "BLOCKED", XDM_CONST.OUTCOME_FAILED, outcome ~= "ALLOWED", XDM_CONST.OUTCOME_SUCCESS,  outcome ~= "DETECT", XDM_CONST.OUTCOME_PARTIAL, to_string(act)),  
+    xdm.event.outcome_reason = cs1, 
+    xdm.source.user.identifier = suid, 
+    xdm.source.user.username = suser, 
+    xdm.source.process.executable.md5 = cs3, 
+    xdm.source.process.executable.sha256 = fileHash, 
+    xdm.source.process.executable.path = filePath, 
+    xdm.source.process.executable.filename = process_file_name,
+    xdm.source.process.executable.extension = process_extension,
+    xdm.source.process.executable.size = to_integer(fsize) 
+;
+
+/* Fallback handling for all other DSA event */
+call tm_ds_convert_cef_event_id_to_int
+| filter cefDeviceProduct = "Deep Security Agent" 
+    and (((event_id < 100) 
+        or (event_id >= 400 and event_id < 500) 
+        or (event_id >= 900 and event_id < 1000000)
+        or (event_id >= 7000000))
+    and (event_id not in (10, 20, 21, 30, 40)))
+| alter xdm.event.type = "N/A"
+| call tm_ds_common_fields_modeling
+| call tm_ds_agent_common_fields_modeling
+;
