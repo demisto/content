@@ -9731,7 +9731,7 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
         except json.JSONDecodeError as e:
             # see XSUP-24343
             if not isinstance(last_mirror_run, dict):
-                raise TypeError("non-dictionary passed to set_last_mirror_run") from e
+                raise TypeError("non-dictionary passed to set_last_mirror_run")
             demisto.debug("encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
             demisto.debug(e)
     else:
