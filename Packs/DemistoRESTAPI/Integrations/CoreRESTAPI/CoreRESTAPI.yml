@@ -275,7 +275,7 @@ script:
       description: "The War Room entry ID of the file."
       required: true
       isArray: false
-    description: This command deletes a file from Xsoar by entry_id.
+    description: Delete a file from Cortex XSOAR by entry_id.
   - name: core-api-file-attachment-delete
     arguments:
     - name: incident_id
