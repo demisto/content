@@ -3653,7 +3653,7 @@ def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
     return {
         "Role Name": role_data.get("pretty_name"),
         "Description": role_data.get("description"),
-        "Permission": role_data.get("permissions", []),
+        "Permissions": role_data.get("permissions", []),
         "Users": role_data.get("users", []),
         "Groups": role_data.get("groups", []),
     }
