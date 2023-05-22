@@ -45,6 +45,10 @@ class Client:
                                          str(self.params.secret_key.get('password')))
 
     def call(self, request_order: list) -> tuple:
+        """
+        returns a tuple (events:list, metadata:dict|None) the metadata part is relevant only to the V2 endpoints,
+        And should be None for the V1 end points.
+        """
         retries = int(self.params.retries)
         response_metadata = None
         while retries != 0:
@@ -89,7 +93,7 @@ class Client:
                 next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'), mintime=mintime,
                 api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
 
-        # The v2 API returns a different object, so we do this to normalize it
+        # The v2 API works with a metadata dictionary - (next token mechanism).
         response_metadata = response.get('metadata')
         events = response.get('authlogs', [])
         return events, response_metadata
@@ -169,6 +173,8 @@ class GetEvents:
         events, metadata = self.make_sdk_call()
         while True:
             if events:
+                # The diffrent filters set are driven from duo-api admin documentation.
+                # V1 is filtered with the timespamp parameter and V2 is filtered by the metadata dictionary.
                 if self.request_order[0] in [
                     LogType.ADMINISTRATION,
                     LogType.TELEPHONY,
