@@ -1,0 +1,32 @@
+args:
+- description: Name of the file to create in the war room, defaults to incident.json.
+  name: filename
+  defaultValue: incident
+  required: false
+- auto: PREDEFINED
+  defaultValue: Incident
+  description: Defines the type of export.
+  name: type
+  predefined:
+  - Incident
+  - Context
+  - Both
+  required: false
+comment: Exports the Incident and/or Context for the current Incident to a JSON file in the war room.
+commonfields:
+  id: ExportIncidentToJSONFile
+  version: -1
+dockerimage: demisto/python3:3.10.11.59581
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: ExportIncidentToJSONFile
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
