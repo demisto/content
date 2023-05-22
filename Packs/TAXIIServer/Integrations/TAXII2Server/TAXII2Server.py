@@ -419,19 +419,32 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
                 return handle_response(HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
 
         request_headers = request.headers
-        if (accept_header := request_headers.get('Accept')) not in accept_headers:
+
+        # v2.0 headers has a space while v2.1 does not,
+        # this caused confusion with platforms sometimes sending a header with or without space.
+        # to avoid issues the Accept header is stripped from the spaces before validation.
+        stripped_v2_0_headers = [value.replace(' ', '') for value in (MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20)]
+        accept_header = request_headers.get('Accept')
+
+        if (accept_header not in accept_headers) or (accept_header not in stripped_v2_0_headers):
             return handle_response(HTTP_406_NOT_ACCEPTABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
 
-        if SERVER.version == TAXII_VER_2_1 and accept_header in {MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20}:
+        possible_v2_0_headers = stripped_v2_0_headers + [MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20]
+        if SERVER.version == TAXII_VER_2_1 and accept_header in possible_v2_0_headers:
             return handle_response(HTTP_406_NOT_ACCEPTABLE, {
                 'title': 'Invalid TAXII Header',
                 'description': 'The media type (version=2.0) provided in the Accept header'
                                ' is not supported on TAXII v2.1.'
             })
+
+        # if Accept header is v2.0 and has no space (like it should) than add the space to the header.
+        if accept_header in stripped_v2_0_headers:
+            request.headers['Accept'] = MEDIA_TYPE_TAXII_V20 if accept_header == MEDIA_TYPE_TAXII_V20.replace(
+                ' ', '') else MEDIA_TYPE_STIX_V20
 
         return f(*args, **kwargs)
 
