@@ -37,4 +37,4 @@ This playbook does not have any outputs.
 
 ---
 
-![Reco Google Drive Playbook Automation](../doc_files/Reco-Reduce Risk Google Publicly Exposed Files.png)
+![Reco Google Drive Playbook Automation](../doc_files/Reco-Reduce_Risk_Google_Publicly_Exposed_Files.png)
