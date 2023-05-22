@@ -16,7 +16,7 @@ comment: Exports the Incident and/or Context for the current Incident to a JSON 
 commonfields:
   id: ExportIncidentToJSONFile
   version: -1
-dockerimage: demisto/python3:3.10.11.59581
+dockerimage: demisto/python3:3.10.11.60032
 enabled: true
 name: ExportIncidentToJSONFile
 runas: DBotWeakRole
