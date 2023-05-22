@@ -1151,6 +1151,7 @@ tasks:
                 value:
                   simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
               unpack_matches: {}
+          - operator: uniq
       val3:
         complex:
           root: alert.asmtags
