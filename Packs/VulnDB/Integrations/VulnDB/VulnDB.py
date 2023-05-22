@@ -5,10 +5,11 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
+import urllib3
 import urllib.parse
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' HELPER FUNCTIONS '''
 
