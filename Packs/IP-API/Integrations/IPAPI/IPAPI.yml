@@ -3,7 +3,7 @@ commonfields:
   id: IP-API
   version: -1
 configuration:
-- additionalinfo: Use of HTTPS requires an API keys
+- additionalinfo: Use of HTTPS requires an API key
   defaultvalue: "false"
   display: Use HTTPS to communicate with the API
   name: https
@@ -172,8 +172,11 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
 
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.11.59581
   runonce: false
   script: ''
   subtype: python3
