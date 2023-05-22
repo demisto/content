@@ -370,9 +370,9 @@ def vulndb_get_cve_command(args: dict, client: Client):
     data = {
         "ID": cve_id,
         "CVSS": cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
-        "Published": result.get('vulndb_published_date').rstrip('Z'),
-        "Modified": result.get('vulndb_last_modified').rstrip('Z'),
-        "Description": result.get("description")
+        "Published": result.get('vulndb_published_date', '').rstrip('Z'),
+        "Modified": result.get('vulndb_last_modified', '').rstrip('Z'),
+        "Description": result.get("description"),
     }
 
     cve_data = Common.CVE(
