@@ -1,11 +1,12 @@
 # Cisco Email Security
-This pack includes Cortex XSIAM content. 
+This pack includes Cortex XSIAM content.
+<~XSIAM> 
 ## Configuration on Server Side
 You need to configure CISCO ESA to forward Syslog messages in CEF format [Documentation](https://docs.ces.cisco.com/docs/single-log-line-sll#sll-log-example).
 
 Open Cisco ESA UI, and follow these instructions:
 1. Under **System Administration** go to **Log Subscriptions**.
-2. Press on **Add Log Subscription**.
+2. Click **Add Log Subscription**.
 3. Select the log type as **Consolidated Event Logs**.
 4. Select the fields that you want in the consolidated event log.
 5. Select a log retrieval mechanism for the log subscription.
@@ -26,3 +27,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - cisco
    - product as product - esa
+</~XSIAM>
