@@ -1,42 +1,77 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
-import io
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
+import pytest
+import freezegun
+import pytz
+from urllib.parse import parse_qs, urlparse
+from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+FREEZE_DATETIME = '2023-01-01T15:00:00Z'
+BASE_URL = 'https://api.xdr.trendmicro.com'
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+@pytest.fixture()
+def client() -> Client:
+    return Client(
+        base_url=BASE_URL,
+        api_key='api-key',
+        proxy=False,
+        verify=True
+    )
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
+def get_url_params(url: str) -> Dict[str, str]:
+    parsed_url = urlparse(url)
+    query_parameters = parse_qs(parsed_url.query)
+    return {
+        key: value[0] for key, value in query_parameters.items()
     }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+def create_workbench_events(start: int, end: int):
+    return [
+        {
+            'id': i,
+            'createdDateTime': (
+                datetime.now(tz=pytz.utc) - timedelta(seconds=i)
+            ).strftime(DATE_FORMAT)
+        } for i in range(start + 1, end + 1)
+    ]
+
+
+def create_workbench_events_mocks(url: str, num_of_events: int):
+
+    url_params = get_url_params(url)
+    top = arg_to_number(url_params.get('top')) or 10
+    fetched_amount_of_events = arg_to_number(url_params.get('fetchedAmountOfEvents')) or 0
+
+    if fetched_amount_of_events >= num_of_events:
+        return {'items': []}
+
+    workbench_events = create_workbench_events(
+        start=fetched_amount_of_events, end=min(fetched_amount_of_events + top, num_of_events)
+    )
+    fetched_amount_of_events += len(workbench_events)
+
+    return {
+            'items': workbench_events,
+            'nextLink': f'{BASE_URL}/v3.0/workbench/alerts?top={top}&fetchedAmountOfEvents={fetched_amount_of_events}'
+        }
+
+
+def _http_request_side_effect_decorator(num_of_events):
+    def _http_request_side_effect(method, full_url, params, headers):
+        if 'workbench/alerts' in full_url:
+            return create_workbench_events_mocks(url=full_url, num_of_events=num_of_events)
+
+    return _http_request_side_effect
+
+
+@freezegun.freeze_time(FREEZE_DATETIME)
+def test_fetch_events(mocker, client: Client):
+    first_fetch = '2 years ago'
+    from TrendMicroVisionOneEventCollector import fetch_events
+    mocker.patch.object(client, '_http_request', side_effect=_http_request_side_effect_decorator(14))
+    fetch_events(client, first_fetch)

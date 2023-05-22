@@ -23,6 +23,7 @@ VENDOR = 'trend_micro'
 
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
 
     API_VERSION = 'v3.0'
