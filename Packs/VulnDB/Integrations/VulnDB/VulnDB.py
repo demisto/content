@@ -10,6 +10,7 @@ import urllib.parse
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+INTEGRATION_NAME = 'VulnDB'
 ''' HELPER FUNCTIONS '''
 
 
@@ -366,16 +367,22 @@ def vulndb_get_cve_command(args: dict, client: Client):
         return_error('Could not find "results" in the returned JSON')
     result = results[0]
     cvss_metrics_details = result.get("cvss_metrics", [])
-    data = {
-        "ID": cve_id,
-        "CVSS": cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
-        "Published": result.get('vulndb_published_date', '').rstrip('Z'),
-        "Modified": result.get('vulndb_last_modified', '').rstrip('Z'),
-        "Description": result.get("description", '')
-    }
-    human_readable = tableToMarkdown(f'Result for CVE ID: {cve_id}', data)
-    ec = {'CVE(val.ID === obj.ID)': data}
-    return_outputs(human_readable, outputs=ec, raw_response=res)
+
+    dbot_score_obj = Common.DBotScore(indicator=cve_id,
+                                      indicator_type=DBotScoreType.CVE,
+                                      integration_name=INTEGRATION_NAME,
+                                      score=Common.DBotScore.NONE,
+                                      reliability=demisto.params().get('reliability'))
+    indicator = Common.CVE(
+        id=cve_id,
+        cvss=cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
+        published=result.get('vulndb_published_date', '').rstrip('Z'),
+        modified=result.get('vulndb_last_modified', '').rstrip('Z'),
+        description=result.get("description", ''),
+        dbot_score=dbot_score_obj)
+
+    human_readable = tableToMarkdown(f'Result for CVE ID: {cve_id}', indicator.to_context())
+    return_results(CommandResults(readable_output=human_readable, indicator=indicator, raw_response=res))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
