@@ -680,53 +680,41 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
+    params = demisto.params()
 
-    :return:
-    :rtype:
-    """
+    base_url = params.get('url') or 'https://api.xdr.trendmicro.com'
+    api_key = params.get('credentials', {}).get('password')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    first_fetch = params.get('first_fetch')
+    limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_LIMIT
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    command = demisto.command()
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
 
         client = Client(
             base_url=base_url,
+            api_key=api_key,
+            proxy=proxy,
             verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        )
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+            return_results(test_module(client=client, first_fetch=first_fetch))
+        elif command == 'fetch-events':
+            events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit)
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(updated_last_run)
+        elif command == 'trend-micro-vision-one-get-events':
+            return_results(get_events_command(client=client, args=demisto.args()))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented')
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
