@@ -1,6 +1,6 @@
 {
-    "name": "Vectra",
-    "description": "Automated attacker behavior analytics",
+    "name": "Vectra (Deprecated)",
+    "description": "Deprecated. Use Vectra Detect instead.",
     "support": "xsoar",
     "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
