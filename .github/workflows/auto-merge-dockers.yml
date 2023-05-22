@@ -18,6 +18,9 @@ jobs:
           echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+      - name: Sleep for 5 minutes
+        run: sleep 300s
+        shell: bash
       - name: Approve and auto-merge for docker update PRs
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
