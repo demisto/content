@@ -1,0 +1,77 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "d1221218-3745-453e-adee-57b440f2aeb8",
+            "vendor": "dropbox",
+            "product": "dropbox",
+            "dataset": "dropbox_dropbox_raw",
+            "event_data": {
+                "timestamp": "Oct 26th 2022 16:45:42",
+                "actor": {".tag":"admin","admin":{".tag":"team_member","account_id":"WEUIW:AADEOWDNMODST7ADSfMBLdIzA5ppOK1d2U51","display_name":"Anon Name","email":"user1@email.com","team_member_id":"dbmid:AACEBOWjmwRvLJGIY0X2ao9jJ35XtF0HsyU"}},
+                "assets": [],
+                "origin": {"geo_location":{"city":"Tel Aviv2","region":"Tel Aviv","country":"IL","ip_address":"10.10.10.10"},"access_method":{".tag":"end_user","end_user":{".tag":"web","session_id":"WEUIW:3723423423465634636958663408365541131265"}}},
+                "context": {".tag":"team_member","account_id":"WEUIW:AADEOWDSFSDFDST7ABfMBLdIzA3ppOK1d2U50","display_name":"Anon Name","email":"user1@email.com","team_member_id":"dbmid:AACEBOWjmwRvLJGIY0X2ao9jJ35XtF0HsyU"},
+                "details": {".tag":"login_success_details","is_emm_managed":false,"login_method":{".tag":"password"}},
+                "event_type": {".tag":"login_success","description":"Signed in"},
+                "participants": [],
+                "event_category": {".tag":"logins"},
+                "involve_non_team_member": false
+            },
+            "expected_values": {
+                "xdm.source.ipv4": "10.10.10.10",
+                "xdm.target.resource_before.value": "login_success_details",
+                "xdm.target.user.username": "Anon Name",
+                "xdm.target.resource.id": null,
+                "xdm.source.location.country": "IL",
+                "xdm.source.user.user_type": "REGULAR",
+                "xdm.source.user.identifier": "WEUIW:AADEOWDNMODST7ADSfMBLdIzA5ppOK1d2U51",
+                "xdm.source.agent.identifier": null,
+                "xdm.source.location.region": "Tel Aviv",
+                "xdm.source.location.city": "Tel Aviv2",
+                "xdm.session_context_id": "WEUIW:3723423423465634636958663408365541131265",
+                "xdm.event.description": {".tag":"login_success","description":"Signed in"},
+                "xdm.target.resource.name": null,
+                "xdm.source.user.username": "Anon Name",
+                "xdm.target.user.identifier": "WEUIW:AADEOWDSFSDFDST7ABfMBLdIzA3ppOK1d2U50",
+                "xdm.event.type": "logins",
+                "xdm.target.resource.type": null,
+                "xdm.target.resource.value": "login_success_details",
+                "xdm.target.user.groups": "team_member"
+            }
+        },
+        {
+            "test_data_event_id": "1d658b06-8799-4f21-8d5d-9551f4fff419",
+            "vendor": "dropbox",
+            "product": "dropbox",
+            "dataset": "dropbox_dropbox_raw",
+            "event_data": {
+                "timestamp": "Dec 1st 2022 09:48:02",
+                "actor": {".tag":"admin","admin":{".tag":"team_member","account_id":"dbid:AAACWQT8dOM-B0BKSblbC6CIjz7FRtnlSRg","display_name":"Anon Name2","email":"user2@email.com","team_member_id":"dbid:AAACWQT8dOM-B0BKSblbC6CIjz7FRtnlSRg"}},
+                "assets": [],
+                "origin": {"geo_location":{"city":"QvutsatYavne","region":"Central District","country":"IL","ip_address":"2b06::3003"},"access_method":{".tag":"end_user","end_user":{".tag":"desktop","session_id":"sdkjg:llB9ducvdl_gSfsdfLqythLYOMx_mu7zCbMqU"}}},
+                "context": {".tag":"team_member","account_id":"dbid:AAACWQT8dOM-B0BKSblbC6CIjz7FRtnlSRg","display_name":"Anon Name2","email":"user2@email.com","team_member_id":"dbid:AAACWQT8dOM-B0BKSblbC6CIjz7FRtnlSRg"},
+                "details": {".tag":"device_change_ip_desktop_details","device_session_info":{".tag":"desktop_device_session","ip_address":"2b06::3003","created":"2022-10-30T12:07:56Z","updated":"2022-11-30T20:33:09Z","session_info":{"session_id":"dbid:AAACWQT8dOM-B0BKSblbC6CIjz7FRtnlSRg"},"host_name":"LO-22-B","client_type":{".tag":"mac"},"client_version":"200.1.4923","platform":"Mac OS X 12.6.0","is_delete_on_unlink_supported":true}},
+                "event_type": {".tag":"device_change_ip_desktop","description":"Changed IP address associated with active desktop session"},
+                "participants": [],
+                "event_category": {".tag":"devices"},
+                "involve_non_team_member": false
+            },
+            "expected_values": {
+                "xdm.source.ipv4": null,
+                "xdm.source.ipv6": "2b06::3003",
+                "xdm.source.location.country": "IL",
+                "xdm.source.user.user_type": "REGULAR",
+                "xdm.source.user.identifier": null,
+                "xdm.source.location.region": "Central District",
+                "xdm.source.location.city": "QvutsatYavne",
+                "xdm.source.user.last_name": "Name2",
+                "xdm.source.user.first_name": "Anon",
+                "xdm.session_context_id": "sdkjg:llB9ducvdl_gSfsdfLqythLYOMx_mu7zCbMqU",
+                "xdm.event.description": "Changed IP address associated with active desktop session",
+                "xdm.source.user.username": "user2@email.com",
+                "xdm.event.operation_sub_type": "device_change_ip_desktop",
+                "xdm.event.type": "devices"
+            }
+        }
+    ]
+}
