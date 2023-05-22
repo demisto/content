@@ -1,26 +1,26 @@
-import demistomock as demisto  # noqa: F401  # pragma: no cover
-from CommonServerPython import *  # noqa: F401  # pragma: no cover
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
 
-import sys  # pragma: no cover
-from datetime import datetime  # pragma: no cover
+import sys
+from datetime import datetime
 
-import paramiko  # pragma: no cover
-from netmiko import Netmiko  # pragma: no cover
+import paramiko
+from netmiko import Netmiko
 
 
 ''' HELPER FUNCTIONS '''
 
 
 # Return only specific keys from dictionary
-def include_keys(dictionary, keys):  # pragma: no cover
+def include_keys(dictionary, keys):
     key_set = set(keys) & set(dictionary.keys())
     return {key: dictionary[key] for key in key_set}
 
 
-def return_file(keys):  # pragma: no cover
+def return_file(keys):
     return_file.readlines = lambda: keys.split("\n")  # type: ignore
     return return_file
 
