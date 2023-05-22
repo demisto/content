@@ -5222,7 +5222,7 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
     if is_error:
         with pytest.raises(DemistoException) as error_info:
             ODS_verify_create_scan_command(args)
-        assert str(error_info.value) == expected_error_info
+            assert str(error_info.value) == expected_error_info
     else:
         ODS_verify_create_scan_command(args)
 
