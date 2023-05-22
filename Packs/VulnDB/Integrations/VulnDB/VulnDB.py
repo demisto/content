@@ -360,22 +360,40 @@ def vulndb_get_cve_command(args: dict, client: Client):
     cve_id = args['cve_id']
     max_size = args.get('max_size')
 
-    res = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
-    results = res.get("results")
+    response = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
+    results = response.get("results")
     if not results:
         return_error('Could not find "results" in the returned JSON')
     result = results[0]
     cvss_metrics_details = result.get("cvss_metrics", [])
+
     data = {
         "ID": cve_id,
         "CVSS": cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
-        "Published": result.get('vulndb_published_date', '').rstrip('Z'),
-        "Modified": result.get('vulndb_last_modified', '').rstrip('Z'),
-        "Description": result.get("description", '')
+        "Published": result.get('vulndb_published_date').rstrip('Z'),
+        "Modified": result.get('vulndb_last_modified').rstrip('Z'),
+        "Description": result.get("description")
     }
-    human_readable = tableToMarkdown(f'Result for CVE ID: {cve_id}', data)
-    ec = {'CVE(val.ID === obj.ID)': data}
-    return_outputs(human_readable, outputs=ec, raw_response=res)
+
+    cve_data = Common.CVE(
+        id=data["ID"],
+        cvss=data["CVSS"],
+        published=data["Published"],
+        modified=data["Modified"],
+        description=data["Description"],
+        dbot_score=Common.DBotScore(
+            indicator=cve_id,
+            indicator_type=DBotScoreType.CVE,
+            integration_name="VulnDB",
+            score=Common.DBotScore.NONE,
+        ),
+    )
+
+    return_results(CommandResults(
+        indicator=cve_data,
+        readable_output=tableToMarkdown(f'Result for CVE ID: {cve_id}', data, removeNull=True),
+        raw_response=response,
+    ))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
