@@ -5,7 +5,7 @@ import pytest
 import freezegun
 import pytz
 from urllib.parse import parse_qs, urlparse
-from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client
+from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT
 
 
 FREEZE_DATETIME = '2023-01-01T15:00:00Z'
@@ -36,7 +36,9 @@ def create_any_type_logs(start: int, end: int, created_time_field: str):
             'id': i,
             created_time_field: (
                 datetime.now(tz=pytz.utc) - timedelta(seconds=i)
-            ).strftime(DATE_FORMAT)
+            ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else (
+                datetime.now(tz=pytz.utc) - timedelta(seconds=i)
+            ).timestamp()
         } for i in range(start + 1, end + 1)
     ]
 
@@ -82,6 +84,14 @@ def _http_request_side_effect_decorator(num_of_events):
                 url_suffix='oat/detections',
                 created_time_field='detectedDateTime',
                 top=params.get('top') or 200
+            )
+        if 'search/detections' in full_url:
+            return create_logs_mocks(
+                url=full_url,
+                num_of_events=num_of_events,
+                url_suffix='search/detections',
+                created_time_field='eventTime',
+                top=params.get('top') or DEFAULT_MAX_LIMIT
             )
 
     return _http_request_side_effect
