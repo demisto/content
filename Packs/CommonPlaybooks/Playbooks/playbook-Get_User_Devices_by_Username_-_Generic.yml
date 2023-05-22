@@ -11,7 +11,7 @@ description: |
   - OS
   - Integration
 
-  Please note that not all of the supported integrations will be able to retrieve this information.
+  Note that not all of the supported integrations will be able to retrieve this information.
 
   Supported integrations:
   - jamf v2
@@ -1068,7 +1068,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1364,7 +1364,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1575,7 +1575,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1617,7 +1617,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1659,7 +1659,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1754,7 +1754,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1839,7 +1839,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2013,7 +2013,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2098,7 +2098,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2175,7 +2175,7 @@ inputs:
 - key: GsuiteCustomerID
   value: {}
   required: false
-  description: In case of using Google Workspace, a customer ID is needed.
+  description: If using Google Workspace, a customer ID is needed.
   playbookInputQuery:
 - key: CustomADAttribute
   value: {}
@@ -2220,7 +2220,7 @@ outputs:
   description: The date and time the mobile device was last synchronized with the
     policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
-  description: Gives information about the mobile device such as the operating system
+  description: Information about the mobile device such as the operating system
     version.
 - contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
   description: The mobile device's serial number.
@@ -2340,7 +2340,7 @@ outputs:
 - contextPath: JAMF.MobileDevice.mac_address
   description: The mobile device MAC address.
 - contextPath: JAMF.MobileDevice.wifi_mac_address
-  description: The mobile device WIFI MAC address.
+  description: The mobile device WI-FI MAC address.
 - contextPath: JAMF.MobileDevice.username
   description: The mobile device username.
 - contextPath: JAMF.MobileDevice.realname
@@ -2460,7 +2460,7 @@ outputs:
 - contextPath: ServiceNow.Computer.ID
   description: Computer system ID.
 - contextPath: ServiceNow.Computer.AssetTag
-  description: Computer Asset tag.
+  description: Computer asset tag.
 - contextPath: ServiceNow.Computer.Name
   description: Computer name.
 - contextPath: ServiceNow.Computer.DisplayName
