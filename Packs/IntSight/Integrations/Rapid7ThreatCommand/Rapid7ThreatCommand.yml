@@ -2231,13 +2231,13 @@ script:
       required: false
       defaultValue: '600'
     outputs:
-    - contextPath: File.md5
+    - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-    - contextPath: File.sha1
+    - contextPath: File.SHA1
       description: The SHA1 hash of the file.
       type: String
-    - contextPath: File.sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
     - contextPath: File.sha512
