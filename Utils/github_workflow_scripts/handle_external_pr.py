@@ -30,6 +30,7 @@ PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
 COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
 
+
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have either been assigned to a user or a review
     was requested from the user for each potential reviewer and returns the user with the smallest amount
