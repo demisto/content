@@ -151,6 +151,10 @@ def main():
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
     print(f'{pr.get_files()=}')
+    for file in pr.get_files():
+        print(f'{file=}')
+
+    print(f'{list(pr.get_files())=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
 
