@@ -260,7 +260,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: UserDevices
-  description: Devices names retrieved by this playbook.
+  description: Devices retrieved by this playbook.
   type: unknown
 - contextPath: GSuite.MobileDevices.MobileListObjects
   description: A list of mobile device objects.

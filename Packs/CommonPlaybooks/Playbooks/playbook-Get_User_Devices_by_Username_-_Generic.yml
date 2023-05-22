@@ -167,7 +167,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -348,7 +348,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -424,7 +424,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -589,7 +589,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -726,7 +726,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -863,7 +863,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -941,7 +941,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1317,7 +1317,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1522,7 +1522,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1559,7 +1559,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1767,7 +1767,7 @@ tasks:
       key:
         simple: SnowComputers
       value:
-        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
+        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1852,7 +1852,7 @@ tasks:
       key:
         simple: GoogleDevices
       value:
-        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
+        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress: val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1887,11 +1887,11 @@ tasks:
       - "34"
     scriptarguments:
       keys:
-        simple: Name,SerialNumber,ID,Type,Integration
+        simple: Name,SerialNumber,ID,Model,MACAddress,OS,Integration
       parent:
         simple: ADComputer
       values:
-        simple: ${ADComputerName},,,,,Active Directory Query v2
+        simple: ${ADComputerName},,,,,,Active Directory Query v2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2026,7 +2026,7 @@ tasks:
       key:
         simple: MSDefenderDevices
       value:
-        simple: '${MicrosoftATP.UserMachine.Machines={Name: val[''ComputerDNSName''], SerialNumber: '''', ID: val[''AADDeviceID''], Model: '''', OS: val[''OSPlatform''], Integration: ''Microsoft Defender Advanced Threat Protection''}}'
+        simple: '${MicrosoftATP.UserMachine.Machines={Name: val[''ComputerDNSName''], SerialNumber: '''', ID: val[''AADDeviceID''], Model: '''', MACAddress: '''', OS: val[''OSPlatform''], Integration: ''Microsoft Defender Advanced Threat Protection''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2111,7 +2111,7 @@ tasks:
       key:
         simple: XDREndpoints
       value:
-        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
+        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: '''', OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-

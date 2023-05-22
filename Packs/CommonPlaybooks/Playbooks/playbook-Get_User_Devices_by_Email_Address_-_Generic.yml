@@ -165,7 +165,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -346,7 +346,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -422,7 +422,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -586,7 +586,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -664,7 +664,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1029,7 +1029,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1234,7 +1234,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1271,7 +1271,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1479,7 +1479,7 @@ tasks:
       key:
         simple: GoogleDevices
       value:
-        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
+        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress: val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1564,7 +1564,7 @@ tasks:
       key:
         simple: SnowComputers
       value:
-        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
+        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1599,11 +1599,11 @@ tasks:
       - "28"
     scriptarguments:
       keys:
-        simple: Name,SerialNumber,ID,Type,OS, Integration
+        simple: Name,SerialNumber,ID,Model,MACAddress,OS,Integration
       parent:
         simple: ADComputer
       values:
-        simple: ${ADComputerName},,,,,Active Directory Query v2
+        simple: ${ADComputerName},,,,,,Active Directory Query v2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1715,6 +1715,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "46"
       "yes":
       - "45"
     scriptarguments:
@@ -1772,7 +1774,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1875,7 +1877,7 @@ tasks:
       key:
         simple: MSGraphDevices
       value:
-        simple: '${MicrosoftGraph={Name: val[''displayName''], SerialNumber: '''', ID: val[''deviceId''], Model: '''', OS: val[''operatingSystem''], Integration: ''Microsoft Graph API''}}'
+        simple: '${MicrosoftGraph={Name: val[''displayName''], SerialNumber: '''', ID: val[''deviceId''], Model: '''', MACAddress: '''', OS: val[''operatingSystem''], Integration: ''Microsoft Graph API''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1912,6 +1914,7 @@ view: |-
       "39_20_#default#": 0.33,
       "42_28_#default#": 0.11,
       "42_29_yes": 0.43,
+      "44_46_no": 0.15,
       "45_46_#error#": 0.18,
       "47_46_#default#": 0.12,
       "5_13_#default#": 0.1,
