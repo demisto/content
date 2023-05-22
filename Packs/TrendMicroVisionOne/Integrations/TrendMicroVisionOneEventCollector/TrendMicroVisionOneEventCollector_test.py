@@ -129,6 +129,24 @@ class TestFetchEvents:
                 200,
                 '2023-01-01T15:00:00Z'
             ),
+            (
+                {
+                    'workbench_logs_time': '2023-01-01T15:00:00Z',
+                    'oat_detection_logs_time': '2023-01-01T15:00:00Z',
+                    'search_detection_logs_time': '2023-01-01T15:00:00Z',
+                    'audit_logs_time': '2023-01-01T14:59:59Z'
+                },
+                {'limit': 100},
+                {
+                    'workbench_logs_time': '2023-01-01T15:05:00Z',
+                    'oat_detection_logs_time': '2023-01-01T15:05:00Z',
+                    'search_detection_logs_time': '2023-01-01T15:05:00Z',
+                    'audit_logs_time': '2023-01-01T15:04:59Z'
+                },
+                50,
+                200,
+                '2023-01-01T15:05:00Z'
+            ),
         ],
     )
     def test_fetch_events_main(
@@ -144,13 +162,15 @@ class TestFetchEvents:
         """
         Given:
             - Case A: last_run={}, limit=100, num_of_events_for_each_log_type=50
+            - Case B: last_run=previous fetch, limit=100, num_of_events_for_each_log_type=50
         When:
             - fetch-events through the main flow
         Then:
-            - Case A:
+            - Case A + B:
                 1. workbench, oat and search detection logs last run time is the last log + 1 second added to it.
                 2. make sure the audit log last time is the last log without +1 second to it.
                 3. make sure the expected_events_length = 200
+
         """
         from TrendMicroVisionOneEventCollector import main
 
