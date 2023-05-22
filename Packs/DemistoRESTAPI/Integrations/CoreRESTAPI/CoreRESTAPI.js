@@ -521,13 +521,13 @@ function coreApiFileCheckCommand(EntryID) {
     }
     return {
         Type: entryTypes.note,
-        Contents: {[EntryID]: [file_found]},
+        Contents: {[EntryID]:file_found},
         HumanReadable: human_readable,
-        EntryContext: {[`IsFileExists(val.${EntryID}==${EntryID})`]: createContext({[EntryID]: [file_found]})}
-    }
+        EntryContext: {[`IsFileExists(val.${EntryID}==${EntryID})`]:{[EntryID]:file_found}}
+    };
         
 
-}
+};
 
 /**
  This command deletes attachment from an incident.
