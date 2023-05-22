@@ -3457,23 +3457,11 @@ def test_list_roles_command(
             "Role was removed successfully for 2 users."
         ),
         (
-            "remove_user_role",
-            {"user_emails": "test1@example.com,test2@example.com"},
-            {"reply": {"update_count": 0}},
-            "Role was removed successfully for 0 users."
-        ),
-        (
             "set_user_role",
             {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
             {"reply": {"update_count": 2}},
             "Role was updated successfully for 2 users."
         ),
-        (
-            "set_user_role",
-            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
-            {"reply": {"update_count": 0}},
-            "Role was updated successfully for 0 users."
-        )
     ]
 )
 def test_change_user_role_command_happy_path(
@@ -3500,6 +3488,35 @@ def test_change_user_role_command_happy_path(
 
     assert result.readable_output == expected_output
 
+
+@pytest.mark.parametrize(
+    "func, args, update_count, expected_output",
+    [
+        (
+            "remove_user_role",
+            {"user_emails": "test1@example.com,test2@example.com"},
+            {"reply": {"update_count": 0}},
+            "No user roll has been removed."
+        ),
+        (
+            "set_user_role",
+            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
+            {"reply": {"update_count": 0}},
+            "No user roll has been updated."
+        )
+    ]
+)
+def test_change_user_role_command_with_raise(
+    mocker, func: str,
+    args: dict[str, str],
+    update_count: dict[str, dict[str, int]],
+    expected_output: str
+):
+    client = CoreClient("test", {})
+    mocker.patch.object(CoreClient, func, return_value=update_count)
+
+    with pytest.raises(DemistoException, match=expected_output):
+        change_user_role_command(client, args)
 
 def test_endpoint_command_fails(requests_mock):
     """
