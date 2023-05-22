@@ -3831,7 +3831,7 @@ def change_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
 
     if count == 0:
         raise DemistoException(f"No user roll has been {action_message}.")
-    
+
     return CommandResults(
         readable_output=f"Role was {action_message} successfully for {count} user{plural_suffix}."
     )
