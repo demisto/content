@@ -21,6 +21,7 @@ ENTRY_TYPE_EVENT = "ENTRY_TYPE_EVENT"
 LABEL_STATUS_RESOLVED = "LABEL_STATUS_RESOLVED"
 
 FILTER_RELATIONSHIP_AND = "FILTER_RELATIONSHIP_AND"
+PAGE_SIZE = 1000
 
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 RECO_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -33,6 +34,21 @@ RECO_TIMELINE_EVENT_TYPE = "TIMELINE_EVENT_TYPE_USER_COMMENT"
 CREATED_AT_FIELD = "created_at"
 STEP_FETCH = "fetch"
 STEP_INIT = "init"
+
+
+def extract_response(response: Any) -> List[Dict[str, Any]]:
+    if response.get("getTableResponse") is None:
+        demisto.error(f"got bad response, {response}")
+        raise Exception(f"got bad response, {response}")
+    else:
+        demisto.info(
+            f"Count of entites: {response.get('getTableResponse').get('totalNumberOfResults')}"
+        )
+        entities = (
+            response.get("getTableResponse", {}).get("data", {}).get("rows", [])
+        )
+        demisto.info(f"Got {len(entities)} entities")
+        return entities
 
 
 class RecoClient(BaseClient):
@@ -109,16 +125,7 @@ class RecoClient(BaseClient):
                 data=json.dumps(params),
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
-            if response.get("getTableResponse") is None:
-                demisto.info(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of incidents: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                alerts = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(alerts)} alerts")
+            alerts = extract_response(response)
         except Exception as e:
             demisto.error(f"Findings Request ReadTimeout error: {str(e)}")
         demisto.info(f"done fetching RECO alerts, fetched {len(alerts)} alerts.")
@@ -189,16 +196,7 @@ class RecoClient(BaseClient):
                 data=json.dumps(params),
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
-            if response.get("getTableResponse") is None:
-                demisto.info(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of incidents: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                alerts = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(alerts)} alerts")
+            alerts = extract_response(response)
         except Exception as e:
             demisto.error(f"Findings Request ReadTimeout error: {str(e)}")
         demisto.info(f"done fetching RECO alerts, fetched {len(alerts)} alerts.")
@@ -339,18 +337,163 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
                 data=json.dumps(params),
             )
-            if response.get("getTableResponse") is None:
-                demisto.error(f"got bad response, {response}")
-                raise Exception(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of risky users: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                users = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(users)} users")
-                return users
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_exposed_publicly_files_at_risk(self) -> List[Dict[str, Any]]:
+        """Get exposed publicly files at risk. Returns a list of exposed publicly files at risk with analysis."""
+        params = {
+            "getTableRequest": {
+                "tableName": "DATA_RISK_MANAGEMENT_VIEW_BREAKDOWN_EXPOSED_PUBLICLY",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "last_access_date",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_OR",
+                    "filters": {
+                        "filters": [
+                            {
+                                "field": "data_category",
+                                "stringEquals": {
+                                    "value": "ALL"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> List[Dict[str, Any]]:
+        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
+        params = {
+            "getTableRequest": {
+                "tableName": "DATA_RISK_MANAGEMENT_VIEW_TOP_3RD_PARTIES_DOMAIN",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "last_activity",
+                            "sortDirection": "SORT_DIRECTION_ASC"
+                        },
+                        {
+                            "sortBy": "num_files",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "filters": {
+                        "filters": [
+                            {
+                                "field": "last_activity",
+                                "before": {
+                                    "value": f"{formatted_date}"
+                                }
+                            },
+                            {
+                                "field": "data_category",
+                                "stringNotContains": {
+                                    "value": "ALL"
+                                }}
+                        ]
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    @staticmethod
+    def get_date_time_before_days_formatted(last_interaction_time_before_in_days: int) -> str:
+        # Calculate the date 30 days ago
+        thirty_days_ago = datetime.utcnow() - timedelta(days=last_interaction_time_before_in_days)
+        # Format the date in the desired format
+        formatted_date = thirty_days_ago.strftime('%Y-%m-%dT%H:%M:%S.999Z')
+        return formatted_date
+
+    def get_files_shared_with_3rd_parties(self,
+                                          domain: str,
+                                          last_interaction_time_before_in_days: int) -> List[Dict[str, Any]]:
+        """Get files shared with 3rd parties. Returns a list of files at risk with analysis."""
+        formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
+        params = {
+            "getTableRequest": {
+                "tableName": "DATA_RISK_MANAGEMENT_VIEW_SHARED_TOP_EXT_DOMAIN_FILES",
+                "pageSize": 100,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "data_category",
+                            "sortDirection": "SORT_DIRECTION_ASC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "filters": {
+                                    "filters": [
+                                        {
+                                            "field": "domain",
+                                            "regexCaseInsensitive": {
+                                                "value": f"{domain}"
+                                            }
+                                        },
+                                        {
+                                            "field": "last_access_time",
+                                            "before": {
+                                                "value": f"{formatted_date}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
@@ -362,7 +505,7 @@ class RecoClient(BaseClient):
         params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "files_view",
-                "pageSize": 1000,
+                "pageSize": PAGE_SIZE,
                 "fieldFilters": {
                     "relationship": "FILTER_RELATIONSHIP_AND",
                     "fieldFilterGroups": {
@@ -412,18 +555,7 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
-            if response.get("getTableResponse") is None:
-                demisto.error(f"got bad response, {response}")
-                raise Exception(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                assets = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(assets)} result")
-                return assets
+            return extract_response(response)
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
@@ -439,7 +571,7 @@ class RecoClient(BaseClient):
         params: Dict[str, Any] = {
             "getTableRequest": {
                 "tableName": "files_view",
-                "pageSize": 1000,
+                "pageSize": PAGE_SIZE,
                 "fieldFilters": {
                     "relationship": "FILTER_RELATIONSHIP_AND",
                     "fieldFilterGroups": {
@@ -484,18 +616,7 @@ class RecoClient(BaseClient):
                 timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
                 data=json.dumps(params),
             )
-            if response.get("getTableResponse") is None:
-                demisto.error(f"got bad response, {response}")
-                raise Exception(f"got bad response, {response}")
-            else:
-                demisto.info(
-                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfResults')}"
-                )
-                assets = (
-                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
-                )
-                demisto.info(f"Got {len(assets)} result")
-                return assets
+            return extract_response(response)
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
@@ -804,6 +925,90 @@ def get_assets_user_has_access(
     )
 
 
+def get_sensitive_assets_shared_with_public_link(reco_client: RecoClient) -> CommandResults:
+    """Get sensitive assets shared with public link from Reco."""
+    assets = reco_client.get_exposed_publicly_files_at_risk()
+    assets_list = []
+    for asset in assets:
+        asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
+        assets_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Assets",
+            assets_list,
+            headers=[
+                "asset_id",
+                "asset",
+                "data_category",
+                "data_categories",
+                "last_access_date",
+                "visibility",
+                "location",
+            ],
+        ),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_id",
+        outputs=assets_list,
+        raw_response=assets,
+    )
+
+
+def get_3rd_parties_list(reco_client: RecoClient, last_interaction_time_in_days: int) -> CommandResults:
+    """Get 3rd parties list from Reco."""
+    domains = reco_client.get_3rd_parties_risk_list(last_interaction_time_in_days)
+    domains_list = []
+    for domain in domains:
+        domain_as_dict = parse_table_row_to_dict(domain.get("cells", {}))
+        domains_list.append(domain_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Domains",
+            domains_list,
+            headers=[
+                "domain",
+                "last_activity",
+                "num_files",
+                "num_users",
+                "data_category",
+            ],
+        ),
+        outputs_prefix="Reco.Domains",
+        outputs_key_field="domain",
+        outputs=domains_list,
+        raw_response=domains,
+    )
+
+
+def get_files_shared_with_3rd_parties(reco_client: RecoClient,
+                                      domain: str,
+                                      last_interaction_time_before_in_days: int) -> CommandResults:
+    """Get files shared with 3rd parties from Reco."""
+    files = reco_client.get_files_shared_with_3rd_parties(domain, last_interaction_time_before_in_days)
+    files_list = []
+    for file in files:
+        file_as_dict = parse_table_row_to_dict(file.get("cells", {}))
+        files_list.append(file_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Files",
+            files_list,
+            headers=[
+                "domain",
+                "location",
+                "users",
+                "data_category",
+                "asset",
+                "last_access_date",
+                "asset_id",
+            ],
+        ),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_id",
+        outputs=files_list,
+        raw_response=files,
+    )
+
+
 def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex_search: bool) -> CommandResults:
     """Get sensitive assets from Reco. If contains is True, the asset name will be searched as a regex."""
     assets = reco_client.get_sensitive_assets_information(asset_name, None, regex_search)
@@ -1031,6 +1236,17 @@ def main() -> None:
                 demisto.args()["entity"],
                 demisto.args()["param"],
             )
+            return_results(result)
+        elif command == "reco-get-sensitive-assets-with-public-link":
+            result = get_sensitive_assets_shared_with_public_link(reco_client)
+            return_results(result)
+        elif command == "reco-get-3rd-parties-accessible-to-data-list":
+            result = get_3rd_parties_list(reco_client, int(demisto.args()["last_interaction_time_in_days"]))
+            return_results(result)
+        elif command == "reco-get-files-shared-with-3rd-parties":
+            result = get_files_shared_with_3rd_parties(reco_client,
+                                                       demisto.args()["domain"],
+                                                       int(demisto.args()["last_interaction_time_in_days"]))
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
