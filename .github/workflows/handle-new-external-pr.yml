@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
 
+env:
+  CHANGED_FILES_DELIMITER: ";"
+
 jobs:
   handle_new_external_pr:
     runs-on: ubuntu-latest
@@ -13,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
@@ -28,6 +34,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pipenv==2021.5.29
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35.1.0
+        with:
+          separator: ${{ env.CHANGED_FILES_DELIMITER }}
+
       - name: Update External PR
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
@@ -36,7 +49,8 @@ jobs:
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
           pipenv sync
-          pipenv run ./handle_external_pr.py
+          
+          pipenv run ./handle_external_pr.py --changed_files "${{ steps.changed-files.outputs.all_changed_files }}" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
           echo "Finished Handling External PR"
       - name: Send Notification
         env:
