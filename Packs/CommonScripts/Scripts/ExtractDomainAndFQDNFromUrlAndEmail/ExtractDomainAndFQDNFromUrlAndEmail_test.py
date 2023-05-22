@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import demistomock as demisto
 from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn, main
 import pytest
