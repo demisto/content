@@ -356,7 +356,7 @@ def vulndb_get_version_command(args: dict, client: Client):
     vulndb_product_results_to_demisto_results(res)
 
 
-def vulndb_get_cve_command(args: dict, client: Client):
+def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: DBotScoreReliability):
     cve_id = args['cve_id']
     max_size = args.get('max_size')
 
@@ -386,6 +386,7 @@ def vulndb_get_cve_command(args: dict, client: Client):
             indicator_type=DBotScoreType.CVE,
             integration_name="VulnDB",
             score=Common.DBotScore.NONE,
+            reliability=dbot_score_reliability,
         ),
     )
 
@@ -407,6 +408,7 @@ def main():
     client_secret = params['client_secret']
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    dbot_score_reliability = params['integrationReliability']
     client = Client(proxy, use_ssl, api_url, client_id, client_secret)
     args = demisto.args()
     command = demisto.command()
@@ -437,7 +439,7 @@ def main():
         elif command == 'vulndb-get-updates-by-dates-or-hours':
             vulndb_get_updates_by_dates_or_hours_command(args, client)
         elif command == 'cve':
-            vulndb_get_cve_command(args, client)
+            vulndb_get_cve_command(args, client, dbot_score_reliability)
     except Exception as e:
         error_message = f'Failed to execute {command} command. Error: {str(e)}'
         return_error(error_message)
