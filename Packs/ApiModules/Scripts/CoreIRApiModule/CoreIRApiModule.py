@@ -3682,7 +3682,7 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
             error_message = f'Error: {match[1]} {match[2]} was not found'
 
             return f'{error_message}{custom_message if type_ in ("Group", "Role") else ""}. Full error message: {e}'
-
+    return None
 
 def list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
     """
