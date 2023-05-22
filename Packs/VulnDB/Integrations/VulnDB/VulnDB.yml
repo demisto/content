@@ -24,6 +24,20 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: C - Fairly reliable
+  display: Reliability
+  hidden: false
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: Lists all of the security vulnerabilities for various products (OS,Applications) etc)
 display: VulnDB
 name: VulnDB
@@ -899,6 +913,16 @@ script:
     - contextPath: CVE.Description
       description: A description of the CVE.
       type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: The indicator that was tested.
+      description: The actual score.
+    - contextPath: DBotScore.Indicator
+      description: Phone numbers
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
   dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false

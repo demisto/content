@@ -14,6 +14,7 @@
 <li><strong>Client Secret</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
+<li><strong>Reliability</strong></li>
 </ul>
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
