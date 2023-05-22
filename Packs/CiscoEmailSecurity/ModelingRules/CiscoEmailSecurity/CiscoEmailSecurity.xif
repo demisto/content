@@ -40,7 +40,7 @@ alter
 	xdm.network.tls.cipher = coalesce(ESATLSOutCipher, ESATLSInCipher),
 	xdm.target.user.username = ESAReplyTo,
 	xdm.email.subject = msg,
-	xdm.email.message_id = ESAMID,
+	xdm.email.message_id = to_string(ESAMID),
 	xdm.alert.subcategory = cs3,
 	xdm.event.outcome = if(act = "DROPPED", XDM_CONST.OUTCOME_FAILED, act = "BOUNCED", XDM_CONST.OUTCOME_PARTIAL, act = "DELIVERED", XDM_CONST.OUTCOME_SUCCESS, act = "QUARANTINED", XDM_CONST.OUTCOME_FAILED, act = "DQ", XDM_CONST.OUTCOME_PARTIAL, act = null, null, to_string(act)),
 	xdm.event.outcome_reason = ESAFinalActionDetails;
