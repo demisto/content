@@ -3382,7 +3382,7 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: List of one or more user group names for which you want the associated users.
+    - description: List of one or more user group names for which you want the associated users. separated by commas.
       name: group_names
       isArray: true
       required: true
@@ -3411,7 +3411,7 @@ script:
       description: Type of User Group.
       type: String
   - arguments:
-    - description: List of one or more role names in your environment for which you want detailed information.
+    - description: List of one or more role names in your environment for which you want detailed information. separated by commas.
       name: role_names
       required: true
     name: xdr-list-roles
@@ -3442,7 +3442,7 @@ script:
       description: Email address of users associated with the Role.
       type: array
   - arguments:
-    - description: List of one or more user emails of users you want to add to a role.
+    - description: List of one or more user emails of users you want to add to a role. separated by commas.
       name: user_emails
       required: true
       isArray: true
@@ -3452,7 +3452,7 @@ script:
     name: xdr-set-user-role
     description: Add one or more users to a role.
   - arguments:
-    - description: List of one or more user emails of users you want to remove from a role.
+    - description: List of one or more user emails of users you want to remove from a role. separated by commas.
       name: user_emails
       required: true
       isArray: true
