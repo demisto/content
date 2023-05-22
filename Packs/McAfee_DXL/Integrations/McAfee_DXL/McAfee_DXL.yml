@@ -197,7 +197,7 @@ script:
     description: The push hash to the DXL fabric.
     execution: false
     name: dxl-push-hash
-  dockerimage: demisto/dxl:1.0.0.35274
+  dockerimage: demisto/dxl:1.0.0.59577
   isfetch: false
   longRunning: false
   longRunningPort: false
