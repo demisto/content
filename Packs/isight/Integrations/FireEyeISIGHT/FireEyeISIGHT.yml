@@ -10,7 +10,7 @@ configuration:
   name: publicKey
   defaultvalue: ""
   type: 0
-  required: false
+  required: true
 - display: Private Key
   name: privateKey
   defaultvalue: ""
