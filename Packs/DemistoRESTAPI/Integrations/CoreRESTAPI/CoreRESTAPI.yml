@@ -295,7 +295,7 @@ script:
       description: "The War Room entry ID of the file."
       required: true
       isArray: false
-    description: This command checks if the file is existing in Xsoar by entry_id
+    description: Check if the file exists in Cortex XSOAR by entry_id.
     outputs:
     - description: Dictionary with EntryID as key and boolean if the file exists as value
       contextPath: IsFileExists
