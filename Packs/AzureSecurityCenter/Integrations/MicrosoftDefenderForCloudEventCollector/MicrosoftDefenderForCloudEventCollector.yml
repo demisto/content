@@ -107,7 +107,7 @@ script:
     - contextPath: MicrosoftDefenderForCloud.Alert.ID
       description: The alert ID.
       type: string
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.59835
   isfetchevents: true
   runonce: false
   script: '-'

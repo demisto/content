@@ -26,6 +26,12 @@ XSIAM collector for Microsoft Defender for Cloud alerts.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+## Known limitations
+This integration does not have a limit parameter due to limitations of the API functionality.
+1. The collector fetches all events between the current time and the last time it was fetched during every fetch operation.
+2. If the command is run for the first time, all events from ***first_fetch*** to now will be fetched in one execution.
+It is possible that the cause of 1 and 2 may cause the fetch to take some time. You may need to increase the collector time out in the server configuration if the collector fetch times out.
+
 ### ms-defender-for-cloud-get-events
 
 ***
