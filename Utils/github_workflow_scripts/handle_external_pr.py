@@ -31,27 +31,6 @@ PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
 COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
 
-
-def parse_changed_files_names() -> argparse.Namespace:
-    """
-    Arg parser to retrieve the changed files along with the delimiter to separate between them.
-    """
-    parser = argparse.ArgumentParser(description="Parse the changed files names.")
-    parser.add_argument(
-        "-c",
-        "--changed_files",
-        help="The files that are passed to handle external PR (passed as one string).",
-    )
-    parser.add_argument(
-        "-d",
-        "--delimiter",
-        help="The delimiter that is used to separate between all the changes files",
-    )
-    args = parser.parse_args()
-
-    return args
-
-
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have either been assigned to a user or a review
     was requested from the user for each potential reviewer and returns the user with the smallest amount
@@ -171,55 +150,50 @@ def main():
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
-
-    parser_args = parse_changed_files_names()
-    changed_files_list = parser_args.changed_files.split(parser_args.delimiter)
-    print(f'{changed_files_list=}')
+    print(f'{pr.get_files()=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
-    if support_label := get_packs_support_level_label(changed_files_list):
-        labels_to_add.append(support_label)
 
-    # Add 'Contribution' + support Label to the external PR
+    # Add 'Contribution' label
     for label in labels_to_add:
         pr.add_to_labels(label)
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
     # check base branch is master
-    if pr.base.ref == 'master':
-        print(f'{t.cyan}Determining name for new base branch{t.normal}')
-        branch_prefix = 'contrib/'
-        new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
-        existant_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
-        potential_conflicting_branch_names = [branch.ref.lstrip('refs/heads/') for branch in existant_branches]
-        # make sure new branch name does not conflict with existing branch name
-        while new_branch_name in potential_conflicting_branch_names:
-            # append or increment digit
-            if not new_branch_name[-1].isdigit():
-                new_branch_name += '-1'
-            else:
-                digit = str(int(new_branch_name[-1]) + 1)
-                new_branch_name = f'{new_branch_name[:-1]}{digit}'
-        master_branch_commit_sha = content_repo.get_branch('master').commit.sha
-        # create new branch
-        print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
-        content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
-        # update base branch of the PR
-        pr.edit(base=new_branch_name)
-        print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
-
-    # assign reviewers / request review from
-    reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
-    pr.add_to_assignees(reviewer_to_assign)
-    pr.create_review_request(reviewers=[reviewer_to_assign])
-    print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
-    print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
-
-    # create welcome comment (only users who contributed through Github need to have that contribution form filled)
-    message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
-    body = message_to_send.format(selected_reviewer=reviewer_to_assign)
-    pr.create_issue_comment(body)
-    print(f'{t.cyan}Created welcome comment{t.normal}')
+    # if pr.base.ref == 'master':
+    #     print(f'{t.cyan}Determining name for new base branch{t.normal}')
+    #     branch_prefix = 'contrib/'
+    #     new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
+    #     existant_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
+    #     potential_conflicting_branch_names = [branch.ref.lstrip('refs/heads/') for branch in existant_branches]
+    #     # make sure new branch name does not conflict with existing branch name
+    #     while new_branch_name in potential_conflicting_branch_names:
+    #         # append or increment digit
+    #         if not new_branch_name[-1].isdigit():
+    #             new_branch_name += '-1'
+    #         else:
+    #             digit = str(int(new_branch_name[-1]) + 1)
+    #             new_branch_name = f'{new_branch_name[:-1]}{digit}'
+    #     master_branch_commit_sha = content_repo.get_branch('master').commit.sha
+    #     # create new branch
+    #     print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
+    #     content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
+    #     # update base branch of the PR
+    #     pr.edit(base=new_branch_name)
+    #     print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
+    #
+    # # assign reviewers / request review from
+    # reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
+    # pr.add_to_assignees(reviewer_to_assign)
+    # pr.create_review_request(reviewers=[reviewer_to_assign])
+    # print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
+    # print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
+    #
+    # # create welcome comment (only users who contributed through Github need to have that contribution form filled)
+    # message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
+    # body = message_to_send.format(selected_reviewer=reviewer_to_assign)
+    # pr.create_issue_comment(body)
+    # print(f'{t.cyan}Created welcome comment{t.normal}')
 
 
 if __name__ == "__main__":
