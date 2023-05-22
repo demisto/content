@@ -198,7 +198,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
+def fetch_events_command(client: Client, first_fetch: str, limit: int) -> tuple[list, dict]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that events are fetched only once and no events are missed.
@@ -212,6 +212,7 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
         limit (int): Maximum numbers of events per fetch.
     Returns:
         list: List of events that will be created in XSIAM.
+        dict: The lastRun object for the next fetch run
     """
     last_run = demisto.getLastRun()
     fetch_from = last_run.get('fetch_from') or first_fetch
@@ -220,9 +221,9 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
     events, next_anchor = fetch_events(client, fetch_from, limit, next_anchor)
 
     last_fetch, event_id, parsed_events = parse_events(events[:limit], fetch_from, event_id)
-    demisto.setLastRun({'fetch_from': last_fetch, 'next_anchor': next_anchor, 'event_id': event_id})
+    next_run = {'fetch_from': last_fetch, 'next_anchor': next_anchor, 'event_id': event_id}
 
-    return parsed_events
+    return parsed_events, next_run
 
 
 ''' MAIN FUNCTION '''
@@ -264,8 +265,9 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-events':
-            events = fetch_events_command(client, first_fetch, limit)   # type: ignore
+            events, next_run = fetch_events_command(client, first_fetch, limit)   # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
