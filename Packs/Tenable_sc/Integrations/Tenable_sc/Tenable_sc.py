@@ -30,10 +30,13 @@ class Client(BaseClient):
                  password: str = "", access_key: str = "", secret_key: str = "", url: str = ""):
 
         if not proxy:
-            del os.environ['HTTP_PROXY']
-            del os.environ['HTTPS_PROXY']
-            del os.environ['http_proxy']
-            del os.environ['https_proxy']
+            try:
+                del os.environ['HTTP_PROXY']
+                del os.environ['HTTPS_PROXY']
+                del os.environ['http_proxy']
+                del os.environ['https_proxy']
+            except Exception:
+                pass
 
         self.url = f"{get_server_url(url)}/rest"
         self.verify_ssl = verify_ssl
@@ -174,7 +177,7 @@ class Client(BaseClient):
         """
         self.send_request(path='token', method='delete')
 
-    def create_scan(self, args):
+    def create_scan(self, args: Dict[str, Any]):
         """
         Send the request for create_scan_command and create_remediation_scan_command.
         Args:
@@ -182,6 +185,11 @@ class Client(BaseClient):
         Returns:
             Dict: The response.
         """
+        body = self.create_scan_body(args)
+
+        return self.send_request(path='scan', method='post', body=body)
+
+    def create_scan_body(self, args):
         create_scan_mapping_dict = {
             'description': 'description',
             'dhcpTracking': 'dhcp_tracking',
@@ -222,7 +230,7 @@ class Client(BaseClient):
         if credentials := args.get("credentials"):
             body['credentials'] = [{'id': c_id} for c_id in argToList(credentials)]
 
-        if max_scan_time := args.get('max_scan_time'):
+        if max_scan_time := int(args.get('max_scan_time', '1')):
             body['maxScanTime'] = max_scan_time * 3600
 
         if schedule := args.get('schedule'):
@@ -237,7 +245,7 @@ class Client(BaseClient):
                 start_time = args.get("start_time")
                 repeat_rule_freq = args.get("repeat_rule_freq", "")
                 repeat_rule_interval = int(args.get("repeat_rule_interval", 0))
-                repeat_rule_by_day = argToList(args.get("repeat_rule_by_day"), "")
+                repeat_rule_by_day = argToList(args.get("repeat_rule_by_day", ""))
                 timestamp_format = "%Y%m%dT%H%M%S"
                 expected_format = "%Y-%m-%d:%H:%M:%S"
                 try:
@@ -259,7 +267,8 @@ class Client(BaseClient):
                                            "repeat_rule_by_day, or don't provide any of them.")
                 body['schedule']['enabled'] = argToBoolean(args.get("enabled", True))
 
-        return self.send_request(path='scan', method='post', body=body)
+        remove_nulls_from_dictionary(body)
+        return body
 
     def get_scan_results(self, scan_results_id):
         """
@@ -822,26 +831,7 @@ class Client(BaseClient):
         Returns:
             Dict: The response.
         """
-        body = {
-            "name": args.get("policy_name"),
-            "description": args.get("policy_description"),
-            "context": "scan",
-            "preferences": {
-                "portscan_range": args.get("port_scan_range", 'default'),
-                "tcp_scanner": args.get("tcp_scanner"),
-                "syn_scanner": args.get("syn_scanner"),
-                "udp_scanner": args.get("udp_scanner"),
-                "syn_firewall_detection": args.get("syn_firewall_detection", 'Automatic (normal)')
-            },
-            "policyTemplate": {
-                "id": args.get("policy_template_id", '1')
-            },
-        }
-        family = {"id": args.get("family_id", "")}
-        if plugins_id := args.get("plugins_id"):
-            family["plugins"] = [{"id": id for id in plugins_id.split(',')}]
-        body["families"] = [family]
-        remove_nulls_from_dictionary(body)
+        body = create_policy_request_body(args)
 
         return self.send_request(path="policy", method='POST', body=body)
 
@@ -856,7 +846,31 @@ def capitalize_first_letter(str):
         return str[:1].upper() + str[1:]
 
 
-def create_user_request_body(args):
+def create_policy_request_body(args: Dict[str, Any]):
+    body = {
+        "name": args.get("policy_name"),
+        "description": args.get("policy_description"),
+        "context": "scan",
+        "preferences": {
+            "portscan_range": args.get("port_scan_range", 'default'),
+            "tcp_scanner": args.get("tcp_scanner", "no"),
+            "syn_scanner": args.get("syn_scanner", "yes"),
+            "udp_scanner": args.get("udp_scanner", "no"),
+            "syn_firewall_detection": args.get("syn_firewall_detection", 'Automatic (normal)')
+        },
+        "policyTemplate": {
+            "id": args.get("policy_template_id", '1')
+        },
+    }
+    family = {"id": args.get("family_id", "")}
+    if plugins_id := args.get("plugins_id"):
+        family["plugins"] = [{"id": id for id in plugins_id.split(',')}]
+    body["families"] = [family]
+    remove_nulls_from_dictionary(body)
+    return body
+
+
+def create_user_request_body(args: Dict[str, Any]):
     """
     Create user request body for update or create user commands.
     Args:
@@ -888,10 +902,10 @@ def create_user_request_body(args):
 
     if args.get('managed_users_groups'):
         body["managedUsersGroups"] = [{"id": managed_users_group} for
-                                      managed_users_group in args.get('managed_users_groups').split(',')]
+                                      managed_users_group in args.get('managed_users_groups', "").split(',')]
     if args.get('managed_objects_groups'):
         body["managedObjectsGroups"] = [{"id": int(managed_objects_group)} for
-                                        managed_objects_group in args.get('managed_objects_groups').split(',')]
+                                        managed_objects_group in args.get('managed_objects_groups', "").split(',')]
     if time_zone := args.get('time_zone'):
         body["preferences"] = [{"name": "timezone", "value": time_zone, "tag": ""}]
 
@@ -911,7 +925,7 @@ def get_server_url(url):
     return url
 
 
-def validate_user_body_params(args, command_type):
+def validate_user_body_params(args: Dict[str, Any], command_type: str):
     """
     Validate all given arguments are valid according to the command type (update or create).
     Args:
@@ -1477,7 +1491,7 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def validate_create_scan_inputs(args):
+def validate_create_scan_inputs(args: Dict[str, Any]):
     """
     Validate all given arguments are valid for create scan command.
     Args:
@@ -2765,7 +2779,7 @@ def test_module(client: Client, args: Dict[str, Any]):
         raise Exception("Authorization Error: make sure your API Key and Secret Key are correctly set")
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()

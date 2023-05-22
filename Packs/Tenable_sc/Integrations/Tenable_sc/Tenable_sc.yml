@@ -697,7 +697,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of days of the week to run the schedule at. Possible values are: SU, MO, TU, WE, TH, FR, SA.'
+      description: 'A comma-separated list of days of the week to run the schedule at. Possible values are: SU,MO,TU,WE,TH,FR,SA.'
       isArray: true
       name: repeat_rule_by_day
       required: false
