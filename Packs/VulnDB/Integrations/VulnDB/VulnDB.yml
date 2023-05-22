@@ -900,7 +900,7 @@ script:
       description: A description of the CVE.
       type: String
   dockerimage: demisto/python3:3.9.8.24399
-  feed: false
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
