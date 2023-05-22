@@ -13125,7 +13125,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
             entries.append(result)
         else:
             raise DemistoException(f'Could not parse fetch results: {result}')
-    demisto.info('test')
+
     entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
     demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
     demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
