@@ -1315,3 +1315,8 @@ Gets a list of PCAP files that Arkime knows about.
 >| localhost | /opt/arkime/raw/localhost-220621-00000384.pcap | 384 | 1970-01-20 03:57:24 | 1073744628 | 1073744628 |
 >| localhost | /opt/arkime/raw/localhost-220621-00000385.pcap | 385 | 1970-01-20 03:57:34 |  |  |
 
+## Known Limitations
+- The integration is not backwards compatible as we are using a different API.
+- The product, Arkime, has a problem with limit and start's support in the following commands so we do not support them.
+   - ***arkime-connection-csv-get***
+   - ***arkime-connection-list***
