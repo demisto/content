@@ -3518,6 +3518,7 @@ def test_change_user_role_command_with_raise(
     with pytest.raises(DemistoException, match=expected_output):
         change_user_role_command(client, args)
 
+
 def test_endpoint_command_fails(requests_mock):
     """
     Given:
