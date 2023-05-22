@@ -1,14 +1,15 @@
 category: Authentication & Identity Management
 commonfields:
-  id: AzureKeyVault
+  id: AzureKeyVault Dev
   version: -1
 configuration:
 - display: Client ID
   name: client_id
   required: false
   type: 0
-- display: Client Secret
-  name: client_secret
+- displaypassword: Client Secret
+  hiddenusername: true
+  name: credentinals
   required: false
   type: 9
 - display: Tenant ID
@@ -74,8 +75,8 @@ configuration:
   type: 8
 description: Use the Azure Key Vault integration to safeguard and manage cryptographic
   keys and secrets used by cloud applications and services.
-display: Azure Key Vault
-name: AzureKeyVault
+display: Azure Key Vault Dev
+name: AzureKeyVault Dev
 script:
   commands:
   - arguments:
