@@ -2264,7 +2264,7 @@ script:
       description: Warnings during Query
     - contextPath: SentinelOne.Query.Status.QueryId
       description: QueryID From Request
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.11.59581
   isfetch: true
   ismappable: true
   isremotesyncin: true

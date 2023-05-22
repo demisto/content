@@ -690,3 +690,39 @@ def test_get_mapping_fields_command():
     result = sentinelone_v2.get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'SentinelOne Incident'
     assert list(result.scheme_types_mappings[0].fields.keys()) == ['analystVerdict', 'incidentStatus']
+
+
+def test_get_status(mocker, requests_mock):
+    """
+    Given: queryId
+    When: run get_status
+    Then: ensure the context output are as expected and contained the Query Status
+    """
+    requests_mock.get('https://usea1.sentinelone.net/web/api/v2.1/dv/query-status',
+                      json={
+                          'data': {
+                              'QueryID': '1234567890',
+                              'progressStatus': 100,
+                              'queryModeInfo': {
+                                  'lastActivatedAt': '2022-07-19T21:20:54+00:00',
+                                  'mode': 'scalyr'
+                              },
+                              'responseState': 'FINISHED',
+                              'warnings': None
+                          }
+                      })
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-status')
+    mocker.patch.object(demisto, 'args', return_value={
+        'query_id': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, 'return_results')
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs.get('QueryID') == '1234567890'
+    assert command_results.outputs.get('responseState') == 'FINISHED'
