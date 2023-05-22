@@ -16,7 +16,7 @@ HTTP_200_OK = 200
 HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
 HTTP_404_NOT_FOUND = 404
-HTTP_406_NOT_ACCEPABLE = 406
+HTTP_406_NOT_ACCEPTABLE = 406
 HTTP_416_RANGE_NOT_SATISFIABLE = 416
 INTEGRATION_NAME: str = 'TAXII2 Server'
 API_ROOT = 'threatintel'
@@ -420,14 +420,14 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
 
         request_headers = request.headers
         if (accept_header := request_headers.get('Accept')) not in accept_headers:
-            return handle_response(HTTP_406_NOT_ACCEPABLE,
+            return handle_response(HTTP_406_NOT_ACCEPTABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
 
         if SERVER.version == TAXII_VER_2_1 and accept_header in {MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20}:
-            return handle_response(HTTP_406_NOT_ACCEPABLE, {
+            return handle_response(HTTP_406_NOT_ACCEPTABLE, {
                 'title': 'Invalid TAXII Header',
                 'description': 'The media type (version=2.0) provided in the Accept header'
                                ' is not supported on TAXII v2.1.'
