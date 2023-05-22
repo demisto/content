@@ -2,9 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - display: Host - IP (x.x.x.x)
   name: host
@@ -112,8 +109,11 @@ configuration:
   required: false
   type: 15
   section: Collect
+<<<<<<< Updated upstream
   hidden:
     - marketplacev2
+=======
+>>>>>>> Stashed changes
 - additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
@@ -122,8 +122,11 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+<<<<<<< Updated upstream
   hidden:
     - marketplacev2
+=======
+>>>>>>> Stashed changes
 - display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
   name: close_extra_labels
   required: false
@@ -144,8 +147,11 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+<<<<<<< Updated upstream
   hidden:
     - marketplacev2
+=======
+>>>>>>> Stashed changes
   additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
 - display: Trust any certificate (not secure)
@@ -173,6 +179,7 @@ configuration:
   advanced: true
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
+  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   required: false
@@ -628,7 +635,11 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
+<<<<<<< Updated upstream
   dockerimage: demisto/splunksdk-py3:1.0.0.56501
+=======
+  dockerimage: demisto/splunksdk-py3:1.0.0.59928
+>>>>>>> Stashed changes
   isfetch: true
   ismappable: true
   isremotesyncin: true
