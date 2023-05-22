@@ -331,4 +331,4 @@ Check if the file exists in Cortex XSOAR by entry_id.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IsFileExists | unknown | Dictionary with EntryID as key and boolean if the file exists as value | 
+| IsFileExists | unknown | Dictionary with EntryID as the key and boolean if the file exists as a value. | 
