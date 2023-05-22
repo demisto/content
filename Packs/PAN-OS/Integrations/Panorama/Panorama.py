@@ -13434,6 +13434,7 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
 
 
 def test_fetch_incidents_parameters(fetch_params):
+    demisto.info('test')
     if log_types := fetch_params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
