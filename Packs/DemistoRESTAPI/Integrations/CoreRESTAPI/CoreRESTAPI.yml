@@ -297,7 +297,7 @@ script:
       isArray: false
     description: Check if the file exists in Cortex XSOAR by entry_id.
     outputs:
-    - description: Dictionary with EntryID as key and boolean if the file exists as value
+    - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
       contextPath: IsFileExists
   runonce: false
 tests:
