@@ -3,7 +3,7 @@ commonfields:
   id: IP-API
   version: -1
 configuration:
-- additionalinfo: Use of HTTPS requires an API key
+- additionalinfo: Use of HTTPS requires an API keys
   defaultvalue: "false"
   display: Use HTTPS to communicate with the API
   name: https
