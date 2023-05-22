@@ -1,0 +1,11 @@
+{
+    "test_case_1":{
+        "args": {
+            "first_name": "test_first_name",
+            "managed_users_groups": "7,1,3",
+            "time_zone": "time_zone_test"
+        },
+        "expected_body": {"firstname": "test_first_name", "managedUsersGroups": [{"id": "7"}, {"id": "1"}, {"id": "3"}],
+        "preferences": [{"name": "timezone", "value": "time_zone_test", "tag": ""}]}
+    }
+}

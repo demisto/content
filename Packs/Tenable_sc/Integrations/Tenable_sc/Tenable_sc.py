@@ -893,7 +893,7 @@ def create_user_request_body(args):
         body["managedObjectsGroups"] = [{"id": int(managed_objects_group)} for
                                         managed_objects_group in args.get('managed_objects_groups').split(',')]
     if time_zone := args.get('time_zone'):
-        body["preferences"].append([{"name": "timezone", "value": time_zone, "tag": ""}])
+        body["preferences"] = [{"name": "timezone", "value": time_zone, "tag": ""}]
 
     return body
 
