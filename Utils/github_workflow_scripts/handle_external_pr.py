@@ -152,9 +152,10 @@ def main():
     pr = content_repo.get_pull(pr_number)
     print(f'{pr.get_files()=}')
     for file in pr.get_files():
-        print(f'{file=}')
+        print(f'{file.filename=}')
 
-    print(f'{list(pr.get_files())=}')
+    file_names = [file.filename for file in pr.get_files()]
+    print(f'{file_names=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
 
