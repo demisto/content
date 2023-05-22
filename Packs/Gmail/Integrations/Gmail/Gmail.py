@@ -2611,7 +2611,7 @@ def fetch_incidents():
     return incidents
 
 
-def main():
+def main():  # pragma: no cover
     global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
     ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
     if '@' not in ADMIN_EMAIL:
