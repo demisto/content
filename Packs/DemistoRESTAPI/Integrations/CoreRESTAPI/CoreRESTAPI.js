@@ -314,7 +314,7 @@ Returns:
     CommandResults
 """
  */
-var upload_file= function(incident_id, file_content, file_name) {
+var uploadFile= function(incident_id, file_content, file_name) {
     var body = {
         file: 
         {
@@ -341,7 +341,7 @@ Returns:
     CommandResults
 """
  */
-var deleteContext = function (incident_id, key_to_delete) {
+var deleteContextRequest = function (incident_id, key_to_delete) {
     var body = JSON.stringify({
         "args": null,
         "id": "",
@@ -363,7 +363,7 @@ Returns:
     CommandResults
 """
  */
-var deleteFile = function (entry_id, delete_artifact = true) {
+var deleteFileRequest = function (entry_id, delete_artifact = true) {
     const body_content = JSON.stringify({
         id: entry_id,
         deleteArtifact: delete_artifact});
@@ -382,7 +382,7 @@ Returns:
     Results
 """
  */
-var delete_attachment=function(incident_id, attachment_path, field_name = 'attachment') {
+var deleteAttachmentRequest=function(incident_id, attachment_path, field_name = 'attachment') {
     body = JSON.stringify({
         fieldName: field_name,
         files: {
@@ -421,13 +421,11 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     if ((!file_name) && (!entryID)) {
         throw 'Either file_name or entry_id argument must be provided.';
     }
-
     var fileId = '';
     if ((!entryID)) {
-        response = upload_file(incident_id, file_content, file_name);
+        response = uploadFile(incident_id, file_content, file_name);
         fileId = saveFile(file_content);
     } else {
-        file_content = entrytoa(entryID);
         if (file_name === undefined) {
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
         }
@@ -438,7 +436,8 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
                 file_name = undefined;
             }
         }
-        response = upload_file(incident_id, file_content, file_name);
+        response_multi= sendMultipart(`/incident/upload/${incident_id}`,entryID,'{}');
+        return `The file ${entryID} uploaded successfully to incident ${incident_id}. `;
         }
     var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
     fileId = file_name ? fileId : entryID;
@@ -486,8 +485,8 @@ var fileDeleteCommand = function(EntryID) {
     if(not_found){
         throw new Error(`File already deleted or not found.`);
     }
-    deleteContext(investigation.id, 'File');
-    deleteFile(EntryID);
+    deleteContextRequest(investigation.id, 'File');
+    deleteFileRequest(EntryID);
     let context = {
         'File(val.MD5==obj.MD5)': createContext(edit_content_data_files)
     };
@@ -541,7 +540,7 @@ function coreApiFileCheckCommand(EntryID) {
 */
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
     incident_id = (incident_id=='undefined')? investigation.id: incident_id;    
-    delete_attachment(incident_id, attachment_path, field_name);
+    deleteAttachmentRequest(incident_id, attachment_path, field_name);
     return `Attachment ${attachment_path} deleted `;
 };
 
@@ -549,7 +548,6 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
 
 switch (command) {
     case 'test-module':
-        //return testModule();
         sendRequest('GET','user');
         return 'ok';
     case 'demisto-api-post':
