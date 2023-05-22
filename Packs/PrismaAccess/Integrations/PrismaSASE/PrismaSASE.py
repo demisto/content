@@ -2056,7 +2056,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                           outputs=outputs)
 
 
-def main():  # pragma: no cover  # sourcery skip: remove-redundant-if
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
@@ -2135,7 +2135,7 @@ def main():  # pragma: no cover  # sourcery skip: remove-redundant-if
     # Log exceptions
     except DemistoException as e:
         # special handling for 404 error, which is returned when the item is not found
-        if "404" and "Object Not Present" in e.message:
+        if e.res.status_code == 404 and "Object Not Present" in e.message:
             return_results("The item you're searching for does not exist within the Prisma SASE API.")
 
         else:
