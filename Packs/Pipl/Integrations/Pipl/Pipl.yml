@@ -96,5 +96,13 @@ script:
       description: Phone numbers
     - contextPath: Account.Usernames
       description: Online platforms usernames
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: The indicator that was tested.
+      description: The actual score.
+    - contextPath: DBotScore.Indicator
+      description: Phone numbers
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
     description: Searches for information regarding given email address
   runonce: false
