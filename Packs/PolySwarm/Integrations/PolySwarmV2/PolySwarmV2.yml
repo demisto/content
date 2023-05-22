@@ -127,6 +127,15 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
   - arguments:
     - default: true
       description: The IP address for which to retrieve the reputation information.
@@ -232,7 +241,7 @@ script:
   - arguments:
     - default: true
       description: Domain for which to retrieve the reputation information.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -438,5 +447,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/polyswarm:1.0.0.18926
+  dockerimage: demisto/polyswarm:1.0.0.59900
 fromversion: 5.0.0
