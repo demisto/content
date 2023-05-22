@@ -2135,7 +2135,7 @@ def main():  # pragma: no cover
     # Log exceptions
     except DemistoException as e:
         # special handling for 404 error, which is returned when the item is not found
-        if e.res.status_code == 404 and "Object Not Present" in e.message:
+        if e.res is not None and e.res.status_code == 404 and "Object Not Present" in e.message:
             return_results("The item you're searching for does not exist within the Prisma SASE API.")
 
         else:
