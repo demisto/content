@@ -103,7 +103,8 @@ def html_to_text(html):
     try:
         parser.feed(html)
         parser.close()
-    except Exception:
+    except Exception as e:
+        demisto.error(f'The following error occurred while parsing the HTML: {e}')
         pass
     return parser.get_text()
 
@@ -193,7 +194,7 @@ def parse_mail_parts(parts):
 def parse_privileges(raw_privileges):
     privileges = []
     for p in raw_privileges:
-        privilege = assign_params(**{'ServiceID': p.get('serviceId'), 'Name': p.get('privilegeName')})
+        privilege = assign_params(ServiceID=p.get('serviceId'), Name=p.get('privilegeName'))
         if privilege:
             privileges.append(privilege)
     return privileges
@@ -300,7 +301,7 @@ def get_email_context(email_data, mailbox):
     context_headers = email_data.get('payload', {}).get('headers', [])
     context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
-    headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+    headers = {h['Name'].lower(): h['Value'] for h in context_headers}
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
@@ -2611,7 +2612,7 @@ def fetch_incidents():
     return incidents
 
 
-def main():
+def main():  # pragma: no cover
     global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
     ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
     if '@' not in ADMIN_EMAIL:
