@@ -1003,6 +1003,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
+        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration.")
         fields_to_present = 'use_legacy_query'
 
     return RequestArguments(query,

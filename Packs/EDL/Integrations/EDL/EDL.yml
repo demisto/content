@@ -254,7 +254,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
+- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code. Note: enabling this field can have big impact on the performance of the integration.'
   display: 'Advanced: Use Legacy Queries'
   hidden: false
   name: use_legacy_query
