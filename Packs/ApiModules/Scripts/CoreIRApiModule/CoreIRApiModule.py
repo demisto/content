@@ -3751,8 +3751,8 @@ def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Comman
     table_for_markdown: list[dict[str, str | None]] = []
     for group in outputs:
         table_for_markdown.extend(parse_user_groups(group))
-    
-    headers = ["Group Name","Group Description", "User email"]
+
+    headers = ["Group Name", "Group Description", "User email"]
     readable_output = tableToMarkdown(name='Groups', t=table_for_markdown, headers=headers)
     return CommandResults(
         readable_output=readable_output,
