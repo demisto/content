@@ -1,0 +1,91 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "Data_Value",
+        "Type": "IpAddresses",
+        "Sources": [
+            {
+                "Name": "Dan.me.uk Tor List",
+                "ConfidenceLevel": 1
+            },
+            {
+                "Name": "TOR Project official exit nodes",
+                "ConfidenceLevel": 3
+            },
+            {
+                "Name": "Cyware",
+                "ConfidenceLevel": 2
+            }
+        ],
+        "SystemTags": [],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Low",
+            "Score": 10,
+            "Origin": "system"
+        },
+        "IpDetails": {
+            "Country": "NL",
+            "ASN": 1101,
+            "ASDescription": "SURF B.V."
+        },
+        "Whois": {
+            "NetworkDetails": {
+                "IPRange": "Data_Whois_NetworkDetails_IPRange",
+                "Statuses": [
+                    "LEGACY"
+                ],
+                "CreatedDate": "Data_Whois_NetworkDetails_CreatedDate",
+                "UpdatedDate": "Data_Whois_NetworkDetails_UpdatedDate"
+            },
+            "RegistrantDetails": [
+                {
+                    "Organization": "Nothing to hide",
+                    "Name": "Nothing to hide",
+                    "Email": "Data_Whois_RegistrantDetails[0]_Email",
+                    "Telephone": "",
+                    "Fax": "",
+                    "City": "",
+                    "State": "",
+                    "Country": "NETHERLANDS",
+                    "Address": "Marterweide 21",
+                    "PostalCode": "3437 TK Nieuwegein",
+                    "CountryCode": "NL"
+                }
+            ]
+        },
+        "RelatedHashes": {
+            "downloaded": [],
+            "communicating": [],
+            "referencing": []
+        },
+        "Resolutions": [
+            {
+                "ResolvedDomain": "32.tor-exit.nothingtohide.nl",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "test",
+                "FirstResolved": "Data_Resolutions[1]_FirstResolved",
+                "LastResolved": "Data_Resolutions[1]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            }
+        ]
+    }
+}
