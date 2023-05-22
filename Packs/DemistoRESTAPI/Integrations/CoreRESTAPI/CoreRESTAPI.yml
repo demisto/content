@@ -258,7 +258,7 @@ script:
     arguments:
     - name: incident_id
       required: true
-      description: The incident's id.
+      description: The incident's ID.
     - name: file_name
       required: false
       description: "The new file's name."
