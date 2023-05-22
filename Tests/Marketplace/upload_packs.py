@@ -1053,12 +1053,10 @@ def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
     packs_in_index = set(os.listdir(index_folder_path))
     private_packs_names = {p.get('id', '') for p in private_packs}
     current_marketplace_pack_names = {pack.name for pack in current_marketplace_packs}
-    packs_to_be_deleted = packs_in_index - current_marketplace_pack_names
+    packs_to_be_deleted = packs_in_index - current_marketplace_pack_names - private_packs_names
     deleted_packs = set()
     for pack_name in packs_to_be_deleted:
 
-        if pack_name in private_packs_names:
-            continue
         try:
             index_pack_path = os.path.join(index_folder_path, pack_name)
             if os.path.exists(os.path.join(index_pack_path, 'metadata.json')):  # verify it's a pack dir
@@ -1214,7 +1212,7 @@ def main():
             pack.cleanup()
             continue
 
-        if pack.name in packs_deleted_from_index:
+        if marketplace not in pack.marketplaces or pack.name in packs_deleted_from_index:
             logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
             pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name  # type: ignore[misc]
             pack.cleanup()
