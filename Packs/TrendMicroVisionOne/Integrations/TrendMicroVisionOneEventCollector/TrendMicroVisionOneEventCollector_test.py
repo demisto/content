@@ -1,14 +1,14 @@
+from freezegun import freeze_time
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import pytest
-import freezegun
 import pytz
 from urllib.parse import parse_qs, urlparse
 from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT
 
 
-FREEZE_DATETIME = '2023-01-01T15:00:00Z'
 BASE_URL = 'https://api.xdr.trendmicro.com'
 
 
@@ -105,12 +105,16 @@ def _http_request_side_effect_decorator(num_of_events):
     return _http_request_side_effect
 
 
-@freezegun.freeze_time(FREEZE_DATETIME)
+def start_freeze_time(timestamp):
+    _start_freeze_time = freeze_time(timestamp)
+    _start_freeze_time.start()
+
+
 class TestFetchEvents:
 
     @pytest.mark.parametrize(
         "last_run, integration_params, expected_updated_last_run, "
-        "num_of_events_for_each_log_type, expected_events_length",
+        "num_of_events_for_each_log_type, expected_events_length, datetime_string_freeze_time",
         [
             (
                 {},
@@ -122,7 +126,8 @@ class TestFetchEvents:
                     'audit_logs_time': '2023-01-01T14:59:59Z'
                 },
                 50,
-                200
+                200,
+                '2023-01-01T15:00:00Z'
             ),
         ],
     )
@@ -133,7 +138,8 @@ class TestFetchEvents:
         integration_params: Dict,
         expected_updated_last_run: Dict,
         num_of_events_for_each_log_type: int,
-        expected_events_length: int
+        expected_events_length: int,
+        datetime_string_freeze_time: str
     ):
         """
         Given:
@@ -148,6 +154,7 @@ class TestFetchEvents:
         """
         from TrendMicroVisionOneEventCollector import main
 
+        start_freeze_time(datetime_string_freeze_time)
         mocker.patch.object(demisto, 'params', return_value=integration_params)
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
