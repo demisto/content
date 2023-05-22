@@ -167,11 +167,11 @@ exifread
 dbotpredicturlphishing
 dbotupdatelogourlphishing
 ssh
+JavaScript
 parseyaml
 parses
 yaml
 indexerror
-JavaScript
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
