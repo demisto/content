@@ -1,5 +1,5 @@
 [file:playbook-ACTI_Create_Report-Indicator_Associations.yml]
-ignore=PB110
+ignore=PB110,IN158
 
 [known_words]
 FormatACTIURL

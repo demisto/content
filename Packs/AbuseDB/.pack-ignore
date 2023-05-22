@@ -1,2 +1,5 @@
 [known_words]
 AbuseIPDB
+
+[file:AbuseDB.yml]
+ignore=IN158

@@ -258,6 +258,7 @@ script:
       default: true
       description: List of IPs.
       isArray: true
+      required: true
     - name: threshold
       description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65

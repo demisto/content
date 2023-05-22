@@ -122,7 +122,7 @@ ignore=IN126
 ignore=IN126
 
 [file:integration-VirusTotal_5_1_0.yml]
-ignore=IN135,IN144,IN145
+ignore=IN135,IN144,IN145,IN158
 
 [file:script-CommonServerUserPowerShell.yml]
 ignore=BA108,BA109

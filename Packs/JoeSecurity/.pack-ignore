@@ -13,6 +13,9 @@ ignore=RM104
 [file:JoeSecurity.yml]
 ignore=IN145
 
+[file:JoeSecurityV2.yml]
+ignore=IN158
+
 [known_words]
 html
 README
