@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import ast
 import copy
 import json
@@ -6,9 +9,9 @@ import traceback
 import urllib.parse
 from typing import Any, List, Tuple
 
-import demistomock as demisto  # noqa: F401
+
 import urllib3
-from CommonServerPython import *  # noqa: F401
+
 from dateutil.parser import parse
 from lxml import etree
 
@@ -2090,6 +2093,7 @@ def main():
     params = demisto.params()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
+    print("T")
 
     # Remove proxy if not set to true in params
     handle_proxy()
