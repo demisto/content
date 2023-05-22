@@ -2065,12 +2065,6 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
-    - default: true
-      description: ''
-      isArray: true
-      name: endpoint
-      required: true
-      secret: false
     description: Returns information about an endpoint, does not support regex.
     name: endpoint
     outputs:
@@ -2838,12 +2832,6 @@ script:
       name: cve_id
       isArray: true
       required: true
-    - default: true
-      description: ''
-      isArray: true
-      name: cve
-      required: true
-      secret: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -3096,10 +3084,10 @@ script:
       description: Indicate who created the rule.
       type: String
   - arguments:
-    - description: A comma-separated list of exclusion IDs to delete.
-      name: ids
-      required: true
-      isArray: true
+      - description: A comma-separated list of exclusion IDs to delete.
+        name: ids
+        required: true
+        isArray: true
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
@@ -3396,10 +3384,10 @@ script:
       description: Indicate who created the rule.
       type: String
   - arguments:
-    - description: A comma-separated list of exclusion IDs to delete.
-      name: ids
-      required: true
-      isArray: true
+      - description: A comma-separated list of exclusion IDs to delete.
+        name: ids
+        required: true
+        isArray: true
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
