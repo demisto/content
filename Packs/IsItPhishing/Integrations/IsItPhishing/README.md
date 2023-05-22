@@ -15,8 +15,6 @@ This integration was integrated and tested with version 1.0 of IsItPhishing
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    |  |  | False |
-    |  |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
