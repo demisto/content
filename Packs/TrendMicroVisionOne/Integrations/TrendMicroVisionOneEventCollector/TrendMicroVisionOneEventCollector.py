@@ -55,7 +55,7 @@ class Client(BaseClient):
         }
 
         url = next_link or f"{self.base_url}{url_suffix}"
-        demisto.debug(f'Sending the http request with {url=}, {params=}')
+        demisto.info(f'Sending the http request with {url=}, {params=}')
 
         return self._http_request(
                 method=method,
@@ -89,13 +89,13 @@ class Client(BaseClient):
 
         response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
         current_items = response.get('items') or []
-        demisto.debug(f'Received {current_items=} with {url_suffix=}')
+        demisto.info(f'Received {current_items=} with {url_suffix=}')
         events.extend(current_items)
 
         while (next_link := response.get('nextLink')) and len(events) < limit:
             response = self.http_request(method=method, params=params, headers=headers, next_link=next_link)
             current_items = response.get('items') or []
-            demisto.debug(f'Received {current_items=} with {next_link=}')
+            demisto.info(f'Received {current_items=} with {next_link=}')
             events.extend(current_items)
 
         return events[:limit]
@@ -290,7 +290,7 @@ def get_datetime_range(
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
     last_run_time_before_parse = last_run_time.strftime(date_format)
-    demisto.debug(f'{last_run_time_before_parse=}')
+    demisto.info(f'{last_run_time_before_parse=}')
 
     if log_type_time_field_name == AUDIT_LOGS_TIME:
         if now - last_run_time > timedelta(days=180):
@@ -311,7 +311,7 @@ def get_datetime_range(
         end_time_datetime = now
 
     start_time, end_time = last_run_time.strftime(date_format), end_time_datetime.strftime(date_format)
-    demisto.debug(f'{start_time=} and {end_time=} for {log_type_time_field_name=}')
+    demisto.info(f'{start_time=} and {end_time=} for {log_type_time_field_name=}')
     return start_time, end_time
 
 
@@ -347,10 +347,10 @@ def get_latest_log_created_time(
             latest_log_time_datetime = latest_log_time_datetime + timedelta(seconds=1)
 
         latest_log_time = latest_log_time_datetime.strftime(date_format)
-        demisto.debug(f'{latest_log_time=} for {log_type=}')
+        demisto.info(f'{latest_log_time=} for {log_type=}')
         return latest_log_time_datetime.strftime(date_format)
 
-    demisto.debug(f'No new logs for {log_type=}')
+    demisto.info(f'No new logs for {log_type=}')
     return ''
 
 
@@ -691,7 +691,7 @@ def main() -> None:
 
     command = demisto.command()
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
 
         client = Client(
