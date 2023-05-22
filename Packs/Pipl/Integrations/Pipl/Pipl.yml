@@ -25,6 +25,20 @@ configuration:
   name: proxy
   type: 8
   required: false
+- defaultvalue: C - Fairly reliable
+  display: Reliability
+  hidden: false
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 script:
   script: ''
   type: javascript
@@ -104,5 +118,7 @@ script:
       description: Phone numbers
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
     description: Searches for information regarding given email address
   runonce: false
