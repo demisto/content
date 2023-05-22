@@ -1083,7 +1083,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         return raw_dict
 
     raw_dict = {}
-    for field, value in list(item.__dict__.items()):
+    for field, value in list(item.__dict__.items()): #ofri - this results in an empty object, any way to reimpliment?
         if type(value) in [str, int, float, bool, Body, HTMLBody, None]:
             try:
                 if isinstance(value, str):
@@ -1118,6 +1118,8 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
             TOIS_PATH) else item.folder.absolute
         raw_dict['folder_path'] = folder_path
 
+    raw_dict['id'] = getattr(item, 'id', None)
+
     if compact_fields:
         new_dict = {}
         fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
@@ -1128,7 +1130,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         # if exchangelib.__version__ == "1.12.0":
         #     if 'id' in raw_dict:
         #         new_dict['item_id'] = raw_dict['id']
-        fields_list.append('item_id')
+        fields_list.append('id')
 
         for field in fields_list:
             if field in raw_dict:
@@ -1239,7 +1241,11 @@ def parse_incident_from_item(item, is_fetch):     # pragma: no cover
 
                         # save the attachment
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
-                            attached_email = email.message_from_string(attachment.item.mime_content)
+                            # came across an item with bytes attachemnt which failed in the source code, added this to keep functionality
+                            if isinstance(attachment.item.mime_content, bytes):
+                                attached_email = email.message_from_bytes(attachment.item.mime_content)
+                            else:
+                                attached_email = email.message_from_string(attachment.item.mime_content)
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in list(attached_email.items()):
