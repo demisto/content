@@ -3629,7 +3629,7 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     )
 
 
-def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any], table_headers: str) -> dict[str, Any]:
+def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any], table_headers: list[str]) -> dict[str, Any]:
     reasons = user_or_host_data.get('reasons', [])
     return {
         table_headers[0]: user_or_host_data.get('id'),
