@@ -43,7 +43,7 @@ class Client(BaseClient):
             'Content-Type': 'application/json'
         }
         if not (user_name and password) and not (secret_key and access_key):
-            return_error("Please provide either user_name and password or secret_key and access_key")
+            raise DemistoException("Please provide either user_name and password or secret_key and access_key")
         if secret_key and access_key:
             self.headers['x-apikey'] = f"accesskey={access_key}; secretkey={secret_key}"
             BaseClient.__init__(self, base_url=self.url, headers=self.headers, verify=verify_ssl, proxy=proxy)
@@ -109,11 +109,11 @@ class Client(BaseClient):
                 error = res.json()
             except Exception:
                 # type: ignore
-                return_error(
+                raise DemistoException(
                     f'Error: Got status code {str(res.status_code)} with {url=} \
                     with body {res.content} with headers {str(res.headers)}')   # type: ignore
 
-            return_error(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
+            raise DemistoException(f"Error: Got an error from TenableSC, code: {error['error_code']}, \
                         details: {error['error_msg']}")  # type: ignore
         return res.json()
 
@@ -128,7 +128,7 @@ class Client(BaseClient):
         login_response = self.send_login_request(login_body)
 
         if 'response' not in login_response:
-            return_error('Error: Could not retrieve login token')
+            raise DemistoException('Error: Could not retrieve login token')
 
         token = login_response['response'].get('token')
         # There might be a case where the API does not return a token because there are too many sessions with the same user
@@ -137,7 +137,7 @@ class Client(BaseClient):
             login_body['releaseSession'] = 'true'
             login_response = self.send_login_request(login_body)
             if 'response' not in login_response or 'token' not in login_response['response']:
-                return_error('Error: Could not retrieve login token')
+                raise DemistoException('Error: Could not retrieve login token')
             token = login_response['response']['token']
 
         self.token = str(token)
@@ -160,7 +160,7 @@ class Client(BaseClient):
         res = self.session.request('post', url, headers=headers, data=json.dumps(login_body), verify=self.verify_ssl)
 
         if res.status_code < 200 or res.status_code >= 300:
-            return_error(f'Error: Got status code {str(res.status_code)} with {url=} \
+            raise DemistoException(f'Error: Got status code {str(res.status_code)} with {url=} \
                         with body {res.content} with headers {str(res.headers)}')  # type: ignore
 
         self.cookie = res.cookies.get('TNS_SESSIONID', self.cookie)
@@ -248,15 +248,15 @@ class Client(BaseClient):
                 if time_zone := args.get("time_zone") and start_time:
                     body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
                 else:
-                    return_error("Please make sure to provide both time_zone and start_time.")
+                    raise DemistoException("Please make sure to provide both time_zone and start_time.")
                 if all([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
                     body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};"
                     f"BYDAY={repeat_rule_by_day}"
                 elif repeat_rule_freq and repeat_rule_interval:
                     body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval}"
                 elif any([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
-                    return_error("Please make sure to provide repeat_rule_freq, repeat_rule_interval with or without "
-                                 "repeat_rule_by_day, or don't provide any of them.")
+                    raise DemistoException("Please make sure to provide repeat_rule_freq, repeat_rule_interval with or without "
+                                           "repeat_rule_by_day, or don't provide any of them.")
                 body['schedule']['enabled'] = argToBoolean(args.get("enabled", True))
 
         return self.send_request(path='scan', method='post', body=body)
@@ -561,7 +561,7 @@ class Client(BaseClient):
             Dict: The response.
         """
         if not query_id:
-            return_error('query id returned None')
+            raise DemistoException('query id returned None')
         path = 'query/' + str(query_id)
         self.send_request(path, method='delete')
 
@@ -625,11 +625,11 @@ class Client(BaseClient):
                 query["tool"] = 'vulndetails'
                 query["type"] = 'vuln'
             else:
-                return_error("When choosing source_type = individual - scan_results_id must be provided.")
+                raise DemistoException("When choosing source_type = individual - scan_results_id must be provided.")
         else:
             body['sourceType'] = source_type
             if not query_id:
-                return_error(f"When choosing source_type = {source_type} - query_id must be provided.")
+                raise DemistoException(f"When choosing source_type = {source_type} - query_id must be provided.")
         body["query"] = query
 
         return body
@@ -932,26 +932,26 @@ def validate_user_body_params(args, command_type):
         try:
             int(args.get(number_arg, '0'))
         except Exception:
-            return_error(f"{number_arg} must be a valid number.")
+            raise DemistoException(f"{number_arg} must be a valid number.")
 
     if time_zone and time_zone not in pytz.all_timezones:
-        return_error("Invalid time zone ID. Please choose one of the following: "
+        raise DemistoException("Invalid time zone ID. Please choose one of the following: "
                      "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
 
-    if command_type == "create" and (auth_type == 'Ldap' or auth_type == 'saml') and args.get("must_change_password"):
-        return_error(f"When choosing {auth_type=}, must_change_password must be set to False.")
+    if command_type == "create" and (auth_type == 'Ldap' or auth_type == 'saml'):
+        args["must_change_password"] = "false"
 
     if password:
         if command_type == 'update' and not args.get("current_password"):
-            return_error("current_password must be provided when attempting to update password.")
+            raise DemistoException("current_password must be provided when attempting to update password.")
         if len(password) < 3:
-            return_error("Password length must be at least 3 characters.")
+            raise DemistoException("Password length must be at least 3 characters.")
 
     if email and not re.compile(emailRegex).match(email):
-        return_error(f"Error: The given email address: {email} is not valid")
+        raise DemistoException(f"Error: The given email address: {email} is not valid")
 
     if command_type == 'create' and not email_notice == 'none' and not email:
-        return_error("When email_notice is different from none, an email must be given as well.")
+        raise DemistoException("When email_notice is different from none, an email must be given as well.")
 
 
 def timestamp_to_utc(timestamp_str, default_returned_value=''):
@@ -999,12 +999,12 @@ def list_scans_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_error('No scans found')
+        raise DemistoException('No scans found')
 
     scans_dicts = get_elements(res['response'], manageable)
 
     if len(scans_dicts) == 0:
-        return_error('No scans found')
+        raise DemistoException('No scans found')
 
     headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner']
 
@@ -1040,12 +1040,12 @@ def list_policies_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_error('No policies found')
+        raise DemistoException('No policies found')
 
     policies = get_elements(res['response'], manageable)
 
     if len(policies) == 0:
-        return_error('No policies found')
+        raise DemistoException('No policies found')
 
     headers = ['ID', 'Name', 'Description', 'Tag', 'Type', 'Group', 'Owner', 'LastModified']
 
@@ -1081,12 +1081,12 @@ def list_repositories_command(client: Client, args: Dict[str, Any]):
     res = client.get_repositories()
 
     if not res or 'response' not in res or not res['response']:
-        return_error('No repositories found')
+        raise DemistoException('No repositories found')
 
     repositories = res['response']
 
     if len(repositories) == 0:
-        return_error('No repositories found')
+        raise DemistoException('No repositories found')
 
     headers = [
         'ID',
@@ -1119,12 +1119,12 @@ def list_credentials_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_error('No credentials found')
+        raise DemistoException('No credentials found')
 
     credentials = get_elements(res['response'], manageable)
 
     if len(credentials) == 0:
-        return_error('No credentials found')
+        raise DemistoException('No credentials found')
 
     headers = ['ID', 'Name', 'Description', 'Type', 'Tag', 'Group', 'Owner', 'LastModified']
 
@@ -1162,12 +1162,12 @@ def list_assets_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_error('No assets found')
+        raise DemistoException('No assets found')
 
     assets = get_elements(res['response'], manageable)
 
     if len(assets) == 0:
-        return_error('No assets found')
+        raise DemistoException('No assets found')
 
     headers = ['ID', 'Name', 'Tag', 'Owner', 'Group', 'Type', 'HostCount', 'LastModified']
 
@@ -1205,7 +1205,7 @@ def get_asset_command(client: Client, args: Dict[str, Any]):
     res = client.get_asset(asset_id)
 
     if not res or 'response' not in res:
-        return_error('Asset not found')
+        raise DemistoException('Asset not found')
 
     asset = res['response']
 
@@ -1257,7 +1257,7 @@ def create_asset_command(client: Client, args: Dict[str, Any]):
     res = client.create_asset(name, description, owner_id, tags, ips)
 
     if not res or 'response' not in res:
-        return_error('Error: Could not retrieve the asset')
+        raise DemistoException('Error: Could not retrieve the asset')
 
     asset = res['response']
 
@@ -1298,7 +1298,7 @@ def delete_asset_command(client: Client, args: Dict[str, Any]):
     res = client.delete_asset(asset_id)
 
     if not res:
-        return_error('Error: Could not delete the asset')
+        raise DemistoException('Error: Could not delete the asset')
 
     return CommandResults(
         raw_response=res,
@@ -1320,7 +1320,7 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_error('No report definitions found')
+        raise DemistoException('No report definitions found')
 
     reports = get_elements(res['response'], manageable)
     # Remove duplicates, take latest
@@ -1328,7 +1328,7 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
                                 filter(lambda e: e['name'] == n, reports)) for n in {r['name'] for r in reports}]
 
     if len(reports) == 0:
-        return_error('No report definitions found')
+        raise DemistoException('No report definitions found')
 
     headers = ['ID', 'Name', 'Description', 'Type', 'Group', 'Owner']
 
@@ -1365,7 +1365,7 @@ def list_zones_command(client: Client, args: Dict[str, Any]):
     """
     res = client.get_zones()
     if not res or 'response' not in res:
-        return_error('No zones found')
+        raise DemistoException('No zones found')
     zones = res['response']
     if len(zones) == 0:
         zones = [{
@@ -1444,7 +1444,7 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     res = client.create_scan(args)
 
     if not res or 'response' not in res:
-        return_error('Error: Could not retrieve the scan')
+        raise DemistoException('Error: Could not retrieve the scan')
 
     scan = res['response']
 
@@ -1492,13 +1492,13 @@ def validate_create_scan_inputs(args):
     time_zone = args.get("time_zone")
 
     if time_zone and time_zone not in pytz.all_timezones:
-        return_error("Invalid time zone ID. Please choose one of the following: "
+        raise DemistoException("Invalid time zone ID. Please choose one of the following: "
                      "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
     if not asset_ids and not ips:
-        return_error('Error: Assets and/or IPs must be provided')
+        raise DemistoException('Error: Assets and/or IPs must be provided')
 
     if schedule == 'dependent' and not dependent:
-        return_error('Error: Dependent schedule must include a dependent scan ID')
+        raise DemistoException('Error: Dependent schedule must include a dependent scan ID')
 
 
 def launch_scan_command(client: Client, args: Dict[str, Any]):
@@ -1583,12 +1583,12 @@ def launch_scan(client: Client, args: Dict[str, Any]):
     target_password = args.get('diagnostic_password')
 
     if (target_address and not target_password) or (target_password and not target_address):
-        return_error('Error: If a target is provided, both IP/Hostname and the password must be provided')
+        raise DemistoException('Error: If a target is provided, both IP/Hostname and the password must be provided')
 
     res = client.launch_scan(scan_id, {'address': target_address, 'password': target_password})
 
     if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
-        return_error('Error: Could not retrieve the scan')
+        raise DemistoException('Error: Could not retrieve the scan')
 
     return res
 
@@ -1638,7 +1638,7 @@ def get_scan_status(client: Client, args: Dict[str, Any]):
     for scan_results_id in scan_results_ids:
         res = client.get_scan_results(scan_results_id)
         if not res or 'response' not in res or not res['response']:
-            return_error('Scan results not found')
+            raise DemistoException('Scan results not found')
 
         scans_results.append(res['response'])
     return scans_results, res
@@ -1659,7 +1659,7 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
     res = client.get_scan_report(scan_results_id)
 
     if not res or 'response' not in res or not res['response']:
-        return_error('Scan results not found')
+        raise DemistoException('Scan results not found')
 
     scan_results = res['response']
 
@@ -1778,17 +1778,17 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
     analysis = client.get_analysis(args=args)
 
     if not analysis or 'response' not in analysis:
-        return_error('Error: Could not get vulnerability analysis')
+        raise DemistoException('Error: Could not get vulnerability analysis')
 
     results = analysis['response']['results']
 
     if not results or len(results) == 0:
-        return_error('Error: Vulnerability not found in the scan results')
+        raise DemistoException('Error: Vulnerability not found in the scan results')
 
     vuln_response = client.get_vulnerability(vuln_id)
 
     if not vuln_response or 'response' not in vuln_response:
-        return_error('Vulnerability not found')
+        raise DemistoException('Vulnerability not found')
 
     vuln = vuln_response['response']
     vuln['severity'] = results[0]['severity']  # The vulnerability severity is the same in all the results
@@ -1906,7 +1906,7 @@ def delete_scan_command(client: Client, args: Dict[str, Any]):
     res = client.delete_scan(scan_id)
 
     if not res:
-        return_error('Error: Could not delete the scan')
+        raise DemistoException('Error: Could not delete the scan')
 
     return CommandResults(
         raw_response=res,
@@ -1931,7 +1931,7 @@ def get_device_command(client: Client, args: Dict[str, Any]):
     res = client.get_device(uuid, ip, dns_name, repo)
 
     if not res or 'response' not in res:
-        return_error('Device not found')
+        raise DemistoException('Device not found')
 
     device = res['response']
 
@@ -2012,7 +2012,7 @@ def list_users_command(client: Client, args: Dict[str, Any]):
     res = client.get_users('id,username,firstname,lastname,title,email,createdTime,modifiedTime,lastLogin,role', user_id)
 
     if not res or 'response' not in res:
-        return_error('No users found')
+        raise DemistoException('No users found')
 
     users = res['response']
 
@@ -2026,7 +2026,7 @@ def list_users_command(client: Client, args: Dict[str, Any]):
             users = list(filter(lambda u: u['email'] == email, users))
 
     if len(users) == 0:
-        return_error('No users found')
+        raise DemistoException('No users found')
 
     headers = [
         'ID',
@@ -2075,7 +2075,7 @@ def get_system_licensing_command(client: Client, args: Dict[str, Any]):
     res = client.get_system_licensing()
 
     if not res or 'response' not in res:
-        return_error('Error: Could not retrieve system licensing')
+        raise DemistoException('Error: Could not retrieve system licensing')
 
     status = res['response']
 
@@ -2112,12 +2112,12 @@ def get_system_information_command(client: Client, args: Dict[str, Any]):
     sys_res = client.get_system()
 
     if not sys_res or 'response' not in sys_res:
-        return_error('Error: Could not retrieve system information')
+        raise DemistoException('Error: Could not retrieve system information')
 
     diag_res = client.get_system_diagnostics()
 
     if not diag_res or 'response' not in diag_res:
-        return_error('Error: Could not retrieve system information')
+        raise DemistoException('Error: Could not retrieve system information')
 
     sys_res.update(diag_res)
     diagnostics = diag_res['response']
@@ -2170,12 +2170,12 @@ def list_alerts_command(client: Client, args: Dict[str, Any]):
     manageable = args.get('manageable', 'false').lower()
 
     if not res or 'response' not in res or not res['response']:
-        return_error('No alerts found')
+        raise DemistoException('No alerts found')
 
     alerts = get_elements(res['response'], manageable)
 
     if len(alerts) == 0:
-        return_error('No alerts found')
+        raise DemistoException('No alerts found')
 
     headers = ['ID', 'Name', 'Actions', 'State', 'LastTriggered', 'LastEvaluated', 'Group', 'Owner']
     mapped_alerts = [{
@@ -2211,7 +2211,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
     res = client.get_alerts(alert_id=alert_id)
 
     if not res or 'response' not in res or not res['response']:
-        return_error('Alert not found')
+        raise DemistoException('Alert not found')
 
     alert = res['response']
     query_res = client.get_query(alert['query'].get('id'))
@@ -2322,7 +2322,7 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
     limit = int(args.get('limit', '50'))
     res = client.list_groups(show_users)
     if not res or not res.get('response', []):
-        return_error('No groups found')
+        raise DemistoException('No groups found')
     groups = res.get('response', [])
     if len(groups) > limit:
         groups = groups[:limit]
@@ -2375,7 +2375,7 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
         limit = 200
 
     if not res or 'response' not in res or not res['response']:
-        return_error('Scan results not found')
+        raise DemistoException('Scan results not found')
 
     elements = get_elements(res['response'], get_manageable_results)
 
@@ -2453,7 +2453,7 @@ def process_update_and_create_user_response(res, hr_header):
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
     if not res or not res.get('response', {}):
-        return_error("User wasn't created successfully.")
+        raise DemistoException("User wasn't created successfully.")
     headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
                "User Group Name", "User  LDAP  Name"]
     response = res.get("response", {})
@@ -2511,7 +2511,7 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
     plugin_id = args.get('plugin_id', '')
     res = client.list_plugin_family(plugin_id, is_active)
     if not res or not res.get('response', []):
-        return_error('No plugins found')
+        raise DemistoException('No plugins found')
     plugins = res.get('response')
     if isinstance(plugins, dict):
         if plugin_type := plugins.get("type") in ["active", "passive"]:
@@ -2590,7 +2590,7 @@ def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
     args["policy_id"] = created_policy.get("id")
     res = client.create_scan(args)
     if not res or 'response' not in res:
-        return_error('Error: Could not retrieve the scan')
+        raise DemistoException('Error: Could not retrieve the scan')
 
     scan = res.get('response', {})
 
@@ -2662,7 +2662,7 @@ def update_asset_command(client: Client, args: Dict[str, Any]):
     asset_id = args.get('asset_id')
     res = client.update_asset(args, asset_id)
     if not res or not res.get('response', []):
-        return_error("Couldn't update asset.")
+        raise DemistoException("Couldn't update asset.")
 
     return CommandResults(
         raw_response=res,
@@ -2683,7 +2683,7 @@ def get_query(client: Client, query_id):
     """
     res = client.get_query(query_id)
     if not res or not res.get('response', []):
-        return_error(f"The query {query_id} wasn't found")
+        raise DemistoException(f"The query {query_id} wasn't found")
     query = res.get('response')
     mapped_query = {
         "Query Id": query_id,
@@ -2709,7 +2709,7 @@ def list_queries(client: Client, type):
     """
     res = client.list_queries(type)
     if not res or not res.get('response', []):
-        return_error("No queries found.")
+        raise DemistoException("No queries found.")
     queries = res.get('response')
     manageable_queries = queries.get("manageable", [])
     usable_queries = queries.get("usable", [])

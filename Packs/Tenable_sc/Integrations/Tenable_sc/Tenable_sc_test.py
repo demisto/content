@@ -127,3 +127,38 @@ def test_list_plugin_family_command(mocker, test_case):
     command_results = list_plugin_family_command(client_mocker, args)
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3", "test_case_4", "test_case_5", "test_case_6"])
+def test_validate_user_body_params(test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, command_type flag and the expected error message.
+        - Case 1: Args with group_id which is not a number, and a command_type flag that point to create.
+        - Case 2: Args with invalid time_zone, and a command_type flag that point to create.
+        - Case 3: Args with only password, and a command_type flag that point to update.
+        - Case 4: Args with password string of length = 1, and a command_type flag that point to create.
+        - Case 5: Args with invalid email address, and a command_type flag that point to create.
+        - Case 6: Args with email_notice but no email field, and a command_type flag that point to create.
+
+        When:
+        - Running validate_user_body_params.
+
+        Then:
+        - Ensure that the right error was thrown.
+        - Case 1: Should throw an error for none-number argument.
+        - Case 2: Should throw an error for invalid time_zone
+        - Case 3: Should throw an error for missing current_password field.
+        - Case 4: Should throw an error for too short password string.
+        - Case 5: Should throw an error for invalid email address.
+        - Case 6: Should throw an error for missing email field.
+    """
+    test_data = load_json("./test_data/test_validate_user_body_params.json").get(test_case, {})
+    args = test_data.get('args')
+    command_type = test_data.get("command_type")
+
+    with pytest.raises(Exception) as e:
+        validate_user_body_params(args, command_type)
+
+    assert test_data.get('expected_error_msg') in str(e.value)
