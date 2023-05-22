@@ -135,6 +135,12 @@ script:
       description: Report publish date
     - contextPath: Report.intelligenceType
       description: Report intelligence type (overview, vulnerability, malware, threat)
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
     description: basic search file report by md5/sha1. NOTE - specify only one of
       md5/sha1 arguments
   - name: isight-get-report
