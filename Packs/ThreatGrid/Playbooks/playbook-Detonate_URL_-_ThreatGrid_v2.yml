@@ -216,7 +216,7 @@ view: |-
 inputs:
 - key: URL
   value:
-    simple: URL.Data
+    simple: ${URL.Data}
   required: false
   description: URL of the sites to detonate.
   playbookInputQuery:
