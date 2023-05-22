@@ -11,7 +11,7 @@ configuration:
 - name: credentials
   displaypassword: API key
   display: Account ID
-  required: false
+  required: true
   type: 9
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
