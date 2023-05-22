@@ -121,18 +121,22 @@ def get_all_events(client: Client, event_type: str, last_run: dict, skip: int, a
                 response = client.get_alerts_request_v1(last_run, skip)
             else:
                 response = client.get_events_request_v1(event_type, last_run, skip)
+
+            if response.get('status') != 'success':  # type: ignore
+                break
+
             results = response.get('data', [])
 
         else:  # API version == v2
             response = client.get_events_request_v2(event_type, last_run, skip)
+            if response.get('ok') != 1:
+                break
+
             results = response.get('result', [])
 
         demisto.debug(f'The number of events pagination - {len(results)}')
         events.extend(results)
         skip += MAX_EVENTS_PAGE_SIZE
-
-        if response.get('status') != 'success':  # type: ignore
-            break
 
         if len(results) < MAX_EVENTS_PAGE_SIZE or not results:
             next_batch = False
