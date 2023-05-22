@@ -212,8 +212,6 @@ def get_indicators(client, limit):
     indicators = indicators[:limit] if isinstance(indicators, List) \
         else [indicators] if indicators else []
     for record in indicators:
-        if record.get('value', '') == '$$DummyIndicator$$':
-            continue
         hr = {'Name': record.get('value'), 'Description': record.get('fields', {}).get('description')}
         hr_list.append(hr)
         output_list.append({'Type': record.get('type'),
