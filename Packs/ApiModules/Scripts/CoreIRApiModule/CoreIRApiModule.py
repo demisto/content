@@ -3677,12 +3677,11 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
         and e.res.status_code == 500
         and 'was not found' in str(e)
     ):
-        pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9]+)\\?'"
+        pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
         if match := re.search(pattern, str(e)):
             error_message = f'Error: {match[1]} {match[2]} was not found'
 
-        return f'{error_message}{custom_message if type_ in ("Group", "Role") else ""}. Full error message: {e}'
-    return None
+            return f'{error_message}{custom_message if type_ in ("Group", "Role") else ""}. Full error message: {e}'
 
 
 def list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
