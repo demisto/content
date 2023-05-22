@@ -682,10 +682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "292":
     id: "292"
-    taskid: af79932c-669d-4939-8da6-82be6cbc42e1
+    taskid: fdb71645-23b4-457c-8138-9d67dc867ed8
     type: playbook
     task:
-      id: af79932c-669d-4939-8da6-82be6cbc42e1
+      id: fdb71645-23b4-457c-8138-9d67dc867ed8
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -744,7 +744,7 @@ tasks:
       mitreTechniqueID:
         simple: TA0003
       timeRange:
-        simple: 30 days
+        simple: 2 hours ago
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -811,14 +811,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "294":
     id: "294"
-    taskid: ca0ceee0-5a61-4731-8971-64a54fe8bb14
+    taskid: 86594eb7-342a-49ee-81d7-4d5c1f449812
     type: condition
     task:
-      id: ca0ceee0-5a61-4731-8971-64a54fe8bb14
+      id: 86594eb7-342a-49ee-81d7-4d5c1f449812
       version: -1
       name: Verify Alert Severity
       description: |
-        Verify that the ‘PaloAltoNetworksXDR.Alert.alert_name’ context key was extracted correctly.
+        Verify that the ‘PaloAltoNetworksXDR.Alert.severity’ context key was extracted correctly.
       type: condition
       iscommand: false
       brand: ""
@@ -836,6 +836,8 @@ tasks:
             value:
               simple: PaloAltoNetworksXDR.Alert.severity
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
