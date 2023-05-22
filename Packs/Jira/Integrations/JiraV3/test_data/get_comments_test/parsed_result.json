@@ -1,0 +1,207 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "startAt": 0,
+        "maxResults": 50,
+        "total": 3,
+        "comments": [
+            {
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487/comment/18322",
+                "id": "18322",
+                "author": {
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/user?accountId=dummy_account_id",
+                    "accountId": "dummy_account_id",
+                    "emailAddress": "admin@demistodev.com",
+                    "avatarUrls": {
+                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                    },
+                    "displayName": "Example User",
+                    "active": true,
+                    "timeZone": "Asia/Jerusalem",
+                    "accountType": "atlassian"
+                },
+                "body": {
+                    "version": 1,
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Hello there"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "renderedBody": "<p>Hello there</p>",
+                "updateAuthor": {
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/user?accountId=dummy_account_id",
+                    "accountId": "dummy_account_id",
+                    "emailAddress": "admin@demistodev.com",
+                    "avatarUrls": {
+                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                    },
+                    "displayName": "Example User",
+                    "active": true,
+                    "timeZone": "Asia/Jerusalem",
+                    "accountType": "atlassian"
+                },
+                "created": "2023-03-23T07:45:29.056+0200",
+                "updated": "2023-03-23T07:45:29.056+0200",
+                "jsdPublic": true
+            },
+            {
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487/comment/18329",
+                "id": "18329",
+                "author": {
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/user?accountId=dummy_account_id",
+                    "accountId": "dummy_account_id",
+                    "emailAddress": "admin@demistodev.com",
+                    "avatarUrls": {
+                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                    },
+                    "displayName": "Example User",
+                    "active": true,
+                    "timeZone": "Asia/Jerusalem",
+                    "accountType": "atlassian"
+                },
+                "body": {
+                    "version": 1,
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Second comment"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "renderedBody": "<p>Second comment</p>",
+                "updateAuthor": {
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/user?accountId=dummy_account_id",
+                    "accountId": "dummy_account_id",
+                    "emailAddress": "admin@demistodev.com",
+                    "avatarUrls": {
+                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                    },
+                    "displayName": "Example User",
+                    "active": true,
+                    "timeZone": "Asia/Jerusalem",
+                    "accountType": "atlassian"
+                },
+                "created": "2023-03-27T20:54:15.878+0300",
+                "updated": "2023-03-27T20:54:15.878+0300",
+                "jsdPublic": true
+            },
+            {
+                "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487/comment/18394",
+                "id": "18394",
+                "author": {
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/user?accountId=dummy_account_id",
+                    "accountId": "dummy_account_id",
+                    "emailAddress": "admin@demistodev.com",
+                    "avatarUrls": {
+                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                    },
+                    "displayName": "Example User",
+                    "active": true,
+                    "timeZone": "Asia/Jerusalem",
+                    "accountType": "atlassian"
+                },
+                "body": {
+                    "version": 1,
+                    "type": "doc",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "This is a comment from Jira demo"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "renderedBody": "<p>This is a comment from Jira demo</p>",
+                "updateAuthor": {
+                    "self": "https://api.atlassian.com/ex/jira/1234/rest/api/3/user?accountId=dummy_account_id",
+                    "accountId": "dummy_account_id",
+                    "emailAddress": "admin@demistodev.com",
+                    "avatarUrls": {
+                        "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+                        "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+                        "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+                        "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+                    },
+                    "displayName": "Example User",
+                    "active": true,
+                    "timeZone": "Asia/Jerusalem",
+                    "accountType": "atlassian"
+                },
+                "created": "2023-04-24T15:41:54.472+0300",
+                "updated": "2023-04-24T15:41:54.472+0300",
+                "jsdPublic": true
+            }
+        ]
+    },
+    "HumanReadable": "### Comments\n|Comment|Created|Id|UpdateUser|Updated|User|\n|---|---|---|---|---|---|\n| Hello there | 2023-03-23T07:45:29.056+0200 | 18322 | Example User | 2023-03-23T07:45:29.056+0200 | Example User |\n| Second comment | 2023-03-27T20:54:15.878+0300 | 18329 | Example User | 2023-03-27T20:54:15.878+0300 | Example User |\n| This is a comment from Jira demo | 2023-04-24T15:41:54.472+0300 | 18394 | Example User | 2023-04-24T15:41:54.472+0300 | Example User |\n",
+    "EntryContext": {
+        "Ticket(val.Id && val.Id == obj.Id)": {
+            "Comment": [
+                {
+                    "Id": "18322",
+                    "Comment": "Hello there",
+                    "User": "Example User",
+                    "Created": "2023-03-23T07:45:29.056+0200",
+                    "Updated": "2023-03-23T07:45:29.056+0200",
+                    "UpdateUser": "Example User"
+                },
+                {
+                    "Id": "18329",
+                    "Comment": "Second comment",
+                    "User": "Example User",
+                    "Created": "2023-03-27T20:54:15.878+0300",
+                    "Updated": "2023-03-27T20:54:15.878+0300",
+                    "UpdateUser": "Example User"
+                },
+                {
+                    "Id": "18394",
+                    "Comment": "This is a comment from Jira demo",
+                    "User": "Example User",
+                    "Created": "2023-04-24T15:41:54.472+0300",
+                    "Updated": "2023-04-24T15:41:54.472+0300",
+                    "UpdateUser": "Example User"
+                }
+            ],
+            "Id": "21487",
+            "Key": "dummy_issue_key"
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}
