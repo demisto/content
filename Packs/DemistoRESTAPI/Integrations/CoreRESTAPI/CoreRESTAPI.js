@@ -26,7 +26,6 @@ getTenantAccountName = function () {
             account_name = 'acc_' + tenant_name
         }
     }
-    log(account_name);
     return account_name
 }
 
@@ -150,8 +149,8 @@ var sendRequest = function(method, uri, body, raw) {
         params.proxy
     );
 
-    if (res.StatusCode < 200 || res.StatusCode >= 300) {            
-        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\n Body: ' + JSON.stringify(res) + '.';
+    if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
     if (raw) {
         return res;
@@ -370,29 +369,40 @@ var deleteFile = function (entry_id, delete_artifact = true) {
         deleteArtifact: delete_artifact});
     
     return sendRequest( 'POST', '/entry/delete/v2', body_content);
-}
-
-/** 
-    
-delete_attachment(incident_id, file_path, field_name = 'attachment') {
-    const json_data = this.create_attachment_data_json(file_path, field_name);
-    
-    return this._http_request({
-        method: 'POST',
-        url_suffix: `/incident/remove/${incident_id}`,
-        json_data: json_data
-    });
-}
-
-get_current_user() {
-    return this._http_request({
-        method: 'GET',
-        url_suffix: '/user'
-    });
-}
+};
 
 
+/**
+ * Sends http request to delete attachment
+Arguments:
+    @param {String} incident_id  -- incident id to upload the file to
+    @param {String} file_path -- the file path to delete
+    @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
+Returns:
+    Results
+"""
  */
+var delete_attachment=function(incident_id, attachment_path, field_name = 'attachment') {
+    body = JSON.stringify({
+        fieldName: field_name,
+        files: {
+          [attachment_path]: {
+            path: attachment_path
+          }
+        },
+        originalAttachments: [
+          {
+            path: attachment_path
+          }
+        ]
+      });    
+    try{
+        return sendRequest('POST', `/incident/remove/${incident_id}`, body);
+    }
+    catch (e) {
+        throw new Error(`File already deleted or not found.\n${e}`);
+    }
+};
 
 /**
  * Upload a new file
@@ -508,7 +518,6 @@ function coreApiFileCheckCommand(EntryID) {
                 file_found= true ;
                 human_readable = `File ${EntryID} exists`;
             }
-
           }    
     }
     return {
@@ -531,29 +540,10 @@ function coreApiFileCheckCommand(EntryID) {
         Show a message that the file was deleted successfully
 */
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
-    incident_id = (incident_id=='undefined')? investigation.id: incident_id;
-    body = JSON.stringify({
-        fieldName: field_name,
-        files: {
-          [attachment_path]: {
-            path: attachment_path
-          }
-        },
-        originalAttachments: [
-          {
-            path: attachment_path
-          }
-        ]
-      });    
-    try{
-        sendRequest('POST', `/incident/remove/${incident_id}`, body);
-    }
-    catch (e) {
-        throw new Error(`File already deleted or not found.\n${e}`);
-    }
+    incident_id = (incident_id=='undefined')? investigation.id: incident_id;    
+    delete_attachment(incident_id, attachment_path, field_name);
     return `Attachment ${attachment_path} deleted `;
 };
-
 
 
 
