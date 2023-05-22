@@ -180,3 +180,7 @@ The following features are not supported in non-ES (Enterprise Security) Splunk.
 - Incident Mirroring
 - Enrichment.
 - Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/splunk-py)
