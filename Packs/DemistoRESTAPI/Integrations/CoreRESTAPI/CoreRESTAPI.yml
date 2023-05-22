@@ -253,7 +253,7 @@ script:
       predefined:
         - 'true'
         - 'false'
-    description: Upload packs to core server from url or the marketplace.
+    description: Upload packs to the core server from the URL or marketplace.
   - name: core-api-file-upload
     arguments:
     - name: incident_id
