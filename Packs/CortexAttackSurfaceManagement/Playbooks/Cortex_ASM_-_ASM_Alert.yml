@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -80
+          "y": -360
         }
       }
     note: false
@@ -50,8 +50,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 5900
+          "x": 90,
+          "y": 6060
         }
       }
     note: false
@@ -82,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 60
+          "y": -220
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 590
+          "y": 310
         }
       }
     note: false
@@ -145,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 890
+          "y": 910
         }
       }
     note: false
@@ -315,7 +315,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 90
         }
       }
     note: false
@@ -1912,12 +1912,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 4a0b20a3-16a1-421c-8ac8-1c1b89758d7e
+    taskid: dfe79b3f-e23c-4b28-8284-f9ab136de402
     type: regular
     task:
-      id: 4a0b20a3-16a1-421c-8ac8-1c1b89758d7e
+      id: dfe79b3f-e23c-4b28-8284-f9ab136de402
       version: -1
-      name: GenerateSummaryReport
+      name: GenerateSummaryReport - Summary
       description: Generate an ASM Alert Summary report.
       scriptName: GenerateASMReport
       type: regular
@@ -1983,10 +1983,24 @@ tasks:
         complex:
           root: alert
           accessor: asmtags
+      asm_asset_id:
+        complex:
+          root: alert
+          accessor: asmassetid
       asm_remediation_path_rule:
         complex:
           root: alert
           accessor: asmremediationpathrule
+      asm_service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      report_type:
+        simple: summary
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2141,14 +2155,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "121"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 730
+          "y": 440
         }
       }
     note: false
@@ -2200,7 +2214,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 210
+          "y": -70
         }
       }
     note: false
@@ -2601,6 +2615,8 @@ tasks:
     nexttasks:
       ' Automated-Remediation':
       - "112"
+      '#default#':
+      - "4"
       Automated-Remediation With Rule Match:
       - "114"
       Close Now:
@@ -2716,8 +2732,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 5660
+          "x": -130,
+          "y": 5590
         }
       }
     note: false
@@ -2754,7 +2770,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 5660
+          "y": 5590
         }
       }
     note: false
@@ -2799,8 +2815,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 5460
+          "x": -450,
+          "y": 5450
         }
       }
     note: false
@@ -2845,7 +2861,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
+          "x": 680,
           "y": 5460
         }
       }
@@ -3039,6 +3055,144 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 6c0ebe20-21a9-4e61-87e5-d4bdc630a92d
+    type: title
+    task:
+      id: 6c0ebe20-21a9-4e61-87e5-d4bdc630a92d
+      version: -1
+      name: Analysis Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "123"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 8f8d355d-3037-4b46-8871-4fc131e9d44d
+    type: regular
+    task:
+      id: 8f8d355d-3037-4b46-8871-4fc131e9d44d
+      version: -1
+      name: GenerateSummaryReport - Analysis
+      description: Generate an ASM Alert Analysis report.
+      scriptName: GenerateASMReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_details:
+        complex:
+          root: alert
+          accessor: details
+      alert_id:
+        complex:
+          root: alert
+          accessor: id
+      alert_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_severityStr:
+        complex:
+          root: alert
+          accessor: severityStr
+      asm_asset_id:
+        complex:
+          root: alert
+          accessor: asmassetid
+      asm_cloud:
+        complex:
+          root: alert
+          accessor: asmcloud
+      asm_data_collection:
+        complex:
+          root: alert
+          accessor: asmdatacollection
+      asm_notification:
+        complex:
+          root: alert
+          accessor: asmnotification
+      asm_private_ip:
+        complex:
+          root: alert
+          accessor: asmprivateip
+      asm_related:
+        complex:
+          root: alert
+          accessor: asmrelated
+      asm_remediation:
+        complex:
+          root: alert
+          accessor: asmremediation
+      asm_remediation_path_rule:
+        complex:
+          root: alert
+          accessor: asmremediationpathrule
+      asm_service_detection:
+        complex:
+          root: alert
+          accessor: asmservicedetection
+      asm_service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      asm_service_owner:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      asm_system_ids:
+        complex:
+          root: alert
+          accessor: asmsystemids
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+      report_type:
+        simple: analysis
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3053,10 +3207,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6045,
+        "height": 6485,
         "width": 3490,
         "x": -1740,
-        "y": -80
+        "y": -360
       }
     }
   }
