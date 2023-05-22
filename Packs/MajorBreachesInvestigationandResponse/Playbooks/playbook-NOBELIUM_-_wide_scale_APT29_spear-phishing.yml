@@ -1,5 +1,7 @@
 id: NOBELIUM - wide scale APT29 spear-phishing
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: NOBELIUM - wide scale APT29 spear-phishing
 description: "On May 27, 2021, Microsoft reported a wide scale spear phishing campaign attributed to APT29, the same threat actor responsible for the SolarWinds campaign named SolarStorm. This attack had a wide range of targets for an APT spear phishing campaign with 3,000 email accounts targeted within 150 organizations. \nhttps://www.microsoft.com/security/blog/2021/05/27/new-sophisticated-email-based-attack-from-nobelium/  \nThis playbook includes the following tasks:\n- Collect IOCs to be used in your threat hunting process\n- Query FW, SIEMs, EDR, XDR to detect malicious hashes, network activity and compromised hosts \n- Block known indicators\n** Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
 starttaskid: "0"
@@ -19,6 +21,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,7 +34,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -51,6 +53,7 @@ tasks:
       - "3"
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -63,7 +66,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -89,6 +91,7 @@ tasks:
         simple: https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Detections/MultipleDataSources/NOBELIUM_IOCsMay2021.yaml
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -101,19 +104,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0df53f3d-b6a9-455f-8d28-d2404e0fb38c
+    taskid: 951a9ee0-ff37-46e8-8e32-ce85411250ab
     type: regular
     task:
-      id: 0df53f3d-b6a9-455f-8d28-d2404e0fb38c
+      id: 951a9ee0-ff37-46e8-8e32-ce85411250ab
       version: -1
       name: Retrieve Volexity blog
-      description: Retrieve parsed Volexity blog to extract indicators from
-      scriptName: RapidBreachResponseParseBlog
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
       brand: ""
@@ -124,6 +126,7 @@ tasks:
       url:
         simple: https://www.volexity.com/blog/2021/05/27/suspected-apt29-operation-launches-election-fraud-themed-phishing-campaigns/
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -136,7 +139,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -157,6 +159,7 @@ tasks:
       - "9"
       - "14"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -169,7 +172,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -194,6 +196,7 @@ tasks:
           root: http
           accessor: parsedBlog
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -206,7 +209,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -231,6 +233,7 @@ tasks:
           root: HttpRequest.Response
           accessor: Body
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -243,7 +246,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -334,6 +336,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -351,7 +354,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -371,6 +373,7 @@ tasks:
       - "11"
       - "12"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -383,7 +386,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -403,6 +405,7 @@ tasks:
       - "7"
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -415,7 +418,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -440,6 +442,7 @@ tasks:
       query:
         simple: (threatid eq 86398)
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -457,7 +460,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -554,6 +556,7 @@ tasks:
                 value:
                   simple: microsoft.com
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -571,7 +574,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -670,6 +672,7 @@ tasks:
       event_limit:
         simple: "100"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -687,7 +690,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -710,6 +712,7 @@ tasks:
       query:
         simple: 'xdralerts.name:"LOLBIN connecting to a rare host" '
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -722,7 +725,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -742,6 +744,7 @@ tasks:
       - "15"
       - "16"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -754,7 +757,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -817,6 +819,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -834,7 +837,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -878,6 +880,7 @@ tasks:
             value:
               simple: active
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -890,7 +893,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -911,6 +913,7 @@ tasks:
       - "19"
       - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -923,7 +926,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -946,6 +948,7 @@ tasks:
       '#none#':
       - "24"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -958,7 +961,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -980,6 +982,7 @@ tasks:
       '#none#':
       - "24"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -992,7 +995,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -1013,6 +1015,7 @@ tasks:
       '#none#':
       - "24"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1025,7 +1028,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -1044,6 +1046,7 @@ tasks:
       '#none#':
       - "22"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1056,7 +1059,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "22":
@@ -1101,6 +1103,7 @@ tasks:
             value:
               simple: active
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1113,7 +1116,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -1137,6 +1139,7 @@ tasks:
         complex:
           root: inputs.EWSSearchQuery
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1149,7 +1152,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
@@ -1168,6 +1170,7 @@ tasks:
       '#none#':
       - "26"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1180,7 +1183,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
@@ -1214,6 +1216,7 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1226,7 +1229,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "27":
@@ -1242,6 +1244,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1254,7 +1257,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "28":
@@ -1273,6 +1275,7 @@ tasks:
       '#none#':
       - "27"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1285,7 +1288,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "29":
@@ -1307,6 +1309,7 @@ tasks:
       - "32"
       - "33"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1319,7 +1322,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "30":
@@ -1348,6 +1350,7 @@ tasks:
       tags:
         simple: NOBELIUM, APT29
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1360,7 +1363,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "31":
@@ -1389,6 +1391,7 @@ tasks:
       tags:
         simple: NOBELIUM, APT29
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1401,7 +1404,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "32":
@@ -1430,6 +1432,7 @@ tasks:
       tags:
         simple: NOBELIUM, APT29
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1442,7 +1445,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
@@ -1471,6 +1473,7 @@ tasks:
       tags:
         simple: NOBELIUM, APT29
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1483,7 +1486,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "35":
@@ -1742,5 +1744,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-contentitemexportablefields:
-  contentitemfields: {}

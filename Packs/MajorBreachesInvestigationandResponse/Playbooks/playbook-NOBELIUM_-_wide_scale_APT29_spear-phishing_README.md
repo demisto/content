@@ -12,12 +12,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Indicators - Generic v3
-* QRadar Indicator Hunting V2
-* Search Endpoints By Hash - Generic V2
-* Panorama Query Logs
-* Palo Alto Networks - Hunting And Threat Detection
 * Splunk Indicator Hunting
+* Search Endpoints By Hash - Generic V2
+* Block Indicators - Generic v3
+* Palo Alto Networks - Hunting And Threat Detection
+* QRadar Indicator Hunting V2
+* Panorama Query Logs
 
 ### Integrations
 
@@ -25,15 +25,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* RapidBreachResponseParseBlog
+* ParseHTMLIndicators
 * http
 * SearchIncidentsV2
 
 ### Commands
 
-* setIndicators
 * extractIndicators
 * ews-search-mailbox
+* setIndicators
 
 ## Playbook Inputs
 
