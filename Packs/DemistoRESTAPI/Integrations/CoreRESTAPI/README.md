@@ -305,7 +305,7 @@ Delete the attachment from the incident and from the Cortex XSOAR server.
 | --- | --- | --- |
 | incident_id | The incident's ID. | Required | 
 | file_path | The file's path. | Required | 
-| field_name | Name of the field (type attachment) you want to remove the attachment. Default is attachment. | Optional | 
+| field_name | Name of the field (type attachment) from which to remove the attachment. Default is attachment. | Optional | 
 
 #### Command example
 ```!core-api-file-attachment-delete file_path=1@1 incident_id=1```
