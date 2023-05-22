@@ -2133,9 +2133,9 @@ def main():  # pragma: no cover
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     # Log exceptions
-    except Exception as e:
+    except DemistoException as e:
         # special handling for 404 error, which is returned when the item is not found
-        if type(e) == DemistoException and e.res is not None and e.res.status_code == 404 and "Object Not Present" in e.message:
+        if e.res is not None and e.res.status_code == 404 and "Object Not Present" in e.message:
             return_results("The item you're searching for does not exist within the Prisma SASE API.")
 
         else:
