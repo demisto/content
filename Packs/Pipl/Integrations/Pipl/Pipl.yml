@@ -81,7 +81,7 @@ script:
   - name: email
     arguments:
     - name: email
-      required: true
+      required: false
       description: Email address to search for
     outputs:
     - contextPath: Account.Email.Address
