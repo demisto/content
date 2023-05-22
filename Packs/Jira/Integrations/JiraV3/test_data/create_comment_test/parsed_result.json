@@ -1,0 +1,11 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": null,
+    "HumanReadable": "### Comment added successfully\n|Comment|Id|Ticket Link|\n|---|---|---|\n|  Dummy link | 18395 | https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21487/comment/18395 |\n",
+    "EntryContext": {},
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}
