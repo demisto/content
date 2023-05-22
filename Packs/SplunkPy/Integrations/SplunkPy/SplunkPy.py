@@ -2621,7 +2621,7 @@ def main():  # pragma: no cover
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = argToBoolean(params.get('proxy', True))
+    proxy = argToBoolean(params.get('proxy', False))
 
     connection_args = get_connection_args()
 
