@@ -2105,17 +2105,17 @@ function mergeContextLists(newItems, oldItems, objectKey) {
 }
 
 /**
- * Creates a file result object with the specified properties.
+ * Creates a file from the given data.
  * @param {Object} entryType - The  entry type from entryTypes.
- * @param {Object} fileEntryId- if file entry exist then fyck
  * @param {string} file_name - The name of the file.
  * @param {string} file_content - The content of the file.
  * @param {boolean} human_readable - (Optional) if human_readable isn't passed the human readable would be the name of the file.
- * @returns {Object} A file result object with the specified properties.
+ * @returns {dict} A Demisto war room entry.
  */
-function fileResult(entryType, fileEntryId, file_name, file_content, human_readable_optional){
-  HumanReadable = (!(human_readable_optional)) ? file_name : human_readable_optional;
-  fileEntryId = (!fileEntryId) ? saveFile(file_content):fileEntryId;
+function fileResult(file_name, file_content,entryType=null, human_readable_optional=null){
+  
+  fileEntryId = saveFile(file_content);
+  HumanReadable = (!(human_readable_optional)) ? `${file_name} uploaded with entryID: ${fileEntryId}.` : human_readable_optional;
   return {
     Type: entryType,
     FileID: fileEntryId,
