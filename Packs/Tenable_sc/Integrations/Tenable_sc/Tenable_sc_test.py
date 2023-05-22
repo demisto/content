@@ -34,15 +34,6 @@ def test_update_asset_command(mocker, test_case):
     assert test_data.get('expected_hr') == command_results.readable_output
 
 
-# @pytest.mark.parametrize("test_case", ["test_case_1"])
-# def test_get_vulnerability_command(mocker, test_case):
-#     test_data = load_json("./test_data/test_update_asset_command.json").get(test_case, {})
-#     args = test_data.get('args')
-#     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
-#     command_results = get_vulnerability_command(client_mocker, args)
-#     assert test_data.get('expected_hr') == command_results.readable_output
-
-
 @pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3"])
 def test_list_zones_command(mocker, test_case):
     """

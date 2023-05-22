@@ -936,7 +936,7 @@ def validate_user_body_params(args, command_type):
 
     if time_zone and time_zone not in pytz.all_timezones:
         raise DemistoException("Invalid time zone ID. Please choose one of the following: "
-                     "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
+                               "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
 
     if command_type == "create" and (auth_type == 'Ldap' or auth_type == 'saml'):
         args["must_change_password"] = "false"
@@ -1493,7 +1493,7 @@ def validate_create_scan_inputs(args):
 
     if time_zone and time_zone not in pytz.all_timezones:
         raise DemistoException("Invalid time zone ID. Please choose one of the following: "
-                     "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
+                               "https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html")
     if not asset_ids and not ips:
         raise DemistoException('Error: Assets and/or IPs must be provided')
 
