@@ -4,17 +4,17 @@ This pack includes Cortex XSIAM content.
 
 
 ## Configuration on Server Side
-Use the **Settings** > **General** > **SIEM Integration** page to configure Websense software to send log data from Filtering Service to a supported Security Information and Event Management (SIEM) solution.
-Before using this page to enable SIEM integration, make sure an instance of Websense Multiplexer is installed for each Policy Server in your deployment.
+In the **Settings** > **General** > **SIEM Integration** page you can configure Websense software to send log data from the Filtering Service to a supported Security Information and Event Management (SIEM) solution.
+Before enabling the SIEM integration, make sure an instance of Websense Multiplexer is installed for each Policy Server in your deployment.
 
 Perform these steps for each Policy Server instance in your deployment:
-1. Select Enable SIEM integration for this Policy Server to turn on the SIEM integration feature.
+1. Select **Enable SIEM integration for this Policy Server** to turn on the SIEM integration feature.
 2. Provide the IP address of the BrokerVM, as well as the communication Port to use for sending the data.
 3. Specify the Transport protocol (UDP or TCP) to use when sending data to XSIAM.
 4. Select **syslog/CEF** format to use. This determines the syntax of the string used to pass log data to the integration.
-5. Click OK to cache your changes. Changes are not implemented until you click Save and Deploy.
+5. Click **OK** to cache your changes. Changes are not implemented until you click **Save and Deploy**.
 
-When you save your changes, Websense Multiplexer connects to Filtering Service and takes over the job of distributing log data to both Log Server and the selected SIEM integration.
+When you save your changes, Websense Multiplexer connects to the Filtering Service and takes over the job of distributing log data to both the Log Server and the selected SIEM integration.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
