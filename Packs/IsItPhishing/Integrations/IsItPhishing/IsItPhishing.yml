@@ -5,7 +5,7 @@ name: IsItPhishing
 display: IsItPhishing
 category: Data Enrichment & Threat Intelligence
 description: Collaborative web service that provides validation on whether a URL is
-  a phishing page or not by analyzing the content of the webpages
+  a phishing page or not by analyzing the content of the webpage
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url
@@ -98,6 +98,8 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    - contextPath: URL.Data
+      description: The enriched URL.
     description: Checks if URL is phishing
 tests:
 - No tests
