@@ -275,7 +275,7 @@ There is no context output for this command.
 ### core-api-file-delete
 
 ***
-This command deletes a file from Xsoar by entry_id.
+Delete a file from Cortex XSOAR by entry_id.
 
 #### Base Command
 
