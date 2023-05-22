@@ -1264,6 +1264,10 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
     return datetime.utcfromtimestamp(timestamp).isoformat()
 
 
+def just_for_test():
+    pass
+
+
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
