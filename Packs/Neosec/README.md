@@ -4,7 +4,7 @@ Neosec is reinventing application security. Its pioneering SaaS platform gives s
 - Ingests alerts from Neosec into XSOAR: 
   - Neosec Posture Alerts covers OWASP top 10 and other vulnerabilities in API endpoints. Handled by R&D. 
   - Neosec Runtime Alerts are on suspicious or malicious user behavior. Handled by SOC analysts.
-- Close/Reopens Neosec Alerts
+  - Close/Reopens Neosec Alerts
 
 _For more information, visit [Neosec Inc.](https://neosec.com/)_
 
