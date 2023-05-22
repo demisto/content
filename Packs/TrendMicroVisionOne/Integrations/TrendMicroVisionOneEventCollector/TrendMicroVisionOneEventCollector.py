@@ -19,8 +19,9 @@ SEARCH_DETECTION_LOGS_TIME = 'search_detection_logs_time'
 AUDIT_LOGS_TIME = 'audit_logs_time'
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
-''' CLIENT CLASS '''
 
+
+''' CLIENT CLASS '''
 
 class Client(BaseClient):
 
@@ -537,6 +538,7 @@ def fetch_events(
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
     """
     last_run = demisto.getLastRun()
+    demisto.info(f'{last_run=}')
 
     workbench_logs, latest_workbench_log_time = get_workbench_logs(
         client=client,
