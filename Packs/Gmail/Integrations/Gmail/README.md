@@ -383,7 +383,7 @@ Retrieves attachments from a sent Gmail message.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 
 
@@ -409,7 +409,7 @@ Retrieves the Gmail message sent to a specified user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
 
 
@@ -3660,7 +3660,7 @@ Deletes an email in the user's mailbox.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to delete. | Required | 
+| message-id | The ID of the email to delete.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
 | permanent | Whether to delete the email permanently or move it to trash (default). Possible values are: False, True. | Optional | 
 
 
@@ -3886,7 +3886,7 @@ Moves an email to a different folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the emaill to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | add-labels | A comma-separated list of labels to add to the email. | Optional | 
 | remove-labels | A comma-separated list of labels to remove from the email. | Optional | 
 
@@ -3987,7 +3987,7 @@ Moves an email to a different mailbox.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | src-user-id | The source user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
 | dst-user-id | The destination user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 
 
