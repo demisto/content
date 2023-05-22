@@ -150,16 +150,15 @@ def main():
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
-    print(f'{pr.get_files()=}')
-    for file in pr.get_files():
-        print(f'{file.filename=}')
 
-    file_names = [file.filename for file in pr.get_files()]
-    print(f'{file_names=}')
+    changed_file_names = [file.filename for file in pr.get_files()]
+    print(f'{changed_file_names=} for {pr_number=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
+    if support_label := get_packs_support_level_label(changed_file_names):
+        labels_to_add.append(support_label)
 
-    # Add 'Contribution' label
+    # Add 'Contribution' label + support label
     for label in labels_to_add:
         pr.add_to_labels(label)
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
