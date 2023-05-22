@@ -5,7 +5,7 @@ name: IsItPhishing
 display: IsItPhishing
 category: Data Enrichment & Threat Intelligence
 description: Collaborative web service that provides validation on whether a URL is
-  a phishing page or not by analyzing the content of the webpage
+  a phishing page or not by analyzing the content of the webpages
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url
