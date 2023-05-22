@@ -25,7 +25,7 @@ This integration fetches the following logs/alerts from Trend Micro Vision One a
 
 | **Log Type**                    | **Action Role Permission Required** | **Api Documentation** |
 |---------------------------------|-------------------------------------|-----------------------|
-| Workbench logS                  | Workbench                           | https://automation.trendmicro.com/xdr/api-v3#tag/Workbench                  |
+| Workbench logs                  | Workbench                           | https://automation.trendmicro.com/xdr/api-v3#tag/Workbench                  |
 | Observed Attack Techniques Logs | Observed Attack Techniques          | https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques                  |
 | Search Detection Logs           | Search                              | https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get                 |
 | Audit Logs                      | Audit Logs                          | https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs                 | 
