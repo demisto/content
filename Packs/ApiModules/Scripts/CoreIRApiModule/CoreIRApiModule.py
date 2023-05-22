@@ -3829,6 +3829,9 @@ def change_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
     count = res.get("update_count")
     plural_suffix = 's' if len(user_emails) > 1 else ''
 
+    if count == 0:
+        raise DemistoException(f"No user roll has been {action_message}")
+    
     return CommandResults(
         readable_output=f"Role was {action_message} successfully for {count} user{plural_suffix}."
     )
