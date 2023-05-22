@@ -268,7 +268,7 @@ script:
       description: "The War Room entry ID of the pack zip file."
       required: false
       isArray: false
-    description: This command uploads to the incident a file that the user provided according to the entry_id or the content of the file
+    description: Upload to the incident a file that the user provided according to the entry_id or the content of the file.
   - name: core-api-file-delete
     arguments:
     - name: entry_id
