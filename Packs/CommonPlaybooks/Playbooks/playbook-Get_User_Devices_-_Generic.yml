@@ -7,7 +7,8 @@ description: |-
   - Name
   - Serial Number
   - ID
-  - Type
+  - Model
+  - MAC Address
   - OS
   - Integration
 

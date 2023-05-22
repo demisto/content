@@ -3,7 +3,8 @@ In order to get a generic output, the following information on all of the retrie
 - Name
 - Serial Number
 - ID
-- Type
+- Model
+- MAC Address
 - OS
 - Integration
 

@@ -7,7 +7,8 @@ description: |-
   - Name
   - Serial Number
   - ID
-  - Type
+  - Model
+  - MAC Address
   - OS
   - Integration
 
@@ -1598,7 +1599,7 @@ tasks:
       - "28"
     scriptarguments:
       keys:
-        simple: Name,SerialNumber,ID,Type, OS, Integration
+        simple: Name,SerialNumber,ID,Type,OS, Integration
       parent:
         simple: ADComputer
       values:
