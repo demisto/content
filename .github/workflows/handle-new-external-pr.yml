@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
-          ref: ${{ github.ref }}  # check out to the branch that triggered the workflow, by default actions/checkout checks out to the master for the 'pull_request_target' event.
+          ref: ${{ github.event.pull_request.head.ref }}  # check out to the branch that triggered the workflow, by default actions/checkout checks out to the master for the 'pull_request_target' event.
 
       - name: Setup Python
         uses: actions/setup-python@v3
