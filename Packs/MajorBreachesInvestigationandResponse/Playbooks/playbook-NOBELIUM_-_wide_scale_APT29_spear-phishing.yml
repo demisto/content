@@ -1490,10 +1490,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 260521c2-7333-4f6d-82b2-a5719163e14c
+    taskid: 780a4e7d-b965-4a47-8066-c35417f39940
     type: playbook
     task:
-      id: 260521c2-7333-4f6d-82b2-a5719163e14c
+      id: 780a4e7d-b965-4a47-8066-c35417f39940
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -1515,13 +1515,83 @@ tasks:
       - "27"
     scriptarguments:
       AutoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.AutoBlockIndicators
       AutoCommit:
         simple: "No"
       CustomBlockRule:
         simple: "True"
       CustomURLCategory:
         simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       IP:
         complex:
           root: DBotScore
@@ -1546,6 +1616,8 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
+      InputEnrichment:
+        simple: "False"
       MD5:
         complex:
           root: DBotScore
@@ -1585,6 +1657,10 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
           root: DBotScore
@@ -1649,7 +1725,8 @@ tasks:
           transformers:
           - operator: uniq
       UserVerification:
-        simple: "True"
+        complex:
+          root: inputs.UserVerification
       Username:
         complex:
           root: DBotScore
