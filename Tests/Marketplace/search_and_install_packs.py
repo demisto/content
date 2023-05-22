@@ -718,7 +718,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             if pack not in installed_packs:
                 installed_packs.append(pack)
                 packs_to_install_together.append(pack)
-        if len(packs_to_install_together) > 9:
+        if len(packs_to_install_together) > 1:
             install_packs(client, host, packs_to_install_together)
             packs_to_install_together = []
 
