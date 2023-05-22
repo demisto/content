@@ -3803,7 +3803,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.11.59070
+  dockerimage: demisto/python3:3.10.11.59581
 tests:
 - No tests
 fromversion: 6.2.0
