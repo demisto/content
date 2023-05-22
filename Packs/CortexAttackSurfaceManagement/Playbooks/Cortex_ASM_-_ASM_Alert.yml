@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -45,7 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -70,10 +70,10 @@ tasks:
       id: cf841205-1bc1-4490-89f8-027e330c91d2
       version: -1
       name: Triage and Qualifier Stage
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "138"
@@ -3611,7 +3611,7 @@ tasks:
       keys:
         simple: stage,timestamp
       val1:
-        simple: 'summarization '
+        simple: 'summarization'
       val2:
         simple: TIMESTAMP
     separatecontext: false
