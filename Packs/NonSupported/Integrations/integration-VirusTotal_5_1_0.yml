@@ -2,11 +2,11 @@ commonfields:
   id: VirusTotal
   version: -1
 name: VirusTotal
-display: VirusTotal
+display: VirusTotal (Deprecated)
 toversion: 5.1.0
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
-description: Analyze suspicious hashes, URLs, domains and IP addresses
+description: Deprecated. No available replacement.
 detaileddescription: |-
   ## Get a VirusTotal API Key
   To use this integration, you need a VirusTotal API key.
@@ -1095,6 +1095,7 @@ script:
       description: Virus Total permanent link.
       type: string
     description: Checks the file reputation of the specified hash.
+    deprecated: true
   - name: ip
     arguments:
     - name: ip
@@ -1165,12 +1166,14 @@ script:
     - contextPath: IP.VirusTotal.Resolutions.last_resolved
       description: Last resolution times of the domains that resolved to the specified IP address.
     description: Checks the reputation of an IP address.
+    deprecated: true
   - name: url
     arguments:
     - name: url
       required: true
       description: The URL to check.
       isArray: true
+      default: true
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
       defaultValue: "10"
@@ -1226,6 +1229,7 @@ script:
       description: Virus Total permanent link.
       type: string
     description: Checks the reputation of a URL.
+    deprecated: true
   - name: domain
     arguments:
     - name: domain
@@ -1296,6 +1300,7 @@ script:
     - contextPath: Domain.VirusTotal.Resolutions.last_resolved
       description: Last resolution times of the IP addresses that resolve to this domain.
     description: Checks the reputation of a domain.
+    deprecated: true
   - name: file-scan
     arguments:
     - name: entryID
@@ -1311,6 +1316,7 @@ script:
       description: Virus Total permanent link.
       type: string
     description: Submits a file for scanning.
+    deprecated: true
   - name: file-rescan
     arguments:
     - name: file
@@ -1324,6 +1330,7 @@ script:
       description: Virus Total permanent link.
       type: string
     description: Re-scans an already submitted file. This avoids having to upload the file again.
+    deprecated: true
   - name: url-scan
     arguments:
     - name: url
@@ -1337,6 +1344,7 @@ script:
       description: Virus Total permanent link.
       type: string
     description: Scans a specified URL.
+    deprecated: true
   - name: vt-comments-add
     arguments:
     - name: resource
@@ -1347,12 +1355,14 @@ script:
       required: true
       description: 'The actual review, which you can tag by using the "#" twitter-like syntax, for example, #disinfection #zbot, and reference users using the "@" syntax, for example, @VirusTotalTeam).'
     description: Adds comments to files and URLs.
+    deprecated: true
   - name: vt-file-scan-upload-url
     arguments: []
     outputs:
     - contextPath: vtUploadURL
       description: The special upload URL for large files.
     description: Private API. Get a special URL for files larger than 32 MB.
+    deprecated: true
   - name: vt-comments-get
     arguments:
     - name: resource
@@ -1362,7 +1372,9 @@ script:
     - name: before
       description: Datetime token in the format YYYYMMDDHHMISS. You can use this for paging.
     description: Private API. Retrieves comments for a given resource.
+    deprecated: true
   runonce: false
 tests:
-- virusTotal-test-playbook
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true
