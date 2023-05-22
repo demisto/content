@@ -1,7 +1,6 @@
 {
     "test_case_1":{
         "args": {
-            "description": "scan_description",
             "scan_type": "scan_type",
             "name": "scan_name",
             "repository_id": "repository_id",
@@ -9,7 +8,7 @@
             "schedule": "rollover",
             "dependent_id": "1"
         },
-        "expected_body": {"description": "scan_description", "type": "scan_type", "name": "scan_name", "repository": {"id": "repository_id"}, "assets": [{"id": "1"}, {"id": "2"}],
+        "expected_body": {"type": "scan_type", "name": "scan_name", "repository": {"id": "repository_id"}, "assets": [{"id": "1"}, {"id": "2"}],
         "maxScanTime": 3600, "schedule": {"type": "rollover", "dependentID": "1"}},
         "mock_response": {"error_code":0,"error_msg":"","response":{
             "manageable":[
@@ -37,11 +36,10 @@
     },
     "test_case_3":{
         "args": {
-            "plugins_id": "1",
             "zone_id": "zone_id",
             "report_ids": "1,2,3"
         },
-        "expected_body": {"type": "plugin", "pluginID": "1", "zone": {"id": "zone_id"},
+        "expected_body": {"type": "plugin", "zone": {"id": "zone_id"},
         "reports": [{"id": "1", "reportSource": "individual"}, {"id": "2", "reportSource": "individual"}, {"id": "3", "reportSource": "individual"}], "maxScanTime": 3600}
     }
 }

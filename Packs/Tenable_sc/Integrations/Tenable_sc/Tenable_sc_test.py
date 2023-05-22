@@ -260,15 +260,25 @@ def test_create_scan_body(mocker, test_case):
     """
         Given:
         - test case that point to the relevant test case in the json test data which include:
-          args, and expected body.
-        - Case 1: Args with policy_description, policy_template_id, family_id,and plugins_id.
+          args, mock_response (for some test cases) and expected body.
+        - Case 1: Args with scan_type, scan_name saved under "name", repository_id, asset_ids set to "AllManageable",
+        schedule set to "rollover", and dependent_id. Also, a mock_response to get asses with two manageable assets.
+        - Case 2: Args with policy_id, scan_name saved under "scan_name", credentials with few credentials, max_scan_time,
+        schedule set to "ical", time_zone, start_time, repeat_rule_freq, repeat_rule_interval, and repeat_rule_by_day.
+        - Case 3: Args with plugins_id, zone_id and a comma separated list of report_ids.
 
         When:
         - Running create_scan_body.
 
         Then:
         - Ensure that the body was created correctly.
-        - Case 1: Should create a body with all the given fields, and include default none-included (preference and context).
+        - Case 1: Should set type to be scan_type value, configure scan_name, add repository_id under repository dict,
+                  send a get_assets request and include the two assets from the response in the request body,
+                  set max_scan_time to 3600, and include dependent_id under schedule.
+        - Case 2: Should set type to be policy, configure scan_name, create a list of credentials id dicts,
+                  calculate max_scan_time, and include time_zone, start_time, repeat_rule_freq, repeat_rule_interval,
+                  and repeat_rule_by_day under schedule.
+        - Case 3: Should set type to be plugin, create a zone dict, a list of report ids dicts and set max_scan_time to 3600.                  
     """
     test_data = load_json("./test_data/test_create_scan_body.json").get(test_case, {})
     args = test_data.get('args')
