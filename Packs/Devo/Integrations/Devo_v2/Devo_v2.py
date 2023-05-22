@@ -225,7 +225,7 @@ def check_configuration():
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
 
-        assert alert_filters["type"] in [
+        assert "type" in alert_filters and alert_filters["type"] in [
             "AND",
             "OR",
         ], 'Missing key:"type" or unsupported value in fetch_incidents_filters'
@@ -233,10 +233,10 @@ def check_configuration():
         filters = check_type(alert_filters["filters"], list)
 
         for filt in filters:
-            assert filt[
-                "key"
-            ], 'Missing key: "key" in fetch_incidents_filters.filters configuration'
-            assert filt["operator"] in [
+            assert (
+                "key" in filt and filt["key"]
+            ), 'Missing key: "key" in fetch_incidents_filters.filters configuration'
+            assert "operator" in filt and filt["operator"] in [
                 "=",
                 "!=",
                 "/=",
@@ -251,9 +251,9 @@ def check_configuration():
                 'Missing key: "operator"'
                 " or unsupported operator in fetch_incidents_filters.filters configuration"
             )
-            assert filt[
-                "value"
-            ], 'Missing key:"value" in fetch_incidents_filters.filters configuration'
+            assert (
+                "value" in filt and filt["value"]
+            ), 'Missing key:"value" in fetch_incidents_filters.filters configuration'
 
     return True
 
