@@ -78,6 +78,7 @@ script:
     - name: log_type
       defaultValue: 'all'
       description: The log type to retrieve.
+      auto: PREDEFINED
       predefined:
       - 'all'
       - 'audit_logs'
