@@ -29,7 +29,6 @@
 			"Security Analytics",
 			"Private Offer",
 			"Simulation",
-			"Spam",
 			"TIM",
 			"Threat Intelligence",
 			"Threat Intelligence Management",
@@ -40,7 +39,12 @@
 			"New",
 			"Trending",
 			"Relationship",
-			"Elasticsearch"],
+			"Elasticsearch",
+			"Free Feed",
+			"Plug & Fetch",
+			"Generic Feed",
+			"Allow List"
+		],
 		"xsoar": [],
 		"marketplacev2": ["Data Source"],
 		"xpanse": ["Data Source"]

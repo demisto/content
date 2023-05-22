@@ -13,7 +13,6 @@ ignore=RM104,RM106
 [file:playbook-Allow_IP_-_Okta_Zone.yml]
 ignore=PB114
 
-
 [file:Okta_IAM_image.png]
 ignore=IM111
 
@@ -24,4 +23,9 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
-Okta
+okta
+zipprotectwithpassword
+
+[file:IAMInitOktaUser.yml]
+ignore=BA124
+

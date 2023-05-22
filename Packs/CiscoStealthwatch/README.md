@@ -62,6 +62,6 @@ You need to configure Cisco Stealthwatch to forward Syslog messages in custom LE
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
-To create or configure the Broker VM, use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 **Note**: The name of the dataset will be assigned automatically as "lancope_stealthwatch_raw".

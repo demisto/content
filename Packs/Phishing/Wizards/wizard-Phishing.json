@@ -11,8 +11,12 @@
         "min_required": 1,
         "packs": [
           {
-            "name": "EWS",
-            "display_name": "Exchange Web Services - EWS"
+            "name": "MicrosoftExchangeOnPremise",
+            "display_name": "Microsoft Exchange On-Premise"
+          },
+          {
+            "name": "MicrosoftExchangeOnline",
+            "display_name": "Microsoft Exchange Online"
           },
           {
             "name": "Gmail",

@@ -1,0 +1,17 @@
+{
+  "Name": "test_1",
+  "Priority": 0,
+  "Statement": {
+    "IPSetReferenceStatement": {
+      "ARN": "ip_arn"
+    }
+  },
+  "Action": {
+    "Block": {}
+  },
+  "VisibilityConfig": {
+    "SampledRequestsEnabled": true,
+    "CloudWatchMetricsEnabled": true,
+    "MetricName": "test_1"
+  }
+}

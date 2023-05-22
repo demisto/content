@@ -1,11 +1,11 @@
 import copy
 from datetime import datetime, timezone
-
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
-    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, search_records_soap_request
+    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
+    search_records_soap_request
 
 BASE_URL = 'https://test.com/'
 
@@ -69,6 +69,150 @@ VALUE_LIST_RES = {
     "IsSuccessful": True, "ValidationMessages": []
 }
 
+NESTED_VALUE_LIST_RES = {
+    "Links": [],
+    "RequestedObject": {
+        "Children": [
+            {
+                "Data": {
+                    "Id": 83998,
+                    "Name": "Corporate (Reportable)",
+                    "IsSelectable": False,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 88888,
+                            "Name": "level 2",
+                            "IsSelectable": False
+                        },
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 83999,
+                    "Name": "Group & Other Non-Healthcare (Reportable)",
+                    "IsSelectable": False,
+                    "Generation": 0,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 84000,
+                            "Name": "Group D&L, Run-off Businesses (Operating)",
+                            "IsSelectable": False,
+                        },
+                        "Children": [],
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 84001,
+                    "Name": "Health Services (Reportable)",
+                    "IsSelectable": False,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 84002,
+                            "Name": "Pharmacy Operations (Operating)",
+                            "IsSelectable": False,
+                            "Generation": 1,
+                        },
+                        "Children": [
+                            {
+                                "Data": {
+                                    "Id": 84003,
+                                    "Name": "Cigna Home Delivery (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            },
+                            {
+                                "Data": {
+                                    "Id": 84004,
+                                    "Name": "ESI PBM (including Evicore) (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            }
+                        ],
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 84005,
+                    "Name": "Integrated Medical (Reportable)",
+                    "IsSelectable": False,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 84006,
+                            "Name": "Commercial (Operating)",
+                            "IsSelectable": False,
+                        },
+                        "Children": [
+                            {
+                                "Data": {
+                                    "Id": 84007,
+                                    "Name": "Behavioral (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            },
+                        ],
+                        "Depth": 1
+                    },
+                    {
+                        "Data": {
+                            "Id": 84012,
+                            "Name": "Government (Operating)",
+                            "IsSelectable": False,
+                        },
+                        "Children": [
+                            {
+                                "Data": {
+                                    "Id": 84013,
+                                    "Name": "CareAllies (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            },
+                        ],
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 107694,
+                    "Name": "US Commercial",
+                    "IsSelectable": False,
+                },
+                "Children": [],
+                "Depth": 0
+            },
+        ]
+    },
+    "IsSuccessful": "true",
+    "ValidationMessages": []
+}
+
 VALUE_LIST_RES_FOR_SOURCE = {
     "RequestedObject": {
         "Children": [
@@ -80,9 +224,9 @@ VALUE_LIST_RES_FOR_SOURCE = {
 
 VALUE_LIST_FIELD_DATA = {
     "FieldId": 304, "ValuesList": [
-        {"Id": 471, "Name": "Low", "IsSelectable": True},
-        {"Id": 472, "Name": "Medium", "IsSelectable": True},
-        {"Id": 473, "Name": "High", "IsSelectable": True}]}
+        {"Id": 471, "Name": "Low", "IsSelectable": True, 'Parent': 'root', 'Depth': None},
+        {"Id": 472, "Name": "Medium", "IsSelectable": True, 'Parent': 'root', 'Depth': None},
+        {"Id": 473, "Name": "High", "IsSelectable": True, 'Parent': 'root', 'Depth': None}]}
 
 RES_WITH_ERRORS = {
     'ValidationMessages': [
@@ -271,6 +415,56 @@ GET_LEVEL_RES_2 = [
     }
 ]
 
+RES_DEPTH_0 = {'FieldId': 304, 'ValuesList': [
+    {'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+     'Depth': 0},
+    {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
+RES_DEPTH_1 = {'FieldId': 304, 'ValuesList': [
+    {'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+    {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+     'Depth': 0},
+    {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
+     'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+    {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
+     'Parent': 'Health Services (Reportable)', 'Depth': 1},
+    {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
+RES_DEPTH_2 = {'FieldId': 304, 'ValuesList': [
+    {'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+    {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+     'Depth': 0},
+    {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
+     'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+    {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
+     'Parent': 'Health Services (Reportable)', 'Depth': 1},
+    {'Id': 84003, 'Name': 'Cigna Home Delivery (Sub Segments)', 'IsSelectable': False,
+     'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+    {'Id': 84004, 'Name': 'ESI PBM (including Evicore) (Sub Segments)', 'IsSelectable': False,
+     'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+    {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 84007, 'Name': 'Behavioral (Sub Segments)', 'IsSelectable': False, 'Parent': 'Commercial (Operating)',
+     'Depth': 2},
+    {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 84013, 'Name': 'CareAllies (Sub Segments)', 'IsSelectable': False, 'Parent': 'Government (Operating)',
+     'Depth': 2},
+    {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
 
 class TestArcherV2:
     def test_extract_from_xml(self):
@@ -294,13 +488,13 @@ class TestArcherV2:
         mocker.patch.object(demisto, 'results')
         client = Client(BASE_URL, '', '', '', '', 400)
         if is_successful:
-            client.update_session()
+            client.create_session()
             assert demisto.results.call_count == 0
         else:
             with pytest.raises(SystemExit) as e:
                 # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
                 # return_error reached
-                client.update_session()
+                client.create_session()
             assert e
 
     def test_update_session_fail_parsing(self, mocker):
@@ -319,7 +513,7 @@ class TestArcherV2:
                                                                                   "</body></html>"))
         client = Client(BASE_URL, '', '', '', '', 400)
         with pytest.raises(DemistoException) as e:
-            client.update_session()
+            client.create_session()
         assert "Check the given URL, it can be a redirect issue" in str(e.value)
 
     def test_generate_field_contents(self):
@@ -332,7 +526,8 @@ class TestArcherV2:
             - return a valid json object
         """
         client = Client(BASE_URL, '', '', '', '', 400)
-        field = generate_field_contents(client, '{"Device Name":"Macbook\\Name\\\"Test"}', GET_LEVELS_BY_APP['mapping'])
+        field = generate_field_contents(client, '{"Device Name":"Macbook\\Name\\\"Test"}', GET_LEVELS_BY_APP['mapping'],
+                                        {"depth": 1})
         assert field == {'2': {'Type': 1, 'Value': 'Macbook\\Name\"Test', 'FieldId': '2'}}
 
     def test_get_errors_from_res(self):
@@ -344,7 +539,7 @@ class TestArcherV2:
                            json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
         client = Client(BASE_URL, '', '', '', '', 400)
-        record, res, errors = client.get_record(75, 1010)
+        record, res, errors = client.get_record(75, 1010, {"depth": 1})
         assert errors == 'No resource found.'
         assert res
         assert record == {}
@@ -356,7 +551,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
         client = Client(BASE_URL, '', '', '', '', 400)
-        record, res, errors = client.get_record(1, 1010)
+        record, res, errors = client.get_record(1, 1010, {"depth": 1})
         assert errors is None
         assert res
         assert record == {'Device Name': 'The device name', 'Id': 1010}
@@ -418,12 +613,28 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_data = client.get_field_value_list(304)
+        field_data = client.get_field_value_list(304, 1)
         assert VALUE_LIST_FIELD_DATA == field_data
+
+    @pytest.mark.parametrize('args, expected_response', [(0, RES_DEPTH_0), (1, RES_DEPTH_1), (2, RES_DEPTH_2)])
+    def test_get_field_value_list_nested_response(self, requests_mock, args, expected_response):
+        cache = demisto.getIntegrationContext()
+        cache['fieldValueList'] = {}
+        demisto.setIntegrationContext(cache)
+
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+        requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=NESTED_VALUE_LIST_RES)
+        client = Client(BASE_URL, '', '', '', '', 400)
+        field_data = client.get_field_value_list(304, args)
+        assert field_data.get('FieldId') == expected_response.get('FieldId')
+        for expected, result in zip(expected_response.get('ValuesList'), field_data.get('ValuesList')):
+            assert expected == result
 
     def test_generate_field_value_text_input(self):
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto")
+        field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto", {"depth": 1})
         assert field_key == 'Value'
         assert field_value == 'Demisto'
 
@@ -438,7 +649,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"])
+        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"], 1)
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [473]}
 
@@ -446,7 +657,8 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 7},
                                                       [{"value": "github", "link": "https://github.com"},
-                                                       {"value": "google", "link": "https://google.com"}])
+                                                       {"value": "google", "link": "https://google.com"}],
+                                                      {"depth": 1})
         assert field_key == 'Value'
         assert field_value == [{"Name": "github", "URL": "https://github.com"},
                                {"Name": "google", "URL": "https://google.com"}]
@@ -464,7 +676,8 @@ class TestArcherV2:
 
         """
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
+        field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]},
+                                                      {"depth": 1})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
 
@@ -482,7 +695,7 @@ class TestArcherV2:
         """
         client = Client(BASE_URL, '', '', '', '', 400)
         with pytest.raises(DemistoException) as e:
-            generate_field_value(client, "test", {'Type': 8}, 'user1, user2')
+            generate_field_value(client, "test", {'Type': 8}, 'user1, user2', {"depth": 1})
         assert "The value of the field: test must be a dictionary type and include a list under \"users\" key or " \
                "\"groups\" key e.g: {\"Policy Owner\":{\"users\":[20],\"groups\":[30]}}" in str(e.value)
 
@@ -492,13 +705,13 @@ class TestArcherV2:
     ])
     def test_generate_field_cross_reference_input(self, field_value, result):
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 9}, field_value)
+        field_key, field_value = generate_field_value(client, "", {'Type': 9}, field_value, {"depth": 1})
         assert field_key == 'Value'
         assert field_value == result
 
     def test_generate_field_ip_address_input(self):
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1')
+        field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1', {"depth": 1})
         assert field_key == 'IpAddressBytes'
         assert field_value == '127.0.0.1'
 
@@ -523,7 +736,7 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "Source",
                                                       {'FieldId': '16172', 'IsRequired': False, 'Name':
-                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight')
+                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight', 1)
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [471]}
 
@@ -747,8 +960,99 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         mocker.patch.object(client, 'do_soap_request',
                             return_value=[SEARCH_RECORDS_BY_REPORT_RES, SEARCH_RECORDS_BY_REPORT_RES])
-        mocker.patch.object(client, 'do_request', return_value=GET_LEVEL_RES_2)
+        mocker.patch.object(client, 'do_rest_request', return_value=GET_LEVEL_RES_2)
         mocker.patch.object(demisto, 'results')
         search_records_by_report_command(client, mock_args)
         assert demisto.results.call_args_list[0][0][0]['HumanReadable'] == MOCK_READABLE_SEARCH_RECORDS_BY_REPORT
         assert demisto.results.call_args_list[0][0][0]['Contents'] == MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT
+
+    @pytest.mark.parametrize('integration_context, is_login_expected, http_call_attempt_results', [
+        ({}, True, [{'status_code': 200, 'json': {'res': 'some_res'}}]),
+        ({'session_id': 'test_session_id'}, False, [{'status_code': 200, 'json': {'res': 'some_res'}}]),
+        ({'session_id': 'test_session_id'}, False, [{'status_code': 401}, {'status_code': 200, 'json': {'res': 'some_res'}}]),
+        ({'session_id': 'test_session_id'}, True, [{'status_code': 401}, {
+         'status_code': 401}, {'status_code': 200, 'json': {'res': 'some_res'}}]),
+    ])
+    def test_do_rest_request(self, mocker, requests_mock, integration_context, is_login_expected, http_call_attempt_results):
+        """
+        Test for the do_rest_request function.
+        Given:
+            Case 1: Empty integration context (no cached session_id).
+            Case 2: Integration context with cached session_id.
+            Case 3: Integration context with cached session_id.
+            Case 4: Integration context with cached session_id.
+
+        When:
+            Case 1: rest API request succeed on first run with newly generated session_id.
+            Case 2: rest API request succeed on first run with cached the session_id.
+            Case 3: rest API request fails on first attempt and succeed on second run with the cached session_id.
+            Case 4: rest API request fails on two first attempts with the cached session_id and succeed on third run
+                after creating new session_id.
+
+        Then:
+            Case 1: Ensure new session_id was generated, and only one call to the search API was done (success).
+            Case 2: Ensure no new session_id was generated, and only one call to the search API was done (success).
+            Case 3: Ensure no new session_id was generated, and two calls to the search API were done (failure and
+                success).
+            Case 3: Ensure new session_id was generated, and three calls to the search API were done (failure, failure
+                and success).
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mocker.patch('ArcherV2.get_integration_context', return_value=integration_context)
+        login_mocker = requests_mock.post(BASE_URL + 'api/core/security/login',
+                                          json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
+        rest_mocker = requests_mock.get(BASE_URL + 'test_requests', http_call_attempt_results)
+        dummy_response = client.do_rest_request('GET', 'test_requests')
+        if is_login_expected:
+            assert login_mocker.called_once
+        else:
+            assert not login_mocker.called
+        assert rest_mocker.call_count == len(http_call_attempt_results)
+        assert dummy_response
+
+    @pytest.mark.parametrize('integration_context, is_new_token_expected, http_call_attempt_results', [
+        ({}, True, [{'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+        ({'token': 'TOKEN'}, False, [{'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+        ({'token': 'TOKEN'}, False, [{'status_code': 500}, {'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+        ({'token': 'TOKEN'}, True, [{'status_code': 500}, {'status_code': 500},
+         {'status_code': 200, 'text': SEARCH_RECORDS_RES}]),
+    ])
+    def test_do_soap_request(self, mocker, requests_mock, integration_context, is_new_token_expected, http_call_attempt_results):
+        """
+        Test for the do_soap_request function.
+        (we use the archer-search-records template as test case, but it doesn't really matter)
+        Given:
+            Case 1: Empty integration context (no cached token).
+            Case 2: Integration context with cached token.
+            Case 3: Integration context with cached token.
+            Case 4: Integration context with cached token.
+
+        When:
+            Case 1: Soap API request succeed on first run with newly generated the token.
+            Case 2: Soap API request succeed on first run with cached the token.
+            Case 3: Soap API request fails on first attempt and succeed on second run with the cached token.
+            Case 4: Soap API request fails on two first attempts and succeed on third run after creating new token.
+
+        Then:
+            Case 1: Ensure new token was generated, and only one call to the search API was done (success).
+            Case 2: Ensure no new token was generated, and only one call to the search API was done (success).
+            Case 3: Ensure no new token was generated, and two calls to the search API were done (failure and success).
+            Case 3: Ensure new token was generated, and three calls to the search API were done (failure, failure and
+            success).
+        """
+        client = Client(BASE_URL, '', '', '', '', 400)
+        mocker.patch('ArcherV2.get_integration_context', return_value=integration_context)
+        new_token_mocker = requests_mock.post(BASE_URL + 'ws/general.asmx', text=GET_TOKEN_SOAP)
+        soap_mocker = requests_mock.post(BASE_URL + 'ws/search.asmx', http_call_attempt_results)
+
+        search_commands_args = {'app_id': 1, 'display_fields': '<DisplayField name="External Links">1</DisplayField>'
+                                                               '<DisplayField name="Device Name">2</DisplayField>',
+                                'field_id': '', 'field_name': '', 'field_to_search_by_id': '', 'numeric_operator': '',
+                                'date_operator': '', 'search_value': '', 'max_results': 10, 'sort_type': 'Ascending',
+                                'level_id': 123}
+        client.do_soap_request('archer-search-records', **search_commands_args)
+        if is_new_token_expected:
+            assert new_token_mocker.called_once
+        else:
+            assert not new_token_mocker.called
+        assert soap_mocker.call_count == len(http_call_attempt_results)

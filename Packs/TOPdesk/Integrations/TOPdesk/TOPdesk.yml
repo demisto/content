@@ -40,7 +40,8 @@ configuration:
   type: 15
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from TOPdesk to Cortex XSOAR), Outgoing (from Cortex XSOAR to TOPdesk), or Incoming and Outgoing (from/to Cortex XSOAR and TOPdesk).'
   defaultvalue: None
-  hidden: false
+  hidden:
+    - marketplacev2
   options:
   - None
   - Incoming
@@ -52,32 +53,37 @@ configuration:
   type: 0
   additionalinfo: Choose the tag to add to an entry to mirror it as a visible comment in TOPdesk for the persons.
   defaultvalue: comments
-  hidden: false
+  hidden:
+    - marketplacev2
 - defaultvalue: work_notes
   display: Work Note Entry Tag
   name: work_notes_tag
   required: false
   type: 0
   additionalinfo: Choose the tag to add to an entry to mirror it as a hidden comment in TOPdesk for the persons.
-  hidden: false
+  hidden:
+    - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in TOPdesk.
   defaultvalue: ForTOPdesk
   display: File Entry Tag
-  hidden: false
+  hidden:
+    - marketplacev2
   name: file_tag
   required: false
   type: 0
 - additionalinfo: When selected, closing the TOPdesk ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incident
-  hidden: false
+  hidden:
+    - marketplacev2
   name: close_incident
   required: false
   type: 8
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in TOPdesk.
   defaultvalue: 'false'
   display: Close Mirrored TOPdesk Ticket
-  hidden: false
+  hidden:
+    - marketplacev2
   name: close_ticket
   required: false
   type: 8
@@ -5866,7 +5872,7 @@ script:
       is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   script: ''

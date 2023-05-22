@@ -1,0 +1,34 @@
+[
+  {
+    "id": 16,
+    "device_name": "Check Point NGFW",
+    "blocked_action_count": 0,
+    "not_blocked_action_count": 0,
+    "total_action_count": 0,
+    "score": 0
+  },
+  {
+    "id": 18,
+    "device_name": "F5 BIG-IP",
+    "blocked_action_count": 0,
+    "not_blocked_action_count": 0,
+    "total_action_count": 0,
+    "score": 0
+  },
+  {
+    "id": 19,
+    "device_name": "Forcepoint NGFW",
+    "blocked_action_count": 0,
+    "not_blocked_action_count": 0,
+    "total_action_count": 0,
+    "score": 0
+  },
+  {
+    "id": 27,
+    "device_name": "Palo Alto Networks",
+    "blocked_action_count": 0,
+    "not_blocked_action_count": 0,
+    "total_action_count": 0,
+    "score": 0
+  }
+]

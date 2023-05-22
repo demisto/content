@@ -64,12 +64,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: Demisto REST API
+      brand: ''
       description: Download files from Demisto server
       id: 45d6032a-9bfe-4db1-8b27-1e600f74a706
       iscommand: true
       name: Download Custom Content Bundle from Dev
-      script: Demisto REST API|||demisto-api-download
+      script: '|||demisto-api-download'
       tags:
       - devcontent
       type: regular
@@ -498,12 +498,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: Demisto REST API
+      brand: ''
       description: Send HTTP Multipart request to upload files to Demisto server
       id: 1957024c-a9ab-4aa9-8fde-54d059eb654e
       iscommand: true
       name: Push Selected Content to Prod
-      script: Demisto REST API|||demisto-api-multipart
+      script: '|||demisto-api-multipart'
       type: regular
       version: -1
     taskid: 1957024c-a9ab-4aa9-8fde-54d059eb654e
@@ -1219,12 +1219,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: Demisto REST API
+      brand: ''
       description: Download files from Demisto server
       id: 9538b972-1086-4717-89ee-0b8e5e96446e
       iscommand: true
       name: 'Backup Custom Content Bundle from Prod '
-      script: Demisto REST API|||demisto-api-download
+      script: '|||demisto-api-download'
       tags:
       - prodbackup
       type: regular

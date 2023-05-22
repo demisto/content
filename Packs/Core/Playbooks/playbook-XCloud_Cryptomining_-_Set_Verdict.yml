@@ -1,6 +1,6 @@
 id: XCloud Cryptomining - Set Verdict
 version: -1
-name: XCloud Cryptomining - Set Verdict
+name: XCloud Cryptojacking - Set Verdict
 description: "This playbook sets the alert's verdict as malicious if one of the following conditions is true:\n1. If the source IP address is malicious\n2. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Cloud identity reached a throttling API rate\" (medium/high severity)\n3. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"Suspicious heavy allocation of compute resources - possible mining activity\" \n4. If the incident includes \"Unusual allocation of multiple cloud compute resources\" with medium/high severity, the source ASN isn't known, and the source IP isn't known as well.\n5. If the incident includes both \"Unusual allocation of multiple cloud compute resources\" AND \"A cloud compute instance was created in a dormant region\"\n\nIf none of the conditions is true, the playbook will wait for an analyst's decision."
 starttaskid: "0"
 tasks:
@@ -482,7 +482,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false

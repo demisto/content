@@ -1,0 +1,44 @@
+{
+    "fireeye_hx_raw": {
+        "event_values": {
+            "type": "string",
+            "is_array": false
+        },
+        "_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "condition": {
+            "type": "string",
+            "is_array": false
+        },
+        "indicator": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "source": {
+            "type": "string",
+            "is_array": false
+        },
+        "subtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "resolution": {
+            "type": "string",
+            "is_array": false
+        },
+        "md5values": {
+            "type": "string",
+            "is_array": true
+        }
+    }
+}

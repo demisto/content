@@ -1,0 +1,8 @@
+{
+    "version": "0.0.0.2",
+    "platform": "extrahop",
+    "hostname": "extrahopabc",
+    "mgmt_ipaddr": "0.0.0.2",
+    "display_host": "extrahopabc",
+    "external_hostname": null
+}

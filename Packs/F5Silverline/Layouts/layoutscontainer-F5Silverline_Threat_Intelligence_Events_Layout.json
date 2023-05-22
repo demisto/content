@@ -579,5 +579,6 @@
 	"id": "F5 Silverline Threat Intelligence Events Layout",
 	"name": "F5 Silverline Threat Intelligence Events Layout",
 	"system": false,
-	"version": -1
+	"version": -1,
+ "marketplaces": ["xsoar"]
 }

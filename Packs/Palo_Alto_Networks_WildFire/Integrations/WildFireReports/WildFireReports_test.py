@@ -137,30 +137,27 @@ def test_user_secrets():
     assert "%%This_is_API_key%%" not in res
 
 
-@pytest.mark.parametrize('platform_to_return,version_to_return,expected_agent', [
-    ('xsoar', '6.9.0', 'xsoartim'),
-    ('x2', '8.0.0', 'xsoartim'),
-    ('x2', '6.9.0', 'xdr'),
+@pytest.mark.parametrize('platform_to_return,expected_agent', [
+    ('xsoar', 'xsoartim'),
+    ('x2', 'xdr')
 ])
-def test_agent_config(mocker, platform_to_return, version_to_return, expected_agent):
+def test_agent_config(mocker, platform_to_return, expected_agent):
     """
     Given:
-        Case 1: Platform type is xsoar (on prem) with version 6.9
-        Case 1: Platform type is x2 (xsoar cloud/xsiam) with version 8.0
-        Case 1: Platform type is x2 (xsoar cloud/xsiam) with version 6.9
+        Case 1: Platform type is xsoar (on prem or cloud)
+        Case 2: Platform type is x2 (xsiam)
 
     When:
         Setting the default 'agent' param for the calls made by the WildFireReports module
 
     Then:
         Case 1: Ensure the calls have the 'xsoartim' agent set
-        Case 1: Ensure the calls have the 'xsoartim' agent set
-        Case 1: Ensure the calls have the 'xdr' agent set
+        Case 2: Ensure the calls have the 'xdr' agent set
     """
-    demisto_version_res = {'platform': platform_to_return, 'version': version_to_return}
+    demisto_version_res = {'platform': platform_to_return}
 
     # We need to make two mocks since the get_demisto_version is being called twice, once from within WildFireReports
-    # module anf once from within CommonServerPython
+    # module and once from within CommonServerPython
     mocker.patch('CommonServerPython.get_demisto_version', return_value=demisto_version_res)
     mocker.patch('WildFireReports.get_demisto_version', return_value=demisto_version_res)
     get_file_call = mocker.patch('CommonServerPython.BaseClient._http_request')

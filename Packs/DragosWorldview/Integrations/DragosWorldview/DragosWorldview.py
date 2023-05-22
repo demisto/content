@@ -1,12 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+# pack version: 1.0.4
 import json
 from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, Tuple
 
 import dateparser
-import demistomock as demisto  # noqa: F401
-import requests
-from CommonServerPython import *  # noqa: F401
 
+import urllib3
 
 
 """Dragos Worldview Integration for XSOAR."""
@@ -17,7 +18,7 @@ from CommonServerPython import *  # noqa: F401
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
+urllib3.disable_warnings()  # pylint:disable=no-member
 
 
 class Client(BaseClient):
@@ -93,7 +94,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     page_number = 2
     full_response = raw_response
 
-    while raw_response['total_pages'] != raw_response['page']:
+    while raw_response['total_pages'] >= raw_response['page']:
         if serial:
             api_query = "indicators?page=" + str(page_number) + "&serial%5B%5D=" + serial
         else:
@@ -127,7 +128,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
 
     max_time = last_fetch
 
-    api_query = "products?updated_after="
+    api_query = "products?released_after="
     api_query = api_query + str(max_time)
     api_query = api_query.replace(":", "%3A")
     api_query = api_query.replace(" ", "%20")
@@ -216,4 +217,3 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-

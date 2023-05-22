@@ -42,7 +42,7 @@ MOCKED_EVENTS = {
                     "createdTime": "2021-11-14T02:11:37.9181822Z"
                 }
             ],
-            "evidence": []
+            "evidence": {}
         },
         {
             "id": "test_id_2",
@@ -66,7 +66,7 @@ MOCKED_EVENTS = {
                     "createdTime": "2021-11-15T02:01:56.3449897Z"
                 }
             ],
-            "evidence": []
+            "evidence": {}
         },
         {
             "id": "test_id_3",
@@ -83,7 +83,7 @@ MOCKED_EVENTS = {
             "mitreTechniques": [],
             "loggedOnUsers": [],
             "comments": [],
-            "evidence": []
+            "evidence": {}
         }
     ]
 }
@@ -216,3 +216,20 @@ class TestFetchEventsEdgeCases:
 
         # validate
         demisto.results.assert_called_with(Microsoft365DefenderEventCollector.AUTH_ERROR_MSG)
+
+
+def test_get_events_command(mocker):
+    """
+    Given -
+    When - call the main for the command get-events.
+    Then - validate the returned result as expected.
+    """
+    # prepare
+    mocker.patch.object(Microsoft365DefenderEventCollector, 'return_results')
+
+    # run
+    main(command='microsoft-365-defender-get-events', demisto_params=PARAMS)
+
+    # validate
+    returned_results = Microsoft365DefenderEventCollector.return_results.call_args[0][0]
+    assert returned_results.outputs == MOCKED_EVENTS['value']

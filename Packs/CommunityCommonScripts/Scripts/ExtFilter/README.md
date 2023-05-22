@@ -16,6 +16,7 @@ You can make filters with comlex and combination conditions for the context data
 | **Argument Name** | **Description** |
 | --- | --- |
 | value | The value to filter/transform. |
+| path | Context path to which to filter |
 | operator | The operation name to filter/transform. |
 | filter | The filter. |
 | ctx_demisto | Enable to access the context data |

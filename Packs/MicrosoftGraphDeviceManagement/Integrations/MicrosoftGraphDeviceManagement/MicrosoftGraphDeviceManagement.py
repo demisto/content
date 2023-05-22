@@ -32,11 +32,14 @@ HEADERS: dict = {
 
 class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, certificate_thumbprint, private_key):
+                 ok_codes, certificate_thumbprint, private_key,
+                 managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
-                                         private_key=private_key)
+                                         private_key=private_key,
+                                         managed_identities_client_id=managed_identities_client_id,
+                                         managed_identities_resource_uri=Resources.graph)
 
     def list_managed_devices(self, limit: int) -> Tuple[list, Any]:
         url_suffix: str = '/deviceManagement/managedDevices'
@@ -402,7 +405,6 @@ def update_windows_device_account_command(client: MsGraphClient, args: dict) -> 
 def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
-    self_deployed: bool = params.get('self_deployed', False)
     tenant_id: str = params.get('tenant_id', '')
     auth_and_token_url: str = params.get('auth_id', '')
     enc_key: str = params.get('enc_key', '')
@@ -413,15 +415,20 @@ def main():
     proxy: bool = params.get('proxy', False)
     certificate_thumbprint: str = params.get('certificate_thumbprint', '')
     private_key: str = params.get('private_key', '')
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    managed_identities_client_id: Optional[str] = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, certificate_thumbprint=certificate_thumbprint,
-                                          private_key=private_key)
+                                          private_key=private_key,
+                                          managed_identities_client_id=managed_identities_client_id)
 
     command: str = demisto.command()
     LOG(f'Command being called is {command}')

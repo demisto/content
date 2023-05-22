@@ -8,6 +8,6 @@ alter xdm.event.id = to_string(id),
     xdm.alert.severity = risk_score,
     xdm.alert.description = risk_reasons,
     xdm.target.application.name = app_name,
-    xdm.target.user.user_type = to_string(actor_user_id),
+    xdm.target.user.identifier = to_string(actor_user_id),
     xdm.target.host.hostname = otp_device_name,
     xdm.target.host.device_id = otp_device_id;

@@ -1,12 +1,12 @@
-The Cortex Xpanse (previously **Expanse v2**) integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flow detected by Expanse Behavior.
+The Cortex Xpanse (previously **Expanse v2**) integration for Cortex XSOAR leverages the Expander API to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Cortex Xpanse Expander.
 
-This integration was developed and tested with Expanse Expander and Behavior.
+This integration was developed and tested with Xpanse Expander.
 
 Cortex Xpanse is a Palo Alto Networks company.
 
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
-## Configure ExpanseV2 on Cortex XSOAR
+## Configure Cortex Xpanse on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Cortex Xpanse.
@@ -22,9 +22,9 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
     | incidentType | Incident type | False |
     | max_fetch | Maximum number of incidents per fetch | False |
     | first_fetch | First fetch time | False |
-    | priority | Fetch Expanse issues with Priority | False |
-    | activity_status | Fetch Expanse issues with Activity Status | False |
-    | progress_status | Fetch Expanse issues with Progress Status | False |
+    | priority | Fetch Xpanse issues with Priority | False |
+    | activity_status | Fetch Xpanse issues with Activity Status | False |
+    | progress_status | Fetch Xpanse issues with Progress Status | False |
     | business_unit | Fetch issues with Business Units \(comma separated string\) | False |
     | tag | Fetch issues with Tags \(comma separated string\) | False |
     | issue_type | Fetch issue with Types \(comma separated string\) | False |
@@ -74,18 +74,18 @@ Retrieve issues
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Expanse.Issue.activityStatus | String | Activity status of issue, whether the issue is active or inactive | 
-| Expanse.Issue.annotations.tags.id | String | The Internal Expanse tag id of the customer added tag | 
+| Expanse.Issue.annotations.tags.id | String | The Internal Xpanse tag id of the customer added tag | 
 | Expanse.Issue.annotations.tags.name | String | The tag name of the customer added tag | 
-| Expanse.Issue.assets.assetKey | String | Key used to access the asset in the respective Expanse asset API | 
+| Expanse.Issue.assets.assetKey | String | Key used to access the asset in the respective Xpanse asset API | 
 | Expanse.Issue.assets.assetType | String | The type of asset the issue primarily relates to | 
 | Expanse.Issue.assets.displayName | String | A friendly name for the asset | 
-| Expanse.Issue.assets.id | String | Internal Expanse ID the asset | 
+| Expanse.Issue.assets.id | String | Internal Xpanse ID the asset | 
 | Expanse.Issue.assigneeUsername | String | The username of the user that has been assigned to the issue | 
-| Expanse.Issue.businessUnits.id | String | The internal Expanse ID for the business unit the affected asset belongs to | 
+| Expanse.Issue.businessUnits.id | String | The internal Xpanse ID for the business unit the affected asset belongs to | 
 | Expanse.Issue.businessUnits.name | String | The name of the business unit the affected asset belongs to | 
 | Expanse.Issue.category | String | The general category of the issue | 
 | Expanse.Issue.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate | 
-| Expanse.Issue.certificate.id | String | The Internal Expanse certificate ID | 
+| Expanse.Issue.certificate.id | String | The Internal Xpanse certificate ID | 
 | Expanse.Issue.certificate.issuer | String | The issuer in the certificate | 
 | Expanse.Issue.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate | 
 | Expanse.Issue.certificate.issuerCountry | String | The issuer country in the certificate | 
@@ -123,10 +123,10 @@ Retrieve issues
 | Expanse.Issue.created | Date | When the issue instance was created | 
 | Expanse.Issue.domain | String | Domain name of the issue | 
 | Expanse.Issue.headline | String | A brief summary of the issue | 
-| Expanse.Issue.helpText | String | Why Expanse this type of issue should be avoided | 
-| Expanse.Issue.id | String | The internal Expanse ID of the issue | 
+| Expanse.Issue.helpText | String | Why Xpanse this type of issue should be avoided | 
+| Expanse.Issue.id | String | The internal Xpanse ID of the issue | 
 | Expanse.Issue.initialEvidence.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate in the initial observation | 
-| Expanse.Issue.initialEvidence.certificate.id | String | The Internal Expanse certificate ID in the initial observation | 
+| Expanse.Issue.initialEvidence.certificate.id | String | The Internal Xpanse certificate ID in the initial observation | 
 | Expanse.Issue.initialEvidence.certificate.issuer | String | The issuer in the certificate in the initial observation | 
 | Expanse.Issue.initialEvidence.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate in the initial observation | 
 | Expanse.Issue.initialEvidence.certificate.issuerCountry | String | The issuer country in the certificate in the initial observation | 
@@ -185,7 +185,7 @@ Retrieve issues
 | Expanse.Issue.issueType.id | String | The ID of the issue type | 
 | Expanse.Issue.issueType.name | String | The name of the issue type | 
 | Expanse.Issue.latestEvidence.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate in the most recent observation | 
-| Expanse.Issue.latestEvidence.certificate.id | String | The Internal Expanse certificate ID in the most recent observation | 
+| Expanse.Issue.latestEvidence.certificate.id | String | The Internal Xpanse certificate ID in the most recent observation | 
 | Expanse.Issue.latestEvidence.certificate.issuer | String | The issuer in the certificate in the most recent observation | 
 | Expanse.Issue.latestEvidence.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate in the most recent observation | 
 | Expanse.Issue.latestEvidence.certificate.issuerCountry | String | The issuer country in the certificate in the most recent observation | 
@@ -601,7 +601,7 @@ Retrieve issues
 
 ### expanse-get-issue-updates
 ***
-Retrieve updates for an Expanse issue.
+Retrieve updates for an Xpanse issue.
 
 
 #### Base Command
@@ -611,7 +611,7 @@ Retrieve updates for an Expanse issue.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Expanse issue ID to retrieve updates for. | Required | 
+| issue_id | Xpanse issue ID to retrieve updates for. | Required | 
 | update_types | Update types to retrieve (comma separated string. Valid options are 'Assignee', 'Comment', 'Priority', 'ProgressStatus', 'ActivityStatus'). | Optional | 
 | created_after | Returns only updates created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ). | Optional | 
 | limit | Maximum number of results to retrieve. | Optional | 
@@ -686,7 +686,7 @@ Retrieve issue comments (subset of updates)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Expanse issue ID to retrieve updates for. | Required | 
+| issue_id | Xpanse issue ID to retrieve updates for. | Required | 
 | created_after | Returns only comments created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ). | Optional | 
 
 
@@ -825,7 +825,7 @@ Retrieve issue comments (subset of updates)
 
 ### expanse-update-issue
 ***
-Update a property of an Expanse issue.
+Update a property of an Xpanse issue.
 
 
 #### Base Command
@@ -835,7 +835,7 @@ Update a property of an Expanse issue.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Expanse issue ID to update. | Required | 
+| issue_id | Xpanse issue ID to update. | Required | 
 | update_type | Type of update. Possible values are: Assignee, Comment, Priority, ProgressStatus. | Required | 
 | value | Updated value. | Required | 
 
@@ -885,7 +885,7 @@ Update a property of an Expanse issue.
 
 ### expanse-get-issue
 ***
-Retrieve Expanse issue by issue ID.
+Retrieve Xpanse issue by issue ID.
 
 
 #### Base Command
@@ -895,7 +895,7 @@ Retrieve Expanse issue by issue ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | ID of the Expanse issue to retrieve. | Required | 
+| issue_id | ID of the Xpanse issue to retrieve. | Required | 
 
 
 #### Context Output
@@ -903,18 +903,18 @@ Retrieve Expanse issue by issue ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Expanse.Issue.activityStatus | String | Activity status of issue, whether the issue is active or inactive | 
-| Expanse.Issue.annotations.tags.id | String | The Internal Expanse tag id of the customer added tag | 
+| Expanse.Issue.annotations.tags.id | String | The Internal Xpanse tag id of the customer added tag | 
 | Expanse.Issue.annotations.tags.name | String | The tag name of the customer added tag | 
-| Expanse.Issue.assets.assetKey | String | Key used to access the asset in the respective Expanse asset API | 
+| Expanse.Issue.assets.assetKey | String | Key used to access the asset in the respective Xpanse asset API | 
 | Expanse.Issue.assets.assetType | String | The type of asset the issue primarily relates to | 
 | Expanse.Issue.assets.displayName | String | A friendly name for the asset | 
-| Expanse.Issue.assets.id | String | Internal Expanse ID the asset | 
+| Expanse.Issue.assets.id | String | Internal Xpanse ID the asset | 
 | Expanse.Issue.assigneeUsername | String | The username of the user that has been assigned to the issue | 
-| Expanse.Issue.businessUnits.id | String | The internal Expanse ID for the business unit the affected asset belongs to | 
+| Expanse.Issue.businessUnits.id | String | The internal Xpanse ID for the business unit the affected asset belongs to | 
 | Expanse.Issue.businessUnits.name | String | The name of the business unit the affected asset belongs to | 
 | Expanse.Issue.category | String | The general category of the issue | 
 | Expanse.Issue.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate | 
-| Expanse.Issue.certificate.id | String | The Internal Expanse certificate ID | 
+| Expanse.Issue.certificate.id | String | The Internal Xpanse certificate ID | 
 | Expanse.Issue.certificate.issuer | String | The issuer in the certificate | 
 | Expanse.Issue.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate | 
 | Expanse.Issue.certificate.issuerCountry | String | The issuer country in the certificate | 
@@ -952,10 +952,10 @@ Retrieve Expanse issue by issue ID.
 | Expanse.Issue.created | Date | When the issue instance was created | 
 | Expanse.Issue.domain | String | Domain name of the issue | 
 | Expanse.Issue.headline | String | A brief summary of the issue | 
-| Expanse.Issue.helpText | String | Why Expanse this type of issue should be avoided | 
-| Expanse.Issue.id | String | The internal Expanse ID of the issue | 
+| Expanse.Issue.helpText | String | Why Xpanse this type of issue should be avoided | 
+| Expanse.Issue.id | String | The internal Xpanse ID of the issue | 
 | Expanse.Issue.initialEvidence.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate in the initial observation | 
-| Expanse.Issue.initialEvidence.certificate.id | String | The Internal Expanse certificate ID in the initial observation | 
+| Expanse.Issue.initialEvidence.certificate.id | String | The Internal Xpanse certificate ID in the initial observation | 
 | Expanse.Issue.initialEvidence.certificate.issuer | String | The issuer in the certificate in the initial observation | 
 | Expanse.Issue.initialEvidence.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate in the initial observation | 
 | Expanse.Issue.initialEvidence.certificate.issuerCountry | String | The issuer country in the certificate in the initial observation | 
@@ -1014,7 +1014,7 @@ Retrieve Expanse issue by issue ID.
 | Expanse.Issue.issueType.id | String | The ID of the issue type | 
 | Expanse.Issue.issueType.name | String | The name of the issue type | 
 | Expanse.Issue.latestEvidence.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate in the most recent observation | 
-| Expanse.Issue.latestEvidence.certificate.id | String | The Internal Expanse certificate ID in the most recent observation | 
+| Expanse.Issue.latestEvidence.certificate.id | String | The Internal Xpanse certificate ID in the most recent observation | 
 | Expanse.Issue.latestEvidence.certificate.issuer | String | The issuer in the certificate in the most recent observation | 
 | Expanse.Issue.latestEvidence.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate in the most recent observation | 
 | Expanse.Issue.latestEvidence.certificate.issuerCountry | String | The issuer country in the certificate in the most recent observation | 
@@ -1429,7 +1429,7 @@ Retrieve Expanse issue by issue ID.
 
 ### expanse-get-service
 ***
-Retrieve Expanse issue by service ID.
+Retrieve Xpanse issue by service ID.
 
 
 #### Base Command
@@ -1439,7 +1439,7 @@ Retrieve Expanse issue by service ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | ID of the Expanse service to retrieve. | Required | 
+| service_id | ID of the Xpanse service to retrieve. | Required | 
 
 
 #### Context Output
@@ -1447,21 +1447,21 @@ Retrieve Expanse issue by service ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Expanse.Service.activityStatus | String | Activity status of service, whether the service is active or inactive | 
-| Expanse.Service.annotations.tags.id | String | The Internal Expanse tag id of the customer added tag | 
+| Expanse.Service.annotations.tags.id | String | The Internal Xpanse tag id of the customer added tag | 
 | Expanse.Service.annotations.tags.name | String | The tag name of the customer added tag | 
-| Expanse.Service.assets.assetKey | String | Key used to access the asset in the respective Expanse asset API | 
+| Expanse.Service.assets.assetKey | String | Key used to access the asset in the respective Xpanse asset API | 
 | Expanse.Service.assets.assetType | String | The type of asset the issue primarily relates to | 
 | Expanse.Service.assets.displayName | String | A friendly name for the asset | 
-| Expanse.Service.assets.id | String | Internal Expanse ID the asset | 
+| Expanse.Service.assets.id | String | Internal Xpanse ID the asset | 
 | Expanse.Service.assets.referenceReason.id | String | ID for asset reference type | 
 | Expanse.Service.assets.referenceReason.name | String | Description for asset reference reason | 
-| Expanse.Service.businessUnits.id | String | The internal Expanse ID for the business unit the affected asset belongs to | 
+| Expanse.Service.businessUnits.id | String | The internal Xpanse ID for the business unit the affected asset belongs to | 
 | Expanse.Service.businessUnits.name | String | The name of the business unit the affected asset belongs to | 
 | Expanse.Service.certificates.assetId | String | Internal Asset ID of certificate | 
 | Expanse.Service.certificates.firstObserved | Date | First observation of certificate | 
 | Expanse.Service.certificates.lastObserved | Date | Most recent observation of certificate | 
 | Expanse.Service.certificates.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate | 
-| Expanse.Service.certificates.certificate.id | String | The Internal Expanse certificate ID | 
+| Expanse.Service.certificates.certificate.id | String | The Internal Xpanse certificate ID | 
 | Expanse.Service.certificates.certificate.issuer | String | The issuer in the certificate | 
 | Expanse.Service.certificates.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate | 
 | Expanse.Service.certificates.certificate.issuerCountry | String | The issuer country in the certificate | 
@@ -1542,7 +1542,7 @@ Retrieve Expanse issue by service ID.
 | Expanse.Service.domain.lastObserved | Date | The last observation of a domain related to the service | 
 | Expanse.Service.discoveryInfo.type | String | Whether the service was directly discovered or colocated | 
 | Expanse.Service.firstObserved | Date | First observation of the service | 
-| Expanse.Service.id | String | The internal Expanse ID of the service | 
+| Expanse.Service.id | String | The internal Xpanse ID of the service | 
 | Expanse.Service.ips.assetId | String | The Internal Asset ID of the ip related to the service | 
 | Expanse.Service.ips.firstObserved | Date | First observation of the ip related to the service | 
 | Expanse.Service.ips.geolocation.city | String | Geolocation city of the ip related to the service | 
@@ -1699,21 +1699,21 @@ Retrieve services
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Expanse.Service.activityStatus | String | Activity status of service, whether the service is active or inactive | 
-| Expanse.Service.annotations.tags.id | String | The Internal Expanse tag id of the customer added tag | 
+| Expanse.Service.annotations.tags.id | String | The Internal Xpanse tag id of the customer added tag | 
 | Expanse.Service.annotations.tags.name | String | The tag name of the customer added tag | 
-| Expanse.Service.assets.assetKey | String | Key used to access the asset in the respective Expanse asset API | 
+| Expanse.Service.assets.assetKey | String | Key used to access the asset in the respective Xpanse asset API | 
 | Expanse.Service.assets.assetType | String | The type of asset the issue primarily relates to | 
 | Expanse.Service.assets.displayName | String | A friendly name for the asset | 
-| Expanse.Service.assets.id | String | Internal Expanse ID the asset | 
+| Expanse.Service.assets.id | String | Internal Xpanse ID the asset | 
 | Expanse.Service.assets.referenceReason.id | String | ID for asset reference type | 
 | Expanse.Service.assets.referenceReason.name | String | Description for asset reference reason | 
-| Expanse.Service.businessUnits.id | String | The internal Expanse ID for the business unit the affected asset belongs to | 
+| Expanse.Service.businessUnits.id | String | The internal Xpanse ID for the business unit the affected asset belongs to | 
 | Expanse.Service.businessUnits.name | String | The name of the business unit the affected asset belongs to | 
 | Expanse.Service.certificates.assetId | String | Internal Asset ID of certificate | 
 | Expanse.Service.certificates.firstObserved | Date | First observation of certificate | 
 | Expanse.Service.certificates.lastObserved | Date | Most recent observation of certificate | 
 | Expanse.Service.certificates.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate | 
-| Expanse.Service.certificates.certificate.id | String | The Internal Expanse certificate ID | 
+| Expanse.Service.certificates.certificate.id | String | The Internal Xpanse certificate ID | 
 | Expanse.Service.certificates.certificate.issuer | String | The issuer in the certificate | 
 | Expanse.Service.certificates.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate | 
 | Expanse.Service.certificates.certificate.issuerCountry | String | The issuer country in the certificate | 
@@ -1794,7 +1794,7 @@ Retrieve services
 | Expanse.Service.domain.lastObserved | Date | The last observation of a domain related to the service | 
 | Expanse.Service.discoveryInfo.type | String | Whether the service was directly discovered or colocated | 
 | Expanse.Service.firstObserved | Date | First observation of the service | 
-| Expanse.Service.id | String | The internal Expanse ID of the service | 
+| Expanse.Service.id | String | The internal Xpanse ID of the service | 
 | Expanse.Service.ips.assetId | String | The Internal Asset ID of the ip related to the service | 
 | Expanse.Service.ips.firstObserved | Date | First observation of the ip related to the service | 
 | Expanse.Service.ips.geolocation.city | String | Geolocation city of the ip related to the service | 
@@ -1976,7 +1976,7 @@ Retrieve services
 
 ### expanse-list-pocs
 ***
-List available Point of Contacts from Expanse.
+List available Point of Contacts from Xpanse.
 
 
 #### Base Command
@@ -2034,7 +2034,7 @@ List available Point of Contacts from Expanse.
 
 ### expanse-create-poc
 ***
-Create a new Point of Contact in Expanse.
+Create a new Point of Contact in Xpanse.
 
 
 #### Base Command
@@ -2076,7 +2076,7 @@ Create a new Point of Contact in Expanse.
 
 ### expanse-assign-pocs-to-asset
 ***
-Assign Point of Contacts to an Expanse asset.
+Assign Point of Contacts to an Xpanse asset.
 
 
 #### Base Command
@@ -2086,7 +2086,7 @@ Assign Point of Contacts to an Expanse asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Expanse asset to assign the poc to. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to assign the poc to. Possible values are: IpRange, Certificate, Domain. | Required | 
 | asset_id | ID of the asset to assign the poc to. | Required | 
 | pocs | IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
 | poc_emails | Email Addresses of the pocs to assign to the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
@@ -2107,7 +2107,7 @@ Assign Point of Contacts to an Expanse asset.
 
 ### expanse-unassign-pocs-from-asset
 ***
-Unassign Point of Contacts from an Expanse Asset.
+Unassign Point of Contacts from an Xpanse Asset.
 
 
 #### Base Command
@@ -2117,7 +2117,7 @@ Unassign Point of Contacts from an Expanse Asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Expanse asset to unassign the pocs from. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to unassign the pocs from. Possible values are: IpRange, Certificate, Domain. | Required | 
 | asset_id | ID of the asset to unassign the pocs from. | Required | 
 | pocs | IDs of the pocs to unassign from the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
 | poc_emails | Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
@@ -2138,7 +2138,7 @@ Unassign Point of Contacts from an Expanse Asset.
 
 ### expanse-assign-pocs-to-iprange
 ***
-Assign Point of Contacts to an Expanse IP range.
+Assign Point of Contacts to an Xpanse IP range.
 
 
 #### Base Command
@@ -2168,7 +2168,7 @@ Assign Point of Contacts to an Expanse IP range.
 
 ### expanse-unassign-pocs-from-iprange
 ***
-Unassign Point of Contacts from an Expanse IP range.
+Unassign Point of Contacts from an Xpanse IP range.
 
 
 #### Base Command
@@ -2198,7 +2198,7 @@ Unassign Point of Contacts from an Expanse IP range.
 
 ### expanse-assign-pocs-to-certificate
 ***
-Assign pocs to an Expanse certificate.
+Assign pocs to an Xpanse certificate.
 
 
 #### Base Command
@@ -2228,7 +2228,7 @@ Assign pocs to an Expanse certificate.
 
 ### expanse-unassign-pocs-from-certificate
 ***
-Unassign pocs from an Expanse certificate.
+Unassign pocs from an Xpanse certificate.
 
 
 #### Base Command
@@ -2258,7 +2258,7 @@ Unassign pocs from an Expanse certificate.
 
 ### expanse-assign-pocs-to-domain
 ***
-Assign pocs to an Expanse domain.
+Assign pocs to an Xpanse domain.
 
 
 #### Base Command
@@ -2288,7 +2288,7 @@ Assign pocs to an Expanse domain.
 
 ### expanse-unassign-pocs-from-domain
 ***
-Unassign pocs from an Expanse domain.
+Unassign pocs from an Xpanse domain.
 
 
 #### Base Command
@@ -2319,7 +2319,7 @@ Unassign pocs from an Expanse domain.
 
 ### expanse-list-businessunits
 ***
-List available business units from Expanse.
+List available business units from Xpanse.
 
 
 #### Base Command
@@ -2372,7 +2372,7 @@ List available business units from Expanse.
 
 ### expanse-list-providers
 ***
-List available providers from Expanse.
+List available providers from Xpanse.
 
 
 #### Base Command
@@ -2445,7 +2445,7 @@ List available tags from Expanse.
 | Expanse.Tag.created | Date | The date in which the tag was first created | 
 | Expanse.Tag.description | String | The description associated with the tag | 
 | Expanse.Tag.disabled | Boolean | If the tag should be hidden as a tag option in the Expander UI | 
-| Expanse.Tag.id | String | The Expanse ID for the tag | 
+| Expanse.Tag.id | String | The Xpanse ID for the tag | 
 | Expanse.Tag.modified | Date | The date in which metadata about the tag was last modified | 
 | Expanse.Tag.name | String | The display name for the tag | 
 | Expanse.Tag.tenantId | String | The tenant ID associated with the tag | 
@@ -2493,7 +2493,7 @@ List available tags from Expanse.
 
 ### expanse-assign-tags-to-asset
 ***
-Assign tags to an Expanse asset.
+Assign tags to an Xpanse asset.
 
 
 #### Base Command
@@ -2503,7 +2503,7 @@ Assign tags to an Expanse asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Expanse asset to assign the tag to. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to assign the tag to. Possible values are: IpRange, Certificate, Domain. | Required | 
 | asset_id | ID of the asset to assign the tags to. | Required | 
 | tags | IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged. | Optional | 
 | tag_names | Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged. | Optional | 
@@ -2529,7 +2529,7 @@ Assign tags to an Expanse asset.
 
 ### expanse-unassign-tags-from-asset
 ***
-Unassign tags from an Expanse Asset.
+Unassign tags from an Xpanse Asset.
 
 
 #### Base Command
@@ -2539,7 +2539,7 @@ Unassign tags from an Expanse Asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Expanse asset to unassign the tags from. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to unassign the tags from. Possible values are: IpRange, Certificate, Domain. | Required | 
 | asset_id | ID of the asset to unassign the tags from. | Required | 
 | tags | IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged. | Optional | 
 | tag_names | Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged. | Optional | 
@@ -2565,7 +2565,7 @@ Unassign tags from an Expanse Asset.
 
 ### expanse-assign-tags-to-iprange
 ***
-Assign tags to an Expanse IP range.
+Assign tags to an Xpanse IP range.
 
 
 #### Base Command
@@ -2600,7 +2600,7 @@ Assign tags to an Expanse IP range.
 
 ### expanse-unassign-tags-from-iprange
 ***
-Unassign tags from an Expanse IP range.
+Unassign tags from an Xpanse IP range.
 
 
 #### Base Command
@@ -2635,7 +2635,7 @@ Unassign tags from an Expanse IP range.
 
 ### expanse-assign-tags-to-certificate
 ***
-Assign tags to an Expanse certificate.
+Assign tags to an Xpanse certificate.
 
 
 #### Base Command
@@ -2670,7 +2670,7 @@ Assign tags to an Expanse certificate.
 
 ### expanse-unassign-tags-from-certificate
 ***
-Unassign tags from an Expanse certificate.
+Unassign tags from an Xpanse certificate.
 
 
 #### Base Command
@@ -2705,7 +2705,7 @@ Unassign tags from an Expanse certificate.
 
 ### expanse-assign-tags-to-domain
 ***
-Assign tags to an Expanse domain.
+Assign tags to an Xpanse domain.
 
 
 #### Base Command
@@ -2740,7 +2740,7 @@ Assign tags to an Expanse domain.
 
 ### expanse-unassign-tags-from-domain
 ***
-Unassign tags from an Expanse domain.
+Unassign tags from an Xpanse domain.
 
 
 #### Base Command
@@ -2775,7 +2775,7 @@ Unassign tags from an Expanse domain.
 
 ### expanse-create-tag
 ***
-Create a new tag in Expanse.
+Create a new tag in Xpanse.
 
 
 #### Base Command
@@ -2796,7 +2796,7 @@ Create a new tag in Expanse.
 | Expanse.Tag.created | Date | The date in which the tag was first created | 
 | Expanse.Tag.description | String | The description associated with the tag | 
 | Expanse.Tag.disabled | Boolean | If the tag should be hidden as a tag option in the Expander UI | 
-| Expanse.Tag.id | String | The Expanse ID for the tag | 
+| Expanse.Tag.id | String | The Xpanse ID for the tag | 
 | Expanse.Tag.modified | Date | The date in which metadata about the tag was last modified | 
 | Expanse.Tag.name | String | The display name for the tag | 
 | Expanse.Tag.tenantId | String | The tenant ID associated with the tag | 
@@ -2816,7 +2816,7 @@ Create a new tag in Expanse.
 
 ### expanse-get-iprange
 ***
-Retrieve Expanse IP ranges by asset id or search parameters.
+Retrieve Xpanse IP ranges by asset id or search parameters.
 
 
 #### Base Command
@@ -2826,7 +2826,7 @@ Retrieve Expanse IP ranges by asset id or search parameters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Asset ID of the Expanse IP range to retrieve. If provided, other search parameters are ignored. | Optional | 
+| id | Asset ID of the Xpanse IP range to retrieve. If provided, other search parameters are ignored. | Optional | 
 | business_units | Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument. | Optional | 
 | business_unit_names | Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument. | Optional | 
 | inet | Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d). | Optional | 
@@ -2848,7 +2848,7 @@ Retrieve Expanse IP ranges by asset id or search parameters.
 | Expanse.IPRange.businessUnits.id | String | Business Units that the IP range has been assigned to | 
 | Expanse.IPRange.businessUnits.name | String | Business Units that the IP range has been assigned to | 
 | Expanse.IPRange.created | Date | The date that the IP range was added to the Expander instance | 
-| Expanse.IPRange.id | String | Internal Expanse ID for the IP Range | 
+| Expanse.IPRange.id | String | Internal Xpanse ID for the IP Range | 
 | Expanse.IPRange.ipVersion | String | The IP version of the IP range | 
 | Expanse.IPRange.locationInformation.geolocation.city | String | The IP range geolocation | 
 | Expanse.IPRange.locationInformation.geolocation.countryCode | String | The IP range geolocation | 
@@ -2859,7 +2859,7 @@ Retrieve Expanse IP ranges by asset id or search parameters.
 | Expanse.IPRange.modified | Date | The date on which the IP range was last ingested into Expander | 
 | Expanse.IPRange.rangeIntroduced | Date | The date that the IP range was added to the Expander instance | 
 | Expanse.IPRange.rangeSize | Number | The number of IP addresses in the IP range | 
-| Expanse.IPRange.rangeType | String | If the IP range is Expanse-generated parent range or a customer-generated custom range | 
+| Expanse.IPRange.rangeType | String | If the IP range is Xpanse-generated parent range or a customer-generated custom range | 
 | Expanse.IPRange.relatedRegistrationInformation.country | String | The country within the IP range registration information | 
 | Expanse.IPRange.relatedRegistrationInformation.endAddress | String | The end address within the IP range registration information | 
 | Expanse.IPRange.relatedRegistrationInformation.handle | String | The handle within the IP range registration information | 
@@ -2942,7 +2942,7 @@ Retrieve Expanse IP ranges by asset id or search parameters.
 
 ### expanse-get-domain
 ***
-Retrieve Expanse domains by domain name or search parameters.
+Retrieve Xpanse domains by domain name or search parameters.
 
 
 #### Base Command
@@ -2953,12 +2953,12 @@ Retrieve Expanse domains by domain name or search parameters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | Domain name to retrieve (exact match). If provided, other search parameters are ignored. | Optional | 
-| last_observed_date | Last date the domain was observed by Expanse (Format is YYYY-MM-DD). | Optional | 
+| last_observed_date | Last date the domain was observed by Xpanse (Format is YYYY-MM-DD). | Optional | 
 | search | Search domain names that match the specified substring. | Optional | 
 | limit | Maximum number of entries to retrieve. | Optional | 
 | has_dns_resolution | Retrieve only domains with or without DNS resolution. Possible values are: true, false. | Optional | 
-| has_active_service | Retrieve only domains with or without an active service discovered by Expanse. Possible values are: true, false. | Optional | 
-| has_related_cloud_resources | Retrieve only domains with or without cloud resources discovered by Expanse. Possible values are: true, false. | Optional | 
+| has_active_service | Retrieve only domains with or without an active service discovered by Xpanse. Possible values are: true, false. | Optional | 
+| has_related_cloud_resources | Retrieve only domains with or without cloud resources discovered by Xpanse. Possible values are: true, false. | Optional | 
 | tags | Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument. | Optional | 
 | tag_names | Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument. | Optional | 
 | business_units | Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument. | Optional | 
@@ -2998,7 +2998,7 @@ Retrieve Expanse domains by domain name or search parameters.
 | Expanse.Domain.dnsResolutionStatus | String | Latest DNS resolution status | 
 | Expanse.Domain.firstObserved | Date | The date that the domain was first observed | 
 | Expanse.Domain.hasLinkedCloudResources | Boolean | Whether the domain has any linked cloud resources associated with it | 
-| Expanse.Domain.id | String | Internal Expanse ID for Domain | 
+| Expanse.Domain.id | String | Internal Xpanse ID for Domain | 
 | Expanse.Domain.domain | String | The domain value | 
 | Expanse.Domain.isCollapsed | Boolean | Whether or not the subdomains of the domain are collapsed | 
 | Expanse.Domain.isPaidLevelDomain | Boolean | Whether or not the domain is a PLD | 
@@ -3376,7 +3376,7 @@ Retrieve Expanse domains by domain name or search parameters.
 
 ### expanse-get-associated-domains
 ***
-Returns all the Expanse domains which have been seen with the specified certificate or IP address.
+Returns all the Xpanse domains which have been seen with the specified certificate or IP address.
 
 
 #### Base Command
@@ -3398,7 +3398,7 @@ Returns all the Expanse domains which have been seen with the specified certific
 | --- | --- | --- |
 | Expanse.AssociatedDomain.name | String | Name of the domain. | 
 | Expanse.AssociatedDomain.IP | String | IP Address the domain resolved to. | 
-| Expanse.AssociatedDomain.certificate | String | Expanse ID of the certificate associated to this domain. | 
+| Expanse.AssociatedDomain.certificate | String | Xpanse ID of the certificate associated to this domain. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -3443,7 +3443,7 @@ Returns all the Expanse domains which have been seen with the specified certific
 
 ### expanse-get-certificate
 ***
-Retrieve Expanse certificates by MD5 hash or search parameters.
+Retrieve Xpanse certificates by MD5 hash or search parameters.
 
 
 #### Base Command
@@ -3454,12 +3454,12 @@ Retrieve Expanse certificates by MD5 hash or search parameters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | md5_hash | MD5 Hash of the certificate. If provided, other search parameters are ignored. | Optional | 
-| last_observed_date | Last date the domain was observed by Expanse (Format is YYYY-MM-DD), to be used with domain argument. | Optional | 
+| last_observed_date | Last date the domain was observed by Xpanse (Format is YYYY-MM-DD), to be used with domain argument. | Optional | 
 | search | Search for  certificates with the specified substring in common name. | Optional | 
 | limit | Maximum number of entries to retrieve. | Optional | 
 | has_certificate_advertisement | Retrieve only certificates actively/not actively advertised. Possible values are: true, false. | Optional | 
-| has_active_service | Retrieve only certificates with or without an active service discovered by Expanse. Possible values are: true, false. | Optional | 
-| has_related_cloud_resources | Retrieve only certificates with or without cloud resources discovered by Expanse. Possible values are: true, false. | Optional | 
+| has_active_service | Retrieve only certificates with or without an active service discovered by Xpanse. Possible values are: true, false. | Optional | 
+| has_related_cloud_resources | Retrieve only certificates with or without cloud resources discovered by Xpanse. Possible values are: true, false. | Optional | 
 | tags | Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument. | Optional | 
 | tag_names | Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument. | Optional | 
 | business_units | Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument. | Optional | 
@@ -3535,9 +3535,9 @@ Retrieve Expanse certificates by MD5 hash or search parameters.
 | Expanse.Certificate.details.recentIps.type | String | Additional details for the recent IPs linked to the certificate | 
 | Expanse.Certificate.firstObserved | Date | The date that the certificate was first observed | 
 | Expanse.Certificate.hasLinkedCloudResources | Boolean | Whether the certificate has any linked cloud resources associated with it | 
-| Expanse.Certificate.id | String | Internal Expanse ID for Certificate | 
+| Expanse.Certificate.id | String | Internal Xpanse ID for Certificate | 
 | Expanse.Certificate.lastObserved | Date | The date that the certificate was most recently observed | 
-| Expanse.Certificate.properties | String | Expanse tagged properties of the certificate | 
+| Expanse.Certificate.properties | String | Xpanse tagged properties of the certificate | 
 | Expanse.Certificate.providers.id | String | The Provider information for the certificate | 
 | Expanse.Certificate.providers.name | String | The Provider information for the certificate | 
 | Expanse.Certificate.serviceStatus | String | Detected service statuses for the certificate | 
@@ -3746,7 +3746,7 @@ This field includes the Common Name of the certificate.
 
 ### certificate
 ***
-Provides data enrichment for an X509 Certificate from Expanse.
+Provides data enrichment for an X509 Certificate from Xpanse.
 
 
 #### Base Command
@@ -3756,8 +3756,8 @@ Provides data enrichment for an X509 Certificate from Expanse.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| certificate | MD5, SHA-1, SHA-256 or SHA-512 hash of the certificate to enrich.<br/>If MD5 is given, the command will check directly with Expanse API otherwise<br/>the script looks first for an indicator with the given hash to retrieve the<br/>corresponding MD5 hash.<br/>. | Optional | 
-| set_expanse_fields | If set to true, the command updates the Expanse custom fields of the indicator.<br/>Only if an indicator already exists.<br/>. Possible values are: true, false. | Optional | 
+| certificate | MD5, SHA-1, SHA-256 or SHA-512 hash of the certificate to enrich.<br/>If MD5 is given, the command will check directly with Xpanse API otherwise<br/>the script looks first for an indicator with the given hash to retrieve the<br/>corresponding MD5 hash.<br/>. | Optional | 
+| set_expanse_fields | If set to true, the command updates the Xpanse custom fields of the indicator.<br/>Only if an indicator already exists.<br/>. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -3827,9 +3827,9 @@ Provides data enrichment for an X509 Certificate from Expanse.
 | Expanse.Certificate.details.recentIps.type | String | Additional details for the recent IPs linked to the certificate | 
 | Expanse.Certificate.firstObserved | Date | The date that the certificate was first observed | 
 | Expanse.Certificate.hasLinkedCloudResources | Boolean | Whether the certificate has any linked cloud resources associated with it | 
-| Expanse.Certificate.id | String | Internal Expanse ID for Certificate | 
+| Expanse.Certificate.id | String | Internal Xpanse ID for Certificate | 
 | Expanse.Certificate.lastObserved | Date | The date that the certificate was most recently observed | 
-| Expanse.Certificate.properties | String | Expanse tagged properties of the certificate | 
+| Expanse.Certificate.properties | String | Xpanse tagged properties of the certificate | 
 | Expanse.Certificate.providers.id | String | The Provider information for the certificate | 
 | Expanse.Certificate.providers.name | String | The Provider information for the certificate | 
 | Expanse.Certificate.serviceStatus | String | Detected service statuses for the certificate | 
@@ -4046,7 +4046,7 @@ This field includes the Common Name of the certificate.
 
 ### expanse-get-cloud-resources
 ***
-Retrieve Cloud Resource assets from Expanse.
+Retrieve Cloud Resource assets from Xpanse.
 
 
 #### Base Command
@@ -4057,7 +4057,7 @@ Retrieve Cloud Resource assets from Expanse.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | Maximum number of cloud resources to retrieve. | Optional | 
-| last_observed_date | Last date the cloud resource was observed by Expanse. (Format is YYYY-MM-DD). | Optional | 
+| last_observed_date | Last date the cloud resource was observed by Xpanse. (Format is YYYY-MM-DD). | Optional | 
 | domain | A domain search string to find related cloud resources. | Optional | 
 | ip | An IP search string to find related cloud resources. | Optional | 
 | providers | A search string of provider IDs to find cloud resources hosted by specific providers. | Optional | 
@@ -4180,7 +4180,7 @@ Retrieve Cloud Resource assets from Expanse.
 
 ### expanse-get-cloud-resource
 ***
-Retrieve a specified cloud resource from Expanse.
+Retrieve a specified cloud resource from Xpanse.
 
 
 #### Base Command
@@ -4300,7 +4300,7 @@ Retrieve a specified cloud resource from Expanse.
 
 ### expanse-get-risky-flows
 ***
-(Deprecated) Retrieve risky flows detected by Expanse Behavior.
+(Deprecated) Retrieve risky flows detected by Xpanse Behavior.
 
 
 #### Base Command
@@ -4325,7 +4325,7 @@ Retrieve a specified cloud resource from Expanse.
 | Expanse.RiskyFlow.acked | Boolean | Whether the risky flow was acked | 
 | Expanse.RiskyFlow.businessUnit.id | String | The business unit id of the asset involved in the risky flow | 
 | Expanse.RiskyFlow.businessUnit.name | String | The business unit name of the asset involved in the risky flow | 
-| Expanse.RiskyFlow.created | Date | The timestamp when the risky flow was found and created by Expanse | 
+| Expanse.RiskyFlow.created | Date | The timestamp when the risky flow was found and created by Xpanse | 
 | Expanse.RiskyFlow.externalAddress | String | The external IPv4 address involved in the risky flow | 
 | Expanse.RiskyFlow.externalCountryCode | String | The external country code of the IPv4 involved in the risky flow | 
 | Expanse.RiskyFlow.externalCountryCodes | String | The external country codes of the IPv4 involved in the risky flow | 
@@ -4405,7 +4405,7 @@ Retrieve a specified cloud resource from Expanse.
 
 ### expanse-list-risk-rules
 ***
-(Deprecated) List risk rules from Expanse Behavior
+(Deprecated) List risk rules from Xpanse Behavior
 
 
 #### Base Command
@@ -4537,7 +4537,7 @@ Provides data enrichment for domains.
 | Expanse.Domain.dnsResolutionStatus | String | Latest DNS resolution status | 
 | Expanse.Domain.firstObserved | Date | The date that the domain was first observed | 
 | Expanse.Domain.hasLinkedCloudResources | Boolean | Whether the domain has any linked cloud resources associated with it | 
-| Expanse.Domain.id | String | Internal Expanse ID for Domain | 
+| Expanse.Domain.id | String | Internal Xpanse ID for Domain | 
 | Expanse.Domain.domain | String | The domain value | 
 | Expanse.Domain.isCollapsed | Boolean | Whether or not the subdomains of the domain are collapsed | 
 | Expanse.Domain.isPaidLevelDomain | Boolean | Whether or not the domain is a PLD | 
@@ -4941,9 +4941,9 @@ Provides data enrichment for IPs.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Expanse.IP.ip | String | The IPv4 address of the asset | 
-| Expanse.IP.assetKey | String | Key used to access the asset in the respective Expanse asset API | 
+| Expanse.IP.assetKey | String | Key used to access the asset in the respective Xpanse asset API | 
 | Expanse.IP.assetType | String | The type of asset | 
-| Expanse.IP.businessUnits.id | String | The internal Expanse ID for the business unit the asset belongs to | 
+| Expanse.IP.businessUnits.id | String | The internal Xpanse ID for the business unit the asset belongs to | 
 | Expanse.IP.businessUnits.name | String | The name of the business unit the asset belongs to | 
 | Expanse.IP.businessUnits.tenantId | String | The ID of the tenant that the asset belongs to | 
 | Expanse.IP.commonName | String | The certificate common name of the asset | 
@@ -4951,7 +4951,7 @@ Provides data enrichment for IPs.
 | Expanse.IP.lastObserved | Date | The last observed IPv4 address of the asset | 
 | Expanse.IP.provider.id | String | The ID of the provider the asset was detected on | 
 | Expanse.IP.provider.name | String | The name of the provider the asset was detected on | 
-| Expanse.IP.tenant.id | String | The internal Expanse ID of the tenant that the asset belongs to | 
+| Expanse.IP.tenant.id | String | The internal Xpanse ID of the tenant that the asset belongs to | 
 | Expanse.IP.tenant.name | String | The name of the tenant that the asset belongs to | 
 | Expanse.IP.tenant.tenantId | String | The ID of the tenant that the asset belongs to | 
 | Expanse.IP.type | String | The type of asset that the IPv4 address relates to | 
@@ -5027,7 +5027,7 @@ Provides data enrichment for IPs.
 
 ### cidr
 ***
-Provides data enrichment for CIDR blocks using Expanse IP Range.
+Provides data enrichment for CIDR blocks using Xpanse IP Range.
 
 
 #### Base Command
@@ -5052,7 +5052,7 @@ Provides data enrichment for CIDR blocks using Expanse IP Range.
 | Expanse.IPRange.businessUnits.id | String | Business Units that the IP range has been assigned to | 
 | Expanse.IPRange.businessUnits.name | String | Business Units that the IP range has been assigned to | 
 | Expanse.IPRange.created | Date | The date that the IP range was added to the Expander instance | 
-| Expanse.IPRange.id | String | Internal Expanse ID for the IP Range | 
+| Expanse.IPRange.id | String | Internal Xpanse ID for the IP Range | 
 | Expanse.IPRange.ipVersion | String | The IP version of the IP range | 
 | Expanse.IPRange.locationInformation.geolocation.city | String | The IP range geolocation | 
 | Expanse.IPRange.locationInformation.geolocation.countryCode | String | The IP range geolocation | 
@@ -5063,7 +5063,7 @@ Provides data enrichment for CIDR blocks using Expanse IP Range.
 | Expanse.IPRange.modified | Date | The date on which the IP range was last ingested into Expander | 
 | Expanse.IPRange.rangeIntroduced | Date | The date that the IP range was added to the Expander instance | 
 | Expanse.IPRange.rangeSize | Number | The number of IP addresses in the IP range | 
-| Expanse.IPRange.rangeType | String | If the IP range is Expanse-generated parent range or a customer-generated custom range | 
+| Expanse.IPRange.rangeType | String | If the IP range is Xpanse-generated parent range or a customer-generated custom range | 
 | Expanse.IPRange.relatedRegistrationInformation.country | String | The country within the IP range registration information | 
 | Expanse.IPRange.relatedRegistrationInformation.endAddress | String | The end address within the IP range registration information | 
 | Expanse.IPRange.relatedRegistrationInformation.handle | String | The handle within the IP range registration information | 

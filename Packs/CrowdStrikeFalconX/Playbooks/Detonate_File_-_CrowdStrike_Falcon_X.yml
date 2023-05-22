@@ -44,7 +44,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 20
+          "y": 50
         }
       }
     note: false
@@ -100,8 +100,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1530
+          "x": 500,
+          "y": 1595
         }
       }
     note: false
@@ -130,8 +130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1760
+          "x": 500,
+          "y": 1770
         }
       }
     note: false
@@ -154,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 2090
+          "y": 1945
         }
       }
     note: false
@@ -232,7 +232,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "2"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -246,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1230
+          "y": 1245
         }
       }
     note: false
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 915
+          "y": 895
         }
       }
     note: false
@@ -480,7 +480,37 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1075
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 7f92d8fa-94a2-4957-871a-872d191d80f0
+    type: regular
+    task:
+      id: 7f92d8fa-94a2-4957-871a-872d191d80f0
+      version: -1
+      name: Sleep before first polling
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
         }
       }
     note: false
@@ -491,10 +521,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 790,
+        "height": 1960,
+        "width": 830,
         "x": 50,
-        "y": 20
+        "y": 50
       }
     }
   }
@@ -543,7 +573,7 @@ inputs:
 - key: SubmitName
   value: {}
   required: false
-  description: Name of the malware sample that’s used for file type detection. and
+  description: Name of the malware sample that's used for file type detection. and
     analysis.
   playbookInputQuery: null
 - key: SystemDate

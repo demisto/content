@@ -32,10 +32,6 @@
           "type": "string",
           "is_array": false
       },
-      "cefDeviceProduct": {
-          "type": "string",
-          "is_array": false
-      },
       "cefDeviceVersion": {
           "type": "string",
           "is_array": false
@@ -85,10 +81,6 @@
           "is_array": false
       },
       "src": {
-          "type": "string",
-          "is_array": false
-      },
-      "cefDeviceVendor": {
           "type": "string",
           "is_array": false
       }

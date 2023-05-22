@@ -11,6 +11,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: What is the top level object to search in (usually a project or organization in format of organization/XX).
+  display: Default Search Scope
+  name: default_search_scope
+  required: false
+  type: 0
 description: Google Compute Engine delivers virtual machines running in Google's innovative data centers and worldwide fiber network. Compute Engine's tooling and workflow support enable scaling from single instances to global, load-balanced cloud computing.
 display: Google Cloud Compute
 name: Google Cloud Compute
@@ -1384,6 +1389,8 @@ script:
     - description: The name of the zone for this request.
       name: zone
       required: true
+    - description: Project ID that you want to run this command on.
+      name: project_id
     description: Returns the specified Instance resource. Gets a list of available instances by making a list() request.
     name: gcp-compute-get-instance
     outputs:
@@ -7098,6 +7105,8 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Project ID that you want to run this command on.
+      name: project_id
     description: Creates a firewall rule in the specified project using the data included in the request.
     name: gcp-compute-insert-firewall
     outputs:
@@ -7340,6 +7349,8 @@ script:
       name: orderBy
     - description: Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
       name: pageToken
+    - description: Project ID that you want to run this command on.
+      name: project_id
     description: Retrieves the list of firewall rules available to the specified project.
     name: gcp-compute-list-firewall
     outputs:
@@ -8023,6 +8034,8 @@ script:
     - description: Network tag to add.  Tag must be unique, 1-63 characters long, and comply with RFC1035.
       name: tag
       required: true
+    - description: Project ID that you want to run this command on.
+      name: project_id
     description: Add network tag for the specified instance.
     name: gcp-compute-add-network-tag
     outputs:
@@ -8399,7 +8412,7 @@ script:
     - contextPath: GoogleCloudCompute.Instances.kind
       description: '] Type of the resource. Always compute#instance for instances.'
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.41311
+  dockerimage: demisto/googleapi-python3:1.0.0.50652
   runonce: false
   script: ''
   subtype: python3

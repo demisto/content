@@ -1,0 +1,87 @@
+{
+    "id": "incident_symantecedrattacks",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "modified": "2023-01-11T16:33:26.019959717+05:30",
+    "name": "SymantecEDR attacks",
+    "ownerOnly": false,
+    "cliName": "symantecedrattacks",
+    "type": "grid",
+    "closeForm": true,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Symantec EDR Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "technique_uid",
+            "displayName": "technique_uid",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "technique_name",
+            "displayName": "technique_name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "tactic_ids",
+            "displayName": "tactic_ids",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "tactic_uids",
+            "displayName": "tactic_uids",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

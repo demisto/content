@@ -13,6 +13,8 @@ configuration:
   - Both
   required: false
   type: 15
+  hidden:
+    - marketplacev2
 - additionalinfo: https://<Respond Analyst Server> (either hostname or IP address)
   display: Base Url
   name: base_url
@@ -243,7 +245,7 @@ script:
       is a specific event derived from a cybersecurity telemetry. Escalations are
       compiled together to form Incidents in Respond.
     name: mad-get-escalations
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   ismappable: false
   isremotesyncin: true
@@ -255,5 +257,5 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-defaultclassifier: Mandiant Automated Defense Classifier
-defaultmapperin: Mandiant Automated Defense Incoming Mapper
+defaultclassifier: mandiant-automated-defense-classifier
+defaultmapperin: mandiant-automated-defense-incoming-mapper

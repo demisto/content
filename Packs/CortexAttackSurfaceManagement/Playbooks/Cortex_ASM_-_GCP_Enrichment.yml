@@ -1,7 +1,9 @@
 id: Cortex ASM - GCP Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex ASM - GCP Enrichment
-description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
+description: Given the IP address this playbook enriches GCP and Firewall information.
 starttaskid: "0"
 tasks:
   "0":
@@ -36,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7e88d6a9-2f2a-407c-8f34-736fa7f41b7e
+    taskid: 17107715-e114-4007-8d78-dbe7b96251ff
     type: playbook
     task:
-      id: 7e88d6a9-2f2a-407c-8f34-736fa7f41b7e
+      id: 17107715-e114-4007-8d78-dbe7b96251ff
       version: -1
       name: GCP - Enrichment
       description: Given the IP address this playbook enriches GCP and Firewall information.
@@ -50,8 +52,17 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      GcpIP:
+        complex:
+          root: inputs.RemoteIP
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -62,7 +73,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1112,7 +1123,12 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "29_9_#default#": 0.16,
+      "3_9_#default#": 0.13,
+      "4_9_#default#": 0.25,
+      "5_9_#default#": 0.1
+    },
     "paper": {
       "dimensions": {
         "height": 2205,
@@ -1134,7 +1150,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
-marketplaces:
-  - xsoar
-  - marketplacev2
+fromversion: 6.8.0

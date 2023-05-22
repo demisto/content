@@ -9,3 +9,7 @@ ignore=BA101
 
 [file:classifier-MicrosoftCloudAppSecurity.json]
 ignore=BA101
+
+[file:MicrosoftDefenderEventCollector.yml]
+ignore=BA124
+

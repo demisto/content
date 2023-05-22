@@ -7,9 +7,10 @@ from CommonServerPython import *  # noqa: F401
 
 
 import traceback
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 IAM_GET_USER_ATTRIBUTES = ['id', 'user_name', 'email']
 '''CLIENT CLASS'''

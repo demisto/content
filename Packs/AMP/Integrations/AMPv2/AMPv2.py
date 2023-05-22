@@ -1165,9 +1165,10 @@ def fetch_incidents(
     client: Client,
     last_run: Dict[str, Any],
     first_fetch_time: str,
+    incident_severities: List[str | None],
     event_types: List[int] = None,
-    incident_severities: List[str] = None,
     max_incidents_to_fetch: int = FETCH_LIMIT,
+    include_null_severities: bool = False,
 ) -> Tuple[Dict[str, int], List[dict]]:
     """
     Retrieves new alerts every interval (default is 1 minute).
@@ -1188,6 +1189,7 @@ def fetch_incidents(
             Defaults to None.
         max_incidents_to_fetch (int, optional): Max number of incidents to fetch in a single run.
             Defaults to FETCH_LIMIT.
+        include_null_severities (bool): Whether to include incidents without any severity.
 
     Returns:
         Tuple[Dict[str, int], List[dict]]:
@@ -1209,19 +1211,26 @@ def fetch_incidents(
     incidents: List[Dict[str, Any]] = []
     incident_name = 'Cisco AMP Event ID:"{event_id}"'
 
+    # Incase the severity acceptance list is empty, initialize it with all values.
+    if not incident_severities:
+        incident_severities.extend(XSOAR_SEVERITY_BY_AMP_SEVERITY.keys())
+
+    # Whether to accept an incident without a severity.
+    if include_null_severities:
+        incident_severities.append(None)
+
     for item in items:
         # Break once the maximum number of incidents has been achieved.
         if len(incidents) >= max_incidents_to_fetch:
             break
 
-        # Continue if the incident severity isn't in the requested list (only if there is one).
-        if (
-            incident_severities
-            and (severity := item.get("severity")) not in incident_severities
-        ):
+        severity = item.get("severity")
+
+        # Skip if the incident severity isn't in the requested severities.
+        if severity not in incident_severities:
             continue
 
-        # Continue if the incident ID has been fetched already.
+        # Skip if the incident ID has been fetched already.
         if (incident_id := str(item.get("id"))) in previous_ids:
             continue
 
@@ -3636,6 +3645,7 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     reliability = params.get("integrationReliability", DBotScoreReliability.C)
     proxy = params.get("proxy", False)
+    include_null_severities = params.get("include_null_severities", False)
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
@@ -3717,6 +3727,7 @@ def main() -> None:
                 incident_severities=incident_severities,
                 max_incidents_to_fetch=max_incidents_to_fetch,
                 event_types=event_types,
+                include_null_severities=include_null_severities,
             )
 
             demisto.setLastRun(next_run)

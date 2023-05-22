@@ -1,0 +1,28 @@
+{
+    "description": "Classifies AWSGuardDuty incidents.",
+    "feed": false,
+    "id": "AWSGuardDuty - Classifier",
+    "keyTypeMap": {
+        "AccessKey": "AWS Guard Duty IAM Finding",
+        "Container": "AWS Guard Duty Malware Protection Finding",
+        "ECSCluster": "AWS Guard Duty Malware Protection Finding",
+        "EKSCluster": "AWS Guard Duty Kubernetes Finding",
+        "Instance": "AWS Guard Duty EC2 Finding",
+        "S3Bucket": "AWS Guard Duty S3 Finding"
+    },
+    "name": "AWSGuardDuty - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "ResourceType",
+            "filters": [],
+            "root": "Resource",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

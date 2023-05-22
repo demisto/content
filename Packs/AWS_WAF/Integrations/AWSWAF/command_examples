@@ -1,0 +1,11 @@
+!aws-waf-ip-set-create ip_version=IPV4 name=name addresses="1.1.1.1/32"
+!aws-waf-ip-set-get id=9bac765d-1cdb-44a7-bfc9-6c69c6633c4a name=Test
+!aws-waf-ip-set-list
+
+!aws-waf-regex-set-create name=name regex_pattern="pattern"
+!aws-waf-regex-set-get id=16941282-4fcd-4ae0-85ed-325ccb19deb2 name=Regex_API
+!aws-waf-regex-set-list
+
+!aws-waf-rule-group-create capacity=1500 name=name
+!aws-waf-rule-group-get id=e2aac47d-0541-4e30-aa2f-aa21b0fb76b1 name=Hey_Test
+!aws-waf-rule-group-list

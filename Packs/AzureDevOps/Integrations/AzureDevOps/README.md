@@ -24,11 +24,8 @@ Manage Git repositories in Azure DevOps Services. Integration capabilities inclu
     | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\) or Device Code Flow. | False |
     | Tenant ID (for user-auth mode) |  | False |
     | Client Secret (for user-auth mode) |  | False |
-    | Client Secret (for user-auth mode) |  | False |
     | Application redirect URI (for user-auth mode) |  | False |
     | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
-    | Authorization code |  | False |
-
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -55,6 +52,35 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Success!
+
+### azure-devops-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-devops-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-devops-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+>```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
+
 
 ### azure-devops-auth-start
 ***

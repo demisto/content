@@ -28,7 +28,7 @@ When the playbook continues, after validating the activity with the user’s man
 
 **External Resources:**
 
-[Impossible traveler alert](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/impossible-traveler---sso.html)
+[Impossible traveler alert](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Impossible-traveler-SSO)
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

@@ -30,13 +30,16 @@ def test_get_events():
         Then
             - Assert the returned messages contains only messages in the specific time range (.
             - Assert the returned messages are ordered by datetime.
+            - Assert the returned "toAddresses" field in the messages returned as a list.
+
     """
     client = Client(base_url="url")
     messages, last_run = get_events(client, after='2022-05-02T18:44:38Z')
 
     assert messages == [{'abxMessageId': 3,
                          'receivedTime': '2022-06-01T18:44:38Z',
-                         'threatId': '123456789-1'},
+                         'threatId': '123456789-1',
+                         "toAddresses": []},
                         {'abxMessageId': 3,
                          'receivedTime': '2022-06-02T18:44:38Z',
                          'threatId': '123456789-2'},
@@ -45,10 +48,12 @@ def test_get_events():
                          'threatId': '123456789-3'},
                         {'abxMessageId': 2,
                          'receivedTime': '2022-08-01T18:44:38Z',
-                         'threatId': '123456789-1'},
+                         'threatId': '123456789-1',
+                         "toAddresses": ["test1", "test2"]},
                         {'abxMessageId': 2,
                          'receivedTime': '2022-08-02T18:44:38Z',
-                         'threatId': '123456789-2'},
+                         'threatId': '123456789-2',
+                         "toAddresses": ["test1", "test2"]},
                         {'abxMessageId': 2,
                          'receivedTime': '2022-08-03T18:44:38Z',
                          'threatId': '123456789-3'}]

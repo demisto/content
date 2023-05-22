@@ -30,7 +30,8 @@
                      "group-tag":"Bark_test_tag",
                      "tag":{
                         "member":"test tag"
-                     }
+                     },
+                     "disabled": "yes"
                   },
                   {
                      "@name":"test-2",

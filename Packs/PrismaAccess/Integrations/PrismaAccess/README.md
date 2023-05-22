@@ -67,6 +67,7 @@ Force logout a specific user from Prisma Access
 | user | Username to logout. (Without domain name - e.g. jsmith) | Required | 
 | domain | Domain name of the user to logout. | Required | 
 | computer | Computer name to logout. | Required | 
+| tenant_name | The tenant name. | Optional | 
 
 
 ##### Context Output

@@ -1,7 +1,7 @@
 Converts URLs, PDF files, and emails to an image file or PDF file.
 ## Docker Security Recommendations
      
-If you are using the integration to rasterize un-trusted URLs or HTML content, such as those obtained via external emails, we recommend following the instructions at the [Docker Network Hardening](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/docker/docker-hardening-guide/docker-network-hardening.html) under the Block Internal Network Access section.
+If you are using the integration to rasterize un-trusted URLs or HTML content, such as those obtained via external emails, we recommend following the instructions at the [Docker Network Hardening](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Network-Hardening) under the Block Internal Network Access section.
 
 ## Configure Rasterize on Cortex XSOAR
 
@@ -263,7 +263,8 @@ Converts an html file to a PDF or PNG file.
 | height | The html file height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional | 
 | type | The file type to which to convert the html file. Can be "pdf" or "png". Default is "png". | Optional | 
-| full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional |
+| wait_time | Time to wait before taking a screenshot (in seconds ). | Optional |
 
 #### Context Output
 

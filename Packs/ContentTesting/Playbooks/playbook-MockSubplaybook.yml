@@ -4,13 +4,13 @@ contentitemexportablefields:
     - all
 id: MockSubplaybook
 inputs:
-- description: ""
+- description: "Test value"
   key: one
   playbookInputQuery:
   required: false
   value:
     simple: ${input1}
-- description: ""
+- description: ' Test value'
   key: two
   playbookInputQuery:
   required: false
@@ -93,19 +93,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       value:
-        simple: ${inputs.one}, ${inputs.two}
+        simple: '${inputs.one}, ${inputs.two} '
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Prints text to war room (Markdown supported)
-      id: 9ffa759e-4020-4e61-8aaa-85b9e2f4d72f
+      id: 090f9724-72dc-4d9b-84e7-7e3cf3693c35
       iscommand: false
       name: Print Inputs
       scriptName: Print
       type: regular
       version: -1
-    taskid: 9ffa759e-4020-4e61-8aaa-85b9e2f4d72f
+    taskid: 090f9724-72dc-4d9b-84e7-7e3cf3693c35
     timertriggers: []
     type: regular
     view: |-

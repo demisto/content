@@ -31,12 +31,15 @@ def test_prettify_report_entry():
     assert expected_report_dict == prettify_report_entry_res
 
 
-def test_prettify_verdict():
-    expected_verdict_dict = dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'})
-    prettify_verdict_res = prettify_verdict(
-        {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"})
-    assert expected_verdict_dict == prettify_verdict_res
+@pytest.mark.parametrize('verdict_dict, expected_verdict', [
+    ({'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"},
+     {'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "1", 'VerdictDescription': 'malware'}),
+    ({'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "5"},
+     {'MD5': "md5_hash", 'SHA256': "sha256_hash", 'Verdict': "5", 'VerdictDescription': 'c2'})
+])
+def test_prettify_verdict(verdict_dict, expected_verdict):
+    prettify_verdict_res = prettify_verdict(verdict_dict)
+    assert expected_verdict == prettify_verdict_res
 
 
 def test_prettify_url_verdict():
@@ -566,3 +569,37 @@ def test_wildfire_get_pending_file_report(mocker):
                                                              'verbose': 'false'})
     assert command_results
     assert status == 'Pending'
+
+
+def test_invalid_argument_res(mocker):
+    """
+    Given:
+     - hash of a file pending to be constructed.
+
+    When:
+     - Running report command with Invalid argument error message.
+
+    Then:
+     - Assert Exception occurred.
+     - Assert error entry created with the error message from the response.
+    """
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "SomeURL")
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 421
+    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><error><error-message>' \
+                                   b'Invalid argument</error-message></error>'
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    try:
+        wildfire_get_file_report(file_hash='some_hash',
+                                 args={'extended_data': 'false',
+                                       'format': 'xml',
+                                       'verbose': 'false'})
+    except Exception as e:
+        assert e.message == 'Error while trying to get the report from the API.'
+        assert demisto.results.call_count == 1
+        assert demisto.results.call_args[0][0]['Type'] == 4
+        assert demisto.results.call_args[0][0]['Contents'] == 'Invalid argument'

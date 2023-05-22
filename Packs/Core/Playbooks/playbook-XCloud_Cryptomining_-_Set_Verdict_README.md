@@ -39,4 +39,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![XCloud Cryptomining - Set Verdict](../doc_files/XCloud_Cryptomining_-_Set_Verdict.png)
+![XCloud Cryptojacking - Set Verdict](../doc_files/XCloud_Cryptomining_-_Set_Verdict.png)

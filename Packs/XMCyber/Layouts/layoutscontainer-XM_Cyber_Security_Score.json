@@ -402,5 +402,6 @@
                 "type": "custom"
             }
         ]
-    }
+    },
+    "marketplaces": ["xsoar"]
 }

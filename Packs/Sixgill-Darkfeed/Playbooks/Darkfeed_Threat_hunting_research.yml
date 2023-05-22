@@ -985,22 +985,24 @@ tasks:
     task:
       id: b15bc826-c117-477d-87e4-63f9095f38f9
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "37"
     scriptarguments:
-      EndpointId: {}
-      Hostname: {}
-      xdr_endpoint_id:
+      Endpoint_hostname:
         complex:
-          root: PaloAltoNetworksXDR
-          accessor: Endpoint.endpoint_id
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -1816,13 +1818,6 @@ inputs:
               simple: mitre.org
   required: false
   description: URL from Darkfeed
-  playbookInputQuery:
-- key: Maximum number of IOCs
-  value:
-    simple: "50"
-  required: false
-  description: Set value to the maximum number of IOCs you would like returned in
-    searches for items from the same source and same actor
   playbookInputQuery:
 - key: Query time lookup
   value:

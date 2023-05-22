@@ -49,6 +49,8 @@ configuration:
   - Out
   - Both
   additionalinfo: Select whether you would like cases to mirror in, out, in both directions or disabled.
+  hidden:
+    - marketplacev2
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1429,7 +1431,7 @@ script:
   - name: get-modified-remote-data
     arguments: []
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   subtype: python3

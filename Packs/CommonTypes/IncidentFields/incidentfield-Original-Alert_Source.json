@@ -1,0 +1,38 @@
+{
+    "id": "incident_originalalertsource",
+    "version": -1,
+    "modified": "2021-11-09T16:15:54.292557+02:00",
+    "name": "Original Alert Source",
+    "ownerOnly": false,
+    "cliName": "originalalertsource",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0",
+    "Aliases": [
+        {
+            "cliName": "alertsource",
+            "type": "shortText",
+            "name": "Alert Source"
+        }
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

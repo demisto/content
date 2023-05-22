@@ -556,5 +556,6 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "marketplaces": ["xsoar"]
 }

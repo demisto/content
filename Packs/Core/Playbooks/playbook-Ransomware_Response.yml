@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 2350
+          "y": 2190
         }
       }
     note: false
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 2915
+          "y": 2755
         }
       }
     note: false
@@ -131,7 +131,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 3050
+          "y": 2890
         }
       }
     note: false
@@ -162,7 +162,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 3390
+          "y": 3230
         }
       }
     note: false
@@ -192,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 3720
+          "y": 3560
         }
       }
     note: false
@@ -222,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 4320
+          "y": 4040
         }
       }
     note: false
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 4780
+          "x": 740,
+          "y": 4540
         }
       }
     note: false
@@ -278,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 5940
+          "x": -250,
+          "y": 5700
         }
       }
     note: false
@@ -330,20 +330,18 @@ tasks:
         simple: "True"
       FileHash:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.FileSHA256
       FilePath:
         complex:
-          root: alert
-          accessor: initiatorpath
+          root: inputs.FilePath
       FileRemediation:
         simple: Quarantine
       HostContainment:
         simple: "True"
-      IAMUserDomain:
-        simple: '@demisto.com'
       UserContainment:
         simple: "True"
+      UserVerification:
+        simple: "False"
       Username:
         complex:
           root: alert.username
@@ -366,7 +364,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 3220
+          "y": 3060
         }
       }
     note: false
@@ -430,6 +428,8 @@ tasks:
         simple: '@demisto.com'
       UserContainment:
         simple: "True"
+      UserVerification:
+        simple: "False"
       Username:
         complex:
           root: foundIncidents.CustomFields.username
@@ -461,8 +461,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 4780
+          "x": 740,
+          "y": 4540
         }
       }
     note: false
@@ -500,8 +500,9 @@ tasks:
     scriptarguments:
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.FileSHA256
+      detonateRansomFile:
+        simple: "True"
       isolateRemoteAttacker:
         complex:
           root: inputs.isolateRemoteAttacker
@@ -518,7 +519,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 3540
+          "y": 3380
         }
       }
     note: false
@@ -563,7 +564,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 3850
+          "y": 3690
         }
       }
     note: false
@@ -593,8 +594,7 @@ tasks:
     scriptarguments:
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.FileSHA256
       ShouldCloseAutomatically:
         complex:
           root: inputs.ShouldCloseAutomatically
@@ -604,8 +604,7 @@ tasks:
           accessor: name
       sourceIP:
         complex:
-          root: alert
-          accessor: hostip
+          root: inputs.IP
       username:
         complex:
           root: alert
@@ -620,7 +619,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 3050
+          "y": 2890
         }
       }
     note: false
@@ -653,8 +652,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 5770
+          "x": 370,
+          "y": 5530
         }
       }
     note: false
@@ -685,8 +684,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 5075
+          "x": 370,
+          "y": 4835
         }
       }
     note: false
@@ -730,8 +729,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 5430
+          "x": 370,
+          "y": 5190
         }
       }
     note: false
@@ -760,8 +759,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 5600
+          "x": 730,
+          "y": 5360
         }
       }
     note: false
@@ -794,6 +793,9 @@ tasks:
       '#none#':
       - "126"
     scriptarguments:
+      FileHash:
+        complex:
+          root: inputs.FileSHA256
       endpointID:
         complex:
           root: alert
@@ -811,8 +813,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 5250
+          "x": 730,
+          "y": 5010
         }
       }
     note: false
@@ -841,8 +843,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4950
+          "x": 370,
+          "y": 4710
         }
       }
     note: false
@@ -872,7 +874,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2915
+          "y": 2755
         }
       }
     note: false
@@ -912,7 +914,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 4475
+          "y": 4355
         }
       }
     note: false
@@ -930,14 +932,39 @@ tasks:
       id: c4da120b-58c7-4521-8180-954cbb09f227
       version: -1
       name: Enrichment for Verdict
+      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "134"
+    scriptarguments:
+      CloseReason:
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: inputs.FileSHA256
+      IP:
+        complex:
+          root: inputs.IP
+      URL:
+        complex:
+          root: alert
+          accessor: url
+      User:
+        complex:
+          root: alert
+          accessor: username
+      query:
+        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
+      threshold:
+        simple: "2"
     separatecontext: true
     loop:
       iscommand: false
@@ -948,7 +975,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 2490
+          "y": 2330
         }
       }
     note: false
@@ -1059,7 +1086,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 2650
+          "y": 2490
         }
       }
     note: false
@@ -1097,8 +1124,7 @@ tasks:
     scriptarguments:
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.FileSHA256
       HuntByFile:
         simple: "True"
       HuntCnCTechniques:
@@ -1139,7 +1165,7 @@ tasks:
       {
         "position": {
           "x": 360,
-          "y": 4320
+          "y": 4185
         }
       }
     note: false
@@ -1182,13 +1208,12 @@ tasks:
           accessor: agentid
       FilePath:
         complex:
-          root: alert
-          accessor: initiatorpath
+          root: inputs.FilePath
       FileRemediation:
         simple: Quarantine
       Username:
         complex:
-          root: foundIncidents.CustomFields
+          root: alert
           accessor: username
     separatecontext: true
     loop:
@@ -1200,7 +1225,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 3220
+          "y": 3060
         }
       }
     note: false
@@ -1244,7 +1269,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 3540
+          "y": 3380
         }
       }
     note: false
@@ -1283,7 +1308,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 4020
+          "y": 3860
         }
       }
     note: false
@@ -1307,10 +1332,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3655,
+        "height": 3575,
         "width": 1780,
         "x": -260,
-        "y": 2350
+        "y": 2190
       }
     }
   }
@@ -1358,6 +1383,30 @@ inputs:
     simple: "False"
   required: false
   description: Whether to close the alert automatically.
+  playbookInputQuery:
+- key: FileSHA256
+  value:
+    complex:
+      root: alert
+      accessor: initiatorsha256
+  required: false
+  description: The file SHA256 to investigate.
+  playbookInputQuery:
+- key: FilePath
+  value:
+    complex:
+      root: alert
+      accessor: initiatorpath
+  required: false
+  description: The file path to investigate.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: alert
+      accessor: hostip
+  required: false
+  description: The IP address to investigate.
   playbookInputQuery:
 outputs: []
 tests:

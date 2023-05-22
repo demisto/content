@@ -1,8 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import shutil
 from typing import Callable, Dict, Iterable, List, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
 import mimetypes
 
 # disable insecure warnings
@@ -519,7 +520,7 @@ def split_notes(raw_notes, note_type, time_info):
             if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
                 notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
-        note_info, note_value = note.split('\n')
+        note_info, note_value = note.split('\n', 1)
         created_on, created_by = note_info.split(' - ')
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
@@ -742,14 +743,19 @@ class Client(BaseClient):
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
 
             if 'error' in json_res:
-                message = json_res.get('error', {}).get('message')
-                details = json_res.get('error', {}).get('detail')
-                if message == 'No Record found':
-                    return {'result': []}  # Return an empty results array
+                error = json_res.get('error', {})
                 if res.status_code == 401:
                     demisto.debug(f'Got status code 401 - {json_res}. Retrying ...')
                 else:
-                    raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    if isinstance(error, dict):
+                        message = json_res.get('error', {}).get('message')
+                        details = json_res.get('error', {}).get('detail')
+                        if message == 'No Record found':
+                            return {'result': []}  # Return an empty results array
+                        else:
+                            raise Exception(f'ServiceNow Error: {message}, details: {details}')
+                    else:
+                        raise Exception(f'ServiceNow Error: {error}')
 
             if res.status_code < 200 or res.status_code >= 300:
                 if res.status_code != 401 or num_of_tries == (max_retries - 1):
@@ -2110,10 +2116,12 @@ def get_mirroring():
     return {
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
         'mirror_tags': [
-            params.get('comment_tag'),
+            params.get('comment_tag'),  # comment tag to service now
+            params.get('comment_tag_from_servicenow'),
             params.get('file_tag'),  # file tag to service now
             params.get('file_tag_from_service_now'),
-            params.get('work_notes_tag')
+            params.get('work_notes_tag'),  # work not tag to service now
+            params.get('work_notes_tag_from_servicenow')
         ],
         'mirror_instance': demisto.integrationInstance()
     }
@@ -2149,6 +2157,11 @@ def fetch_incidents(client: Client) -> list:
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
+    # remove duplicate incidents which were already fetched
+    tickets_response = filter_incidents_by_duplicates_and_limit(
+        incidents_res=tickets_response, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='sys_id'
+    )
+
     for ticket in tickets_response:
         ticket.update(get_mirroring())
 
@@ -2175,14 +2188,10 @@ def fetch_incidents(client: Client) -> list:
             'severity': severity_map.get(ticket.get('severity', ''), 0),
             'attachment': get_ticket_file_attachments(client=client, ticket=ticket),
             'occurred': ticket.get(client.timestamp_field),
+            'sys_id': ticket.get('sys_id'),
             'rawJSON': json.dumps(ticket)
         })
         count += 1
-
-    # remove duplicate incidents which were already fetched
-    incidents = filter_incidents_by_duplicates_and_limit(
-        incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
-    )
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -2192,14 +2201,15 @@ def fetch_incidents(client: Client) -> list:
         end_fetch_time=end_snow_time,
         look_back=client.look_back,
         created_time_field='occurred',
-        id_field='name',
+        id_field='sys_id',
         date_format=DATE_FORMAT
     )
     demisto.debug(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
-        ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()}Z"
+        occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
+        ticket['occurred'] = f"{occurred}Z"
 
     demisto.setLastRun(last_run)
     return incidents
@@ -2435,46 +2445,86 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     for note in comments_result.get('result', []):
         if 'Mirrored from Cortex XSOAR' not in note.get('value'):
             comments_context = {'comments_and_work_notes': note.get('value')}
+
+            if (tagsstr := note.get('tags', 'none')) == 'none':
+                if note.get('element') == 'comments':
+                    tags = [params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')]
+                else:
+                    tags = [params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')]
+            else:
+                if str(note.get('element')) == 'comments':
+                    tags = tagsstr + params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')
+                    tags = argToList(tags)
+                else:
+                    tags = tagsstr + params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')
+                    tags = argToList(tags)
+
             entries.append({
                 'Type': note.get('type'),
                 'Category': note.get('category'),
                 'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
                             f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
-                'Tags': note.get('tags'),
+                'Tags': tags,
                 'Note': True,
                 'EntryContext': comments_context
             })
 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
-    if ticket.get('closed_at') and close_incident == 'closed' \
-            or ticket.get('resolved_at') and close_incident == 'resolved':
-        demisto.debug(f'ticket is closed: {ticket}')
-        entries.append({
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
-                'closeReason': converts_state_close_reason(ticket.get("state"))
-            },
-            'ContentsFormat': EntryFormat.JSON
-        })
+    if close_incident != 'None':
+        server_close_custom_state = params.get('server_close_custom_state')
+
+        if server_close_custom_state or (ticket.get('closed_at') and close_incident == 'closed') \
+                or (ticket.get('resolved_at') and close_incident == 'resolved'):
+            demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
+            entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeNotes': ticket.get("close_notes"),
+                    'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state: Optional[str]):
+def converts_state_close_reason(ticket_state: Optional[str], server_close_custom_state: Optional[str]):
     """
-    determine the XSOAR closeReason based on the Service Now ticket state.
+    determine the XSOAR incident close reason based on the Service Now ticket state.
+    if 'Mirrored XSOAR Ticket custom close state code' parameter is set, the function will try to use it to
+    determine the close reason (should be corresponding to a user-defined list of close reasons in the server configuration).
+    then it will try using 'closed' or 'resolved' state, if set using 'Mirrored XSOAR Ticket closure method' parameter.
+    otherwise, it will use the default 'out of the box' server incident close reason.
     Args:
         ticket_state: Service now ticket state
+        server_close_custom_state: server close custom state parameter
     Returns:
         The XSOAR state
     """
-    if ticket_state in ['6', '7']:
+
+    custom_label = ''
+    # if custom state parameter is set and ticket state is returned from incident is not empty
+    if server_close_custom_state and ticket_state:
+        demisto.debug(f'trying to close XSOAR incident using custom states: {server_close_custom_state}, with \
+            received state code: {ticket_state}')
+        # parse custom state parameter into a dictionary of custom state codes and their names (label)
+        server_close_custom_state_dict = dict(item.split("=") for item in server_close_custom_state.split(","))
+        if ticket_state in server_close_custom_state_dict:
+            # check if state code is in the parsed dictionary
+            if custom_state_label := server_close_custom_state_dict.get(ticket_state):
+                custom_label = custom_state_label
+
+    if custom_label:
+        demisto.debug(f'incident should be closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
+        return custom_label
+    elif ticket_state in ['6', '7']:  # default states for closed (6) and resolved (7)
+        demisto.debug(f'incident should be closed using default state. State Code: {ticket_state}')
         return 'Resolved'
+    demisto.debug(f'incident is closed using default close reason "Other". State Code: {ticket_state}')
     return 'Other'
 
 
@@ -2929,6 +2979,26 @@ def main():
         raise Exception(
             f'File Entry Tag To ServiceNow and File Entry Tag '
             f'From ServiceNow cannot be the same name [{file_tag_from_service_now}].'
+        )
+
+    comment_tag_from_servicenow, comment_tag = (
+        params.get('comment_tag_from_servicenow'), params.get('comment_tag')
+    )
+
+    if comment_tag_from_servicenow == comment_tag:
+        raise Exception(
+            f'Comment Entry Tag To ServiceNow and Comment Entry Tag '
+            f'From ServiceNow cannot be the same name [{comment_tag_from_servicenow}].'
+        )
+
+    work_notes_tag_from_servicenow, work_notes_tag = (
+        params.get('work_notes_tag_from_servicenow'), params.get('work_notes_tag')
+    )
+
+    if work_notes_tag_from_servicenow == work_notes_tag:
+        raise Exception(
+            f'Work note Entry Tag To ServiceNow and Work Note Entry Tag '
+            f'From ServiceNow cannot be the same name [{work_notes_tag_from_servicenow}].'
         )
 
     raise_exception = False

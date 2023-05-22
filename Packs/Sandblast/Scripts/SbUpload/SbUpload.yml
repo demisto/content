@@ -7,7 +7,7 @@ type: python
 subtype: python2
 tags:
 - sandblast
-comment: Use the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis, and then deleted
+comment: Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on cloud.
 system: true
 args:
 - name: file_name
@@ -51,4 +51,5 @@ dependson:
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.27799
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

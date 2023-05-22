@@ -17,3 +17,9 @@ ignore=RN115,RN113
 XSIAM
 CoreIRApiModule
 XDRIR
+
+[file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
+ignore=BA101
+
+[file:playbook-XCloud_Cryptomining.yml]
+ignore=BA101
