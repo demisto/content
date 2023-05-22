@@ -570,7 +570,7 @@
             "widget_key": "xql_1683766565790",
             "title": "HIPAA 164.306 (a) (1) : Validate confidentiality and integrity of PHI",
             "creation_time": 1683766565790,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel \n| filter xdm.observer.product contains \"XDR agent\" \n| filter xdm.observer.content_version contains \"*\"\n| fields xdm.observer.*\n| comp count () as counter by xdm.observer.content_version\n| view graph type = column subtype = grouped xaxis = xdm.observer.content_version yaxis = counter ",
                 "time_frame": {
@@ -727,7 +727,7 @@
             "widget_key": "xql_1683766946301",
             "title": "HIPAA 164.308 (a) (1) (i) (B): Reduce risks and Vulnerabilities",
             "creation_time": 1683766946301,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel \n| filter xdm.observer.content_version contains \"*\" \n| filter XDM.source.host.os contains \"*\"\n| fields xdm.source.host.hostname, xdm.source.host.ipv4_addresses, xdm.source.host.mac_addresses, xdm.source.host.os, xdm.source.host.os_family ",
                 "time_frame": {
@@ -748,7 +748,7 @@
             "widget_key": "xql_1683766964741",
             "title": "HIPAA 164.308 (a) (1) (i) (C): Apply sanction policy when members fail to comply",
             "creation_time": 1683766964741,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel | filter xdm.observer.product = \"XDR agent\"\n| filter xdm.observer.content_version contains \"*\"\n| dedup xdm.observer.name\n| fields xdm.observer.product , xdm.observer.name, xdm.observer.content_version, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version, _time ",
                 "time_frame": {
@@ -769,7 +769,7 @@
             "widget_key": "xql_1683766983921",
             "title": "HIPAA 164.308 (a) (6) (i): Identify/respond to known security incidents",
             "creation_time": 1683766983921,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel\n| filter xdm.network.rule contains \"*\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id",
                 "time_frame": {
@@ -790,7 +790,7 @@
             "widget_key": "xql_1683767003041",
             "title": "HIPAA 164.308 (a) (1) (i) (D): Regularly review audit logs",
             "creation_time": 1683767003041,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel\n| filter xdm.network.rule contains \"*\" and xdm.network.ip_protocol = \"TCP\"\n| fields xdm.network.rule, xdm.network.application_protocol, xdm.network.application_protocol_category, xdm.network.http.method, xdm.network.http.response_code, xdm.network.http.url_category, xdm.network.ip_protocol, xdm.network.protocol_layers, xdm.network.session_id\n| comp count() as network_rule_counter by xdm.network.rule\n| view graph type = wordcloud xaxis = xdm.network.rule yaxis = network_rule_counter ",
                 "time_frame": {
@@ -826,7 +826,7 @@
             "widget_key": "xql_1683767022136",
             "title": "HIPAA 164.308 (a) (4) (i) (A): Isolate health care clearinghouse functions",
             "creation_time": 1683767022136,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel | filter xdm.auth.privilege_level contains \"*\" | fields xdm.auth.* | limit 500",
                 "time_frame": {
@@ -847,7 +847,7 @@
             "widget_key": "xql_1683767040079",
             "title": "HIPAA 164.308 (a) (7) (i) (A): Data backup plan",
             "creation_time": 1683767040079,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel \n| filter xdm.observer.product contains \"XDR\" \n| filter xdm.observer.type = \"AGENT_TYPE_REGULAR\"\n| fields xdm.observer.content_version, xdm.observer.name, xdm.observer.product, xdm.observer.type, xdm.observer.unique_identifier, xdm.observer.vendor, xdm.observer.version ",
                 "time_frame": {
@@ -868,7 +868,7 @@
             "widget_key": "xql_1683767058419",
             "title": "HIPAA 164.308 (a) (7) (i) (B): Data recovery plan",
             "creation_time": 1683767058419,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel \n| filter xdm.event.operation contains \"REGISTRY\" /*Filter for registry events*/\n| filter xdm.event.operation contains \"*\"\n| fields _time, xdm.event.type, xdm.event.operation, xdm.event.operation_sub_type, xdm.source.host.hostname, xdm.source.user.username, xdm.source.agent.identifier, xdm.source.process.name, xdm.source.process.executable.path, xdm.event.outcome, xdm.observer.product",
                 "time_frame": {
@@ -910,7 +910,7 @@
             "widget_key": "xql_1683767483158",
             "title": "HIPAA 164.312 (c) (1): Implement policies or procedures to protect PHI",
             "creation_time": 1683767483158,
-            "description": null,
+            "description": "Test",
             "data": {
                 "phrase": "datamodel | filter xdm.observer.product contains \"XDR\" | fields xdm.observer.*",
                 "time_frame": {
