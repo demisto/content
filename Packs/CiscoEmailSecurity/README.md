@@ -5,7 +5,7 @@ You need to configure CISCO ESA to forward Syslog messages in CEF format [Docume
 
 Open Cisco ESA UI, and follow these instructions:
 1. Under **System Administration** go to **Log Subscriptions**.
-2. Press on **Add Log Subscription**.
+2. Click **Add Log Subscription**.
 3. Select the log type as **Consolidated Event Logs**.
 4. Select the fields that you want in the consolidated event log.
 5. Select a log retrieval mechanism for the log subscription.
