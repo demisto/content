@@ -7,12 +7,12 @@ type: powershell
 tags:
 - infra
 - server
-comment: Common user defined code that will be merged into each server script when
-  it runs
+comment: Deprecated. No available replacement.
 scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.5.0
 tests:
-- No test - No need
+- No tests (deprecated)
 dockerimage: demisto/python:2.7.18.20958
+deprecated: true
