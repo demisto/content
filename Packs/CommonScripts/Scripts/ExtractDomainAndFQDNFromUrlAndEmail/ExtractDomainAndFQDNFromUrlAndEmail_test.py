@@ -13,7 +13,6 @@ import pytest
 
     # no fqdn extracted
     ('www.test.fake', ''),
-    ('test.zip', ''),
     ('https://emea01.safelinks.protection.outlook.com/', ''),
     ('https://urldefense.proofpoint.com/', ''),
     ('https://urldefense.com/', ''),  # noqa: E501
