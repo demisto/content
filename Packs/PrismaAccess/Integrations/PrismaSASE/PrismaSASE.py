@@ -2127,15 +2127,15 @@ def main():  # pragma: no cover
     try:
         if command == 'test-module':
             return_results(test_module(client))
-        if command in commands:
+        elif command in commands:
             return_results(commands[command](client, demisto.args()))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     # Log exceptions
-    except DemistoException as e:
+    except Exception as e:
         # special handling for 404 error, which is returned when the item is not found
-        if e.res is not None and e.res.status_code == 404 and "Object Not Present" in e.message:
+        if type(e) == DemistoException and e.res is not None and e.res.status_code == 404 and "Object Not Present" in e.message:
             return_results("The item you're searching for does not exist within the Prisma SASE API.")
 
         else:
