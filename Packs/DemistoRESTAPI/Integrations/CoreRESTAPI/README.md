@@ -293,7 +293,7 @@ There is no context output for this command.
 ### core-api-file-attachment-delete
 
 ***
-This command deletes the attachment from the incident and from the XSOAR server
+Delete the attachment from the incident and from the Cortex XSOAR server.
 
 #### Base Command
 
