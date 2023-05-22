@@ -145,7 +145,7 @@ class Client(BaseClient):
         self,
         detected_start_datetime: str,
         detected_end_datetime: str,
-        top: int = DEFAULT_MAX_LIMIT,
+        top: int = 200,
         limit: int = DEFAULT_MAX_LIMIT
     ) -> List[Dict]:
         """
@@ -422,7 +422,7 @@ def get_observed_attack_techniques_logs(
         date_format=date_format
     )
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
-        detected_start_datetime=start_time, detected_end_datetime=end_time, top=limit, limit=limit
+        detected_start_datetime=start_time, detected_end_datetime=end_time, limit=limit
     )
     latest_observed_attack_technique_log_time = get_latest_log_created_time(
         logs=observed_attack_techniques_logs,
