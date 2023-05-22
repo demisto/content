@@ -254,7 +254,7 @@ There is no context output for this command.
 ### core-api-file-upload
 
 ***
-This command uploads to the incident a file that the user provided according to the entry_id or the content of the file
+Upload to the incident a file that the user provided according to the entry_id or the content of the file.
 
 #### Base Command
 
