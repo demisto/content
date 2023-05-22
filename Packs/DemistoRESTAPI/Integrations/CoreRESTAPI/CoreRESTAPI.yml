@@ -288,7 +288,7 @@ script:
       defaultValue: 'attachment'
       required: false
       description: "Name of the field (type attachment) from which to remove the attachment."
-    description: This command deletes the attachment from the incident and from the XSOAR server
+    description: Delete the attachment from the incident and from the Cortex XSOAR server.
   - name: core-api-file-check
     arguments:
     - name: entry_id
