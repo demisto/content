@@ -151,14 +151,14 @@ def main():
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
 
-    changed_file_names = [file.filename for file in pr.get_files()]
-    print(f'{changed_file_names=} for {pr_number=}')
+    changed_file_paths = [file.filename for file in pr.get_files()]
+    print(f'{changed_file_paths=} for {pr_number=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
-    if support_label := get_packs_support_level_label(changed_file_names):
+    if support_label := get_packs_support_level_label(changed_file_paths):
         labels_to_add.append(support_label)
 
-    # Add 'Contribution' label + support label
+    # Add 'Contribution' + support Label to the external PR
     for label in labels_to_add:
         pr.add_to_labels(label)
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
