@@ -264,7 +264,7 @@ Upload to the incident a file that the user provided according to the entry_id o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The incident's id. | Required | 
+| incident_id | The incident's ID. | Required | 
 | file_name | The new file's name. | Optional | 
 | file_content | The new file's content. | Optional | 
 | entry_id | The War Room entry ID of the pack zip file. | Optional | 
