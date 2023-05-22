@@ -109,9 +109,21 @@ def _http_request_side_effect_decorator(num_of_events):
 class TestFetchEvents:
 
     @pytest.mark.parametrize(
-        "last_run, integration_params, expected_updated_last_run, num_of_events",
+        "last_run, integration_params, expected_updated_last_run, "
+        "num_of_events_for_each_log_type, expected_events_length",
         [
-            ({}, {'limit': 100, 'first_fetch': '1 month ago'}, {}, 50),
+            (
+                {},
+                {'limit': 100, 'first_fetch': '1 month ago'},
+                {
+                    'workbench_logs_time': '2023-01-01T15:00:00Z',
+                    'oat_detection_logs_time': '2023-01-01T15:00:00Z',
+                    'search_detection_logs_time': '2023-01-01T15:00:00Z',
+                    'audit_logs_time': '2023-01-01T14:59:59Z'
+                },
+                50,
+                200
+            ),
         ],
     )
     def test_fetch_events_main(
@@ -120,8 +132,20 @@ class TestFetchEvents:
         last_run: Dict,
         integration_params: Dict,
         expected_updated_last_run: Dict,
-        num_of_events: int
+        num_of_events_for_each_log_type: int,
+        expected_events_length: int
     ):
+        """
+        Given:
+            - Case A: last_run={}, limit=100, num_of_events_for_each_log_type=50
+        When:
+            - fetch-events through the main flow
+        Then:
+            - Case A:
+                1. workbench, oat and search detection logs last run time is the last log + 1 second added to it.
+                2. make sure the audit log last time is the last log without +1 second to it.
+                3. make sure the expected_events_length = 200
+        """
         from TrendMicroVisionOneEventCollector import main
 
         mocker.patch.object(demisto, 'params', return_value=integration_params)
@@ -130,21 +154,12 @@ class TestFetchEvents:
         mocker.patch.object(
             BaseClient,
             '_http_request',
-            side_effect=_http_request_side_effect_decorator(num_of_events=num_of_events)
+            side_effect=_http_request_side_effect_decorator(num_of_events=num_of_events_for_each_log_type)
         )
 
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value=last_run)
         send_events_to_xsiam_mocker = mocker.patch('TrendMicroVisionOneEventCollector.send_events_to_xsiam')
         main()
 
-        print()
-
-
-
-@freezegun.freeze_time(FREEZE_DATETIME)
-def test_fetch_events(mocker, client: Client):
-    first_fetch = '2 years ago'
-    from TrendMicroVisionOneEventCollector import fetch_events
-    mocker.patch.object(client, '_http_request', side_effect=_http_request_side_effect_decorator(10))
-    result = fetch_events(client, first_fetch)
-    print()
+        assert set_last_run_mocker.call_args.args[0] == expected_updated_last_run
+        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == expected_events_length
