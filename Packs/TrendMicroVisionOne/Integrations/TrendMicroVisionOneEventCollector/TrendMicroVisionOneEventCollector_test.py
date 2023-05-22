@@ -36,9 +36,9 @@ def create_any_type_logs(start: int, end: int, created_time_field: str):
             'id': i,
             created_time_field: (
                 datetime.now(tz=pytz.utc) - timedelta(seconds=i)
-            ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else (
-                datetime.now(tz=pytz.utc) - timedelta(seconds=i)
-            ).timestamp()
+            ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else int(
+                (datetime.now(tz=pytz.utc) - timedelta(seconds=i)).timestamp()
+            ) * 1000
         } for i in range(start + 1, end + 1)
     ]
 
@@ -106,8 +106,45 @@ def _http_request_side_effect_decorator(num_of_events):
 
 
 @freezegun.freeze_time(FREEZE_DATETIME)
+class TestFetchEvents:
+
+    @pytest.mark.parametrize(
+        "last_run, integration_params, expected_updated_last_run, num_of_events",
+        [
+            ({}, {'limit': 100, 'first_fetch': '1 month ago'}, {}, 50),
+        ],
+    )
+    def test_fetch_events_main(
+        self,
+        mocker, client: Client,
+        last_run: Dict,
+        integration_params: Dict,
+        expected_updated_last_run: Dict,
+        num_of_events: int
+    ):
+        from TrendMicroVisionOneEventCollector import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_params)
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_events=num_of_events)
+        )
+
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value=last_run)
+        send_events_to_xsiam_mocker = mocker.patch('TrendMicroVisionOneEventCollector.send_events_to_xsiam')
+        main()
+
+        print()
+
+
+
+@freezegun.freeze_time(FREEZE_DATETIME)
 def test_fetch_events(mocker, client: Client):
     first_fetch = '2 years ago'
     from TrendMicroVisionOneEventCollector import fetch_events
-    mocker.patch.object(client, '_http_request', side_effect=_http_request_side_effect_decorator(14))
-    fetch_events(client, first_fetch)
+    mocker.patch.object(client, '_http_request', side_effect=_http_request_side_effect_decorator(10))
+    result = fetch_events(client, first_fetch)
+    print()
