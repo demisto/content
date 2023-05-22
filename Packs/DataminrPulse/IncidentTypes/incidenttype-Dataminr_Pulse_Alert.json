@@ -1,0 +1,30 @@
+{
+    "id": "Dataminr Pulse Alert",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Dataminr Pulse Alert",
+    "prevName": "Dataminr Pulse Alert",
+    "color": "#FF3F81",
+    "playbookId": "Retrieve Related Alerts - Dataminr Pulse",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Dataminr Pulse Alert",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    }
+}
