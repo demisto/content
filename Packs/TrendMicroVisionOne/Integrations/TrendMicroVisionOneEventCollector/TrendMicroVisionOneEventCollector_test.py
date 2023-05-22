@@ -93,6 +93,14 @@ def _http_request_side_effect_decorator(num_of_events):
                 created_time_field='eventTime',
                 top=params.get('top') or DEFAULT_MAX_LIMIT
             )
+        else:
+            return create_logs_mocks(
+                url=full_url,
+                num_of_events=num_of_events,
+                url_suffix='audit/logs',
+                created_time_field='loggedDateTime',
+                top=params.get('top') or 200
+            )
 
     return _http_request_side_effect
 
