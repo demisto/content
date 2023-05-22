@@ -3629,12 +3629,12 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     )
 
 
-def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any], table_title: str) -> dict[str, Any]:
+def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any], table_headers: str) -> dict[str, Any]:
     reasons = user_or_host_data.get('reasons', [])
     return {
-        table_title: user_or_host_data.get('id'),
-        'Score': user_or_host_data.get('score'),
-        'Description': reasons[0].get('description') if reasons else None,
+        table_headers[0]: user_or_host_data.get('id'),
+        table_headers[1]: user_or_host_data.get('score'),
+        table_headers[2]: reasons[0].get('description') if reasons else None,
     }
 
 
@@ -3854,15 +3854,15 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         case "user":
             id_key = "user_id"
             table_title = "Risky Users"
-            table_header = "User ID"
             outputs_prefix = "RiskyUser"
             get_func = client.list_risky_users
+            table_headers = ["User ID", "Score", "Description"]
         case 'host':
             id_key = "host_id"
             table_title = "Risky Hosts"
-            table_header = "Host ID"
             outputs_prefix = "RiskyHost"
             get_func = client.list_risky_hosts
+            table_headers = ["Host ID", "Score", "Description"]
 
     outputs: list[dict] | dict
     if id_ := args.get(id_key):
@@ -3873,15 +3873,15 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
                 raise DemistoException(error_message)
             raise
 
-        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_header)]  # type: ignore[arg-type]
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_headers)]  # type: ignore[arg-type]
 
     else:
         list_limit = int(args.get('limit', 50))
         outputs = get_func().get('reply', [])[:list_limit]
 
-        table_for_markdown = [parse_risky_users_or_hosts(user, table_header) for user in outputs]
+        table_for_markdown = [parse_risky_users_or_hosts(user, table_headers) for user in outputs]
 
-    readable_output = tableToMarkdown(name=table_title, t=table_for_markdown)
+    readable_output = tableToMarkdown(name=table_title, t=table_for_markdown, headers=table_headers)
 
     return CommandResults(
         readable_output=readable_output,
