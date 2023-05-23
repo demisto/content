@@ -12,7 +12,5 @@ alter
     ,xdm.source.sent_bytes = to_integer(json_extract(payload, "$.size"))
     ,xdm.source.ipv4 = json_extract_scalar(payload, "$.src_ip")
     ,xdm.source.user.username = arrayindex(regextract(json_extract_scalar(payload, "$.hdr_from"), "\"(.*?)\""), 0)
-    # TODO add mapping
-    # ,xdm.observer.action => recipients.action
-    # ,xdm.event.outcome => recipients.delivered
+    ,xdm.event.description = to_string(json_extract(payload, "$.recipients"))
     ;
