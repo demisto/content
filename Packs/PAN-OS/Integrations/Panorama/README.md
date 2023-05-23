@@ -3049,8 +3049,7 @@ Deprecated. Retrieves traffic log query data by job id.
 ### pan-os-list-rules
 ***
 Returns a list of predefined Security Rules.
-(When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want)
-
+**Note**: When passing a query, all other arguments are overridden. Make sure the query includes all necessary filters.
 
 #### Base Command
 
