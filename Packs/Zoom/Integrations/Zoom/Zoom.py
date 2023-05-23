@@ -1248,13 +1248,11 @@ def zoom_get_user_id_by_email(client, email):
     :return: The user ID associated with the email address.
     :rtype: str
     """
-
-    user_url_suffix = 'users'
-    users = client.zoom_list_users(page_size=50, url_suffix=user_url_suffix).get('users', [])
-    for user in users:
-        if user['email'] == email:
-            return user['id']
-    raise DemistoException(USER_NOT_FOUND)
+    user_url_suffix = f'users/{email}'
+    user_id = client.zoom_list_users(page_size=50, url_suffix=user_url_suffix).get('id')
+    if not user_id:
+        raise DemistoException(USER_NOT_FOUND)
+    return user_id
 
 
 def arg_to_datetime_str(arg):

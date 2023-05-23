@@ -1485,3 +1485,19 @@ def test_zoom_delete_message_command(mocker):
     zoom_delete_message_mock.assert_called_with(f"/chat/users/{user_id}/messages/{message_id}?to_channel={to_channel}")
 
     assert result_to_channel.readable_output == 'Message 2d12042d-1823-4b0c-b26d-3f5ef7a89d68 was deleted successfully'
+    
+    
+def test_zoom_get_user_id_by_email(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    email = "user@example.com"
+
+    expected_user_id = "user_id"
+    expected_response = {"id": expected_user_id}
+
+    mock_zoom_list_users = mocker.MagicMock(return_value=expected_response)
+    client.zoom_list_users = mock_zoom_list_users
+    from Zoom import zoom_get_user_id_by_email
+    result = zoom_get_user_id_by_email(client, email)
+    mock_zoom_list_users.assert_called_with(page_size=50, url_suffix=f'users/{email}')
+    assert result == expected_user_id
