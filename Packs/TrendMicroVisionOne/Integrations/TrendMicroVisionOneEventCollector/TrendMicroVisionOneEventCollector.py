@@ -623,7 +623,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             {
                 'Id': log.get('id'),
                 'Time': log.get('createdDateTime'),
-                'Type': 'workbench',
+                'Type': 'Workbench',
             } for log in workbench_logs
         ]
 
@@ -635,7 +635,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             {
                 'Id': log.get('uuid'),
                 'Time': log.get('detectedDateTime'),
-                'Type': 'observed attack technique'
+                'Type': 'Observed Attack Technique'
             } for log in observed_attack_techniques_logs
         ]
 
@@ -647,7 +647,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             {
                 'Id': log.get('uuid'),
                 'Time': log.get('eventTimeDT'),
-                'Type': 'search detection'
+                'Type': 'search Detection'
             } for log in search_detection_logs
         ]
 
@@ -659,7 +659,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             {
                 'Id': log.get('uuid'),
                 'Time': log.get('loggedDateTime'),
-                'Type': 'audit'
+                'Type': 'Audit'
             } for log in audit_logs
         ]
 
