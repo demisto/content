@@ -11,8 +11,9 @@ configuration:
   required: false
   type: 0
   section: Connect
-- display: Client Secret
-  name: client_secret
+- displaypassword: Client Secret
+  name: credentials
+  hiddenusername: true
   required: false
   type: 9
   section: Connect
@@ -367,6 +368,16 @@ script:
       name: ip_rules
       required: false
       secret: false
+    - name: subscription_id
+      description: Will override instance param ‘subscription_id'
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: Will override instance param ‘resource_group_name'
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: Create or update a key vault in the specified subscription. If the
       Key Vault exists, the updated properties will overwrite the existing ones. Please
