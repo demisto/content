@@ -179,7 +179,7 @@ class Client(BaseClient):
             batch_size = limit if limit else BATCH_SIZE
             while True:
 
-                feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
+                feed_batch = [feed for _, feed in zip(range(batch_size), file_stream) if feed]
 
                 if not feed_batch:
                     file_stream.close()
