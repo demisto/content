@@ -3472,8 +3472,8 @@ def test_list_host_group_members(requests_mock):
     )
     command_results = list_host_group_members_command()
     expected_results = load_json('test_data/expected_list_hostgroup_members_results.json')
-    for expected_results, ectual_results in zip(expected_results, command_results.outputs):
-        assert expected_results == ectual_results
+    for expected_result, ectual_results in zip(expected_results, command_results.outputs):
+        assert expected_result == ectual_results
 
 
 def test_upload_batch_custom_ioc_command(requests_mock):

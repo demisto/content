@@ -5041,7 +5041,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         'initiated_from': args.get('initiated_from'),
         'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
         'description': args.get('description'),
-        'quarantine': argToBoolean(quarantine) if (quarantine := args.get('quarantine')) is not None else None,
+        'quarantine': argToBoolean(quarantine) if (quarantine := args.get('quarantine')) is not None else None,  # pylint: ignore[E0601]
         'endpoint_notification': True,
         'pause_duration': arg_to_number(args.get('pause_duration')),
         'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
