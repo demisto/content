@@ -61,7 +61,7 @@ class Client(BaseClient):
             "Authorization": f"Bearer {self.api_key}"
         }
 
-        url = next_link or f"{self.base_url}{url_suffix}"
+        url = next_link or f"{self.base_url}/{self.API_VERSION}{url_suffix}"
         demisto.info(f'Sending the http request with {url=}, {params=}')
 
         return self._http_request(
@@ -141,7 +141,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix=f'/{self.API_VERSION}/workbench/alerts',
+            url_suffix=f'/workbench/alerts',
             params=params,
             limit=limit
         )
@@ -177,7 +177,7 @@ class Client(BaseClient):
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # The data retrieval time range cannot be greater than 365 days.
         return self.get_events(
-            url_suffix=f'/{self.API_VERSION}/oat/detections',
+            url_suffix=f'/oat/detections',
             params={
                 'detectedStartDateTime': detected_start_datetime,
                 'detectedEndDateTime': detected_end_datetime,
@@ -216,7 +216,7 @@ class Client(BaseClient):
             params['endDateTime'] = end_datetime
 
         return self.get_events(
-            url_suffix=f'/{self.API_VERSION}/search/detections',
+            url_suffix=f'/search/detections',
             params=params,
             limit=limit
         )
@@ -262,7 +262,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix=f'/{self.API_VERSION}/audit/logs',
+            url_suffix=f'/audit/logs',
             params=params,
             limit=limit
         )
