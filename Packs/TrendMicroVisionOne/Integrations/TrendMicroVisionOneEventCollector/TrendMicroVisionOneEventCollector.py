@@ -26,6 +26,13 @@ class LastRunLogsTimeFields:
     AUDIT = 'audit_logs_time'
 
 
+class LogTypes:
+    OBSERVED_ATTACK_TECHNIQUES = 'observed_attach_techniques'
+    WORKBENCH = 'workbench'
+    SEARCH_DETECTIONS = 'search_detections'
+    AUDIT = 'audit'
+
+
 class UrlSuffixes:
     OBSERVED_ATTACK_TECHNIQUES = '/oat/detections'
     WORKBENCH = '/workbench/alerts'
@@ -112,7 +119,13 @@ class Client(BaseClient):
             demisto.info(f'Received {current_items=} with {next_link=}')
             events.extend(current_items)
 
-        return events[:limit]
+        event_type = get_event_type_by_url_suffix(url_suffix)
+        events = events[:limit]
+        
+        for event in events:
+            event['event_type'] = event_type
+
+        return events
 
     def get_workbench_logs(
         self,
@@ -277,6 +290,26 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_event_type_by_url_suffix(url_suffix: str) -> str:
+    """
+    Get the event type by the url suffix.
+
+    Args:
+        url_suffix (str): the url suffix of the http request for a certian log.
+
+    Returns:
+        str: The log type.
+    """
+    if url_suffix == UrlSuffixes.WORKBENCH:
+        return LogTypes.WORKBENCH
+    elif url_suffix == UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES:
+        return LogTypes.OBSERVED_ATTACK_TECHNIQUES
+    elif url_suffix == UrlSuffixes.SEARCH_DETECTIONS:
+        return LogTypes.SEARCH_DETECTIONS
+    else:
+        return LogTypes.AUDIT
 
 
 def get_datetime_range(
