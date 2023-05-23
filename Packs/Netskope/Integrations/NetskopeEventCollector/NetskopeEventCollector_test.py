@@ -1,7 +1,7 @@
 import io
 import json
 
-from NetskopeEventCollector import get_sorted_events_by_type, Client
+from NetskopeEventCollector import Client
 
 
 def util_load_json(path):
@@ -16,59 +16,6 @@ BASE_URL = 'https://netskope.example.com/'
 FIRST_LAST_RUN = {'alert': 1680182467, 'alert-ids': [], 'application': 1680182467, 'application-ids': [],
                   'audit': 1680182467, 'audit-ids': [], 'network': 1680182467, 'network-ids': [],
                   'page': 1680182467, 'page-ids': []}
-
-
-def test_get_sorted_events_by_type():
-    """
-    Given:
-        - an event type = audit
-    When:
-        - Running the command get_sorted_events_by_type
-    Then:
-        - Make sure that the audit events returned and are sorted.
-    """
-    assert get_sorted_events_by_type(MOCK_ENTRY, event_type='audit') == [
-        {
-            "timestamp": 1658381961,
-            "type": "admin_audit_logs",
-            "user": "testing@test.com",
-            "severity_level": 2,
-            "audit_log_event": "Logout Successful",
-            "supporting_data": {
-                "data_type": "reason",
-                "data_values": [
-                    "Logged out due to inactivity"
-                ]
-            },
-            "organization_unit": "test-unit",
-            "ur_normalized": "testing@test.com",
-            "ccl": "unknown",
-            "count": 1,
-            "_insertion_epoch_timestamp": 1658382261,
-            "_id": "c8d6aed8f613f5de0fa5e123",
-            "source_log_event": "audit"
-        },
-        {
-            "timestamp": 1658384700,
-            "type": "admin_audit_logs",
-            "user": "testing@test.com",
-            "severity_level": 2,
-            "audit_log_event": "Login Successful",
-            "supporting_data": {
-                "data_type": "user",
-                "data_values": [
-                    "1.1.1.1",
-                    "testing@test.com"
-                ]
-            },
-            "organization_unit": "test-unit",
-            "ur_normalized": "testing@test.com",
-            "ccl": "unknown",
-            "count": 1,
-            "_insertion_epoch_timestamp": 1658385000,
-            "_id": "d3ad748bf011262fa142123",
-            "source_log_event": "audit"
-        }]
 
 
 def test_test_module_v2(mocker):

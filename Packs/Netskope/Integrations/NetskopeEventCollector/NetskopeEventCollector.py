@@ -125,7 +125,7 @@ def get_all_events(client: Client, event_type: str, last_run: dict, skip: int, a
             if response.get('status') != 'success':  # type: ignore
                 break
 
-            results = response.get('data', [])
+            results = response.get('data', [])  # type: ignore
 
         else:  # API version == v2
             response = client.get_events_request_v2(event_type, last_run, skip)
@@ -152,9 +152,9 @@ def get_all_events(client: Client, event_type: str, last_run: dict, skip: int, a
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, api_version: str, last_run: dict) -> str:
+def test_module(client: Client, api_version: str, last_run: dict):
 
-    event_type = 'page'
+    event_type = 'application'
     if api_version == 'v1':
         response = client.get_events_request_v1(event_type, last_run, limit=1, is_command=True)
         if response.get('status') == 'success':
@@ -164,8 +164,11 @@ def test_module(client: Client, api_version: str, last_run: dict) -> str:
         if response.get('ok') == 1:
             return 'ok'
 
+    return response
 
-def get_events_v1(client: Client, last_run: dict, api_version: str, limit: Optional[int] = None) -> List[Any] | Any:  # pragma: no cover
+
+def get_events_v1(client: Client, last_run: dict, api_version: str,
+                  limit: Optional[int] = None) -> List[Any] | Any:  # pragma: no cover
     """
     Get all events extracted from Saas traffic and or logs.
     Args:
@@ -189,7 +192,7 @@ def get_events_v1(client: Client, last_run: dict, api_version: str, limit: Optio
         else:
             response = client.get_events_request_v1(event_type, last_run)
 
-        results = response.get('data', [])
+        results = response.get('data', [])  # type: ignore
 
         if response.get('status') != 'success' or not results:  # type: ignore
             break
