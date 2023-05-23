@@ -1295,7 +1295,7 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
     """
     mirror_direction = test_case_data['mirror_direction']
 
-    init_context = test_case_data['init_context']
+    init_context = test_case_data['init_context'].copy()
     init_context |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                      MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                      MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
