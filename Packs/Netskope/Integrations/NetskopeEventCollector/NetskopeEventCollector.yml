@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: NetskopeEventCollector
+  id: NetskopeEventCollector-shelly-last
   version: -1
 configuration:
 - display: Server URL
@@ -56,8 +56,8 @@ configuration:
   required: false
   type: 8
 description: Netskope Event Collector integration.
-display: Netskope Event Collector
-name: NetskopeEventCollector
+display: Netskope Event Collector Shelly Last
+name: NetskopeEventCollector-shelly-last
 script:
   commands:
   - arguments:

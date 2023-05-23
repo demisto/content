@@ -12,6 +12,7 @@ def util_load_json(path):
 MOCK_ENTRY = util_load_json('test_data/mock_events.json')
 EVENTS_RAW_V2 = util_load_json('test_data/events_raw_v2.json')
 EVENTS_RAW_V2_MULTI = util_load_json('test_data/events_raw_v2_2_results.json')
+EVENTS_PAGE_RAW_V1 = util_load_json('test_data/page_raw_v1.json')
 BASE_URL = 'https://netskope.example.com/'
 FIRST_LAST_RUN = {'alert': 1680182467, 'alert-ids': [], 'application': 1680182467, 'application-ids': [],
                   'audit': 1680182467, 'audit-ids': [], 'network': 1680182467, 'network-ids': [],
@@ -34,25 +35,36 @@ def test_test_module_v2(mocker):
     assert results == 'ok'
 
 
-def test_v2_get_events_command(mocker):
+def test_dedup_by_id():
     """
     Given:
-        - netskope-get-events call
+        - Results from the API
     When:
         - Running the command
     Then:
-        - Make sure all the events are returned as part of the CommandResult.
+        - Make sure only the limited number of events return.
+        - Make sure that first comes the event that with the earlier timestamp
     """
-    from NetskopeEventCollector import v2_get_events_command
-    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
-    mocker.patch('NetskopeEventCollector.get_events_v2', return_value=MOCK_ENTRY)
-    args = {
-        'limit': 2
-    }
-    response, _ = v2_get_events_command(client, args, FIRST_LAST_RUN)
-    assert response.raw_response == MOCK_ENTRY
-    assert len(response.outputs) == 9
-    assert 'Events List' in response.readable_output
+    from NetskopeEventCollector import dedup_by_id
+    results = EVENTS_PAGE_RAW_V1['data']
+    events = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', last_run_ids=set(), limit=4, results=results)
+    assert events[0].get('timestamp') == 1684751415
+    assert len(events) == 4
+
+
+def test_populate_modeling_rule_fields():
+    """
+    Given:
+        - Event from the API of type audit
+    When:
+        - Running the command
+    Then:
+        - Make sure the field _time is populated properly.
+    """
+    from NetskopeEventCollector import populate_modeling_rule_fields
+    event = EVENTS_RAW_V2.get('result')[0]
+    populate_modeling_rule_fields(event, event_type='audit')
+    assert event.get('_time') == '2022-01-18T19:58:07.000Z'
 
 
 def test_get_events_v2(mocker):
@@ -67,7 +79,7 @@ def test_get_events_v2(mocker):
     from NetskopeEventCollector import get_events_v2, ALL_SUPPORTED_EVENT_TYPES
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
-    response = get_events_v2(client, FIRST_LAST_RUN, 1)
+    response = get_events_v2(client, FIRST_LAST_RUN, 'v2', 1)
     assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
     assert 'results' not in response
 
@@ -88,7 +100,7 @@ def test_get_events_v2__multi_page__end_at_limit(mocker):
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', side_effect=[EVENTS_RAW_V2 for _ in range(10)])
     NEC.MAX_EVENTS_PAGE_SIZE = 1
-    response = NEC.get_events_v2(client, FIRST_LAST_RUN, 2)
+    response = NEC.get_events_v2(client, FIRST_LAST_RUN, 'v2', 2)
     assert len(response) == (2 * len(NEC.ALL_SUPPORTED_EVENT_TYPES))
 
 
@@ -109,6 +121,6 @@ def test_get_events_v2__multi_page__end_before_limit(mocker):
     side_effect = [EVENTS_RAW_V2_MULTI for _ in range(9)] + [EVENTS_RAW_V2]
     mocker.patch.object(client, 'get_events_request_v2', side_effect=side_effect)
     NEC.MAX_EVENTS_PAGE_SIZE = 2
-    response = NEC.get_events_v2(client, FIRST_LAST_RUN, 4)
+    response = NEC.get_events_v2(client, FIRST_LAST_RUN, 'v2', 4)
     assert len(response) == (4 * len(NEC.ALL_SUPPORTED_EVENT_TYPES) - 1)
     assert 'results' not in response

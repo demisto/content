@@ -47,7 +47,7 @@ class Client(BaseClient):
             'skip': skip
         }
         demisto.debug(f'Get event request body - {body}')
-        response = self._http_request(method='GET', url_suffix='events', json_data=body)
+        response = self._http_request(method='GET', url_suffix='events', json_data=body, retries=3)
         return response
 
     def get_alerts_request_v1(self, last_run: dict, skip: int = None, limit: int = None,
@@ -72,7 +72,7 @@ class Client(BaseClient):
             'limit': limit if is_command else MAX_EVENTS_PAGE_SIZE,
             'skip': skip
         }
-        response = self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
+        response = self._http_request(method='GET', url_suffix=url_suffix, json_data=body, retries=3)
         return response
 
     def get_events_request_v2(self, event_type: str, last_run: dict, skip: int = None,
@@ -85,7 +85,8 @@ class Client(BaseClient):
             'limit': limit if is_command else MAX_EVENTS_PAGE_SIZE,
             'skip': skip
         }
-        response = self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers, params=params)
+        response = self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers,
+                                      params=params, retries=3)
         return response
 
 
@@ -149,6 +150,37 @@ def get_all_events(client: Client, event_type: str, last_run: dict, skip: int, a
     return events
 
 
+def dedup_by_id(last_run: dict, results: list, last_run_ids: set, event_type: str, limit: int) -> list:
+    """
+    Dedup mechanism for the fetch to check both event id and timestamp (since timestamp can be duplicate)
+    Args:
+        last_run: Last run.
+        results: List of the events from the api.
+        last_run_ids: set of the last_run_ids.
+        event_type: the event type.
+        limit: the number of events to return.
+
+    Returns: list of events to send to XSIAM.
+
+    """
+    events = []
+    # Sorting the list to Ascending order according to the timestamp (old one first)
+    sorted_results = sorted(results, key=lambda d: d['timestamp'])
+    for event in sorted_results[:limit]:
+        event['event_id'] = event['_id']
+        if event.get('timestamp') == last_run[event_type] and event.get('event_id') not in last_run_ids:
+            events.append(event)
+            last_run_ids.add(event['event_id'])
+        else:
+            last_run_ids = set()
+            last_run_ids.add(event['event_id'])
+            last_run[event_type] = event['timestamp']
+            events.append(event)
+    demisto.debug(f'Last Run Ids to send to XSIAM - {last_run_ids}')
+
+    return events
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -196,24 +228,12 @@ def get_events_v1(client: Client, last_run: dict, api_version: str,
 
         if response.get('status') != 'success' or not results:  # type: ignore
             break
+
         if len(results) == MAX_EVENTS_PAGE_SIZE:
             all_events = get_all_events(client, event_type, last_run, skip, api_version)
             results.extend(all_events)
 
-        events = []
-        # Sorting the list to Ascending order according to the timestamp (old one first)
-        sorted_results = sorted(results, key=lambda d: d['timestamp'])
-        for event in sorted_results[:limit]:
-            event['event_id'] = event['_id']
-            if event.get('timestamp') == last_run[event_type] and event.get('event_id') not in last_run_ids:
-                events.append(event)
-                last_run_ids.add(event['event_id'])
-            else:
-                last_run_ids = set()
-                last_run_ids.add(event['event_id'])
-                last_run[event_type] = event['timestamp']
-                events.append(event)
-
+        events = dedup_by_id(last_run, results, last_run_ids, event_type, limit)
         et_events.extend(events)
         # prepare for the next iteration
         last_run[f'{event_type}-ids'] = list(last_run_ids)
@@ -235,8 +255,9 @@ def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
             result = response.get('data', [])
             events.extend(result)
 
-    for event in events:
-        event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
+        for event in events:
+            event['source_log_event'] = event_type
+            event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
 
     readable_output = tableToMarkdown('Events List:', events,
                                       removeNull=True,
@@ -280,19 +301,7 @@ def get_events_v2(client, last_run: dict, api_version: str, limit: Optional[int]
             all_events = get_all_events(client, event_type, last_run, skip, api_version)
             results.extend(all_events)
 
-        events = []
-        sorted_results = sorted(results, key=lambda d: d['timestamp'])
-        for event in sorted_results[:limit]:
-            event['event_id'] = event['_id']
-            if event.get('timestamp') == last_run[event_type] and event.get('event_id') not in last_run_ids:
-                events.append(event)
-                last_run_ids.add(event['event_id'])
-            else:
-                last_run_ids = set()
-                last_run_ids.add(event['event_id'])
-                last_run[event_type] = event['timestamp']
-                events.append(event)
-
+        events = dedup_by_id(last_run, results, last_run_ids, event_type, limit)
         et_events.extend(events)
         # prepare for the next iteration
         last_run[f'{event_type}-ids'] = list(last_run_ids)
@@ -314,8 +323,9 @@ def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
             result = response.get('result', [])
             events.extend(result)
 
-    for event in events:
-        event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
+        for event in events:
+            event['source_log_event'] = event_type
+            event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
 
     readable_output = tableToMarkdown('Events List:', events,
                                       removeNull=True,
@@ -354,7 +364,7 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
     max_fetch = min(arg_to_number(params.get('max_fetch')), MAX_EVENTS_PAGES_PER_FETCH)  # type: ignore[type-var]
-    vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
+    vendor, product = params.get('vendor', 'netskope2'), params.get('product', 'netskope2')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
