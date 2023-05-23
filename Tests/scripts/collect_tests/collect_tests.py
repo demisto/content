@@ -282,8 +282,6 @@ class CollectionResult:
 
 
 class TestCollector(ABC):
-    skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
-
     def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
         self.marketplace = marketplace
         self.id_set: IdSet | Graph
@@ -360,18 +358,6 @@ class TestCollector(ABC):
         self._validate_tests_in_id_set(result.tests)  # type: ignore[union-attr]
         if result.packs_to_install:
             result += self._always_installed_packs  # type: ignore[operator]
-
-            # remove the skipped packs from packs_to_install
-            for pack in self.skipped_packs:
-                if pack in result.packs_to_install:
-                    result.packs_to_install.remove(pack)
-
-        # remove the skipped packs from packs_to_upload
-        if result.packs_to_upload:
-            for pack in self.skipped_packs:
-                if pack in result.packs_to_upload:
-                    result.packs_to_upload.remove(pack)
-
         result += self._collect_test_dependencies(result.tests if result else ())  # type: ignore[union-attr]
         result.machines = Machine.get_suitable_machines(result.version_range)  # type: ignore[union-attr]
 
