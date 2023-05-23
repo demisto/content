@@ -60,7 +60,7 @@ def get_http_client_with_proxy(disable_ssl):
     proxies = handle_proxy()
     if not proxies.get('https', True):
         raise Exception('https proxy value is empty. Check Demisto server configuration')
-    https_proxy = proxies['https']
+    https_proxy = proxies.get('https', "")
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
         https_proxy = 'https://' + https_proxy
     parsed_proxy = urllib.parse.urlparse(https_proxy)
