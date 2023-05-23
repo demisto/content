@@ -785,7 +785,7 @@ class TestHelperFunctions:
 
     def test_collect_content_items_with_same_id(self):
         """
-        Given: pack with IncidentType, Layout with same id 
+        Given: pack with IncidentType, Layout with same id
 
         When: collecting content item to upload.
 
@@ -793,7 +793,7 @@ class TestHelperFunctions:
 
         """
         pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
-        expected_id = 'Phishing'        
+        expected_id = 'Phishing'
 
         pack = Pack('test_pack', pack_path)
         res = pack.collect_content_items()
@@ -801,7 +801,7 @@ class TestHelperFunctions:
         layout_containers = pack._content_items['layoutscontainer']
         assert len(layout_containers) == 1
         assert layout_containers[0]['id'] == expected_id
-        
+
         incident_types = pack._content_items['incidenttype']
         assert len(incident_types) == 1
         assert incident_types[0]['id'] == expected_id
