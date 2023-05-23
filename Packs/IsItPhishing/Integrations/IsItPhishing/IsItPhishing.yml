@@ -98,8 +98,6 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
-    - contextPath: URL.Data
-      description: The enriched URL.
     description: Checks if URL is phishing
 tests:
 - No tests
