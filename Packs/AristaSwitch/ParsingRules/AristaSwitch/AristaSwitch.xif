@@ -36,4 +36,4 @@ alter tmp_raw_ts = arrayindex(regextract(_raw_log, "<\d+>(.+?)\s+\S+\s+\w+\:\s")
 | alter _time = to_timestamp(tmp_epoch_ms, "MILLIS")
 
 // remove temporary utility fields
-| fields -tmp_*;
+| fields - tmp_*;
