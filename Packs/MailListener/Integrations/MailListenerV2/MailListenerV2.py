@@ -433,7 +433,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
         messages_query_list += ['UID', f'{uid_to_fetch_from}:*']
     return messages_query_list
 
-
+# TODO: revert to test-module
 def t_module(client: IMAPClient) -> str:
     yesterday = parse('1 day UTC')
     client.search(['SINCE', yesterday])
