@@ -627,7 +627,6 @@ def handle_response_errors(raw_res: dict, err_msg: str = None):
         raise DemistoException(err_msg)
     if raw_res.get('errors'):
         raise DemistoException(raw_res.get('errors'))
-    return
 
 
 def create_json_iocs_list(
@@ -2884,7 +2883,7 @@ def get_endpoint_command():
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
-        lowercase_hostnames = set(hostname.lower() for hostname in hostnames)
+        lowercase_hostnames = {hostname.lower() for hostname in hostnames}
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
     standard_endpoints = generate_endpoint_by_contex_standard(devices)
