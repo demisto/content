@@ -201,7 +201,7 @@ configuration:
     displaypassword: ""
     hiddenusername: false
 description: Multi-vendor library to simplify SSH connections to network
-  devices. Utilises the Python library Netmiko for connections. Supports SSH Key
+  devices. Utilizes the Python library Netmiko for connections. Supports SSH Key
   authentication and username / password.
 display: Netmiko
 name: Netmiko
@@ -219,16 +219,16 @@ script:
             - ""
         - auto: PREDEFINED
           defaultValue: "false"
-          description: Requires "enable" to be run before commands are executed (default
-            is false)
+          description: Whether requires "enable" to be run before commands are executed. Default
+            is false.
           name: require_enable
           predefined:
             - "false"
             - "true"
         - auto: PREDEFINED
           defaultValue: "false"
-          description: Commands are config items (such as those used in Cisco devices)
-            (default is false)
+          description: Whether commands are config items (such as those used in Cisco devices).
+            Default is false.
           name: isConfig
           predefined:
             - "false"
@@ -236,19 +236,19 @@ script:
         - auto: PREDEFINED
           defaultValue: "false"
           description: Whether an exit argument is required after comamnds are executed
-            (default is false)
+            (default is false).
           name: require_exit
           predefined:
             - "false"
             - "true"
         - defaultValue: q
           description: Optional exit argument used to exit the terminal after commands are
-            executed (default is q)
+            executed. Default is q.
           name: exit_argument
         - auto: PREDEFINED
           defaultValue: "false"
-          description: If true, the output in the war room is raw output (as seen in a
-            terminal) and not in JSON format (default is false)
+          description: If true, the output in the War Room is raw output (as seen in a
+            terminal) and not in JSON format. Default is false.
           name: raw_print
           predefined:
             - "false"
@@ -257,7 +257,7 @@ script:
           defaultValue: "false"
           description: If set to true, the context is not ouput. This is useful if the
             command needs to be executed but the result of the command is not
-            required in context (default is false)
+            required in context. Default is false.
           name: disable_context
           predefined:
             - "false"
@@ -469,7 +469,7 @@ script:
         - description: If specified, it will override the password specified in the
             integration instrance.
           name: override_password
-      description: Execute commands using Netmiko
+      description: Execute commands using Netmiko.
       execution: true
       name: netmiko-cmds
       outputs:
