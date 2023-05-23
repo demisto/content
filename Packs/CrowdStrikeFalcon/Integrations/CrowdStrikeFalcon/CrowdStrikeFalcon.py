@@ -306,6 +306,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         token = get_token()
         headers['Authorization'] = 'Bearer {}'.format(token)
     url = SERVER + url_suffix
+
+    headers['User-Agent'] = 'PANW-XSOAR'
+
     try:
         res = requests.request(
             method,
@@ -655,7 +658,7 @@ def create_json_iocs_list(
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
-def init_rtr_single_session(host_id: str) -> str:
+def init_rtr_single_session(host_id: str, queue_offline: bool = False) -> str:
     """
         Start a session with single host.
         :param host_id: Host agent ID to initialize a RTR session on.
@@ -663,7 +666,8 @@ def init_rtr_single_session(host_id: str) -> str:
     """
     endpoint_url = '/real-time-response/entities/sessions/v1'
     body = json.dumps({
-        'device_id': host_id
+        'device_id': host_id,
+        'queue_offline': queue_offline
     })
     response = http_request('POST', endpoint_url, data=body)
     resources = response.get('resources')
@@ -833,7 +837,7 @@ def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str =
     return response
 
 
-def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with read access
         :param host_id: Host agent ID to run RTR command on.
@@ -842,7 +846,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
 
     body = json.dumps({
         'base_command': command_type,
@@ -853,7 +857,7 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_write_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with write access
         :param host_id: Host agent ID to run RTR command on.
@@ -862,7 +866,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
@@ -872,7 +876,7 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
     return response
 
 
-def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> Dict:
+def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool) -> Dict:
     """
         Sends RTR command scope with admin access
         :param host_id: Host agent ID to run RTR command on.
@@ -881,7 +885,7 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str) -> 
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/admin-command/v1'
-    session_id = init_rtr_single_session(host_id)
+    session_id = init_rtr_single_session(host_id, queue_offline)
 
     body = json.dumps({
         'base_command': command_type,
@@ -3043,11 +3047,11 @@ def run_command():
         responses = []
         for host_id in host_ids:
             if scope == 'read':
-                response1 = run_single_read_cmd(host_id, command_type, full_command)
+                response1 = run_single_read_cmd(host_id, command_type, full_command, offline)
             elif scope == 'write':
-                response1 = run_single_write_cmd(host_id, command_type, full_command)
+                response1 = run_single_write_cmd(host_id, command_type, full_command, offline)
             else:  # scope = admin
-                response1 = run_single_admin_cmd(host_id, command_type, full_command)
+                response1 = run_single_admin_cmd(host_id, command_type, full_command, offline)
             responses.append(response1)
 
             for resource in response1.get('resources', []):

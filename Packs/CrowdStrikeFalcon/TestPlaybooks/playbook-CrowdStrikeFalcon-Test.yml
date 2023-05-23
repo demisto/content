@@ -2724,9 +2724,9 @@ tasks:
       - "71"
     scriptarguments:
       cve_ids:
-        simple: CVE-2021-34484
+        simple: ${CrowdStrike.Vulnerability.cve.id}
       limit:
-        simple: "2"
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-

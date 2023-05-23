@@ -195,7 +195,7 @@ script:
         description: File name of download
       - name: description
         description: Description of file entry
-    description: Download files from core server
+    description: Download files from Core server
   - name: core-api-multipart
     arguments:
       - name: uri
@@ -206,14 +206,20 @@ script:
         description: File entry ID
       - name: body
         description: Request body
-    description: Send HTTP Multipart request to upload files to core server
+    description: Send HTTP Multipart request to upload files to Core server
   - name: core-delete-incidents
     arguments:
     - name: ids
       required: true
       description: IDs of the incidents to delete
       isArray: true
-    description: Delete core incidents
+    - name: fields
+      description: 'Comma separated list of fields to return, case sensitive. Set
+          "all" for all fields. WARNING: Setting all fields may result in big results.'
+      required: false
+      isArray: true
+      defaultValue: id,name,type,severity,status
+    description: Delete Core incidents
     execution: true
   - name: core-api-install-packs
     arguments:
@@ -247,7 +253,7 @@ script:
       predefined:
         - 'true'
         - 'false'
-    description: Upload packs to core server from url or the marketplace.
+    description: Upload packs to Core server from url or the marketplace.
   runonce: false
 tests:
 - No tests

@@ -31,6 +31,7 @@ MAP_INDICATORS_TYPE = {'fqdn': FeedIndicatorType.Domain,
                        'sha1': FeedIndicatorType.File,
                        'sha256': FeedIndicatorType.File,
                        'url': FeedIndicatorType.URL}
+DATETIME_SETTINGS = settings = {'TIMEZONE': 'Z', 'RETURN_AS_TIMEZONE_AWARE': True}
 
 ''' CLIENT CLASS '''
 
@@ -178,14 +179,14 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         List: new indicators
 
     """
-    start_date = arg_to_datetime(last_run)
+    start_date = arg_to_datetime(last_run, settings=DATETIME_SETTINGS)
 
     params = {}
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
-        earliest_fetch = arg_to_datetime('90 days ago')
+        earliest_fetch = arg_to_datetime('90 days ago', settings=DATETIME_SETTINGS)
         start_date = max(earliest_fetch, start_date)  # type:ignore
-        params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
+        params = {'start_epoch': int(start_date.timestamp()), 'limit': limit, "last_updated": "asc"}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
@@ -222,8 +223,7 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
     if indicators_list:
         new_indicators_list = indicators_list[:limit]
         last_run_dict[indicator_type + 'List'] = indicators_list[limit:]
-        date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
-        last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1][date_key]
+        last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1]['last_updated']
 
         if update_context:
             demisto.setLastRun(last_run_dict)

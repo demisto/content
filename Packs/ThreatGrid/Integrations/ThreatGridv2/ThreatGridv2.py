@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Cisco ThreatGird integration
 """
@@ -16,8 +18,6 @@ from typing import (
     Union,
     Set,
 )
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 DEFAULT_INTERVAL = 90
 DEFAULT_TIMEOUT = 600
@@ -205,7 +205,8 @@ class Client(BaseClient):
 
     def upload_sample(self,
                       files: Optional[Dict] = None,
-                      payload: Optional[Dict] = None) -> Dict[str, Any]:
+                      payload: Optional[Dict] = None,
+                      private: Optional[bool] = None) -> Dict[str, Any]:
         """Submits a sample (file or URL) to Malware Analytics for analysis.
         Args:
             files (dict, optional): File name and path in XSOAR.
@@ -215,12 +216,12 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
 
-        return self._http_request(
-            "POST",
-            urljoin(API_V2_PREFIX, "samples"),
-            files=files,
-            data=payload,
-        )
+        return self._http_request("POST",
+                                  urljoin(API_V2_PREFIX, "samples"),
+                                  files=files,
+                                  data=payload,
+                                  params=remove_empty_elements(
+                                      {'private': private}))
 
     def associated_samples(self, arg_name: str, arg_value: str,
                            url_arg: str) -> Dict[str, Any]:
@@ -838,16 +839,17 @@ def upload_sample_command(
     """
     file_id = args.get("file_id")
     url = args.get("url")
+    private = optional_arg_to_boolean(args.get("private"))
 
     if (file_id and url) or (not file_id and not url):
         raise ValueError("You must specified file_id or url, not both.")
 
     if file_id:
         file = parse_file_to_sample(file_id)
-        response = client.upload_sample(files=file)
+        response = client.upload_sample(files=file, private=private)
     else:
         payload = {"url": url}
-        response = client.upload_sample(payload=payload)
+        response = client.upload_sample(payload=payload, private=private)
     uploaded_sample = response["data"]
 
     return CommandResults(
@@ -1045,12 +1047,15 @@ def reputation_command(
             state="succ",
             sort_by="analyzed_at",
         )
+
         if response["data"]["current_item_count"] == 0:
             score = 0
-            sample_details = {}
+            sample_details = {generic_command_name: command_arg}
             sample_id = ""
+
         else:
             sample_details = response["data"]["items"][0]["item"]
+            sample_details[generic_command_name] = command_arg
             sample_analysis_date = dict_safe_get(
                 sample_details,
                 ["analysis", "metadata", "sandcastle_env", "analysis_end"],
@@ -1061,7 +1066,7 @@ def reputation_command(
 
             if not is_day_diff_valid(sample_analysis_date):
                 score = 0
-                sample_details = {}
+                sample_details = {generic_command_name: command_arg}
                 sample_id = ""
 
         dbot_score = get_dbotscore(score, generic_command_name, command_arg,
@@ -1075,6 +1080,7 @@ def reputation_command(
             "dbot_score": dbot_score,
             "sample_details": sample_details,
         }
+
         command_results.append(reputation_helper_command(**kwargs))
 
     return command_results
@@ -1228,10 +1234,17 @@ def parse_file_indicator(
         "sha1": sha1,
         "sha256": sha256,
     }
-    readable_output = tableToMarkdown(
-        name=f"ThreatGrid File Reputation for {md5} \n",
-        t=outputs,
-    )
+
+    file_hash = sample_details.get('file')
+    if md5 or sha1 or sha256:
+        readable_output = tableToMarkdown(
+            name=f"ThreatGrid File Reputation for {file_hash} \n",
+            t=outputs,
+        )
+    else:
+        readable_output = tableToMarkdown(
+            name=f"ThreatGrid File Not Found for {file_hash} \n",
+            t={"file": file_hash})
 
     return CommandResults(
         readable_output=readable_output,

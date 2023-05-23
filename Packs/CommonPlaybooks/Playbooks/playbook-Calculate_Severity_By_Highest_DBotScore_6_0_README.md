@@ -1,4 +1,4 @@
-Calculates the incident severity level according to the highest indicator DBotScore.
+Calculates the incident severity level according to the highest DBotScore.
 
 ## Dependencies
 
@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Indicator Registration Polling - Generic
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
@@ -15,6 +15,7 @@ This playbook does not use any integrations.
 ### Scripts
 
 * Set
+* GetIndicatorDBotScoreFromCache
 
 ### Commands
 
