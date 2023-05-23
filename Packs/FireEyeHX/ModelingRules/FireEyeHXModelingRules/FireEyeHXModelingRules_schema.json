@@ -43,6 +43,144 @@
         "md5values": {
             "type": "string",
             "is_array": true
+        },
+        "cs1Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs2Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs3Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs4Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs4": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs6Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs6": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs7Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs7": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs8Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs8": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs9Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs9": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs10Label": {
+            "type": "string",
+            "is_array": true
+        },
+        "cs10": {
+            "type": "string",
+            "is_array": true
+        },
+        "dst": {
+            "type": "string",
+            "is_array": true
+        },
+        "dhost": {
+            "type": "string",
+            "is_array": true
+        },
+        "categoryOutcome": {
+            "type": "string",
+            "is_array": true
+        },
+        "dmac": {
+            "type": "string",
+            "is_array": true
+        },
+        "dntdom": {
+            "type": "string",
+            "is_array": true
+        },
+        "dvchost": {
+            "type": "string",
+            "is_array": true
+        },
+        "externalId": {
+            "type": "string",
+            "is_array": true
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": true
+        },
+        "msg": {
+            "type": "string",
+            "is_array": true
+        },
+        "categoryTupleDescription": {
+            "type": "string",
+            "is_array": true
+        },
+        "cefSeverity": {
+            "type": "string",
+            "is_array": true
+        },
+        "suser": {
+            "type": "string",
+            "is_array": true
+        },
+        "fname": {
+            "type": "string",
+            "is_array": true
+        },
+        "filePath": {
+            "type": "string",
+            "is_array": true
+        },
+        "request": {
+            "type": "string",
+            "is_array": true
+        }
+    },
+    "fireeye_hx_audit_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

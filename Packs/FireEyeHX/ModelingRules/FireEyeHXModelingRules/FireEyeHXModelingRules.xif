@@ -1,5 +1,7 @@
 [MODEL: dataset = fireeye_hx_raw]
-alter
+// API logs
+filter cefVersion = null
+| alter
         // addressNotificationEvent fields
         addressNotificationEvent_address = json_extract_scalar(event_values, "$['addressNotificationEvent/address']"),
         // dnsLookupEvent fields
@@ -73,7 +75,7 @@ alter
         xdm.intermediate.host.ipv4_addresses = arraycreate(addressNotificationEvent_address),
         xdm.intermediate.host.ipv6_addresses = arraycreate(addressNotificationEvent_address),
         xdm.network.dns.dns_question.name = dnsLookupEvent_hostname,
-        xdm.source.process.pid = dnsLookupEvent_pid,
+        xdm.source.process.pid = to_integer(dnsLookupEvent_pid),
         xdm.source.process.executable.path = dnsLookupEvent_ppath,
         xdm.source.process.name = dnsLookupEvent_process,
         xdm.source.process.executable.directory = dnsLookupEvent_processPath,
@@ -108,6 +110,45 @@ alter
         xdm.observer.type = subtype,
         xdm.event.outcome = resolution,
         xdm.target.file.md5 = coalesce(md5values,fileWriteEvent_md5);
+// Syslog CEF logs
+filter cefVersion != null
+| alter
+        FireEye_Agent_Version = if(cs2Label = "FireEye Agent Version", cs2, null),
+        containment_action = if(cs3Label = "Containment action", cs3, null),
+        IOC_Name = if(cs4Label = "IOC Name", cs4, null),
+        Process_Name = if(cs4Label = "Process Name", cs4, null),
+        Target_OS = lowercase(if(cs6Label = "Target OS", cs6, null)),
+        resolution_cs = if(cs7Label = "Resolution", cs7, null),
+        Alert_Types = if(cs8Label = "Alert Types", cs8, null),
+        MD5_hash = if(cs9Label = "MD5", cs9, null),
+        Alert_Correlation_ID = if(cs10Label = "Alert Correlation ID", cs10, null),
+        categoryOutcome = lowercase(categoryOutcome)
+// Mapping fields
+| alter
+        xdm.source.ipv4 = arrayindex(regextract(dst, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        xdm.source.ipv6 = arrayindex(regextract(dst, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        xdm.source.host.hostname = dhost,
+        xdm.source.host.mac_addresses = arraycreate(dmac),
+        xdm.target.domain = dntdom,
+        xdm.observer.name = dvchost,
+        xdm.event.id = externalId,
+        xdm.event.type = cefName,
+        xdm.source.user.username = suser,
+        xdm.target.file.filename = fname,
+        xdm.target.file.path = filePath,
+        xdm.target.url = request,
+        xdm.event.description = coalesce(msg, categoryTupleDescription),
+        xdm.event.outcome = if(categoryOutcome contains "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, categoryOutcome contains "FAILURE", XDM_CONST.OUTCOME_FAILED, categoryOutcome contains "completed", XDM_CONST.OUTCOME_SUCCESS, to_string(categoryOutcome)),
+        xdm.event.log_level = if(cefSeverity = "10", XDM_CONST.LOG_LEVEL_ALERT, cefSeverity = "0", XDM_CONST.LOG_LEVEL_INFORMATIONAL, cefSeverity = "4", XDM_CONST.LOG_LEVEL_WARNING, cefSeverity = "7", XDM_CONST.LOG_LEVEL_ERROR),
+        xdm.alert.name = IOC_Name,
+        xdm.alert.subcategory = to_string(Alert_Types),
+        xdm.source.host.os = Target_OS,
+        xdm.observer.action = coalesce(resolution_cs, containment_action),
+        xdm.source.agent.version = FireEye_Agent_Version,
+        xdm.alert.original_alert_id = Alert_Correlation_ID,
+        xdm.source.process.name = Process_Name,
+        xdm.source.process.executable.md5 = MD5_hash,
+        xdm.source.host.os_family = if(Target_OS contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, Target_OS contains "mac", XDM_CONST.OS_FAMILY_MACOS, Target_OS contains "linux", XDM_CONST.OS_FAMILY_LINUX, Target_OS contains "android", XDM_CONST.OS_FAMILY_ANDROID, Target_OS contains "ios", XDM_CONST.OS_FAMILY_IOS, Target_OS contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, Target_OS contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, Target_OS contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, Target_OS contains "centos", XDM_CONST.OS_FAMILY_CENTOS, Target_OS contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, Target_OS contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, Target_OS contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(Target_OS));
 
 [MODEL: dataset = fireeye_hx_audit_raw]
 // Modeling for Action audit logs
@@ -131,7 +172,7 @@ filter _raw_log contains "Action ID"
         xdm.network.http.method = if(http_request_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_request_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_request_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_request_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_request_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_request_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_request_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_request_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_request_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_request_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_request_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_request_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_request_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_request_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_request_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_request_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_request_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_request_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_request_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_request_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_request_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_request_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_request_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_request_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_request_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_request_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_request_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_request_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_request_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_request_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_request_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_request_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_request_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_request_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_request_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_request_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_request_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_request_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_request_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_request_method)),
         xdm.network.http.url = arrayindex(regextract(_raw_log, "descr: [A-Z]{2,}\s(/[\w/]+)"),0),
         xdm.source.user.username = arrayindex(regextract(_raw_log, "requested by: user ([^\s]+)"),0),
-        xdm.event.outcome = if(http_status contains "success", XDM_CONST.OUTCOME_SUCCESS, http_status contains "failue", XDM_CONST.OUTCOME_FAILED, http_status = "CHALLENGE", to_string(http_status))
+        xdm.event.outcome = if(http_status contains "success", XDM_CONST.OUTCOME_SUCCESS, http_status contains "failue", XDM_CONST.OUTCOME_FAILED, http_status = "CHALLENGE", to_string(http_status)),
         xdm.target.domain = arrayindex(regextract(_raw_log, "domain name: ([^\s,]+)"),0);
 // Modeling for authentication audit logs
 filter _raw_log contains ": User log"
