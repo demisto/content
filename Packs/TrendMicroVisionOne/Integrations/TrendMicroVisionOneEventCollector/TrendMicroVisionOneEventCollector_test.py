@@ -119,7 +119,8 @@ class TestFetchEvents:
 
     @pytest.mark.parametrize(
         "last_run, integration_params, expected_updated_last_run, datetime_string_freeze_time, "
-        "num_of_workbench_logs, num_of_oat_logs, num_of_search_detection_logs, num_of_audit_logs",
+        "num_of_workbench_logs, num_of_oat_logs, num_of_search_detection_logs, num_of_audit_logs, "
+        "num_of_expected_events",
         [
             (
                 {},
@@ -134,7 +135,8 @@ class TestFetchEvents:
                 50,
                 50,
                 50,
-                50
+                50,
+                200
             ),
             (
                 {
@@ -154,7 +156,29 @@ class TestFetchEvents:
                 50,
                 50,
                 50,
-                50
+                50,
+                200
+            ),
+            (
+                {
+                    'workbench_logs_time': '2023-01-01T15:05:00Z',
+                    'oat_detection_logs_time': '2023-01-01T15:05:00Z',
+                    'search_detection_logs_time': '2023-01-01T15:05:00Z',
+                    'audit_logs_time': '2023-01-01T15:04:59Z'
+                },
+                {'max_fetch': 20},
+                {
+                    'workbench_logs_time': '2023-01-01T15:10:30Z',
+                    'oat_detection_logs_time': '2023-01-01T15:10:30Z',
+                    'search_detection_logs_time': '2023-01-01T15:10:30Z',
+                    'audit_logs_time': '2023-01-01T15:10:29Z'
+                },
+                '2023-01-01T15:10:30Z',
+                4,
+                9,
+                81,
+                55,
+                4 + 9 + 20 + 20
             ),
         ],
     )
@@ -169,22 +193,25 @@ class TestFetchEvents:
         num_of_workbench_logs: int,
         num_of_oat_logs: int,
         num_of_search_detection_logs: int,
-        num_of_audit_logs: int
+        num_of_audit_logs: int,
+        num_of_expected_events: int
     ):
         """
         Note: the limit is per single log!
 
         Given:
-            - Case A: last_run={}, limit=100, num_of_workbench_logs=50, num_of_oat_logs=50,
+            - Case A: last_run={}, max_fetch=100, num_of_workbench_logs=50, num_of_oat_logs=50,
                       num_of_search_detection_logs=50, num_of_audit_logs=50
-            - Case B: last_run=last run from Case A, limit=100, num_of_workbench_logs=50, num_of_oat_logs=50,
+            - Case B: last_run=last run from Case A, max_fetch=100, num_of_workbench_logs=50, num_of_oat_logs=50,
                       num_of_search_detection_logs=50, num_of_audit_logs=50
+            - Case C: last_run=last run from Case B, max_fetch=20, num_of_workbench_logs=4, num_of_oat_logs=9,
+                      num_of_search_detection_logs=81, num_of_audit_logs=55
         When:
             - fetch-events through the main flow
         Then:
             - workbench, oat and search detection logs last run time is the last log time + 1 second added to it.
             - make sure the audit log last time is the last log without +1 second to it.
-            - make sure the expected_events_length is the sum of all the logs.
+            - make sure the expected_events_length is correct according to the limit of number of events from each type.
 
         """
         from TrendMicroVisionOneEventCollector import main
@@ -209,5 +236,4 @@ class TestFetchEvents:
         main()
 
         assert set_last_run_mocker.call_args.args[0] == expected_updated_last_run
-        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == \
-               num_of_workbench_logs + num_of_oat_logs + num_of_search_detection_logs + num_of_audit_logs
+        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == num_of_expected_events
