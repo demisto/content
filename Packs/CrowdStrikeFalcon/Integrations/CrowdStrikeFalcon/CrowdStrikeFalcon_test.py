@@ -5230,7 +5230,8 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
 @pytest.mark.parametrize(
     'body, is_scheduled',
     (
-        ({'endpoint_notification': True, 'schedule': {'ignored_by_channelfile': True, 'interval': None, 'start_timestamp': None}}, True),
+        ({'endpoint_notification': True, 'schedule': {
+            'ignored_by_channelfile': True, 'interval': None, 'start_timestamp': None}}, True),
         ({'endpoint_notification': True}, False)
     )
 )
@@ -5249,7 +5250,7 @@ def test_ODS_create_scan_request(mocker, body, is_scheduled):
     """
 
     from CrowdStrikeFalcon import ODS_create_scan_request
-    
+
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_create_scan_request({}, is_scheduled)
     http_request.assert_called_with('POST', f'/ods/entities/{f"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
