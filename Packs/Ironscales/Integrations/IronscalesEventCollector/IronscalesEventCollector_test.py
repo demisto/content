@@ -8,6 +8,11 @@ def client(mocker):
         return {
             "incident_id": inc_id,
             "first_reported_date": f"{4 - inc_id} days ago",
+            "reports": [
+                {
+                    "name": "first_name",
+                }
+            ]
         }
     mocked_client = mocker.Mock()
     mocked_client.get_open_incidents.return_value = {"incident_ids": [0, 1, 3, 4]}
@@ -16,6 +21,11 @@ def client(mocker):
 
 
 def test_fetch_events_by_last_id(client):
+    """
+    Given: A mock Ironscales client.
+    When: Running fetch-events, where `max_fetch` param is 10 and the last fetched incident id is 1.
+    Then: Ensure incidents 3 and 4 are returned as events.
+    """
     res, last_run = fetch_events_command(
         client,
         last_run={"last_id": 1},
@@ -27,6 +37,11 @@ def test_fetch_events_by_last_id(client):
 
 
 def test_fetch_events_by_fetch_time(client):
+    """
+    Given: A mock Ironscales client.
+    When: Running fetch-events, where `max_fetch` param is 1 and `first_fetch` param is "2 days ago".
+    Then: Ensure only the first event that occured up to 2 days ago is returned.
+    """
     events, last_run = fetch_events_command(
         client,
         last_run={},
@@ -39,6 +54,66 @@ def test_fetch_events_by_fetch_time(client):
 
 
 def test_get_events(client):
+    """
+    Given: A mock Ironscales client.
+    When: Running get-events with a limit of 1, while there are four open incidents.
+    Then: Ensure only one event is returned.
+    """
     _, events = get_events_command(client, {"limit": 1})
     assert len(events) == 1
     assert events[0]["incident_id"] == 0
+
+
+def test_incident_to_events():
+    """
+    Given: A mock Ironscales incident data that aggregates two reports.
+    When: Calling incident_to_events().
+    Then: Ensure there are two events returned, where each of them
+        consists of the incident data and a single report data.
+    """
+    dummy_incident = {
+        "incident_id": 1,
+        "reports": [
+            {
+                "name": "dummy name 1",
+                "email": "test@paloaltonetworks.com",
+                "headers": [
+                    {
+                        "name": "header1",
+                        "value": "value1"
+                    },
+                ]
+            },
+            {
+                "name": "dummy name 2",
+                "email": "test2@paloaltonetworks.com",
+                "headers": [
+                    {
+                        "name": "header2",
+                        "value": "value2"
+                    },
+                ]
+            }
+        ],
+        "links": [
+            {
+                "url": "http://www.ironscales.com/",
+                "name": "tests"
+            },
+        ],
+        "attachments": [
+            {
+                "file_name": "dummy file",
+                "file_size": 1024,
+                "md5": "a36544c75d1253d8dd32070908adebd0"
+            }
+        ]
+    }
+    events = incident_to_events(dummy_incident)
+    assert len(events) == 2
+    assert "reports" not in events[0] and "reports" not in events[1]
+    assert events[0]["incident_id"] == events[1]["incident_id"]
+    assert events[0]["links"] == events[1]["links"]
+    assert events[0]["attachments"] == events[1]["attachments"]
+    assert events[0]["headers"][0]["name"] == "header1" and events[1]["headers"][0]["name"] == "header2"
+    assert events[0]["headers"][0]["value"] == "value1" and events[1]["headers"][0]["value"] == "value2"

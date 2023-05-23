@@ -2,6 +2,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import copy
 import dateparser
 import urllib3
 from typing import Dict, Tuple
@@ -144,6 +145,21 @@ def get_incident_ids(
     )
 
 
+def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Creates an event for each report in the current incident.
+        Returns the list of events.
+    """
+    def get_flatten_event_data(report_data: Dict[str, Any]) -> Dict[str, Any]:
+        event = copy.deepcopy(incident)
+        del event["reports"]
+        return event | report_data
+
+    events: List[Dict[str, Any]] = []
+    for report_data in incident.get("reports", []):
+        events.append(get_flatten_event_data(report_data))
+    return events
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -157,7 +173,8 @@ def get_events_command(
     for idx, incident_id in enumerate(incident_ids):
         if idx == args.get('limit'):
             break
-        events.append(client.get_incident(incident_id))
+        inc = client.get_incident(incident_id)
+        events.extend(incident_to_events(inc))
 
     result = CommandResults(
         readable_output=tableToMarkdown("Open Incidents", events),
@@ -182,7 +199,8 @@ def fetch_events_command(
     for idx, incident_id in enumerate(incident_ids):
         if idx == max_fetch:
             break
-        events.append(client.get_incident(incident_id))
+        inc = client.get_incident(incident_id)
+        events.extend(incident_to_events(inc))
         last_run["last_id"] = incident_id
 
     if "last_id" not in last_run:
