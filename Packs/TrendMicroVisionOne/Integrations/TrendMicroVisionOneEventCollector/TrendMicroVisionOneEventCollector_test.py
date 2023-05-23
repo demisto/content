@@ -7,7 +7,7 @@ import pytest
 import pytz
 from typing import Tuple
 from urllib.parse import parse_qs, urlparse
-from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsTimeFields
+from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsTimeFields, UrlSuffixes
 
 
 BASE_URL = 'https://api.xdr.trendmicro.com'
@@ -72,7 +72,7 @@ def create_logs_mocks(
 
     return {
         'items': logs,
-        'nextLink': f'{BASE_URL}/v3.0/{url_suffix}?top={top}&fetchedAmountOfEvents={fetched_amount_of_events}'
+        'nextLink': f'{BASE_URL}/v3.0{url_suffix}?top={top}&fetchedAmountOfEvents={fetched_amount_of_events}'
     }
 
 
@@ -85,31 +85,31 @@ def _http_request_side_effect_decorator(
     def _http_request_side_effect(**kwargs):
         full_url = kwargs.get('full_url') or ''
         params = kwargs.get('params') or {}
-        if 'workbench/alerts' in full_url:
+        if UrlSuffixes.WORKBENCH in full_url:
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_workbench_logs,
-                url_suffix='workbench/alerts',
+                url_suffix=UrlSuffixes.WORKBENCH,
                 created_time_field='createdDateTime',
                 id_field_name='id',
                 top=10,
                 extra_seconds=60
             )
-        if 'oat/detections' in full_url:
+        if UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES in full_url:
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_oat_logs,
-                url_suffix='oat/detections',
+                url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES,
                 created_time_field='detectedDateTime',
                 id_field_name='uuid',
                 top=params.get('top') or 200,
                 extra_seconds=150
             )
-        if 'search/detections' in full_url:
+        if UrlSuffixes.SEARCH_DETECTIONS in full_url:
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_search_detection_logs,
-                url_suffix='search/detections',
+                url_suffix=UrlSuffixes.SEARCH_DETECTIONS,
                 created_time_field='eventTime',
                 id_field_name='uuid',
                 top=params.get('top') or DEFAULT_MAX_LIMIT,
@@ -119,7 +119,7 @@ def _http_request_side_effect_decorator(
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_audit_logs,
-                url_suffix='audit/logs',
+                url_suffix=UrlSuffixes.AUDIT,
                 created_time_field='loggedDateTime',
                 id_field_name='loggedUser',
                 top=params.get('top') or 200,

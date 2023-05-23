@@ -26,6 +26,13 @@ class LastRunLogsTimeFields:
     AUDIT = 'audit_logs_time'
 
 
+class UrlSuffixes:
+    OBSERVED_ATTACK_TECHNIQUES = '/oat/detections'
+    WORKBENCH = '/workbench/alerts'
+    SEARCH_DETECTIONS = '/search/detections'
+    AUDIT = '/audit/logs'
+
+
 ''' CLIENT CLASS '''
 
 
@@ -141,7 +148,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix='/workbench/alerts',
+            url_suffix=UrlSuffixes.WORKBENCH,
             params=params,
             limit=limit
         )
@@ -177,7 +184,7 @@ class Client(BaseClient):
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # The data retrieval time range cannot be greater than 365 days.
         return self.get_events(
-            url_suffix='/oat/detections',
+            url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES,
             params={
                 'detectedStartDateTime': detected_start_datetime,
                 'detectedEndDateTime': detected_end_datetime,
@@ -216,7 +223,7 @@ class Client(BaseClient):
             params['endDateTime'] = end_datetime
 
         return self.get_events(
-            url_suffix='/search/detections',
+            url_suffix=UrlSuffixes.SEARCH_DETECTIONS,
             params=params,
             limit=limit,
             headers={'TMV1-Query': '*', "Authorization": f"Bearer {self.api_key}"}
@@ -263,7 +270,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix='/audit/logs',
+            url_suffix=UrlSuffixes.AUDIT,
             params=params,
             limit=limit
         )
