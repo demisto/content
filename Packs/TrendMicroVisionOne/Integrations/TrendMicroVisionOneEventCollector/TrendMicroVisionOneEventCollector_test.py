@@ -354,15 +354,15 @@ def test_get_datetime_range(
 ):
     """
     Given:
-        - Case A: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=workbench_logs_time, 
+        - Case A: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=workbench_logs_time,
                   start_time=2023-01-01T15:20:45Z
-        - Case B: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=audit_logs_time, 
+        - Case B: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=audit_logs_time,
                   start_time=2023-01-01T15:20:45Z
-        - Case C: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=oat_detection_logs_time, 
+        - Case C: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=oat_detection_logs_time,
                   start_time=2023-01-01T15:20:45Z
-        - Case D: last_run_time=None, first_fetch=1 month ago, log_type_time_field_name=oat_detection_logs_time, 
+        - Case D: last_run_time=None, first_fetch=1 month ago, log_type_time_field_name=oat_detection_logs_time,
                   start_time=2023-01-01T15:20:45Z
-        - Case E: last_run_time=2023-01-01T15:00:00Z, first_fetch=1 month ago, 
+        - Case E: last_run_time=2023-01-01T15:00:00Z, first_fetch=1 month ago,
                   log_type_time_field_name=search_detection_logs_time, start_time=2023-01-01T15:20:45Z
     When:
         - running get datetime range
