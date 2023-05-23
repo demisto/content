@@ -180,6 +180,27 @@ class TestFetchEvents:
                 55,
                 4 + 9 + 20 + 20
             ),
+            (
+                {
+                    'workbench_logs_time': '2023-01-01T15:10:30Z',
+                    'oat_detection_logs_time': '2023-01-01T15:10:30Z',
+                    'search_detection_logs_time': '2023-01-01T15:10:30Z',
+                    'audit_logs_time': '2023-01-01T15:10:29Z'
+                },
+                {'max_fetch': 1000},
+                {
+                    'workbench_logs_time': '2023-01-01T15:15:42Z',
+                    'oat_detection_logs_time': '2023-01-01T15:15:42Z',
+                    'search_detection_logs_time': '2023-01-01T15:15:42Z',
+                    'audit_logs_time': '2023-01-01T15:15:41Z'
+                },
+                '2023-01-01T15:15:42Z',
+                1400,
+                1123,
+                356,
+                879,
+                1000 + 1000 + 356 + 879
+            ),
         ],
     )
     def test_fetch_events_main(
@@ -206,6 +227,8 @@ class TestFetchEvents:
                       num_of_search_detection_logs=50, num_of_audit_logs=50
             - Case C: last_run=last run from Case B, max_fetch=20, num_of_workbench_logs=4, num_of_oat_logs=9,
                       num_of_search_detection_logs=81, num_of_audit_logs=55
+            - Case D: last_run=last run from Case C, max_fetch=1000, num_of_workbench_logs=1400, num_of_oat_logs=1123,
+                      num_of_search_detection_logs=356, num_of_audit_logs=879
         When:
             - fetch-events through the main flow
         Then:
