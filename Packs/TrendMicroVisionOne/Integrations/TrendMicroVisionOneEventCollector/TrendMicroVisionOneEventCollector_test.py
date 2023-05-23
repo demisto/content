@@ -201,6 +201,27 @@ class TestFetchEvents:
                 879,
                 1000 + 1000 + 356 + 879
             ),
+            (
+                {
+                    'workbench_logs_time': '2023-01-01T15:15:42Z',
+                    'oat_detection_logs_time': '2023-01-01T15:15:42Z',
+                    'search_detection_logs_time': '2023-01-01T15:15:42Z',
+                    'audit_logs_time': '2023-01-01T15:15:41Z'
+                },
+                {'max_fetch': 1000},
+                {
+                    'workbench_logs_time': '2023-01-01T15:20:45Z',
+                    'oat_detection_logs_time': '2023-01-01T15:20:45Z',
+                    'search_detection_logs_time': '2023-01-01T15:20:45Z',
+                    'audit_logs_time': '2023-01-01T15:20:44Z'
+                },
+                '2023-01-01T15:20:45Z',
+                0,
+                0,
+                50,
+                14,
+                14 + 50
+            ),
         ],
     )
     def test_fetch_events_main(
@@ -218,7 +239,7 @@ class TestFetchEvents:
         num_of_expected_events: int
     ):
         """
-        Note: the limit is per single log!
+        Note: the max_fetch is per single log!
 
         Given:
             - Case A: last_run={}, max_fetch=100, num_of_workbench_logs=50, num_of_oat_logs=50,
@@ -229,6 +250,8 @@ class TestFetchEvents:
                       num_of_search_detection_logs=81, num_of_audit_logs=55
             - Case D: last_run=last run from Case C, max_fetch=1000, num_of_workbench_logs=1400, num_of_oat_logs=1123,
                       num_of_search_detection_logs=356, num_of_audit_logs=879
+            - Case E: last_run=last run from Case D, max_fetch=1000, num_of_workbench_logs=0, num_of_oat_logs=0,
+                      num_of_search_detection_logs=50, num_of_audit_logs=14
         When:
             - fetch-events through the main flow
         Then:
