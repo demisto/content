@@ -1277,7 +1277,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        client_secret = params.get('client_secret')
+        client_secret = params.get('credentials', {}).get('password','')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
