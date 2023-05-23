@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: qualys_modeling_rule
+name: Qualys Modeling Rule
+rules: ''
+schema: ''
+tags: Qualys
