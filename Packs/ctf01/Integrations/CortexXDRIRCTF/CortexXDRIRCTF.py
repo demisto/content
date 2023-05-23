@@ -1869,7 +1869,7 @@ def main():  # pragma: no cover
     #api_key = params.get('apikey') or params.get('apikey_creds').get('password', '')
     #api_key_id = params.get('apikey_id') or params.get('apikey_id_creds').get('password', '')
     first_fetch_time = params.get('fetch_time', '3 days')
-    base_url = urljoin(params.get('url'), '/public_api/v1')
+    #base_url = urljoin(params.get('url'), '/public_api/v1')
     proxy = params.get('proxy')
     verify_cert = not params.get('insecure', False)
     statuses = params.get('status')
