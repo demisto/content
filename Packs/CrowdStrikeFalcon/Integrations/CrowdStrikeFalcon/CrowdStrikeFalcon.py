@@ -5063,7 +5063,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
     return result
 
 
-def create_ODS_scan_request(args: dict, is_scheduled: bool) -> dict:
+def ODS_create_scan_request(args: dict, is_scheduled: bool) -> dict:
     body = make_create_scan_request_body(args, is_scheduled)
     remove_nulls_from_dictionary(body)
     return http_request('POST', f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
@@ -5091,7 +5091,7 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     ODS_verify_create_scan_command(args)
 
     is_scheduled = argToBoolean(args.get('is_scheduled'))
-    response = create_ODS_scan_request(args, is_scheduled)
+    response = ODS_create_scan_request(args, is_scheduled)
 
     resources = response.get('resources', [])
 
