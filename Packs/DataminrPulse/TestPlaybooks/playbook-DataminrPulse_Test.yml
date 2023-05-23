@@ -1,0 +1,397 @@
+id: DataminrPulse-Test
+version: -1
+name: DataminrPulse-Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 2e45a7cf-3e29-4225-85ae-9de852646af8
+    type: start
+    task:
+      id: 2e45a7cf-3e29-4225-85ae-9de852646af8
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: f0b16be9-1adf-46a9-845a-cef8f17508e9
+    type: regular
+    task:
+      id: f0b16be9-1adf-46a9-845a-cef8f17508e9
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      key:
+        simple: DataminrPulse
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: d7ae0963-e89a-4377-8cf1-fde74a48ca19
+    type: regular
+    task:
+      id: d7ae0963-e89a-4377-8cf1-fde74a48ca19
+      version: -1
+      name: Get Watchlists
+      description: Retrieves the WatchLists configured on the Dataminr platform.
+      script: '|||dataminrpulse-watchlists-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 1ae73131-499b-4e0f-8cef-7bac7c39bc67
+    type: condition
+    task:
+      id: 1ae73131-499b-4e0f-8cef-7bac7c39bc67
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.WatchLists.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.WatchLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.WatchLists.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataminrPulse.WatchLists.properties.watchlistColor
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: f5e3161e-fc13-4a4d-82a4-85bd731f7a09
+    type: regular
+    task:
+      id: f5e3161e-fc13-4a4d-82a4-85bd731f7a09
+      version: -1
+      name: Get Alerts
+      description: Retrieves the alerts as per the provided watchlist_ids or query or configured watchlist_names parameter in integration.
+      script: '|||dataminrpulse-alerts-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      use_configured_watchlist_names:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: ee497987-1588-4013-83e5-df6501a72aa7
+    type: condition
+    task:
+      id: ee497987-1588-4013-83e5-df6501a72aa7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Alerts.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Alerts.eventTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Cursor.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Cursor.to
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataminrPulse.Alerts.availableRelatedAlerts
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataminrPulse.Alerts.caption
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataminrPulse.Alerts.companies
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 0d8a604f-7499-4379-81d0-292d24795a42
+    type: regular
+    task:
+      id: 0d8a604f-7499-4379-81d0-292d24795a42
+      version: -1
+      name: Get Related Alerts
+      description: Retrieves the alerts related to the provided Alert ID.
+      script: '|||dataminrpulse-related-alerts-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      alert_id:
+        complex:
+          root: DataminrPulse.Alerts
+          accessor: alertId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 3111cb7c-bdc0-4a8e-81fe-f4868e0174d5
+    type: condition
+    task:
+      id: 3111cb7c-bdc0-4a8e-81fe-f4868e0174d5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Alerts.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Alerts.parentAlertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Alerts.eventTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DataminrPulse.Alerts.eventLocation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataminrPulse.Alerts.relatedTermsQueryURL
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DataminrPulse.Alerts.relatedTerms
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: a77f0a55-6561-4f35-8ff3-316dec06b443
+    type: title
+    task:
+      id: a77f0a55-6561-4f35-8ff3-316dec06b443
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 380,
+        "x": 450,
+        "y": 80
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

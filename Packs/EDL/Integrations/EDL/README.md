@@ -3,8 +3,8 @@ Use the Generic Export Indicators Service integration to provide an endpoint wit
 ## PAN-OS EDL Management to Export Indicators Service (PAN-OS EDL Service) migration steps
 Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSOAR server. Follow these steps to migrate your EDLs.
 1. Convert existing EDL lists to indicators in Cortex XSOAR. This can be done automatically:
-   1. Extract your EDL as a text file from the web server it's currently hosted on.
-   2. Upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g., `!ExtractIndicatorsFromTextFile entryID=<entry_id>` 
+    1. Extract your EDL as a text file from the web server it's currently hosted on.
+    2. Upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g., `!ExtractIndicatorsFromTextFile entryID=<entry_id>`
 2. Go to the `Indicators` page and [filter](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicators) to find all of the indicators you extracted from the text file.
 3. If needed, batch select the indicators and add a tag to the indicators you want to host as a specific EDL. Use this tag in the `Indicator Query` integration parameter when configuring the integration. For example, if you want to create an allowed list of indicators and a blocked list of indicators.
 4. Edit the EDL object on the PAN-OS device to pull from the `Export Indicators Service (PAN-OS EDL Service)` instance, as explained in [Access the Export Indicators Service by Instance Name (HTTPS)](#access-the-export-indicators-service-by-instance-name-https). You can edit the EDL object using the [panorama-edit-edl](https://xsoar.pan.dev/docs/reference/integrations/panorama#panorama-edit-edl) command in the `Palo Alto Networks PAN-OS` integration.
@@ -99,13 +99,13 @@ Expected value is a string, supports newline characters (`\n`).
 
 When `PAN-OS: drop invalid URL entries` is enabled, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
 
-#### Exported Fields 
-This applies to the `JSON` and `CSV` formats - select specific Cortex XSOAR fields to export. 
+#### Exported Fields
+This applies to the `JSON` and `CSV` formats - select specific Cortex XSOAR fields to export.
 If given the value `all` - all of Cortex XSOAR's available fields will be exported. If set to empty - only the indicator value and type will be exported.
 
 Optional system fields are:
-- `id` 
-- `modified` 
+- `id`
+- `modified`
 - `sortValues`
 - `comments`
 - `indicator`
@@ -134,7 +134,7 @@ In order to get the list of all available fields to search by, you can configure
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 **Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
 
-To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled.
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
@@ -200,13 +200,27 @@ There is no context output for this command.
 ##### Human Readable Output
 'EDL will be updated the next time you access it'
 
-### Troubleshooting
-Memory issue can happen in CSV / JSON format over 150,000 if all fields are selected.
 
-#### In terms of times
-* 10,000 indicators can take 10 - 20 seconds.
-* 100,000 indicators can take 1 - 3 minutes.
+### Troubleshooting
+* Indicators that are passed through the integration undergo formatting and deduplication, which may lead to an apparent loss of indicators.  
+  For instance, enabling the `Strip ports from URLs` option may cause two URLs that are similar but use different ports to be merged into a single indicator after formatting, resulting in the removal of one of them as a duplicate.
+* In case all fields are selected, there is a potential memory issue when dealing with CSV or JSON format files that exceed 150,000 entries.
+
+#### Custom HTTP Headers
+The response from EDL's endpoint includes custom headers, starting with the `X-EDL` prefix, that can be used for debugging purposes.  
+The headers are:
+- `X-EDL-Created` - The date and time the response was created.
+- `X-EDL-Query-Time-Secs` - The time it took to execute the query and format the response.
+- `X-EDL-Size` - The number of indicators returned in the response.
+- `X-EDL-Origin-Size` - The number of indicators originally fetched before formatting and deduplication.
+
+
+#### Execution Time
+* 10,000 indicators can take 10-20 seconds.
+* 100,000 indicators can take up to 1-3 minutes.
 * 1,000,000 indicators can take over half an hour.
+
 In 5 minutes (the default timeout of the integration) the integration can export between 200,000 to 400,000 indicators,
 depending on the load of the server, the existing indicators in the server, and the query used.
+
 The *NGINX Read Timeout* can be set to increase the timeout.
