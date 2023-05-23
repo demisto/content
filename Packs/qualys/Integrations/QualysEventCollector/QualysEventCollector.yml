@@ -33,7 +33,7 @@ configuration:
   name: first_fetch
   required: true
   type: 0
-- display: Host Detections Fetch Interval in minutes
+- display: Host Detections Fetch Interval
   additionalinfo: Time between fetches of host detections (for example 12 hours, 60 minutes, etc).
   name: host_detections_fetch_interval
   required: true

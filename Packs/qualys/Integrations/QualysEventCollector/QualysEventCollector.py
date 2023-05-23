@@ -169,6 +169,17 @@ def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
     return simple_response
 
 
+def remove_events_before_last_scan(events, last_run):
+    edited_events = []
+    for event in events:
+        if first_found := event.get('DETECTION', {}).get('FIRST_FOUND_DATETIME'):
+            if datetime.strptime(first_found, DATE_FORMAT) < datetime.strptime(last_run, DATE_FORMAT):
+                demisto.debug(f'Removed event with time: {first_found}, qid: {event.get("DETECTION", {}).get("ID")}')
+            else:
+                edited_events.append(event)
+    return edited_events
+
+
 def remove_last_events(events, time_to_remove, time_field):
     """ Removes events with certain time.
         Args:
@@ -176,9 +187,13 @@ def remove_last_events(events, time_to_remove, time_field):
             time_to_remove: remove events with this time
             time_field: the field name where the time is
     """
+    new_events = []
     for event in events:
         if event.get(time_field) == time_to_remove:
-            events.remove(event)
+            demisto.debug(f'Removed event with time: {time_to_remove}, log: {event}')
+        else:
+            new_events.append(event)
+    return new_events
 
 
 def add_fields_to_events(events, time_field_path, event_type_field):
@@ -193,8 +208,7 @@ def add_fields_to_events(events, time_field_path, event_type_field):
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=dict_safe_get(event, time_field_path))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            event['_time'] = dict_safe_get(event, time_field_path)
             event['event_type'] = event_type_field
 
 
@@ -251,13 +265,16 @@ def get_activity_logs_events(client, last_run, max_fetch) -> tuple[Optional[list
     Returns:
         Logs activity events, Next run datetime
     """
+    demisto.debug(f'Starting to fetch activity logs events: {last_run=}')
+
     activity_logs = client.get_user_activity_logs(since_datetime=last_run, max_fetch=max_fetch)
     activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV, END_RESPONSE_LOGS_CSV))
     next_run = activity_logs_events[0].get('Date') if activity_logs_events else last_run
-    remove_last_events(activity_logs_events, next_run, 'Date')
+    activity_logs_events = remove_last_events(activity_logs_events, next_run, 'Date')
     add_fields_to_events(activity_logs_events, ['Date'], 'activity_log')
 
     next_run_dict = {'activity_logs': next_run}
+    demisto.debug(f'Done to fetch activity logs events: {next_run_dict=}')
     return activity_logs_events, next_run_dict
 
 
@@ -270,20 +287,26 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
     Returns:
         Host list detections events, Next run datetime
     """
+    demisto.debug(f'Starting to fetch host list events: {last_run=}')
+
     host_list_detections = client.get_host_list_detection(since_datetime=last_run, max_fetch=max_fetch)
     host_list_events = handle_host_list_detection_result(host_list_detections)
-    # todo: handle fetch
+
     next_run = host_list_events[0].get('LAST_VM_SCANNED_DATE') if host_list_events else last_run
-    # remove_last_events(host_list_events, next_run, 'LAST_UPDATE_DATETIME')
-    edited_host_detections = get_detections_from_hosts(host_list_detections)
-    # todo: filter events
-    add_fields_to_events(host_list_events, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+
+    edited_host_detections = get_detections_from_hosts(host_list_events)
+
+    edited_host_detections = remove_events_before_last_scan(edited_host_detections, last_run)
+
+    add_fields_to_events(edited_host_detections, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
 
     next_run_dict = {
         'host_list_detection': next_run,
         'host_last_fetch': datetime.now().strftime(DATE_FORMAT)
     }
-    return host_list_events, next_run_dict
+    demisto.debug(f'Done to fetch host list events: {next_run_dict=}')
+
+    return edited_host_detections, next_run_dict
 
 
 def fetch_events(client, last_run, last_run_field, first_fetch_time, fetch_function, max_fetch: int = 0):
@@ -309,7 +332,7 @@ def fetch_events(client, last_run, last_run_field, first_fetch_time, fetch_funct
     return next_run, events
 
 
-def get_activity_logs_events_command(client, args):
+def get_activity_logs_events_command(client, args, first_fetch_time):
     """
     Args:
         client: command client
@@ -320,7 +343,7 @@ def get_activity_logs_events_command(client, args):
     """
     limit = arg_to_number(args.get('limit', 50))
     since_datetime = arg_to_datetime(args.get('since_datetime'))
-    last_run = since_datetime.strftime(DATE_FORMAT) if since_datetime else ''
+    last_run = since_datetime.strftime(DATE_FORMAT) if since_datetime else first_fetch_time
     activity_logs_events, _ = get_activity_logs_events(
         client=client,
         last_run=last_run,
@@ -335,7 +358,7 @@ def get_activity_logs_events_command(client, args):
     return activity_logs_events, results
 
 
-def get_host_list_detections_events_command(client, args):
+def get_host_list_detections_events_command(client, args, first_fetch_time):
     """
     Args:
         client: command client
@@ -346,7 +369,7 @@ def get_host_list_detections_events_command(client, args):
     """
     limit = arg_to_number(args.get('limit', 50))
     since_datetime = arg_to_datetime(args.get('vm_scan_date_after'))
-    last_run = since_datetime.strftime(DATE_FORMAT) if since_datetime else ''
+    last_run = since_datetime.strftime(DATE_FORMAT) if since_datetime else first_fetch_time
 
     host_list_detection_events, _ = get_host_list_detections_events(
         client=client,
@@ -411,6 +434,7 @@ def should_run_host_detections_fetch(last_run, first_fetch: datetime, host_detec
         last_check_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
     else:
         last_check_time = first_fetch
+    demisto.debug(f'Should run host detections? {last_check_time=}, {host_detections_fetch_interval=}')
     return datetime.now() - last_check_time > host_detections_fetch_interval
 
 
@@ -430,7 +454,7 @@ def main():  # pragma: no cover
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '6 days'),
+        arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
@@ -458,15 +482,15 @@ def main():  # pragma: no cover
             return_results(result)
 
         elif command == "qualys-get-activity-logs":
-            should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_activity_logs_events_command(client, args)
+            should_push_events = argToBoolean(args.get('should_push_events', False))
+            events, results = get_activity_logs_events_command(client, args, first_fetch_timestamp)
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "qualys-get-host-detections":
-            should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_host_list_detections_events_command(client, args)
+            should_push_events = argToBoolean(args.get('should_push_events', False))
+            events, results = get_host_list_detections_events_command(client, args, first_fetch_timestamp)
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -484,7 +508,6 @@ def main():  # pragma: no cover
                     fetch_function=get_host_list_detections_events,
                     first_fetch_time=first_fetch_timestamp,
                 )
-                host_next_run.update({'host_last_fetch': datetime.now().strftime(DATE_FORMAT)})
             logs_next_run, activity_logs_events = fetch_events(
                 client=client,
                 last_run=last_run,
@@ -493,6 +516,7 @@ def main():  # pragma: no cover
                 first_fetch_time=first_fetch_timestamp,
             )
             send_events_to_xsiam(activity_logs_events + host_list_detection_events, vendor=VENDOR, product=PRODUCT)
+            send_events_to_xsiam(host_list_detection_events, vendor=VENDOR, product=PRODUCT)
 
             # saves next_run for the time fetch-events is invoked
             last_run.update(logs_next_run)
