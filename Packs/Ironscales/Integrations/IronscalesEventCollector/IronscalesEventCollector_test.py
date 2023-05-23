@@ -115,8 +115,10 @@ def test_incident_to_events():
     assert events[0]["incident_id"] == events[1]["incident_id"]
     assert events[0]["links"] == events[1]["links"]
     assert events[0]["attachments"] == events[1]["attachments"]
-    assert events[0]["headers"][0]["name"] == "header1" and events[1]["headers"][0]["name"] == "header2"
-    assert events[0]["headers"][0]["value"] == "value1" and events[1]["headers"][0]["value"] == "value2"
+    assert events[0]["headers"][0]["name"] == "header1"
+    assert events[1]["headers"][0]["name"] == "header2"
+    assert events[0]["headers"][0]["value"] == "value1"
+    assert events[1]["headers"][0]["value"] == "value2"
 
 
 @pytest.mark.parametrize(
