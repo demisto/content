@@ -136,8 +136,8 @@ script:
       name: timeout_in_seconds
     - description: The uploaded sample ID.
       name: sample_id
-    - description: Whether to mark the sample as private.
-      name: private
+    - name: private
+      description: Whether to mark the sample as private.
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -1367,7 +1367,7 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.11.59070
+  dockerimage: demisto/python3:3.10.11.61265
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
