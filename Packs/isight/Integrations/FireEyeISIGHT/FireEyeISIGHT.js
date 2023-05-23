@@ -222,8 +222,7 @@ var basicSearchfile = function(key, value) {
     var res = createContextReportsAndScore(records);
     var context = {
         DBotScore: {Indicator: value, Type: 'file', Vendor: VENDOR_NAME, Score: res.dbotScore},
-        'Report(val.ID && val.ID == obj.ID)': res.reports,
-        '# todo: add for file.md5 ...
+        'Report(val.ID && val.ID == obj.ID)': res.reports
     };
 
     if (res.dbotScore > 2) {
