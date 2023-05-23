@@ -172,9 +172,69 @@ select = [
 
     "D419", # empty-docstring
 
-    "E", # pycodestyle:error
-
-    "F", # pyflakes
+    "E101", # mixed-spaces-and-tabs
+    "E401", # multiple-imports-on-one-line
+    "E402", # module-import-not-at-top-of-file
+    "E501", # line-too-long
+    "E701", # multiple-statements-on-one-line-colon
+    "E702", # multiple-statements-on-one-line-semicolon
+    "E703", # useless-semicolon
+    "E711", # none-comparison
+    "E712", # true-false-comparison
+    "E713", # not-in-test
+    "E714", # not-is-test
+    "E721", # type-comparison
+    "E722", # bare-except
+    "E731", # lambda-assignment
+    "E741", # ambiguous-variable-name
+    "E742", # ambiguous-class-name
+    "E743", # ambiguous-function-name
+    "E902", # io-error
+    "E999", # syntax-error
+    
+    "F401", # unused-import
+    "F402", # import-shadowed-by-loop-var
+    "F403", # undefined-local-with-import-star
+    "F404", # late-future-import
+    "F405", # undefined-local-with-import-star-usage
+    "F406", # undefined-local-with-nested-import-star-usage
+    "F407", # future-feature-not-defined
+    "F501", # percent-format-invalid-format
+    "F502", # percent-format-expected-mapping
+    "F503", # percent-format-expected-sequence
+    "F504", # percent-format-extra-named-arguments
+    "F505", # percent-format-missing-argument
+    "F506", # percent-format-mixed-positional-and-named
+    "F507", # percent-format-positional-count-mismatch
+    "F508", # percent-format-star-requires-sequence
+    "F509", # percent-format-unsupported-format-character
+    "F521", # string-dot-format-invalid-format
+    "F522", # string-dot-format-extra-named-arguments
+    "F523", # string-dot-format-extra-positional-arguments
+    "F524", # string-dot-format-missing-arguments
+    "F525", # string-dot-format-mixing-automatic
+    "F541", # f-string-missing-placeholders
+    "F601", # multi-value-repeated-key-literal
+    "F602", # multi-value-repeated-key-variable
+    "F621", # expressions-in-star-assignment
+    "F622", # multiple-starred-expressions
+    "F631", # assert-tuple
+    "F632", # is-literal
+    "F633", # invalid-print-syntax
+    "F634", # if-tuple
+    "F701", # break-outside-loop
+    "F702", # continue-outside-loop
+    "F704", # yield-outside-function
+    "F706", # return-outside-function
+    "F707", # default-except-not-last
+    "F722", # forward-annotation-syntax-error
+    "F811", # redefined-while-unused
+    "F821", # undefined-name
+    "F822", # undefined-export
+    "F823", # undefined-local
+    "F841", # unused-variable
+    "F842", # unused-annotation
+    "F901", # raise-not-implemented
 
     "G004", # logging-f-string
     "G010", # logging-warn
