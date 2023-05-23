@@ -1485,8 +1485,8 @@ def test_zoom_delete_message_command(mocker):
     zoom_delete_message_mock.assert_called_with(f"/chat/users/{user_id}/messages/{message_id}?to_channel={to_channel}")
 
     assert result_to_channel.readable_output == 'Message 2d12042d-1823-4b0c-b26d-3f5ef7a89d68 was deleted successfully'
-    
-    
+
+
 def test_zoom_get_user_id_by_email(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
