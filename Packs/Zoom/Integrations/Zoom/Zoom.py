@@ -232,7 +232,7 @@ class Client(Zoom_Client):
             resp_type='response',
             return_empty_response=True)
 
-    def zoom_send_file(self, url_suffix: str, file_info, json_data):
+    def zoom_send_file(self, url_suffix: str, file_info: dict, json_data: dict):
 
         files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
 
@@ -245,14 +245,14 @@ class Client(Zoom_Client):
         )
         return response
 
-    def zoom_upload_file(self, url_suffix: str, file_info):
+    def zoom_upload_file(self, url_suffix: str, file_info: dict):
         files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
         return self._http_request('POST',
                                   headers={'Authorization': f'Bearer {self.access_token}'},
                                   files=files,
                                   full_url=url_suffix)
 
-    def zoom_send_message(self, url_suffix: str, json_data):
+    def zoom_send_message(self, url_suffix: str, json_data: dict):
         return self.error_handled_http_request(
             method='POST',
             url_suffix=url_suffix,
@@ -268,7 +268,7 @@ class Client(Zoom_Client):
             resp_type='response',
             return_empty_response=True)
 
-    def zoom_update_message(self, url_suffix: str, json_data):
+    def zoom_update_message(self, url_suffix: str, json_data: dict):
         return self.error_handled_http_request(
             method='PUT',
             url_suffix=url_suffix,
