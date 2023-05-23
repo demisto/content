@@ -1,4 +1,4 @@
-Initiates a new endpoint script execution to check if the file exists and retrieve the results.
+Deprecated. Use `xdr-file-exist-script-execute` command instead.Initiates a new endpoint script execution to check if the file exists and retrieve the results.
 
 
 ## Dependencies
@@ -19,8 +19,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-file-exist-script-execute
 * xdr-get-script-execution-results
+* xdr-run-script-file-exists
 
 ## Playbook Inputs
 
@@ -45,4 +45,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Cortex XDR - check file existence](../doc_files/Cortex_XDR_-_Check_file_existence.png)
+![Cortex XDR - check file existence](../doc_files/Cortex_XDR_-_check_file_existence.png)

@@ -1,9 +1,10 @@
+deprecated: true
 id: Cortex XDR - kill process
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - kill process
-description: Initiates a new endpoint script execution kill process and retrieves the results.
+description: Deprecated. Use `xdr-kill-process-script-execute` command instead.Initiates a new endpoint script execution kill process and retrieves the results.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +46,7 @@ tasks:
       version: -1
       name: Kill process
       description: Initiates a new endpoint script execution kill process.
-      script: '|||xdr-kill-process-script-execute'
+      script: '|||xdr-run-script-kill-process'
       type: regular
       iscommand: true
       brand: ""

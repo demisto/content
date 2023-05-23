@@ -1,10 +1,11 @@
+deprecated: true
 id: Cortex XDR - check file existence
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - check file existence
 description: |
-  Initiates a new endpoint script execution to check if the file exists and retrieve the results.
+  Deprecated. Use `xdr-file-exist-script-execute` command instead.Initiates a new endpoint script execution to check if the file exists and retrieve the results.
 starttaskid: "0"
 tasks:
   "0":
@@ -46,7 +47,7 @@ tasks:
       version: -1
       name: Run script file exists
       description: Initiates a new endpoint script execution to check if file exists.
-      script: '|||xdr-file-exist-script-execute'
+      script: '|||xdr-run-script-file-exists'
       type: regular
       iscommand: true
       brand: ""

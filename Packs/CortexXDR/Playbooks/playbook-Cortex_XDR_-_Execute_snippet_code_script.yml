@@ -1,9 +1,10 @@
+deprecated: true
 id: Cortex XDR - Execute snippet code script
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - Execute snippet code script
-description: Initiates a new endpoint script execution action using the provided snippet code and retrieves the file results.
+description: Deprecated. Use `xdr-snippet-code-script-execute` command instead.Initiates a new endpoint script execution action using the provided snippet code and retrieves the file results.
 starttaskid: "0"
 tasks:
   "0":
@@ -44,8 +45,9 @@ tasks:
       id: 516d4dea-8b72-4ecf-80e3-762ab62e503d
       version: -1
       name: Run snippet code script
-      description: Initiates a new endpoint script execution action using the provided snippet code.
-      script: '|||xdr-snippet-code-script-execute'
+      description: Initiates a new endpoint script execution action using the provided
+        snippet code.
+      script: '|||xdr-run-snippet-code-script'
       type: regular
       iscommand: true
       brand: ""

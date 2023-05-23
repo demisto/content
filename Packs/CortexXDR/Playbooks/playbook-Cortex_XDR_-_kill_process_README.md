@@ -1,4 +1,4 @@
-Initiates a new endpoint script execution kill process and retrieves the results.
+Deprecated. Use `xdr-kill-process-script-execute` command instead.Initiates a new endpoint script execution kill process and retrieves the results.
 
 ## Dependencies
 
@@ -18,7 +18,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-kill-process-script-execute
+* xdr-run-script-kill-process
 * xdr-get-script-execution-results
 
 ## Playbook Inputs

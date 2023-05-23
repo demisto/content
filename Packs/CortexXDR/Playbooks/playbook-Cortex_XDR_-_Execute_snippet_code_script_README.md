@@ -1,4 +1,4 @@
-Initiates a new endpoint script execution action using the provided snippet code and retrieves the file results.
+Deprecated. Use `xdr-snippet-code-script-execute` command instead.Initiates a new endpoint script execution action using the provided snippet code and retrieves the file results.
 
 ## Dependencies
 
@@ -18,7 +18,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-snippet-code-script-execute
+* xdr-run-snippet-code-script
 * xdr-get-script-execution-results
 
 ## Playbook Inputs

@@ -1,4 +1,4 @@
-Initiates a new script execution of shell commands.
+Deprecated. Use `xdr-script-commands-execute` command instead.Initiates a new script execution of shell commands.
 
 ## Dependencies
 
@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
+* xdr-run-script-execute-commands
 * xdr-get-script-execution-results
-* xdr-script-commands-execute
 
 ## Playbook Inputs
 

@@ -1,9 +1,10 @@
+deprecated: true
 id: Cortex XDR - Execute commands
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - Execute commands
-description: Initiates a new script execution of shell commands.
+description: Deprecated. Use `xdr-script-commands-execute` command instead.Initiates a new script execution of shell commands.
 starttaskid: "0"
 tasks:
   "0":
@@ -44,8 +45,8 @@ tasks:
       id: 370177e1-b835-49d2-8f87-d478d0b9ffbe
       version: -1
       name: Run script execute commands
-      description: Initiates a new endpoint script execution of shell commands.
-      script: '|||xdr-script-commands-execute'
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||xdr-run-script-execute-commands'
       type: regular
       iscommand: true
       brand: ""
