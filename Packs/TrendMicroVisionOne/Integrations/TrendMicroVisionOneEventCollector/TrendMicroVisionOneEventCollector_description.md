@@ -41,3 +41,4 @@ Please be sure to select the correct domain for **Your server URL** integration 
 ***
 ### Api Limitations
 * You cannot retrieve audit logs that are older than 180 days, hence if setting a first fetch that is more than 180 days, for audit-logs it will be maximum 180 days.
+* For api rate limits please refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
