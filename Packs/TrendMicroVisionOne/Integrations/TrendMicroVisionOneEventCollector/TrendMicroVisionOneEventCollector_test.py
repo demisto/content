@@ -31,10 +31,10 @@ def get_url_params(url: str) -> Dict[str, str]:
     }
 
 
-def create_any_type_logs(start: int, end: int, created_time_field: str, extra_seconds: int = 0):
+def create_any_type_logs(start: int, end: int, created_time_field: str, id_field_name: str, extra_seconds: int = 0):
     return [
         {
-            'id': i,
+            id_field_name: i,
             created_time_field: (
                 datetime.now(tz=pytz.utc) - timedelta(seconds=i + extra_seconds)
             ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else int(
@@ -48,9 +48,10 @@ def create_logs_mocks(
     url: str,
     num_of_events: int,
     created_time_field: str,
+    id_field_name: str,
     url_suffix,
     top: int = 10,
-    extra_seconds: int = 0
+    extra_seconds: int = 0,
 ):
 
     url_params = get_url_params(url)
@@ -64,6 +65,7 @@ def create_logs_mocks(
         start=fetched_amount_of_events,
         end=min(fetched_amount_of_events + top, num_of_events),
         created_time_field=created_time_field,
+        id_field_name=id_field_name,
         extra_seconds=extra_seconds
     )
     fetched_amount_of_events += len(logs)
@@ -89,6 +91,7 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_workbench_logs,
                 url_suffix='workbench/alerts',
                 created_time_field='createdDateTime',
+                id_field_name='id',
                 top=10,
                 extra_seconds=60
             )
@@ -98,6 +101,7 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_oat_logs,
                 url_suffix='oat/detections',
                 created_time_field='detectedDateTime',
+                id_field_name='uuid',
                 top=params.get('top') or 200,
                 extra_seconds=150
             )
@@ -107,6 +111,7 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_search_detection_logs,
                 url_suffix='search/detections',
                 created_time_field='eventTime',
+                id_field_name='uuid',
                 top=params.get('top') or DEFAULT_MAX_LIMIT,
                 extra_seconds=300
             )
@@ -116,6 +121,7 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_audit_logs,
                 url_suffix='audit/logs',
                 created_time_field='loggedDateTime',
+                id_field_name='loggedUser',
                 top=params.get('top') or 200,
                 extra_seconds=20
             )
@@ -405,3 +411,39 @@ def test_module_main_flow(mocker):
 
     main()
     assert return_results_mocker.call_args.args[0] == 'ok'
+
+
+# @pytest.mark.parametrize(
+#     "args, expected_outputs",
+#     [
+#         (
+#             {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'all'},
+#             {},
+#         ),
+#     ],
+# )
+# def test_get_events_command_main_flow(mocker, args: Dict, expected_outputs):
+#
+#     from TrendMicroVisionOneEventCollector import main
+#
+#     start_freeze_time('2023-01-01T15:20:45Z')
+#
+#     mocker.patch.object(demisto, 'params', return_value={'first_fetch': '1 year ago'})
+#     mocker.patch.object(demisto, 'args', return_value=args)
+#     mocker.patch.object(demisto, 'command', return_value='trend-micro-vision-one-get-events')
+#     mocker.patch.object(
+#         BaseClient,
+#         '_http_request',
+#         side_effect=_http_request_side_effect_decorator(
+#             num_of_workbench_logs=1,
+#             num_of_oat_logs=1,
+#             num_of_search_detection_logs=1,
+#             num_of_audit_logs=1
+#         )
+#     )
+#
+#     return_results_mocker = mocker.patch('TrendMicroVisionOneEventCollector.return_results')
+#
+#     main()
+#
+#     print()

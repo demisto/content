@@ -612,7 +612,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         CommandResults: command results object.
     """
     limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_LIMIT
-    should_push_events = argToBoolean(args.get('should_push_events'))
+    should_push_events = argToBoolean(args.get('should_push_events', False))
     log_type = args.get('log_type') or 'all'
     from_time = args.get('from_time')
     to_time = args.get('to_time')
@@ -621,8 +621,9 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         workbench_logs = client.get_workbench_logs(start_datetime=from_time, end_datetime=to_time, limit=limit)
         return [
             {
-                "Id": log.get('id'),
-                'Time': log.get('createdDateTime')
+                'Id': log.get('id'),
+                'Time': log.get('createdDateTime'),
+                'Type': 'workbench',
             } for log in workbench_logs
         ]
 
@@ -632,8 +633,9 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         )
         return [
             {
-                "Id": log.get('uuid'),
-                'Time': log.get('detectedDateTime')
+                'Id': log.get('uuid'),
+                'Time': log.get('detectedDateTime'),
+                'Type': 'observed attack technique'
             } for log in observed_attack_techniques_logs
         ]
 
@@ -643,8 +645,9 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         )
         return [
             {
-                "Id": log.get('uuid'),
-                'Time': log.get('eventTimeDT')
+                'Id': log.get('uuid'),
+                'Time': log.get('eventTimeDT'),
+                'Type': 'search detection'
             } for log in search_detection_logs
         ]
 
@@ -654,8 +657,9 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         )
         return [
             {
-                "Id": log.get('uuid'),
-                'Time': log.get('loggedDateTime')
+                'Id': log.get('uuid'),
+                'Time': log.get('loggedDateTime'),
+                'Type': 'audit'
             } for log in audit_logs
         ]
 
@@ -677,7 +681,6 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         )
 
     return CommandResults(
-        outputs_key_field='Id',
         outputs=events,
         outputs_prefix='TrendMicroVisionOne.Events',
         readable_output=tableToMarkdown(f'events for {log_type=}', events, removeNull=True)
