@@ -30,20 +30,27 @@ def get_url_params(url: str) -> Dict[str, str]:
     }
 
 
-def create_any_type_logs(start: int, end: int, created_time_field: str):
+def create_any_type_logs(start: int, end: int, created_time_field: str, extra_seconds: int = 0):
     return [
         {
             'id': i,
             created_time_field: (
-                datetime.now(tz=pytz.utc) - timedelta(seconds=i)
+                datetime.now(tz=pytz.utc) - timedelta(seconds=i + extra_seconds)
             ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else int(
-                (datetime.now(tz=pytz.utc) - timedelta(seconds=i)).timestamp()
+                (datetime.now(tz=pytz.utc) - timedelta(seconds=i + extra_seconds)).timestamp()
             ) * 1000
         } for i in range(start + 1, end + 1)
     ]
 
 
-def create_logs_mocks(url: str, num_of_events: int, created_time_field: str, url_suffix, top: int = 10):
+def create_logs_mocks(
+    url: str,
+    num_of_events: int,
+    created_time_field: str,
+    url_suffix,
+    top: int = 10,
+    extra_seconds: int = 0
+):
 
     url_params = get_url_params(url)
     top = arg_to_number(url_params.get('top')) or top
@@ -55,7 +62,8 @@ def create_logs_mocks(url: str, num_of_events: int, created_time_field: str, url
     logs = create_any_type_logs(
         start=fetched_amount_of_events,
         end=min(fetched_amount_of_events + top, num_of_events),
-        created_time_field=created_time_field
+        created_time_field=created_time_field,
+        extra_seconds=extra_seconds
     )
     fetched_amount_of_events += len(logs)
 
@@ -80,7 +88,8 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_workbench_logs,
                 url_suffix='workbench/alerts',
                 created_time_field='createdDateTime',
-                top=10
+                top=10,
+                extra_seconds=60
             )
         if 'oat/detections' in full_url:
             return create_logs_mocks(
@@ -88,7 +97,8 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_oat_logs,
                 url_suffix='oat/detections',
                 created_time_field='detectedDateTime',
-                top=params.get('top') or 200
+                top=params.get('top') or 200,
+                extra_seconds=150
             )
         if 'search/detections' in full_url:
             return create_logs_mocks(
@@ -96,7 +106,8 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_search_detection_logs,
                 url_suffix='search/detections',
                 created_time_field='eventTime',
-                top=params.get('top') or DEFAULT_MAX_LIMIT
+                top=params.get('top') or DEFAULT_MAX_LIMIT,
+                extra_seconds=300
             )
         else:
             return create_logs_mocks(
@@ -104,7 +115,8 @@ def _http_request_side_effect_decorator(
                 num_of_events=num_of_audit_logs,
                 url_suffix='audit/logs',
                 created_time_field='loggedDateTime',
-                top=params.get('top') or 200
+                top=params.get('top') or 200,
+                extra_seconds=20
             )
 
     return _http_request_side_effect
@@ -126,10 +138,10 @@ class TestFetchEvents:
                 {},
                 {'limit': 100, 'first_fetch': '1 month ago'},
                 {
-                    'workbench_logs_time': '2023-01-01T15:00:00Z',
-                    'oat_detection_logs_time': '2023-01-01T15:00:00Z',
-                    'search_detection_logs_time': '2023-01-01T15:00:00Z',
-                    'audit_logs_time': '2023-01-01T14:59:59Z'
+                    'audit_logs_time': '2023-01-01T14:59:39Z',
+                    'oat_detection_logs_time': '2023-01-01T14:57:30Z',
+                    'search_detection_logs_time': '2023-01-01T14:55:00Z',
+                    'workbench_logs_time': '2023-01-01T14:59:00Z'
                 },
                 '2023-01-01T15:00:00Z',
                 50,
@@ -140,17 +152,17 @@ class TestFetchEvents:
             ),
             (
                 {
-                    'workbench_logs_time': '2023-01-01T15:00:00Z',
-                    'oat_detection_logs_time': '2023-01-01T15:00:00Z',
-                    'search_detection_logs_time': '2023-01-01T15:00:00Z',
-                    'audit_logs_time': '2023-01-01T14:59:59Z'
+                    'audit_logs_time': '2023-01-01T14:59:39Z',
+                    'oat_detection_logs_time': '2023-01-01T14:57:30Z',
+                    'search_detection_logs_time': '2023-01-01T14:55:00Z',
+                    'workbench_logs_time': '2023-01-01T14:59:00Z'
                 },
                 {'limit': 100},
                 {
-                    'workbench_logs_time': '2023-01-01T15:05:00Z',
-                    'oat_detection_logs_time': '2023-01-01T15:05:00Z',
-                    'search_detection_logs_time': '2023-01-01T15:05:00Z',
-                    'audit_logs_time': '2023-01-01T15:04:59Z'
+                    'audit_logs_time': '2023-01-01T15:04:39Z',
+                    'oat_detection_logs_time': '2023-01-01T15:02:30Z',
+                    'search_detection_logs_time': '2023-01-01T15:00:00Z',
+                    'workbench_logs_time': '2023-01-01T15:04:00Z'
                 },
                 '2023-01-01T15:05:00Z',
                 50,
@@ -161,17 +173,17 @@ class TestFetchEvents:
             ),
             (
                 {
-                    'workbench_logs_time': '2023-01-01T15:05:00Z',
-                    'oat_detection_logs_time': '2023-01-01T15:05:00Z',
-                    'search_detection_logs_time': '2023-01-01T15:05:00Z',
-                    'audit_logs_time': '2023-01-01T15:04:59Z'
+                    'audit_logs_time': '2023-01-01T15:04:39Z',
+                    'oat_detection_logs_time': '2023-01-01T15:02:30Z',
+                    'search_detection_logs_time': '2023-01-01T15:00:00Z',
+                    'workbench_logs_time': '2023-01-01T15:04:00Z'
                 },
                 {'max_fetch': 20},
                 {
-                    'workbench_logs_time': '2023-01-01T15:10:30Z',
-                    'oat_detection_logs_time': '2023-01-01T15:10:30Z',
-                    'search_detection_logs_time': '2023-01-01T15:10:30Z',
-                    'audit_logs_time': '2023-01-01T15:10:29Z'
+                    'audit_logs_time': '2023-01-01T15:10:09Z',
+                    'oat_detection_logs_time': '2023-01-01T15:08:00Z',
+                    'search_detection_logs_time': '2023-01-01T15:05:30Z',
+                    'workbench_logs_time': '2023-01-01T15:09:30Z'
                 },
                 '2023-01-01T15:10:30Z',
                 4,
@@ -182,17 +194,17 @@ class TestFetchEvents:
             ),
             (
                 {
-                    'workbench_logs_time': '2023-01-01T15:10:30Z',
-                    'oat_detection_logs_time': '2023-01-01T15:10:30Z',
-                    'search_detection_logs_time': '2023-01-01T15:10:30Z',
-                    'audit_logs_time': '2023-01-01T15:10:29Z'
+                    'audit_logs_time': '2023-01-01T15:10:09Z',
+                    'oat_detection_logs_time': '2023-01-01T15:08:00Z',
+                    'search_detection_logs_time': '2023-01-01T15:05:30Z',
+                    'workbench_logs_time': '2023-01-01T15:09:30Z'
                 },
                 {'max_fetch': 1000},
                 {
-                    'workbench_logs_time': '2023-01-01T15:15:42Z',
-                    'oat_detection_logs_time': '2023-01-01T15:15:42Z',
-                    'search_detection_logs_time': '2023-01-01T15:15:42Z',
-                    'audit_logs_time': '2023-01-01T15:15:41Z'
+                    'audit_logs_time': '2023-01-01T15:15:21Z',
+                    'oat_detection_logs_time': '2023-01-01T15:13:12Z',
+                    'search_detection_logs_time': '2023-01-01T15:10:42Z',
+                    'workbench_logs_time': '2023-01-01T15:14:42Z'
                 },
                 '2023-01-01T15:15:42Z',
                 1400,
@@ -203,17 +215,17 @@ class TestFetchEvents:
             ),
             (
                 {
-                    'workbench_logs_time': '2023-01-01T15:15:42Z',
-                    'oat_detection_logs_time': '2023-01-01T15:15:42Z',
-                    'search_detection_logs_time': '2023-01-01T15:15:42Z',
-                    'audit_logs_time': '2023-01-01T15:15:41Z'
+                    'audit_logs_time': '2023-01-01T15:15:21Z',
+                    'oat_detection_logs_time': '2023-01-01T15:13:12Z',
+                    'search_detection_logs_time': '2023-01-01T15:10:42Z',
+                    'workbench_logs_time': '2023-01-01T15:14:42Z'
                 },
                 {'max_fetch': 1000},
                 {
-                    'workbench_logs_time': '2023-01-01T15:20:45Z',
+                    'audit_logs_time': '2023-01-01T15:20:24Z',
                     'oat_detection_logs_time': '2023-01-01T15:20:45Z',
-                    'search_detection_logs_time': '2023-01-01T15:20:45Z',
-                    'audit_logs_time': '2023-01-01T15:20:44Z'
+                    'search_detection_logs_time': '2023-01-01T15:15:45Z',
+                    'workbench_logs_time': '2023-01-01T15:20:45Z'
                 },
                 '2023-01-01T15:20:45Z',
                 0,
@@ -258,6 +270,7 @@ class TestFetchEvents:
             - workbench, oat and search detection logs last run time is the last log time + 1 second added to it.
             - make sure the audit log last time is the last log without +1 second to it.
             - make sure the expected_events_length is correct according to the limit of number of events from each type.
+            - make sure that if there aren't any events of a certain log-type, it would take the datetime.now
 
         """
         from TrendMicroVisionOneEventCollector import main
