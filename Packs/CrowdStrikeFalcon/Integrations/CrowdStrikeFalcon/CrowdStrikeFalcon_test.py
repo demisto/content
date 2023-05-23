@@ -5196,8 +5196,8 @@ def test_make_create_scan_request_body(args, is_scheduled, expected_result):
 @pytest.mark.parametrize(
     'args, is_error, expected_error_info',
     (
-        ({'is_scheduled': 'False'}, True, 'MUST set hosts OR host_groups.'),
-        ({'hosts': 'john doe', 'is_scheduled': 'False'}, True, 'MUST set file_paths OR scan_inclusions.'),
+        ({'is_scheduled': 'False'}, True, 'MUST set either hosts OR host_groups.'),
+        ({'hosts': 'john doe', 'is_scheduled': 'False'}, True, 'MUST set either file_paths OR scan_inclusions.'),
         ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'true'}, True,
          'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.'),
         ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'False'}, False, None),
@@ -5222,7 +5222,7 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
     if is_error:
         with pytest.raises(DemistoException) as error_info:
             ODS_verify_create_scan_command(args)
-            assert str(error_info.value) == expected_error_info
+        assert str(error_info.value) == expected_error_info
     else:
         ODS_verify_create_scan_command(args)
 
