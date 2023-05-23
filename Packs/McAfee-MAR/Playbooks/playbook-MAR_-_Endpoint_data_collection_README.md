@@ -13,8 +13,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* McAfee Active Response
 * McAfee ePO v2
+* McAfee Active Response
 
 ### Scripts
 
