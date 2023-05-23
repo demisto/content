@@ -283,6 +283,7 @@ class CollectionResult:
 
 class TestCollector(ABC):
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
+
     def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
         self.marketplace = marketplace
         self.id_set: IdSet | Graph
