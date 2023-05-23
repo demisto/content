@@ -27,7 +27,7 @@ configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
-  name: integrationReliability
+  name: integration_reliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -36,7 +36,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 description: Lists all of the security vulnerabilities for various products (OS,Applications) etc)
 display: VulnDB
@@ -913,7 +913,19 @@ script:
     - contextPath: CVE.Description
       description: A description of the CVE.
       type: String
-  dockerimage: demisto/python3:3.10.11.59581
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

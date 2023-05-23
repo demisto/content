@@ -408,7 +408,7 @@ def main():
     client_secret = params['client_secret']
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    dbot_score_reliability = params['integrationReliability']
+    dbot_score_reliability = params['integration_reliability']
     client = Client(proxy, use_ssl, api_url, client_id, client_secret)
     args = demisto.args()
     command = demisto.command()
