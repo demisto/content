@@ -11,6 +11,9 @@ set -e
 # * setup content dependencies with poetry
 # * Setup npm
 
+# poetry is installed in ~/.local/bin
+PATH=~/.local/bin:$PATH
+
 if [ "$1" == "-h" -o "$1" == "--help" ]; then
     cat << EOF
 Setup development environment (run with no arguments):
