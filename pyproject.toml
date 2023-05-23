@@ -126,12 +126,20 @@ json5 = "^0.9.10"
 
 [tool.ruff]
 select = [
+    "A003", # builtin-attribute-shadowing
+
     "ANN206", # missing-return-type-class-method
 
     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
     "B005", # strip-with-multi-characters
+    "B006", # mutable-argument-default
+    "B007", # unused-loop-control-variable
+    "B008", # function-call-in-default-argument
+    "B011", # assert-false
+    "B015", # useless-comparison
+    "B018", # useless-expression
     "B009", # get-attr-with-constant
     "B010", # set-attr-with-constant
     "B013", # redundant-tuple-in-exception-handler
@@ -148,7 +156,7 @@ select = [
     "B028", # no-explicit-stacklevel
     "B029", # except-with-empty-tuple
     "B030", # except-with-non-exception-classes
-    # "B031", # reuse-of-groupby-generator # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    "B031", # reuse-of-groupby-generator
     "B032", # unintentional-type-annotation
 
     "C400", # unnecessary-generator-list
@@ -160,7 +168,7 @@ select = [
     "C411", # unnecessary-list-call
     "C413", # unnecessary-call-around-sorted
     "C415", # unnecessary-subscript-reversal
-    # "C418", # unnecessary-literal-within-dict-call # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    "C418", # unnecessary-literal-within-dict-call
 
     "D419", # empty-docstring
 
@@ -181,6 +189,7 @@ select = [
     "N807", # dunder-function-name
     "N811", # constant-imported-as-non-constant
     "N812", # lowercase-imported-as-non-lowercase
+    "N813", # camelcase-imported-as-lowercase
     "N814", # camelcase-imported-as-constant
     "N817", # camelcase-imported-as-acronym
     "N999", # invalid-module-name
@@ -220,7 +229,7 @@ select = [
     "PLE0116", # continue-in-finally
     "PLE0117", # nonlocal-without-binding
     "PLE0118", # load-before-global-declaration
-    # "PLE0302", # unexpected-special-method-signature # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    "PLE0302", # unexpected-special-method-signature
     "PLE0604", # invalid-all-object
     "PLE0605", # invalid-all-format
     "PLE1142", # await-outside-async
@@ -245,6 +254,7 @@ select = [
 
     "PLW0120", # useless-else-on-loop
     "PLW0129", # assert-on-string-literal
+    "PLW0602", # global-variable-not-assigned
     "PLW0711", # binary-op-exception
     "PLW1508", # invalid-envvar-default
 
@@ -268,10 +278,12 @@ select = [
     "PTH105", # pathlib-replace
     "PTH106", # os-rmdir
     "PTH108", # os-unlink
+    "PTH107", # os-remove
     "PTH109", # os-getcwd
     "PTH110", # os-path-exists
     "PTH111", # os-path-expanduser
     "PTH112", # os-path-isdir
+    "PTH113", # os-path-isfile
     "PTH114", # os-path-islink
     "PTH115", # os-readlink
     "PTH116", # os-stat
@@ -282,13 +294,14 @@ select = [
     "PTH124", # py-path
 
     "RET501", # unnecessary-return-none
+    "RET507", # superfluous-else-continue
 
     "RSE102", # unnecessary-paren-on-raise-exception
 
     "RUF006", # asyncio-dangling-task
     "RUF007", # pairwise-over-zipped
-    # "RUF008", # mutable-dataclass-default # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
-    # "RUF009", # function-call-in-dataclass-default-argument # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    "RUF008", # mutable-dataclass-default
+    "RUF009", # function-call-in-dataclass-default-argument
 
     "S102", # exec-builtin
     "S103", # bad-file-permissions
@@ -311,28 +324,41 @@ select = [
     "S506", # unsafe-yaml-load
     "S508", # snmp-insecure-version
     "S509", # snmp-weak-cryptography
-    # "S602", # subprocess-popen-with-shell-equals-true # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
-    # "S603", # subprocess-without-shell-equals-true # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
-    # "S604", # call-with-shell-equals-true # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
-    # "S605", # start-process-with-a-shell # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
-    # "S606", # start-process-with-no-shell # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
-    # "S607", # start-process-with-partial-path # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    "S603", # subprocess-without-shell-equals-true
+    "S602", # subprocess-popen-with-shell-equals-true
+    "S604", # call-with-shell-equals-true
+    "S605", # start-process-with-a-shell
+    "S606", # start-process-with-no-shell
+    "S607", # start-process-with-partial-path
     "S608", # hardcoded-sql-expression
     "S612", # logging-config-insecure-listen
     "S701", # jinja2-autoescape-false
 
     "SIM101", # duplicate-isinstance-call
+    "SIM102", # collapsible-if
     "SIM103", # needless-bool
     "SIM107", # return-in-try-except-finally
+    "SIM108", # if-else-block-instead-of-if-exp
     "SIM109", # compare-with-tuple
+    "SIM110", # reimplemented-builtin
+    "SIM114", # if-with-same-arms
+    "SIM115", # open-file-with-context-handler
+    "SIM116", # if-else-block-instead-of-dict-lookup
+    "SIM117", # multiple-with-statements
+    "SIM118", # in-dict-keys
+    "SIM201", # negate-equal-op
     "SIM202", # negate-not-equal-op
     "SIM208", # double-negation
+    "SIM210", # if-expr-with-true-false
+    "SIM211", # if-expr-with-false-true
+    "SIM212", # if-expr-with-twisted-arms
     "SIM220", # expr-and-not-expr
     "SIM221", # expr-or-not-expr
     "SIM222", # expr-or-true
     "SIM223", # expr-and-false
+    "SIM300", # yoda-conditions
     "SIM401", # if-else-block-instead-of-dict-get
-    # "SIM910", # dict-get-with-none-default # temporarily removed until ruff upgrate (pending SDK release 1.15.0)
+    "SIM910", # dict-get-with-none-default
 
     "T201", # print
     "T203", # p-print
@@ -361,6 +387,8 @@ select = [
     "UP033", # lru-cache-with-maxsize-none
     "UP036", # outdated-version-block
     "UP037", # quoted-annotation
+
+    "TRY201", # verbose-raise
 
     "YTT101", # sys-version-slice3
     "YTT102", # sys-version2
