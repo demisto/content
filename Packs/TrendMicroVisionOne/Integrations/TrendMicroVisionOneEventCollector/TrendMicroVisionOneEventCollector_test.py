@@ -5,8 +5,9 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import pytest
 import pytz
+from typing import Tuple
 from urllib.parse import parse_qs, urlparse
-from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT
+from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsTimeFields
 
 
 BASE_URL = 'https://api.xdr.trendmicro.com'
@@ -298,11 +299,79 @@ class TestFetchEvents:
         assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == num_of_expected_events
 
 
-# @pytest.mark.parametrize(
-#         "last_run_time, first_fetch, log_type_time_field_name, expected_start_and_end_datetimes",
-#         [
-#             (None, '3 years', 'workbench_logs_time')
-#         ],
-#     )
-# def test_get_datetime_range():
-#     from TrendMicroVisionOneEventCollector import get_datetime_range
+@pytest.mark.parametrize(
+        "last_run_time, first_fetch, log_type_time_field_name, start_time, expected_start_and_end_date_times",
+        [
+            # (
+            #     None,
+            #     '3 years',
+            #     LastRunLogsTimeFields.WORKBENCH,
+            #     '2023-01-01T15:20:45Z',
+            #     ('2020-01-01T15:20:45Z', '2023-01-01T15:20:45Z')
+            # ),
+            # (
+            #     None,
+            #     '3 years',
+            #     LastRunLogsTimeFields.AUDIT,
+            #     '2023-01-01T15:20:45Z',
+            #     ('2022-07-05T15:20:45Z', '2023-01-01T15:20:45Z')
+            # ),
+            # (
+            #     None,
+            #     '3 years ago',
+            #     LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+            #     '2023-01-01T15:20:45Z',
+            #     ('2020-01-01T15:20:45Z', '2020-12-31T15:20:45Z')
+            # ),
+            (
+                None,
+                '1 month ago',
+                LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+                '2023-01-01T15:20:45Z',
+                ('2022-12-01T15:20:45Z', '2023-01-01T15:20:45Z')
+            ),
+            (
+                '2023-01-01T15:00:00Z',
+                '1 month ago',
+                LastRunLogsTimeFields.SEARCH_DETECTIONS,
+                '2023-01-01T15:20:45Z',
+                ('2023-01-01T15:00:00Z', '2023-01-01T15:20:45Z')
+            )
+        ],
+    )
+def test_get_datetime_range(
+    last_run_time: str | None,
+    first_fetch: str,
+    log_type_time_field_name: str,
+    expected_start_and_end_date_times:
+    Tuple[str, str], start_time: str
+):
+    """
+    Given:
+        - Case A: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=workbench_logs_time, 
+                  start_time=2023-01-01T15:20:45Z
+        - Case B: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=audit_logs_time, 
+                  start_time=2023-01-01T15:20:45Z
+        - Case C: last_run_time=None, first_fetch=3 years ago, log_type_time_field_name=oat_detection_logs_time, 
+                  start_time=2023-01-01T15:20:45Z
+        - Case D: last_run_time=None, first_fetch=1 month ago, log_type_time_field_name=oat_detection_logs_time, 
+                  start_time=2023-01-01T15:20:45Z
+        - Case E: last_run_time=2023-01-01T15:00:00Z, first_fetch=1 month ago, 
+                  log_type_time_field_name=search_detection_logs_time, start_time=2023-01-01T15:20:45Z
+    When:
+        - running get datetime range
+    Then:
+        - Case A: make sure start time is 3 years ago and end time is "now".
+        - Case B: make sure the start time is 180 days ago and end time is "now"
+        - Case C: make sure the start time is 3 years ago and the time is 1 year after.
+        - Case D: make sure the start time is 1 month ago and end time is "now"
+        - Case E: make sure the start time is the last_run_time and end time is "now"
+        
+
+    """
+    from TrendMicroVisionOneEventCollector import get_datetime_range
+
+    start_freeze_time(start_time)
+    assert get_datetime_range(
+        last_run_time=last_run_time, first_fetch=first_fetch, log_type_time_field_name=log_type_time_field_name
+    ) == expected_start_and_end_date_times
