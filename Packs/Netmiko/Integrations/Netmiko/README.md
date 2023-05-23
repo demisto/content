@@ -6,31 +6,21 @@ This integration provides ssh-based access to network devices, servers, and othe
 
   [Netmiko Platforms.md on Github](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md)
 
-## Configuration Parameters
-
- - *Name* - Integration instance name.
- - *Platform* - The Netmiko-specific platform name.
- - *Hostname* - The IP address, hostname, or FQDN to connect to over SSH.
- - *Port* - The port to use for the SSH connection.
- - *Credentials* - The credentials should be the same as the Tanium client.
-
-**NOTE**: Platform names are taken from the supported
-[SSH](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-ssh-device_type-values) or [Telnet](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-telnet-device_type-values) device type lists on GitHub.
-
-
-## Configure Netmiko Integration in Cortex XSOAR ##
+## Configure Netmiko Integration in Cortex XSOAR
 
  1. Navigate to **Settings** > **Integrations**.
  2. Search for **Netmiko**.
  3. Click **Add instance** to create and configure a new integration instance.
 	 - *Name*: a name for the integration instance.
-	 - *Platfor**: the platform identifier taken from the above SSH or Telnet platform name lists (e.g., linux_ssh, paloalto_panos, etc.).
+	 - *Platform*: the platform identifier taken from the above SSH or Telnet platform name lists (e.g., linux_ssh, paloalto_panos, etc.).
 	 - *Hostname*: The IP address, hostname, or FQDN for the device to connect to via SSH.
 	 - *Port*: The port to connect to via SSH.
 	 - *Credentials*: The username/password, or XSOAR credential object, to be used for the connection.
+	 **NOTE**: Platform names are taken from the supported [SSH](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-ssh-device_type-values) or [Telnet](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-telnet-device_type-values) device type lists on GitHub.
+
 4. Click **Test** to validate the new instance. This performs a simple connection to the system hosting the SSH server.
 
-## Commands ##
+## Commands
 
   The Netmiko integration currently only supports the netmiko-cmds command for SSH. This command can be used via the Cortex XSOAR CLI, as part of an automation, or as a task in a Cortex XSOAR playbook. Like other Cortex XSOAR commands, this object can be passed as a single command, a list of commands, or an array of commands to execute in a single session. 
 
@@ -39,10 +29,10 @@ This integration provides ssh-based access to network devices, servers, and othe
 ## netmiko-cmds
 Executes a command, or series of commands, over an SSH connection. Outputs from the executed commands are returned to the incident/playground context.
 
-#### Base Command ####
+#### Base Command
 `netmiko-cmds`
 
-#### Input ####
+#### Input
 ------------------
 | **Argument Name** | **Description**  | **Required** |
 |--|--|--|
@@ -67,9 +57,9 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 |Netmiko.Hostname|String|The hostname used for this execution of the integration.|
 |Netmiko.Output|String|The results of the command(s) that were executed.|
 
-#### Command Example (Single command) ####
+#### Command Example (Single command)
 `!netmiko-cmds cmds="whoami"`
-#### Context Example ####
+#### Context Example
 
 >{<br> 	
 >&emsp;"Command": "whoami",<br>
@@ -78,23 +68,23 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 >&emsp;"Output": "[someuser@someserver ~]$ root"<br>
 >}<br>
 
-#### Human Readable Output ####
-#### Command(s) against 192.168.0.1 (linux) ####
+#### Human Readable Output
+#### Command(s) against 192.168.0.1 (linux)
 |**Command**|**DateTimeUTC**|**Hostname**|**Output**|
 |--|--|--|--|
 |whoami|2023-04-24T21:40:21.755985|192.168.0.1|root|
 
-### Command Example (Multiple commands) ###
-#### As multiple commands via CLI or task ####
+### Command Example (Multiple commands)
+#### As multiple commands via CLI or task
 
 `!netmiko-cmds cmds="whoami`
 `who"`
 
-#### As multiple commands via CLI or task using an array ####
+#### As multiple commands via CLI or task using an array
 `array context key = ["whoami", "who"]`
 `!netmiko-cmds cmds=${array}`
 
-#### Context Example #### 
+#### Context Example
 
 >{<br>
 >&emsp;"Netmiko": [{<br>
@@ -111,8 +101,8 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 >&emsp;}]<br>
 >}<br>
 
-#### Human Readable Output ####
-#### Command(s) against 192.168.0.1 (linux) ####
+#### Human Readable Output
+#### Command(s) against 192.168.0.1 (linux)
 |**Command**|**DateTimeUTC**|**Hostname**|**Output**|
 |--|--|--|--|
 |whoami|2023-04-24T21:59:02.177240|192.168.0.1|root|
