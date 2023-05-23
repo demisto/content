@@ -324,8 +324,8 @@ select = [
     "S506", # unsafe-yaml-load
     "S508", # snmp-insecure-version
     "S509", # snmp-weak-cryptography
-    "S603", # subprocess-without-shell-equals-true
     "S602", # subprocess-popen-with-shell-equals-true
+    "S603", # subprocess-without-shell-equals-true
     "S604", # call-with-shell-equals-true
     "S605", # start-process-with-a-shell
     "S606", # start-process-with-no-shell
