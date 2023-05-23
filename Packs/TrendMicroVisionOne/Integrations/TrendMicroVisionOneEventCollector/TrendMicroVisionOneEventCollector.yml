@@ -21,7 +21,7 @@ configuration:
   hiddenusername: true
   section: Connect
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is being executed for a single log-type (Workbench, Observed Attack Techniques, Search Detections and Aduit logs)
+  additionalinfo: The maximum number of events to fetch every time fetch is being executed for a single log-type (Workbench, Observed Attack Techniques, Search Detections and Audit logs)
   defaultvalue: 1000
   name: max_fetch
   required: false
