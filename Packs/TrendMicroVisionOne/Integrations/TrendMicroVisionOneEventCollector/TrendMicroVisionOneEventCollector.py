@@ -5,6 +5,7 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 from typing import Dict, Any, Tuple
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -13,12 +14,16 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC
 DEFAULT_MAX_LIMIT = 1000
-OAT_DETECTION_LOGS_TIME = 'oat_detection_logs_time'
-WORKBENCH_LOGS_TIME = 'workbench_logs_time'
-SEARCH_DETECTION_LOGS_TIME = 'search_detection_logs_time'
-AUDIT_LOGS_TIME = 'audit_logs_time'
+
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
+
+
+class LastRunLogsTimeFields:
+    OBSERVED_ATTACK_TECHNIQUES = 'oat_detection_logs_time'
+    WORKBENCH = 'workbench_logs_time'
+    SEARCH_DETECTIONS = 'search_detection_logs_time'
+    AUDIT = 'audit_logs_time'
 
 
 ''' CLIENT CLASS '''
@@ -294,14 +299,14 @@ def get_datetime_range(
     last_run_time_before_parse = last_run_time.strftime(date_format)
     demisto.info(f'{last_run_time_before_parse=}')
 
-    if log_type_time_field_name == AUDIT_LOGS_TIME:
+    if log_type_time_field_name == LastRunLogsTimeFields.AUDIT:
         if now - last_run_time > timedelta(days=180):
             # cannot retrieve audit logs that are older than 180 days.
             last_run_time = dateparser.parse(
                 '180 days ago', settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
             )
 
-    if log_type_time_field_name == OAT_DETECTION_LOGS_TIME:
+    if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
         one_year_from_last_run_time = last_run_time + timedelta(days=365)
@@ -379,7 +384,7 @@ def get_workbench_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=workbench_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=WORKBENCH_LOGS_TIME,
+        log_type_time_field_name=LastRunLogsTimeFields.WORKBENCH,
         date_format=date_format
     )
     workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
@@ -418,7 +423,7 @@ def get_observed_attack_techniques_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=observed_attack_technique_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=OAT_DETECTION_LOGS_TIME,
+        log_type_time_field_name=LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
         date_format=date_format
     )
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
@@ -458,7 +463,7 @@ def get_search_detection_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=search_detection_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=SEARCH_DETECTION_LOGS_TIME,
+        log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS,
         date_format=date_format
     )
     search_detection_logs = client.get_search_detection_logs(
@@ -502,7 +507,7 @@ def get_audit_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=audit_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=AUDIT_LOGS_TIME,
+        log_type_time_field_name=LastRunLogsTimeFields.AUDIT,
         date_format=date_format
     )
     audit_logs = client.get_audit_logs(
@@ -543,25 +548,25 @@ def fetch_events(
 
     workbench_logs, latest_workbench_log_time = get_workbench_logs(
         client=client,
-        workbench_log_last_run_time=last_run.get(WORKBENCH_LOGS_TIME),
+        workbench_log_last_run_time=last_run.get(LastRunLogsTimeFields.WORKBENCH),
         first_fetch=first_fetch,
         limit=limit
     )
     observed_attack_techniques_logs, latest_observed_attack_technique_log_time = get_observed_attack_techniques_logs(
         client=client,
-        observed_attack_technique_log_last_run_time=last_run.get(OAT_DETECTION_LOGS_TIME),
+        observed_attack_technique_log_last_run_time=last_run.get(LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES),
         first_fetch=first_fetch,
         limit=limit
     )
     search_detection_logs, latest_search_detection_log_time = get_search_detection_logs(
         client=client,
-        search_detection_log_last_run_time=last_run.get(SEARCH_DETECTION_LOGS_TIME),
+        search_detection_log_last_run_time=last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS),
         first_fetch=first_fetch,
         limit=limit
     )
     audit_logs, latest_audit_log_time = get_audit_logs(
         client=client,
-        audit_log_last_run_time=last_run.get(AUDIT_LOGS_TIME),
+        audit_log_last_run_time=last_run.get(LastRunLogsTimeFields.AUDIT),
         first_fetch=first_fetch,
         limit=limit
     )
@@ -570,10 +575,10 @@ def fetch_events(
     demisto.info(f'Fetched the following {events=}')
 
     updated_last_run = {
-        WORKBENCH_LOGS_TIME: latest_workbench_log_time,
-        OAT_DETECTION_LOGS_TIME: latest_observed_attack_technique_log_time,
-        SEARCH_DETECTION_LOGS_TIME: latest_search_detection_log_time,
-        AUDIT_LOGS_TIME: latest_audit_log_time
+        LastRunLogsTimeFields.WORKBENCH: latest_workbench_log_time,
+        LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES: latest_observed_attack_technique_log_time,
+        LastRunLogsTimeFields.SEARCH_DETECTIONS: latest_search_detection_log_time,
+        LastRunLogsTimeFields.AUDIT: latest_audit_log_time
     }
     demisto.info(f'{updated_last_run=}')
 

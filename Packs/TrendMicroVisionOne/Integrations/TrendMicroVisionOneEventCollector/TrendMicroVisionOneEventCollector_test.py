@@ -296,3 +296,13 @@ class TestFetchEvents:
 
         assert set_last_run_mocker.call_args.args[0] == expected_updated_last_run
         assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == num_of_expected_events
+
+
+# @pytest.mark.parametrize(
+#         "last_run_time, first_fetch, log_type_time_field_name, expected_start_and_end_datetimes",
+#         [
+#             (None, '3 years', 'workbench_logs_time')
+#         ],
+#     )
+# def test_get_datetime_range():
+#     from TrendMicroVisionOneEventCollector import get_datetime_range
