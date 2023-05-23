@@ -9,12 +9,12 @@ alter
     auth_status = arrayindex( regextract(_raw_log , "Auth\.\s([A-Za-z]+)" ),0),
     state_status = arrayindex( regextract(_raw_log , "\,\sstate\s([A-Za-z]+)" ),0),
     operation = arrayindex( regextract(_raw_log , "STP\sState\s->\s([A-Za-z]+)" ),0)
-// create Source_ipv4 field
+// create Source_ipv4 fields
 | alter
     src_ip1 = arrayindex( regextract(_raw_log , "src\sIP\s(\d+\.\d+\.\d+\.\d+)\s" ),0),
     src_ip2 = arrayindex( regextract(_raw_log , "intruder\sIP:\s+(\d+\.\d+\.\d+\.\d+)" ),0),
     src_ip3 = arrayindex( regextract(_raw_log , "from\stelnet\sclient\s(\d+\.\d+\.\d+\.\d+)") ,0)
-// end create Source_ipv4 field
+// end create Source_ipv4 fields
 | alter
     xdm.event.outcome = if(auth_status ~= "fail", XDM_CONST.OUTCOME_FAILED, auth_status = null, null, to_string(auth_status)),
     xdm.event.operation = coalesce(operation , state_status ),
