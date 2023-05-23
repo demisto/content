@@ -782,6 +782,42 @@ class TestHelperFunctions:
         assert res
         assert len(pack._content_items.get('modelingrule')) == 1
 
+    def test_collect_content_items_with_same_id(self):
+        """
+        Given: pack with IncidentType, Layout with same id 
+
+        When: collecting content item to upload.
+
+        Then: collect IncidentType and Layout and the up to date playbook.
+
+        """
+        expected_id = 'Phishing'
+        pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        assert len(pack._content_items.get('layoutscontainer')) == 1
+        assert pack._content_items.get('layoutscontainer')[0]['id'] == expected_id
+        assert len(pack._content_items.get('incidenttype')) == 1
+        assert pack._content_items.get('incidenttype')[0]['id'] == expected_id
+
+    def test_collect_content_items_only_relevant_playbook(self):
+        """
+        Given: 4 Playbook from which 3 are deprecated.
+
+        When: collecting content item to upload.
+
+        Then: collect the relevant playbook.
+
+        """
+        expected_description = "Expected description"
+        pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        assert len(pack._content_items.get('playbook')) == 1
+        assert pack._content_items.get('playbook')[0]['description'] == expected_description
+
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
