@@ -2299,7 +2299,7 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
 
 def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
     if assigned_to:
-        user_result = client.get('sys_user', record_id=assigned_to.get('value'),  # type: ignore[arg-type]
+        user_result = client.get('sys_user', assigned_to.get('value'),  # type: ignore[arg-type]
                                  no_record_found_res={'result': {}})
         user = user_result.get('result', {})
         if user:
