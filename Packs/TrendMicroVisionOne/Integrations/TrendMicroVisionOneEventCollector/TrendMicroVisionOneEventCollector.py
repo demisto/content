@@ -62,7 +62,7 @@ class Client(BaseClient):
         }
 
         url = next_link or f"{self.base_url}/{self.API_VERSION}{url_suffix}"
-        demisto.info(f'Sending the http request with {url=}, {params=}')
+        demisto.info(f'Sending the http request to {url=} with {params=}')
 
         return self._http_request(
             method=method,
@@ -96,7 +96,7 @@ class Client(BaseClient):
 
         response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
         current_items = response.get('items') or []
-        demisto.info(f'Received {current_items=} with {url_suffix=}')
+        demisto.info(f'Received {current_items=} with {url_suffix=} and {params=}')
         events.extend(current_items)
 
         while (next_link := response.get('nextLink')) and len(events) < limit:
