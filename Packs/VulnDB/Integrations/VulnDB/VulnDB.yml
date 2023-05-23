@@ -24,10 +24,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: C - Fairly reliable
-  display: Reliability
-  hidden: false
-  name: reliability
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integration_reliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -913,17 +913,19 @@ script:
     - contextPath: CVE.Description
       description: A description of the CVE.
       type: String
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-    - contextPath: The indicator that was tested.
-      description: The actual score.
-    - contextPath: DBotScore.Indicator
-      description: Phone numbers
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
-  dockerimage: demisto/python3:3.10.11.59581
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false
