@@ -808,7 +808,7 @@ class TestHelperFunctions:
 
     def test_collect_content_items_only_relevant_playbook(self):
         """
-        Given: 4 Playbook from which 3 are deprecated.
+        Given: 3 Playbook from which 2 are deprecated.
 
         When: collecting content item to upload.
 
