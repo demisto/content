@@ -3688,7 +3688,7 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
         if match := re.search(pattern, str(e)):
             error_message = f'Error: {match[1]} {match[2]} was not found'
 
-            return f'{error_message}{custom_message if type_ in ("Group", "Role") else ""}. Full error message: {e}'
+            return f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}. Full error message: {e}'
     return None
 
 
@@ -3750,7 +3750,8 @@ def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Comman
     try:
         outputs = client.list_user_groups(group_names).get("reply", [])
     except DemistoException as e:
-        custom_message = ", Note: If you sent more than one group name, they may not exist either"
+        custom_message = ", Note: If you sent more than one group name, they may not exist either" if len(
+            group_names) > 1 else None
         if error_message := enrich_error_message_id_group_role(e=e, type_="Group", custom_message=custom_message):
             raise DemistoException(error_message)
         raise
@@ -3790,7 +3791,7 @@ def list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResul
     try:
         outputs = client.list_roles(role_names).get("reply", [])
     except DemistoException as e:
-        custom_message = ", Note: If you sent more than one Role name, they may not exist either"
+        custom_message = ", Note: If you sent more than one Role name, they may not exist either" if len(role_names) > 1 else None
         if error_message := enrich_error_message_id_group_role(e=e, type_="Role", custom_message=custom_message):
             raise DemistoException(error_message)
         raise
