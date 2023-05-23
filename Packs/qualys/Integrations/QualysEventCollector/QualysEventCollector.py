@@ -47,7 +47,7 @@ class Client(BaseClient):
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-        params = {
+        params: Dict[str, Any] = {
             "truncation_limit": max_fetch
         }
         if since_datetime:
@@ -74,7 +74,7 @@ class Client(BaseClient):
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-        params = {
+        params: Dict[str, Any] = {
             "truncation_limit": max_fetch
         }
         if since_datetime:
@@ -453,12 +453,12 @@ def main():  # pragma: no cover
     password = params.get("credentials").get("password")
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
+    first_fetch_time: datetime = arg_to_datetime(  # type: ignore[assignment]
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
-    host_detections_fetch_interval = (datetime.now() - dateparser.parse(
+    host_detections_fetch_interval: timedelta = (datetime.now() - dateparser.parse(  # type: ignore[operator]
         params.get('host_detections_fetch_interval', '12 hours')))
     first_fetch_timestamp = first_fetch_time.strftime(DATE_FORMAT)
 
