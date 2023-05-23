@@ -2099,7 +2099,10 @@ class Pack(object):
                             continue
 
                     # check if content item has to version
-                    to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    try:
+                        to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    except Exception:
+                        logging.exception(f"Failed on {pack_file_path=}. {content_item=}")
 
                     if to_version and Version(to_version) < Version(Metadata.SERVER_DEFAULT_MIN_VERSION):
                         os.remove(pack_file_path)
@@ -2504,7 +2507,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar'])
+            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
