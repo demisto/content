@@ -141,7 +141,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix=f'/workbench/alerts',
+            url_suffix='/workbench/alerts',
             params=params,
             limit=limit
         )
@@ -177,7 +177,7 @@ class Client(BaseClient):
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # The data retrieval time range cannot be greater than 365 days.
         return self.get_events(
-            url_suffix=f'/oat/detections',
+            url_suffix='/oat/detections',
             params={
                 'detectedStartDateTime': detected_start_datetime,
                 'detectedEndDateTime': detected_end_datetime,
@@ -216,7 +216,7 @@ class Client(BaseClient):
             params['endDateTime'] = end_datetime
 
         return self.get_events(
-            url_suffix=f'/search/detections',
+            url_suffix='/search/detections',
             params=params,
             limit=limit
         )
@@ -262,7 +262,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix=f'/audit/logs',
+            url_suffix='/audit/logs',
             params=params,
             limit=limit
         )
