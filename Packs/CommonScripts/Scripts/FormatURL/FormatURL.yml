@@ -27,3 +27,4 @@ fromversion: 5.5.0
 tests:
 - FormatURL-Test
 - URL extraction test
+- FormattingPerformance - Test

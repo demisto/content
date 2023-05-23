@@ -260,8 +260,6 @@ configuration:
   name: use_legacy_query
   required: false
   type: 8
-
-
   section: Collect
   advanced: true
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
@@ -539,7 +537,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.55042
+  dockerimage: demisto/flask-nginx:1.0.0.58905
   feed: false
   isfetch: false
   longRunning: true
