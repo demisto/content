@@ -660,7 +660,8 @@ class Client(BaseClient):
         return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False):
+                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False,
+                     default_no_record_found_res: dict = {'result': []}):
         """Generic request to ServiceNow.
 
         Args:
@@ -751,7 +752,7 @@ class Client(BaseClient):
                         message = json_res.get('error', {}).get('message')
                         details = json_res.get('error', {}).get('detail')
                         if message == 'No Record found':
-                            return {'result': []}  # Return an empty results array
+                            return default_no_record_found_res
                         else:
                             raise Exception(f'ServiceNow Error: {message}, details: {details}')
                     else:
@@ -874,7 +875,8 @@ class Client(BaseClient):
 
         return entries
 
-    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None) -> dict:
+    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None,
+            default_no_record_found_res: dict = {'result': []}) -> dict:
         """Get a ticket by sending a GET request.
 
         Args:
@@ -901,7 +903,7 @@ class Client(BaseClient):
             # Only in cases where the table is of type ticket
             raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
 
-        return self.send_request(path, 'GET', params=query_params)
+        return self.send_request(path, 'GET', params=query_params, default_no_record_found_res=default_no_record_found_res)
 
     def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {},
                input_display_value: bool = False) -> dict:
@@ -2298,10 +2300,11 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
 
 def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
     if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
+        user_result = client.get('sys_user', record_id=assigned_to.get('value'),  # type: ignore[arg-type]
+                                 default_no_record_found_res={'result': {}})
         user = user_result.get('result', {})
         if user:
-            user_email = user.get('email')
+            user_email = user.get('email', "")
             return user_email
         else:
             demisto.debug(f'Could not assign user {assigned_to.get("value")} since it does not exist in ServiceNow')
@@ -2316,18 +2319,18 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     assignment_group = ticket.get('assignment_group', {})
 
     if assignment_group:
-        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group_result = client.get('sys_user_group', assignment_group.get('value'), default_no_record_found_res={'result': {}})
         group = group_result.get('result', {})
-        group_name = group.get('name')
+        group_name = group.get('name', "")
         ticket['assignment_group'] = group_name
 
     user_assigned = check_assigned_to_field(client, assigned_to)
     ticket['assigned_to'] = user_assigned
 
     if caller:
-        user_result = client.get('sys_user', caller.get('value'))
+        user_result = client.get('sys_user', caller.get('value'), default_no_record_found_res={'result': {}})
         user = user_result.get('result', {})
-        user_email = user.get('email')
+        user_email = user.get('email', "")
         ticket['caller_id'] = user_email
 
     return ticket
