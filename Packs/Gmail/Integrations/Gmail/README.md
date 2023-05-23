@@ -61,7 +61,8 @@ To revoke or fetch a user role, you need an Immutable Google Apps ID.
 
 1. Continue within the [Google Administrator Console](https://admin.google.com) from the previous step.
 2. Navigate to **Security** -> **Authentication** -> **SSO with SAML applications**.
-3. Copy the **idpid** value from the **SSO URL**, this is the Immutable Google Apps ID.</br>![gmail_section4_step3](https://raw.githubusercontent.com/demisto/content-docs/d8ca78236562702cd1347af133fbba09972a8160/docs/doc_imgs/integrations/gmail_section4_step3.png)
+3. Copy the **idpid** value from the **SSO URL**, this is the Immutable Google Apps ID.
+![gmail_section4_step3](https://raw.githubusercontent.com/demisto/content-docs/d8ca78236562702cd1347af133fbba09972a8160/docs/doc_imgs/integrations/gmail_section4_step3.png)
 
 ## Required Scopes
 
