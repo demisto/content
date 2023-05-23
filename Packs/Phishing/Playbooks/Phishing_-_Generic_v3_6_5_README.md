@@ -1,8 +1,11 @@
-This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.
+A playbook for investigating and remediating potential phishing incidents.  
+The playbook engages with the user who triggered the incident while investigating the incident itself.
 
-Note:
+## Notes
+- For the playbook to run properly, emails forwarded to the listener mailbox must be forwarded as an attachment \(with an `EML` file\).
+- The playbook may not work properly when used as a sub-playbook inside another playbook.
+- Do not re-run this playbook inside a phishing incident, as it can produce an unexpected result. Create a new incident instead.
 - Final remediation tasks are manual by default. can be managed by "SearchAndDelete" and "BlockIndicators" inputs. 
-- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed.
 
 ## Dependencies
 
