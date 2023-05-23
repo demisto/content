@@ -5779,11 +5779,12 @@ script:
       - allow
       - deny
       - drop
-    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules.
+    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden.
       name: query
       isArray: false
       required: false
     description: Returns a list of predefined Security Rules.
+    (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want)
     name: pan-os-list-rules
     outputs:
     - contextPath: Panorama.SecurityRule.Name
