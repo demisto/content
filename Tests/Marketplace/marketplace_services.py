@@ -2462,6 +2462,10 @@ class Pack(object):
 
             logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
+            if task_status:
+                logging.success(f"Finished collecting content items for {self._pack_name} pack")
+            else:
+                logging.success(f"Finished collecting content items for {self._pack_name} pack")
         except Exception:
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
