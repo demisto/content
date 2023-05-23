@@ -2,6 +2,7 @@
 from CommonServerPython import *
 from typing import Union
 import json
+import math
 
 
 def get_color(cvss: Union[int, float]) -> str:
@@ -28,14 +29,16 @@ def get_color(cvss: Union[int, float]) -> str:
         'Red3': '#FF4040'
     }
 
-    if not 0 < cvss <= 10:
+    cvss = int(math.ceil(cvss))
+
+    if not 0 < cvss < 10:
         color = "#000000"
     elif cvss <= 4:
-        color = colors[f"Green{int(cvss)}"]
+        color = colors[f"Green{cvss}"]
     elif cvss <= 7:
-        color = colors[f"Amber{int(cvss) - 4}"]
+        color = colors[f"Amber{cvss - 4}"]
     else:
-        color = colors[f"Red{int(cvss) - 7}"]
+        color = colors[f"Red{cvss - 7}"]
 
     return color
 

@@ -374,7 +374,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "CVSS Score",
-                        "query": "dfb4b422-06c0-431e-8478-6d24d8e11b8d",
+                        "query": "cvss_color",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamicIndicator",
