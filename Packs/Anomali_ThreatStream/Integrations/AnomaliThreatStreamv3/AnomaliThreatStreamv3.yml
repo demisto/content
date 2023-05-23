@@ -2447,6 +2447,12 @@ script:
       name: confidence
       required: false
       secret: false
+    - default: false
+      description: To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set source_confidence_ weight to 100.
+      isArray: false
+      name: source_confidence_weight
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: private
