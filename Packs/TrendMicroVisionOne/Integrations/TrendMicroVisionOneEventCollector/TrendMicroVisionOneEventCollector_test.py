@@ -413,37 +413,82 @@ def test_module_main_flow(mocker):
     assert return_results_mocker.call_args.args[0] == 'ok'
 
 
-# @pytest.mark.parametrize(
-#     "args, expected_outputs",
-#     [
-#         (
-#             {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'all'},
-#             {},
-#         ),
-#     ],
-# )
-# def test_get_events_command_main_flow(mocker, args: Dict, expected_outputs):
-#
-#     from TrendMicroVisionOneEventCollector import main
-#
-#     start_freeze_time('2023-01-01T15:20:45Z')
-#
-#     mocker.patch.object(demisto, 'params', return_value={'first_fetch': '1 year ago'})
-#     mocker.patch.object(demisto, 'args', return_value=args)
-#     mocker.patch.object(demisto, 'command', return_value='trend-micro-vision-one-get-events')
-#     mocker.patch.object(
-#         BaseClient,
-#         '_http_request',
-#         side_effect=_http_request_side_effect_decorator(
-#             num_of_workbench_logs=1,
-#             num_of_oat_logs=1,
-#             num_of_search_detection_logs=1,
-#             num_of_audit_logs=1
-#         )
-#     )
-#
-#     return_results_mocker = mocker.patch('TrendMicroVisionOneEventCollector.return_results')
-#
-#     main()
-#
-#     print()
+@pytest.mark.parametrize(
+    "args, expected_outputs",
+    [
+        (
+            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'all'},
+            [
+                {'Id': 1, 'Time': '2023-01-01T15:19:44Z', 'Type': 'Workbench'},
+                {'Id': 1, 'Time': '2023-01-01T15:18:14Z', 'Type': 'Observed Attack Technique'},
+                {'Id': 1, 'Time': '2023-01-01T15:15:44Z', 'Type': 'Search Detection'},
+                {'Id': 1, 'Time': '2023-01-01T15:20:24Z', 'Type': 'Audit'}
+            ]
+        ),
+        (
+            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'audit_logs'},
+            [
+                {'Id': 1, 'Time': '2023-01-01T15:20:24Z', 'Type': 'Audit'}
+            ]
+        ),
+        (
+            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'oat_detection_logs'},
+            [
+                {'Id': 1, 'Time': '2023-01-01T15:18:14Z', 'Type': 'Observed Attack Technique'},
+            ]
+        ),
+        (
+            {
+                'from_time': '2023-01-01T15:00:45Z',
+                'to_time': '2023-01-01T15:20:45Z',
+                'log_type': 'search_detection_logs'
+            },
+            [
+                {'Id': 1, 'Time': '2023-01-01T15:15:44Z', 'Type': 'Search Detection'},
+            ]
+        ),
+        (
+            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'workbench_logs'},
+            [
+                {'Id': 1, 'Time': '2023-01-01T15:19:44Z', 'Type': 'Workbench'},
+            ]
+        ),
+    ],
+)
+def test_get_events_command_main_flow(mocker, args: Dict, expected_outputs: List[Dict]):
+    """
+    Given:
+        - Case A: log_type=all
+        - Case B: log_type=audit_logs
+        - Case C: log_type=oat_detection_logs
+        - Case D: log_type=search_detection_logs
+        - Case E: log_type=workbench_logs
+    When:
+        - running trend-micro-vision-one-get-events through main
+    Then:
+        - make sure when log_type=all, all events are returned.
+        - make sure for each log type only the correct log will be returned.
+    """
+    from TrendMicroVisionOneEventCollector import main
+
+    start_freeze_time('2023-01-01T15:20:45Z')
+
+    mocker.patch.object(demisto, 'params', return_value={'first_fetch': '1 year ago'})
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='trend-micro-vision-one-get-events')
+    mocker.patch.object(
+        BaseClient,
+        '_http_request',
+        side_effect=_http_request_side_effect_decorator(
+            num_of_workbench_logs=1,
+            num_of_oat_logs=1,
+            num_of_search_detection_logs=1,
+            num_of_audit_logs=1
+        )
+    )
+
+    return_results_mocker = mocker.patch('TrendMicroVisionOneEventCollector.return_results')
+
+    main()
+
+    assert return_results_mocker.call_args.args[0].outputs == expected_outputs

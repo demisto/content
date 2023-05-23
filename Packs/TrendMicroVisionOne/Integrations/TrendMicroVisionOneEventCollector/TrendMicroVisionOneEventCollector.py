@@ -646,8 +646,8 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         return [
             {
                 'Id': log.get('uuid'),
-                'Time': log.get('eventTimeDT'),
-                'Type': 'search Detection'
+                'Time': timestamp_to_datestring(timestamp=log.get('eventTime'), date_format=DATE_FORMAT, is_utc=True),
+                'Type': 'Search Detection'
             } for log in search_detection_logs
         ]
 
@@ -657,7 +657,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         )
         return [
             {
-                'Id': log.get('uuid'),
+                'Id': log.get('loggedUser'),
                 'Time': log.get('loggedDateTime'),
                 'Type': 'Audit'
             } for log in audit_logs
@@ -671,9 +671,9 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             'audit_logs': parse_audit_logs,
             'oat_detection_logs': parse_observed_attack_techniques_logs,
             'search_detection_logs': parse_search_detection_logs,
-            'workbench_logs': parse_workbench_logs()
+            'workbench_logs': parse_workbench_logs
         }
-        events = log_type_to_parse_func[log_type]
+        events = log_type_to_parse_func[log_type]()
 
     if should_push_events:
         send_events_to_xsiam(
