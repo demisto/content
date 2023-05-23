@@ -2,6 +2,7 @@ commonfields:
   id: SetRDPOverallScore
   version: -1
 name: SetRDPOverallScore
+comment: Sets the overall score for the strings similarity scoring for the text extracted from the RDP cache image.
 script: ''
 type: python
 tags:
