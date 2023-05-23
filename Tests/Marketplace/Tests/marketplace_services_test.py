@@ -14,6 +14,7 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
+from pathlib import Path
 
 # pylint: disable=no-member
 
@@ -791,15 +792,19 @@ class TestHelperFunctions:
         Then: collect IncidentType and Layout and the up to date playbook.
 
         """
-        expected_id = 'Phishing'
-        pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
+        expected_id = 'Phishing'        
+
         pack = Pack('test_pack', pack_path)
         res = pack.collect_content_items()
         assert res
-        assert len(pack._content_items.get('layoutscontainer')) == 1
-        assert pack._content_items.get('layoutscontainer')[0]['id'] == expected_id
-        assert len(pack._content_items.get('incidenttype')) == 1
-        assert pack._content_items.get('incidenttype')[0]['id'] == expected_id
+        layout_containers = pack._content_items['layoutscontainer']
+        assert len(layout_containers) == 1
+        assert layout_containers[0]['id'] == expected_id
+        
+        incident_types = pack._content_items['incidenttype']
+        assert len(incident_types) == 1
+        assert incident_types[0]['id'] == expected_id
 
     def test_collect_content_items_only_relevant_playbook(self):
         """
@@ -811,7 +816,7 @@ class TestHelperFunctions:
 
         """
         expected_description = "Expected description"
-        pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
         pack = Pack('test_pack', pack_path)
         res = pack.collect_content_items()
         assert res
