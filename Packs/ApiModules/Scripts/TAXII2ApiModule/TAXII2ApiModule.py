@@ -1323,7 +1323,7 @@ class Taxii2FeedClient:
             else:
                 tags.append(field_tag)
 
-        fields["tags"] = tags
+        fields["tags"] = list(set(tags))
 
         indicator["fields"] = fields
         return indicator

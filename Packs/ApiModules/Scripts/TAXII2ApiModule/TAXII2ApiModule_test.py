@@ -1082,6 +1082,8 @@ class TestParsingIndicators:
          - Make sure all the fields are being parsed correctly.
         """
         vulnerability_object = {'created': '2021-06-01T00:00:00.000Z',
+                                "extensions": {"extension-definition--1234": {
+                                    "CustomFields": {"tags": ["test", "elevated"], "description": "test"}}},
                                 'created_by_ref': 'identity--ce222222-2a22-222b-2222-222222222222',
                                 'external_references': [{'external_id': 'CVE-1234-5', 'source_name': 'cve'},
                                                         {'external_id': '1', 'source_name': 'other'}],
@@ -1107,12 +1109,33 @@ class TestParsingIndicators:
                 'value': 'CVE-1234-5'
             }
         ]
+
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'vulnerability--25222222-2a22-222b-2222-222222222222',
+                    'trafficlightprotocol': 'WHITE'},
+                'rawJSON': vulnerability_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'CVE',
+                'value': 'CVE-1234-5'
+            }
+        ]
+        parsed_response = taxii_2_client.parse_vulnerability(vulnerability_object)
+        response_tags = parsed_response[0]['fields'].pop('tags')
         xsoar_expected_tags = {'CVE-1234-5', 'elevated'}
+        assert parsed_response == xsoar_expected_response
+        assert set(response_tags) == xsoar_expected_tags
+
+        taxii_2_client.update_custom_fields = True
 
         parsed_response = taxii_2_client.parse_vulnerability(vulnerability_object)
         response_tags = parsed_response[0]['fields'].pop('tags')
-
-        assert parsed_response == xsoar_expected_response
+        xsoar_expected_tags = {'CVE-1234-5', 'elevated', 'test'}
+        assert parsed_response == xsoar_expected_response_with_update_custom_fields
         assert set(response_tags) == xsoar_expected_tags
 
     def test_parse_indicator(self, taxii_2_client):
@@ -1134,6 +1157,8 @@ class TestParsingIndicators:
                          "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
                          "labels": ["medium"],
                          "indicator_types": ["anomalous-activity"],
+                         "extensions": {
+                             "extension-definition--1234": {"CustomFields": {"tags": ["medium"], "description": "test"}}},
                          "pattern_version": "2.1", "spec_version": "2.1"}
 
         indicator_obj['value'] = 'test.org'
@@ -1150,8 +1175,23 @@ class TestParsingIndicators:
                 'value': 'test.org'
             }
         ]
+
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'tags': ['medium'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': indicator_obj,
+                'type': 'Domain',
+                'value': 'test.org'
+            }
+        ]
         taxii_2_client.tlp_color = None
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response_with_update_custom_fields
 
     # Parsing SDO Indicators
 
@@ -1177,6 +1217,8 @@ class TestParsingIndicators:
                            'name': 'Government',
                            'sectors': ['government-national'],
                            'spec_version': '2.1',
+                           "extensions": {"extension-definition--1234": {
+                               "CustomFields": {"tags": ["consent-everyone"], "description": "test"}}},
                            'type': 'identity'}
 
         xsoar_expected_response = [
@@ -1198,7 +1240,29 @@ class TestParsingIndicators:
             }
         ]
 
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'identityclass': 'organization',
+                    'industrysectors': ['government-national'],
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'identity--f8222222-2a22-222b-2222-222222222222',
+                    'tags': ['consent-everyone'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': identity_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'Identity',
+                'value': 'Government'
+            }
+        ]
+
         assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response_with_update_custom_fields
+
 
     upper_case_country_object = {'administrative_area': 'US-MI',
                                  'country': 'US',
