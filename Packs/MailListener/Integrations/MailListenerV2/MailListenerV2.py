@@ -62,7 +62,6 @@ class Email(object):
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
                     continue
 
-                # Retrieve the attachment
                 filename = part.get_filename()
                 if filename and filename.endswith('.eml'):
                     eml_attachments.append({
@@ -433,8 +432,8 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
         messages_query_list += ['UID', f'{uid_to_fetch_from}:*']
     return messages_query_list
 
-# TODO: revert to test-module
-def t_module(client: IMAPClient) -> str:
+
+def script_test_module(client: IMAPClient) -> str:
     yesterday = parse('1 day UTC')
     client.search(['SINCE', yesterday])
     return 'ok'
@@ -528,7 +527,7 @@ def main():
             client.login(username, password)
             client.select_folder(folder)
             if demisto.command() == 'test-module':
-                result = t_module(client)
+                result = script_test_module(client)
                 demisto.results(result)
             elif demisto.command() == 'mail-listener-list-emails':
                 return_results(list_emails(client=client,
