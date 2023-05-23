@@ -13,6 +13,7 @@ Depending on the authentication method that you use, the integration parameters 
 
 To allow us access to Microsoft Graph Security, an admin has to approve our app using an admin consent flow, by clicking this [link](https://oproxy.demisto.ninja/ms-graph-security).
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
+If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.

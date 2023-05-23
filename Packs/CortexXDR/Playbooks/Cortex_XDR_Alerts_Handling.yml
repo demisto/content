@@ -103,6 +103,7 @@ tasks:
           right:
             value:
               simple: Port Scan
+          ignorecase: true
     - label: Cloud
       condition:
       - - operator: containsGeneral
