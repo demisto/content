@@ -366,12 +366,42 @@ def test_get_datetime_range(
         - Case C: make sure the start time is 3 years ago and the time is 1 year after.
         - Case D: make sure the start time is 1 month ago and end time is "now"
         - Case E: make sure the start time is the last_run_time and end time is "now"
-        
-
     """
     from TrendMicroVisionOneEventCollector import get_datetime_range
-
     start_freeze_time(start_time)
+
     assert get_datetime_range(
         last_run_time=last_run_time, first_fetch=first_fetch, log_type_time_field_name=log_type_time_field_name
     ) == expected_start_and_end_date_times
+
+
+def test_module_main_flow(mocker):
+    """
+    Given:
+        - 1 log of each type
+    When:
+        - test-module through main
+    Then:
+        - make sure that test-module returns 'ok'
+    """
+    from TrendMicroVisionOneEventCollector import main
+
+    start_freeze_time('2023-01-01T15:20:45Z')
+
+    mocker.patch.object(demisto, 'params', return_value={'first_fetch': '1 year ago'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(
+        BaseClient,
+        '_http_request',
+        side_effect=_http_request_side_effect_decorator(
+            num_of_workbench_logs=1,
+            num_of_oat_logs=1,
+            num_of_search_detection_logs=1,
+            num_of_audit_logs=1
+        )
+    )
+
+    return_results_mocker = mocker.patch('TrendMicroVisionOneEventCollector.return_results')
+
+    main()
+    assert return_results_mocker.call_args.args[0] == 'ok'
