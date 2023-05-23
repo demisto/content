@@ -1,7 +1,6 @@
 import ast
 import copy
 import json
-import os
 import traceback
 import urllib.parse
 from typing import Any, List, Tuple
@@ -12,6 +11,7 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 from lxml import etree
+from pathlib import Path
 
 ''' IMPORTS '''
 
@@ -1653,7 +1653,7 @@ def request_file_download(client, data_args) -> Tuple[str, dict, Union[list, dic
     }
     raw_response = client.do_request('POST', f'/plugin/products/threat-response/api/v1/conns/{cid}/file', data=body)
 
-    filename = os.path.basename(path)
+    filename = Path(path).name
     hr = f'Download request of file {filename} has been sent successfully.'
     context = {}
     if task_id := raw_response.get('taskInfo', {}).get('id'):
