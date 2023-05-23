@@ -155,7 +155,7 @@ class Email(object):
                 'path': file_result['FileID'],
                 'name': file_result['File']
             })
-        if self.save_eml_file or True:
+        if self.save_eml_file:
             file_result = fileResult('original-email-file.eml', self.mail_bytes)
             files.append({
                 'path': file_result['FileID'],
