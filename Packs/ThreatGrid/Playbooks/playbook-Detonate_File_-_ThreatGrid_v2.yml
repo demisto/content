@@ -247,6 +247,10 @@ tasks:
     scriptarguments:
       file_id:
         simple: ${File.EntryID}
+      interval_in_seconds:
+        simple: ${inputs.interval}
+      timeout_in_seconds:
+        simple: ${inputs.timeout}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -363,7 +367,21 @@ inputs:
       root: File
   required: false
   description: File object of the file to detonate.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: timeout
+  value:
+    simple: "60"
+  required: false
+  description: Indicates the time in seconds until the polling sequence times out.
+    Default is 60.
+  playbookInputQuery: null
+- key: interval
+  value:
+    simple: "10"
+  required: false
+  description: Indicates the time in seconds to wait between command execution when
+    'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+  playbookInputQuery: null
 outputs:
 - contextPath: File.Type
   description: File type e.g. "PE"
