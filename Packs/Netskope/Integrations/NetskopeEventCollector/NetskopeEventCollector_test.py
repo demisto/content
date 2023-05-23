@@ -82,4 +82,3 @@ def test_get_events_v2(mocker):
     response = get_events_v2(client, FIRST_LAST_RUN, 'v2', 1)
     assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
     assert 'results' not in response
-
