@@ -910,7 +910,7 @@ def get_firewall_rule_collection(client: AzureFirewallClient, firewall_name: str
     Returns:
         tuple: response, rule_collections
 
-    """""
+    """
 
     response = client.azure_firewall_get_request(firewall_name=firewall_name)
 
@@ -940,7 +940,7 @@ def azure_firewall_rules_collection_list_command(client: AzureFirewallClient, ar
     start_offset = (page - 1) * limit
     end_offset = start_offset + limit
 
-    resource = firewall_name if firewall_name else policy
+    resource = firewall_name or policy
 
     readable_message = get_pagination_readable_message(header=f'{resource} Rule Collections List:',
                                                        limit=limit, page=page)
@@ -953,7 +953,7 @@ def azure_firewall_rules_collection_list_command(client: AzureFirewallClient, ar
 
     else:
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         complete_requests = False
         total_response = {'value': []}
@@ -1027,7 +1027,7 @@ def azure_firewall_rules_list_command(client: AzureFirewallClient, args: Dict[st
     if firewall_name:
 
         if not rule_type:
-            raise Exception('The ''rule_type'' argument must be provided for firewall rules.')
+            raise Exception("The `rule_type` argument must be provided for firewall rules.")
 
         response, filtered_rules = get_firewall_rule_collection(client, firewall_name, rule_type)
         readable_message = get_pagination_readable_message(header=f'Firewall {firewall_name} {rule_type} Rules List:',
@@ -1046,7 +1046,7 @@ def azure_firewall_rules_list_command(client: AzureFirewallClient, args: Dict[st
     else:
 
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         readable_message = get_pagination_readable_message(header=f'Policy {policy} {rule_type} Rules List:',
                                                            limit=limit, page=page)
@@ -1078,7 +1078,7 @@ def azure_firewall_rule_get_command(client: AzureFirewallClient, args: Dict[str,
     if firewall_name:
 
         if not rule_type:
-            raise Exception('The ''rule_type'' argument must be provided for firewall rules.')
+            raise Exception("The `rule_type` argument must be provided for firewall rules.")
 
         response, filtered_rules = get_firewall_rule_collection(client, firewall_name, rule_type)
 
@@ -1097,7 +1097,7 @@ def azure_firewall_rule_get_command(client: AzureFirewallClient, args: Dict[str,
 
     else:
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         response, rules = get_policy_collection_rules(client=client, policy=policy, collection_name=collection_name)
 
@@ -1585,7 +1585,7 @@ def delete_rule_collection(client: AzureFirewallClient, collection_name: str, ru
 
     else:
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         response = client.azure_firewall_policy_rule_collection_delete_request(policy_name=policy,
                                                                                collection_name=collection_name)
@@ -1707,7 +1707,7 @@ def remove_rule_from_collection(client: AzureFirewallClient, collection_name: st
 
     else:
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         collection_information = client.azure_firewall_policy_rule_collection_get_request(
             policy_name=policy, collection_name=collection_name)
@@ -1824,10 +1824,10 @@ def validate_network_rule_properties(source_type: str, destination_type: str, pr
                                  argument_options=['ip_address', 'ip_group', 'service_tag', 'fqdn'])
 
     if source_type == 'ip_address' and not ip_source_address:
-        raise Exception('"ip_source_address" argument most be provided when "ip_address" argument is provided.')
+        raise Exception("`ip_source_address` argument most be provided when `ip_address` argument is provided.")
 
     if source_type == 'ip_group' and not source_ip_group_ids:
-        raise Exception('"source_ip_group_ids" argument most be provided when "ip_group" argument is provided.')
+        raise Exception("`source_ip_group_ids` argument most be provided when `ip_group` argument is provided.")
 
     return True
 
@@ -1964,7 +1964,7 @@ def azure_firewall_network_rule_collection_create_command(client: AzureFirewallC
     else:
 
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         collection_information = None
 
@@ -2096,7 +2096,7 @@ def azure_firewall_network_rule_collection_update_command(client: AzureFirewallC
 
     else:
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         response = update_policy_rule_collection(client=client, policy=policy, collection_name=collection_name,
                                                  priority=priority,
@@ -2244,7 +2244,7 @@ def azure_firewall_network_rule_create_command(client: AzureFirewallClient, args
 
     else:
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         response = add_rule_to_policy_collection(client=client, policy=policy, collection_name=collection_name,
                                                  rule_object=rule_information, rule_name=rule_name)
@@ -2426,7 +2426,7 @@ def azure_firewall_network_rule_update_command(client: AzureFirewallClient, args
     else:
 
         if not policy:
-            raise Exception('One of the arguments: ''firewall_name'' or ''policy'' must be provided.')
+            raise Exception("One of the arguments: `firewall_name` or `policy` must be provided.")
 
         if protocol:
             rule_fields_mapper["protocol"] = "ipProtocols"
@@ -2639,7 +2639,7 @@ def azure_firewall_ip_group_update_command(client: AzureFirewallClient, args: Di
     timeout = arg_to_number(args.get('timeout', 60))
 
     if not ip_address_to_add and not ip_address_to_remove:
-        raise Exception('One of the arguments: ''ip_address_to_add'' or ''ip_address_to_remove'' must be provided.')
+        raise Exception("One of the arguments: `ip_address_to_add` or `ip_address_to_remove` must be provided.")
 
     ip_group_data = client.azure_firewall_ip_group_get_request(ip_group_name=ip_group_name)
 

@@ -270,7 +270,10 @@ class MicrosoftClient(BaseClient):
                     ET.fromstring(response.text)
             return response
         except ValueError as exception:
-            raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
+            raise DemistoException(
+                f'Failed to parse json object from response: {response.content}',
+                exception,
+            )
 
     def get_access_token(self, resource: str = '', scope: Optional[str] = None) -> str:
         """
@@ -346,8 +349,9 @@ class MicrosoftClient(BaseClient):
         """
         msg = 'Error in authentication. Try checking the credentials you entered.'
         try:
-            demisto.info('Authentication failure from server: {} {} {}'.format(
-                oproxy_response.status_code, oproxy_response.reason, oproxy_response.text))
+            demisto.info(
+                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} {oproxy_response.text}'
+            )
             err_response = oproxy_response.json()
             server_msg = err_response.get('message')
             if not server_msg:
@@ -358,14 +362,14 @@ class MicrosoftClient(BaseClient):
                 elif detail:
                     server_msg = detail
             if server_msg:
-                msg += ' Server message: {}'.format(server_msg)
+                msg += f' Server message: {server_msg}'
         except Exception as ex:
-            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+            demisto.error(f'Failed parsing error response - Exception: {ex}')
         if oproxy_response.status_code == 403 and "Hash Verification Error" in oproxy_response.text:
             msg += '\nThe Oproxy server returned an error, ' \
-                   'there may be an issue with the *Token* parameter. ' \
-                   'You can run the *<integration command prefix>-auth-reset* command ' \
-                   'to reset the authentication process.'
+                'there may be an issue with the *Token* parameter. ' \
+                'You can run the *<integration command prefix>-auth-reset* command ' \
+                'to reset the authentication process.'
         raise Exception(msg)
 
     def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
@@ -759,7 +763,7 @@ class MicrosoftClient(BaseClient):
         try:
             headers = get_x_content_info_headers()
         except Exception as e:
-            demisto.error('Failed getting integration info: {}'.format(str(e)))
+            demisto.error(f'Failed getting integration info: {str(e)}')
 
         return headers
 

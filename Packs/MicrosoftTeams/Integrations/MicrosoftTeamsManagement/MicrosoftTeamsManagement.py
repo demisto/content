@@ -430,7 +430,7 @@ def delete_team(client: Client, args: Dict) -> str:
 def list_members(client: Client, args: Dict) -> CommandResults:
     team_id = args.get('team_id')
     response = client.list_members_request(team_id)
-    members = [dict(member, **{'teamId': team_id}) for member in response.get('value', [])]
+    members = [{**member, 'teamId': team_id} for member in response.get('value', [])]
     return CommandResults(
         outputs_prefix='MicrosoftTeams.TeamMember',
         outputs_key_field='id',

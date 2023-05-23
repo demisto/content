@@ -128,7 +128,6 @@ class DataExplorerClient:
 
     def search_queries_list_request(self, database_name: str,
                                     client_activity_id: str) -> Dict[str, Any]:
-
         """
             List search queries that have reached a final state on the given database.
             When the client_activity_id argument is provided, the request will retrieve information
