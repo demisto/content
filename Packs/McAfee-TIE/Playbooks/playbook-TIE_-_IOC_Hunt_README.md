@@ -17,12 +17,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* McAfeeTIEV2
 * McAfee-TIE
+* McAfeeTIEV2
 
 ### Scripts
 
-* EPOFindSystem
 * Exists
 
 ### Commands
