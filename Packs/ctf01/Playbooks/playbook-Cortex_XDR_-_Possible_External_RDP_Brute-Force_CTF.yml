@@ -1,0 +1,1385 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: 6.8.0
+    itemVersion: 4.10.41
+    packID: ""
+    packName: Cortex XDR by Palo Alto Networks
+    prevname: ""
+    toServerVersion: ""
+description: "This playbook investigates a “Possible External RDP Brute Force” XDR
+  Alert by gathering user, IP, and hostname information, and investigating if the
+  following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3
+  \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related
+  to campaign - IP address is related to campaign, based on TIM module\n-  Hunting
+  results - the hunt for indicators related to the source IP and the related campaign
+  returned results\n-  XDR Alert search - XDR Alerts that related to the same username
+  and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were
+  found.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input
+  allows you to select a specific element that, if identified as suspicious,  the
+  investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict
+  -  Each suspicious element is being added to an array called \"Suspicious Elements\",
+  which is used to count potential security threats. The array size will be compared
+  to a final threshold. If the size is greater than or equal to the threshold, the
+  investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement
+  - The \"UserEngagementThreshold\" input allows you to set the number of suspicious
+  elements that trigger user engagement. When this threshold is met, an email will
+  be sent to the user and their manager asking for authorization of RDP activity.
+  If the RDP activity is not authorized by the user, the investigation's final verdict
+  will be deemed a \"True Positive\".\n"
+id: 9abe05a7-c98a-4fc8-82e2-459230df4191
+inputs:
+- description: RDP connection username.
+  key: Username
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Source external IP address.
+  key: ExternalIP
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Set this value to "true" to enable auto remediation (IP Block and User
+    Block).
+  key: AutoRemediation
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+- description: The threshold number of suspicious elements required to determine a
+    'True Positive' verdict.
+  key: FinalThreshold
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "2"
+- description: |-
+    You can select a specific element that, if identified as suspicious, will automatically set the final verdict as true positive. The following options are available:
+    IP Reputation
+    Related Campaign
+    Hunting Results
+    Related Alerts
+    Unusual Country
+
+    NOTE: You can read about the meaning of every element in the playbook description.
+  key: CriticalElement
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    The threshold number of suspicious elements that will trigger a user engagement. Set 0 to disable user engagement.
+
+    NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
+  key: UserEngagementThreshold
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+- description: RDP connection destination hostname.
+  key: Hostname
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: RDP connection destination endpoint ID.
+  key: EndpointID
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Alert name.
+  key: Alert_Name
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Alert description.
+  key: AlertDescription
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Source external IP country.
+  key: Country
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Set this value to "true" to enable endpoint isolation in case of a
+    true positive.
+  key: IsolateEndpoint
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+- description: The SOC email address to use for the user engagement section.
+  key: SOCEmailAddress
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Cortex XDR - Possible External RDP Brute-Force CTF
+outputs: []
+sourceplaybookid: Cortex XDR - Possible External RDP Brute-Force
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 92a82d84-7846-4fe3-8539-b90a0e1524ad
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 92a82d84-7846-4fe3-8539-b90a0e1524ad
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 0
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5734023e-1a6c-477a-8f9e-3cfc2e0f2c71
+      iscommand: false
+      name: Analysis
+      type: title
+      version: -1
+    taskid: 5734023e-1a6c-477a-8f9e-3cfc2e0f2c71
+    timertriggers:
+    - action: start
+      fieldname: containmentsla
+    - action: start
+      fieldname: triagesla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 135
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "109"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      id: 36090104-40be-4b18-80e7-7628d06fa2c9
+      iscommand: false
+      name: Account Enrichment - Generic v2.1
+      playbookId: Account Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+    taskid: 36090104-40be-4b18-80e7-7628d06fa2c9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 280
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "111"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c4cf1d29-aac1-4228-88d5-7f2c39514bb5
+      iscommand: false
+      name: Set Verdict
+      type: title
+      version: -1
+    taskid: c4cf1d29-aac1-4228-88d5-7f2c39514bb5
+    timertriggers:
+    - action: stop
+      fieldname: triagesla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1720
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UserEngagementThreshold
+          operator: isEqualNumber
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: Suspicious_Elements
+                transformers:
+                - operator: count
+      label: "yes"
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UserEngagementThreshold
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UserEngagementThreshold
+          operator: lessThan
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: Suspicious_Elements
+                transformers:
+                - operator: count
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UserEngagementThreshold
+          operator: greaterThan
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: Suspicious_Elements
+                transformers:
+                - operator: count
+      label: "no"
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if user engagement is needed, based on UserEngagementThreshold
+        input.
+      id: fa3c7921-d9c6-4d43-8c37-2bb39ba9f679
+      iscommand: false
+      name: Communicate With User?
+      type: condition
+      version: -1
+    taskid: fa3c7921-d9c6-4d43-8c37-2bb39ba9f679
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2175
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Was the following action performed by you?
+        options: []
+        optionsarg:
+        - simple: Authorized
+        - simple: Unauthorized
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Was the following action performed by you?
+      totalanswers: 0
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: |-
+          Hello,
+          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
+          Was this action performed by you and can be considered as authorized?
+      cc: {}
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: Was the following action performed by you?
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        complex:
+          accessor: mail
+          root: ActiveDirectory.Users
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: UserManagerEmail
+            operator: append
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: inputs.SOCEmailAddress
+            operator: append
+    nexttasks:
+      '#none#':
+      - "139"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ask the user via email if the RDP connection is authorized activity.
+      id: e7ef23b2-5071-400e-82e8-90ceb59af047
+      iscommand: false
+      name: User Communication
+      type: collection
+      version: -1
+    taskid: e7ef23b2-5071-400e-82e8-90ceb59af047
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 2350
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Suspicious_Elements
+                transformers:
+                - operator: count
+          operator: greaterThanOrEqual
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FinalThreshold
+      label: "yes"
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determine if the activity is malicious.
+      id: d4da95d2-9620-4858-8b65-44b0f90b66c4
+      iscommand: false
+      name: Malicious Activity?
+      type: condition
+      version: -1
+    taskid: d4da95d2-9620-4858-8b65-44b0f90b66c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2700
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "98"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3ccd86fb-693f-405d-81f7-7444add80f10
+      iscommand: false
+      name: True Positive
+      type: title
+      version: -1
+    taskid: 3ccd86fb-693f-405d-81f7-7444add80f10
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 2910
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "99"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 34f837cd-83aa-4268-8a9c-63725c629908
+      iscommand: false
+      name: False Positive
+      type: title
+      version: -1
+    taskid: 34f837cd-83aa-4268-8a9c-63725c629908
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 2910
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3924520d-8f9e-4572-842d-49fdab8188af
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 3924520d-8f9e-4572-842d-49fdab8188af
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3260
+        }
+      }
+  "33":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Source IP
+      output:
+        complex:
+          root: inputs.ExternalIP
+    - incidentfield: Detected User
+      output:
+        complex:
+          root: inputs.Username
+    - incidentfield: Destination Hostname
+      output:
+        complex:
+          root: inputs.Hostname
+    - incidentfield: Alert Name
+      output:
+        complex:
+          root: inputs.Alert_Name
+    - incidentfield: Description
+      output:
+        complex:
+          root: inputs.AlertDescription
+    - incidentfield: ASN
+      output:
+        complex:
+          accessor: ASN
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IP.Address
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.ExternalIP
+          root: IP
+    - incidentfield: IP Reputation
+      output:
+        complex:
+          accessor: Score
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Indicator
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.ExternalIP
+          root: DBotScore
+          transformers:
+          - args:
+              descending:
+                value:
+                  simple: "true"
+            operator: sort
+          - operator: FirstArrayElement
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ExternalIP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the reputation of an IP address.
+      id: 85b57bbe-1e6f-4850-8df7-9d65040c5578
+      iscommand: true
+      name: IP Enrichment
+      script: '|||ip'
+      type: regular
+      version: -1
+    taskid: 85b57bbe-1e6f-4850-8df7-9d65040c5578
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 895,
+          "y": 280
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Was the following action performed by you?.Answers
+          operator: isEqualString
+          right:
+            value:
+              simple: authorized
+      label: "yes"
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the user defined the RDP connection as an authorized activity.
+      id: cd8f56d5-f212-4188-8afa-37fd8643413f
+      iscommand: false
+      name: Authorized Activity?
+      type: condition
+      version: -1
+    taskid: cd8f56d5-f212-4188-8afa-37fd8643413f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 2700
+        }
+      }
+  "53":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: RelatedFiles
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: RelatedDomains
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: RelatedIPs
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: RelatedURLs
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "54"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Hunt for indicators that are related to the RDP Connection external
+        IP.
+      id: c8b84676-d085-4424-84e7-806522185c01
+      iscommand: false
+      name: Has related Indicators to hunt?
+      type: condition
+      version: -1
+    taskid: c8b84676-d085-4424-84e7-806522185c01
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1060
+        }
+      }
+  "54":
+    continueonerrortype: ""
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "112"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: RelatedIPs
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA256:
+        complex:
+          root: RelatedFiles
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: RelatedDomains
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: "This playbook enables threat hunting for IOCs in your enterprise.
+        It currently supports the following integrations: \n- Splunk\n- Qradar\n-
+        Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      id: 264737a7-d382-4445-887b-f205ad7f02ba
+      iscommand: false
+      name: Threat Hunting - Generic
+      playbookId: Threat Hunting - Generic
+      type: playbook
+      version: -1
+    taskid: 264737a7-d382-4445-887b-f205ad7f02ba
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1230
+        }
+      }
+  "56":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CriticalElement
+          operator: in
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: Suspicious_Elements
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CriticalElement
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "56"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a critical element is defined.
+      id: e40fd351-db7b-4d7f-8ca5-ef7faedbb720
+      iscommand: false
+      name: Critical Element exist?
+      type: condition
+      version: -1
+    taskid: e40fd351-db7b-4d7f-8ca5-ef7faedbb720
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2010
+        }
+      }
+  "66":
+    continueonerrortype: ""
+    id: "66"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 228060ee-9d87-4835-8a8b-2726a407b28b
+      iscommand: false
+      name: Investigation - Related Indicators Hunt
+      type: title
+      version: -1
+    taskid: 228060ee-9d87-4835-8a8b-2726a407b28b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 930
+        }
+      }
+  "72":
+    continueonerrortype: ""
+    id: "72"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "141"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 86bf50b3-f1d7-4f24-823a-65f20bf92543
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: 86bf50b3-f1d7-4f24-823a-65f20bf92543
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 610
+        }
+      }
+  "98":
+    continueonerrortype: ""
+    id: "98"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      verdict:
+        simple: True Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: f8dbdb26-93b5-40bc-8f26-b39dfff4aa14
+      iscommand: true
+      name: Set final verdict
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f8dbdb26-93b5-40bc-8f26-b39dfff4aa14
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 3050
+        }
+      }
+  "99":
+    continueonerrortype: ""
+    id: "99"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      verdict:
+        simple: False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 1ddbb5cc-f893-4174-83ab-b83fd8672efe
+      iscommand: true
+      name: Set final verdict
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1ddbb5cc-f893-4174-83ab-b83fd8672efe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 3050
+        }
+      }
+  "109":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "109"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountgroups:
+        complex:
+          accessor: Groups
+          root: Account
+      accountname:
+        complex:
+          accessor: Username
+          root: Account
+      managername:
+        complex:
+          accessor: Manager
+          root: Account
+      passwordchangeddate:
+        complex:
+          accessor: PasswordChanged
+          root: Account
+      usercreationtime:
+        complex:
+          accessor: Created
+          root: Account
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 43cf6c15-eea5-4473-8cb2-bdd34ff10b38
+      iscommand: true
+      name: Set Account Details
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 43cf6c15-eea5-4473-8cb2-bdd34ff10b38
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 440
+        }
+      }
+  "111":
+    continueonerrortype: ""
+    id: "111"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      HuntResults:
+        complex:
+          root: HasHuntResults
+      IpReputation:
+        complex:
+          accessor: Score
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Indicator
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.ExternalIP
+          root: DBotScore
+      RelatedAlerts:
+        complex:
+          accessor: Alert
+          root: PaloAltoNetworksXDR
+      RelatedCampaign:
+        complex:
+          root: RelatedCampaign
+      UnusualGeoLocation:
+        complex:
+          root: PermanentCountry
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This playbook creating an array called \"Suspicious Elements\",
+        which is used to count potential security threats. The following elements
+        can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n-
+        \"Source geolocation\" - Connection from unusual country \n-  Related to campaign
+        - IP address related to campaign, based on TIM module\n-  Hunting results
+        - hunt for indicators related to the source IP and the related campaign returned
+        results\n-  XDR Alert search -XDR Alerts related to the same username and
+        endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nThe
+        array will then be outputted and its size will be compared to a final threshold.
+        If the size is greater than or equal to the threshold, the investigation's
+        final verdict will be deemed a \"True Positive.\""
+      id: 807a9914-b953-4fcb-80a2-c073a311a22a
+      iscommand: false
+      name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
+      playbookId: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
+      type: playbook
+      version: -1
+    taskid: 807a9914-b953-4fcb-80a2-c073a311a22a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1850
+        }
+      }
+  "112":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: Splunk
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: PANWHunting
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: QRadar
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: Microsoft365Defender
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "112"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "113"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if hunt results were found.
+      id: 4a4aa00d-20f1-4a40-8a0e-9197341914dc
+      iscommand: false
+      name: Has hunt results?
+      type: condition
+      version: -1
+    taskid: 4a4aa00d-20f1-4a40-8a0e-9197341914dc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1390
+        }
+      }
+  "113":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Hunt Results Count
+      output:
+        complex:
+          root: HasHuntResults
+    id: "113"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: HasHuntResults
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 02e04643-3fae-4c0c-8c06-981790ed973d
+      iscommand: false
+      name: Set hunt results true
+      script: Set
+      type: regular
+      version: -1
+    taskid: 02e04643-3fae-4c0c-8c06-981790ed973d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1550
+        }
+      }
+  "139":
+    continueonerrortype: ""
+    id: "139"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userengagementresponse:
+        complex:
+          accessor: "0"
+          root: Was the following action performed by you?.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 0456b742-d472-4c38-83df-18c9158d2574
+      iscommand: true
+      name: Set user response
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 0456b742-d472-4c38-83df-18c9158d2574
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 2520
+        }
+      }
+  "141":
+    continueonerrortype: ""
+    id: "141"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      EntityType:
+        simple: actor_effective_username
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntCredentialAccessTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "false"
+      entityID:
+        complex:
+          root: inputs.Username
+      timeRange:
+        simple: 30 hours
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0fbe47ca-8a90-4b31-853c-675c617e7b4e
+      iscommand: false
+      name: Cortex XDR - Get entity alerts by MITRE tactics CTF
+      playbookId: 973e45d6-ffa6-4c85-8d80-944bb7ac6afd
+      type: playbook
+      version: -1
+    taskid: 0fbe47ca-8a90-4b31-853c-675c617e7b4e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 750
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "112_113_yes": 0.31,
+      "112_6_#default#": 0.37,
+      "20_21_yes": 0.4,
+      "20_22_#default#": 0.34,
+      "35_21_#default#": 0.1,
+      "35_22_yes": 0.7,
+      "53_6_#default#": 0.11,
+      "56_11_#default#": 0.42,
+      "56_21_yes": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3325,
+        "width": 1375,
+        "x": 160,
+        "y": 0
+      }
+    }
+  }
