@@ -19,7 +19,7 @@ args:
   name: paperSize
   required: false
   secret: false
-comment: Deprecated. No available replacement. Parse Sane-json-reports and export them as docx files (used internally).
+comment: Deprecated. No available replacement.
 commonfields:
   id: SaneDocReports
   version: -1
@@ -38,7 +38,7 @@ dockerimage: demisto/sane-doc-reports:1.0.0.6054
 runas: DBotWeakRole
 runonce: false
 tests:
-- No Test
+- No tests (deprecated)
 deprecated: true
 toversion: 5.4.9
 fromversion: 5.0.0

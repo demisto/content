@@ -18,6 +18,8 @@ SecneurX
 VirusTotal
 DetectedHashes
 NonFoundHashes
+opswat
+filescan
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
