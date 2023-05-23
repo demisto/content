@@ -31,7 +31,7 @@ def get_color(cvss: Union[int, float]) -> str:
 
     cvss = int(math.ceil(cvss))
 
-    if not 0 < cvss < 10:
+    if not 0 < cvss <= 10:
         color = "#000000"
     elif cvss <= 4:
         color = colors[f"Green{cvss}"]
