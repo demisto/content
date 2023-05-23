@@ -3599,7 +3599,7 @@ def create_events_search(client: Client,
             offense = client.offenses_list(offense_id=offense_id)
             offense_start_time = offense['start_time']
         query_expression = (
-            f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
+            f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '  # noqa: S608
             f'START {offense_start_time}'
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
