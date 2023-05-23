@@ -1263,7 +1263,6 @@ class TestParsingIndicators:
         taxii_2_client.update_custom_fields = True
         assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response_with_update_custom_fields
 
-
     upper_case_country_object = {'administrative_area': 'US-MI',
                                  'country': 'US',
                                  'created': '2022-11-19T23:27:34.000Z',
