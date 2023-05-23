@@ -758,7 +758,7 @@ script:
   - name: zoom-update-channel
     description: >
      Update an existing channel in zoom account
-     Use command zoom-list-account-public-channels in order to fetch channel id by channel name
+     Use command in order to fetch channel id by channel name
      Need to provide at least on of the arguments  posting_permissions or channnel_name
     execution: true
     arguments:

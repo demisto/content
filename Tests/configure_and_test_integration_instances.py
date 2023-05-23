@@ -1163,6 +1163,18 @@ def set_integration_params(build,
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        if integration['name'] == "Core REST API" and build.is_cloud:
+            integration_params[0]['params'] = {  # type: ignore
+                "url": build.base_url,
+                "creds_apikey": {
+                    "identifier": str(build.xdr_auth_id),
+                    "password": build.api_key,
+                },
+                "auth_method": "Standard",
+                "insecure": True,
+                "proxy": False,
+            }
+
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1220,7 +1232,7 @@ def set_module_params(param_conf, integration_params):
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials':
+        if key == 'credentials' or key == "creds_apikey":
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1801,7 +1813,7 @@ def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
 
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install) - non_hidden_packs,
+    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install),
                                                                       build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
