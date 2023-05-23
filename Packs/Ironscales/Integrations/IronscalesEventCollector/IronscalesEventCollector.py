@@ -15,6 +15,8 @@ urllib3.disable_warnings()
 
 VENDOR = "ironscales"
 PRODUCT = "ironscales"
+DEFAULT_FIRST_FETCH = "3 days"
+DEFAULT_MAX_FETCH = 1000
 
 
 """ CLIENT CLASS """
@@ -151,6 +153,7 @@ def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     def get_flatten_event_data(report_data: Dict[str, Any]) -> Dict[str, Any]:
         event = copy.deepcopy(incident)
+        event["_time"] = event["first_reported_date"]
         del event["reports"]
         return event | report_data
 
@@ -209,17 +212,16 @@ def fetch_events_command(
     return events, last_run
 
 
-def main():  # pragma: no cover
+def main():
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
 
     try:
-        first_fetch = dateparser.parse(params.get("first_fetch", ""))
-        assert first_fetch, "Invalid first_fetch parameter"
-        max_fetch = arg_to_number(params.get("max_fetch"))
-        assert max_fetch, "Invalid max_fetch parameter"
+        first_fetch = dateparser.parse(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
+        assert first_fetch, f"Invalid first_fetch value: {params.get('first_fetch')}"
+        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
 
         client = Client(
             company_id=params.get("company_id"),
@@ -254,5 +256,5 @@ def main():  # pragma: no cover
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

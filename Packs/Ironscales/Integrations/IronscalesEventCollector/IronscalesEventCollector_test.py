@@ -117,3 +117,39 @@ def test_incident_to_events():
     assert events[0]["attachments"] == events[1]["attachments"]
     assert events[0]["headers"][0]["name"] == "header1" and events[1]["headers"][0]["name"] == "header2"
     assert events[0]["headers"][0]["value"] == "value1" and events[1]["headers"][0]["value"] == "value2"
+
+
+@pytest.mark.parametrize(
+    "params, is_valid, result_msg",
+    [
+        (
+            {"max_fetch": "1", "first_fetch": "", "url": ""},
+            True,
+            "ok"
+        ),
+        (
+            {"max_fetch": "not a number", "first_fetch": "3 days", "url": ""},
+            False,
+            "\"not a number\" is not a valid number"
+        ),
+        (
+            {"max_fetch": "1", "first_fetch": "not a date", "url": ""},
+            False,
+            "Invalid first_fetch value: not a date"
+        ),
+    ]
+)
+def test_test_module(mocker, params, is_valid, result_msg):
+    """
+    Given: different assignments for integration parameters.
+    When: Running test-module command.
+    Then: Make sure the correct message is returned.
+    """
+    mocker.patch.object(Client, "get_jwt_token", return_value="mock_token")
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value=params)
+    demisto_result = mocker.patch.object(demisto, "results")
+    return_error = mocker.patch('IronscalesEventCollector.return_error')
+    main()
+    result = (demisto_result if is_valid else return_error).call_args[0][0]
+    assert result_msg in result

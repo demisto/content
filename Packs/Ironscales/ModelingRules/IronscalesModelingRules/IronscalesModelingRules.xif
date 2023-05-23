@@ -3,20 +3,17 @@ alter
     ipv4_address = arrayindex(regextract(json_extract_scalar(mail_server, "$.ip"), "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
     ipv6_address = arrayindex(regextract(json_extract_scalar(mail_server, "$.ip"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
 | alter
-	_time = parse_timestamp("%Y-%m-%dT%H:%M:%E6SZ", first_reported_date)
 	xdm.event.id = to_string(incident_id),
 	xdm.event.operation_sub_type = classification,
 	xdm.email.sender = sender_email,
 	xdm.email.recipients = arraycreate(reply_to),
 	xdm.alert.subcategory = themis_verdict,
-	xdm.intermediate.host.hostname = json_extract_scalar(mail_server, "$.host"),
+	xdm.intermediate.host.hostname = to_json_string(arraymap(mail_server -> [], json_extract_scalar("@element","$.host"))),
 	xdm.intermediate.ipv4 = ipv4_address,
 	xdm.intermediate.ipv6 = ipv6_address,
 	xdm.source.user.username = name,
 	xdm.source.user.upn = email,
 	xdm.email.subject = subject,
-	xdm.email.sender = sender_email,
-	xdm.intermediate.host.hostname = json_extract_scalar(mail_server, "$.host"),
-	xdm.network.http.http_header.value = to_string(json_extract_scalar(headers, "$.value")),
-	xdm.network.http.url = to_string(json_extract_scalar(links, "$.url")),
-	xdm.email.attachment.filename = to_string(json_extract_scalar(attachments, "$.file_name"));
+	xdm.network.http.http_header.value = to_json_string(arraymap(headers -> [], json_extract_scalar("@element","$.value"))),
+	xdm.network.http.url = to_json_string(arraymap(links -> [], json_extract_scalar("@element","$.url"))),
+	xdm.email.attachment.filename = to_json_string(arraymap(attachments -> [], json_extract_scalar("@element","$.file_name")));
