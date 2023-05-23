@@ -1410,3 +1410,50 @@ Lists active property hostnames for all properties available in an account.
 #### Context Output
 
 There is no context output for this command.
+
+
+
+### akamai-list-siteshield-map
+
+***
+Returns a list of all Site Shield maps that belong to your account.
+
+#### Base Command
+
+`akamai-list-siteshield-map`
+
+#### Input
+
+There is no input for this command.
+
+#### Context Output
+`{
+  "Akamai.SiteShieldMaps": [
+    {
+      "acknowledgeRequiredBy": 168321944560,
+      "acknowledged": false,
+      "acknowledgedBy": "example@fisglobal.com",
+      "acknowledgedOn": 1676034518000,
+      "contacts": [
+        "example@fisglobal.com",
+        "example@akamai.com"
+      ],
+      "currentCidrs": [
+        "ip1",
+        "ip2"
+      ],
+      "id": 1910627,
+      "latestTicketId": 22728,
+      "mapAlias": "Americas Secure Map",
+      "mcmMapRuleId": 14002,
+      "proposedCidrs": [
+        "ip3",
+      ],
+      "ruleName": "s1702.akamaiedge.net",
+      "service": "S",
+      "shared": false,
+      "sureRouteName": "example.akamai.com",
+      "type": "Production"
+    }
+}`
+

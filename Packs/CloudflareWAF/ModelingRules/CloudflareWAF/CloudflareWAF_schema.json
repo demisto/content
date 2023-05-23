@@ -95,6 +95,22 @@
       "ZoneName": {
           "type": "string",
           "is_array": false
-        }
+        },
+      "securityaction": {
+          "type": "string",
+          "is_array": false
+        },
+      "clientip": {
+        "type": "string",
+        "is_array": false
+      },
+      "securityruledescription": {
+        "type": "string",
+        "is_array": false
+      },
+      "securityruleid": {
+        "type": "string",
+        "is_array": false
+      }
     }
 }

@@ -664,7 +664,7 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client, hostname: str = '',
+                                                    client: demisto_client, hostname: str | None = None,
                                                     install_packs_one_by_one=False):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.

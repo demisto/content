@@ -90,8 +90,11 @@ def check_if_known_url(the_input):
 
 
 def extract_fqdn(the_input):
+    the_input = unquote(the_input)
     if the_input.endswith("@"):
         return ''
+    if not the_input[0].isalnum():
+        the_input = the_input[1:]
     the_input = check_if_known_url(the_input)
     # pre-processing the input, removing excessive characters
     the_input = pre_process_input(the_input)

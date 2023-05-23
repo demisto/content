@@ -15,6 +15,7 @@ This playbook does not use any scripts.
 ### Commands
 * qualys-report-fetch
 * qualys-report-launch-scan-based-findings
+* qualys-report-list
 
 ## Playbook Inputs
 ---

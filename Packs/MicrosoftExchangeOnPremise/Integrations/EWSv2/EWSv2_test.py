@@ -359,10 +359,10 @@ def test_send_mail(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    result = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
+    results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
-    assert result.get('Contents') == {
+    assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
@@ -381,9 +381,9 @@ def test_send_mail_with_trailing_comma(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    result = send_email(to="test@gmail.com,", subject="test")
+    results = send_email(to="test@gmail.com,", subject="test")
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert result.get('Contents') == {
+    assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
