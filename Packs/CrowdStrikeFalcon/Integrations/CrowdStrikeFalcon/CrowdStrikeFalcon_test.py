@@ -5253,7 +5253,7 @@ def test_ODS_create_scan_request(mocker, body, is_scheduled):
 
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_create_scan_request({}, is_scheduled)
-    http_request.assert_called_with('POST', f'/ods/entities/{f"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
+    http_request.assert_called_with('POST', f'/ods/entities/{"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
 
 
 @pytest.mark.parametrize(
