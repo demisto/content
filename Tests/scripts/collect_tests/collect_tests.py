@@ -151,8 +151,6 @@ class CollectionResult:
             logger.info(f'{str(e)}{test_suffix} (pack will be installed)')
             test = None
 
-
-
         if test:
             self.tests = {test}
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
