@@ -100,7 +100,7 @@ class Client(BaseClient):
         events.extend(current_items)
 
         while (next_link := response.get('nextLink')) and len(events) < limit:
-            response = self.http_request(method=method, params=params, headers=headers, next_link=next_link)
+            response = self.http_request(method=method, headers=headers, next_link=next_link)
             current_items = response.get('items') or []
             demisto.info(f'Received {current_items=} with {next_link=}')
             events.extend(current_items)
@@ -218,7 +218,8 @@ class Client(BaseClient):
         return self.get_events(
             url_suffix='/search/detections',
             params=params,
-            limit=limit
+            limit=limit,
+            headers={'TMV1-Query': '*', "Authorization": f"Bearer {self.api_key}"}
         )
 
     def get_audit_logs(
@@ -473,9 +474,7 @@ def get_search_detection_logs(
         log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS,
         date_format=date_format
     )
-    search_detection_logs = client.get_search_detection_logs(
-        start_datetime=start_time, end_datetime=end_time, top=limit, limit=limit
-    )
+    search_detection_logs = client.get_search_detection_logs(start_datetime=start_time, top=limit, limit=limit)
     for log in search_detection_logs:
         if event_time := log.get('eventTime'):
             log['eventTime'] = timestamp_to_datestring(timestamp=event_time, date_format=date_format, is_utc=True)
@@ -714,7 +713,7 @@ def main() -> None:
 
     base_url = params.get('url') or 'https://api.xdr.trendmicro.com'
     api_key = params.get('credentials', {}).get('password')
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
     limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_LIMIT
