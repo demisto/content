@@ -7,49 +7,28 @@ contentitemexportablefields:
     packName: Cortex XDR by Palo Alto Networks
     prevname: ""
     toServerVersion: ""
-description: "This playbook investigates a “Possible External RDP Brute Force” XDR
-  Alert by gathering user, IP, and hostname information, and investigating if the
-  following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3
-  \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related
-  to campaign - IP address is related to campaign, based on TIM module\n-  Hunting
-  results - the hunt for indicators related to the source IP and the related campaign
-  returned results\n-  XDR Alert search - XDR Alerts that related to the same username
-  and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were
-  found.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input
-  allows you to select a specific element that, if identified as suspicious,  the
-  investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict
-  -  Each suspicious element is being added to an array called \"Suspicious Elements\",
-  which is used to count potential security threats. The array size will be compared
-  to a final threshold. If the size is greater than or equal to the threshold, the
-  investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement
-  - The \"UserEngagementThreshold\" input allows you to set the number of suspicious
-  elements that trigger user engagement. When this threshold is met, an email will
-  be sent to the user and their manager asking for authorization of RDP activity.
-  If the RDP activity is not authorized by the user, the investigation's final verdict
-  will be deemed a \"True Positive\".\n"
-id: 9abe05a7-c98a-4fc8-82e2-459230df4191
+description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
+id: Cortex XDR - Possible External RDP Brute-Force CTF
 inputs:
 - description: RDP connection username.
   key: Username
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Source external IP address.
   key: ExternalIP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: Set this value to "true" to enable auto remediation (IP Block and User
-    Block).
+- description: Set this value to "true" to enable auto remediation (IP Block and User Block).
   key: AutoRemediation
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "false"
-- description: The threshold number of suspicious elements required to determine a
-    'True Positive' verdict.
+- description: The threshold number of suspicious elements required to determine a 'True Positive' verdict.
   key: FinalThreshold
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "2"
@@ -63,7 +42,7 @@ inputs:
 
     NOTE: You can read about the meaning of every element in the playbook description.
   key: CriticalElement
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -71,45 +50,44 @@ inputs:
 
     NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
   key: UserEngagementThreshold
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "false"
 - description: RDP connection destination hostname.
   key: Hostname
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: RDP connection destination endpoint ID.
   key: EndpointID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Alert name.
   key: Alert_Name
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Alert description.
   key: AlertDescription
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Source external IP country.
   key: Country
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: Set this value to "true" to enable endpoint isolation in case of a
-    true positive.
+- description: Set this value to "true" to enable endpoint isolation in case of a true positive.
   key: IsolateEndpoint
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "false"
 - description: The SOC email address to use for the user engagement section.
   key: SOCEmailAddress
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: Cortex XDR - Possible External RDP Brute-Force CTF
@@ -335,8 +313,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if user engagement is needed, based on UserEngagementThreshold
-        input.
+      description: Check if user engagement is needed, based on UserEngagementThreshold input.
       id: fa3c7921-d9c6-4d43-8c37-2bb39ba9f679
       iscommand: false
       name: Communicate With User?
@@ -382,7 +359,7 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: |-
           Hello,
@@ -765,8 +742,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Hunt for indicators that are related to the RDP Connection external
-        IP.
+      description: Hunt for indicators that are related to the RDP Connection external IP.
       id: c8b84676-d085-4424-84e7-806522185c01
       iscommand: false
       name: Has related Indicators to hunt?
@@ -818,9 +794,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: "This playbook enables threat hunting for IOCs in your enterprise.
-        It currently supports the following integrations: \n- Splunk\n- Qradar\n-
-        Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
       id: 264737a7-d382-4445-887b-f205ad7f02ba
       iscommand: false
       name: Threat Hunting - Generic
@@ -1122,17 +1096,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "This playbook creating an array called \"Suspicious Elements\",
-        which is used to count potential security threats. The following elements
-        can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n-
-        \"Source geolocation\" - Connection from unusual country \n-  Related to campaign
-        - IP address related to campaign, based on TIM module\n-  Hunting results
-        - hunt for indicators related to the source IP and the related campaign returned
-        results\n-  XDR Alert search -XDR Alerts related to the same username and
-        endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nThe
-        array will then be outputted and its size will be compared to a final threshold.
-        If the size is greater than or equal to the threshold, the investigation's
-        final verdict will be deemed a \"True Positive.\""
+      description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
       id: 807a9914-b953-4fcb-80a2-c073a311a22a
       iscommand: false
       name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
@@ -1347,7 +1311,7 @@ tasks:
       id: 0fbe47ca-8a90-4b31-853c-675c617e7b4e
       iscommand: false
       name: Cortex XDR - Get entity alerts by MITRE tactics CTF
-      playbookId: 973e45d6-ffa6-4c85-8d80-944bb7ac6afd
+      playbookId: Cortex XDR - Get entity alerts by MITRE tactics CTF
       type: playbook
       version: -1
     taskid: 0fbe47ca-8a90-4b31-853c-675c617e7b4e

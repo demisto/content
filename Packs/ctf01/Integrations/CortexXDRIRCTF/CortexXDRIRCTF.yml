@@ -1,7 +1,6 @@
 commonfields:
   id: Cortex XDR - IR CTF
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Cortex XDR - IR CTF
 display: Cortex XDR - IR CTF
 category: Endpoint
@@ -2494,6 +2493,12 @@ script:
     - name: hostname
       description: The endpoint host name.
       isArray: true
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     outputs:
     - contextPath: Endpoint.Hostname
       description: The endpoint hostname.
@@ -3125,4 +3130,6 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-sourcemoduleid: Cortex XDR - IR
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

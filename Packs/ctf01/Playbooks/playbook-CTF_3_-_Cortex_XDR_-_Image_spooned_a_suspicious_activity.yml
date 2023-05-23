@@ -1,17 +1,9 @@
 contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: 4.10.41
-    packID: ""
-    packName: Cortex XDR by Palo Alto Networks
-    prevname: ""
-    toServerVersion: ""
-id: 7c46ad29-3bb3-404e-84e4-16812150dd24
+  contentitemfields: {}
+id: 'CTF 3 - Cortex XDR - Image spooned a suspicious activity'
 inputs: []
-name: 'CTF 3 - Cortex XDR - Image spooned a suspicious activity '
+name: 'CTF 3 - Cortex XDR - Image spooned a suspicious activity'
 outputs: []
-sourceplaybookid: CTF 3 - Image spooned a suspicious activity
 starttaskid: "0"
 tasks:
   "0":
@@ -33,6 +25,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 55f2d7f4-a8b2-457e-8bf4-e9256de21a0e
     timertriggers: []
     type: start
@@ -161,6 +154,7 @@ tasks:
       name: Enrichmnet
       type: title
       version: -1
+      description: ''
     taskid: 64f89a11-fc58-4d2b-89de-ffa7e67df36e
     timertriggers: []
     type: title
@@ -191,6 +185,7 @@ tasks:
       name: 'Calculate Severity '
       type: title
       version: -1
+      description: ''
     taskid: a2968bbd-05e9-46f3-85ac-539bf5fa8f0f
     timertriggers: []
     type: title
@@ -294,6 +289,7 @@ tasks:
       name: 'Investigation '
       type: title
       version: -1
+      description: ''
     taskid: e72c7841-588e-4bf8-8ea3-457462b666fa
     timertriggers: []
     type: title
@@ -327,10 +323,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: 'This playbook searches for a specific hash in the supported sandboxes.
-        If the hash is known, the playbook provides a detailed analysis of the sandbox
-        report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire
-        and Joe Sandbox. '
+      description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox. '
       id: d51d1ca8-8cec-4df2-8169-b242c959dcf3
       iscommand: false
       name: Search For Hash In Sandbox - Generic
@@ -362,10 +355,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Seems like SecOps did it again? It seems someone forgot to add
-        all the required items for us to go and check the image… Maybe running Optical
-        Character Recognition (OCR) can help us here?\n\n I remember we had an automation
-        started with !image-ocr-ex.... for such scenario :wink: "
+      description: "Seems like SecOps did it again? It seems someone forgot to add all the required items for us to go and check the image… Maybe running Optical Character Recognition (OCR) can help us here?\n\n I remember we had an automation started with !image-ocr-ex.... for such scenario :wink: "
       id: fffa1f2a-559c-4ae9-8ce2-ad5aaf5c5914
       iscommand: false
       name: Oh, Snap!!! - Where are all the other tasks that we need?
@@ -424,8 +414,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: In order to answer this you will need to run the CTF_3 automation/script
-        with the provided answer
+      description: In order to answer this you will need to run the CTF_3 automation/script with the provided answer
       id: d8abe179-60e4-4f0e-8c8c-517847d83785
       iscommand: false
       name: Soooooo who is the person behind this attack?
@@ -461,6 +450,7 @@ tasks:
       name: Finalizing
       type: title
       version: -1
+      description: ''
     taskid: 22007ab8-216b-4412-803c-ccf30d7a058d
     timertriggers: []
     type: title
@@ -521,11 +511,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Retrieves files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. At least one endpoint ID and one
-        file path are necessary in order to run the command. After running this command,
-        you can use the xdr-action-status-get command with returned action_id, to
-        check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
       id: 1be10ab5-60cd-428f-80a6-6c4a91c64fbe
       iscommand: true
       name: Cortex XDR - Retrieve File
@@ -606,14 +592,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Welcome to the Final CTF -> AKA CTF #3\n\nUse all the knowledge
-        & tools that you have gained from the previous Capture the Flag exercises.
-        \nIn this CTF, you will need to fix errors in the playbook to continue with
-        the challenge.\n\nWhen you have the answer you can complete the CTF by running
-        the automation ‘CTF_3’ in the incident. Then check the answer in the war room.
-        \n\nNote that this CTF is a bit more difficult than the others, but don't
-        give up so quickly -> it's easier than you think.\nWe believe that you can
-        do this!\n\nWhen you are ready -> complete this task to proceed.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/1c8915d79a2dd62593c8d0e7f1a303973e44bbe1/Packs/ctf01/doc_files/do-this.gif)"
+      description: "Welcome to the Final CTF -> AKA CTF #3\n\nUse all the knowledge & tools that you have gained from the previous Capture the Flag exercises. \nIn this CTF, you will need to fix errors in the playbook to continue with the challenge.\n\nWhen you have the answer you can complete the CTF by running the automation ‘CTF_3’ in the incident. Then check the answer in the war room. \n\nNote that this CTF is a bit more difficult than the others, but don't give up so quickly -> it's easier than you think.\nWe believe that you can do this!\n\nWhen you are ready -> complete this task to proceed.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/1c8915d79a2dd62593c8d0e7f1a303973e44bbe1/Packs/ctf01/doc_files/do-this.gif)"
       id: 633bd0fb-8eb4-4525-8af0-855bb1a55d1b
       iscommand: false
       name: 'Welcome to CTF #3'
@@ -642,3 +621,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
+description: 'CTF #3'

@@ -1,94 +1,79 @@
 contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: 6.5.0
-    itemVersion: 4.10.41
-    packID: ""
-    packName: Cortex XDR by Palo Alto Networks
-    prevname: ""
-    toServerVersion: ""
+  contentitemfields: {}
 description: |-
   This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
   Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
-id: 973e45d6-ffa6-4c85-8d80-944bb7ac6afd
+id: Cortex XDR - Get entity alerts by MITRE tactics CTF
 inputs:
-- description: Set to True to hunt for identified alerts with MITRE Reconnaissance
-    techniques.
+- description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
   key: HuntReconnaissanceTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
-- description: Set to True to hunt for identified alerts with MITRE Initial Access
-    techniques.
+- description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
   key: HuntInitialAccessTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
 - description: Set to True to hunt for identified alerts with MITRE Execution techniques.
   key: HuntExecutionTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
 - description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
   key: HuntPersistenceTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
-- description: Set to True to hunt for identified alerts with MITRE Privilege Escalation
-    techniques.
+- description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
   key: HuntPrivilegeEscalationTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
-- description: Set to True to hunt for identified alerts with MITRE Defense Evasion
-    techniques.
+- description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
   key: HuntDefenseEvasionTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
 - description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
   key: HuntDiscoveryTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
-- description: Set to True to hunt for identified alerts with MITRE Lateral Movement
-    techniques.
+- description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
   key: HuntLateralMovementTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
-- description: Set to True to hunt for identified alerts with MITRE Collection techniques
-    .
+- description: Set to True to hunt for identified alerts with MITRE Collection techniques .
   key: HuntCollectionTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
-- description: Set to True to hunt for identified alerts with MITRE Command and Control
-    techniques.
+- description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
   key: HuntCnCTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
 - description: Set to True to hunt for identified alerts with MITRE Impact techniques.
   key: HuntImpactTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "True"
-- description: Set to True to hunt for identified alerts with MITRE Credential Access
-    techniques.
+- description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
   key: HuntCredentialAccessTechniques
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
@@ -99,23 +84,23 @@ inputs:
     * 4 hours
     * 8 days
   key: timeRange
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: 2 hours
 - description: Whether to run all the sub-tasks for Mitre Tactics.
   key: RunAll
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Entity type to search on xdr-get-alerts custom filters.
   key: EntityType
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Entity value.
   key: entityID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: Cortex XDR - Get entity alerts by MITRE tactics CTF
@@ -125,7 +110,6 @@ outputs:
   type: unknown
 - contextPath: ArraySize
   description: Array size.
-sourceplaybookid: Cortex XDR - Get entity alerts by MITRE tactics
 starttaskid: "0"
 tasks:
   "0":
@@ -147,6 +131,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 2e7c6fcb-b000-4bd4-8ab8-5c6f537acfa5
     timertriggers: []
     type: start
@@ -545,6 +530,7 @@ tasks:
       name: Persistence
       type: title
       version: -1
+      description: ''
     taskid: 60a731f8-4d6b-43b6-825d-a1c12c5cff20
     timertriggers: []
     type: title
@@ -598,11 +584,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 8424fd61-7489-4c63-83d7-882676c1dbc9
       iscommand: true
       name: Hunt Persistence techniques
@@ -639,6 +621,7 @@ tasks:
       name: Initial Access
       type: title
       version: -1
+      description: ''
     taskid: ecae67cb-2dd0-4cc4-85b6-39d8d1872678
     timertriggers: []
     type: title
@@ -669,6 +652,7 @@ tasks:
       name: Execution
       type: title
       version: -1
+      description: ''
     taskid: 80c56186-6f82-46e3-81cc-e1f5ca970db2
     timertriggers: []
     type: title
@@ -699,6 +683,7 @@ tasks:
       name: Privilege Escalation
       type: title
       version: -1
+      description: ''
     taskid: b802ec3d-1047-4584-8815-fa53902a49c0
     timertriggers: []
     type: title
@@ -729,6 +714,7 @@ tasks:
       name: Defense Evasion
       type: title
       version: -1
+      description: ''
     taskid: 3d02cd98-8ac1-46d4-8d3b-1e865a6dc674
     timertriggers: []
     type: title
@@ -759,6 +745,7 @@ tasks:
       name: Discovery
       type: title
       version: -1
+      description: ''
     taskid: 867cde89-05a0-42e8-8b82-ffe9b2c928b7
     timertriggers: []
     type: title
@@ -789,6 +776,7 @@ tasks:
       name: Lateral Movement
       type: title
       version: -1
+      description: ''
     taskid: 3a90ced3-1ab4-49fd-8965-a94da7483689
     timertriggers: []
     type: title
@@ -819,6 +807,7 @@ tasks:
       name: Collection
       type: title
       version: -1
+      description: ''
     taskid: 3f6cf6de-b65a-4f9b-86e3-d5b1dbf66a51
     timertriggers: []
     type: title
@@ -941,6 +930,7 @@ tasks:
       name: Command and Control
       type: title
       version: -1
+      description: ''
     taskid: e34844ec-ffe6-4d48-81d9-3798d60bf6ee
     timertriggers: []
     type: title
@@ -971,6 +961,7 @@ tasks:
       name: Impact
       type: title
       version: -1
+      description: ''
     taskid: f3226c98-20fe-48b6-8292-5575a7337fb1
     timertriggers: []
     type: title
@@ -1047,6 +1038,7 @@ tasks:
       name: Reconnaissance
       type: title
       version: -1
+      description: ''
     taskid: b3c85728-d7d1-4f70-876b-dcd6394d3953
     timertriggers: []
     type: title
@@ -1100,11 +1092,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 500daf73-27c2-4aa5-82e1-6367386222a0
       iscommand: true
       name: Hunt Reconnaissance techniques
@@ -1164,11 +1152,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: c0a6dfd9-25f0-473e-8b99-239ff497bdbe
       iscommand: true
       name: Hunt Initial Access techniques
@@ -1228,11 +1212,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: b1257c78-0db4-428a-873e-c3e54d361462
       iscommand: true
       name: Hunt Execution techniques
@@ -1292,11 +1272,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: f62169b0-80f2-4c9e-844b-213ffbe404cc
       iscommand: true
       name: Hunt Privilege Escalation techniques
@@ -1356,11 +1332,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 5d9dd15a-365c-496b-88c5-21d5e1afd31c
       iscommand: true
       name: Hunt Defense Evasion techniques
@@ -1420,11 +1392,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: c34a8ce7-b5b6-484c-82b9-35411adde1fb
       iscommand: true
       name: Hunt Discovery techniques
@@ -1484,11 +1452,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 81bce8d5-789d-4f47-8cc0-cf31f2706064
       iscommand: true
       name: Hunt Lateral Movement techniques
@@ -1546,11 +1510,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: de7e3679-97fd-4ac4-8a0b-0b3e38ccf3a8
       iscommand: true
       name: Hunt Collection techniques
@@ -1610,11 +1570,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 80d5f96e-ac0f-4140-86a3-0a7d71c45633
       iscommand: true
       name: Hunt Command and Control techniques
@@ -1672,11 +1628,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 3a89b503-d9d5-470b-8b08-833b69b3c3c5
       iscommand: true
       name: Hunt Impact techniques
@@ -1713,6 +1665,7 @@ tasks:
       name: Hunt by MITRE Tactics
       type: title
       version: -1
+      description: ''
     taskid: d126a4c8-162c-4c28-8d70-449f593d1230
     timertriggers: []
     type: title
@@ -1740,6 +1693,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 591149d8-6eba-46cb-874b-bb83eea0c6fe
     timertriggers: []
     type: title
@@ -1945,6 +1899,7 @@ tasks:
       name: Credential Access
       type: title
       version: -1
+      description: ''
     taskid: d84fcb11-cf36-4538-8013-a5448145d330
     timertriggers: []
     type: title
@@ -1998,11 +1953,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Returns a list of alerts and their metadata, which you can filter
-        by built-in arguments or use the custom_filter to input a JSON filter object.
-        \nMultiple filter arguments will be concatenated using the AND operator, while
-        arguments that support a comma-separated list of values will use an OR operator
-        between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: b4352aac-73fe-46a6-8f26-f4618f8ce39e
       iscommand: true
       name: Hunt Credential Access techniques
@@ -2077,3 +2028,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
