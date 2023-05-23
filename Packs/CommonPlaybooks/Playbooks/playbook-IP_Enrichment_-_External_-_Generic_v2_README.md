@@ -5,24 +5,28 @@ Enrich IP addresses using one or more integrations.
 - Separate internal and external addresses.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* VirusTotal - Private API
+
+This playbook does not use any integrations.
 
 ### Scripts
+
 * IsIPInRanges
 * IPToHost
 
 ### Commands
+
 * ip
-* threat-crowd-ip
-* vt-private-get-ip-report
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -33,6 +37,7 @@ This playbook does not use any sub-playbooks.
 | UseReputationCommand | Define if you would like to use the \!IP command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -47,5 +52,7 @@ This playbook does not use any sub-playbooks.
 | Endpoint.Domain | Endpoint domain name. | string |
 
 ## Playbook Image
+
 ---
+
 ![IP Enrichment - External - Generic v2](../doc_files/IP_Enrichment_-_External_-_Generic_v2.png)
