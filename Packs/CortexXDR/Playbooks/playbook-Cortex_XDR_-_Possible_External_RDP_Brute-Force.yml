@@ -1220,7 +1220,7 @@ tasks:
         complex:
           root: inputs.Username
       timeRange:
-        simple: 30 days
+        simple: 6 hours
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1293,7 +1293,7 @@ tasks:
         complex:
           root: inputs.Hostname
       timeRange:
-        simple: 30 days
+        simple: 6 hours
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -2894,7 +2894,7 @@ inputs:
   playbookInputQuery:
 - key: FinalThreshold
   value:
-    simple: "2"
+    simple: "3"
   required: false
   description: The threshold number of suspicious elements required to determine a 'True Positive' verdict.
   playbookInputQuery:
@@ -2913,7 +2913,7 @@ inputs:
   playbookInputQuery:
 - key: UserEngagementThreshold
   value:
-    simple: "false"
+    simple: "2"
   required: false
   description: |-
     The threshold number of suspicious elements that will trigger a user engagement. Set 0 to disable user engagement.
