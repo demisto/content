@@ -190,6 +190,13 @@ class Client(BaseClient):
         return self.send_request(path='scan', method='post', body=body)
 
     def create_scan_body(self, args):
+        """
+        Construct the body for the create_scan request.
+        Args:
+            args (dict): The demisto.args() object.
+        Returns:
+            Dict: The request body.
+        """
         create_scan_mapping_dict = {
             'description': 'description',
             'dhcpTracking': 'dhcp_tracking',
@@ -574,7 +581,7 @@ class Client(BaseClient):
         path = 'query/' + str(query_id)
         self.send_request(path, method='delete')
 
-    def get_analysis(self, query=None, scan_results_id=None, args={}):
+    def get_analysis(self, query=None, scan_results_id=None, args={}, calling_command="get_vulnerability_command"):
         """
         Send the request for get_vulnerability_command and get_vulnerabilities.
         Args:
@@ -582,6 +589,7 @@ class Client(BaseClient):
                           or as an ID of an existing query (as in get_vulnerabilities).
             scan_results_id (None or str): str if received from get_vulnerabilities, otherwise will be part of args.
             args (dict): Either an empty dict if passed from get_vulnerabilities, otherwise, the demisto.results() object.
+            calling_command (str): The command that call this function.
         Returns:
             Dict: The response.
         """
@@ -589,7 +597,8 @@ class Client(BaseClient):
 
         return self.send_request(path='analysis', method='post', body=body)
 
-    def create_get_vulnerability_request_body(self, args={}, query=None, scan_results_id=None):
+    def create_get_vulnerability_request_body(self, args={}, query=None, scan_results_id=None,
+                                              calling_command="get_vulnerability_command"):
         """
         Create the body for the request made in get_analysis.
         Args:
@@ -597,34 +606,43 @@ class Client(BaseClient):
                           or as an ID of an existing query (as in get_vulnerabilities).
             scan_results_id (None or str): str if received from get_vulnerabilities, otherwise will be part of args.
             args (dict): Either an empty dict if passed from get_vulnerabilities, otherwise, the demisto.results() object.
+            calling_command (str): The command that call this function.
         Returns:
             Dict: The prepared request body.
         """
         vuln_id = args.get('vulnerability_id')
         scan_results_id = scan_results_id or args.get('scan_results_id')
-        sort_field = args.get('sort_field')
+        sort_field = args.get('sort_field', 'severity')
         query_id = query or args.get('query_id')
         if not isinstance(query_id, dict):
             query = {'id': query_id}
-        sort_direction = args.get('sort_direction')
+        else:
+            query = query_id
+        sort_direction = args.get('sort_direction', "ASC")
         source_type = args.get('source_type', "individual")
         page = int(args.get('page', '0'))
         limit = int(args.get('limit', '50'))
         if limit > 200:
             limit = 200
         body = {
-            'tool': 'vulndetails',
             'type': 'vuln',
-            'startOffset': page,  # Lower bound for the results list (must be specified)
-            'endOffset': page + limit,  # Upper bound for the results list (must be specified)
-            'sortField': sort_field,
-            'sortDir': sort_direction,
-            'sourceType': source_type,
             'view': 'all',
+            'sourceType': source_type,
         }
+        if calling_command == "get_vulnerability_command":
+            body.update({
+                'startOffset': page,  # Lower bound for the results list (must be specified)
+                'endOffset': page + limit,  # Upper bound for the results list (must be specified)
+                'sortField': sort_field,
+                'sortDir': sort_direction,
+                'tool': 'vulndetails',
+            })
         if source_type == 'individual':
             if scan_results_id:
                 body['scanID'] = scan_results_id
+            else:
+                raise DemistoException("When choosing source_type = individual - scan_results_id must be provided.")
+            if calling_command == "get_vulnerability_command":
                 vuln_filter = [{
                     'filterName': 'pluginID',
                     'operator': '=',
@@ -633,8 +651,6 @@ class Client(BaseClient):
                 query["filters"] = vuln_filter
                 query["tool"] = 'vulndetails'
                 query["type"] = 'vuln'
-            else:
-                raise DemistoException("When choosing source_type = individual - scan_results_id must be provided.")
         else:
             body['sourceType'] = source_type
             if not query_id:
@@ -711,18 +727,7 @@ class Client(BaseClient):
         Returns:
             Dict: The response.
         """
-        path = 'repository/' + repo + '/' if repo else ''
-        path += 'deviceInfo'
-        params = {
-            'fields': 'ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,'
-                      'severityMedium,severityHigh,severityCritical'
-        }
-        if uuid:
-            params['uuid'] = uuid
-        else:
-            params['ip'] = ip
-            if dns_name:
-                params['dnsName'] = dns_name
+        path, params = create_get_device_request_params_and_path(uuid, ip, dns_name, repo)
 
         return self.send_request(path, params=params)
 
@@ -839,14 +844,41 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def capitalize_first_letter(str):
-    if str == 'id':
-        return 'ID'
+def create_get_device_request_params_and_path(uuid: str, ip: str, dns_name: str, repo: str):
+    """
+    Construct the url suffix and params dict for get_device request.
+    Args:
+        uuid (str): UUID extracted from args.
+        ip (str): IP extracted from args.
+        dns_name (str): Dns extracted from args.
+        repo (str): Repo name extracted from args.
+    Returns:
+        str: The url suffix for the request.
+        Dict: The params for the request.
+    """
+    path = f'repository/{repo}/' if repo else ''
+    path += 'deviceInfo'
+    params = {
+        'fields': 'ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,'
+                  'severityMedium,severityHigh,severityCritical'
+    }
+    if uuid:
+        params['uuid'] = uuid
     else:
-        return str[:1].upper() + str[1:]
+        params['ip'] = ip
+        if dns_name:
+            params['dnsName'] = dns_name
+    return path, params
 
 
 def create_policy_request_body(args: Dict[str, Any]):
+    """
+    Construct the body for create_policy request.
+    Args:
+        args (Dict): The demisto.args() object.
+    Returns:
+        Dict: The body for the request.
+    """
     body = {
         "name": args.get("policy_name"),
         "description": args.get("policy_description"),
@@ -1738,7 +1770,8 @@ def get_vulnerabilities(client: Client, scan_results_id):
     if not query or 'response' not in query:
         return 'Could not get vulnerabilites query'
 
-    analysis = client.get_analysis(query=query['response']['id'], scan_results_id=scan_results_id)
+    analysis = client.get_analysis(query=query['response']['id'], scan_results_id=scan_results_id,
+                                   calling_command="get_vulnerabilities")
 
     client.delete_query(query.get('response', {}).get('id'))
 
@@ -2748,12 +2781,17 @@ def list_queries(client: Client, type):
                 "Query  Name": usable_query.get("name"),
                 "Query Description": usable_query.get("description"),
                 "Query Filters": usable_query.get("filters"),
-                "Query Usable": "True"
+                "Query Usable": "True",
+                "Query Manageable": "False"
             })
         else:
             for mapped_query in mapped_queries:
                 if query_id == mapped_query["Query Id"]:
                     mapped_query["Query Usable"] = "True"
+
+    for mapped_query in mapped_queries:
+        if not mapped_query.get("Query Usable"):
+            mapped_query["Query Usable"] = "False"
 
     mapped_queries.extend(mapped_usable_queries)
     headers = ["Query Id", "Query  Name", "Query Description", "Query Filters", "Query Manageable", "Query Usable"]

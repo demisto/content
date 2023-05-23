@@ -278,10 +278,116 @@ def test_create_scan_body(mocker, test_case):
         - Case 2: Should set type to be policy, configure scan_name, create a list of credentials id dicts,
                   calculate max_scan_time, and include time_zone, start_time, repeat_rule_freq, repeat_rule_interval,
                   and repeat_rule_by_day under schedule.
-        - Case 3: Should set type to be plugin, create a zone dict, a list of report ids dicts and set max_scan_time to 3600.                  
+        - Case 3: Should set type to be plugin, create a zone dict, a list of report ids dicts and set max_scan_time to 3600.
     """
     test_data = load_json("./test_data/test_create_scan_body.json").get(test_case, {})
     args = test_data.get('args')
     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response', {}))
     body = client_mocker.create_scan_body(args)
     assert test_data.get('expected_body') == body
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3"])
+def test_create_get_device_request_params_and_path(test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          function args (uuid, ip, dns_name, repo), expected path and params, and expected body.
+        - Case 1: repo, uuid and dns_name.
+        - Case 2: ip.
+        - Case 3: ip and dns_name.
+
+        When:
+        - Running create_get_device_request_params_and_path.
+
+        Then:
+        - Ensure that the body was created correctly.
+        - Case 1: Path should include repo, params should include uuid and ignore dns_name.
+        - Case 2: Path should be deviceInfo, params should include ip.
+        - Case 3: Path should be deviceInfo, params should include ip and dns_name.
+    """
+    test_data = load_json("./test_data/test_create_get_device_request_params_and_path.json").get(test_case, {})
+    uuid = test_data.get('uuid')
+    ip = test_data.get('ip')
+    dns_name = test_data.get('dns_name')
+    repo = test_data.get('repo')
+    path, params = create_get_device_request_params_and_path(uuid, ip, dns_name, repo)
+    assert test_data.get('expected_path') == path
+    assert test_data.get('expected_params') == params
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3"])
+def test_create_get_vulnerability_request_body(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, query, scan_results_id, calling_command, and expected body.
+        - Case 1: Args with scan_results_id, vulnerability_id, sort_field, and sort_direction.
+                  Empty query, scan_results_id, and calling_command.
+        - Case 2: Args with scan_results_id, vulnerability_id, query_id, source_type and limit higher than 200.
+                  Empty query, scan_results_id, and calling_command.
+        - Case 3: Empty args, filled query and scan_results_id, and calling_command = get_vulnerabilities.
+
+        When:
+        - Running create_get_vulnerability_request_body.
+
+        Then:
+        - Ensure that the body was created correctly.
+        - Case 1: Should complete all the none-given fields, count source_type as individual, and add related fields.
+        - Case 2: Should lower limit to 200, ignore scan_results_id and vulnerability_id.
+        - Case 3: Shouldn't handle any filtering fields, only create the basic body.
+    """
+    test_data = load_json("./test_data/test_create_get_vulnerability_request_body.json").get(test_case, {})
+    args = test_data.get('args')
+    query = test_data.get('query')
+    scan_results_id = test_data.get('scan_results_id')
+    calling_command = test_data.get("calling_command", "get_vulnerability_command")
+    body = client_mocker.create_get_vulnerability_request_body(args, query, scan_results_id, calling_command)
+    assert test_data.get('expected_body') == body
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_query(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          query_id, response mock, expected hr, and expected_ec.
+        - Case 1: response mock that misses filters section
+
+        When:
+        - Running get_query.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should exclude the filters section from the HR but not from the EC.
+    """
+    test_data = load_json("./test_data/test_get_query.json").get(test_case, {})
+    query_id = test_data.get('query_id')
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    _, hr, query = get_query(client_mocker, query_id)
+    assert test_data.get('expected_hr') == hr
+    assert test_data.get('expected_ec') == query
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_list_queries(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          response mock, expected hr, and expected_ec.
+        - Case 1: response mock with 2 manageable and 2 usable queries, one of the queries appears in both lists,
+                  some queries with filters and some don't.
+
+        When:
+        - Running list_queries.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should Include the filters section in the HR, 
+        should have "True" in both manageable and usable columns for the mutual query and fill False in the none-mutual queries.
+    """
+    test_data = load_json("./test_data/test_list_queries.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    _, hr, query = list_queries(client_mocker, "")
+    assert test_data.get('expected_hr') == hr
+    assert test_data.get('expected_ec') == query
