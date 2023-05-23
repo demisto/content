@@ -65,11 +65,11 @@ class Client(BaseClient):
         demisto.info(f'Sending the http request with {url=}, {params=}')
 
         return self._http_request(
-                method=method,
-                full_url=url,
-                params=params,
-                headers=request_headers,
-            )
+            method=method,
+            full_url=url,
+            params=params,
+            headers=request_headers,
+        )
 
     def get_events(
         self,
@@ -92,7 +92,7 @@ class Client(BaseClient):
         Returns:
             List[Dict]: a list of the requested logs.
         """
-        events = []
+        events: List[Dict] = []
 
         response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
         current_items = response.get('items') or []
@@ -292,24 +292,29 @@ def get_datetime_range(
     now = get_current_time()
 
     if last_run_time:
-        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        last_run_time_datetime = dateparser.parse(  # type: ignore[assignment]
+            last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
+        )
     else:
-        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        last_run_time_datetime = dateparser.parse(  # type: ignore[no-redef]
+            first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
+        )
 
-    last_run_time_before_parse = last_run_time.strftime(date_format)
+    last_run_time_before_parse = last_run_time_datetime.strftime(date_format)  # type: ignore[union-attr]
     demisto.info(f'{last_run_time_before_parse=}')
 
     if log_type_time_field_name == LastRunLogsTimeFields.AUDIT:
-        if now - last_run_time > timedelta(days=180):
+        if now - last_run_time_datetime > timedelta(days=180):
             # cannot retrieve audit logs that are older than 180 days.
-            last_run_time = dateparser.parse(
-                '180 days ago', settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
+            last_run_time_datetime = dateparser.parse(  # type: ignore[assignment]
+                '180 days ago',
+                settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
             )
 
     if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
-        one_year_from_last_run_time = last_run_time + timedelta(days=365)
+        one_year_from_last_run_time = last_run_time_datetime + timedelta(days=365)  # type: ignore[operator]
         if one_year_from_last_run_time > now:
             end_time_datetime = now
         else:
@@ -317,7 +322,9 @@ def get_datetime_range(
     else:
         end_time_datetime = now
 
-    start_time, end_time = last_run_time.strftime(date_format), end_time_datetime.strftime(date_format)
+    start_time, end_time = (
+        last_run_time_datetime.strftime(date_format), end_time_datetime.strftime(date_format)  # type: ignore[union-attr]
+    )
     demisto.info(f'{start_time=} and {end_time=} for {log_type_time_field_name=}')
     return start_time, end_time
 
@@ -618,7 +625,11 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
     to_time = args.get('to_time')
 
     def parse_workbench_logs() -> List[Dict]:
-        workbench_logs = client.get_workbench_logs(start_datetime=from_time, end_datetime=to_time, limit=limit)
+        workbench_logs = client.get_workbench_logs(
+            start_datetime=from_time,  # type: ignore[arg-type]
+            end_datetime=to_time,
+            limit=limit
+        )
         return [
             {
                 'Id': log.get('id'),
@@ -629,7 +640,10 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
 
     def parse_observed_attack_techniques_logs() -> List[Dict]:
         observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
-            detected_start_datetime=from_time, detected_end_datetime=to_time, top=limit, limit=limit
+            detected_start_datetime=from_time,  # type: ignore[arg-type]
+            detected_end_datetime=to_time,  # type: ignore[arg-type]
+            top=limit,
+            limit=limit
         )
         return [
             {
@@ -641,7 +655,10 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
 
     def parse_search_detection_logs() -> List[Dict]:
         search_detection_logs = client.get_search_detection_logs(
-            start_datetime=from_time, end_datetime=to_time, top=limit, limit=limit
+            start_datetime=from_time,  # type: ignore[arg-type]
+            end_datetime=to_time,
+            top=limit,
+            limit=limit
         )
         return [
             {
@@ -653,7 +670,9 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
 
     def parse_audit_logs() -> List[Dict]:
         audit_logs = client.get_audit_logs(
-            start_datetime=from_time, end_datetime=to_time, limit=limit
+            start_datetime=from_time,  # type: ignore[arg-type]
+            end_datetime=to_time,
+            limit=limit
         )
         return [
             {
@@ -665,7 +684,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
 
     if log_type == 'all':
         events = parse_workbench_logs() + parse_observed_attack_techniques_logs() + \
-                 parse_search_detection_logs() + parse_audit_logs()
+            parse_search_detection_logs() + parse_audit_logs()
     else:
         log_type_to_parse_func = {
             'audit_logs': parse_audit_logs,

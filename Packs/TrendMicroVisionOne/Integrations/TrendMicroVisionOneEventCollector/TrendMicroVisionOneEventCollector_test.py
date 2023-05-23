@@ -71,9 +71,9 @@ def create_logs_mocks(
     fetched_amount_of_events += len(logs)
 
     return {
-            'items': logs,
-            'nextLink': f'{BASE_URL}/v3.0/{url_suffix}?top={top}&fetchedAmountOfEvents={fetched_amount_of_events}'
-        }
+        'items': logs,
+        'nextLink': f'{BASE_URL}/v3.0/{url_suffix}?top={top}&fetchedAmountOfEvents={fetched_amount_of_events}'
+    }
 
 
 def _http_request_side_effect_decorator(
