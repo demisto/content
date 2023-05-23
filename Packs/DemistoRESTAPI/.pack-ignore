@@ -11,7 +11,7 @@ ignore=SC105
 ignore=SC105
 
 [file:README.md]
-ignore=RM106,RM110
+ignore=RM106
 
 [file:script-DemistoUploadFileToIncident_README.md]
 ignore=RM106
@@ -20,4 +20,4 @@ ignore=RM106
 ignore=SC106
 
 [file:CoreRESTAPI.yml]
-ignore=IN139
+ignore=IN139,RM110
