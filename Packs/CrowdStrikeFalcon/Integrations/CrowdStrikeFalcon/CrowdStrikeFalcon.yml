@@ -3084,10 +3084,10 @@ script:
       description: Indicate who created the rule.
       type: String
   - arguments:
-      - description: A comma-separated list of exclusion IDs to delete.
-        name: ids
-        required: true
-        isArray: true
+    - description: A comma-separated list of exclusion IDs to delete.
+      name: ids
+      required: true
+      isArray: true
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
@@ -3384,10 +3384,10 @@ script:
       description: Indicate who created the rule.
       type: String
   - arguments:
-      - description: A comma-separated list of exclusion IDs to delete.
-        name: ids
-        required: true
-        isArray: true
+    - description: A comma-separated list of exclusion IDs to delete.
+      name: ids
+      required: true
+      isArray: true
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
