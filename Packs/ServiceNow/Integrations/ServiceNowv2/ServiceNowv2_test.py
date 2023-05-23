@@ -1306,7 +1306,7 @@ def test_assigned_to_field_user_exists():
     """
 
     class Client:
-        def get(self, table, value):
+        def get(self, table, value, no_record_found_res):
             return USER_RESPONSE
 
     assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
