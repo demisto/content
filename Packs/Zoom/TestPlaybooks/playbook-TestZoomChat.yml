@@ -1,15 +1,15 @@
 id: 7e010435-f76c-4044-8422-c14e5eab1b5e
-version: 3
+version: 29
 vcShouldKeepItemLegacyProdMachine: false
 name: Zoom_Chat_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 368aee83-00e0-4724-890d-dcc386c2c167
+    taskid: b228b22f-ea61-4533-85df-6cf137315b29
     type: start
     task:
-      id: 368aee83-00e0-4724-890d-dcc386c2c167
+      id: b228b22f-ea61-4533-85df-6cf137315b29
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ca948354-c949-49ed-858c-a0bfafd7264f
+    taskid: 92df7453-b189-40ca-89ec-7416b5fea4a6
     type: regular
     task:
-      id: ca948354-c949-49ed-858c-a0bfafd7264f
+      id: 92df7453-b189-40ca-89ec-7416b5fea4a6
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -47,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "43"
+      - "57"
     scriptarguments:
       all:
         simple: "yes"
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 66a21905-f7a3-4a5b-8dac-ccf3aeec379e
+    taskid: 21b861ef-9d7f-4037-8724-9e858ba78d1b
     type: regular
     task:
-      id: 66a21905-f7a3-4a5b-8dac-ccf3aeec379e
+      id: 21b861ef-9d7f-4037-8724-9e858ba78d1b
       version: -1
       name: Verify channel created
       description: List the existing channels
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1595
         }
       }
     note: false
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 3cbb5f01-7a70-4f19-8a5b-7dfddb84c07f
+    taskid: fb86be7c-b2a9-4509-8ea5-b341c45c9212
     type: regular
     task:
-      id: 3cbb5f01-7a70-4f19-8a5b-7dfddb84c07f
+      id: fb86be7c-b2a9-4509-8ea5-b341c45c9212
       version: -1
       name: Create new channel
       description: Creates a channel for a user
@@ -130,7 +130,18 @@ tasks:
       channel_type:
         simple: Public channel
       member_emails:
-        simple: mock@moker.com
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: Usetobe
+          accessor: email
       new_members_can_see_prev_msgs:
         simple: "true"
       posting_permissions:
@@ -138,14 +149,25 @@ tasks:
       retry-count:
         simple: "1"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1420
         }
       }
     note: false
@@ -157,10 +179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 71dc2d45-66c2-40f2-8a35-2cede43ba254
+    taskid: 50c3e517-7d13-4264-8584-7c552bc2b29f
     type: regular
     task:
-      id: 71dc2d45-66c2-40f2-8a35-2cede43ba254
+      id: 50c3e517-7d13-4264-8584-7c552bc2b29f
       version: -1
       name: Invite user to channel
       description: Invites members that are in a user's contact list to a channel.
@@ -183,13 +205,35 @@ tasks:
                 value:
                   simple: "0"
       members:
-        simple: mock@moker.com
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: email
       retry-count:
         simple: "1"
       retry-interval:
         simple: "5"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -197,7 +241,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1450
+          "y": 1770
         }
       }
     note: false
@@ -209,10 +253,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 4ed699cb-4631-4573-843f-6c5a7742e9ba
+    taskid: 3d70a19c-1e39-49d3-8cda-4e293e015189
     type: regular
     task:
-      id: 4ed699cb-4631-4573-843f-6c5a7742e9ba
+      id: 3d70a19c-1e39-49d3-8cda-4e293e015189
       version: -1
       name: Verify user added to channel ${Zoom.Channel.name}
       description: List the existing channels
@@ -237,14 +281,25 @@ tasks:
       retry-count:
         simple: "1"
       user_id:
-        simple: Pq0T1uVlRqmi_P_-Cg2UGQ
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1625
+          "y": 1945
         }
       }
     note: false
@@ -256,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 932fab1c-dee0-4080-88d4-7267bc43e343
+    taskid: 1bc8602b-7886-4db6-81ed-3613ff837165
     type: regular
     task:
-      id: 932fab1c-dee0-4080-88d4-7267bc43e343
+      id: 1bc8602b-7886-4db6-81ed-3613ff837165
       version: -1
       name: Delete created channel
       description: Deletes a specific Zoom channel
@@ -279,7 +334,18 @@ tasks:
                 value:
                   simple: "0"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -287,7 +353,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4075
+          "y": 4395
         }
       }
     note: false
@@ -299,10 +365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: fe3e377e-702f-49b9-8e33-88cd0f557664
+    taskid: e3694e14-519c-4f15-8d3f-ea67f2f5d89d
     type: regular
     task:
-      id: fe3e377e-702f-49b9-8e33-88cd0f557664
+      id: e3694e14-519c-4f15-8d3f-ea67f2f5d89d
       version: -1
       name: Remove user from channel
       description: Removes a member from a chat channel. A channel can have one or
@@ -326,20 +392,42 @@ tasks:
                 value:
                   simple: "0"
       member_id:
-        simple: mock@moker.com
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: email
       retry-count:
         simple: "1"
       retry-interval:
         simple: "5"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 2120
         }
       }
     note: false
@@ -351,10 +439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: c730cf1b-cfca-4216-83d1-a390bac2c739
+    taskid: f67fffb9-9b8a-4f6b-856b-a16c2cf5008f
     type: regular
     task:
-      id: c730cf1b-cfca-4216-83d1-a390bac2c739
+      id: f67fffb9-9b8a-4f6b-856b-a16c2cf5008f
       version: -1
       name: list user channels
       description: List the existing channels
@@ -369,14 +457,25 @@ tasks:
       retry-count:
         simple: "1"
       user_id:
-        simple: Pq0T1uVlRqmi_P_-Cg2UGQ
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1975
+          "y": 2295
         }
       }
     note: false
@@ -388,10 +487,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 98e44214-7858-48b1-8e19-9acf4c3418f1
+    taskid: bd0c7472-2857-47e8-83c0-6573bda2b8bf
     type: condition
     task:
-      id: 98e44214-7858-48b1-8e19-9acf4c3418f1
+      id: bd0c7472-2857-47e8-83c0-6573bda2b8bf
       version: -1
       name: verify user was removed from channel
       type: condition
@@ -409,7 +508,7 @@ tasks:
       - - operator: notInList
           left:
             value:
-              simple: Zoom.Channel.channels.channels.name
+              simple: Zoom.Channel.channels.name
             iscontext: true
           right:
             value:
@@ -419,7 +518,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2150
+          "y": 2470
         }
       }
     note: false
@@ -431,10 +530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: f209fc0b-8827-4d2d-8f9d-169e65383503
+    taskid: 2c97f41d-abf8-4961-8129-0c90b9b8a5e6
     type: regular
     task:
-      id: f209fc0b-8827-4d2d-8f9d-169e65383503
+      id: 2c97f41d-abf8-4961-8129-0c90b9b8a5e6
       version: -1
       name: Update channel permissions
       description: Update an existing channel in zoom account
@@ -459,14 +558,25 @@ tasks:
       new_members_can_see_prev_msgs:
         simple: "false"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2325
+          "y": 2645
         }
       }
     note: false
@@ -478,10 +588,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: cfc381eb-379e-4c52-8fb7-bd382e5d7360
+    taskid: 1a83fec9-95f9-40a2-879f-92041eee8694
     type: regular
     task:
-      id: cfc381eb-379e-4c52-8fb7-bd382e5d7360
+      id: 1a83fec9-95f9-40a2-879f-92041eee8694
       version: -1
       name: Get all public channels
       description: List the existing channels
@@ -498,7 +608,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 545
         }
       }
     note: false
@@ -510,10 +620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: f96c04a2-84b0-4895-8c78-e9e1455bdd45
+    taskid: d75e03c6-c4ee-408e-80c7-1f324ad2d487
     type: condition
     task:
-      id: f96c04a2-84b0-4895-8c78-e9e1455bdd45
+      id: d75e03c6-c4ee-408e-80c7-1f324ad2d487
       version: -1
       name: Check if test channel exist
       type: condition
@@ -541,7 +651,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 720
         }
       }
     note: false
@@ -553,10 +663,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 5dc5f2ec-a315-40b0-89c7-06e5d671c050
+    taskid: a1a7fc29-7059-40d4-8990-203397b72a59
     type: regular
     task:
-      id: 5dc5f2ec-a315-40b0-89c7-06e5d671c050
+      id: a1a7fc29-7059-40d4-8990-203397b72a59
       version: -1
       name: Delete Channel
       description: Deletes a specific Zoom channel
@@ -582,14 +692,25 @@ tasks:
                   simple: PlaybookTestChannel
           accessor: id
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 750
+          "y": 895
         }
       }
     note: false
@@ -601,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 76bd4baa-68a3-4276-8b69-6af891f04276
+    taskid: a4065d87-90ee-476e-8450-e97b9920572c
     type: regular
     task:
-      id: 76bd4baa-68a3-4276-8b69-6af891f04276
+      id: a4065d87-90ee-476e-8450-e97b9920572c
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -613,7 +734,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "58"
     scriptarguments:
       all:
         simple: "yes"
@@ -623,7 +744,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 1070
         }
       }
     note: false
@@ -635,10 +756,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: bc6d45be-e1a3-487a-8e8c-30d72a27b76d
+    taskid: 14225472-3e51-4c2c-825a-153183d41cb9
     type: regular
     task:
-      id: bc6d45be-e1a3-487a-8e8c-30d72a27b76d
+      id: 14225472-3e51-4c2c-825a-153183d41cb9
       version: -1
       name: Send message to Channel
       description: Sends a file on Zoom to either an individual user in your contact
@@ -664,14 +785,25 @@ tasks:
                 value:
                   simple: "0"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2500
+          "y": 2820
         }
       }
     note: false
@@ -683,10 +815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 41c66999-acef-44d5-8558-a60beefaa2be
+    taskid: 2bd75878-721b-4699-8244-46902bce9459
     type: regular
     task:
-      id: 41c66999-acef-44d5-8558-a60beefaa2be
+      id: 2bd75878-721b-4699-8244-46902bce9459
       version: -1
       name: List user messages
       description: List the existing channels
@@ -709,14 +841,25 @@ tasks:
                 value:
                   simple: "0"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2850
+          "y": 3170
         }
       }
     note: false
@@ -728,10 +871,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: c5d1b56c-3c6c-44a0-8f29-c609c0288063
+    taskid: b89a17ac-694c-462a-8494-1312fc0c09fb
     type: regular
     task:
-      id: c5d1b56c-3c6c-44a0-8f29-c609c0288063
+      id: b89a17ac-694c-462a-8494-1312fc0c09fb
       version: -1
       name: Sleep(2sec)
       description: Sleep for X seconds
@@ -751,7 +894,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2675
+          "y": 2995
         }
       }
     note: false
@@ -763,10 +906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 71590f41-addd-4685-8b7d-5b7d880be9e6
+    taskid: ddaec546-c862-4e87-8715-e7246e4fe75a
     type: condition
     task:
-      id: 71590f41-addd-4685-8b7d-5b7d880be9e6
+      id: ddaec546-c862-4e87-8715-e7246e4fe75a
       version: -1
       name: Verify message created
       type: condition
@@ -782,7 +925,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Zoom.ChatMessage.messages.message
+              simple: Zoom.ChatMessage.ChatMessage.message
             iscontext: true
           right:
             value:
@@ -792,7 +935,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3025
+          "y": 3345
         }
       }
     note: false
@@ -804,10 +947,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: cd51f1ba-ff0b-46e7-8e8a-fdfa81540978
+    taskid: bf32ea8c-993c-4410-81e9-6663bf010dc6
     type: regular
     task:
-      id: cd51f1ba-ff0b-46e7-8e8a-fdfa81540978
+      id: bf32ea8c-993c-4410-81e9-6663bf010dc6
       version: -1
       name: Update message
       description: Edits a Zoom message.
@@ -834,14 +977,25 @@ tasks:
                 value:
                   simple: "0"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 3200
+          "y": 3520
         }
       }
     note: false
@@ -853,10 +1007,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 05c67fdd-d0cd-41ac-81ab-54a0db7bf91b
+    taskid: e3584795-9d9e-4c1a-8cf5-32c27692e278
     type: regular
     task:
-      id: 05c67fdd-d0cd-41ac-81ab-54a0db7bf91b
+      id: e3584795-9d9e-4c1a-8cf5-32c27692e278
       version: -1
       name: List user messages
       description: List the existing channels
@@ -879,14 +1033,25 @@ tasks:
                 value:
                   simple: "0"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 3550
+          "y": 3870
         }
       }
     note: false
@@ -898,10 +1063,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 64518dec-cd84-4746-855d-fed34eee51aa
+    taskid: f69208dc-fa8b-4f13-889b-77797bea5792
     type: regular
     task:
-      id: 64518dec-cd84-4746-855d-fed34eee51aa
+      id: f69208dc-fa8b-4f13-889b-77797bea5792
       version: -1
       name: verify message updated
       description: |
@@ -922,7 +1087,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3725
+          "y": 4045
         }
       }
     note: false
@@ -934,10 +1099,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 6fb1f7ab-b59a-4d0f-865d-2452fec8a6ce
+    taskid: 26fcea88-ade6-4e98-83b9-e7e8b00558f3
     type: regular
     task:
-      id: 6fb1f7ab-b59a-4d0f-865d-2452fec8a6ce
+      id: 26fcea88-ade6-4e98-83b9-e7e8b00558f3
       version: -1
       name: Sleep(2sec)
       description: Sleep for X seconds
@@ -957,7 +1122,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3375
+          "y": 3695
         }
       }
     note: false
@@ -969,10 +1134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 98a83817-7047-4bbc-8919-32fb6199917f
+    taskid: 8b4a5d48-22aa-4c85-8727-db345262e1a6
     type: regular
     task:
-      id: 98a83817-7047-4bbc-8919-32fb6199917f
+      id: 8b4a5d48-22aa-4c85-8727-db345262e1a6
       version: -1
       name: Delete message
       description: Deletes a Zoom message.
@@ -997,14 +1162,89 @@ tasks:
                 value:
                   simple: "0"
       user_id:
-        simple: u
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 3900
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 59f3578c-0536-4d07-8c70-7612f46dde61
+    type: regular
+    task:
+      id: 59f3578c-0536-4d07-8c70-7612f46dde61
+      version: -1
+      name: Get users
+      description: List the existing users
+      script: '|||zoom-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: f2a7b1e8-b73f-4804-896f-852b301d89d0
+    type: regular
+    task:
+      id: f2a7b1e8-b73f-4804-896f-852b301d89d0
+      version: -1
+      name: Get users
+      description: List the existing users
+      script: '|||zoom-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -1018,14 +1258,15 @@ view: |-
   {
     "linkLabelsPosition": {
       "38_35_#default#": 0.82,
+      "44_45_yes": 0.48,
       "44_46_#default#": 0.56
     },
     "paper": {
       "dimensions": {
-        "height": 4105,
+        "height": 4440,
         "width": 492.5,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }

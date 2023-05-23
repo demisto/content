@@ -856,6 +856,7 @@ def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
                 client=client, next_page_token=next_page_token, limit=limit, url_suffix=url_suffix)
 
             data = remove_extra_info_list('channels', limit, raw_data)
+            token = raw_data[0].get('next_page_token', None)
     else:
         # only one request is needed
         raw_data = client.zoom_list_channels(page_size=page_size, next_page_token=next_page_token,
@@ -865,6 +866,7 @@ def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
             data = [raw_data]
         else:
             data = raw_data.get("channels")
+        token = raw_data.get('next_page_token', None)
     outputs = []
     for i in data:
         outputs.append({'Channel JID': i.get('jid'),
@@ -872,13 +874,14 @@ def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
                         'Channel name': i.get('name'),
                         'Channel type': i.get('type'),
                         'Channel url': i.get('channel_url'),
-                        'Channel next token': i.get('next_page_token', None)})
+                        'Channel next token': token})
     md = tableToMarkdown('Channels', outputs, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='Zoom.Channel',
+        outputs_prefix='Zoom',
         readable_output=md,
-        outputs=raw_data,
+        outputs={'Channel': raw_data,
+                 'ChannelsNextToken': token},
         raw_response=raw_data
     )
 
@@ -907,6 +910,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
                                                            next_page_token=next_page_token, limit=limit,
                                                            url_suffix=url_suffix)
             data = remove_extra_info_list('channels', limit, raw_data)
+            token = raw_data[0].get('next_page_token', None)
     else:
         # only one request is needed
         raw_data = client.zoom_list_user_channels(user_id=user_id, page_size=page_size,
@@ -917,6 +921,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
             data = [raw_data]
         else:
             data = raw_data.get('channels')
+        token = raw_data.get('next_page_token', None)
     outputs = []
     for i in data:
         outputs.append({'User id': user_id,
@@ -928,9 +933,10 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
     md = tableToMarkdown('Channels', outputs)
 
     return CommandResults(
-        outputs_prefix='Zoom.Channel',
+        outputs_prefix='Zoom',
         readable_output=md,
-        outputs=raw_data,
+        outputs={'Channel': raw_data,
+                 'UserChannelsNextToken': token},
         raw_response=raw_data
     )
 
@@ -1160,7 +1166,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     raw_data = client.zoom_send_message(url_suffix, json_data)
     data = {
         'Mentioned user': at_contact,
-        'Channel Name ': to_channel,
+        'Channel ID ': to_channel,
         'Message ID': raw_data.get('id'),
         'Contact': to_contact
     }
@@ -1271,12 +1277,12 @@ def arg_to_datetime_str(arg):
     relative_timestamp_pattern = r'^(\d+)\s+(year|month|week|day|hour|minute|second)s?\s+ago$'
     # Check if the argument is "now"
     if arg == 'now':
-        return datetime.now()
+        return datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
     # Check if the argument is "today"
     if arg == 'today':
         now = datetime.now()
-        return datetime(now.year, now.month, now.day)
+        return datetime(now.year, now.month, now.day).strftime('%Y-%m-%dT%H:%M:%SZ')
 
     # Check if the argument matches relative timestamp pattern
     match = re.match(relative_timestamp_pattern, arg)
@@ -1301,9 +1307,9 @@ def arg_to_datetime_str(arg):
             delta = timedelta(seconds=amount)
 
         if delta:
-            return datetime.now() - delta
+            return (datetime.now() - delta).strftime('%Y-%m-%dT%H:%M:%SZ')
     try:
-        dt = datetime.strptime(arg, '%Y-%m-%dT%H:%M:%S')
+        dt = (datetime.strptime(arg, '%Y-%m-%dT%H:%M:%S')).strftime('%Y-%m-%dT%H:%M:%SZ')
         return dt
     except ValueError:
         raise DemistoException(f"Invalid datetime format: {arg}")
@@ -1386,7 +1392,8 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     return CommandResults(
         outputs_prefix='Zoom.ChatMessage',
         readable_output=md,
-        outputs={'messages': all_messages},
+        outputs={'ChatMessage': all_messages,
+                 'ChatMessageNextToken': raw_data.get('next_page_token')},
         raw_response=raw_data
     )
 

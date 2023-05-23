@@ -534,7 +534,11 @@ script:
       Show all the meetings of a given user.
       Note: only scheduled and unexpired meetings will appear.
   - name: zoom-list-account-public-channels
-    description: List the existing channels
+    description: > 
+      List the existing channels
+      You can only retrieve the channel information for the authorized user.
+      in order to get public channel by its name (for example Admins_to_delete_4) 
+      you need to run command zoom-list-account-public-channels without channel_id param and found what channel_id fits channel name
     arguments:
     - description: Number of channels to return. Max 300. The default is 50.
       name: page-size
@@ -603,11 +607,21 @@ script:
     - contextPath: Zoom.Channels.type
       type: integer
       description: >
+        The channel's type:
+        0 — An unknown channel type.
+        1 — A private channel. Members must be invited to join this channel.
+        2 — A private channel with members that belong to a Zoom account. All members of this channel are from the same organization and must be invited to join.
+        3 — A public channel. Anyone can search for and join this channel.
+        4 — An instant channel. This type of channel is created by adding members to a new chat.
+        5 — A public channel. Anyone can join this channel and invite members from other Zoom accounts.Allowed: 0┃1┃2┃3┃4┃5
     - contextPath: Zoom.Channels.channel_url
       description: The URL of the Zoom Chat channel.
       type: string
   - name: zoom-list-user-channels
-    description: List the existing channels
+    description: >
+     List the existing channels
+     in order get user id by user email - use existing command zoom-list-users 
+     In order to get user channel by its name customer need to run command zoom-list-user-channels without channel_id param and found what channel_id fits channel name
     arguments:
     - description: Number of channels to return. Max 300. The default is 50.
       name: page-size
@@ -647,7 +661,9 @@ script:
       description: created channel url
       type: string
   - name: zoom-create-channel
-    description: Creates a channel for a user
+    description: >
+      Creates a channel for a user
+      Use existing command zoom-list-users to get  user id  by email (only if user has email address as part of user parameters)
     execution: true
     arguments:
     - description: The user's unique identifier
@@ -734,11 +750,16 @@ script:
     - description: User Unique Identifier
       name: user_id
       required: true
-    description: Deletes a specific Zoom channel
+    description: >
+     Deletes a specific Zoom channel
+     Use command zoom-list-account-public-channels  in order to fetch channel id by channel name
     execution: true
     name: zoom-delete-channel
   - name: zoom-update-channel
-    description: Update an existing channel in zoom account
+    description: >
+     Update an existing channel in zoom account
+     Use command zoom-list-account-public-channels in order to fetch channel id by channel name
+     Need to provide at least on of the arguments  posting_permissions or channnel_name
     execution: true
     arguments:
     - description: The channel ID.
@@ -786,6 +807,7 @@ script:
     description: >
       Invites members that are in a user's contact list to a channel. A channel can have one or multiple members.
       The maximum number of members that can be added at once with this API is 5.
+      Use command zoom-list-account-public-channels  in order to fetch channel id by channel name
     arguments:
     - name: channel_id
       description: Channel ID the channel's unique identifier.
@@ -812,7 +834,10 @@ script:
       description: The comma-separated member IDs of the members added to the channel.
       type: string
   - name: zoom-remove-from-channel
-    description: Removes a member from a chat channel. A channel can have one or many members.
+    description: >
+       Removes a member from a chat channel. A channel can have one or many members.
+       Use command zoom-list-account-public-channels  in order to fetch channel id by channel name
+       In order get user id by user email - use existing command zoom-list-users 
     arguments:
     - name: channel_id
       description: The unique identifier of the channel from where you would like to remove a member
@@ -830,7 +855,10 @@ script:
       type: string
     outputs: []
   - name: zoom-send-file
-    description: Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
+    description: >
+     Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
+     Use existing command zoom-list-users to get user id by user email (for to_contact)
+     Use command zoom-list-user-channels  in order to fetch channel id by channel name (for to_channel)
     arguments:
     - name: to_channel
       description: The channel ID of the channel to which to send the chat file.
@@ -849,7 +877,11 @@ script:
       type: string
     outputs: []
   - name: zoom-send-message
-    description: Sends chat messages on Zoom to either an individual user who is in your contact list or to a channel of which you are a member. 
+    description: >
+      Sends chat messages on Zoom to either an individual user who is in your contact list or to a channel of which you are a member. 
+      Use command zoom-list-users to get user id by user email (for to_contact)
+      Use command zoom-list-user-channels  in order to fetch channel id by channel name (for to_channel)
+      In order to send a message,user need to provide at least a message (message text) and to_contact( contact to send) or to_channel(channel to send to),but not both of them.
     arguments:
     - name: user_id
       description: Unique identifier of the user.
@@ -946,7 +978,11 @@ script:
       description:  Unique Identifier of the message.
       type: number
   - name: zoom-delete-message
-    description: Deletes a chat message previously sent to a contact or a channel. 
+    description: >
+       Deletes a chat message previously sent to a contact or a channel. 
+       Use command zoom-list-user-channels  to get channel id by channel name(fro to_channel)
+       see existing command zoom-list-users to get user id  by email (for to_contact)
+       In order to update  messages (or single message using messageId), customer need to provide  to_contact( contact to send) or to_channel (channel to send to),but not both of them.
     arguments:
     - name: user_id
       description: Unique identifier of the user.
@@ -972,6 +1008,9 @@ script:
     description: >
       Edits a chat message that you previously sent to either a contact or a channel in Zoom by providing the ID of the message as the value of the messageId parameter. 
       as a query parameter, you must provide either the contact's email address of the contact or the Channel ID of the channel where the message was sent.
+      Use command zoom-list-user-channels  to get channel id by channel name(fto to_channel)
+      Use existing command zoom-list-users to get user id  by email (for to_contact)
+      In order to update  messages (or single message using messageId), user need to provide  to_contact( contact to send) or to_channel (channel to send to),but not both of them.
     arguments:
     - name: user_id
       description: Unique identifier of the user.
@@ -1212,7 +1251,7 @@ script:
       type: string
       description: The next page token for pagination.
       
-  dockerimage: demisto/pyjwt3:1.0.0.59980
+  dockerimage: demisto/pyjwt3:1.0.0.60463
   runonce: false
   script: "-"
   subtype: python3

@@ -955,11 +955,22 @@ def test_zoom_list_user_channels_command(mocker):
 
     expected_raw_data = {
         "channels": [
-            {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
+            {"jid": "channel_jid_1_t", "id": "channel_id_1", "name": "Channel 1", "type": "public",
                 "channel_url": "https://test1.com", "next_page_token": "token1"},
             {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
                 "channel_url": "https://test1.com", "next_page_token": "token2"}
         ]
+    }
+
+    expected_results = {
+        'UserChannelsNextToken': None,
+        'Channel': {
+            "channels": [
+                {"jid": "channel_jid_1_t", "id": "channel_id_1", "name": "Channel 1", "type": "public",
+                    "channel_url": "https://test1.com", "next_page_token": "token1"},
+                {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
+                    "channel_url": "https://test1.com", "next_page_token": "token2"}
+            ]}
     }
 
     zoom_list_user_channels_mock = mocker.patch.object(client, "zoom_list_user_channels")
@@ -981,9 +992,9 @@ def test_zoom_list_user_channels_command(mocker):
         page_number=1
     )
 
-    assert result.outputs == expected_raw_data
-    assert result.outputs['channels'][0]['id'] == expected_raw_data['channels'][0]['id']
-    assert result.outputs['channels'][0]['jid'] == expected_raw_data['channels'][0]['jid']
+    assert result.outputs == expected_results
+    assert result.outputs['Channel']['channels'][0]['id'] == expected_results['Channel']['channels'][0]['id']
+    assert result.outputs['Channel']['channels'][0]['jid'] == expected_results['Channel']['channels'][0]['jid']
 
 
 def test_zoom_create_channel_command(mocker):
@@ -1152,47 +1163,45 @@ def test_zoom_remove_from_channel_command(mocker):
     zoom_remove_from_channel_mock.assert_called_with(expected_url_suffix)
 
 
-# def test_zoom_send_file_command(mocker, monkeypatch):
-#     client = Client(base_url='https://test.com', account_id="mockaccount",
-#                     client_id="mockclient", client_secret="mocksecret")
+def test_zoom_send_file_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
 
-#     user_id = "user_id"
-#     to_channel = "channel_id"
-#     entry_id = "entry_id"
+    user_id = "user_id"
+    to_channel = "channel_id"
+    entry_id = "entry_id"
 
-#     expected_upload_url = f'https://file.zoom.us/v2/chat/users/{user_id}/messages/files'
-#     expected_file_info = {
-#         'name': 'test_file.txt',
-#         'path': '/path/to/test_file.txt'
-#     }
-#     expected_json_data = {
-#         'to_channel': to_channel
-#     }
-#     expected_upload_response = {
-#         'id': 'file_id'
-#     }
+    expected_upload_url = f'https://file.zoom.us/v2/chat/users/{user_id}/messages/files'
+    expected_file_info = {
+        'name': 'test_file.txt',
+        'path': '/path/to/test_file.txt'
+    }
+    expected_json_data = {
+        'to_channel': to_channel
+    }
+    expected_upload_response = {
+        'id': 'file_id'
+    }
 
-#     zoom_remove_from_channel_mock = mocker.patch.object(client, "zoom_remove_from_channel")
+    mocker.patch('Zoom.demisto.getFilePath', return_value=expected_file_info)
 
+    zoom_send_file_mock = mocker.patch.object(client, "zoom_send_file", return_value=expected_upload_response)
 
-#     mock_getFilePath = mocker.Mock(return_value=expected_file_info)
-#     monkeypatch.setattr('demisto.getFilePath', mock_getFilePath)
+    from Zoom import zoom_send_file_command
 
-#     zoom_send_file_mock = mocker.patch.object(client, "zoom_send_file", return_value=expected_upload_response)
+    results = zoom_send_file_command(
+        client,
+        user_id=user_id,
+        to_channel=to_channel,
+        entry_id=entry_id
+    )
 
-#     from Zoom import zoom_send_file_command
+    # Assert function calls
+    Zoom.demisto.getFilePath.assert_called_with(entry_id)
+    zoom_send_file_mock.assert_called_with(expected_upload_url, expected_file_info, expected_json_data)
 
-#     results = zoom_send_file_command(
-#         client,
-#         user_id=user_id,
-#         to_channel=to_channel,
-#         entry_id=entry_id
-#     )
-
-#     mock_getFilePath.assert_called_with(entry_id)
-#     zoom_send_file_mock.assert_called_with(expected_upload_url, expected_file_info, expected_json_data)
-
-#     assert results.outputs == expected_upload_response
+    # Assert results
+    assert results.readable_output == 'Message with  id file_id was  successfully sent'
 
 
 def test_zoom_list_account_public_channels_command(mocker):
@@ -1240,9 +1249,21 @@ def test_zoom_list_account_public_channels_command(mocker):
         page_number=page_number
     )
 
-    assert result.outputs == expected_raw_data
-    assert result.outputs['channels'][0]['id'] == expected_raw_data['channels'][0]['id']
-    assert result.outputs['channels'][0]['jid'] == expected_raw_data['channels'][0]['jid']
+    expected_results = {
+        "Channel": {
+            "channels": [
+                {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
+                 "channel_url": "https://test1.com", "next_page_token": "token1"},
+                {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
+                    "channel_url": "https://test1.com", "next_page_token": "token2"}
+            ]
+        },
+        "ChannelsNextToken": None
+    }
+
+    assert result.outputs == expected_results
+    assert result.outputs['Channel']['channels'][0]['id'] == expected_results['Channel']['channels'][0]['id']
+    assert result.outputs['Channel']['channels'][0]['jid'] == expected_results['Channel']['channels'][0]['jid']
 
 
 def test_zoom_list_account_public_channels_command__limit(mocker):
@@ -1315,17 +1336,17 @@ def test_zoom_send_message_command(mocker):
 
 def test_arg_to_datetime_str():
     # Test relative timestamps
-    now = datetime.datetime.now()
-    two_weeks_ago = now - datetime.timedelta(weeks=2)
+    now = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+    two_weeks_ago = (datetime.datetime.now() - datetime.timedelta(weeks=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
     from Zoom import arg_to_datetime_str
 
-    assert arg_to_datetime_str('now').replace(microsecond=0) == now.replace(microsecond=0)
-    assert arg_to_datetime_str('2 weeks ago').replace(microsecond=0) == two_weeks_ago.replace(microsecond=0)
+    assert arg_to_datetime_str('now') == now
+    assert arg_to_datetime_str('2 weeks ago') == two_weeks_ago
 
     # Test specific datetime format
     dt_str = '2023-03-13T01:22:00'
-    dt = datetime.datetime(2023, 3, 13, 1, 22, 0)
+    dt = datetime.datetime(2023, 3, 13, 1, 22, 0).strftime('%Y-%m-%dT%H:%M:%SZ')
     assert arg_to_datetime_str(dt_str) == dt
     # Test error format
 
@@ -1363,7 +1384,15 @@ def test_zoom_list_messages_command(mocker):
                 "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
         ]
     }
-
+    expacted_result = {
+        "ChatMessage": [
+            {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
+                "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
+            {"id": "message_id_2", "message": "Message 2", "sender": "sender_2",
+                "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
+        ],
+        "ChatMessageNextToken": None
+    }
     client.zoom_list_user_messages = mocker.MagicMock(return_value=expected_raw_data)
     from Zoom import zoom_list_messages_command
 
@@ -1384,12 +1413,12 @@ def test_zoom_list_messages_command(mocker):
         exclude_child_message=exclude_child_message
     )
 
-    assert result.outputs == expected_raw_data
-    assert result.outputs['messages'][0]['id'] == expected_raw_data['messages'][0]['id']
-    assert result.outputs['messages'][0]['message'] == expected_raw_data['messages'][0]['message']
-    assert result.outputs['messages'][0]['sender'] == expected_raw_data['messages'][0]['sender']
-    assert result.outputs['messages'][0]['sender_display_name'] == expected_raw_data['messages'][0]['sender_display_name']
-    assert result.outputs['messages'][0]['date_time'] == expected_raw_data['messages'][0]['date_time']
+    assert result.outputs == expacted_result
+    assert result.outputs['ChatMessage'][0]['id'] == expacted_result['ChatMessage'][0]['id']
+    assert result.outputs['ChatMessage'][0]['message'] == expacted_result['ChatMessage'][0]['message']
+    assert result.outputs['ChatMessage'][0]['sender'] == expacted_result['ChatMessage'][0]['sender']
+    assert result.outputs['ChatMessage'][0]['sender_display_name'] == expacted_result['ChatMessage'][0]['sender_display_name']
+    assert result.outputs['ChatMessage'][0]['date_time'] == expacted_result['ChatMessage'][0]['date_time']
 
 
 def test_zoom_update_message_command(mocker):
