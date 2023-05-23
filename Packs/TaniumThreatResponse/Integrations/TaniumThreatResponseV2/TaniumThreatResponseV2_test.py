@@ -471,7 +471,8 @@ def test_start_quick_scan(mocker, requests_mock):
     assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ComputerGroupId') == 1
     assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ID') == 1000239
     assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('AlertCount') == 0
-    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('CreatedAt') == "2022-01-05T19:53:43.049Z"
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get(
+        'CreatedAt') == "2022-01-05T19:53:43.049Z"
     assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('UserId') == 64
     assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('QuestionId') == 2025697
 
@@ -1525,3 +1526,85 @@ def test_fetch_new_incidents(requests_mock):
     assert next_run.get('id') == "4"
     assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:04:59.000Z"),
                                                      TaniumThreatResponseV2.DATE_FORMAT)
+
+
+def test_get_response_actions(requests_mock):
+    """
+    Given - Nothing
+
+    When -
+        Running get_response_actions function.
+
+    Then -
+        The response actions should be returned.
+    """
+
+    api_raw_response = {
+        "data": [
+            {
+                "id": 10,
+                "type": "downloadFile",
+                "status": "COMPLETED",
+                "computerName": "id1",
+                "userId": 1,
+                "userName": "test",
+                "options": {
+                    "filePath": "C:\\Program Files (x86)\\log1.txt"
+                },
+                "results": {
+                    "taskIds": [
+                        34
+                    ],
+                    "actionIds": [],
+                    "fileName": "test.zip"
+                },
+                "expirationTime": "2021-11-17T14:05:12.003Z",
+                "createdAt": "2021-11-10T14:06:19.571Z",
+                "updatedAt": "2021-11-10T14:06:26.249Z"
+            }]
+    }
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/response-actions',
+                      json=api_raw_response)
+
+    args = {'limit': 2, 'offset': 0, 'partial_computer_name': '1', 'status': 'test'}
+    human_readable, outputs, _ = TaniumThreatResponseV2.get_response_actions(MOCK_CLIENT, args)
+    assert 'Response Actions' in human_readable
+    assert outputs.get('Tanium.ResponseActions(val.id === obj.id)', {})['data'][0].get('id') == 10
+
+
+def test_response_action_gather_snapshot(requests_mock):
+    """
+    Given - Nothing
+
+    When -
+        Running get_response_actions function.
+
+    Then -
+        The response actions should be returned.
+    """
+
+    api_raw_response = {
+        "data": {
+            "type": "gatherSnapshot",
+            "computerName": "1",
+            "options": {},
+            "status": "QUEUED",
+            "userId": 1,
+            "userName": "administrator",
+            "results": {},
+            "expirationTime": "2023-05-18T16:56:16.502Z",
+            "createdAt": "2023-05-11T16:56:16.503Z",
+            "updatedAt": "2023-05-11T16:56:16.503Z",
+            "id": 11
+        }
+    }
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + '/plugin/products/threat-response/api/v1/response-actions',
+                       json=api_raw_response)
+
+    args = {'computer_name': 1}
+    human_readable, outputs, _ = TaniumThreatResponseV2.response_action_gather_snapshot(MOCK_CLIENT, args)
+    assert 'Response Actions' in human_readable
+    assert outputs.get('Tanium.ResponseActions(val.id === obj.id)', {})['data'].get('id') == 11
+    assert outputs.get('Tanium.ResponseActions(val.id === obj.id)', {})['data'].get('type') == 'gatherSnapshot'

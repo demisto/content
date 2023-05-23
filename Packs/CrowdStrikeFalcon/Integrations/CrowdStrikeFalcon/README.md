@@ -40,6 +40,7 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 - Host Groups - Read and Write
 - Incidents - Read and Write
 - Spotlight Vulnerabilities - Read
+- User Management - Read
 
 ### Incident Mirroring
  

@@ -207,6 +207,13 @@ def get_next_month(date_obj: datetime) -> datetime:
     return date_obj + relativedelta.relativedelta(months=1)
 
 
+def call_send_events_to_xsiam(events):
+    """Enhances and sends events to XSIAM"""
+    for event in events:
+        event["_time"] = event.get('time')
+    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -259,32 +266,27 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif command in ('zoom-get-events', 'fetch-events'):
-            if command == 'zoom-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client=client,
-                                             limit=arg_to_number(args.get("limit")) or MAX_RECORDS_PER_PAGE,
-                                             first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
-                                             )
-                return_results(results)
+        elif command == 'zoom-get-events':
+            events, results = get_events(client=client,
+                                         limit=arg_to_number(args.get("limit")) or MAX_RECORDS_PER_PAGE,
+                                         first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
+                                         )
+            return_results(results)
 
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
-                next_run, events = fetch_events(client=client,
-                                                last_run=last_run,
-                                                first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
-                                                )
-                # saves next_run for the time fetch-events is invoked
-                demisto.debug(f'Set last run to {next_run}')
-                demisto.setLastRun(next_run)
-            if should_push_events:
-                for event in events:
-                    event["_time"] = event.get('time')
-                send_events_to_xsiam(events,
-                                     vendor=VENDOR,
-                                     product=PRODUCT,
-                                     )
+            if argToBoolean(args.pop('should_push_events')):
+                call_send_events_to_xsiam(events)
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            next_run, events = fetch_events(client=client,
+                                            last_run=last_run,
+                                            first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
+                                            )
+
+            call_send_events_to_xsiam(events)
+            # saves next_run for the time fetch-events is invoked
+            demisto.debug(f'Set last run to {next_run}')
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
