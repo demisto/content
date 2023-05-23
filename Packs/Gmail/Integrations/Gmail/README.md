@@ -7,8 +7,8 @@ This integration replaces the Gmail functionality in the GoogleApps API and G Su
 You need to do the following in Google before configuring your integration instance in Cortex XSOAR.
 
 * [Get a New Private Key](#get-a-new-private-key)
+* [Enable APIs](#enable-apis)
 * [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
-* [Enable APIs](#Enable-APIs)
 * [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id)
 
 ### Get a New Private Key
@@ -18,13 +18,22 @@ You need to do the following in Google before configuring your integration insta
 3.  If you need to create a new project, click **CREATE PROJECT** and do the following:
     1.  In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
     2.  Click **CREATE**.
-4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.</br>![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
-5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.</br>![gmail_section1_step5](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step5.png)
+4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.    
+
+
+    ![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
+5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
+ 
+    ![gmail_section1_step5](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step5.png)
 6.  In the **Grant this service account access to project** section,click **Continue**.
-7.  In the **Grant users access to this service account** section, click **DONE**.</br>
-8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.</br>![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
+7.  In the **Grant users access to this service account** section, click **DONE**.  
+8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
+  
+  
+    ![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
 9. Click the **ADD KEY** dropdown, and select **Create new key**.
-10. Select Key type **JSON** and click **CREATE**.<br/>This will generate a json **Private key** file that will be downloaded and saved locally.
+10. Select Key type **JSON** and click **CREATE**.  
+    This will generate a json **Private key** file that will be downloaded and saved locally.
 11. Click **CLOSE** to close the dialog.
 12. Navigate to **DETAILS** -> **Advanced Settings**.  Copy the **Client ID**.
 
