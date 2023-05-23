@@ -1,4 +1,7 @@
 category: Authentication & Identity Management
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: AzureKeyVault
   version: -1
@@ -7,24 +10,29 @@ configuration:
   name: client_id
   required: false
   type: 0
+  section: Connect
 - display: Client Secret
   name: client_secret
   required: false
   type: 9
+  section: Connect
 - display: Tenant ID
   name: tenant_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+  section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. 
     If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
     If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
@@ -33,45 +41,60 @@ configuration:
   name: use_managed_identities
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   required: false
   hiddenusername: true
   type: 9
-- display: Subscription ID
+  section: Connect
+  advanced: true
+- display: Default Subscription ID
+  additionalinfo: The specified value can be inserted either in the configuration or directly within the commands. However, if done so, it will be overridden.
   name: subscription_id
-  required: true
+  required: false
   type: 0
-- display: Resource Group Name
+  section: Connect
+- display: Default Resource Group Name
+  additionalinfo: The specified value can be inserted either in the configuration or directly within the commands. However, if done so, it will be overridden.
   name: resource_group_name
-  required: true
+  required: false
   type: 0
+  section: Connect
 - display: Fetches credentials
   hidden: false
   name: isFetchCredentials
   required: false
   type: 8
+  section: Connect
 - display: Key Vault names - comma seperated list of Key Vaults to fetch secrets from.
   hidden: false
   name: key_vaults
   required: false
   type: 0
+  section: Connect
 - display: Secret names - comma seperated list of secrets to fetch.
   hidden: false
   name: secrets
   required: false
   type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Use the Azure Key Vault integration to safeguard and manage cryptographic
   keys and secrets used by cloud applications and services.
 display: Azure Key Vault
