@@ -1092,7 +1092,10 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
                               data=body, params={'id': alert_ids})
 
     else:
-        client.do_request('PUT', '/plugin/products/detect3/api/v1/alerts/', data=body.update({'id': alert_ids}))
+        if len(alert_ids) == 1:
+            client.do_request('PUT', f'/plugin/products/detect3/api/v1/alerts/{alert_ids[0]}', data=body)
+        else:
+            client.do_request('PUT', '/plugin/products/detect3/api/v1/alerts/', data=body.update({'id': alert_ids}))
 
     return f'Alert state updated to {state}.', {}, {}
 
