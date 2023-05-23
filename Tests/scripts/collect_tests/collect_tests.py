@@ -1004,7 +1004,11 @@ class BranchTestCollector(TestCollector):
                 )
 
         if pack_id in PackManager.skipped_packs:
-            raise SkippedPackException(pack_id)
+            return self._collect_pack(
+                pack_id=find_pack_folder(path).name,
+                reason=CollectionReason.NON_XSOAR_SUPPORTED,
+                reason_description="xsoar",
+            )
 
         if file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
