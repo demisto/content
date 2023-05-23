@@ -56,3 +56,5 @@ fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
 dockerimage: demisto/python3:3.9.8.24399
+marketplaces:
+- xsoar
