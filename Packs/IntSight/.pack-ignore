@@ -6,3 +6,6 @@ MSSP
 Deprecated
 IntSights
 ThreatCommand
+
+[file:Rapid7ThreatCommand.yml ]
+ignore:IN107
