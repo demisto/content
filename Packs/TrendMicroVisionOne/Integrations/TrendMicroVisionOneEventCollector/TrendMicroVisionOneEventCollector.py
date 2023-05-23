@@ -586,7 +586,7 @@ def fetch_events(
         LastRunLogsTimeFields.SEARCH_DETECTIONS: latest_search_detection_log_time,
         LastRunLogsTimeFields.AUDIT: latest_audit_log_time
     }
-    demisto.info(f'{updated_last_run=}')
+    demisto.info(f'{updated_last_run=}, {len(events)=}')
 
     return events, updated_last_run
 
