@@ -53,7 +53,7 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: "false"
+    simple: "0"
 - description: RDP connection destination hostname.
   key: Hostname
   playbookInputQuery:
