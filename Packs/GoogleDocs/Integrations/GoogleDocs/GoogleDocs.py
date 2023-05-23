@@ -275,12 +275,12 @@ def delete_positioned_object(action_name, object_id):
     }
 
 
-def batch_update_document_command(service):
-    args = demisto.args()
+def batch_update_document_command(service, args: dict):
     document_id = args.get('document_id')
     actions = parse_actions(args.get('actions'))
     required_revision_id = args.get("required_revision_id", None)
     target_revision_id = args.get("target_revision_id", None)
+
     document = batch_update_document(service, document_id, actions, required_revision_id, target_revision_id)
     human_readable_text = "The document with the title {title} and actions {actions} was updated. the results are:".\
         format(title=document['title'], actions=args.get('actions'))
@@ -312,8 +312,7 @@ def batch_update_document(service, document_id, actions, required_revision_id=No
     return document
 
 
-def create_document_command(service):
-    args = demisto.args()
+def create_document_command(service, args: dict):
     title = args.get('title')
     document = create_document(service, title)
     human_readable_text = "The document with the title {title} was created. The results are:".format(title=title)
@@ -329,8 +328,7 @@ def create_document(service, title):
     return document
 
 
-def get_document_command(service):
-    args = demisto.args()
+def get_document_command(service, args: dict):
     document_id = args.get('document_id')
     document = get_document(service, document_id)
     human_readable_text = "The document with the title {title} was returned. The results are:".\
@@ -344,11 +342,13 @@ def get_document(service, document_id):
 
 
 def main():
-    demisto.debug('Command being called is %s' % (demisto.command()))
+    command = demisto.command()
+    args = demisto.args()
+    demisto.debug('Command being called is %s' % (command))
     proxy = demisto.params().get('proxy')
     disable_ssl = demisto.params().get('insecure', False)
     service_account_credentials = json.loads(demisto.params().get('service_account_credentials'))
-    if demisto.command() == 'test-module':
+    if command == 'test-module':
         try:
             get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
             demisto.results('ok')
@@ -357,15 +357,19 @@ def main():
 
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
-        if demisto.command() == 'google-docs-update-document':
-            document, human_readable_text = batch_update_document_command(service)
-        elif demisto.command() == 'google-docs-create-document':
-            document, human_readable_text = create_document_command(service)
-        elif demisto.command() == 'google-docs-get-document':
-            document, human_readable_text = get_document_command(service)
-        else:
-            return_error("Command {} does not exist".format(demisto.command()))
-            return
+        match command:
+            case 'google-docs-update-document':
+                document, human_readable_text = batch_update_document_command(service, args)
+
+            case 'google-docs-create-document':
+                document, human_readable_text = create_document_command(service, args)
+
+            case 'google-docs-get-document':
+                document, human_readable_text = get_document_command(service, args)
+
+            case _:
+                return_error("Command {} does not exist".format(command))
+                return
 
         res = {
             'RevisionId': document['revisionId'],
@@ -388,7 +392,7 @@ def main():
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)), e)
+        return_error("Failed to execute {} command. Error: {}".format(command, str(e)), e)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
