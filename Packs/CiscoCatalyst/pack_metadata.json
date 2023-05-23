@@ -1,20 +1,19 @@
 {
-    "name": "McAfee DXL",
-    "description": "McAfee DXL client",
+    "name": "Cisco Catalyst",
+    "description": "Cisco Catalyst switch",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
+    "created": "2023-05-16T10:10:08Z",
     "categories": [
-        "Messaging and Conferencing"
+        "Network Security"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
