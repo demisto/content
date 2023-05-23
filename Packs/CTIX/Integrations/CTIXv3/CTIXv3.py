@@ -133,7 +133,7 @@ class Client(BaseClient):
         :param dict params: Paramters to be added in request
         :return dict: Params dictionary with AccessID, Expires and Signature
         """
-        expires = int(time.time() + 5)
+        expires = int(time.time() + 15)
         params["AccessID"] = self.access_id
         params["Expires"] = expires
         params["Signature"] = self.signature(expires)
@@ -1423,7 +1423,7 @@ def get_indicator_details_command(client: Client, args: Dict[str, Any]) -> Comma
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
 
-    response = client.get_indicator_details(object_type, object_id, params)
+    response = client.get_indicator_details(object_type.lower(), object_id, params)
     data = response.get("data")
     data = no_result_found(data)
     if isinstance(data, CommandResults):

@@ -7,18 +7,18 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 10c4378f-44df-4293-8f72-874b0495a27a
+    taskid: 602c39dd-6a0e-417d-8d66-9af149d5e3ad
     type: start
     task:
-      id: 10c4378f-44df-4293-8f72-874b0495a27a
+      id: 602c39dd-6a0e-417d-8d66-9af149d5e3ad
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     view: |-
       {
@@ -30,12 +30,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a39113bf-3b59-4935-84a4-ca700c708154
+    taskid: 3461eca6-a3a0-43f1-85d2-ed00da8b5543
     type: regular
     task:
-      id: a39113bf-3b59-4935-84a4-ca700c708154
+      id: 3461eca6-a3a0-43f1-85d2-ed00da8b5543
       version: -1
       name: Add file MD5 to context
       scriptName: Set
@@ -58,18 +63,23 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 835
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 65c19517-7c8f-4064-8fb6-6ef179bed34b
+    taskid: 76d8ba09-97cc-4149-8e57-3fee0f4e136d
     type: regular
     task:
-      id: 65c19517-7c8f-4064-8fb6-6ef179bed34b
+      id: 76d8ba09-97cc-4149-8e57-3fee0f4e136d
       version: -1
       name: Add file SHA1 to context
       scriptName: Set
@@ -92,18 +102,23 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1000
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8f11095f-844f-441d-8ec3-f849cdb6d23a
+    taskid: b257d946-eff3-4cd4-8b7f-214d7775c3cc
     type: regular
     task:
-      id: 8f11095f-844f-441d-8ec3-f849cdb6d23a
+      id: b257d946-eff3-4cd4-8b7f-214d7775c3cc
       version: -1
       name: Add file SHA256 to context
       scriptName: Set
@@ -126,18 +141,23 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1155
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f509768d-6029-4bd0-8f41-b96be360aff9
+    taskid: 49ea4f5a-ab85-46df-8feb-102d0866f1da
     type: condition
     task:
-      id: f509768d-6029-4bd0-8f41-b96be360aff9
+      id: 49ea4f5a-ab85-46df-8feb-102d0866f1da
       version: -1
       name: Verify DBotScore context fields
       description: Checks if the expected DBotScore fields were populated in the context.
@@ -177,48 +197,58 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1485
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: f083cfd3-28ab-4f13-8692-32ae498df885
+    taskid: b485be7e-9173-4af5-8598-1ac21e3cd65e
     type: title
     task:
-      id: f083cfd3-28ab-4f13-8692-32ae498df885
+      id: b485be7e-9173-4af5-8598-1ac21e3cd65e
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1240
+          "y": 1850
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 144f05c5-0c6b-45a4-8c74-46e471288276
+    taskid: 868861d8-5b19-4403-8610-2e986ff3c97e
     type: playbook
     task:
-      id: 144f05c5-0c6b-45a4-8c74-46e471288276
+      id: 868861d8-5b19-4403-8610-2e986ff3c97e
       version: -1
       name: File Enrichment - Generic v2
-      description: ""
       playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -240,22 +270,28 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1320
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 60f8b33c-5629-4912-8ef0-9c465db61356
+    taskid: 313989ff-9fe4-4089-84aa-b48d8b02c500
     type: regular
     task:
-      id: 60f8b33c-5629-4912-8ef0-9c465db61356
+      id: 313989ff-9fe4-4089-84aa-b48d8b02c500
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -274,20 +310,180 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1070
+          "x": 270,
+          "y": 1670
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b2b5966f-f79f-4f7f-8a79-f39e530cb958
+    type: regular
+    task:
+      id: b2b5966f-f79f-4f7f-8a79-f39e530cb958
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 27dab5c4-3127-4a4e-81d7-64d899b605be
+    type: title
+    task:
+      id: 27dab5c4-3127-4a4e-81d7-64d899b605be
+      version: -1
+      name: Test With Empty Input
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d5aff158-c9b6-4f39-8c90-5522c932e4f0
+    type: title
+    task:
+      id: d5aff158-c9b6-4f39-8c90-5522c932e4f0
+      version: -1
+      name: Test With Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 547d0174-9d17-455a-8084-762e730963f5
+    type: playbook
+    task:
+      id: 547d0174-9d17-455a-8084-762e730963f5
+      version: -1
+      name: File Enrichment - Generic v2
+      description: |-
+        Enrich a file using one or more integrations.
+
+        - Provide threat information
+      playbookName: File Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1255,
-        "width": 740,
+        "height": 1865,
+        "width": 600,
         "x": 50,
         "y": 50
       }

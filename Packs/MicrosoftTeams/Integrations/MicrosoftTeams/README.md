@@ -304,6 +304,7 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
     | Minimum incident severity to send notifications to Teams by |  | False |
     | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
     | Allow external users to create incidents via direct message |  | False |
+    | The header of an external form hyperlink. |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
@@ -381,6 +382,7 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 | team              | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional     | 
 | adaptive_card     | The Microsoft Teams adaptive card to send.                                                                                                                              | Optional     | 
 | to                | The team member to which to send the message.                                                                                                                           | Optional     | 
+| external_form_url_header                | The header of an external form hyperlink.message.                                                                                                                           | Optional     | 
 
 
 ##### Context Output
