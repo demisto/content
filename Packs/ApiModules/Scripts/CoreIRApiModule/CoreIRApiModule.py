@@ -3629,12 +3629,17 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     )
 
 
-def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any], table_headers: list[str]) -> dict[str, Any]:
+def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any],
+                               id_header: str,
+                               score_header: str,
+                               description_header: str
+                               ) -> dict[str, Any]:
+
     reasons = user_or_host_data.get('reasons', [])
     return {
-        table_headers[0]: user_or_host_data.get('id'),
-        table_headers[1]: user_or_host_data.get('score'),
-        table_headers[2]: reasons[0].get('description') if reasons else None,
+        id_header: user_or_host_data.get('id'),
+        score_header: user_or_host_data.get('score'),
+        description_header: reasons[0].get('description') if reasons else None,
     }
 
 
@@ -3826,11 +3831,10 @@ def change_user_role_command(client: CoreClient, args: dict[str, str]) -> Comman
         res = client.remove_user_role(user_emails)["reply"]
         action_message = "removed"
 
-    count = res.get("update_count")
-    plural_suffix = 's' if len(user_emails) > 1 else ''
+    if not (count := int(res["update_count"])):
+        raise DemistoException(f"No user role has been {action_message}.")
 
-    if count == 0:
-        raise DemistoException(f"No user roll has been {action_message}.")
+    plural_suffix = 's' if count > 1 else ''
 
     return CommandResults(
         readable_output=f"Role was {action_message} successfully for {count} user{plural_suffix}."
@@ -3878,13 +3882,13 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
                 raise DemistoException(error_message)
             raise
 
-        table_for_markdown = [parse_risky_users_or_hosts(outputs, table_headers)]  # type: ignore[arg-type]
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
         list_limit = int(args.get('limit', 50))
         outputs = get_func().get('reply', [])[:list_limit]
 
-        table_for_markdown = [parse_risky_users_or_hosts(user, table_headers) for user in outputs]
+        table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
 
     readable_output = tableToMarkdown(name=table_title, t=table_for_markdown, headers=table_headers)
 

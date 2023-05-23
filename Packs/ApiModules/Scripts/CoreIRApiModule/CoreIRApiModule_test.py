@@ -3453,13 +3453,19 @@ def test_list_roles_command(
         (
             "remove_user_role",
             {"user_emails": "test1@example.com,test2@example.com"},
-            {"reply": {"update_count": 2}},
+            {"reply": {"update_count": "2"}},
             "Role was removed successfully for 2 users."
+        ),
+        (
+            "remove_user_role",
+            {"user_emails": "test1@example.com,test2@example.com"},
+            {"reply": {"update_count": "1"}},
+            "Role was removed successfully for 1 user."
         ),
         (
             "set_user_role",
             {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
-            {"reply": {"update_count": 2}},
+            {"reply": {"update_count": "2"}},
             "Role was updated successfully for 2 users."
         ),
     ]
@@ -3467,7 +3473,7 @@ def test_list_roles_command(
 def test_change_user_role_command_happy_path(
     mocker, func: str,
     args: dict[str, str],
-    update_count: dict[str, dict[str, int]],
+    update_count: dict[str, dict[str, str]],
     expected_output: str
 ):
     """
@@ -3496,13 +3502,13 @@ def test_change_user_role_command_happy_path(
             "remove_user_role",
             {"user_emails": "test1@example.com,test2@example.com"},
             {"reply": {"update_count": 0}},
-            "No user roll has been removed."
+            "No user role has been removed."
         ),
         (
             "set_user_role",
             {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
             {"reply": {"update_count": 0}},
-            "No user roll has been updated."
+            "No user role has been updated."
         )
     ]
 )
