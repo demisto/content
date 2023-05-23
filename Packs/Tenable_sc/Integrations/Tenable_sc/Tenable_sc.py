@@ -35,8 +35,8 @@ class Client(BaseClient):
                 del os.environ['HTTPS_PROXY']
                 del os.environ['http_proxy']
                 del os.environ['https_proxy']
-            except Exception:
-                pass
+            except Exception as e:
+                demisto.debug(f"Encountered the following error: {e}")
 
         self.url = f"{get_server_url(url)}/rest"
         self.verify_ssl = verify_ssl
