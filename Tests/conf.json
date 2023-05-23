@@ -1125,8 +1125,7 @@
         },
         {
             "integrations": "Netmiko",
-            "playbookID": "Netmiko_test",
-            "instance_names": "Netmiko"
+            "playbookID": "Netmiko_test"
         },
         {
             "integrations": "Panorama",
