@@ -1361,7 +1361,7 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.11.59070
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
