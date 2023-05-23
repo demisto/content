@@ -3416,6 +3416,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
         except Exception as e:
+            demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
         alert.update(alert.pop('original_alert_json', None))
