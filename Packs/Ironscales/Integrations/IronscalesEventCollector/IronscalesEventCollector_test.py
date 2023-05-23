@@ -73,6 +73,7 @@ def test_incident_to_events():
     """
     dummy_incident = {
         "incident_id": 1,
+        "first_reported_date": "2023-05-11T11:39:53.104571Z",
         "reports": [
             {
                 "name": "dummy name 1",
@@ -111,7 +112,8 @@ def test_incident_to_events():
     }
     events = incident_to_events(dummy_incident)
     assert len(events) == 2
-    assert "reports" not in events[0] and "reports" not in events[1]
+    assert "reports" not in events[0]
+    assert "reports" not in events[1]
     assert events[0]["incident_id"] == events[1]["incident_id"]
     assert events[0]["links"] == events[1]["links"]
     assert events[0]["attachments"] == events[1]["attachments"]

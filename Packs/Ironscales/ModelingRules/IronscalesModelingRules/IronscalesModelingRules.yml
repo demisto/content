@@ -1,6 +1,6 @@
-fromversion: 6.10.0
-id: ironscales_ironscales_modeling_rule
-name: Ironscales Ironscales Modeling Rule
+fromversion: 8.2.0
+id: ironscales_modeling_rule
+name: IRONSCALES Modeling Rule
 rules: ''
 schema: ''
 tags: ironscales
