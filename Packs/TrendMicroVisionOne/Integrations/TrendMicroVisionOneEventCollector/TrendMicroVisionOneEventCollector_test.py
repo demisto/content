@@ -300,45 +300,45 @@ class TestFetchEvents:
 
 
 @pytest.mark.parametrize(
-        "last_run_time, first_fetch, log_type_time_field_name, start_time, expected_start_and_end_date_times",
-        [
-            # (
-            #     None,
-            #     '3 years',
-            #     LastRunLogsTimeFields.WORKBENCH,
-            #     '2023-01-01T15:20:45Z',
-            #     ('2020-01-01T15:20:45Z', '2023-01-01T15:20:45Z')
-            # ),
-            # (
-            #     None,
-            #     '3 years',
-            #     LastRunLogsTimeFields.AUDIT,
-            #     '2023-01-01T15:20:45Z',
-            #     ('2022-07-05T15:20:45Z', '2023-01-01T15:20:45Z')
-            # ),
-            # (
-            #     None,
-            #     '3 years ago',
-            #     LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
-            #     '2023-01-01T15:20:45Z',
-            #     ('2020-01-01T15:20:45Z', '2020-12-31T15:20:45Z')
-            # ),
-            (
-                None,
-                '1 month ago',
-                LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
-                '2023-01-01T15:20:45Z',
-                ('2022-12-01T15:20:45Z', '2023-01-01T15:20:45Z')
-            ),
-            (
-                '2023-01-01T15:00:00Z',
-                '1 month ago',
-                LastRunLogsTimeFields.SEARCH_DETECTIONS,
-                '2023-01-01T15:20:45Z',
-                ('2023-01-01T15:00:00Z', '2023-01-01T15:20:45Z')
-            )
-        ],
-    )
+    "last_run_time, first_fetch, log_type_time_field_name, start_time, expected_start_and_end_date_times",
+    [
+        (
+            None,
+            '3 years',
+            LastRunLogsTimeFields.WORKBENCH,
+            '2023-01-01T15:20:45Z',
+            ('2020-01-01T15:20:45Z', '2023-01-01T15:20:45Z')
+        ),
+        (
+            None,
+            '3 years',
+            LastRunLogsTimeFields.AUDIT,
+            '2023-01-01T15:20:45Z',
+            ('2022-07-05T15:20:45Z', '2023-01-01T15:20:45Z')
+        ),
+        (
+            None,
+            '3 years ago',
+            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+            '2023-01-01T15:20:45Z',
+            ('2020-01-01T15:20:45Z', '2020-12-31T15:20:45Z')
+        ),
+        (
+            None,
+            '1 month ago',
+            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+            '2023-01-01T15:20:45Z',
+            ('2022-12-01T15:20:45Z', '2023-01-01T15:20:45Z')
+        ),
+        (
+            '2023-01-01T15:00:00Z',
+            '1 month ago',
+            LastRunLogsTimeFields.SEARCH_DETECTIONS,
+            '2023-01-01T15:20:45Z',
+            ('2023-01-01T15:00:00Z', '2023-01-01T15:20:45Z')
+        )
+    ],
+)
 def test_get_datetime_range(
     last_run_time: str | None,
     first_fetch: str,
