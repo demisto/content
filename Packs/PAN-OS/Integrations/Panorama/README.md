@@ -55,7 +55,8 @@ The Panorama integration now supports fetch incidents.
 The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 ##### Max incidents per fetch
-The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- Important note: Cortex XSOAR standard setup is not designed to handle many hundreds of new incidents every minute. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
 
 ##### Log Type
 The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
@@ -65,6 +66,8 @@ The queries that will be included during the fetch are decided according to the 
 ##### Log Type Query
 - Each log type has its own query field in the instance configuration.
 - Note that the default query values has some example text in it, make sure to enter a valid query.
+- Note: In case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. 
+For example: "and (device_name eq dummy_device)".
 
 ##### Log Type Query Examples
 
@@ -97,14 +100,14 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 | key | API Key | True |
 | device_group | Device group - Panorama instances only \(write shared for Shared location\) | False |
 | vsys | Vsys - Firewall instances only | False |
-| template | Template - Panorama instances only | False |
+| template | Template - Panorama instances only | False |****
 | use_url_filtering | Use URL Filtering for auto enrichment | False |
 | additional_suspicious | URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious. | False |
 | additional_malicious | URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | First fetch timestamp  | First fetch time interval | False |
 | Max incidents per fetch | Max incidents per fetch for each selected Log Type Query | False |
-| Log Type | Log Types incidents to fetch | False |
+| Log Type | Log Types incidents to fetch | False |****
 | Traffic Log Type Query | Traffic Query for fetch incidents | False |
 | Threat Log Type Query | Threat Query for fetch incidents | False |
 | URL Log Type Query | URL Query for fetch incidents | False |

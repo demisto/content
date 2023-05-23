@@ -7,8 +7,11 @@ type: javascript
 tags:
 - infra
 - server
-comment: Common user defined code that will be merged into each server script when it runs
+comment: Deprecated. No available replacement.
 scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)

@@ -43,7 +43,8 @@
         "FreshworksFreshservice Ticket",
         "FreshworksFreshservice Release Request",
         "FreshworksFreshservice Problem Request",
-        "FreshworksFreshservice Change Request"
+        "FreshworksFreshservice Change Request",
+        "Graph Security Alert"
     ],
     "associatedToAll": false,
     "unmapped": false,

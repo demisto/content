@@ -179,6 +179,19 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
     return True
 
 
+def sync_marketplace(client: demisto_client):
+    """
+    Syncs marketplace
+    Args:
+        client (demisto_client): The client to connect to.
+    """
+    try:
+        _ = demisto_client.generic_request_func(client, path='/contentpacks/marketplace/sync', method='POST')
+        logging.info('Synced marketplace successfully.')
+    except Exception as e:
+        logging.warning(f'Failed to sync marketplace. Error: {str(e)}')
+
+
 def options_handler():
     """
 
@@ -213,10 +226,13 @@ def main():
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
-
+    # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
+    # in earlier builds they will appear in the bucket as it is cached.
+    sync_marketplace(client=client)
     success = reset_base_pack_version(client) and uninstall_all_packs(client,
                                                                       host) and wait_for_uninstallation_to_complete(
         client)
+    sync_marketplace(client=client)
     if not success:
         sys.exit(2)
     logging.info('Uninstalling packs done.')

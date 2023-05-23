@@ -49,7 +49,7 @@ variables:
   TEST_UPLOAD: "true"
   NATIVE_CANDIDATE_IMAGE: "latest"
   DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"  # change this when the demisto-sdk update-graph command is stable
-
+  DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
 
 include:
   - local: .gitlab/ci/global.yml

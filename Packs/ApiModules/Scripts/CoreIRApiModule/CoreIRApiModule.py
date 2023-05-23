@@ -1083,12 +1083,13 @@ class CoreClient(BaseClient):
             timeout=self.timeout,
         )
         link = response.get('reply', {}).get('DATA')
+        demisto.debug(f"From the previous API call, this link was returned {link=}")
         # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
         if not link:
             raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
-            full_url=link,
+            url_suffix=re.findall('download.*', link)[0],
             resp_type='response',
         )
 

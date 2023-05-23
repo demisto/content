@@ -1276,6 +1276,28 @@ def test_get_project_id(mocker):
     assert id == 'Test_id'
 
 
+def test_get_project_id_non_english(mocker):
+    """
+    Given:
+        - Exception (404) contains non english content.
+    When
+        - Running the create issue command.
+    Then
+        - Ensure the new api endpoint is being used.
+    """
+    from JiraV2 import get_project_id
+
+    def mock_res(method, endpoint, resp_type):
+        if endpoint == 'rest/api/latest/issue/createmeta':
+            raise DemistoException("Status code: 404\nMessage: La Incidencia no Existe")
+        elif endpoint == 'rest/api/latest/project':
+            return [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]
+
+    mocker.patch('JiraV2.jira_req', side_effect=mock_res)
+    id = get_project_id(project_name='Test_name')
+    assert id == 'Test_id'
+
+
 @pytest.mark.parametrize('params, custom_headers, expected_headers', AUTH_CASES)
 def test_jira_req(mocker, requests_mock, params, custom_headers, expected_headers):
     """

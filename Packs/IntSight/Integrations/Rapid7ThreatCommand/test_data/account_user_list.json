@@ -1,0 +1,144 @@
+[
+    {
+        "Email": "test@test.com",
+        "Role": "Admin",
+        "LastName": "test",
+        "FirstName": "test",
+        "_id": "59a71a61749a7800062d9c5c",
+        "Permissions": {
+            "TIP": {
+                "View": true,
+                "EditSources": true,
+                "InvestigationPage": true,
+                "IntelliFind": true,
+                "ThreatLibrary": true
+            },
+            "Data": {
+                "Actions": {
+                    "ChangeSeverity": true,
+                    "Share": true,
+                    "Remediation": {
+                        "Takedown": true,
+                        "Report": true
+                    },
+                    "Assignment": true,
+                    "AskTheAnalyst": true,
+                    "ChangeStatus": true
+                },
+                "Reports": {
+                    "View": true
+                },
+                "Assets": {
+                    "Edit": true,
+                    "View": true
+                },
+                "AlertTypes": {
+                    "vip": true,
+                    "ExploitableData": true,
+                    "BrandSecurity": true,
+                    "Phishing": true,
+                    "DataLeakage": true,
+                    "AttackIndication": true
+                },
+                "StrategicInsights": {
+                    "View": false,
+                    "Edit": false
+                }
+            },
+            "Automation": {
+                "Extend": true,
+                "Integrations": true,
+                "Policy": true,
+                "Profiler": true
+            },
+            "Vulnerabilities": {
+                "View": true
+            },
+            "ThreatThirdParty": {
+                "RiskAssessment": {
+                    "View": true,
+                    "Assess": true
+                },
+                "TailoredRisk": {
+                    "View": true,
+                    "Assess": true
+                }
+            },
+            "Configurations": {
+                "PhishingWatchManager": true
+            }
+        },
+        "IsDeleted": true
+    },
+    {
+        "Email": "test2@test.com",
+        "Role": "Analyst",
+        "FirstName": "test",
+        "LastName": "test",
+        "_id": "59ac3c8ad86ec20006aeda76",
+        "Permissions": {
+            "TIP": {
+                "View": true,
+                "EditSources": true,
+                "InvestigationPage": true,
+                "IntelliFind": true,
+                "ThreatLibrary": true
+            },
+            "Data": {
+                "Actions": {
+                    "ChangeSeverity": true,
+                    "Share": true,
+                    "Remediation": {
+                        "Takedown": true,
+                        "Report": true
+                    },
+                    "Assignment": true,
+                    "AskTheAnalyst": true,
+                    "ChangeStatus": true
+                },
+                "Reports": {
+                    "View": true
+                },
+                "Assets": {
+                    "Edit": true,
+                    "View": true
+                },
+                "AlertTypes": {
+                    "vip": true,
+                    "ExploitableData": true,
+                    "BrandSecurity": true,
+                    "Phishing": true,
+                    "DataLeakage": true,
+                    "AttackIndication": true
+                },
+                "StrategicInsights": {
+                    "View": false,
+                    "Edit": false
+                }
+            },
+            "Automation": {
+                "Extend": true,
+                "Integrations": false,
+                "Policy": false,
+                "Profiler": true
+            },
+            "Vulnerabilities": {
+                "View": true
+            },
+            "ThreatThirdParty": {
+                "RiskAssessment": {
+                    "View": true,
+                    "Assess": true
+                },
+                "TailoredRisk": {
+                    "View": true,
+                    "Assess": true
+                }
+            },
+            "Configurations": {
+                "PhishingWatchManager": true
+            }
+        },
+        "IsDeleted": true
+    }
+]

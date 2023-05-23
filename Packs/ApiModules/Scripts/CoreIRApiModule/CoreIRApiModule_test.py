@@ -1819,14 +1819,14 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
             pass
 
     request.addfinalizer(cleanup)
-    zip_link = 'https://example-link'
+    zip_link = 'https://download/example-link'
     zip_filename = 'file.zip'
     requests_mock.post(
         f'{Core_URL}/public_api/v1/scripts/get_script_execution_results_files',
         json={'reply': {'DATA': zip_link}}
     )
     requests_mock.get(
-        zip_link,
+        f"{Core_URL}/public_api/v1/download/example-link",
         content=b'PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\x00\x00'
                 b'\x00your_file.txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00'
                 b'\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file'
@@ -3207,3 +3207,22 @@ def test_generate_files_dict(mocker):
                                           file_path_list=['fake\\path1', 'fake\\path2', 'fake\\path3'])
 
     assert res == {"macos": ['fake\\path1'], "linux": ['fake\\path2'], "windows": ['fake\\path3']}
+
+
+def test_get_script_execution_result_files(mocker):
+    """
+    Given:
+    - no arguments
+    When:
+    - executing the get_script_execution_result_files command
+    Then:
+    - Validate that the url_suffix generated correctly
+    """
+    http_request = mocker.patch.object(test_client, '_http_request',
+                                       return_value={
+                                           "reply": {
+                                               "DATA": "https://test_api/public_api/v1/download/test"
+                                           }
+                                       })
+    test_client.get_script_execution_result_files(action_id="1", endpoint_id="1")
+    http_request.assert_called_with(method='GET', url_suffix="download/test", resp_type="response")
