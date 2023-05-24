@@ -46,3 +46,10 @@
 !xdr-endpoint-tag-remove endpoint_id=f8a2f58846b542579c12090652e79f3d tag=tag_test
 !xdr-get-tenant-info
 !xdr-endpoint-alias-change new_alias_name=test scan_status=success ip_list=1.1.1.1
+!xdr-list-users
+!xdr-list-risky-users user_id=dummy
+!xdr-list-risky-hosts host_id=dummy
+!xdr-list-roles role_names="dummy dummy"
+!xdr-list-user-groups group_names=test
+!xdr-set-user-role role_name=dummy user_emails=email@company.com
+!xdr-remove-user-role user_emails=email@company.com
