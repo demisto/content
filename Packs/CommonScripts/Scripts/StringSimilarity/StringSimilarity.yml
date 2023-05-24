@@ -1,8 +1,7 @@
 commonfields:
-  id: 1c628632-2a2e-42e5-8a68-396b65388568
-  version: 45
-vcShouldKeepItemLegacyProdMachine: false
-name: stringSimilarity_dev
+  id: StringSimilarity
+  version: -1
+name: StringSimilarity
 script: ''
 type: python
 tags: []
@@ -26,9 +25,10 @@ outputs:
   description: Similarity score - a value between 1.0 if the sequences are identical,
     and 0.0 if they have nothing in common.
 scripttarget: 0
+dockerimage: demisto/python3:3.10.11.61265
 subtype: python3
-pswd: ""
 runonce: false
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
