@@ -46,7 +46,7 @@ def get_function_by_action_name(action):
 def parse_actions(actions: str):
     """Destructs action1{param1,param2,...};action2{param1,param2,...}... to a dictionary where keys are action type and
       values are function params"""
-    parsed_actions = dict()
+    parsed_actions = {}
     actions = actions.split(';')
     for action in actions:
         action_type, params = action.split('{')
@@ -62,7 +62,7 @@ def get_http_client_with_proxy(disable_ssl):
         raise Exception('https proxy value is empty. Check Demisto server configuration')
     https_proxy = proxies['https']
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-        https_proxy = 'https://' + https_proxy
+        https_proxy = f'https://{https_proxy}'
     parsed_proxy = urllib.parse.urlparse(https_proxy)
     proxy_info = httplib2.ProxyInfo(
         proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
@@ -308,8 +308,7 @@ def batch_update_document(service, document_id, actions, required_revision_id=No
         payload["requests"].append(request)
 
     service.documents().batchUpdate(documentId=document_id, body=payload).execute()
-    document = get_document(service, document_id)
-    return document
+    return get_document(service, document_id)
 
 
 def create_document_command(service):
@@ -325,8 +324,7 @@ def create_document(service, title):
         "title": title,
     }
 
-    document = service.documents().create(body=payload).execute()
-    return document
+    return service.documents().create(body=payload).execute()
 
 
 def get_document_command(service):
@@ -339,13 +337,12 @@ def get_document_command(service):
 
 
 def get_document(service, document_id):
-    document = service.documents().get(documentId=document_id).execute()
-    return document
+    return service.documents().get(documentId=document_id).execute()
 
 
 def main():
     command = demisto.command()
-    demisto.debug('Command being called is %s' % (command))
+    demisto.debug(f'Command being called is {command}')
     params = demisto.params()
     proxy = params.get('proxy')
     disable_ssl = params.get('insecure', False)
@@ -355,7 +352,7 @@ def main():
             get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
             demisto.results('ok')
         except Exception as e:
-            return_error("Failed to execute test. Error: {}".format(str(e)), e)
+            return_error(f"Failed to execute test. Error: {str(e)}", e)
 
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
@@ -366,7 +363,7 @@ def main():
         elif command == 'google-docs-get-document':
             document, human_readable_text = get_document_command(service)
         else:
-            return_error("Command {} does not exist".format(command))
+            return_error(f"Command {command} does not exist")
             return
 
         res = {
@@ -386,13 +383,13 @@ def main():
             'EntryContext': ec
         })
 
-    # Log exceptions
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
-        return_error("Failed to execute {} command. Error: {}".format(command, str(e)), e)
+        return_error(f"Failed to execute {command} command. Error: {str(e)}", e)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
-if __name__ == "__builtin__" or __name__ == "builtins":
+
+if __name__ in ["__builtin__", "builtins"]:
     main()
