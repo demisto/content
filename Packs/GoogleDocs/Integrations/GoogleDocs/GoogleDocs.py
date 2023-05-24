@@ -347,12 +347,13 @@ def main():
     proxy = params.get('proxy')
     disable_ssl = params.get('insecure', False)
     service_account_credentials = json.loads(params.get('service_account_credentials'))
+
     if command == 'test-module':
         try:
             get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
-            demisto.results('ok')
+            return_results('ok')
         except Exception as e:
-            return_error(f"Failed to execute test. Error: {str(e)}", e)
+            raise Exception(f"Failed to execute test. Error: {str(e)}", e)
 
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
@@ -363,8 +364,7 @@ def main():
         elif command == 'google-docs-get-document':
             document, human_readable_text = get_document_command(service)
         else:
-            return_error(f"Command {command} does not exist")
-            return
+            raise Exception(f"Command {command} does not exist")
 
         res = {
             'RevisionId': document['revisionId'],
@@ -375,7 +375,7 @@ def main():
             'GoogleDocs(val.DocumentId && val.DocumentId == obj.DocumentId)': res
         }
 
-        demisto.results({
+        return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': ec,
