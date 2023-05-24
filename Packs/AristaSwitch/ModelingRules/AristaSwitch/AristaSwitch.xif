@@ -30,7 +30,8 @@ alter
 
 
 [MODEL: dataset="arista_switch_raw"]
-/*** AAA (Authentication, Authorization, and Accounting) Events ***/  
+/*** AAA (Authentication, Authorization, and Accounting) Events 
+    (https://www.arista.com/en/um-eos/eos-user-security) ***/  
 call arista_switch_common_fields_modeling
 | filter facility = "AAA" 
 | alter 
@@ -55,7 +56,8 @@ call arista_switch_common_fields_modeling
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION); 
     
 
-/*** Accounting Events ***/  
+/*** Accounting Events 
+    (https://www.arista.com/en/um-eos/eos-user-security) ***/  
 call arista_switch_common_fields_modeling
 | filter facility = "ACCOUNTING" 
 | alter 
@@ -96,13 +98,15 @@ call arista_switch_common_fields_modeling
     xdm.auth.auth_method = login_process;
 
 
-/*** BFD (Bidirectional Forwarding Detection) Events ***/  
+/*** BFD (Bidirectional Forwarding Detection) Events 
+    (https://www.arista.com/en/um-eos/eos-bidirectional-forwarding-detection) ***/  
 call arista_switch_common_fields_modeling
 | filter facility = "BFD" 
 | alter 
     peer_ip =  arrayindex(regextract(message, "ip:\s*([^,]+)"), 0),  
     interface =  arrayindex(regextract(message, "intf:\s*([^,]+)"), 0),  
     state = uppercase(arrayindex(regextract(message, "changed state from \S+ to (\S+)"), 0)),
+    old_state = uppercase(arrayindex(regextract(message, "changed state from (\S+) to \S+"), 0)),
     reason = arrayindex(regextract(message, "diag (\S+)"), 0) // diagnostic code specifying the local system reason for the last change to Down state
 | alter 
     peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
@@ -111,12 +115,55 @@ call arista_switch_common_fields_modeling
     xdm.target.ipv4 = peer_ipv4,
     xdm.target.ipv6 = peer_ipv6,
     xdm.target.interface = interface,
-    xdm.event.outcome = if(state = "UP", XDM_CONST.OUTCOME_SUCCESS, state="DOWN", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.target.resource.value = state,
+    xdm.target.resource.type = if(state != null and state != "", "state", null),
+    xdm.target.resource_before.value = old_state,
+    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
+    xdm.observer.action = state,
+    xdm.event.outcome = if(state = "UP", XDM_CONST.OUTCOME_SUCCESS, state="DOWN", XDM_CONST.OUTCOME_FAILED, state != null, XDM_CONST.OUTCOME_UNKNOWN, null),
     xdm.event.outcome_reason = reason, 
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
-/*** ACL (Access List) Events (https://www.arista.com/en/um-eos/eos-acls-and-route-maps) ***/  
+/*** BGP (Border Gateway Protocol) RIB (Routing Information Base) Events 
+    (https://www.arista.com/en/um-eos/eos-border-gateway-protocol-bgp) ***/  
+call arista_switch_common_fields_modeling
+| filter process = "Rib" and facility contains "BGP" 
+| alter 
+    peer_ip = arrayindex(regextract(message, "peer\s*(\S+)"), 0),  
+    neighbor_ip = arrayindex(regextract(message, "neighbor\s*(\S+)"), 0),  
+    asn =  to_integer(arrayindex(regextract(message, "AS (\d+)"), 0)), 
+    old_state1 = arrayindex(regextract(message, "old state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE:
+    old_state2 = arrayindex(regextract(message, "\(AS \d+\) (\S+) to \S+"), 0),  //  Rib: %BGP-BFD-STATE-CHANGE:
+    new_state1 = arrayindex(regextract(message, "new state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE: 
+    new_state2 = arrayindex(regextract(message, "\(AS \d+\) \S+ to (\S+)"), 0), // Rib: %BGP-BFD-STATE-CHANGE:
+    trigger_event = arrayindex(regextract(message, "old state \S+ event (\S+) new state \S+"), 0),
+    bytes = to_integer(arrayindex(regextract(message, "sent to neighbor .+? (\d+) bytes"), 0))
+| alter 
+    peer_ip = coalesce(peer_ip, neighbor_ip),
+    old_state = uppercase(coalesce(old_state1, old_state2)),
+    new_state = uppercase(coalesce(new_state1, new_state2))
+| alter 
+    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
+    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
+| alter 
+    xdm.source.sent_bytes = bytes,
+    xdm.target.ipv4 = peer_ipv4,
+    xdm.target.ipv6 = peer_ipv6,
+    xdm.target.asn.as_number = asn,
+    xdm.target.resource.type = if(new_state != null and new_state != "", "state", null),
+    xdm.target.resource.value = new_state,
+    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
+    xdm.target.resource_before.value = old_state,
+    xdm.observer.action = new_state,
+    xdm.event.is_completed = if(new_state = "ESTABLISHED", true, new_state != null, false, null),
+    xdm.event.outcome = if(new_state in("UP", "ESTABLISHED"), XDM_CONST.OUTCOME_SUCCESS, new_state in("DOWN", "ACTIVE"), XDM_CONST.OUTCOME_FAILED, new_state in("IDLE", "CONNECT", "OPENSENT", "OPENCONFIRM"), XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = trigger_event, 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** ACL (Access List) Events 
+    (https://www.arista.com/en/um-eos/eos-acls-and-route-maps) ***/  
 call arista_switch_common_fields_modeling
 | filter facility = "ACL" and mnemonic in("IPACCESS", "MACACCESS")
 | alter
