@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Dict
+from typing import Any
 import traceback, json
 
 class Playbook:
