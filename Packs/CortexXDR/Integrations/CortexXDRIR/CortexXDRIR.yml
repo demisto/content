@@ -3351,7 +3351,7 @@ script:
     - description: >
         Unique ID of a specific host.
       name: host_id
-    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(limit should be used when no specific host is requested).
+    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.)
       name: limit
       defaultValue: 50
     name: xdr-list-risky-hosts
