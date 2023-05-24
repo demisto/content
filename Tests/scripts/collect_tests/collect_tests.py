@@ -132,10 +132,6 @@ class CollectionResult:
                 skip_support_level_compatibility=skip_support_level_compatibility,
             )
 
-        except (SkippedPackException, DeprecatedPackException,) as e:
-            logger.warning(str(e))
-            return
-
         except NonXsoarSupportedPackException:
             if test:
                 logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
@@ -150,6 +146,10 @@ class CollectionResult:
             test_suffix = f', not collecting {test}' if test else ''
             logger.info(f'{str(e)}{test_suffix} (pack will be installed)')
             test = None
+
+        except (SkippedPackException, DeprecatedPackException,) as e:
+            logger.warning(str(e))
+            return
 
         if test:
             self.tests = {test}
