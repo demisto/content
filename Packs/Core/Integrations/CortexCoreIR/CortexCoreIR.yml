@@ -3629,7 +3629,7 @@ script:
       description: Email address of the user.
       type: string
     - contextPath: Core.User.user_first_name
-      description: First name of the user
+      description: First name of the user.
       type: string
     - contextPath: Core.User.user_last_name
       description: Last name of the user.
