@@ -176,6 +176,8 @@ class KeyVaultClient:
         url_suffix = '/vaults'
         response = self.http_request(
             'GET', url_suffix=url_suffix)
+        if response.get('error'):
+            raise Exception(response.get('error').get('message'))
         return self.get_entities_independent_of_pages(response, limit, offset)
 
     def update_access_policy_request(self, vault_name: str, operation_kind: str, object_id: str,
@@ -437,7 +439,6 @@ class KeyVaultClient:
                                 enabled_for_disk_encryption: bool,
                                 enabled_for_template_deployment: bool, sku_name: str,
                                 permissions: Dict[str, Any], network_acls: Dict[str, Any]):
-
         """
         Configure the properties of a vault on create or update command.
 
@@ -585,7 +586,8 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
         readable_output=readable_output,
         ignore_auto_extract=True
     )
-
+    if response.get('error'):
+        command_results = CommandResults(readable_output=response.get('error').get('message'))
     return command_results
 
 
@@ -1277,7 +1279,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        client_secret = params.get('credentials', {}).get('password','')
+        client_secret = params.get('credentials', {}).get('password', '')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
@@ -1288,10 +1290,10 @@ def main() -> None:
                                                 client_id=params.get(
                                                     'client_id', None),
                                                 client_secret=client_secret,
-                                                subscription_id=params.get(
-                                                    'subscription_id', None),
-                                                resource_group_name=params.get(
-                                                    'resource_group_name', None),
+                                                subscription_id=args.get('subscription_id',
+                                                params.get('subscription_id')) or None,
+                                                resource_group_name=args.get('resource_group_name',
+                                                params.get('resource_group_name')) or None,
                                                 verify=verify_certificate,
                                                 proxy=proxy,
                                                 certificate_thumbprint=certificate_thumbprint,

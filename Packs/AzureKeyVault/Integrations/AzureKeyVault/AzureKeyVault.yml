@@ -53,13 +53,13 @@ configuration:
   section: Connect
   advanced: true
 - display: Default Subscription ID
-  additionalinfo: The specified value can be inserted either in the configuration or directly within the commands. However, if done so, it will be overridden.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an overwrite by the command value..
   name: subscription_id
   required: false
   type: 0
   section: Connect
 - display: Default Resource Group Name
-  additionalinfo: The specified value can be inserted either in the configuration or directly within the commands. However, if done so, it will be overridden.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an overwrite by the command value..
   name: resource_group_name
   required: false
   type: 0
