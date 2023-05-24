@@ -5360,15 +5360,14 @@ def main():  # pragma: no cover
 
         # A workaround for fixing compatibility issues when upgrading existing instances that are < 1.2.0.
         # ('token' field was converted from type 0 to type 9)
-        if params.get("token") and isinstance(params["token"], str):
-            token = params["token"]
+        token = None
 
-        else:
-            if identifier := params.get("token", {}).get("identifier"):
-                token = identifier
+        if params.get("token"):
+            if isinstance(params["token"], str):
+                token = params["token"]
 
-            else:  # If token.identifier is an empty string, use None instead.
-                token = None
+            elif params["token"].get("identifier"):
+                token = params["token"]["identifier"]
 
         client = Client(
             url=params["server"],
