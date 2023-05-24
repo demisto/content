@@ -40,6 +40,33 @@ class UrlSuffixes:
     AUDIT = '/audit/logs'
 
 
+class CreatedTimeFields:
+    OBSERVED_ATTACK_TECHNIQUES = 'detectedDateTime'
+    WORKBENCH = 'createdDateTime'
+    SEARCH_DETECTIONS = 'eventTime'
+    AUDIT = 'loggedDateTime'
+
+
+URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD = {
+    UrlSuffixes.AUDIT: (
+        LogTypes.AUDIT,
+        CreatedTimeFields.AUDIT
+    ),
+    UrlSuffixes.WORKBENCH: (
+        LogTypes.WORKBENCH,
+        CreatedTimeFields.WORKBENCH
+    ),
+    UrlSuffixes.SEARCH_DETECTIONS: (
+        LogTypes.SEARCH_DETECTIONS,
+        CreatedTimeFields.SEARCH_DETECTIONS
+    ),
+    UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES: (
+        LogTypes.OBSERVED_ATTACK_TECHNIQUES,
+        CreatedTimeFields.OBSERVED_ATTACK_TECHNIQUES
+    )
+}
+
+
 ''' CLIENT CLASS '''
 
 
@@ -119,11 +146,14 @@ class Client(BaseClient):
             demisto.info(f'Received {current_items=} with {next_link=}')
             events.extend(current_items)
 
-        event_type = get_event_type_by_url_suffix(url_suffix)
+        event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
         events = events[:limit]
-        
+
+        # add event time and event type for modeling rules
         for event in events:
             event['event_type'] = event_type
+            if event_time := event.get(created_time_field):
+                event['_time'] = event_time
 
         return events
 
@@ -292,26 +322,6 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_event_type_by_url_suffix(url_suffix: str) -> str:
-    """
-    Get the event type by the url suffix.
-
-    Args:
-        url_suffix (str): the url suffix of the http request for a certian log.
-
-    Returns:
-        str: The log type.
-    """
-    if url_suffix == UrlSuffixes.WORKBENCH:
-        return LogTypes.WORKBENCH
-    elif url_suffix == UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES:
-        return LogTypes.OBSERVED_ATTACK_TECHNIQUES
-    elif url_suffix == UrlSuffixes.SEARCH_DETECTIONS:
-        return LogTypes.SEARCH_DETECTIONS
-    else:
-        return LogTypes.AUDIT
-
-
 def get_datetime_range(
     last_run_time: str | None,
     first_fetch: str,
@@ -438,8 +448,8 @@ def get_workbench_logs(
     workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
     latest_workbench_log_time = get_latest_log_created_time(
         logs=workbench_logs,
-        created_time_field='createdDateTime',
-        log_type='workbench',
+        created_time_field=CreatedTimeFields.WORKBENCH,
+        log_type=LogTypes.WORKBENCH,
         date_format=date_format,
         increase_latest_log=True
     )
@@ -479,8 +489,8 @@ def get_observed_attack_techniques_logs(
     )
     latest_observed_attack_technique_log_time = get_latest_log_created_time(
         logs=observed_attack_techniques_logs,
-        created_time_field='detectedDateTime',
-        log_type='observed attack techniques',
+        created_time_field=CreatedTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+        log_type=LogTypes.OBSERVED_ATTACK_TECHNIQUES,
         date_format=date_format,
         increase_latest_log=True
     )
@@ -521,8 +531,8 @@ def get_search_detection_logs(
 
     latest_search_detection_log_time = get_latest_log_created_time(
         logs=search_detection_logs,
-        created_time_field='eventTime',
-        log_type='search detection',
+        created_time_field=CreatedTimeFields.SEARCH_DETECTIONS,
+        log_type=LogTypes.SEARCH_DETECTIONS,
         date_format=date_format,
         increase_latest_log=True
     )
@@ -562,8 +572,8 @@ def get_audit_logs(
 
     latest_audit_log_time = get_latest_log_created_time(
         logs=audit_logs,
-        created_time_field='loggedDateTime',
-        log_type='audit',
+        created_time_field=CreatedTimeFields.AUDIT,
+        log_type=LogTypes.AUDIT,
         date_format=date_format,
     )
 
