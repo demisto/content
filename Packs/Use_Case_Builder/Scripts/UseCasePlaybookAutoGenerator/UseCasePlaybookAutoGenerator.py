@@ -48,7 +48,7 @@ class Playbook:
     def taskSection(self, section):
         try:
             tasks = demisto.incident()['CustomFields'][self.taskSectionDict[section]] #Determines enrichment tasks defined in incident
-        except:
+        except Exception:
             tasks = "None" #Sets default value if no enrichment tasks
 
         if tasks != "None":
