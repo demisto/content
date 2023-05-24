@@ -53,6 +53,11 @@ configuration:
     name: fetch_incidents_filters
     type: 12
     required: false
+  - display: (deprecated) Deduplication parameters JSON if required
+    name: fetch_incidents_deduplication
+    type: 0
+    required: false
+    hidden: true
   - display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
     name: fetch_incidents_limit
     type: 0
