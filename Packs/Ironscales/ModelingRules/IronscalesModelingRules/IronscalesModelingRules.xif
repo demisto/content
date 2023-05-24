@@ -8,7 +8,7 @@ alter
 	xdm.email.sender = sender_email,
 	xdm.email.recipients = arraycreate(reply_to),
 	xdm.alert.subcategory = themis_verdict,
-	xdm.intermediate.host.hostname = to_json_string(arraymap(mail_server -> [], json_extract_scalar("@element","$.host"))),
+	xdm.intermediate.host.hostname = mail_server -> host,
 	xdm.intermediate.ipv4 = ipv4_address,
 	xdm.intermediate.ipv6 = ipv6_address,
 	xdm.source.user.username = name,
