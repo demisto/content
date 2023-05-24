@@ -752,6 +752,16 @@ script:
       - purge
       required: false
       secret: false
+    - name: subscription_id
+      description: Will override instance param ‘subscription_id'.
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: Will override instance param ‘resource_group_name'.
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: Update access policies in a key vault in the specified subscription.
       The update regards only the access policy for the specified object ID.

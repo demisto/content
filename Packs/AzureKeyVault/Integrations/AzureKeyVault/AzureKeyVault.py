@@ -703,6 +703,8 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any]) -
 
     response = client.update_access_policy_request(
         vault_name, operation_kind, object_id, keys, secrets, certificates, storage_accounts)
+    if response.get('error'):
+        raise Exception(response)
 
     readable_output = tableToMarkdown(f'{vault_name} Updated Access Policy',
                                       response,
