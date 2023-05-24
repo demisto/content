@@ -4300,7 +4300,7 @@ def domain_reputation_handler(
     Args:
         client (Client): Threat Command API client.
         obj (dict[str, Any]): Domain response.
-        obj_id (str): Domain value.
+        obj_id (bool): Domain value.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
