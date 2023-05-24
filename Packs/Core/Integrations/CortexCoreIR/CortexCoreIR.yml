@@ -3736,7 +3736,7 @@ script:
       description: Name of the user group as it appears in the management console.
       type: String
     - contextPath: Core.UserGroup.insert_time
-      description: Timestamp of when the User Group was created
+      description: Timestamp of when the user group was created
       type: Number
     - contextPath: Core.UserGroup.update_time
       description: Timestamp of when the User Group was last updated.
