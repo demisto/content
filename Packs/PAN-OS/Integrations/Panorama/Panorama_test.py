@@ -176,7 +176,7 @@ def test_get_address(mocker):
     from Panorama import panorama_get_address
     exception_msg = 'Object was not found, verify that the name is correct and that the instance was committed.'
     mocker.patch.object(Panorama, "http_request", side_effect=Exception(exception_msg))
-    result = panorama_get_address("lksdhgkjhdsga")
+    result = panorama_get_address("TEST")
     assert result == {}
 
 
@@ -195,9 +195,9 @@ def test_get_address_command(mocker):
     from Panorama import panorama_get_address_command
     mocker.patch.object(Panorama, "panorama_get_address", return_value={})
     return_results_mock = mocker.patch.object(Panorama, 'return_results')
-    result = panorama_get_address_command({'name': 'lksdhgkjhdsga'})
+    result = panorama_get_address_command({'name': 'TEST'})
     assert not result
-    assert return_results_mock.call_args[0][0] == 'Address name does not exist'
+    assert return_results_mock.call_args[0][0] == 'Address name TEST was not found'
 
 
 def test_prettify_addresses_arr():
