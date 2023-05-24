@@ -98,6 +98,11 @@ Requires security manager authentication. Launch an existing scan from Tenable.s
 
 #### Human Readable Output
 
+### Tenable.sc Scan
+|Name|ID|OwnerID|JobID|Status|
+|---|---|---|---|---|
+| test_scan_2023 | 169 | 38 | 118864 | Queued |
+
 ### tenable-sc-get-vulnerability
 
 ***
@@ -202,6 +207,11 @@ Requires security manager authentication. Get the status of a specific scan in T
 
 #### Human Readable Output
 
+### Tenable.sc Scan Status
+|ID|Name|Status|Description|
+|---|---|---|---|
+| 169 | test_scan_2023 | Running | Test scan 2023 |
+
 ### tenable-sc-get-scan-report
 
 ***
@@ -244,6 +254,15 @@ Requires security manager authentication. Get a single report with Tenable.sc sc
 
 #### Human Readable Output
 
+### Tenable.sc Scan 150 Report
+|ID|Name|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 150 | my_Test_scan | Plugin #1 | Full Access | yuv | 115 | 2023-05-18T13:12:51Z | 2023-05-18T13:45:53Z | 33.03333333333333 | 21275 | 2023-05-18T13:45:57Z | Local | Completed | regular | 115 |
+### Vulnerabilities
+|ID|Name|Family|Severity|Total|
+|---|---|---|---|---|
+| 11219 | Nessus SYN scanner | Port scanners | Info | 109 |
+
 ### tenable-sc-list-credentials
 
 ***
@@ -273,6 +292,13 @@ Requires security manager authentication. Get a list of Tenable.sc credentials.
 | TenableSC.Credential.LastModified | date | Credential last modified time. | 
 
 #### Human Readable Output
+
+### Tenable.sc Credentials
+|ID|Name|Type|Group|LastModified|
+|---|---|---|---|---|
+| 1 | Windows server | windows |  | 2023-02-14T11:44:12Z |
+| 2 | SSH linux | ssh |  | 2023-02-15T09:11:10Z |
+| 3 | Windows clients | windows |  | 2023-02-15T12:32:45Z |
 
 ### tenable-sc-list-policies
 
@@ -304,6 +330,12 @@ Requires security manager authentication. Get a list of Tenable.sc scan policies
 
 #### Human Readable Output
 
+### Tenable.sc Scan Policies
+|ID|Name|Description|Type|Group|Owner|LastModified|
+|---|---|---|---|---|---|---|
+| 1 | Network Scan |  | Basic Network Scan |  |  | 2023-02-09T14:58:26Z |
+| 2 | D Advanced Scan | D Advanced Scan | Advanced Scan |  |  | 2023-02-13T13:02:22Z |
+
 ### tenable-sc-list-report-definitions
 
 ***
@@ -332,6 +364,11 @@ Requires security manager authentication. Get a list of Tenable.sc report defini
 
 #### Human Readable Output
 
+### Tenable.sc Report Definitions
+|ID|Name|Description|Type|Group|Owner|
+|---|---|---|---|---|---|
+| 2 | Critical and Exploitable Vulnerabilities Report | Test | pdf | Full Access | test |
+
 ### tenable-sc-list-repositories
 
 ***
@@ -354,6 +391,11 @@ There are no input arguments for this command.
 | TenableSC.ScanRepository.Description | string | Scan Repository. | 
 
 #### Human Readable Output
+
+### Tenable.sc Scan Repositories
+|ID|Name|
+|---|---|
+| 1 | Local |
 
 ### tenable-sc-list-zones
 
@@ -388,7 +430,8 @@ There are no input arguments for this command.
 |ID|Name|IPList|activeScanners|
 |---|---|---|---|
 | 1 | Default Scan Zone | ip | 1 |
-### Tenable.sc Scanners\n|ID|Name|Status|
+### Tenable.sc Scanners
+|ID|Name|Status|
 |---|---|---|
 | 2 | RHEL6 Scanner | 1 |
 
@@ -443,7 +486,10 @@ Requires security manager role. Create a scan on Tenable.sc
 
 #### Human Readable Output
 
-Scan successfully deleted
+### Scan created successfully
+|ID|CreatorID|Name|Type|CreationTime|
+|---|---|---|---|---|
+| 70 | 39 | my_name | policy | 2023-05-24T12:33:03Z |
 
 ### tenable-sc-delete-scan
 
@@ -465,6 +511,9 @@ Requires security manager authentication. Delete a scan in Tenable.sc
 There is no context output for this command.
 
 #### Human Readable Output
+
+Scan successfully deleted
+
 ### tenable-sc-list-assets
 
 ***
@@ -494,6 +543,13 @@ Requires security manager authentication. Get a list of Tenable.sc Assets.
 | TenableSC.Asset.LastModified | date | Asset last modified time. | 
 
 #### Human Readable Output
+
+### Tenable.sc Assets
+|ID|Name|Tag|Owner|Type|HostCount|LastModified|
+|---|---|---|---|---|---|---|
+| 0 | All Defined Ranges |  |  | static | 0 | 2023-01-09T13:13:52Z |
+| 1 | asset_1_name |  | test | dynamic | 106 | 2023-05-21T09:12:52Z |
+| 2 | Systems that have been Scanned |  | test | dynamic | 152 | 2023-01-09T13:14:43Z |
 
 ### tenable-sc-create-asset
 
@@ -525,6 +581,11 @@ Requires security manager authentication. Create an Asset in Tenable.sc with pro
 
 #### Human Readable Output
 
+### Asset created successfully
+|ID|Name|OwnerName|
+|---|---|---|
+| 42 | example output | yuv |
+
 ### tenable-sc-get-asset
 
 ***
@@ -554,6 +615,11 @@ Requires security manager authentication. Get details for a given asset in Tenab
 | TenableSC.Asset.IPs | unknown | Asset viewable IPs. | 
 
 #### Human Readable Output
+
+### Tenable.sc Asset
+|ID|Name|Description|Created|Modified|Owner|Group|IPs|
+|---|---|---|---|---|---|---|---|
+| 1 | asset_1_name | asset_1_description | 2023-01-09T13:14:43Z | 2023-05-21T09:12:52Z | test | Full Access | <IPs_list> |
 
 ### tenable-sc-delete-asset
 
@@ -609,6 +675,12 @@ Requires security manager authentication. List alerts from Tenable.sc.
 
 #### Human Readable Output
 
+### Tenable.sc Alerts
+|ID|Name|Actions|State|LastTriggered|LastEvaluated|Group|Owner|
+|---|---|---|---|---|---|---|---|
+| 1 | Test Alert 1 | ticket | Triggered | 2023-02-16T07:13:08Z | 2023-05-23T13:30:01Z | Full Access | lmanager |
+| 2 | Test Alert 2 | scan | Triggered | 2023-02-16T07:14:07Z | 2023-05-24T12:14:08Z | Full Access | lmanager |
+
 ### tenable-sc-get-alert
 
 ***
@@ -641,6 +713,19 @@ Requires security manager authentication. Get information about a given alert in
 | TenableSC.Alert.Action.Values | Unknown | Alert action values. | 
 
 #### Human Readable Output
+
+### Tenable.sc Alert
+ID|Name|LastTriggered|State|Behavior|
+|---|---|---|---|---|
+| 1 | Test Alert 1 | 2023-02-16T07:13:08Z | Triggered | Execute only on first trigger |
+### Condition
+|Trigger|Query|
+|---|---|
+| sumip \u003e= 10 | Query for alert 'Test Alert 1' at 1676531587 |
+### Actions
+|Type|Values|
+|---|---|
+| ticket | lmanager |
 
 ### tenable-sc-get-device
 
@@ -685,6 +770,11 @@ Requires security manager authentication. Gets the specified device information.
 
 #### Human Readable Output
 
+### Tenable.sc Device
+|IP| UUID | MacAddress|
+|---|---|---|
+| <IP> | <UUID> | <MacAddress> |
+
 ### tenable-sc-list-users
 
 ***
@@ -719,6 +809,12 @@ Results may vary based on the authentication type (admin or security manager). L
 
 #### Human Readable Output
 
+### Tenable.sc Users
+|ID|Username|Title|Email|Created|Modified|LastLogin|Role|
+|---|---|---|---|---|---|---|---|
+| 1 | test |  |  | 2023-01-09T13:13:53Z | 2023-05-24T10:23:29Z |  | Security Manager |
+| 2 | secman |  |  | 2023-02-06T09:54:47Z | 2023-05-01T10:05:46Z | 2023-05-24T12:43:35Z | Security Manager |
+
 ### tenable-sc-get-system-licensing
 
 ***
@@ -741,6 +837,11 @@ There are no input arguments for this command.
 | TenableSC.Status.License | Unknown | License status. | 
 
 #### Human Readable Output
+
+### Tenable.sc Licensing information
+|License|LicensedIPS|ActiveIPS|
+|---|---|---|
+| Valid | 512 | 152 |
 
 ### tenable-sc-get-system-information
 
@@ -770,6 +871,11 @@ There are no input arguments for this command.
 | TenableSC.System.LastCheck | date | System last check time. | 
 
 #### Human Readable Output
+
+### Tenable.sc System information
+|RPMStatus|JavaStatus|DiskStatus|DiskThreshold|LastCheck|
+|---|---|---|---|---|
+| true | true | true | 5% | 2023-05-24T04:10:02Z |
 
 ### tenable-sc-get-all-scan-results
 
@@ -809,6 +915,13 @@ Requires security manager authentication. Returns all scan results in Tenable.sc
 
 #### Human Readable Output
 
+### Tenable.sc Scan results - 0-1
+Total number of elements is 77
+|ID|Name|Status|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 92 | test_scan_2023-mart-05-1950 | Error | Test scan 2023 | Network Scan | Full Access | secman | 0 | 2023-04-24T23:50:07Z | 2023-04-25T01:10:13Z | 80.1 | 22639720 |  | Local |
+| 93 | test_scan_2023-mart-05-1950 | Error | Test scan 2023 | Network Scan | Full Access | secman | 0 | 2023-04-25T23:50:07Z | 2023-04-26T00:30:44Z | 40.61666666666667 | 12624659 |  | Local |
+
 ### tenable-sc-list-groups
 
 ***
@@ -839,6 +952,19 @@ Requires security manager authentication. list all groups.
 | TenableSC.Group.Users.Username | string | Group's user's user name. | 
 
 #### Human Readable Output
+
+## Tenable.sc groups
+|ID|
+|---|
+| 0 |
+### Group id:0
+|Username|Firstname|Lastname|
+|---|---|---|
+| test | test |  |
+| secman |  |  |
+| testuser1 | fname | lname |
+| testuser444 | fname2 | lname2 |
+| testuser3 | fname3 | lname3 |
 
 ### tenable-sc-create-user
 
@@ -931,7 +1057,10 @@ This command can be executed with both authentication types (admin or security m
 
 #### Human Readable Output
 
-
+### User example_output was created successfully.
+|User type|User Id|User Status|User Name|User Role Name|User Group Name|
+|---|---|---|---|---|---|
+| regular | 57 | 0 | example_output | Security Analyst | Full Access |
 
 ### tenable-sc-update-user
 
@@ -1024,7 +1153,10 @@ update user details by given user_id.
 
 #### Human Readable Output
 
-
+### user 23 was updated successfully.
+|User type|User Id|User Status|User Name|First Name|Lat Name |Email |User Role Name|User Group Name|
+|---|---|---|---|---|---|---|---|---|
+| regular | 23 | 0 | testuser30 | testuser30 | testuser30 | testuser30@mymail.com | Credential Manager | Full Access |
 
 ### tenable-sc-delete-user
 

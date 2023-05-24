@@ -23,6 +23,7 @@ ACTION_TYPE_TO_VALUE = {
     'report': 'report.name',
     'ticket': 'assignee.username'
 }
+FIELDS_TO_INCLUDE = 'id,name,description,type,ownerGroup,owner,tags,modifiedTime'
 
 
 class Client(BaseClient):
@@ -30,10 +31,13 @@ class Client(BaseClient):
                  password: str = "", access_key: str = "", secret_key: str = "", url: str = ""):
 
         if not proxy:
-            del os.environ['HTTP_PROXY']
-            del os.environ['HTTPS_PROXY']
-            del os.environ['http_proxy']
-            del os.environ['https_proxy']
+            try:
+                del os.environ['HTTP_PROXY']
+                del os.environ['HTTPS_PROXY']
+                del os.environ['http_proxy']
+                del os.environ['https_proxy']
+            except Exception as e:
+                demisto.debug(f"encountered the following issue: {e}")
 
         self.url = f"{get_server_url(url)}/rest"
         self.verify_ssl = verify_ssl
@@ -47,7 +51,7 @@ class Client(BaseClient):
         if secret_key and access_key:
             self.headers['x-apikey'] = f"accesskey={access_key}; secretkey={secret_key}"
             BaseClient.__init__(self, base_url=self.url, headers=self.headers, verify=verify_ssl, proxy=proxy)
-            self.send_request = self.send_request_new
+            self.send_request = self.send_request_api_key_auth
         else:
             self.session = Session()
             integration_context = demisto.getIntegrationContext()
@@ -55,11 +59,11 @@ class Client(BaseClient):
             self.cookie = integration_context.get('cookie')
             self.user_name = user_name
             self.password = password
-            self.send_request = self.send_request_old
+            self.send_request = self.send_request_username_and_password_auth
             if not self.token or not self.cookie:
                 self.login()
 
-    def send_request_new(self, path, method='get', body={}, params={}, headers=None):
+    def send_request_api_key_auth(self, path, method='GET', body={}, params={}, headers=None):
         """
         Send the requests for access & secret keys authentication method.
         Args:
@@ -74,7 +78,7 @@ class Client(BaseClient):
         headers = headers or self.headers
         return self._http_request(method, url_suffix=path, params=params, data=json.dumps(body), headers=headers)
 
-    def send_request_old(self, path, method='get', body=None, params=None, headers=None, try_number=1):
+    def send_request_username_and_password_auth(self, path, method='GET', body=None, params=None, headers=None, try_number=1):
         """
         Send the requests for username & password authentication method.
         Args:
@@ -172,7 +176,7 @@ class Client(BaseClient):
         """
         Send the request to logout for username & password authentication method.
         """
-        self.send_request(path='token', method='delete')
+        self.send_request(path='token', method='DELETE')
 
     def create_scan(self, args: Dict[str, Any]):
         """
@@ -184,7 +188,7 @@ class Client(BaseClient):
         """
         body = self.create_scan_body(args)
 
-        return self.send_request(path='scan', method='post', body=body)
+        return self.send_request(path='scan', method='POST', body=body)
 
     def create_scan_body(self, args):
         """
@@ -238,12 +242,12 @@ class Client(BaseClient):
             body['maxScanTime'] = max_scan_time * 3600
 
         if schedule := args.get('schedule'):
-            body['schedule'] = {
+            schedule_body = {
                 'type': schedule
             }
 
             if dependent := args.get('dependent_id'):
-                body['schedule']['dependentID'] = dependent
+                schedule_body['dependentID'] = dependent
 
             if schedule == 'ical':
                 start_time = args.get("start_time")
@@ -258,18 +262,19 @@ class Client(BaseClient):
                 except Exception:
                     start_time = parse_date_range(start_time, date_format=timestamp_format)[0]
                 if time_zone := args.get("time_zone") and start_time:
-                    body['schedule']['start'] = f"TZID={time_zone}:{start_time}"
+                    schedule_body['start'] = f"TZID={time_zone}:{start_time}"
                 else:
                     raise DemistoException("Please make sure to provide both time_zone and start_time.")
                 if all([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
-                    body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};"
+                    schedule_body['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval};"
                     f"BYDAY={repeat_rule_by_day}"
                 elif repeat_rule_freq and repeat_rule_interval:
-                    body['schedule']['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval}"
+                    schedule_body['repeatRule'] = f"FREQ={repeat_rule_freq};INTERVAL={repeat_rule_interval}"
                 elif any([repeat_rule_freq, repeat_rule_interval, repeat_rule_by_day]):
                     raise DemistoException("Please make sure to provide repeat_rule_freq, repeat_rule_interval with or without "
                                            "repeat_rule_by_day, or don't provide any of them.")
-                body['schedule']['enabled'] = argToBoolean(args.get("enabled", True))
+                schedule_body['enabled'] = argToBoolean(args.get("enabled", True))
+            body['schedule'] = schedule_body
 
         remove_nulls_from_dictionary(body)
         return body
@@ -433,20 +438,15 @@ class Client(BaseClient):
 
         return self.send_request(path='asset', params=params)
 
-    def get_credentials(self, fields):
+    def get_credentials(self):
         """
         Send the request for list_credentials_command.
-        Args:
-            fields (str): The fields to include in the response.
         Returns:
             Dict: The response.
         """
-        params = None
-
-        if fields:
-            params = {
-                'fields': fields
-            }
+        params = {
+            'fields': FIELDS_TO_INCLUDE
+        }
 
         return self.send_request(path='credential', params=params)
 
@@ -491,7 +491,7 @@ class Client(BaseClient):
         if tags:
             body['tags'] = tags
 
-        return self.send_request(path='asset', method='post', body=body)
+        return self.send_request(path='asset', method='POST', body=body)
 
     def delete_asset(self, asset_id):
         """
@@ -501,7 +501,7 @@ class Client(BaseClient):
         Returns:
             Dict: The response.
         """
-        return self.send_request(path=f'asset/{asset_id}', method='delete')
+        return self.send_request(path=f'asset/{asset_id}', method='DELETE')
 
     def get_report_definitions(self, fields):
         """
@@ -557,13 +557,13 @@ class Client(BaseClient):
         path = 'query'
 
         body = {
-            'name': 'scan ' + scan_id + ' query',
+            'name': f'scan {scan_id} query',
             'type': 'vuln',
             'tool': tool,
             'scanID': scan_id
         }
 
-        return self.send_request(path, method='post', body=body)
+        return self.send_request(path, method='POST', body=body)
 
     def delete_query(self, query_id):
         """
@@ -576,45 +576,34 @@ class Client(BaseClient):
         if not query_id:
             raise DemistoException('query id returned None')
         path = 'query/' + str(query_id)
-        self.send_request(path, method='delete')
+        self.send_request(path, method='DELETE')
 
-    def get_analysis(self, query=None, scan_results_id=None, args={}, calling_command="get_vulnerability_command"):
+    def get_analysis(self, body=None, args={}):
         """
         Send the request for get_vulnerability_command and get_vulnerabilities.
         Args:
-            query (dict or str): This function can receive query argument either as a dict (as in get_vulnerability_command),
-                          or as an ID of an existing query (as in get_vulnerabilities).
-            scan_results_id (None or str): str if received from get_vulnerabilities, otherwise will be part of args.
             args (dict): Either an empty dict if passed from get_vulnerabilities, otherwise, the demisto.results() object.
-            calling_command (str): The command that call this function.
+            body (str): The request body (if function is called from get_vulnerabilities).
         Returns:
             Dict: The response.
         """
-        body = self.create_get_vulnerability_request_body(args, query, scan_results_id)
+        body = body or self.create_get_vulnerability_request_body(args)
 
-        return self.send_request(path='analysis', method='post', body=body)
+        return self.send_request(path='analysis', method='POST', body=body)
 
-    def create_get_vulnerability_request_body(self, args={}, query=None, scan_results_id=None,
-                                              calling_command="get_vulnerability_command"):
+    def create_get_vulnerability_request_body(self, args={}):
         """
         Create the body for the request made in get_analysis.
         Args:
-            query (dict or str): This function can receive query argument either as a dict (as in get_vulnerability_command),
-                          or as an ID of an existing query (as in get_vulnerabilities).
-            scan_results_id (None or str): str if received from get_vulnerabilities, otherwise will be part of args.
             args (dict): Either an empty dict if passed from get_vulnerabilities, otherwise, the demisto.results() object.
-            calling_command (str): The command that call this function.
         Returns:
             Dict: The prepared request body.
         """
         vuln_id = args.get('vulnerability_id')
-        scan_results_id = scan_results_id or args.get('scan_results_id')
+        scan_results_id = args.get('scan_results_id')
         sort_field = args.get('sort_field', 'severity')
-        query_id = query or args.get('query_id')
-        if not isinstance(query_id, dict):
-            query = {'id': query_id}
-        else:
-            query = query_id
+        query_id = args.get('query_id')
+        query = {'id': query_id}
         sort_direction = args.get('sort_direction', "ASC")
         source_type = args.get('source_type', "individual")
         page = int(args.get('page', '0'))
@@ -625,29 +614,25 @@ class Client(BaseClient):
             'type': 'vuln',
             'view': 'all',
             'sourceType': source_type,
+            'startOffset': page,  # Lower bound for the results list (must be specified)
+            'endOffset': page + limit,  # Upper bound for the results list (must be specified)
+            'sortField': sort_field,
+            'sortDir': sort_direction,
+            'tool': 'vulndetails',
         }
-        if calling_command == "get_vulnerability_command":
-            body.update({
-                'startOffset': page,  # Lower bound for the results list (must be specified)
-                'endOffset': page + limit,  # Upper bound for the results list (must be specified)
-                'sortField': sort_field,
-                'sortDir': sort_direction,
-                'tool': 'vulndetails',
-            })
         if source_type == 'individual':
             if scan_results_id:
                 body['scanID'] = scan_results_id
             else:
                 raise DemistoException("When choosing source_type = individual - scan_results_id must be provided.")
-            if calling_command == "get_vulnerability_command":
-                vuln_filter = [{
-                    'filterName': 'pluginID',
-                    'operator': '=',
-                    'value': vuln_id
-                }]
-                query["filters"] = vuln_filter
-                query["tool"] = 'vulndetails'
-                query["type"] = 'vuln'
+            vuln_filter = [{
+                'filterName': 'pluginID',
+                'operator': '=',
+                'value': vuln_id
+            }]
+            query["filters"] = vuln_filter
+            query["tool"] = 'vulndetails'
+            query["type"] = 'vuln'
         else:
             body['sourceType'] = source_type
             if not query_id:
@@ -684,7 +669,7 @@ class Client(BaseClient):
         if show_users:
             params['fields'] = 'users'
 
-        return self.send_request(path='group', method='get', params=params)
+        return self.send_request(path='group', method='GET', params=params)
 
     def get_vulnerability(self, vuln_id):
         """
@@ -711,7 +696,7 @@ class Client(BaseClient):
         Returns:
             Dict: The response.
         """
-        return self.send_request(path=f'scan/{scan_id}', method='delete')
+        return self.send_request(path=f'scan/{scan_id}', method='DELETE')
 
     def get_device(self, uuid, ip, dns_name, repo):
         """
@@ -991,7 +976,7 @@ def validate_user_body_params(args: Dict[str, Any], command_type: str):
             raise DemistoException("Password length must be at least 3 characters.")
 
     if email and not re.compile(emailRegex).match(email):
-        raise DemistoException(f"Error: The given email address: {email} is not valid")
+        raise DemistoException(f"Error: The given email address: {email} is not in the correct format.")
 
     if command_type == 'create' and not email_notice == 'none' and not email:
         raise DemistoException("When email_notice is different from none, an email must be given as well.")
@@ -1041,7 +1026,7 @@ def list_scans_command(client: Client, args: Dict[str, Any]):
     res = client.get_scans('id,name,description,policy,ownerGroup,owner')
     manageable = args.get('manageable', 'false').lower()
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('No scans found')
 
     scans_dicts = get_elements(res['response'], manageable)
@@ -1082,7 +1067,7 @@ def list_policies_command(client: Client, args: Dict[str, Any]):
 
     manageable = args.get('manageable', 'false').lower()
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('No policies found')
 
     policies = get_elements(res['response'], manageable)
@@ -1123,7 +1108,7 @@ def list_repositories_command(client: Client, args: Dict[str, Any]):
     """
     res = client.get_repositories()
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('No repositories found')
 
     repositories = res['response']
@@ -1157,11 +1142,11 @@ def list_credentials_command(client: Client, args: Dict[str, Any]):
     Returns:
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
-    res = client.get_credentials('id,name,description,type,ownerGroup,owner,tags,modifiedTime')
+    res = client.get_credentials()
 
     manageable = args.get('manageable', 'false').lower()
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('No credentials found')
 
     credentials = get_elements(res['response'], manageable)
@@ -1204,7 +1189,7 @@ def list_assets_command(client: Client, args: Dict[str, Any]):
 
     manageable = args.get('manageable', 'false').lower()
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('No assets found')
 
     assets = get_elements(res['response'], manageable)
@@ -1362,7 +1347,7 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
 
     manageable = args.get('manageable', 'false').lower()
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('No report definitions found')
 
     reports = get_elements(res['response'], manageable)
@@ -1680,7 +1665,7 @@ def get_scan_status(client: Client, args: Dict[str, Any]):
     scans_results = []
     for scan_results_id in scan_results_ids:
         res = client.get_scan_results(scan_results_id)
-        if not res or 'response' not in res or not res['response']:
+        if not (res and res.get('response')):
             raise DemistoException('Scan results not found')
 
         scans_results.append(res['response'])
@@ -1701,7 +1686,7 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
 
     res = client.get_scan_report(scan_results_id)
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('Scan results not found')
 
     scan_results = res['response']
@@ -1767,8 +1752,15 @@ def get_vulnerabilities(client: Client, scan_results_id):
     if not query or 'response' not in query:
         return 'Could not get vulnerabilites query'
 
-    analysis = client.get_analysis(query=query['response']['id'], scan_results_id=scan_results_id,
-                                   calling_command="get_vulnerabilities")
+    body = {
+        'type': 'vuln',
+        'view': 'all',
+        'sourceType': 'individual',
+        'scanID': scan_results_id,
+        'query': {"id": query.get('response', {}).get('id')}
+    }
+
+    analysis = client.get_analysis(body=body)
 
     client.delete_query(query.get('response', {}).get('id'))
 
@@ -1980,21 +1972,8 @@ def get_device_command(client: Client, args: Dict[str, Any]):
     device = res['response']
 
     headers = [
-        'IP',
-        'UUID',
-        'MacAddress',
-        'RepositoryID',
-        'RepositoryName',
-        'NetbiosName',
-        'DNSName',
-        'OS',
-        'OsCPE',
-        'LastScan',
-        'TotalScore',
-        'LowSeverity',
-        'MediumSeverity',
-        'HighSeverity',
-        'CriticalSeverity'
+        'IP', 'UUID', 'MacAddress', 'RepositoryID', 'RepositoryName', 'NetbiosName', 'DNSName', 'OS', 'OsCPE', 'LastScan',
+        'TotalScore', 'LowSeverity', 'MediumSeverity', 'HighSeverity', 'CriticalSeverity'
     ]
 
     mapped_device = {
@@ -2007,7 +1986,7 @@ def get_device_command(client: Client, args: Dict[str, Any]):
         'DNSName': device.get('dnsName'),
         'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device.get('os') else '',
         'OsCPE': device.get('osCPE'),
-        'LastScan': timestamp_to_utc(device['lastScan']),
+        'LastScan': timestamp_to_utc(device.get('lastScan')),
         'TotalScore': device.get('total'),
         'LowSeverity': device.get('severityLow'),
         'MediumSeverity': device.get('severityMedium'),
@@ -2168,27 +2147,19 @@ def get_system_information_command(client: Client, args: Dict[str, Any]):
     system = sys_res['response']
 
     mapped_information = {
-        'Version': system['version'],
-        'BuildID': system['buildID'],
-        'ReleaseID': system['releaseID'],
-        'License': system['licenseStatus'],
-        'RPMStatus': diagnostics['statusRPM'],
-        'JavaStatus': diagnostics['statusJava'],
-        'DiskStatus': diagnostics['statusDisk'],
-        'DiskThreshold': diagnostics['statusThresholdDisk'],
-        'LastCheck': timestamp_to_utc(diagnostics['statusLastChecked']),
+        'Version': system.get('version'),
+        'BuildID': system.get('buildID'),
+        'ReleaseID': system.get('releaseID'),
+        'License': system.get('licenseStatus'),
+        'RPMStatus': diagnostics.get('statusRPM'),
+        'JavaStatus': diagnostics.get('statusJava'),
+        'DiskStatus': diagnostics.get('statusDisk'),
+        'DiskThreshold': diagnostics.get('statusThresholdDisk'),
+        'LastCheck': timestamp_to_utc(diagnostics.get('statusLastChecked')),
     }
 
     headers = [
-        'Version',
-        'BuildID',
-        'ReleaseID',
-        'License',
-        'RPMStatus',
-        'JavaStatus',
-        'DiskStatus',
-        'DiskThreshold',
-        'LastCheck'
+        'Version', 'BuildID', 'ReleaseID', 'License', 'RPMStatus', 'JavaStatus', 'DiskStatus', 'DiskThreshold', 'LastCheck'
     ]
 
     return CommandResults(
@@ -2213,7 +2184,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]):
                             'action,lastEvaluated,ownerGroup,owner')
     manageable = args.get('manageable', 'false').lower()
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('No alerts found')
 
     alerts = get_elements(res['response'], manageable)
@@ -2254,7 +2225,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
     alert_id = args.get('alert_id')
     res = client.get_alerts(alert_id=alert_id)
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('Alert not found')
 
     alert = res['response']
@@ -2418,7 +2389,7 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
     if limit > 200:
         limit = 200
 
-    if not res or 'response' not in res or not res['response']:
+    if not (res and res.get('response')):
         raise DemistoException('Scan results not found')
 
     elements = get_elements(res['response'], get_manageable_results)
@@ -2468,7 +2439,7 @@ def create_user_command(client: Client, args: Dict[str, Any]):
     validate_user_body_params(args, "create")
     res = client.create_user(args)
     hr_header = f'User {args.get("user_name")} was created successfully.'
-    process_update_and_create_user_response(res, hr_header)
+    return process_update_and_create_user_response(res, hr_header)
 
 
 def update_user_command(client: Client, args: Dict[str, Any]):
@@ -2484,7 +2455,7 @@ def update_user_command(client: Client, args: Dict[str, Any]):
     validate_user_body_params(args, "update")
     res = client.update_user(args, user_id)
     hr_header = f'user {args.get("user_id")} was updated successfully.'
-    process_update_and_create_user_response(res, hr_header)
+    return process_update_and_create_user_response(res, hr_header)
 
 
 def process_update_and_create_user_response(res, hr_header):
@@ -2874,8 +2845,6 @@ def main():  # pragma: no cover
             secret_key=secret_key,
             url=url
         )
-        print(client._base_url)
-        print(client._verify)
         if command == 'fetch-incidents':
             first_fetch = params.get('fetch_time').strip()
             fetch_incidents(client, first_fetch)

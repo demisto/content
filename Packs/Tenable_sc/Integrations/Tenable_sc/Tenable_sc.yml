@@ -678,7 +678,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: to specify repeating events based on an interval of a repeat_rule_freq or more.
+      description: To specify repeating events based on an interval of a repeat_rule_freq or more.
       isArray: false
       name: repeat_rule_freq
       required: false

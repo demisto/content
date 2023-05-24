@@ -329,7 +329,6 @@ def test_create_get_vulnerability_request_body(mocker, test_case):
                   Empty query, scan_results_id, and calling_command.
         - Case 2: Args with scan_results_id, vulnerability_id, query_id, source_type and limit higher than 200.
                   Empty query, scan_results_id, and calling_command.
-        - Case 3: Empty args, filled query and scan_results_id, and calling_command = get_vulnerabilities.
 
         When:
         - Running create_get_vulnerability_request_body.
@@ -338,14 +337,10 @@ def test_create_get_vulnerability_request_body(mocker, test_case):
         - Ensure that the body was created correctly.
         - Case 1: Should complete all the none-given fields, count source_type as individual, and add related fields.
         - Case 2: Should lower limit to 200, ignore scan_results_id and vulnerability_id.
-        - Case 3: Shouldn't handle any filtering fields, only create the basic body.
     """
     test_data = load_json("./test_data/test_create_get_vulnerability_request_body.json").get(test_case, {})
-    args = test_data.get('args')
-    query = test_data.get('query')
-    scan_results_id = test_data.get('scan_results_id')
-    calling_command = test_data.get("calling_command", "get_vulnerability_command")
-    body = client_mocker.create_get_vulnerability_request_body(args, query, scan_results_id, calling_command)
+    args = test_data.get('args', {})
+    body = client_mocker.create_get_vulnerability_request_body(args)
     assert test_data.get('expected_body') == body
 
 
