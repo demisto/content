@@ -177,7 +177,7 @@ class KeyVaultClient:
         response = self.http_request(
             'GET', url_suffix=url_suffix)
         if response.get('error'):
-            raise Exception(response.get('error').get('message'))
+            raise Exception(response)
         return self.get_entities_independent_of_pages(response, limit, offset)
 
     def update_access_policy_request(self, vault_name: str, operation_kind: str, object_id: str,
