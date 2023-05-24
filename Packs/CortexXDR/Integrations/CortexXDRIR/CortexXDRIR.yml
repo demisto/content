@@ -3442,7 +3442,7 @@ script:
       description: Email address of users associated with the Role.
       type: array
   - arguments:
-    - description: List of one or more user emails of users you want to add to a role. separated by commas.
+    - description: A comma-separated list of one or more user emails of users you want to add to a role.
       name: user_emails
       required: true
       isArray: true
