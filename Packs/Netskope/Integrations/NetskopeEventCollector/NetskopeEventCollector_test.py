@@ -44,12 +44,18 @@ def test_dedup_by_id():
     Then:
         - Make sure only the limited number of events return.
         - Make sure that first comes the event that with the earlier timestamp
+        - Make sure that the last_run timestamp has been updated
+        - Make sure that the correct last_run_ids returned.
     """
     from NetskopeEventCollector import dedup_by_id
     results = EVENTS_PAGE_RAW_V1['data']
-    events = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', last_run_ids=set(), limit=4, results=results)
+    events, new_last_run, last_run_ids = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', limit=4,
+                                                     results=results)
     assert events[0].get('timestamp') == 1684751415
     assert len(events) == 4
+    assert new_last_run['page'] == 1684751416
+    assert last_run_ids == {'3757761212778242bfda29cd', '98938eb19b4f9bea24ef9a8c', '66544bf5fda515f229592644',
+                            '9e99b72b957416a43222fa7a'}
 
 
 def test_populate_modeling_rule_fields():

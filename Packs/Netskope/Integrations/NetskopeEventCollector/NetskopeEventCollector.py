@@ -102,7 +102,8 @@ def populate_modeling_rule_fields(event: dict, event_type: str):
         pass
 
 
-def get_all_events(client: Client, event_type: str, last_run: dict, skip: int, api_version: str) -> list:
+def get_all_events(client: Client, event_type: str, last_run: dict, skip: int,
+                   api_version: str) -> list:  # pragma: no cover
     """
     This Function is doing a pagination to get all events within the given start and end time.
     Args:
@@ -150,13 +151,12 @@ def get_all_events(client: Client, event_type: str, last_run: dict, skip: int, a
     return events
 
 
-def dedup_by_id(last_run: dict, results: list, last_run_ids: set, event_type: str, limit: int) -> list:
+def dedup_by_id(last_run: dict, results: list, event_type: str, limit: int):
     """
     Dedup mechanism for the fetch to check both event id and timestamp (since timestamp can be duplicate)
     Args:
         last_run: Last run.
         results: List of the events from the api.
-        last_run_ids: set of the last_run_ids.
         event_type: the event type.
         limit: the number of events to return.
 
@@ -164,21 +164,21 @@ def dedup_by_id(last_run: dict, results: list, last_run_ids: set, event_type: st
 
     """
     events = []
+    last_run_ids = set(last_run.get(f'{event_type}-ids', []))
     # Sorting the list to Ascending order according to the timestamp (old one first)
-    sorted_results = sorted(results, key=lambda d: d['timestamp'])
-    for event in sorted_results[:limit]:
+    for event in list(reversed(results))[:limit]:
         event['event_id'] = event['_id']
         if event.get('timestamp') == last_run[event_type] and event.get('event_id') not in last_run_ids:
             events.append(event)
             last_run_ids.add(event['event_id'])
         else:
-            last_run_ids = set()
+            last_run[f'{event_type}-ids'] = [event['event_id']]
             last_run_ids.add(event['event_id'])
             last_run[event_type] = event['timestamp']
             events.append(event)
     demisto.debug(f'Last Run Ids to send to XSIAM - {last_run_ids}')
 
-    return events
+    return events, last_run, last_run_ids
 
 
 ''' COMMAND FUNCTIONS '''
@@ -217,7 +217,6 @@ def get_events_v1(client: Client, last_run: dict, api_version: str,
     skip = MAX_EVENTS_PAGE_SIZE
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         # et - event_type
-        last_run_ids = set(last_run.get(f'{event_type}-ids', []))
         et_events: list = []
         if event_type == 'alert':
             response = client.get_alerts_request_v1(last_run)
@@ -233,11 +232,12 @@ def get_events_v1(client: Client, last_run: dict, api_version: str,
             all_events = get_all_events(client, event_type, last_run, skip, api_version)
             results.extend(all_events)
 
-        events = dedup_by_id(last_run, results, last_run_ids, event_type, limit)
+        events, new_last_run, last_run_ids = dedup_by_id(last_run, results, event_type, limit)
         et_events.extend(events)
         # prepare for the next iteration
         last_run[f'{event_type}-ids'] = list(last_run_ids)
-        demisto.debug(f'Initialize last run after fetch - {event_type} - {last_run[event_type]}')
+        demisto.debug(f'Initialize last run after fetch - {event_type} - {last_run[event_type]} \n '
+                      f'Events IDs to send to XSIAM - {last_run_ids}')
 
         for event in et_events:
             populate_modeling_rule_fields(event, event_type)
@@ -289,9 +289,7 @@ def get_events_v2(client, last_run: dict, api_version: str, limit: Optional[int]
     skip = MAX_EVENTS_PAGE_SIZE
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         # et - event_type
-        last_run_ids = set(last_run.get(f'{event_type}-ids', []))
         et_events: list = []
-
         response = client.get_events_request_v2(event_type, last_run)
         results = response.get('result', [])
         if response.get('ok') != 1 or not results:
@@ -301,11 +299,12 @@ def get_events_v2(client, last_run: dict, api_version: str, limit: Optional[int]
             all_events = get_all_events(client, event_type, last_run, skip, api_version)
             results.extend(all_events)
 
-        events = dedup_by_id(last_run, results, last_run_ids, event_type, limit)
+        events, new_last_run, last_run_ids = dedup_by_id(last_run, results, event_type, limit)
         et_events.extend(events)
         # prepare for the next iteration
         last_run[f'{event_type}-ids'] = list(last_run_ids)
-        demisto.debug(f'Initialize last run after fetch - {event_type} - {last_run[event_type]}')
+        demisto.debug(f'Initialize last run after fetch - {event_type} - {last_run[event_type]} \n '
+                      f'Events IDs to send to XSIAM - {last_run_ids}')
 
         for event in et_events:
             populate_modeling_rule_fields(event, event_type)
