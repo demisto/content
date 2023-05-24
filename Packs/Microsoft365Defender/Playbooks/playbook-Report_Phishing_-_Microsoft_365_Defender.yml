@@ -1,0 +1,492 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Report Phishing - Microsoft 365 Defender
+inputs: []
+name: Report Phishing - Microsoft 365 Defender
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dca75d96-ac2f-422f-8073-31ad7db5ef5d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: dca75d96-ac2f-422f-8073-31ad7db5ef5d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      api_version:
+        simple: v1.0
+      http_method:
+        simple: POST
+      request_body:
+        simple: |-
+          {
+              "@odata.type": "#microsoft.graph.mailAssessmentRequest",
+              "recipientEmail": "${Email.To}",
+              "expectedAssessment": "block",
+              "category": "${report_type}",
+              "messageUri": "https://graph.microsoft.com/v1.0/users/${Email.To}/messages/${MSGraphMail.ID}"
+              }
+      resource:
+        simple: /informationProtection/threatAssessmentRequests
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Run a Microsoft Graph API query.
+      id: f182485b-ba68-4b1a-87fe-a5b26cdaa931
+      iscommand: true
+      name: Report the Message
+      script: '|||msgraph-api-request'
+      type: regular
+      version: -1
+    taskid: f182485b-ba68-4b1a-87fe-a5b26cdaa931
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1535
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      MALWARE:
+      - "17"
+      PHISHING:
+      - "16"
+      SPAM:
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9d896494-474f-49b3-8d94-9ce7b427e95c
+      iscommand: false
+      name: How do you want to Report the Email to Microsoft?
+      type: condition
+      version: -1
+    taskid: 9d896494-474f-49b3-8d94-9ce7b427e95c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d5f77d7-6179-4adf-8280-e958c448deee
+      iscommand: false
+      name: Report Email to Microsoft
+      type: title
+      version: -1
+      description: ''
+    taskid: 7d5f77d7-6179-4adf-8280-e958c448deee
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: File
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Extension
+          operator: isEqualString
+          right:
+            value:
+              simple: eml
+      label: "yes"
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2acb20d8-4498-40c3-8ff5-35e3dbfec044
+      iscommand: false
+      name: Do we have the EML attached to this incident?
+      type: condition
+      version: -1
+    taskid: 2acb20d8-4498-40c3-8ff5-35e3dbfec044
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryid:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: EML
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: eml
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: (Beta) Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. This script is based on the parse-emails XSOAR python package, check the script documentation for more info
+      id: 13e3c15e-4ec1-4951-809e-8b886b24f13d
+      iscommand: false
+      name: Parse Email information
+      scriptName: ParseEmailFilesV2
+      type: regular
+      version: -1
+    taskid: 13e3c15e-4ec1-4951-809e-8b886b24f13d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d692bca1-e913-4b28-8ac8-ebd070142dbd
+      iscommand: false
+      name: Please upload the Email reported as EML
+      type: regular
+      version: -1
+    taskid: d692bca1-e913-4b28-8ac8-ebd070142dbd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      odata:
+        complex:
+          accessor: Message-ID
+          root: Email.HeadersMap
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: ?$filter=internetMessageId eq '
+              suffix:
+                value:
+                  simple: ''''
+            operator: concat
+      user_id:
+        complex:
+          accessor: To
+          root: Email
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
+      id: 87530f80-098e-4b62-8e96-86428c7e441c
+      iscommand: true
+      name: Set Message ID
+      script: '|||msgraph-mail-list-emails'
+      type: regular
+      version: -1
+    taskid: 87530f80-098e-4b62-8e96-86428c7e441c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2fb32835-f473-45e0-8b46-e58934aede73
+      iscommand: false
+      name: Create request_body
+      type: title
+      version: -1
+      description: ''
+    taskid: 2fb32835-f473-45e0-8b46-e58934aede73
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: report_type
+      value:
+        simple: SPAM
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 7939cb15-d963-4c07-8d27-5491fc4768ee
+      iscommand: false
+      name: Set Report Type as SPAM
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 7939cb15-d963-4c07-8d27-5491fc4768ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: report_type
+      value:
+        simple: PHISHING
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9f90ab77-86f7-4757-8162-65d0dad5478e
+      iscommand: false
+      name: Set Report Type as Phishing
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 9f90ab77-86f7-4757-8162-65d0dad5478e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: report_type
+      value:
+        simple: MALWARE
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 7a849d07-16d7-482f-8e07-6c28e86cc179
+      iscommand: false
+      name: Set Report Type as Malware
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 7a849d07-16d7-482f-8e07-6c28e86cc179
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
