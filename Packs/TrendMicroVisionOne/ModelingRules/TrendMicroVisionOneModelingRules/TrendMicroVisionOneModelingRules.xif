@@ -1,0 +1,19 @@
+[MODEL: dataset="trend_micro_vision_raw"]
+filter
+    event_type in ("workbench")
+| alter
+    xdm.source.cloud.project = id
+    xdm.event.outcome_reason = investigationStatus
+    xdm.network.http.url = workbenchLink
+    xdm.source.application.name = alertProvider
+    xdm.event.original_event_type = model
+    xdm.alert.severity = score
+    xdm.event.log_level = severity
+    xdm.alert.description = items
+
+    # TODO - add all the nested mapping
+    Entities = json_extract_array(impactScope, "$.entities)
+    | alter
+
+    _time = createdDateTime  # delete this and add this to the code
+
