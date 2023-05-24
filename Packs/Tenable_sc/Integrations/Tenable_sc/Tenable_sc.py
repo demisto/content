@@ -24,9 +24,11 @@ ACTION_TYPE_TO_VALUE = {
     'ticket': 'assignee.username'
 }
 FIELDS_TO_INCLUDE = 'id,name,description,type,ownerGroup,owner,tags,modifiedTime'
+API_KEY = "API_KEY"
+USERNAME_AND_PASSWORD = "USERNAME_AND_PASSWORD"
 
 
-class Client(BaseClient):
+class Client(BaseClient, object):
     def __init__(self, verify_ssl: bool = True, proxy: bool = False, user_name: str = "",
                  password: str = "", access_key: str = "", secret_key: str = "", url: str = ""):
 
@@ -46,6 +48,7 @@ class Client(BaseClient):
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
+        self.auth_method = API_KEY
         if not (user_name and password) and not (secret_key and access_key):
             raise DemistoException("Please provide either user_name and password or secret_key and access_key")
         if secret_key and access_key:
@@ -60,8 +63,12 @@ class Client(BaseClient):
             self.user_name = user_name
             self.password = password
             self.send_request = self.send_request_username_and_password_auth
+            self.auth_method = USERNAME_AND_PASSWORD
             if not self.token or not self.cookie:
                 self.login()
+
+    def __enter__(self):
+        return self
 
     def send_request_api_key_auth(self, path, method='GET', body={}, params={}, headers=None):
         """
@@ -106,7 +113,7 @@ class Client(BaseClient):
         if res.status_code == 403 and try_number <= self.max_retries:
             self.login()
             headers['X-SecurityCenter'] = self.token  # The Token is being updated in the login
-            return self.send_request_old(path, method, body, params, headers, try_number + 1)
+            return self.send_request_username_and_password_auth(path, method, body, params, headers, try_number + 1)
 
         elif res.status_code < 200 or res.status_code >= 300:
             try:
@@ -172,11 +179,12 @@ class Client(BaseClient):
 
         return res.json()
 
-    def logout(self):
+    def __exit__(self, *args):
         """
         Send the request to logout for username & password authentication method.
         """
-        self.send_request(path='token', method='DELETE')
+        if self.auth_method == USERNAME_AND_PASSWORD:
+            self.send_request(path='token', method='DELETE')
 
     def create_scan(self, args: Dict[str, Any]):
         """
@@ -928,7 +936,8 @@ def create_user_request_body(args: Dict[str, Any]):
 
 def get_server_url(url):
     """
-    Retrieve the server url.
+    Remove redundant '/' from the url the server url.
+    For example: www.example.com/ - > www.example.com.
     Args:
         url (str): The server url.
     Returns:
@@ -2834,31 +2843,21 @@ def main():  # pragma: no cover
         'tenable-sc-get-device': get_device_command,
         'tenable-sc-create-remediation-scan': create_remediation_scan_command
     }
-
+ 
     try:
-        client = Client(
-            verify_ssl=verify_ssl,
-            proxy=proxy,
-            user_name=user_name,
-            password=password,
-            access_key=access_key,
-            secret_key=secret_key,
-            url=url
-        )
-        if command == 'fetch-incidents':
-            first_fetch = params.get('fetch_time').strip()
-            fetch_incidents(client, first_fetch)
-        elif command == 'tenable-sc-launch-scan-report':
-            return_results(launch_scan_report_command(args, client))
-        else:
-            return_results(command_dict[command](client, args))
+        with Client(verify_ssl=verify_ssl, proxy=proxy, user_name=user_name, password=password, access_key=access_key,
+                    secret_key=secret_key, url=url) as client:
+            if command == 'fetch-incidents':
+                first_fetch = params.get('fetch_time').strip()
+                fetch_incidents(client, first_fetch)
+            elif command == 'tenable-sc-launch-scan-report':
+                return_results(launch_scan_report_command(args, client))
+            else:
+                return_results(command_dict[command](client, args))
     except Exception as e:
         return_error(
             f'Failed to execute {command} command. Error: {str(e)}'
         )
-    finally:
-        if (user_name and password) and not (access_key and secret_key):
-            client.logout()
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
