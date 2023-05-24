@@ -256,12 +256,13 @@ configuration:
   advanced: true
 - additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code. Note: enabling this field can have big impact on the performance of the integration. Due to this reason, we are deprecating the Legacy Query option, make sure to adjust your queries accordingly.'
   display: 'Advanced: Use Legacy Queries'
-  hidden: true
+  hidden: false
   name: use_legacy_query
   required: false
   type: 8
   section: Collect
   advanced: true
+  deprecated: true
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL
