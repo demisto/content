@@ -3761,7 +3761,7 @@ script:
       description: List of permissions associated with this role.
       type: array
     - contextPath: Core.Role.insert_time
-      description: Timestamp of when the Role was created.
+      description: Timestamp of when the role was created.
       type: Number
     - contextPath: Core.Role.update_time
       description: Timestamp of when the Role was last updated.
