@@ -3773,7 +3773,7 @@ script:
       description: Description of the role, if available.
       type: String
     - contextPath: Core.Role.groups
-      description: Group names associated with the Role.
+      description: Group names associated with the role.
       type: array
     - contextPath: Core.Role.users
       description: Email address of users associated with the Role.
