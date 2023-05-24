@@ -61,7 +61,8 @@ configuration:
   - display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
     name: fetch_incidents_limit
     type: 0
-    required: true
+    required: false
+    defaultvalue: "50"
   - display: Incidents Fetch Interval
     name: incidentFetchInterval
     type: 19
