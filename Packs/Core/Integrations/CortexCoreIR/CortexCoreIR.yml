@@ -3770,7 +3770,7 @@ script:
       description: Email of the user who created the role.
       type: String
     - contextPath: Core.Role.description
-      description: Description of the Role, if available.
+      description: Description of the role, if available.
       type: String
     - contextPath: Core.Role.groups
       description: Group names associated with the Role.
