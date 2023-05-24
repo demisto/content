@@ -693,7 +693,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     # Each list contain one pack and its dependencies.
     packs_in_the_list_to_install: list = []    # list of packs that are already in the list to install.
 
-
     lock = Lock()
 
     if install_packs_one_by_one:
