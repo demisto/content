@@ -3390,7 +3390,7 @@ script:
     description: Retrieve a list of the current user emails associated with one or more user groups in the environment.
     outputs:
     - contextPath: PaloAltoNetworksXDR.UserGroup.group_name
-      description: Name of the User Group.
+      description: Name of the user group.
       type: String
     - contextPath: PaloAltoNetworksXDR.UserGroup.description
       description: Description of the user group, if available.
