@@ -1,7 +1,11 @@
 id: RDP Bitmap Cache - Detect and Hunt
-version: -1
+version: 22
+vcShouldKeepItemLegacyProdMachine: false
 name: RDP Bitmap Cache - Detect and Hunt
-description: This playbook automates the collection and forensic analysis of RDP sessions cache data by collecting the cache files and convert it to an image, extract readable text from the image and build IOC's from text and finally enrich any extracted indicators for further hunting
+description: This playbook automates the collection and forensic analysis of RDP sessions
+  cache data by collecting the cache files and convert it to an image, extract readable
+  text from the image and build IOC's from text and finally enrich any extracted indicators
+  for further hunting
 starttaskid: "0"
 tasks:
   "0":
@@ -14,7 +18,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -89,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 590
+          "y": 390
         }
       }
     note: false
@@ -152,14 +155,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 46ae2cc1-80ea-4741-899d-eb5c14bb03d8
+    taskid: a545fdfe-b3a9-4919-89d3-eaa9c44d13ca
     type: regular
     task:
-      id: 46ae2cc1-80ea-4741-899d-eb5c14bb03d8
+      id: a545fdfe-b3a9-4919-89d3-eaa9c44d13ca
       version: -1
       name: Suspicious tools hunting
-      description: Compare and check similarity of the extract text to a list of known malicious tools
-      scriptName: stringSimilarity
+      description: This automation calculates the similarity ratio between a Text
+        and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0
+        if the sequences are identical, and 0.0 if they don't have anything in common).
+      scriptName: StringSimilarity
       type: regular
       iscommand: false
       brand: ""
@@ -167,35 +172,29 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      Strings:
-        complex:
-          root: getListRow.Result.Results
-          accessor: Tool
-      Text:
-        complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Extension
-                iscontext: true
-              right:
-                value:
-                  simple: png
-              ignorecase: true
-          accessor: Text
-      list_of_strings:
-        complex:
-          root: lists
-          accessor: MalTools
-      text:
+      string_A:
         complex:
           root: File
           accessor: Text
           transformers:
-          - operator: Stringify
+          - operator: uniq
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ' '
+      string_B:
+        complex:
+          root: lists
+          accessor: MalTools
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -219,7 +218,8 @@ tasks:
       id: 3c563b94-366f-41b3-8a53-7e59c25abd2f
       version: -1
       name: Suspicious strings hunting
-      description: This script runs stringsifter ML tool for malware anlisys and ranking of words.
+      description: This script runs stringsifter ML tool for malware anlisys and ranking
+        of words.
       scriptName: StringSifter
       type: regular
       iscommand: false
@@ -323,7 +323,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 780
+          "y": 620
         }
       }
     note: false
@@ -361,7 +361,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 910
+          "y": 800
         }
       }
     note: false
@@ -540,10 +540,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: fc87148b-4125-49cf-850d-87ca11f9fed8
+    taskid: b915ddc2-5255-41f8-8b85-85b9956bb759
     type: regular
     task:
-      id: fc87148b-4125-49cf-850d-87ca11f9fed8
+      id: b915ddc2-5255-41f8-8b85-85b9956bb759
       version: -1
       name: Set strings similarity results in the layout
       description: Creates a Grid table from items or key-value pairs.
@@ -569,7 +569,7 @@ tasks:
       grid_id:
         simple: stringssimilarity
       keys:
-        simple: OCRstring,tool,similarityRatio
+        simple: StringFromText,StringFromList,similarityRatio
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -594,6 +594,9 @@ tasks:
       id: 7507e553-ee84-4263-85c2-5a5e4b37a196
       version: -1
       name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise.
+        It currently supports the following integrations: \n- Splunk\n- Qradar\n-
+        Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -742,6 +745,7 @@ tasks:
       id: 0380a060-f956-46b9-8071-499cf364e29a
       version: -1
       name: Set RDP Bitmap Cache Overall Score
+      description: This playbook sets the RDP bitmap cache overall score
       playbookName: Set RDP Bitmap Cache Overall Score
       type: playbook
       iscommand: false
@@ -789,7 +793,46 @@ tasks:
       - "17"
     scriptarguments:
       usecasedescription:
-        simple: "**Remote Desktop Protocol (RDP) is a Microsoft protocol that allows users to connect to other Windows operating systems via a graphical user interface (GUI).**\n\nRDP Bitmap Cache was introduced to improve the RDP user experience while reducing network bandwidth usage. Simply said, it saves cached tiles of your RDP sessions into a file so your session can reuse them and avoid potential delays.\n\n**Why?**\n\n* Attackers often operate outside the organization's working hours, therefore, Weekends and holidays are the best time to operate.\n* As shown - RDP is still massively used by attackers, either as an initial attack vector or for lateral movement within the network.\n* Without any session recording tool, it is almost impossible to tell what happened during the RDP session.\n\n**How do we investigate?**\n\n**Preparation:**\n\n1. Collect the RDP bitmap cache files using Cortex XDR integration.\n2. Process the files and extract the cached tiles using BMC-Tools.\n3. Improve the quality of the extracted collage using PIL and OpenCV.\n4. Extract text from the tiles collage using OCR.\n5. Extract IoCs from the extracted OCR text.\n\n**Analysis:**\n\n6. Search for similar strings against the MITRE ATT&CK Software list.\n7. Detect suspicious strings using Mandiant Stringsifter ML ranking capabilities.\n8. Hunt for the extracted IoCs prevalence using your SIEM.\n\n\n**What will you achieve using this playbook?**\n\n* Helps the analyst determine whether there were internal RDP sessions on predefined hosts.\n* Points out any suspicious activity that was detected.\n* Allows the analyst to hunt for suspicious indicators found during the process.\n* Provide the analyst with the collage processed for further analysis.\n\n**How do we calculate the overall score?**\n\nThe overall score is a combination of:\n1. Tools found in the similarity check:\nThe similarity check produces a similarity ratio for each string and tool pair; the score can be somewhere between 0 to 1. Then we take the similarity ratio and multiply it by 5, meaning a finding can have a maximum score of 5.\ne.g. \nFor a finding with a similarity ratio of 0.85, the score will be 0.85*5 = 4.25.\nWe then sum up all the findings scores and move on to the next step.\n2. Executables found using 'extractindicators' and appear in the Stringsifter results:\nIn this step, we are basing the score on both the extracted indicators of type 'Executables' and the Stringsifter ranking.\nIf an executable was successfully extracted using '!extractindicators' and also appears in the Stringsifter results, we'll take the score and add it to the combined score we got from step 1.\ne.g.\nIf mimikatz.exe was extracted using '!extractinidcators' and also appears in the Stringsifter results with a rank of 9.5, we'll add 9.5 to the overall score.\n\n**Note:**\n* The maximum score can be 100.\n* If the score is 0, no suspicious **strings** were found.\n"
+        simple: "**Remote Desktop Protocol (RDP) is a Microsoft protocol that allows
+          users to connect to other Windows operating systems via a graphical user
+          interface (GUI).**\n\nRDP Bitmap Cache was introduced to improve the RDP
+          user experience while reducing network bandwidth usage. Simply said, it
+          saves cached tiles of your RDP sessions into a file so your session can
+          reuse them and avoid potential delays.\n\n**Why?**\n\n* Attackers often
+          operate outside the organization's working hours, therefore, Weekends and
+          holidays are the best time to operate.\n* As shown - RDP is still massively
+          used by attackers, either as an initial attack vector or for lateral movement
+          within the network.\n* Without any session recording tool, it is almost
+          impossible to tell what happened during the RDP session.\n\n**How do we
+          investigate?**\n\n**Preparation:**\n\n1. Collect the RDP bitmap cache files
+          using Cortex XDR integration.\n2. Process the files and extract the cached
+          tiles using BMC-Tools.\n3. Improve the quality of the extracted collage
+          using PIL and OpenCV.\n4. Extract text from the tiles collage using OCR.\n5.
+          Extract IoCs from the extracted OCR text.\n\n**Analysis:**\n\n6. Search
+          for similar strings against the MITRE ATT&CK Software list.\n7. Detect suspicious
+          strings using Mandiant Stringsifter ML ranking capabilities.\n8. Hunt for
+          the extracted IoCs prevalence using your SIEM.\n\n\n**What will you achieve
+          using this playbook?**\n\n* Helps the analyst determine whether there were
+          internal RDP sessions on predefined hosts.\n* Points out any suspicious
+          activity that was detected.\n* Allows the analyst to hunt for suspicious
+          indicators found during the process.\n* Provide the analyst with the collage
+          processed for further analysis.\n\n**How do we calculate the overall score?**\n\nThe
+          overall score is a combination of:\n1. Tools found in the similarity check:\nThe
+          similarity check produces a similarity ratio for each string and tool pair;
+          the score can be somewhere between 0 to 1. Then we take the similarity ratio
+          and multiply it by 5, meaning a finding can have a maximum score of 5.\ne.g.
+          \nFor a finding with a similarity ratio of 0.85, the score will be 0.85*5
+          = 4.25.\nWe then sum up all the findings scores and move on to the next
+          step.\n2. Executables found using 'extractindicators' and appear in the
+          Stringsifter results:\nIn this step, we are basing the score on both the
+          extracted indicators of type 'Executables' and the Stringsifter ranking.\nIf
+          an executable was successfully extracted using '!extractindicators' and
+          also appears in the Stringsifter results, we'll take the score and add it
+          to the combined score we got from step 1.\ne.g.\nIf mimikatz.exe was extracted
+          using '!extractinidcators' and also appears in the Stringsifter results
+          with a rank of 9.5, we'll add 9.5 to the overall score.\n\n**Note:**\n*
+          The maximum score can be 100.\n* If the score is 0, no suspicious **strings**
+          were found.\n"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -910,7 +953,8 @@ tasks:
       id: 8e69838c-895e-4502-8b8c-91e3d1fd02fb
       version: -1
       name: Should collect RDP cache files?
-      description: Check if should collect RDP cache from endpoints or cache files to be provided manually.
+      description: Check if should collect RDP cache from endpoints or cache files
+        to be provided manually.
       type: condition
       iscommand: false
       brand: ""
@@ -1038,7 +1082,11 @@ tasks:
       id: d6dae20c-ec34-4bdf-8506-1783736ceb2f
       version: -1
       name: Get RDP cache files
-      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to
+        20 files, from no more than 10 endpoints. At least one endpoint ID and one
+        file path are necessary in order to run the command. After running this command,
+        you can use the xdr-action-status-get command with returned action_id, to
+        check the action status.
       script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
@@ -1066,57 +1114,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: 3a7c0e59-32e2-4439-8ab2-6e12cb4b2b4a
-    type: regular
-    task:
-      id: 3a7c0e59-32e2-4439-8ab2-6e12cb4b2b4a
-      version: -1
-      name: Set image to display in layout
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "42"
-    scriptarguments:
-      key:
-        simple: RDPImageEntryID
-      stringify:
-        simple: "true"
-      value:
-        complex:
-          root: File
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: original
-              ignorecase: true
-          accessor: EntryID
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1159,7 +1156,8 @@ tasks:
       id: 6708e984-cef0-442b-8fe4-94d8f709e615
       version: -1
       name: Preprocess Grayscale Image
-      description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
+      description: This script pre-processes (resizes, sharpens, and grayscales) an
+        image file from context, given an entry_id.
       scriptName: PreProcessImage
       type: regular
       iscommand: false
@@ -1214,7 +1212,8 @@ tasks:
       id: eecb86f7-83b0-4b1f-8dcd-8adf43795dd0
       version: -1
       name: Preprocess Sharpened Image
-      description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
+      description: This script pre-processes (resizes, sharpens, and grayscales) an
+        image file from context, given an entry_id.
       scriptName: PreProcessImage
       type: regular
       iscommand: false
@@ -1269,15 +1268,16 @@ tasks:
       id: fb56e0e1-63c3-4c95-8b9d-d3a1c98263d0
       version: -1
       name: Preprocess Original Image
-      description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
+      description: This script pre-processes (resizes, sharpens, and grayscales) an
+        image file from context, given an entry_id.
       scriptName: PreProcessImage
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
       - "44"
+      - "42"
     scriptarguments:
       action:
         simple: original
@@ -1334,7 +1334,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 440
+          "y": 240
         }
       }
     note: false
@@ -1352,6 +1352,8 @@ tasks:
       id: be0b1b9a-6ed6-4844-8966-e2f1e9c5bce5
       version: -1
       name: Set list of indicator types
+      description: This playbook takes IOCs as input and adds the type into a list
+        to be able to calculate stats about the types of the extracted indicators
       playbookName: Set list of indicator types
       type: playbook
       iscommand: false
@@ -1388,7 +1390,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1080
+          "y": 1000
         }
       }
     note: false
@@ -1437,7 +1439,9 @@ tasks:
       id: e9b330dc-d584-4ddb-8000-c6a61bb42093
       version: -1
       name: Convert image to png
-      description: 'Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
+      description: 'Converts a file from one format to a different format by using
+        the convert-to function of Libre Office. For a list of supported input/output
+        formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
       scriptName: ConvertFile
       type: regular
       iscommand: false
@@ -1477,7 +1481,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 370
+          "y": 390
         }
       }
     note: false
@@ -1489,12 +1493,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 7210179e-1830-4ac7-88ef-3c68e77af0e7
+    taskid: 5b45875f-222b-4951-8800-8bfa8a377210
     type: regular
     task:
-      id: 7210179e-1830-4ac7-88ef-3c68e77af0e7
+      id: 5b45875f-222b-4951-8800-8bfa8a377210
       version: -1
-      name: Convert pdf to image
+      name: Convert image to pdf
       description: Converts a PDF file to an image file.
       tags:
       - RDPCacheImage
@@ -1502,6 +1506,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "43"
     scriptarguments:
       EntryID:
         complex:
@@ -1534,7 +1541,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 730
+          "y": 810
         }
       }
     note: false
@@ -1546,12 +1553,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 1c0017e8-1fe3-407e-86b9-719a2731f956
+    taskid: baef2a3c-06f5-454a-87d1-ce1a06e0b83f
     type: regular
     task:
-      id: 1c0017e8-1fe3-407e-86b9-719a2731f956
+      id: baef2a3c-06f5-454a-87d1-ce1a06e0b83f
       version: -1
-      name: Convert image to pdf
+      name: Convert pdf to image
       description: Converts an image file to a PDF file.
       script: Rasterize|||rasterize-image
       type: regular
@@ -1592,7 +1599,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 550
+          "y": 620
         }
       }
     note: false
@@ -1623,13 +1630,14 @@ inputs:
   value:
     simple: "false"
   required: true
-  description: When set to True, will use XDR to get RDP cache files from the endpoints, but set to False will try and use existing cache file from context
-  playbookInputQuery:
+  description: When set to True, will use XDR to get RDP cache files from the endpoints,
+    but set to False will try and use existing cache file from context
+  playbookInputQuery: null
 - key: EndpointIDs
   value: {}
   required: false
   description: A comma seperated list of endpoint ID's to retrieve cache files from
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FilePath
   value:
     simple: C:\Users\administrator\AppData\Local\Microsoft\Terminal Server Client\Cache\
@@ -1638,12 +1646,13 @@ inputs:
     The path of the file to retrieve.
     For example:
     C:\users\folder\file.txt
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Hostname
   value: {}
   required: false
-  description: Hostname of the machine on which the file is located for PS remote it can also be an IP address.
-  playbookInputQuery:
+  description: Hostname of the machine on which the file is located for PS remote
+    it can also be an IP address.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)
