@@ -573,6 +573,8 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
                                                          default_action, bypass, vnet_subnet_id,
                                                          ignore_missing_vnet_service_endpoint, ip_rules)
 
+    if response.get('error'):
+        raise Exception(response)
     readable_output = tableToMarkdown(f'{vault_name} Information',
                                       response,
                                       ['id', 'name', 'type', 'location'], removeNull=True,
@@ -586,8 +588,6 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
         readable_output=readable_output,
         ignore_auto_extract=True
     )
-    if response.get('error'):
-        command_results = CommandResults(readable_output=response.get('error').get('message'))
     return command_results
 
 
@@ -604,6 +604,8 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> Co
 
     vault_name = args['vault_name']
     response = client.delete_key_vault_request(vault_name)
+    if response.get('error'):
+        raise Exception(response)
     message = ""
     if response.get('status_code') == 200:
         message = f'Deleted Key Vault {vault_name} successfully.'

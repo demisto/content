@@ -452,6 +452,16 @@ script:
       name: vault_name
       required: true
       secret: false
+    - name: subscription_id
+      description: Will override instance param ‘subscription_id'
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: Will override instance param ‘resource_group_name'
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: Delete the specified key vault.
     execution: true
