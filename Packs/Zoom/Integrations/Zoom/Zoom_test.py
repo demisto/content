@@ -154,20 +154,21 @@ def test_manual_list_user_pagination__large_limit(mocker):
     manual_list_user_pagination(client=client, next_page_token="None", limit=limit,
                                 status="None", role_id="None")
     assert zoom_list_users_mocker.call_args[1].get('page_size') == 300
-    
+
+
 def test_zoom_create_user_command(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
-    user_type='Basic',
-    email="mock@moker.com",
-    first_name="John", 
-    last_name="Smith"
-    
+    user_type = 'Basic',
+    email = "mock@moker.com",
+    first_name = "John",
+    last_name = "Smith"
+
     zoom_create_user_mock = mocker.patch.object(client, "zoom_create_user")
     from Zoom import zoom_create_user_command
 
-    zoom_create_user_command(client, email=email, user_type=user_type,first_name=first_name,last_name=last_name)
+    zoom_create_user_command(client, email=email, user_type=user_type, first_name=first_name, last_name=last_name)
 
     zoom_create_user_mock.assert_called()
 
@@ -227,6 +228,7 @@ def test_zoom_user_create__Corporate_user_type(mocker):
     client.zoom_create_user(user_type_num=3, email="mock@moker.com",
                             first_name="John", last_name="Smith")
     assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 3
+
 
 def test_zoom_delete_user_command(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
@@ -1024,6 +1026,7 @@ def test_zoom_list_user_channels_command(mocker):
     assert result.outputs['channels'][0]['id'] == expected_results['channels'][0]['id']
     assert result.outputs['channels'][0]['jid'] == expected_results['channels'][0]['jid']
 
+
 def test_zoom_list_user_channels_command__limit(mocker):
     """
         Given -
@@ -1470,7 +1473,6 @@ def test_zoom_list_messages_command(mocker):
     assert result.outputs['messages'][0]['sender'] == expacted_result['messages'][0]['sender']
     assert result.outputs['messages'][0]['sender_display_name'] == expacted_result['messages'][0]['sender_display_name']
     assert result.outputs['messages'][0]['date_time'] == expacted_result['messages'][0]['date_time']
-
 
 
 def test_zoom_update_message_command(mocker):
