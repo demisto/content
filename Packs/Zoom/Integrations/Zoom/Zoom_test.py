@@ -154,6 +154,22 @@ def test_manual_list_user_pagination__large_limit(mocker):
     manual_list_user_pagination(client=client, next_page_token="None", limit=limit,
                                 status="None", role_id="None")
     assert zoom_list_users_mocker.call_args[1].get('page_size') == 300
+    
+def test_zoom_create_user_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    user_type='Basic',
+    email="mock@moker.com",
+    first_name="John", 
+    last_name="Smith"
+    
+    zoom_create_user_mock = mocker.patch.object(client, "zoom_create_user")
+    from Zoom import zoom_create_user_command
+
+    zoom_create_user_command(client, email=email, user_type=user_type,first_name=first_name,last_name=last_name)
+
+    zoom_create_user_mock.assert_called()
 
 
 def test_zoom_create_user__basic_user_type(mocker):
@@ -211,6 +227,19 @@ def test_zoom_user_create__Corporate_user_type(mocker):
     client.zoom_create_user(user_type_num=3, email="mock@moker.com",
                             first_name="John", last_name="Smith")
     assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 3
+
+def test_zoom_delete_user_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    user_id = "user_id"
+
+    zoom_delete_user_mock = mocker.patch.object(client, "zoom_delete_user")
+    from Zoom import zoom_delete_user_command
+
+    zoom_delete_user_command(client, user_id=user_id)
+
+    zoom_delete_user_mock.assert_called()
 
 
 def test_zoom__create_meeting_command__instant_meeting(mocker):
@@ -995,6 +1024,23 @@ def test_zoom_list_user_channels_command(mocker):
     assert result.outputs['channels'][0]['id'] == expected_results['channels'][0]['id']
     assert result.outputs['channels'][0]['jid'] == expected_results['channels'][0]['jid']
 
+def test_zoom_list_user_channels_command__limit(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a limit of results
+        Then -
+            Validate that a func that runs a pagination has been called
+    """
+    manual_list_user_channel_pagination_mock = mocker.patch.object(Zoom, "manual_list_user_channel_pagination")
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    from Zoom import zoom_list_user_channels_command
+    zoom_list_user_channels_command(client=client, user_id="user_id", limit=5)
+    assert manual_list_user_channel_pagination_mock.called
+
 
 def test_zoom_create_channel_command(mocker):
     """
@@ -1277,7 +1323,7 @@ def test_zoom_list_account_public_channels_command__limit(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     from Zoom import zoom_list_account_public_channels_command
-    zoom_list_account_public_channels_command(client=client, user_id="blabla", limit=5)
+    zoom_list_account_public_channels_command(client=client, user_id="example@example.com", limit=5)
     assert manual_manual_list_channel_paginatio_mock.called
 
 
@@ -1335,16 +1381,23 @@ def test_arg_to_datetime_str():
     # Test relative timestamps
     now = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     two_weeks_ago = (datetime.datetime.now() - datetime.timedelta(weeks=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    five_hours_ago = (datetime.datetime.now() - datetime.timedelta(hours=5)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    five_min_ago = (datetime.datetime.now() - datetime.timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    today = (datetime.datetime.today().date()).strftime('%Y-%m-%dT%H:%M:%SZ')
 
     from Zoom import arg_to_datetime_str
 
     assert arg_to_datetime_str('now') == now
     assert arg_to_datetime_str('2 weeks ago') == two_weeks_ago
+    assert arg_to_datetime_str('5 hours ago') == five_hours_ago
+    assert arg_to_datetime_str('5 minutes ago') == five_min_ago
+    assert arg_to_datetime_str('today') == today
 
     # Test specific datetime format
     dt_str = '2023-03-13T01:22:00'
     dt = datetime.datetime(2023, 3, 13, 1, 22, 0).strftime('%Y-%m-%dT%H:%M:%SZ')
     assert arg_to_datetime_str(dt_str) == dt
+
     # Test error format
 
     with pytest.raises(DemistoException) as e:
@@ -1417,6 +1470,7 @@ def test_zoom_list_messages_command(mocker):
     assert result.outputs['messages'][0]['sender'] == expacted_result['messages'][0]['sender']
     assert result.outputs['messages'][0]['sender_display_name'] == expacted_result['messages'][0]['sender_display_name']
     assert result.outputs['messages'][0]['date_time'] == expacted_result['messages'][0]['date_time']
+
 
 
 def test_zoom_update_message_command(mocker):

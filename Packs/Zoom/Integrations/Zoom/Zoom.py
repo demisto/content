@@ -1307,7 +1307,7 @@ def arg_to_datetime_str(arg):
         return None
 
     # Relative timestamp regex pattern
-    relative_timestamp_pattern = r'^(\d+)\s+(year|month|week|day|hour|minute|second)s?\s+ago$'
+    relative_timestamp_pattern = r'^(\d+)\s+(year|month|week|day|hour|minute)s?\s+ago$'
     # Check if the argument is "now"
     if arg == 'now':
         return datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -1336,8 +1336,6 @@ def arg_to_datetime_str(arg):
             delta = timedelta(hours=amount)
         elif unit == 'minute':
             delta = timedelta(minutes=amount)
-        elif unit == 'second':
-            delta = timedelta(seconds=amount)
 
         if delta:
             return (datetime.now() - delta).strftime('%Y-%m-%dT%H:%M:%SZ')
