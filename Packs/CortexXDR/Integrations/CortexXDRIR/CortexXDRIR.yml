@@ -3418,7 +3418,7 @@ script:
     description: Retrieve information about one or more roles created in the environment.
     outputs:
     - contextPath: PaloAltoNetworksXDR.Role.pretty_name
-      description: Name of the role as it appears in the Management Console.
+      description: Name of the role as it appears in the management console.
       type: String
     - contextPath: PaloAltoNetworksXDR.Role.permissions
       description: List of permissions associated with this role.
