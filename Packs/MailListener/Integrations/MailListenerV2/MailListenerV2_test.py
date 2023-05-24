@@ -966,7 +966,7 @@ def test_convert_to_incident(mail_string, mail_date):
     'time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',  # noqa: E501
     [
         (
-                datetime(year=2020, month=10, day=1),
+                datetime(year=2020, month=10, day=1),  # noqa: E126
                 False,  # noqa: E126
                 ['test1@mail.com', 'test2@mail.com'],
                 ['test1.com', 'domain2.com'],
@@ -990,7 +990,7 @@ def test_convert_to_incident(mail_string, mail_date):
                 ]
         ),
         (
-                datetime(year=2020, month=10, day=1),
+                datetime(year=2020, month=10, day=1),  # noqa: E126
                 True,  # noqa: E126
                 ['test1@mail.com', 'test2@mail.com'],
                 ['test1.com', 'domain2.com'],
@@ -1018,7 +1018,7 @@ def test_convert_to_incident(mail_string, mail_date):
                 ]
         ),
         (
-                None,
+                None,  # noqa: E126
                 '',  # noqa: E126
                 [],
                 [],
