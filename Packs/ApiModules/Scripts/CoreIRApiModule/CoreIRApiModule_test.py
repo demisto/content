@@ -3349,8 +3349,8 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
     "test_data, excepted_error",
     [
         ({"group_names": "test"}, "Error: Group test was not found. Full error message: Group 'test' was not found"),
-        ({"group_names": "test, test2"}, "Error: Group test was not found, Note: If you sent more than one group name, they may not exist either. "
-        "Full error message: Group 'test' was not found" )
+        ({"group_names": "test, test2"}, "Error: Group test was not found, Note: If you sent more than one group name, "
+         "they may not exist either. Full error message: Group 'test' was not found")
     ]
 )
 def test_list_user_groups_command_raise_exception(mocker, test_data: dict[str, str], excepted_error: str):
