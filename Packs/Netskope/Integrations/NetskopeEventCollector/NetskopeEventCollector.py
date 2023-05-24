@@ -363,7 +363,7 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
     max_fetch = min(arg_to_number(params.get('max_fetch')), MAX_EVENTS_PAGES_PER_FETCH)  # type: ignore[type-var]
-    vendor, product = params.get('vendor', 'netskope2'), params.get('product', 'netskope2')
+    vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
