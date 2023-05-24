@@ -3730,7 +3730,7 @@ script:
       description: Name of the user group.
       type: String
     - contextPath: Core.UserGroup.description
-      description: Description of the User Group, if available.
+      description: Description of the user group, if available.
       type: String
     - contextPath: Core.UserGroup.pretty_name
       description: Name of the User Group as it appears in the Management Console.
