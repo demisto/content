@@ -1506,7 +1506,7 @@ def panorama_get_address(address_name: str) -> Dict:
     except Exception as err:
         if OBJ_NOT_FOUND_ERR in str(err):
             return {}
-        raise err
+        raise
 
     return result['response']['result']['entry']
 
