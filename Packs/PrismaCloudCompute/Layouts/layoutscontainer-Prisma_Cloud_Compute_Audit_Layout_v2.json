@@ -1,0 +1,956 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "externallink",
+                                "height": 53,
+                                "id": "953e82a0-0bc8-11ed-a263-1f3efd1f9f94",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 24,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 24,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 24,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 24,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputecategory",
+                                "height": 53,
+                                "id": "7701a730-3534-11ea-82bb-d3789631c89f",
+                                "index": 0,
+                                "listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputemessage",
+                                "height": 53,
+                                "id": "dbd74070-3534-11ea-82bb-d3789631c89f",
+                                "index": 1,
+                                "listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeimage",
+                                "height": 53,
+                                "id": "7d910910-3534-11ea-82bb-d3789631c89f",
+                                "index": 2,
+                                "listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputehost",
+                                "height": 53,
+                                "id": "adfafca0-3534-11ea-82bb-d3789631c89f",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputefqdn",
+                                "height": 53,
+                                "id": "b00090a0-3534-11ea-82bb-d3789631c89f",
+                                "index": 4,
+                                "listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputecontainer",
+                                "height": 53,
+                                "id": "b81e33a0-3534-11ea-82bb-d3789631c89f",
+                                "index": 5,
+                                "listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeuser",
+                                "height": 53,
+                                "id": "cdec5310-3534-11ea-82bb-d3789631c89f",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeinteractive",
+                                "height": 53,
+                                "id": "d252e180-3534-11ea-82bb-d3789631c89f",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputerule",
+                                "height": 53,
+                                "id": "e1fd5930-3534-11ea-82bb-d3789631c89f",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputefunction",
+                                "height": 53,
+                                "id": "ee0025a0-3534-11ea-82bb-d3789631c89f",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeregion",
+                                "height": 53,
+                                "id": "1235b570-3535-11ea-82bb-d3789631c89f",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeruntime",
+                                "height": 53,
+                                "id": "15172a80-3535-11ea-82bb-d3789631c89f",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeappid",
+                                "height": 53,
+                                "id": "17a48c20-3535-11ea-82bb-d3789631c89f",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeforensic",
+                                "height": 53,
+                                "id": "1a906170-3535-11ea-82bb-d3789631c89f",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputekubernetesresource",
+                                "height": 53,
+                                "id": "1f486b40-3535-11ea-82bb-d3789631c89f",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputecommand",
+                                "height": 53,
+                                "id": "2655d6c0-3535-11ea-82bb-d3789631c89f",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeservice",
+                                "height": 53,
+                                "id": "2f908280-3535-11ea-82bb-d3789631c89f",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputelogfile",
+                                "height": 53,
+                                "id": "3509e080-3535-11ea-82bb-d3789631c89f",
+                                "index": 17,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeactivitytype",
+                                "height": 53,
+                                "id": "22cf4810-3535-11ea-82bb-d3789631c89f",
+                                "index": 18,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputeline",
+                                "height": 53,
+                                "id": "38ebfcb0-3535-11ea-82bb-d3789631c89f",
+                                "index": 19,
+                                "listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputelabels",
+                                "height": 53,
+                                "id": "e8b74d80-3534-11ea-82bb-d3789631c89f",
+                                "index": 20,
+                                "listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Quickly block suspected attacker domains and IPs to prevent immediate recomprimise of containers. This is particularly important for attacks against K8s applications. You may also block the runtime process for containers.",
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
+                        "items": [
+                            {
+                                "args": {
+                                    "severity": {
+                                        "simple": "Critical"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "229e25f0-fe19-11ec-8186-47081b53acb3",
+                                "index": 0,
+                                "name": "Escalate",
+                                "scriptId": "IncreaseIncidentSeverity",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "e6bd95d0-fe17-11ec-8186-47081b53acb3",
+                                "index": 1,
+                                "listId": "caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
+                                "name": "Tag IP or Domain",
+                                "scriptId": "TagIndicatorButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "c4be8e80-02cc-11ed-8b4c-2f2d4e09d112",
+                                "index": 2,
+                                "listId": "caseinfoid-d8e8a170-fe17-11ec-8186-47081b53acb3",
+                                "name": "Add Hash to Prisma Blocklist",
+                                "scriptId": "AbuseIPDB|||abuseipdb-check-cidr-block",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "a3505c10-02cc-11ed-8b4c-2f2d4e09d112",
+                                "index": 3,
+                                "name": "Add IP to Prisma Malicious Feed",
+                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute_additional_remediation|||prisma-cloud-compute-custom-feeds-ip-add",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "table": {
+                                        "simple": "${Indicators}"
+                                    },
+                                    "title": {
+                                        "simple": "Prisma Cloud Compute CVEs"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "fafce270-fe18-11ec-8186-47081b53acb3",
+                                "index": 4,
+                                "name": "Email CVE Report",
+                                "scriptId": "CreatePrismaCloudComputeComplianceReportButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "closeNotes": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "closeReason": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "aaa93600-13c3-11ed-b41b-4554c60a8ab0",
+                                "index": 5,
+                                "name": "Close Investigation",
+                                "scriptId": "Builtin|||closeInvestigation",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Quick Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "description": "Review the alert type and host details to determine who should be emailed for this particular deployment. Then proceed to\n\n1. Container Alerts - review if there are multiple issues ongoing for the particular exploitation type. Check source IP address reputation and block if needed.\n\n2.  Container Forensics - review the processes currently running on the host and container. MD5s can be blocked via the Quick Action buttons on this page.\n\n3. Compliance - determine if the asset owner needs to be notified of the vulnerabilities and compliance violations present on the system.\n\n4. Policy Review - determine if there needs to be a policy update to make the WaaS more restrictive.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-eb8780f0-13c3-11ed-b41b-4554c60a8ab0",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Wiki",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-e997d400-13c5-11ed-b41b-4554c60a8ab0",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 7
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "dhendfrlpj",
+                "name": "Container Alerts",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-e142a090-12a4-11ed-88ab-4930fc56fe30",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "prismaaudittable",
+                                "height": 44,
+                                "id": "3fdff490-1395-11ed-95e2-e50cc8b5467a",
+                                "index": 0,
+                                "listId": "caseinfoid-e142a090-12a4-11ed-88ab-4930fc56fe30",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Similar Container Alerts",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-fed49770-139a-11ed-9e27-77adfaad2f98",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-d6dee3d0-13c5-11ed-b41b-4554c60a8ab0",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": " (type:IP or type:File)",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "0q4qlmgwhw",
+                "name": "Container Forensics",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-0f8e5a10-d89b-11eb-9760-61d435d58ac8",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "prismacloudcomputedefenderlogs",
+                                "height": 106,
+                                "id": "ed1a9c30-b3b5-11ed-bf13-f540c67c90dd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Defender Logs",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "h": 3,
+                        "i": "caseinfoid-1c0b5f90-d89b-11eb-9760-61d435d58ac8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Backups and Forensic Bundles",
+                        "query": {
+                            "categories": [],
+                            "fromTime": "0001-01-01T00:00:00Z",
+                            "pageSize": 0,
+                            "tags": [
+                                "backups"
+                            ],
+                            "tagsAndOperator": false,
+                            "usersAndOperator": false
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 3,
+                        "i": "caseinfoid-ef91b030-de04-11eb-a516-758ed2571769",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "h": 6,
+                        "i": "caseinfoid-64377ab0-0383-11ed-a1a9-9bbd9b77de53",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Forensics",
+                        "query": {
+                            "tags": [
+                                "forensics"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "5hwygcoqct",
+                "name": "Compliance",
+                "sections": [
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "value",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "score",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Description",
+                                "width": 200
+                            }
+                        ],
+                        "h": 3,
+                        "i": "caseinfoid-c2691c80-d894-11eb-9526-0138f2c993e4",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Malicious or Suspicious Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious and type:CVE",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "caseinfoid-e1b77c30-d894-11eb-9526-0138f2c993e4",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "prismacloudcomputemarkdown",
+                                "height": 44,
+                                "id": "04499fc0-d896-11eb-a5ed-d539a7e76c26",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Image Compliance Issues",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "The following actions can quickly generate an HTML summary report of the compliance and vulnerability issues for this incident and email it off to the appropriate team",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-a94cb6d0-fe18-11ec-8186-47081b53acb3",
+                        "items": [
+                            {
+                                "args": {
+                                    "table": {
+                                        "simple": "${Indicators}"
+                                    },
+                                    "title": {
+                                        "simple": "Prisma  Cloud Compute CVEs"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "b7143db0-fe18-11ec-8186-47081b53acb3",
+                                "index": 0,
+                                "name": "Email CVE Report",
+                                "scriptId": "CreatePrismaCloudComputeComplianceReportButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "table": {
+                                        "simple": "${PrismaCloudCompute.Images.ComplianceIssues}"
+                                    },
+                                    "title": {
+                                        "simple": "Compliance Issues"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "c3342f10-fe18-11ec-8186-47081b53acb3",
+                                "index": 1,
+                                "name": "Email Compliance Report",
+                                "scriptId": "CreatePrismaCloudComputeComplianceReportButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "lmwjk2mikn",
+                "name": "Policy Review",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "caseinfoid-68931570-fe19-11ec-8186-47081b53acb3",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "External Alerting Policy",
+                        "query": {
+                            "categories": [],
+                            "fromTime": "0001-01-01T00:00:00Z",
+                            "pageSize": 0,
+                            "tags": [
+                                "policy"
+                            ],
+                            "tagsAndOperator": false,
+                            "usersAndOperator": false
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Use this section to update the WaaS container policy which triggered this incident.",
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "caseinfoid-85dacfb0-fe19-11ec-8186-47081b53acb3",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudcomputerule",
+                                "height": 22,
+                                "id": "984b98d0-129d-11ed-b288-7359d91bbd31",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prismacloudcomputecategory",
+                                "height": 22,
+                                "id": "8df4f5c0-129d-11ed-b288-7359d91bbd31",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "attack_type": {
+                                        "simple": "${PrismaCloudCompute.AuditAlert.category}"
+                                    },
+                                    "policy": {
+                                        "simple": "${PCC}"
+                                    },
+                                    "rule_name": {
+                                        "simple": "${PrismaCloudCompute.AuditAlert.rule}"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "95e12300-fe19-11ec-8186-47081b53acb3",
+                                "index": 1,
+                                "name": "Modify WaaS Container Policy",
+                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute_additional_remediation|||prisma-cloud-compute-update-waas-policies",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Prisma Cloud Compute Audit Layout v2",
+    "name": "Prisma Cloud Compute Audit Layout v2",
+    "system": false,
+    "version": -1,
+    "description": "",
+    "fromVersion": "6.0.0",
+    "marketplaces": ["xsoar"]
+}

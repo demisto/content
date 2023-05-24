@@ -660,7 +660,8 @@ class Client(BaseClient):
         return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False):
+                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False,
+                     no_record_found_res: dict = {'result': []}):
         """Generic request to ServiceNow.
 
         Args:
@@ -751,7 +752,7 @@ class Client(BaseClient):
                         message = json_res.get('error', {}).get('message')
                         details = json_res.get('error', {}).get('detail')
                         if message == 'No Record found':
-                            return {'result': []}  # Return an empty results array
+                            return no_record_found_res
                         else:
                             raise Exception(f'ServiceNow Error: {message}, details: {details}')
                     else:
@@ -874,7 +875,8 @@ class Client(BaseClient):
 
         return entries
 
-    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None) -> dict:
+    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None,
+            no_record_found_res: dict = {'result': []}) -> dict:
         """Get a ticket by sending a GET request.
 
         Args:
@@ -901,7 +903,7 @@ class Client(BaseClient):
             # Only in cases where the table is of type ticket
             raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
 
-        return self.send_request(path, 'GET', params=query_params)
+        return self.send_request(path, 'GET', params=query_params, no_record_found_res=no_record_found_res)
 
     def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {},
                input_display_value: bool = False) -> dict:
@@ -2157,6 +2159,11 @@ def fetch_incidents(client: Client) -> list:
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
+    # remove duplicate incidents which were already fetched
+    tickets_response = filter_incidents_by_duplicates_and_limit(
+        incidents_res=tickets_response, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='sys_id'
+    )
+
     for ticket in tickets_response:
         ticket.update(get_mirroring())
 
@@ -2170,9 +2177,8 @@ def fetch_incidents(client: Client) -> list:
             if datetime.strptime(ticket[client.timestamp_field], DATE_FORMAT) < snow_time_as_date:
                 continue
             parse_dict_ticket_fields(client, ticket)
-        except Exception:
-            pass
-
+        except Exception as e:
+            demisto.debug(f"got the following error: {e}")
         incidents.append({
             'name': f"ServiceNow Incident {ticket.get(client.incident_name)}",
             'labels': [
@@ -2183,14 +2189,10 @@ def fetch_incidents(client: Client) -> list:
             'severity': severity_map.get(ticket.get('severity', ''), 0),
             'attachment': get_ticket_file_attachments(client=client, ticket=ticket),
             'occurred': ticket.get(client.timestamp_field),
+            'sys_id': ticket.get('sys_id'),
             'rawJSON': json.dumps(ticket)
         })
         count += 1
-
-    # remove duplicate incidents which were already fetched
-    incidents = filter_incidents_by_duplicates_and_limit(
-        incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
-    )
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -2200,14 +2202,15 @@ def fetch_incidents(client: Client) -> list:
         end_fetch_time=end_snow_time,
         look_back=client.look_back,
         created_time_field='occurred',
-        id_field='name',
+        id_field='sys_id',
         date_format=DATE_FORMAT
     )
     demisto.debug(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
-        ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()}Z"
+        occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
+        ticket['occurred'] = f"{occurred}Z"
 
     demisto.setLastRun(last_run)
     return incidents
@@ -2296,7 +2299,8 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
 
 def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
     if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
+        user_result = client.get('sys_user', assigned_to.get('value'),  # type: ignore[arg-type]
+                                 no_record_found_res={'result': {}})
         user = user_result.get('result', {})
         if user:
             user_email = user.get('email')
@@ -2314,7 +2318,7 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     assignment_group = ticket.get('assignment_group', {})
 
     if assignment_group:
-        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group_result = client.get('sys_user_group', assignment_group.get('value'), no_record_found_res={'result': {}})
         group = group_result.get('result', {})
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
@@ -2323,7 +2327,7 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     ticket['assigned_to'] = user_assigned
 
     if caller:
-        user_result = client.get('sys_user', caller.get('value'))
+        user_result = client.get('sys_user', caller.get('value'), no_record_found_res={'result': {}})
         user = user_result.get('result', {})
         user_email = user.get('email')
         ticket['caller_id'] = user_email

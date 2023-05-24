@@ -3537,6 +3537,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
     if last_run:
         last_fetch_time = last_run.get('last_alert_fetched_time')
+        last_fetch_time = datetime.strftime(parse_date_string(last_fetch_time) + timedelta(milliseconds=1), TIME_FORMAT)
         # handling old version of time format:
         if not last_fetch_time.endswith('Z'):
             last_fetch_time = last_fetch_time + "Z"

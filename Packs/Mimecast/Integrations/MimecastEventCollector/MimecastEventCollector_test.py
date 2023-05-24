@@ -205,16 +205,13 @@ def test_handle_last_run_exit_with_values(mocker):
     local_siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
     local_siem_event_handler.token = 'new token'
     local_siem_event_handler.events_from_prev_run = ['event3', 'event4']
-    set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
 
-    handle_last_run_exit(local_siem_event_handler, ['audit event1', 'audit event2', 'audit event3'])
-
-    set_last_run_call_args = set_last_run_mocker.call_args.args[0]
+    next_run_obj = handle_last_run_exit(local_siem_event_handler, ['audit event1', 'audit event2', 'audit event3'])
 
     assert {SIEM_LAST_RUN: 'new token',
             SIEM_EVENTS_FROM_LAST_RUN: ['event3', 'event4'],
             AUDIT_LAST_RUN: '2525',
-            AUDIT_EVENT_DEDUP_LIST: ['id3', 'id4']} == set_last_run_call_args
+            AUDIT_EVENT_DEDUP_LIST: ['id3', 'id4']} == next_run_obj
 
 
 def test_handle_last_run_exit_without_values(mocker):
@@ -237,15 +234,12 @@ def test_handle_last_run_exit_without_values(mocker):
     mocker.patch('MimecastEventCollector.set_audit_next_run', return_value='')
     local_siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
 
-    set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
+    next_run_obj = handle_last_run_exit(local_siem_event_handler, audit_event_list)
 
-    handle_last_run_exit(local_siem_event_handler, audit_event_list)
-
-    set_last_run_call_args = set_last_run_mocker.call_args.args[0]
     assert {SIEM_LAST_RUN: 'token1',
             SIEM_EVENTS_FROM_LAST_RUN: ['event1', 'event2'],
             AUDIT_LAST_RUN: '2011-12-03T10:15:30+0000',
-            AUDIT_EVENT_DEDUP_LIST: ['id1', 'id2']} == set_last_run_call_args
+            AUDIT_EVENT_DEDUP_LIST: ['id1', 'id2']} == next_run_obj
 
 
 def test_siem_custom_run():

@@ -1,0 +1,1880 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "freshworksfreshserviceincidenttype"
+                                }
+                            },
+                            "operator": "isEqualString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "ticket"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "wiudpy7cnt",
+                "name": "FreshService Ticket Layout",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketnumber",
+                                "height": 53,
+                                "id": "75829d80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "78c5e1a0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceincidenttype",
+                                "height": 53,
+                                "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicecategory",
+                                "height": 53,
+                                "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 53,
+                                "id": "82c0d020-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 4,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 53,
+                                "id": "559ddf50-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastupdatetime",
+                                "height": 53,
+                                "id": "a98aed80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicetickettype",
+                                "height": 53,
+                                "id": "d0c299c0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicesubcategory",
+                                "height": 53,
+                                "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Ticket Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceticketstatus",
+                                "height": 53,
+                                "id": "67075290-d152-11ed-b877-09ea73968356",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceurgency",
+                                "height": 53,
+                                "id": "6e718410-d152-11ed-b877-09ea73968356",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicepriority",
+                                "height": 53,
+                                "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceimpact",
+                                "height": 53,
+                                "id": "04bf02e0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Ticket Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicetags",
+                                "height": 53,
+                                "id": "089dd4a0-ce45-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicespam",
+                                "height": 53,
+                                "id": "0fe7ace0-ce45-11ed-861e-61c58ce93800",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicedueby",
+                                "height": 53,
+                                "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
+                                "index": 2,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicesource",
+                                "height": 53,
+                                "id": "70a785e0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicedeleted",
+                                "height": 53,
+                                "id": "145d5680-ce45-11ed-861e-61c58ce93800",
+                                "index": 1,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceitemcategory",
+                                "height": 53,
+                                "id": "58ec0000-ced9-11ed-a716-cf57762f7af4",
+                                "index": 2,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Ticket Additional Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicerequesterid",
+                                "height": 22,
+                                "id": "e96e6840-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "agentid",
+                                "height": 22,
+                                "id": "f2cbde40-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceworkspaceid",
+                                "height": 22,
+                                "id": "0106e770-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceresponderid",
+                                "height": 22,
+                                "id": "f77912a0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicedepartmentid",
+                                "height": 22,
+                                "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 4,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicegroupid",
+                                "height": 22,
+                                "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 5,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Ticket Handling",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-38080510-ce3d-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "freshworksfreshserviceassets",
+                                "height": 106,
+                                "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Ticket Assets",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-c40ec570-ce3e-11ed-861e-61c58ce93800",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicecustomfields",
+                                "height": 22,
+                                "id": "cc3939b0-ce3e-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Fields",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-198886c0-ce40-11ed-861e-61c58ce93800",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceattachments",
+                                "height": 106,
+                                "id": "c3674ff0-ce40-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "listId": "caseinfoid-198886c0-ce40-11ed-861e-61c58ce93800",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Attachments",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "freshworksfreshserviceincidenttype"
+                                }
+                            },
+                            "operator": "isEqualString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "change"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "m6oziz42pw",
+                "name": "FreshService Change Layout",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketnumber",
+                                "height": 53,
+                                "id": "75829d80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "78c5e1a0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceincidenttype",
+                                "height": 53,
+                                "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicecategory",
+                                "height": 53,
+                                "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 53,
+                                "id": "82c0d020-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 4,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 53,
+                                "id": "559ddf50-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastupdatetime",
+                                "height": 53,
+                                "id": "a98aed80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicechangetype",
+                                "height": 53,
+                                "id": "d92b2440-ce42-11ed-861e-61c58ce93800",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicesubcategory",
+                                "height": 53,
+                                "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Change Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicechangestatus",
+                                "height": 53,
+                                "id": "49c787d0-ce42-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceimpact",
+                                "height": 53,
+                                "id": "04bf02e0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceapprovalstatus",
+                                "height": 53,
+                                "id": "a9e01160-ce46-11ed-91a7-cfa2d59836ed",
+                                "index": 2,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicepriority",
+                                "height": 53,
+                                "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicerisk",
+                                "height": 53,
+                                "id": "9fa581d0-ce46-11ed-91a7-cfa2d59836ed",
+                                "index": 1,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Change Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceimpactedservices",
+                                "height": 53,
+                                "id": "ae135ad0-ce46-11ed-91a7-cfa2d59836ed",
+                                "index": 0,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceplannedstartdate",
+                                "height": 53,
+                                "id": "b4c252a0-ce46-11ed-91a7-cfa2d59836ed",
+                                "index": 1,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicedueby",
+                                "height": 53,
+                                "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceplannedenddate",
+                                "height": 53,
+                                "id": "d55cba50-ce46-11ed-91a7-cfa2d59836ed",
+                                "index": 1,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Change Additional Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicerequesterid",
+                                "height": 22,
+                                "id": "e96e6840-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "agentid",
+                                "height": 22,
+                                "id": "f2cbde40-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "freshworksfreshservicegroupid",
+                                "height": 22,
+                                "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "freshworksfreshservicedepartmentid",
+                                "height": 22,
+                                "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Change Handling",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "caseinfoid-38080510-ce3d-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "freshworksfreshserviceassets",
+                                "height": 106,
+                                "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Change Assets",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "caseinfoid-6c497fa0-d231-11ed-ad72-bf20c8fc7908",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceattachments",
+                                "height": 22,
+                                "id": "a1e6ee90-d231-11ed-ad72-bf20c8fc7908",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Change Attachments",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "freshworksfreshserviceincidenttype"
+                                }
+                            },
+                            "operator": "isEqualString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "problem"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "ygjtpnllzp",
+                "name": "FreshService Problem Layout",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "ticketnumber",
+                                "height": 53,
+                                "id": "75829d80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "78c5e1a0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicecategory",
+                                "height": 53,
+                                "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 53,
+                                "id": "82c0d020-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 53,
+                                "id": "559ddf50-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceincidenttype",
+                                "height": 53,
+                                "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastupdatetime",
+                                "height": 53,
+                                "id": "a98aed80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicesubcategory",
+                                "height": 53,
+                                "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Problem Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceproblemstatus",
+                                "height": 53,
+                                "id": "ac325b40-ce45-11ed-a2f3-052cb6769150",
+                                "index": 0,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceimpact",
+                                "height": 53,
+                                "id": "04bf02e0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicepriority",
+                                "height": 53,
+                                "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Problem Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicedueby",
+                                "height": 53,
+                                "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceknownerror",
+                                "height": 53,
+                                "id": "cadc64a0-ce45-11ed-a2f3-052cb6769150",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceanalysisfields",
+                                "height": 53,
+                                "id": "e9591c70-ce45-11ed-a2f3-052cb6769150",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Problem Additional Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicerequesterid",
+                                "height": 22,
+                                "id": "e96e6840-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicedepartmentid",
+                                "height": 22,
+                                "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicegroupid",
+                                "height": 22,
+                                "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "agentid",
+                                "height": 22,
+                                "id": "f2cbde40-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Problem Handling",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-38080510-ce3d-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "freshworksfreshserviceassets",
+                                "height": 106,
+                                "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Problem Assets",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-c40ec570-ce3e-11ed-861e-61c58ce93800",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicecustomfields",
+                                "height": 53,
+                                "id": "cc3939b0-ce3e-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "listId": "caseinfoid-c40ec570-ce3e-11ed-861e-61c58ce93800",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Fields",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-aa81b0d0-d231-11ed-ad72-bf20c8fc7908",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceattachments",
+                                "height": 22,
+                                "id": "ad82e2e0-d231-11ed-ad72-bf20c8fc7908",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Problem Attachments",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "freshworksfreshserviceincidenttype"
+                                }
+                            },
+                            "operator": "isEqualString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "release"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "enggi2xjrv",
+                "name": "FreshService Release Layout",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketnumber",
+                                "height": 53,
+                                "id": "75829d80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "78c5e1a0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceincidenttype",
+                                "height": 53,
+                                "id": "bcb84a60-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicecategory",
+                                "height": 53,
+                                "id": "91d437f0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 53,
+                                "id": "82c0d020-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 4,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 53,
+                                "id": "559ddf50-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastupdatetime",
+                                "height": 53,
+                                "id": "a98aed80-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicereleasetype",
+                                "height": 53,
+                                "id": "3f7569e0-ce48-11ed-8f12-6f4cd6b24d72",
+                                "index": 2,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicesubcategory",
+                                "height": 53,
+                                "id": "99f3afb0-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 3,
+                                "listId": "caseinfoid-c522f260-ce2f-11ed-bc15-15b418732d13",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Release Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicereleasestatus",
+                                "height": 53,
+                                "id": "3c935890-ce48-11ed-8f12-6f4cd6b24d72",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicepriority",
+                                "height": 53,
+                                "id": "f9192380-ce3b-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-e8cdb0e0-ce3b-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Release Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshservicedueby",
+                                "height": 53,
+                                "id": "a57f7a90-ce3f-11ed-861e-61c58ce93800",
+                                "index": 0,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "freshworksfreshserviceplannedstartdate",
+                                "height": 53,
+                                "id": "94ae4710-ce48-11ed-8f12-6f4cd6b24d72",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceitemcategory",
+                                "height": 53,
+                                "id": "67d80190-ce48-11ed-8f12-6f4cd6b24d72",
+                                "index": 0,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceplannedenddate",
+                                "height": 53,
+                                "id": "97c4fcf0-ce48-11ed-8f12-6f4cd6b24d72",
+                                "index": 1,
+                                "listId": "caseinfoid-44e08d80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Release Additional Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicedepartmentid",
+                                "height": 22,
+                                "id": "fb58bdd0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshservicegroupid",
+                                "height": 22,
+                                "id": "eed54fb0-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 1,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "agentid",
+                                "height": 22,
+                                "id": "f2cbde40-ce3c-11ed-bb44-53a7254e86e7",
+                                "index": 2,
+                                "listId": "caseinfoid-93511e80-ce3c-11ed-bb44-53a7254e86e7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Release Handling",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-38080510-ce3d-11ed-bb44-53a7254e86e7",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "freshworksfreshserviceassets",
+                                "height": 106,
+                                "id": "4b7f3c30-ce3d-11ed-bb44-53a7254e86e7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Release Assets",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-cba17520-d231-11ed-ad72-bf20c8fc7908",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "freshworksfreshserviceattachments",
+                                "height": 22,
+                                "id": "d08e71a0-d231-11ed-ad72-bf20c8fc7908",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Release Attachments",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "kmjkmljnjq",
+                "name": "FreshService Task",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-496781f0-b371-11ed-9732-a97e308dae95",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "freshworksfreshservicetask",
+                                "height": 106,
+                                "id": "4c6bc140-b371-11ed-9732-a97e308dae95",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "FreshworksFreshservice Layout",
+    "name": "FreshworksFreshservice Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": "FreshworksFreshservice Layout"
+}

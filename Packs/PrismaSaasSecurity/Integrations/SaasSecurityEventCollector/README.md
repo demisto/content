@@ -39,11 +39,13 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 
 ## Limitations
 1) Occurring events expire after one hour in Saas-Security cache, so setting a low limit could cause events to expire if there are a large number of events in the Saas-Security cache.
-2) The max-fetch/limit parameters to fetch events must be divisible by 100.
+2) If the ```max_fetch``` is not dividable by 10, it will be rounded down to a number that is dividable by 10 due to SaaS Security api limits.
 3) **reset last fetch** has no effect.
 4) On initial activation this integration will pull events starting from one hour prior.
 5) Using the ```saas-security-get-events``` command may take upwards of twenty seconds in some cases.
 6) In some rare cases more than ```max_fetch``` events could be fetched.
+7) The maximum recommended max fetch is 5000 to avoid fetch timeouts.
+8) In case not providing the ```max_fetch``` argument, the default will be 1000.
 
 ## Fetch Events
 Requires the scope of *api_access* in order to fetch log events. See [Documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/api-client-authentication/retrieve-a-token#idd543d5f0-c56e-4899-957f-74f921fd0976)
