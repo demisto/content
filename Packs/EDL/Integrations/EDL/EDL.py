@@ -1004,11 +1004,13 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
-        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration." +
+        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration."
                      "This parameter is deprecated, make sure to adjust your queries accordingly.")
         fields_to_present = 'use_legacy_query'
 
     if query and request_args.get("q"):
+        demisto.info("Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
+                     "For more information, review the documentation.")
         limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
 
     return RequestArguments(query,
