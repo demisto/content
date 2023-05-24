@@ -3626,7 +3626,7 @@ script:
     arguments: []
     outputs:
     - contextPath: Core.User.user_email
-      description: Email address of the user
+      description: Email address of the user.
       type: string
     - contextPath: Core.User.user_first_name
       description: First name of the user
