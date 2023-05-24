@@ -10,7 +10,7 @@
     "id": "incident_userblockstatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "IP Blocked Status",
+    "name": "User Block Status",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
