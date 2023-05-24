@@ -3424,7 +3424,7 @@ script:
       description: List of permissions associated with this role.
       type: array
     - contextPath: PaloAltoNetworksXDR.Role.insert_time
-      description: Timestamp of when the Role was created.
+      description: Timestamp of when the role was created.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Role.update_time
       description: Timestamp of when the role was last updated.
