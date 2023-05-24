@@ -297,7 +297,7 @@ def main():
     params = demisto.params()
     user: str = params.get('credentials', {}).get('identifier')
     base_url: str = params.get('base_url', "").rstrip('/')
-    tenant_name: str = params.get('tenant_name')
+    tenant_name: str = params.get('tenant_name', {}).get('password') or params.get('tenant_name', None)
     username = f"{user}@{tenant_name}"
     password: str = params.get('credentials', {}).get('password')
     token = params.get('token')
