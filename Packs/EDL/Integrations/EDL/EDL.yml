@@ -254,15 +254,14 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code. Note: enabling this field can have big impact on the performance of the integration. Due to this reason, we are deprecating the Legacy Query option, make sure to adjust your queries accordingly.'
-  display: 'Advanced: Use Legacy Queries'
+- additionalinfo: 'This parameter is deprecated, make sure to adjust your queries accordingly. When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code. Note: enabling this field can have big impact on the performance of the integration.'
+  display: 'Advanced: Use Legacy Queries (Deprecated)'
   hidden: false
   name: use_legacy_query
   required: false
   type: 8
   section: Collect
   advanced: true
-  deprecated: true
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL
@@ -538,7 +537,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.59974
+  dockerimage: demisto/flask-nginx:1.0.0.61723
   feed: false
   isfetch: false
   longRunning: true
