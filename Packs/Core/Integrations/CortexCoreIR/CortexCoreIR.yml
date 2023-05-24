@@ -3748,7 +3748,7 @@ script:
       description: Type of user group.
       type: String
   - arguments:
-    - description: List of one or more role names in your environment for which you want detailed information. separated by commas.
+    - description: A comma-separated list of one or more role names in your environment for which you want detailed information.
       name: role_names
       required: true
     name: core-list-roles
