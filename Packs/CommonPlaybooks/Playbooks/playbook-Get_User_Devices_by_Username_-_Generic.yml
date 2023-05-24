@@ -2501,6 +2501,9 @@ outputs:
 - contextPath: UserDevices.Integration
   description: The integration which retrieved the devices.
   type: unknown
+- contextPath: UserDevices.MACAddress
+  description: Devices MAC Address retrieved by this playbook.
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
