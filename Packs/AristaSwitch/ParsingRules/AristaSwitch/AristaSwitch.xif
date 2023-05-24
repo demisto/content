@@ -3,7 +3,7 @@
 alter tmp_raw_ts = arrayindex(regextract(_raw_log, "<\d+>(.+?)\s+\S+\s+\w+\:\s"), 0)
 
 // assert the timestamp contains a valid RFC 3339 timezone ( either Z or [+|-]HH:MM )
-| filter tmp_raw_ts ~= "\d+[Zz]{1}$|\d+[+-]{1}\d{2}:\d{2}"
+| filter tmp_raw_ts ~= "\d+[Zz]{1}$|\d+[\+\-]{1}\d{2}:\d{2}"
 
 // process RFC 3339 compliant timestamps 
 | filter tmp_raw_ts ~= "[12]\d{3}\-[01]\d{1}\-[0123]\d{1}[\s\S]{1}\d{2}:\d{2}:\d{2}\.?\d{0,6}" 
