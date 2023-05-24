@@ -344,11 +344,13 @@ def get_document(service, document_id):
 
 
 def main():
-    demisto.debug('Command being called is %s' % (demisto.command()))
-    proxy = demisto.params().get('proxy')
-    disable_ssl = demisto.params().get('insecure', False)
-    service_account_credentials = json.loads(demisto.params().get('service_account_credentials'))
-    if demisto.command() == 'test-module':
+    command = demisto.command()
+    demisto.debug('Command being called is %s' % (command))
+    params = demisto.params()
+    proxy = params.get('proxy')
+    disable_ssl = params.get('insecure', False)
+    service_account_credentials = json.loads(params.get('service_account_credentials'))
+    if command == 'test-module':
         try:
             get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
             demisto.results('ok')
@@ -357,14 +359,14 @@ def main():
 
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
-        if demisto.command() == 'google-docs-update-document':
+        if command == 'google-docs-update-document':
             document, human_readable_text = batch_update_document_command(service)
-        elif demisto.command() == 'google-docs-create-document':
+        elif command == 'google-docs-create-document':
             document, human_readable_text = create_document_command(service)
-        elif demisto.command() == 'google-docs-get-document':
+        elif command == 'google-docs-get-document':
             document, human_readable_text = get_document_command(service)
         else:
-            return_error("Command {} does not exist".format(demisto.command()))
+            return_error("Command {} does not exist".format(command))
             return
 
         res = {
@@ -388,7 +390,7 @@ def main():
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)), e)
+        return_error("Failed to execute {} command. Error: {}".format(command, str(e)), e)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
