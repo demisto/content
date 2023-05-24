@@ -8,8 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -33,8 +32,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -64,9 +62,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -77,8 +73,7 @@ configuration:
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed, If auto-detect is checked then
-    the value set as Indicator Type will be ignored.
+- additionalinfo: Type of the indicator in the feed, If auto-detect is checked then the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   required: false
@@ -106,16 +101,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Zero Day Live is Blackwired’s flagship product that delivers proprietary
-  cyber threat intelligence, enabling our clients to operate at the same speed as
-  the adversary. Zero Day Live specializes in unknown, zero day and early warning
-  threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated,
-  directly into the existing security infrastructure – measurably reducing the risk
-  of breach.'
+description: 'Zero Day Live is Blackwired’s flagship product that delivers proprietary cyber threat intelligence, enabling our clients to operate at the same speed as the adversary. Zero Day Live specializes in unknown, zero day and early warning threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated, directly into the existing security infrastructure – measurably reducing the risk of breach.'
 display: Zero Day Live TI FUSION
 name: ZeroDayLiveTIFUSION
 script:
-  dockerimage: demisto/py3-tools:1.0.0.45904
+  dockerimage: demisto/py3-tools:1.0.0.61685
   feed: true
   runonce: true
   script: '-'
