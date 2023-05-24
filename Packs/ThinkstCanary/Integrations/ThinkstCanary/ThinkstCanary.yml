@@ -15,6 +15,13 @@ configuration:
   type: 0
   required: true
   section: Connect
+- display: API Authentication Token
+  name: auth_token
+  defaultvalue: ""
+  type: 4
+  required: true
+  section: Connect
+  hidden: true
 - name: auth_token
   required: true
   type: 9

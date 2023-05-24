@@ -180,7 +180,7 @@ def test_module(client: Client) -> str:
 def main():
     params = demisto.params()
     base_url = f"{params.get('url')}/1.0/"
-    api_key = params.get('api_key')
+    api_key = params.get('api_key', {}).get('password') or params.get('api_key', None)
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
