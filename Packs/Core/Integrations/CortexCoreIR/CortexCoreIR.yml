@@ -3776,7 +3776,7 @@ script:
       description: Group names associated with the role.
       type: array
     - contextPath: Core.Role.users
-      description: Email address of users associated with the Role.
+      description: Email address of users associated with the role.
       type: array
   - arguments:
     - description: List of one or more user emails of users you want to add to a role. separated by commas.
