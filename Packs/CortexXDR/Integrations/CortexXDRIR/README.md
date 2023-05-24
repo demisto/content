@@ -3162,61 +3162,6 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 >|---|---|
 >| new ip address | 1.1.1.1 |
 
-### xdr-list-risky-users
-
-***
-Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
-
-
-
-#### Base Command
-
-`xdr-list-risky-users`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`<br/>. | Optional | 
-| limit | Limit the number of users that will appear in the list. By default, the limit is 50 users.(use limit when you don't asking for specific user). Default is 50. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.RiskyUser.type | String | Form of identification element. | 
-| PaloAltoNetworksXDR.RiskyUser.id | String | Identification value of the type field. | 
-| PaloAltoNetworksXDR.RiskyUser.score | Number | The score assigned to the user. | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.date created | String | Date the incident created. | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.description | String | Description of the incident. | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.severity | String | The severity of the incident. | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.status | String | Incident status. | 
-| PaloAltoNetworksXDR.RiskyUser.reasons.points | Number | The score. | 
-
-#### Command example
-```!xdr-list-risky-users user_id=dummy```
-#### Context Example
-```json
-{
-    "PaloAltoNetworksXDR": {
-        "RiskyUser": {
-            "id": "dummy",
-            "reasons": [],
-            "score": 0,
-            "type": "user"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Risky Users
->|Description|Score|User ID|
->|---|---|---|
->|  | 0 | dummy |
-
 ### xdr-list-users
 
 ***
@@ -3250,7 +3195,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Context Example
 ```json
 {
-    "PaloAltoNetworksXDR": {
+    "dummy": {
         "User": [
             {
                 "groups": [],
@@ -3260,9 +3205,9 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
                 "user_email": "dummy@dummy.com",
                 "user_first_name": "dummy",
                 "user_last_name": "dummy",
-                "user_type": "CSP"
+                "user_type": "dummy"
             },
-            {
+             {
                 "groups": [],
                 "last_logged_in": null,
                 "role_name": "dummy",
@@ -3270,9 +3215,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
                 "user_email": "dummy@dummy.com",
                 "user_first_name": "dummy",
                 "user_last_name": "dummy",
-                "user_type": "CSP"
-            },
-          
+                "user_type": "dummy"
+            }            
         ]
     }
 }
@@ -3280,13 +3224,65 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 #### Human Readable Output
 
-
-
 >### Users
 >|First Name|Groups|Last Name|Role|Type|User email|
 >|---|---|---|---|---|---|
->| dummy |  | dummy | dummy | CSP | dummy@dummy.com |
->| dummy |  | dummy | dummy | CSP | dummy@dummy.com |
+>| dummy |  | dummy | dummy | dummy | dummy |
+>| dummy |  | dummy | dummy | dummy | dummy |
+
+
+
+### xdr-list-risky-users
+
+***
+Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+
+#### Base Command
+
+`xdr-list-risky-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | Unique ID of a specific user.<br/>User ID could be either of the `foo/dummy` format, or just `dummy`.<br/>. | Optional | 
+| limit | Limit the number of users that will appear in the list. (Use limit when no specific host is requested.). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.RiskyUser.type | String | Form of identification element. | 
+| PaloAltoNetworksXDR.RiskyUser.id | String | Identification value of the type field. | 
+| PaloAltoNetworksXDR.RiskyUser.score | Number | The score assigned to the user. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.date created | String | Date when the incident was created. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.description | String | Description of the incident. | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.severity | String | The severity of the incident | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.status | String | The incident status | 
+| PaloAltoNetworksXDR.RiskyUser.reasons.points | Number | The score. | 
+
+#### Command example
+```!xdr-list-risky-users user_id=dummy```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "RiskyUser": {
+            "id": "dummy",
+            "reasons": [],
+            "score": 0,
+            "type": "user"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Risky Users
+>|User ID|Score|Description|
+>|---|---|---|
+>| dummy | 0 |  |
 
 
 ### xdr-list-risky-hosts
@@ -3303,8 +3299,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | Unique ID of a specific host.<br/> | Optional | 
-| limit | Limit the number of hosts that will appear in the list. (Use limit when no specific host is requested). Default is 50. | Optional | 
+| host_id | Unique ID of a specific host.<br/>. | Optional | 
+| limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output
 
@@ -3313,14 +3309,14 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 | PaloAltoNetworksXDR.RiskyHost.type | String | Form of identification element. | 
 | PaloAltoNetworksXDR.RiskyHost.id | String | Identification value of the type field. | 
 | PaloAltoNetworksXDR.RiskyHost.score | Number | The score assigned to the host. | 
-| PaloAltoNetworksXDR.RiskyHost.reasons.date created | String | Date the incident created. | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.date created | String | Date when the incident was created. | 
 | PaloAltoNetworksXDR.RiskyHost.reasons.description | String | Description of the incident. | 
-| PaloAltoNetworksXDR.RiskyHost.reasons.severity | String | The severity of the incident. | 
-| PaloAltoNetworksXDR.RiskyHost.reasons.status | String | Incident status. | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.severity | String | The severity of the incident | 
+| PaloAltoNetworksXDR.RiskyHost.reasons.status | String | The incident status | 
 | PaloAltoNetworksXDR.RiskyHost.reasons.points | Number | The score. | 
 
 #### Command example
-```!xdr-list-risky-hosts host_id=dummy	```
+```!xdr-list-risky-hosts host_id=dummy```
 #### Context Example
 ```json
 {
@@ -3329,7 +3325,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
             "id": "dummy",
             "reasons": [],
             "score": 0,
-            "type": "host"
+            "type": "dummy"
         }
     }
 }
@@ -3338,15 +3334,71 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Risky Hosts
->|Description|Host ID|Score|
+>|Host ID|Score|Description|
 >|---|---|---|
->|  | dummy | 0 |
+>| dummy | 0 |  |
+
+
+### xdr-list-user-groups
+
+***
+Retrieve a list of the current user emails associated with one or more user groups in the environment.
+
+#### Base Command
+
+`xdr-list-user-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_names | A comma-separated list of one or more user group names for which you want the associated users. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.UserGroup.group_name | String | Name of the user group. | 
+| PaloAltoNetworksXDR.UserGroup.description | String | Description of the user group, if available. | 
+| PaloAltoNetworksXDR.UserGroup.pretty_name | String | Name of the user group as it appears in the management console. | 
+| PaloAltoNetworksXDR.UserGroup.insert_time | Number | Timestamp of when the user group was created. | 
+| PaloAltoNetworksXDR.UserGroup.update_time | Number | Timestamp of when the user group was last updated. | 
+| PaloAltoNetworksXDR.UserGroup.user_email | array | List of email addresses belonging to the users associated with the user group. | 
+| PaloAltoNetworksXDR.UserGroup.source | String | Type of user group. | 
+
+#### Command example
+```!xdr-list-user-groups group_names=test```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "UserGroup": {
+            "description": "test",
+            "group_name": "test",
+            "insert_time": 1684746187678,
+            "pretty_name": null,
+            "source": "Custom",
+            "update_time": 1684746209062,
+            "user_email": [
+                null
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Groups
+>|Group Name|Group Description|User email|
+>|---|---|---|
+>| test | test for demo |  |
+
 
 ### xdr-list-roles
 
 ***
 Retrieve information about one or more roles created in the environment.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
 
 #### Base Command
 
@@ -3356,23 +3408,23 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_names | List of one or more role names in the environment for which you want detailed information. | Required | 
+| role_names | A comma-separated list of one or more role names in your environment for which you want detailed information. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.Role.pretty_name | String | Name of the role as it appears in the Management Console. | 
+| PaloAltoNetworksXDR.Role.pretty_name | String | Name of the role as it appears in the management console. | 
 | PaloAltoNetworksXDR.Role.permissions | array | List of permissions associated with this role. | 
-| PaloAltoNetworksXDR.Role.insert_time | Number | Timestamp of when the Role was created. | 
-| PaloAltoNetworksXDR.Role.update_time | Number | Timestamp of when the Role was last updated. | 
-| PaloAltoNetworksXDR.Role.created_by | String | Email of the user who created the Role. | 
-| PaloAltoNetworksXDR.Role.description | String | Description of the Role, if available. | 
-| PaloAltoNetworksXDR.Role.groups | array | Group names associated with the Role. | 
-| PaloAltoNetworksXDR.Role.users | array | Email address of users associated with the Role. | 
+| PaloAltoNetworksXDR.Role.insert_time | Number | Timestamp of when the role was created. | 
+| PaloAltoNetworksXDR.Role.update_time | Number | Timestamp of when the role was last updated. | 
+| PaloAltoNetworksXDR.Role.created_by | String | Email of the user who created the role. | 
+| PaloAltoNetworksXDR.Role.description | String | Description of the role, if available. | 
+| PaloAltoNetworksXDR.Role.groups | array | Group names associated with the role. | 
+| PaloAltoNetworksXDR.Role.users | array | Email address of users associated with the role. | 
 
 #### Command example
-```!xdr-list-roles role_names="dummy"```
+```!xdr-list-roles role_names=dummy```
 #### Context Example
 ```json
 {
@@ -3381,22 +3433,15 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
             [
                 {
                     "created_by": "dummy dummy",
-                    "description": "The user(s) have full access to the given app(s).",
-                    "groups": [
-                        ""
-                    ],
+                    "description": "The user(s) have full access.",
+                    "groups": [],
                     "insert_time": null,
                     "permissions": [
-                        "dummy1",
-                        "dummy2",
+                        "dummy"
                     ],
                     "pretty_name": "dummy",
                     "update_time": null,
-                    "users": [
-                        "dummy1@dummy.com",
-                        "dummy2@dummy.com",
-                        "dummy3@dummy.com"
-                    ]
+                    "users": []
                 }
             ]
         ]
@@ -3407,68 +3452,9 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Roles
->|Role Name|Description|Permission|Users|Groups|
+>|Role Name|Description|Permissions|Users|Groups|
 >|---|---|---|---|---|
->| dummy | The user(s) have full access to the given app(s). | dummy,<br/>dummy,<br/>| dummy@dummy.com,<br/>dummy@dummy.com,<br/>dummy@dummy.com,<br/>dummy@dummy.com,<br/> |  |
-
-### xdr-list-user-groups
-
-***
-Retrieve a list of the current user emails associated with one or more user groups in the environment.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
-
-#### Base Command
-
-`xdr-list-user-groups`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| group_names | List of one or more user group names for which you want the associated users. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.UserGroup.group_name | String | Name of the User Group. | 
-| PaloAltoNetworksXDR.UserGroup.description | String | Description of the User Group, if available. | 
-| PaloAltoNetworksXDR.UserGroup.pretty_name | String | Name of the User Group as it appears in the Management Console. | 
-| PaloAltoNetworksXDR.UserGroup.insert_time | Number | Timestamp of when the User Group was created. | 
-| PaloAltoNetworksXDR.UserGroup.update_time | Number | Timestamp of when the User Group was last updated. | 
-| PaloAltoNetworksXDR.UserGroup.user_email | array | List of email addresses belonging to the users associated with the User Group. | 
-| PaloAltoNetworksXDR.UserGroup.source | String | Type of User Group. | 
-
-#### Command example
-```!xdr-list-user-groups group_names=test1```
-#### Context Example
-```json
-{
-    "PaloAltoNetworksXDR": {
-        "UserGroup": {
-            "description": "test1",
-            "group_name": "test1",
-            "insert_time": 1683713586014,
-            "pretty_name": "dummy dummy",
-            "source": "Custom",
-            "update_time": null,
-            "user_email": [
-                "email@company.com",
-                "email@company.com"
-
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Groups
->|Group Description|Group Name|User email|
->|---|---|---|
->| test1 | test1 | email@company.com |
->| test1 | test1 | email@company.com |
+>| dummy | The user(s) have full access. | ADMIN |  |  |
 
 
 ### xdr-set-user-role
@@ -3485,18 +3471,17 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_emails | List of one or more user emails of users you want to add to a role. | Required | 
+| user_emails | A comma-separated list of one or more user emails of users you want to add to a role. | Required | 
 | role_name | Name of the role you want to add a user to. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!xdr-set-user-role role_name="dummy dummy" user_emails=email@company.com```
+```!xdr-set-user-role role_name=dummy user_emails=dummy```
 #### Human Readable Output
 
->User Role Was Updated Successfully
-
+>Role was updated successfully for 1 user.
 
 ### xdr-remove-user-role
 
@@ -3512,17 +3497,16 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_emails | List of one or more user emails of users you want to remove from a role. | Required | 
+| user_emails | A comma-separate list of one or more user emails of users you want to remove from a role. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!xdr-remove-user-role user_emails=email@company.com```
+```!xdr-remove-user-role user_emails=dummy```
 #### Human Readable Output
 
->User Role Was Removed Successfully
-
+>Role was removed successfully for 1 user.
 
 ## xdr-script-run
 ***
