@@ -25,4 +25,4 @@ filter
     xdm.event.type = category
     xdm.event.operation_sub_type = activity
     xdm.event.outcome_reason = result
-    xdm.event.description =
+    xdm.event.description = details  # TODO - looks like details structure is changing for each audit log, need to check
