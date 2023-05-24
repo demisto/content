@@ -3433,7 +3433,7 @@ script:
       description: Email of the user who created the Role.
       type: String
     - contextPath: PaloAltoNetworksXDR.Role.description
-      description: Description of the Role, if available.
+      description: Description of the role, if available.
       type: String
     - contextPath: PaloAltoNetworksXDR.Role.groups
       description: Group names associated with the role.
