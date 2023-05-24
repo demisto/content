@@ -275,6 +275,26 @@ def delete_positioned_object(action_name, object_id):
     }
 
 
+def generate_results(document, human_readable_text):
+    """ Generates the results dictionary for the command """
+
+    res = {
+        'RevisionId': document['revisionId'],
+        'DocumentId': document['documentId'],
+        'Title': document['title']
+    }
+    ec = {
+        'GoogleDocs(val.DocumentId && val.DocumentId == obj.DocumentId)': res
+    }
+    return {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': ec,
+        'HumanReadable': tableToMarkdown(human_readable_text, res),
+        'EntryContext': ec
+    }
+
+
 def batch_update_document_command(service):
     args = demisto.args()
     document_id = args.get('document_id')
@@ -284,7 +304,7 @@ def batch_update_document_command(service):
     document = batch_update_document(service, document_id, actions, required_revision_id, target_revision_id)
     human_readable_text = "The document with the title {title} and actions {actions} was updated. the results are:".\
         format(title=document['title'], actions=args.get('actions'))
-    return document, human_readable_text
+    return generate_results(document, human_readable_text)
 
 
 def batch_update_document(service, document_id, actions, required_revision_id=None, target_revision_id=None):
@@ -316,7 +336,7 @@ def create_document_command(service):
     title = args.get('title')
     document = create_document(service, title)
     human_readable_text = "The document with the title {title} was created. The results are:".format(title=title)
-    return document, human_readable_text
+    generate_results(document, human_readable_text)
 
 
 def create_document(service, title):
@@ -333,7 +353,7 @@ def get_document_command(service):
     document = get_document(service, document_id)
     human_readable_text = "The document with the title {title} was returned. The results are:".\
         format(title=document['title'])
-    return document, human_readable_text
+    generate_results(document, human_readable_text)
 
 
 def get_document(service, document_id):
@@ -351,34 +371,17 @@ def main():
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
         if command == 'google-docs-update-document':
-            document, human_readable_text = batch_update_document_command(service)
+            return_results(batch_update_document_command(service))
         elif command == 'google-docs-create-document':
-            document, human_readable_text = create_document_command(service)
+            return_results(create_document_command(service))
         elif command == 'google-docs-get-document':
-            document, human_readable_text = get_document_command(service)
+            return_results(get_document_command(service))
         elif command == 'test-module':
             if not service:
                 raise DemistoException('Failed to create client')
             return_results('ok')
         else:
             raise DemistoException(f"Command {command} does not exist.")
-
-        res = {
-            'RevisionId': document['revisionId'],
-            'DocumentId': document['documentId'],
-            'Title': document['title']
-        }
-        ec = {
-            'GoogleDocs(val.DocumentId && val.DocumentId == obj.DocumentId)': res
-        }
-
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': ec,
-            'HumanReadable': tableToMarkdown(human_readable_text, res),
-            'EntryContext': ec
-        })
 
     except Exception as e:
         LOG(str(e))
