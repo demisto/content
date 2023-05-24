@@ -429,7 +429,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      installation_request_body: list,
                                      lock: Lock,
                                      one_pack_and_its_dependencies_in_batch: bool = False,
-                                     batch_packs_install_request_body: list = None
+                                     batch_packs_install_request_body: list = None,
                                      ):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
