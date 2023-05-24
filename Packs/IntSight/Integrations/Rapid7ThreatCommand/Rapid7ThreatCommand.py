@@ -928,7 +928,7 @@ class Parser:
         Args:
             obj (dict[str, Any]): Domain enrichment response from the API.
             reliability (_type_): Reliability of the source providing the intelligence data.
-            domain (str): domain value.
+            domain (bool): domain value.
 
         Returns:
             dict[str, Any]: XSOAR outputs.
@@ -4300,7 +4300,7 @@ def domain_reputation_handler(
     Args:
         client (Client): Threat Command API client.
         obj (dict[str, Any]): Domain response.
-        obj_id (bool): Domain value.
+        obj_id (str): Domain value.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
