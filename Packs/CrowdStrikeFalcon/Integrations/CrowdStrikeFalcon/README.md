@@ -5797,7 +5797,7 @@ Retrieve ODS malicious file details.
 ### cs-falcon-ods-create-scan
 
 ***
-Create an ODS scan.
+Create an ODS scheduled scan or an ODS scan
 
 #### Base Command
 
@@ -5822,8 +5822,8 @@ Create an ODS scan.
 | cloud_ml_level_detection | ML Detection level for the scan. | Optional | 
 | cloud_ml_level_prevention | ML Prevention level for the scan. | Optional | 
 | max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
-| is_scheduled | If to make it a scheduled scan. Default is False. | Optional | 
-| schedule_start_timestamp | Time to start scan in yyyy-MM-ddThh:mm format. Must be set if scan is scheduled. | Optional | 
+| is_scheduled | If to make it a scheduled scan. If set to true, schedule_start_timestamp, schedule_interval and host_groups must be defined. Default is False. | Optional | 
+| schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". Must be set if scan is scheduled. | Optional | 
 | schedule_interval | Set the schedule interval. Must be set if scan is scheduled. Possible values are: never, daily, weekly, every other week, every 4 weeks, monthly. | Optional | 
 
 #### Context Output

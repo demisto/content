@@ -5053,8 +5053,12 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
     result |= {
         'schedule': {
             'ignored_by_channelfile': True,
-            'interval': SCHEDULE_INTERVAL_STR_TO_INT.get(str(args.get('schedule_interval')).lower()),
-            'start_timestamp': args.get('schedule_start_timestamp'),
+            'interval': SCHEDULE_INTERVAL_STR_TO_INT.get(args['schedule_interval'].lower()),
+            'start_timestamp': (
+                dateparser.parse(args['schedule_start_timestamp'])
+                or return_error('Invalid start_timestamp.')
+            ).strftime("%Y-%m-%dT%H:%M"),
+             
         }
     } if is_scheduled else {
         'hosts': argToList(args.get('hosts')),
@@ -5130,6 +5134,25 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
     )
 
     return command_results
+
+
+@polling_function('cs-falcon-ods-query-scan', poll_message='Scan underway...')
+def cs_f_command(args: Dict[str, Any], client: Client):
+    key = get_api_id(args)
+    api_response = client.call_api()
+    successful_response = api_response.status_code == 200
+
+    if successful_response:
+        success_return = show_successful_response()
+        return PollResult(success_return)
+
+    else:
+        error_response = CommandResults(raw_response=report_response,
+                                        readable_output='API returned an error',
+                                        entry_type=entryTypes['error'])
+
+        return PollResult(continue_to_poll=lambda: not should_not_keep_polling(client, key), response=error_response)
+    
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

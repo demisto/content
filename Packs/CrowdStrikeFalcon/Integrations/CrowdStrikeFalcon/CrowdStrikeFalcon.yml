@@ -4073,11 +4073,11 @@ script:
       name: max_duration
       required: false
       defaultValue: '2'
-    - description: If to make it a scheduled scan.
+    - description: If to make it a scheduled scan. If set to true, schedule_start_timestamp, schedule_interval and host_groups must be defined.
       name: is_scheduled
       required: false
       defaultValue: 'False'
-    - description: Time to start scan in yyyy-MM-ddThh:mm format. Must be set if scan is scheduled.
+    - description: When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". Must be set if scan is scheduled.
       name: schedule_start_timestamp
       required: false
     - description: Set the schedule interval. Must be set if scan is scheduled.
@@ -4091,7 +4091,7 @@ script:
       - every other week
       - every 4 weeks
       - monthly
-    description: Create an ODS scan.
+    description: Create an ODS scheduled scan or an ODS scan.
     name: cs-falcon-ods-create-scan
     outputs:
     - contextPath: CrowdStrike.ODSScan.id
