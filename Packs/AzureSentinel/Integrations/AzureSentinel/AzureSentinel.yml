@@ -6,12 +6,21 @@ commonfields:
   id: Azure Sentinel
   version: -1
 configuration:
-- defaultvalue: https://management.azure.com
-  display: Server URL
-  hidden: false
-  name: server_url
+- display: Azure Cloud
+  name: azure_cloud
+  defaultvalue: Worldwide
+  options:
+  - Worldwide
+  - Germany
+  - China
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Custom
+  type: 15
+  section: Connect
+  advanced: true
   required: true
-  type: 0
 - name: creds_tenant_id
   required: false
   type: 9
@@ -171,6 +180,13 @@ configuration:
   hidden:
     - marketplacev2
   section: Collect
+  advanced: true
+- defaultvalue: https://management.azure.com
+  display: Server URL
+  hidden: false
+  name: server_url
+  required: false
+  type: 0
   advanced: true
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel

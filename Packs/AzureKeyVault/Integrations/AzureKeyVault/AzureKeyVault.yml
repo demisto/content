@@ -3,6 +3,21 @@ commonfields:
   id: AzureKeyVault
   version: -1
 configuration:
+- display: Azure Cloud
+  name: azure_cloud
+  defaultvalue: Worldwide
+  options:
+  - Worldwide
+  - Germany
+  - China
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Custom
+  type: 15
+  section: Connect
+  advanced: true
+  required: true
 - display: Client ID
   name: client_id
   required: false

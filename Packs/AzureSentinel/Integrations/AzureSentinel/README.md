@@ -31,25 +31,26 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
 2. Search for Azure Sentinel.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | False |
-    | Tenant ID | False |
-    | Client ID | False |
-    | Azure Managed Identities Client ID | False |
-    | Subscription ID | True |
-    | Resource Group Name | True |
-    | Workspace Name | True |
-    | Fetch incidents | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | The minimum severity of incidents to fetch | False |
-    | Incident type | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Additional info to fetch | False |
-    | Mirroring Direction | False |
-    | Close Mirrored XSOAR Incident | False |
-    | Close Mirrored Microsoft Sentinel Ticket | False |
+    | **Parameter**                                                                    | **Required** |
+    |----------------------------------------------------------------------------------|--------------|
+    | Azure Cloud                                                                      | False        |
+    | Server URL                                                                       | False        |
+    | Tenant ID                                                                        | False        |
+    | Client ID                                                                        | False        |
+    | Azure Managed Identities Client ID                                               | False        |
+    | Subscription ID                                                                  | True         |
+    | Resource Group Name                                                              | True         |
+    | Workspace Name                                                                   | True         |
+    | Fetch incidents                                                                  | False        |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False        |
+    | The minimum severity of incidents to fetch                                       | False        |
+    | Incident type                                                                    | False        |
+    | Trust any certificate (not secure)                                               | False        |
+    | Use system proxy settings                                                        | False        |
+    | Additional info to fetch                                                         | False        |
+    | Mirroring Direction                                                              | False        |
+    | Close Mirrored XSOAR Incident                                                    | False        |
+    | Close Mirrored Microsoft Sentinel Ticket                                         | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

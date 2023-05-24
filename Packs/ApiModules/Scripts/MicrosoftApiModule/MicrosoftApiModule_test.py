@@ -394,8 +394,8 @@ def test_self_deployed_multi_resource(requests_mock, resource):
     assert client.resource_to_access_token[resource] == TOKEN
 
 
-@pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
-def test_national_endpoints(mocker, endpoint):
+@pytest.mark.parametrize('azure_cloud_name', ['com', 'gcc', 'gcc-high', 'dod', 'de', 'cn'])
+def test_national_endpoints(mocker, azure_cloud_name):
     """
     Given:
         self-deployed client
@@ -408,14 +408,14 @@ def test_national_endpoints(mocker, endpoint):
     auth_id = f'{AUTH_ID}@{TOKEN_URL}'
     enc_key = ENC_KEY
     app_name = APP_NAME
-    base_url = BASE_URL
     ok_codes = OK_CODES
+    azure_cloud = get_azure_cloud_or_default(azure_cloud_name)
     client = MicrosoftClient(self_deployed=True, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-                             tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
-                             endpoint=endpoint)
+                             tenant_id=tenant_id, verify=True, proxy=False, ok_codes=ok_codes,
+                             azure_cloud=azure_cloud)
 
-    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[endpoint]
-    assert client.scope == f'{GRAPH_ENDPOINTS[endpoint]}/.default'
+    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[client.azure_cloud.abbreviation]
+    assert client.scope == f'{GRAPH_ENDPOINTS[client.azure_cloud.abbreviation]}/.default'
 
 
 def test_retry_on_rate_limit(requests_mock, mocker):

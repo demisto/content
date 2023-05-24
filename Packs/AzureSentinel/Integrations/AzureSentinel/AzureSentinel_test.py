@@ -14,7 +14,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
+    list_threat_indicator_command, NEXT_LINK_DESCRIPTION, process_incidents, fetch_incidents, fetch_incidents_additional_info, \
     get_modified_remote_data_command, get_remote_data_command, get_remote_incident_data, get_mapping_fields_command, \
     update_remote_system_command, update_remote_incident, close_incident_in_remote, update_incident_request, \
     set_xsoar_incident_entries, build_threat_indicator_data, DEFAULT_SOURCE, list_alert_rule_command, \
@@ -54,7 +54,6 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
 
 def mock_client():
     client = AzureSentinelClient(
-        server_url='http://server_url',
         tenant_id='tenant_id',
         client_id='client_id',
         client_secret='client_secret',
@@ -1029,7 +1028,7 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
             requests_mock.get(
-                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
                 '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
                 '/main/indicators', json=mocked_indicators)
         else:
@@ -1049,7 +1048,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, expected_next_link, client', [  # disable-secrets-detection
@@ -1072,7 +1071,7 @@ class TestHappyPath:
         if expected_next_link:
             mocked_indicators['nextLink'] = expected_next_link
             requests_mock.post(
-                'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+                'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
                 '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
                 '/main/queryIndicators', json=mocked_indicators)
         else:
@@ -1091,7 +1090,7 @@ class TestHappyPath:
         assert context['DisplayName'] == 'displayfortestmay'
 
         assert len(raw_response['value']) == 1
-        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")', {}).get('URL')
+        next_link = outputs.get(f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")', {}).get('URL')
         assert next_link == expected_next_link
 
     @pytest.mark.parametrize('args, client', [  # disable-secrets-detection
@@ -1223,11 +1222,11 @@ class TestHappyPath:
         mocked_updated_indicators = MOCKED_UPDATE_THREAT_INDICATOR
 
         requests_mock.get(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
             '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
             '/main/indicators/ind_name', json=mocked_indicators)
         requests_mock.put(
-            'http://server_url/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
+            'https://management.azure.com/subscriptions/subscriptionID/resourceGroups/resourceGroupName/providers/Microsoft'
             '.OperationalInsights/workspaces/workspaceName/providers/Microsoft.SecurityInsights/threatIntelligence'
             '/main/indicators/ind_name', json=mocked_updated_indicators)
 

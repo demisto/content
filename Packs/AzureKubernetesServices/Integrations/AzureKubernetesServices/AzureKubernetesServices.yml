@@ -19,6 +19,21 @@ configuration:
   - Device Code
   - Azure Managed Identities
   type: 15
+- display: Azure Cloud
+  name: azure_cloud
+  defaultvalue: Worldwide
+  options:
+  - Worldwide
+  - Germany
+  - China
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Custom
+  type: 15
+  section: Connect
+  advanced: true
+  required: true
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
@@ -57,6 +72,14 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
@@ -68,17 +91,9 @@ configuration:
   - https://login.chinacloudapi.cn
   required: false
   type: 15
+  advanced: true
   additionalinfo: Azure AD endpoint associated with a national cloud.
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: Deploy and manage containerized applications with a fully managed Kubernetes
-  service.
+description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services
 name: Azure Kubernetes Services
 script:

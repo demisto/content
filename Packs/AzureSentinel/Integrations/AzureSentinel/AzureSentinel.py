@@ -1,13 +1,16 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa
+from CommonServerPython import *  # noqa
+from CommonServerUserPython import *  # noqa
 # IMPORTS
 
+from typing import Union
 import json
 import urllib3
 import requests
 import dateparser
 import uuid
+
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -20,9 +23,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 API_VERSION = '2022-11-01'
 
-DEFAULT_AZURE_SERVER_URL = 'https://management.azure.com'
-
-NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
+NEXT_LINK_DESCRIPTION = 'NextLink for listing commands'
 
 XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 
@@ -77,16 +78,17 @@ CLASSIFICATION_REASON = {'FalsePositive': 'InaccurateData', 'TruePositive': 'Sus
 
 
 class AzureSentinelClient:
-    def __init__(self, server_url: str, tenant_id: str, client_id: str,
+    def __init__(self, tenant_id: str, client_id: str,
                  client_secret: str, subscription_id: str,
                  resource_group_name: str, workspace_name: str, certificate_thumbprint: Optional[str],
                  private_key: Optional[str], verify: bool = True, proxy: bool = False,
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: Optional[str] = None,
+                 azure_cloud: Optional[AzureCloud] = AZURE_WORLDWIDE_CLOUD):
         """
         AzureSentinelClient class that make use client credentials for authorization with Azure.
 
-        :type server_url: ``str``
-        :param server_url: The server url.
+        :type azure_cloud: ``AzureCloud | None``
+        :param azure_cloud: The Azure Cloud settings.
 
         :type tenant_id: ``str``
         :param tenant_id: The tenant id.
@@ -121,24 +123,27 @@ class AzureSentinelClient:
         :type managed_identities_client_id: ``str``
         :param managed_identities_client_id: The Azure Managed Identities client id.
         """
-        server_url = f'{server_url}/subscriptions/{subscription_id}/' \
-                     f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
-                     f'{workspace_name}/providers/Microsoft.SecurityInsights'
+
+        azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        base_url = f'{azure_cloud.endpoints.resource_manager}subscriptions/{subscription_id}/' \
+                   f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
+                   f'{workspace_name}/providers/Microsoft.SecurityInsights'
         self._client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
             enc_key=client_secret,
             self_deployed=True,
             grant_type=CLIENT_CREDENTIALS,
-            base_url=server_url,
-            scope=Scopes.management_azure,
+            scope=f'{azure_cloud.endpoints.resource_manager}.default',
             ok_codes=(200, 201, 202, 204),
             verify=verify,
             proxy=proxy,
+            azure_cloud=azure_cloud,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=azure_cloud.endpoints.resource_manager,
+            base_url=base_url
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -669,9 +674,10 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
-    required_fileds = ('severity', 'status', 'title')
-    if any(field not in data for field in required_fileds):
-        raise DemistoException(f'Update incident request is missing one of the required fields for the API: {required_fileds}')
+    required_fields = ('severity', 'status', 'title')
+    if any(field not in data for field in required_fields):
+        raise DemistoException(f'Update incident request is missing one of the required fields for the '
+                               f'API: {required_fields}')
 
     properties = {
         'title': data.get('title'),
@@ -794,7 +800,7 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
     next_link = args.get('next_link', '')
 
     if next_link:
-        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        next_link = next_link.replace('%20', ' ')  # Next link syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         url_suffix = 'incidents'
@@ -1032,7 +1038,7 @@ def list_incident_comments_command(client, args):
     next_link = args.get('next_link', '')
 
     if next_link:
-        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        next_link = next_link.replace('%20', ' ')  # Next link syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         url_suffix = f'incidents/{inc_id}/comments'
@@ -1145,7 +1151,7 @@ def list_incident_relations_command(client, args):
     filter_expression = args.get('filter', '')
 
     if next_link:
-        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        next_link = next_link.replace('%20', ' ')  # Next link syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         # Handle entity kinds to filter by
@@ -1189,13 +1195,13 @@ def update_next_link_in_context(result: dict, outputs: dict):
     next_link = result.get('nextLink', '').replace(' ', '%20')
     if next_link:
         next_link_item = {
-            'Description': NEXTLINK_DESCRIPTION,
+            'Description': NEXT_LINK_DESCRIPTION,
             'URL': next_link,
         }
-        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
+        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List | Dict):
+def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: Union[List, Dict]):
     """Fetches additional info of an incidents array or a single incident.
 
     Args:
@@ -1247,9 +1253,13 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         if last_fetch_time is None:
             last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
             latest_created_time = dateparser.parse(last_fetch_time_str)
+            if not latest_created_time:
+                raise DemistoException(f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}')
         else:
             latest_created_time = dateparser.parse(last_fetch_time)
-        assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
+            if not latest_created_time:
+                raise DemistoException(f'Got empty latest_created_time. {last_fetch_time=}')
+
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
@@ -1259,8 +1269,8 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     else:
         demisto.debug("handle via id")
         latest_created_time = dateparser.parse(last_fetch_time)
-        assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
-                                                f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
+        if latest_created_time is None:
+            raise DemistoException(f"{dateparser.parse(last_fetch_time)=} couldn't be parsed")
         command_args = {
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',
@@ -1315,8 +1325,9 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
                               "due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
-            assert incident_created_time is not None, f"incident.get('CreatedTimeUTC') : " \
-                                                      f"{incident.get('CreatedTimeUTC')} couldnt be parsed"
+            if incident_created_time is None:
+                raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
+
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
             if incident.get('IncidentNumber') > last_incident_number:
@@ -1500,7 +1511,7 @@ def list_threat_indicator_command(client, args):
 
     next_link = args.get('next_link', '')
     if next_link:
-        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        next_link = next_link.replace('%20', ' ')  # Next link syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
         indicator_name = args.get('indicator_name')
@@ -1541,7 +1552,7 @@ def query_threat_indicators_command(client, args):
     data = build_query_filter(args)
     next_link = args.get('next_link', '')
     if next_link:
-        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        next_link = next_link.replace('%20', ' ')  # Next link syntax can't handle '%' character
         result = client.http_request('POST', full_url=next_link, data=data)
     else:
 
@@ -1872,6 +1883,19 @@ def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict
     )
 
 
+def get_azure_cloud(params):
+    azure_cloud_arg = params.get('azure_cloud')
+    if azure_cloud_arg is None or azure_cloud_arg == AzureCloudNames.CUSTOM:
+        # Backward compatibility before the azure cloud settings.
+        server_url = params.get('server_url') or 'https://management.azure.com/'
+        azure_cloud = create_custom_azure_cloud('AzureSentinel', defaults=AZURE_WORLDWIDE_CLOUD,
+                                                endpoints={'resource_manager': server_url})
+    else:
+        azure_cloud = get_azure_cloud_or_default(azure_cloud_arg)
+    LOG(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
+    return azure_cloud
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1899,7 +1923,7 @@ def main():
         resource_group_name = args.get('resource_group_name') or params.get('resourceGroupName', '')
 
         client = AzureSentinelClient(
-            server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
+            azure_cloud=get_azure_cloud(params),
             tenant_id=tenant_id,
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=client_secret,
@@ -1980,8 +2004,6 @@ def main():
             f'Failed to execute {demisto.command()} command. Error: {str(e)}'
         )
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
