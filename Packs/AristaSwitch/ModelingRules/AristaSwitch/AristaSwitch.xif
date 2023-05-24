@@ -99,11 +99,11 @@ call arista_switch_common_fields_modeling
 
 
 /*** ETH Events 
-    (https://www.arista.com/en/um-eos/eos-bidirectional-forwarding-detection) ***/  
+    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
 call arista_switch_common_fields_modeling
 | filter facility = "ETH" 
 | alter 
-    host_mac_address =  arrayindex(regextract(message, "Host [a-fA-F\d\:\-]{12,17}"), 0),  
+    host_mac_address =  arrayindex(regextract(message, "Host ([a-fA-F\d\:\-]{12,17})"), 0),  
     src_interface =  arrayindex(regextract(message, "between interface (\S+)"), 0),  
     dst_interface =  arrayindex(regextract(message, "between interface \S+ and interface (\S+)"), 0),  
     vlan = to_integer(arrayindex(regextract(message, "in VLAN (\d+)"), 0))
@@ -114,6 +114,18 @@ call arista_switch_common_fields_modeling
     xdm.target.vlan = vlan, 
     xdm.target.interface = dst_interface,
     xdm.target.host.mac_addresses = arraycreate(host_mac_address),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** ETH Events 
+    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
+call arista_switch_common_fields_modeling
+| filter process = "Strata" 
+| alter 
+    interface =  arrayindex(regextract(message, "on Interface (\w+)"), 0)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.interface = interface,
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
