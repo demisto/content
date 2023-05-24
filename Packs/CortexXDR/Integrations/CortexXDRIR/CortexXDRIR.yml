@@ -3399,7 +3399,7 @@ script:
       description: Name of the User Group as it appears in the Management Console.
       type: String
     - contextPath: PaloAltoNetworksXDR.UserGroup.insert_time
-      description: Timestamp of when the User Group was created.
+      description: Timestamp of when the user group was created.
       type: Number
     - contextPath: PaloAltoNetworksXDR.UserGroup.update_time
       description: Timestamp of when the user uroup was last updated.
