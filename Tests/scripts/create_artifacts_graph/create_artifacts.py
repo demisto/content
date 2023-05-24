@@ -52,6 +52,14 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
         json.dump(pack_dependencies, f, indent=4)
 
 
+def create_packs_json(content_dto: ContentDTO, artifacts_output: Path):
+    packs = content_dto.packs
+    packs_json = {pack.object_id: json.loads(
+        pack.json(include={"name", "description", "author", "current_version"}, by_alias=True)) for pack in packs}
+    with open(artifacts_output / "packs.json", "w") as f:
+        json.dump(packs_json, f, indent=4)
+
+
 def main():
     parser = ArgumentParser()
     parser.add_argument("-mp", "--marketplace", type=MarketplaceVersions, help="marketplace version", default="xsoar")
@@ -69,6 +77,9 @@ def main():
 
         logger.info("Creating pack dependencies mapping")
         create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output))
+
+        logger.info("Creating packs.json")
+        create_packs_json(content_dto, Path(args.artifacts_output))
 
         logger.info("Creating content artifacts zips")
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
