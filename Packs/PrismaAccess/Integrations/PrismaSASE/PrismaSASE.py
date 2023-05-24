@@ -121,14 +121,13 @@ class Client(BaseClient):
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules'
 
-        res = self.http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri,
             params=query_params,
             json_data=rule,
             tsg_id=tsg_id
         )
-        return res
 
     def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
         """Update an existing security rule
@@ -1078,8 +1077,6 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     }
     tsg_id = args.get('tsg_id')
     demisto.debug(f'sending security rule to the API. Rule: {rule}')
-    if True:
-        raise DemistoException('test')
     raw_response = client.create_security_rule(rule=rule, query_params=query_params, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
