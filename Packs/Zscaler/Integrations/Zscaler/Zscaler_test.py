@@ -29,8 +29,7 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
     if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
                                  'get_departments_command', 'get_usergroups_command',
                                  'list_ip_destination_groups', 'create_ip_destination_group',
-                                 'edit_ip_destination_group',
-                                 'list_ip_destination_groups_lite', 'delete_ip_destination_groups']:
+                                 'edit_ip_destination_group', 'delete_ip_destination_groups']:
         res = command_func(args)
     else:
         res = command_func(**args)
@@ -614,6 +613,18 @@ def test_list_ip_destination_groups__command_with_exclude_argument(mocker):
                      mocker=mocker)
 
 
+def test_list_ip_destination_groups_command_with_lite_argument(mocker):
+    """zscaler-list-ip-destination-groups-lite"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.list_ip_destination_groups,
+                     args={
+                         'lite': 'True'
+                     },
+                     response_path='test_data/responses/list_ip_destination_groups_lite.json',
+                     expected_result_path='test_data/results/list_ip_destination_groups_lite.json',
+                     mocker=mocker)
+
+
 def test_create_ip_destination_group(mocker):
     """zscaler-create-ip-destination-group"""
     import Zscaler
@@ -648,16 +659,6 @@ def test_edit_ip_destination_group(mocker):
                                    + 'edit_ip_destination_group.json',
                      expected_result_path='test_data/results/'
                                           + 'edit_ip_destination_group.json',
-                     mocker=mocker)
-
-
-def test_list_ip_destination_groups_lite(mocker):
-    """zscaler-list-ip-destination-groups-lite"""
-    import Zscaler
-    run_command_test(command_func=Zscaler.list_ip_destination_groups_lite,
-                     args={},
-                     response_path='test_data/responses/list_ip_destination_groups_lite.json',
-                     expected_result_path='test_data/results/list_ip_destination_groups_lite.json',
                      mocker=mocker)
 
 

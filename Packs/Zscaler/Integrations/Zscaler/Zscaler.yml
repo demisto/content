@@ -880,7 +880,7 @@ script:
       - VEHICLES
       - VIOLENCE
       - WEAPONS_AND_BOMBS
-      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrive list of possible values you can execute zscaler-get-categories command.
       isArray: true
       type: textArea
     - name: countries
@@ -1545,7 +1545,7 @@ script:
       - VEHICLES
       - VIOLENCE
       - WEAPONS_AND_BOMBS
-      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrive list of possible values you can execute zscaler-get-categories command.
       isArray: true
       type: textArea
     - name: countries
@@ -1849,6 +1849,15 @@ script:
       - DSTN_OTHER
       description: The IP group type to be excluded from results.
       type: textArea
+    - name: category_type
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+      description: The IP group type to be filtered from results.
     - name: include_ipv6
       auto: PREDEFINED
       predefined:
@@ -1867,6 +1876,14 @@ script:
       - "True"
       - "False"
       description: Boolean value for user to choose, if wanted to get all results at once or not
+      defaultValue: "False"
+      type: textArea
+    - name: lite
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Boolean value for user to choose, To retrieve only limited information of IP Destination groups. Includes ID, Name and Type of the IP Destination groups.
       defaultValue: "False"
       type: textArea
     outputs:
@@ -1892,45 +1909,6 @@ script:
       description: Destination IP address counties. You can identify destinations based on the location of a server.
       type: string
     description: Gets a list of all IP destination groups or the IP destination group information for the specified group ID
-  - name: zscaler-list-ip-destination-groups-lite
-    arguments:
-    - name: exclude_type
-      auto: PREDEFINED
-      predefined:
-      - DSTN_IP
-      - DSTN_FQDN
-      - DSTN_DOMAIN
-      description: The IP group type to be excluded from results.
-      type: textArea
-    - name: category_type
-      auto: PREDEFINED
-      isArray: true
-      predefined:
-      - DSTN_IP
-      - DSTN_FQDN
-      - DSTN_DOMAIN
-      - DSTN_OTHER
-      description: The IP group type to be filtered from results.
-    - name: include_IPv6
-      auto: PREDEFINED
-      defaultValue: 'false'
-      description: Fetch the ipv6 Destination Groups.
-      predefined:
-      - 'true'
-      - 'false'
-    - name: limit
-      description: Limit to results to be showcased, defaulted with the value 50 if nothing given as input
-      defaultValue: "50"
-      type: textArea
-    - name: all_results
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
-      description: Boolean value for user to choose, if wanted to get all results at once or not
-      defaultValue: "False"
-      type: textArea
-    description: Retrieves name and ID dictionary of IPv4/IPv6 destination groups.
   - name: zscaler-delete-ip-destination-groups
     arguments:
     - name: ip_group_ids
@@ -1941,7 +1919,7 @@ script:
   runonce: false
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.57890
+  dockerimage: demisto/python3:3.10.11.61265
   type: python
 fromversion: 5.0.0
 tests:

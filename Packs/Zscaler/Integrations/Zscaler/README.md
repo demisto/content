@@ -1078,6 +1078,8 @@ Gets a list of all IP destination groups or the IP destination group information
 | ip_group_id | A list of unique identifier for the IP destination groups. | Optional | 
 | exclude_type | The IP group type to be excluded from results. | Optional | 
 | include_ipv6 | It's boolean value to Include IPv6 destination groups | Optional | 
+| category_type | The IP group type to be filtered from results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional |
+| lite | It's boolean value to retrieve limited information of IP Destination groups. | Optional |
 
 
 #### Context Output
@@ -1130,6 +1132,28 @@ IPv4 Destination groups (2)
 |---|---|---|---|---|---|---|
 | 127.0.0.2 |  | Localhost v2 | 1997898 |  | Test99 | DSTN_IP |
 | 127.0.0.1 |  | Localhost v1 | 2001335 |  | Test01 | DSTN_IP |
+
+```!zscaler-list-ip-destination-groups lite=True```
+
+#### Context Example
+
+```json
+[
+    {
+        "ID": 1964949, 
+        "Name": "Russia-Region", 
+        "Type": "DSTN_OTHER"
+    }
+]
+```
+
+#### Human Readable Output
+
+IPv4 Destination groups lite (1)
+ID|Name|Type|
+|---|---|---|
+| 1964949 |  | Russia-Region | DSTN_OTHER 
+
 
 ### zscaler-create-ip-destination-group
 
@@ -1259,45 +1283,6 @@ IP Destination group updated
 |---|---|---|---|---|---|---|
 | 127.0.0.2 |  | Localhost v2 | 2000359 |  | Test01 | DSTN_IP |
 
-
-### zscaler-list-ip-destination-groups-lite
-
-***
-List the IP destination group information with limited fields.
-
-#### Base Command
-
-`zscaler-list-ip-destination-groups-lite`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| exclude_type | The IP group type to be excluded from results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN. | Optional | 
-| category_type | The IP group type to be filtered from results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional | 
-| include_ipv6 | Fetch the ipv6 Destination Groups. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-
-#### Command Example
-
-```!zscaler-list-ip-destination-groups-lite```
-
-#### Context Example
-
-```json
-[
-    {
-        "id": 1964949, 
-        "name": "Russia-Region", 
-        "extensions": {"type": "DSTN_OTHER"}
-    }
-]
-```
 
 ### zscaler-delete-ip-destination-groups
 
