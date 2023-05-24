@@ -247,7 +247,7 @@ def read_skipped_test_playbooks(pack_folder: Path) -> set[str]:
 
 
 class PackManager:
-    skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules', 'NotSupported'}
+    skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
 
     def __init__(self, path_manager: PathManager):
         self.packs_path = path_manager.packs_path
