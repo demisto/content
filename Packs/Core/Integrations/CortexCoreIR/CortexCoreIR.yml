@@ -3727,7 +3727,7 @@ script:
     description: Retrieve a list of the current user emails associated with one or more user groups in your environment.
     outputs:
     - contextPath: Core.UserGroup.group_name
-      description: Name of the User Group.
+      description: Name of the user group.
       type: String
     - contextPath: Core.UserGroup.description
       description: Description of the User Group, if available.
