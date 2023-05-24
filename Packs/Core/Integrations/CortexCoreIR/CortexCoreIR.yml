@@ -3719,7 +3719,7 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: List of one or more user group names for which you want the associated users. separated by commas.
+    - description: A comma-separated list of one or more user group names for which you want the associated users.
       name: group_names
       isArray: true
       required: true
