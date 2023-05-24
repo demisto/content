@@ -1330,6 +1330,49 @@ def test_zoom_list_account_public_channels_command__limit(mocker):
     assert manual_manual_list_channel_paginatio_mock.called
 
 
+def test_zoom_send_message_command_with_file(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    entry_id = "entry_id"
+    user_id = "user1"
+
+    expected_file_info = {
+        'name': 'test_file.txt',
+        'path': '/path/to/test_file.txt'
+    }
+    expected_upload_response = {
+        'id': 'file_id'
+    }
+    expected_uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
+
+    expected_response = {
+        'id': 'message_id',
+        'contact': "user2@example.com",
+        'channel_name': 'channel_name'
+    }
+
+    mocker.patch('Zoom.demisto.getFilePath', return_value=expected_file_info)
+    zoom_send_file_mock = mocker.patch.object(client, "zoom_upload_file", return_value=expected_upload_response)
+    mock_send_chat_message = mocker.patch.object(client, 'zoom_send_message')
+    mock_send_chat_message.return_value = expected_response
+    from Zoom import zoom_send_message_command
+
+    zoom_send_message_command(client,
+                              user_id=user_id,
+                              at_contact='user2@example.com',
+                              at_type='Mention a contact',
+                              start_position=11,
+                              end_position=16,
+                              message='Hello from @dima!',
+                              to_channel='channel1',
+                              entry_ids='entry_id'
+                              )
+    # Assert function calls
+    Zoom.demisto.getFilePath.assert_called_with(entry_id)
+    zoom_send_file_mock.assert_called_with(expected_uplaod_file_url, expected_file_info)
+
+
 def test_zoom_send_message_command(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
