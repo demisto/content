@@ -28,6 +28,7 @@ class ScanStatus(Enum):
 
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow flexible conversion from strings to Enum."""
+
     def __getitem__(self, item: Any):
         try:
             return super().__getitem__(item)
