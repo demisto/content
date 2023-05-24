@@ -350,7 +350,8 @@ class MicrosoftClient(BaseClient):
         msg = 'Error in authentication. Try checking the credentials you entered.'
         try:
             demisto.info(
-                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} {oproxy_response.text}'
+                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} '
+                f'{oproxy_response.text}'
             )
             err_response = oproxy_response.json()
             server_msg = err_response.get('message')
