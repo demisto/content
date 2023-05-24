@@ -632,6 +632,9 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comma
     vault_name = args['vault_name']
 
     response = client.get_key_vault_request(vault_name)
+    if response.get('error'):
+        raise Exception(response)
+    
     readable_output = tableToMarkdown(f'{vault_name} Information',
                                       response,
                                       ['id', 'name', 'type', 'location'], removeNull=True,
