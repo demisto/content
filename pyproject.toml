@@ -17,7 +17,7 @@ pre-commit = "^2.20.0"
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
 flake8 = "^4.0.1"
-ruff = "^0.0.264"
+ruff = "^0.0.269"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7.1.2"
@@ -191,7 +191,7 @@ select = [
     "E743", # ambiguous-function-name
     "E902", # io-error
     "E999", # syntax-error
-    
+
     "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
     "F403", # undefined-local-with-import-star
@@ -447,8 +447,9 @@ select = [
     "UP033", # lru-cache-with-maxsize-none
     "UP036", # outdated-version-block
     "UP037", # quoted-annotation
-
+    
     "TRY201", # verbose-raise
+    "TRY302", # useless-try-except
 
     "YTT101", # sys-version-slice3
     "YTT102", # sys-version2
@@ -462,7 +463,6 @@ select = [
     "YTT303", # sys-version-slice
 ]
 ignore = [
-    "E501", # line too long
     "E402", # module-import-not-at-top-of-file	
 
     "F403", # undefined-local-with-import-star
@@ -476,7 +476,7 @@ extend-exclude = ["CommonServerPython", "test_data"]
 # fixable = []
 # unfixable = []
 
-line-length = 120
+line-length = 130
 target-version = "py310"
 src = [
     "Packs/Base/Scripts/CommonServerPython",
@@ -513,3 +513,6 @@ junit_family = "xunit1"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.autopep8]
+max_line_length = 130
