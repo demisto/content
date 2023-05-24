@@ -2492,8 +2492,8 @@ outputs:
 - contextPath: UserDevices.ID
   description: Devices IDs retrieved by this playbook.
   type: unknown
-- contextPath: UserDevices.Type
-  description: Devices types retrieved by this playbook.
+- contextPath: UserDevices.Model
+  description: Devices models retrieved by this playbook.
   type: unknown
 - contextPath: UserDevices.OS
   description: Devices operating systems retrieved by this playbook.
