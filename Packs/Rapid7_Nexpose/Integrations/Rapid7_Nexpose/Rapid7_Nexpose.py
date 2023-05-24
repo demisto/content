@@ -5357,11 +5357,23 @@ def main():  # pragma: no cover
         command = demisto.command()
         handle_proxy()
 
+        # A workaround for fixing compatibility issues when upgrading existing instances that are < 1.2.0.
+        # ('token' field was converted from type 0 to type 9)
+        if params.get("token") and isinstance(params["token"], str):
+            token = params["token"]
+
+        else:
+            if identifier := params.get("token", {}).get("identifier"):
+                token = identifier
+
+            else:  # If token.identifier is an empty string, use None instead.
+                token = None
+
         client = Client(
             url=params["server"],
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
-            token=params.get("token", {}).get("identifier"),
+            token=token,
             verify=not params.get("unsecure")
         )
 
