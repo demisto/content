@@ -664,6 +664,9 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any]) -> Com
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     offset = arg_to_number(args.get('offset', DEFAULT_OFFSET))
     response = client.list_key_vaults_request(limit, offset)
+    if type(response) == Dict and response.get('error'):
+        raise Exception(response)
+    
     readable_output = tableToMarkdown(
         'Key Vaults List',
         response,
