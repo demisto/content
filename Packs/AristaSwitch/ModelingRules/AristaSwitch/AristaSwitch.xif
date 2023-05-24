@@ -117,15 +117,23 @@ call arista_switch_common_fields_modeling
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
-/*** ETH Events 
+/*** Strata & Flow Control Events 
     (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
 call arista_switch_common_fields_modeling
-| filter process = "Strata" 
+| filter process = "Strata" or facility="FLOWCONTROL"
 | alter 
-    interface =  arrayindex(regextract(message, "on Interface (\w+)"), 0)
+    interface =  arrayindex(regextract(message, "on Interface (\w+)"), 0),
+    ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
 | alter 
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
     xdm.source.interface = interface,
+    xdm.source.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.target.ipv4 = ipv4,
+    xdm.target.ipv6 = ipv6,
     xdm.target.interface = interface,
+    xdm.target.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
