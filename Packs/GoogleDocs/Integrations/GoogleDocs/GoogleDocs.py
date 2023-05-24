@@ -81,10 +81,10 @@ def get_credentials(credentials, scopes):
 def get_client(credentials, scopes, proxy, disable_ssl):
     credentials = get_credentials(credentials, scopes)
 
-    if proxy or disable_ssl:
-        http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
-        return discovery.build('docs', 'v1', http=http_client)
-    return discovery.build('docs', 'v1', credentials=credentials)
+    if not proxy:
+        return discovery.build('docs', 'v1', credentials=credentials)
+    http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
+    return discovery.build('docs', 'v1', http=http_client)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -336,7 +336,7 @@ def create_document_command(service):
     title = args.get('title')
     document = create_document(service, title)
     human_readable_text = "The document with the title {title} was created. The results are:".format(title=title)
-    generate_results(document, human_readable_text)
+    return generate_results(document, human_readable_text)
 
 
 def create_document(service, title):
@@ -353,7 +353,7 @@ def get_document_command(service):
     document = get_document(service, document_id)
     human_readable_text = "The document with the title {title} was returned. The results are:".\
         format(title=document['title'])
-    generate_results(document, human_readable_text)
+    return generate_results(document, human_readable_text)
 
 
 def get_document(service, document_id):
@@ -389,7 +389,5 @@ def main():
         return_error(f"Failed to execute {command} command. Error: {str(e)}", e)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
-
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
