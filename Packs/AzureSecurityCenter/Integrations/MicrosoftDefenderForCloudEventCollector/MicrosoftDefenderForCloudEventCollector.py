@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from MicrosoftApiModule import *  # noqa: E402
-# Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
