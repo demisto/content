@@ -329,7 +329,7 @@ def run_long_running(params: Dict = None, is_test: bool = False):
         demisto.updateModuleHealth(f'An error occurred: {error_message}')
         if isinstance(e, ValueError) and "Try to write when connection closed" in error_message:
             # This indicates that the XSOAR platform is unreachable, and there is no way to recover from this, so we need to exit.
-            sys.exit(1)
+            sys.exit(1)  # pylint: disable=E9001
         raise ValueError(error_message)
 
     finally:
