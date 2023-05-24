@@ -1335,7 +1335,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         first_fetch='3 days',
         mirror_options=mirror_options,
     )
-    expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
+    expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY:
+                                {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                                 MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                                 LAST_FETCH_KEY: expected_ctx_first_loop.get(LAST_FETCH_KEY, 0),
@@ -1376,7 +1377,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
     for k, v in second_loop_ctx_not_default_values.items():
         expected_ctx_second_loop[k] = v
 
-    expected_ctx_second_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
+    expected_ctx_second_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY:
+                                 {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
                                  MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                                  MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                                  LAST_FETCH_KEY: expected_ctx_second_loop.get(LAST_FETCH_KEY, 0),

@@ -3591,15 +3591,16 @@ def create_events_search(client: Client,
                          offense_start_time: str = None,
                          return_raw_response: bool = False,
                          ) -> str:
-    additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
-        if fetch_mode == FetchMode.correlations_events_only.value else ''
+    additional_where = ''
+    if fetch_mode == FetchMode.correlations_events_only.value:
+        additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' '''
     try:
         # Get all the events starting from one hour after epoch
         if not offense_start_time:
             offense = client.offenses_list(offense_id=offense_id)
             offense_start_time = offense['start_time']
         query_expression = (
-            f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '  # noqa: S608
+            f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '  # noqa: S608, E501
             f'START {offense_start_time}'
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
