@@ -1009,8 +1009,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
         fields_to_present = 'use_legacy_query'
 
     if query and request_args.get("q"):
-        demisto.info("Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
-                     "For more information, review the documentation.")
+        demisto.debug("Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
+                      "For more information, review the documentation.")
         limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
 
     return RequestArguments(query,

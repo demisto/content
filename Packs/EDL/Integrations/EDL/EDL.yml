@@ -254,7 +254,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: 'This parameter is deprecated. Make sure to adjust your queries accordingly. When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration is to be used only if instructed by Cortex XSOAR Support, or you encountered log errors in the form of: msgpack: invalid code. Note: Enabling this field can have a large impact on the performance of the integration.'
+- additionalinfo: 'This parameter will be deprecated from September 2023. Make sure to adjust your default queries accordingly..'
   display: 'Advanced: Use Legacy Queries (Deprecated)'
   hidden: false
   name: use_legacy_query
