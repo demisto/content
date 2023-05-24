@@ -1003,13 +1003,6 @@ class BranchTestCollector(TestCollector):
                     reason_description=e.support_level or "xsoar",
                 )
 
-        if pack_id in PackManager.skipped_packs:
-            return self._collect_pack(
-                pack_id=find_pack_folder(path).name,
-                reason=CollectionReason.NON_XSOAR_SUPPORTED,
-                reason_description="xsoar",
-            )
-
         if file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
             if path.name.lower().endswith(('_test.py', 'tests.ps1')):
                 raise NothingToCollectException(path, 'changing unit tests does not trigger collection')
