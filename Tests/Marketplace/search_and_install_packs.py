@@ -441,7 +441,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
-        packs_in_the_list_to_install (list): aa
+        packs_in_the_list_to_install (list): list of packs that are already in the list to install
         one_pack_and_its_dependencies_in_batch(bool): Whether to install packs in small batches.
             If false - install all packs in one batch.
         batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
