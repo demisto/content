@@ -10,10 +10,19 @@ filter
     xdm.alert.severity = score
     xdm.event.log_level = severity
     xdm.alert.description = items
-
-    # TODO - add all the nested mapping
     Entities = json_extract_array(impactScope, "$.entities)
     | alter
-
-    _time = createdDateTime  # delete this and add this to the code
-
+    # TODO - handle items.impactScope.entities.entityType
+    xdm.source.user.username = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue")), ","), # TODO - there is a problem here, sometimes it returns dict, and sometimes string
+    # TODO - handle items.impactScope.entities.entityId
+    xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntites")), ","),
+filter
+    event type in ("audit")
+| alter
+    xdm.source.user.username = loggedUser
+    xdm.source.user.groups = loggedRole
+    xdm.source.zone = accessType
+    xdm.event.type = category
+    xdm.event.operation_sub_type = activity
+    xdm.event.outcome_reason = result
+    xdm.event.description =
