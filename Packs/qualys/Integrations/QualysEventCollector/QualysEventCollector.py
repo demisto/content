@@ -323,9 +323,9 @@ def fetch_events(client, last_run, last_run_field, first_fetch_time, fetch_funct
         next_last_run: where to fetch from next time
         event: events to push to xsiam
     """
-    last_run_time = last_run.get(last_run_field)
+    last_run_time = last_run.get(last_run_field) if last_run else None
 
-    if not last_run:
+    if not last_run_time:
         last_run_time = first_fetch_time
 
     events, next_run = fetch_function(client, last_run_time, max_fetch)
@@ -419,23 +419,23 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: str) -
     return 'ok'
 
 
-def should_run_host_detections_fetch(last_run, first_fetch: datetime, host_detections_fetch_interval: timedelta):
+def should_run_host_detections_fetch(last_run, host_detections_fetch_interval: timedelta, datatime_now: datetime):
     """
 
     Args:
         last_run: last run object.
-        first_fetch: time to first fetch from.
-        host_detections_fetch_interval: vulnerabilities fetch interval.
+        host_detections_fetch_interval: host detection fetch interval.
 
-    Returns: True if fetch vulnerabilities interval time has passed since last time that fetch run.
+    Returns: True if fetch host detections interval time has passed since last time that fetch run.
 
     """
     if last_fetch_time := last_run.get('host_last_fetch'):
         last_check_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
     else:
-        last_check_time = first_fetch
+        # never run host detections fetch before
+        return True
     demisto.debug(f'Should run host detections? {last_check_time=}, {host_detections_fetch_interval=}')
-    return datetime.now() - last_check_time > host_detections_fetch_interval
+    return datatime_now - last_check_time > host_detections_fetch_interval
 
 
 """ MAIN FUNCTION """
@@ -453,14 +453,14 @@ def main():  # pragma: no cover
     password = params.get("credentials").get("password")
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time: datetime = arg_to_datetime(  # type: ignore[assignment]
+    first_fetch_datetime: datetime = arg_to_datetime(  # type: ignore[assignment]
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
     host_detections_fetch_interval: timedelta = (datetime.now() - dateparser.parse(  # type: ignore[operator]
         params.get('host_detections_fetch_interval', '12 hours')))
-    first_fetch_timestamp = first_fetch_time.strftime(DATE_FORMAT)
+    first_fetch_str = first_fetch_datetime.strftime(DATE_FORMAT)
 
     demisto.debug(f'Command being called is {command}')
 
@@ -478,19 +478,19 @@ def main():  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_timestamp)
+            result = test_module(client, params, first_fetch_str)
             return_results(result)
 
         elif command == "qualys-get-activity-logs":
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events, results = get_activity_logs_events_command(client, args, first_fetch_timestamp)
+            events, results = get_activity_logs_events_command(client, args, first_fetch_str)
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "qualys-get-host-detections":
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events, results = get_host_list_detections_events_command(client, args, first_fetch_timestamp)
+            events, results = get_host_list_detections_events_command(client, args, first_fetch_str)
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
@@ -499,21 +499,22 @@ def main():  # pragma: no cover
             last_run = demisto.getLastRun()
             host_list_detection_events = []
             host_next_run = {}
-            if should_run_host_detections_fetch(last_run=last_run, first_fetch=first_fetch_time,
-                                                host_detections_fetch_interval=host_detections_fetch_interval):
+            if should_run_host_detections_fetch(last_run=last_run,
+                                                host_detections_fetch_interval=host_detections_fetch_interval,
+                                                datatime_now=datetime.now()):
                 host_next_run, host_list_detection_events = fetch_events(
                     client=client,
                     last_run=last_run,
                     last_run_field='host_list_detection',
                     fetch_function=get_host_list_detections_events,
-                    first_fetch_time=first_fetch_timestamp,
+                    first_fetch_time=first_fetch_str,
                 )
             logs_next_run, activity_logs_events = fetch_events(
                 client=client,
                 last_run=last_run,
                 last_run_field='activity_logs',
                 fetch_function=get_activity_logs_events,
-                first_fetch_time=first_fetch_timestamp,
+                first_fetch_time=first_fetch_str,
             )
             send_events_to_xsiam(activity_logs_events + host_list_detection_events, vendor=VENDOR, product=PRODUCT)
             send_events_to_xsiam(host_list_detection_events, vendor=VENDOR, product=PRODUCT)
