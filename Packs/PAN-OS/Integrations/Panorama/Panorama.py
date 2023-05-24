@@ -116,7 +116,7 @@ PAN_OS_ERROR_DICT = {
     '21': 'Internal error - Check with technical support when seeing these errors.',
     '22': 'Session timed out - The session for this query timed out.'
 }
-
+OBJ_NOT_FOUND_ERR = 'Object was not found'
 # was taken from here: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC
 PAN_DB_URL_FILTERING_CATEGORIES = {
     'abortion',
@@ -1496,11 +1496,17 @@ def panorama_get_address(address_name: str) -> Dict:
         'xpath': f'{XPATH_OBJECTS}address/entry[@name=\'{address_name}\']',
         'key': API_KEY
     }
-    result = http_request(
-        URL,
-        'GET',
-        params=params,
-    )
+
+    try:
+        result = http_request(
+            URL,
+            'GET',
+            params=params,
+        )
+    except Exception as err:
+        if OBJ_NOT_FOUND_ERR in str(err):
+            return {}
+        raise err
 
     return result['response']['result']['entry']
 
@@ -1511,7 +1517,9 @@ def panorama_get_address_command(args: dict):
     """
     address_name = args.get('name')
 
-    address = panorama_get_address(address_name)
+    if not (address := panorama_get_address(address_name)):
+        return_results('Address name does not exist')
+        return
     address_output = prettify_address(address)
 
     return_results({

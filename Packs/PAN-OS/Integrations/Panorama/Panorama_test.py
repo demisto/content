@@ -161,6 +161,43 @@ def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results
     assert result == expected_result
 
 
+def test_get_address(mocker):
+    """
+    Given:
+     - an address_name argument which does not exist
+
+    When:
+     - running the panorama_get_address function
+
+    Then:
+     - Ensure the return value is an empty dictionary
+    """
+    import Panorama
+    from Panorama import panorama_get_address
+    exception_msg = 'Object was not found, verify that the name is correct and that the instance was committed.'
+    mocker.patch.object(Panorama, "http_request", side_effect=Exception(exception_msg))
+    result = panorama_get_address("lksdhgkjhdsga")
+    assert result == {}
+
+
+def test_get_address_command(mocker):
+    """
+    Given:
+     - an address_name argument which does not exist
+
+    When:
+     - running the panorama_get_address_command function
+
+    Then:
+     - Ensure the return value is None, without any errors
+    """
+    import Panorama
+    from Panorama import panorama_get_address_command
+    mocker.patch.object(Panorama, "panorama_get_address", return_value={})
+    result = panorama_get_address_command({'name': 'lksdhgkjhdsga'})
+    assert not result
+
+
 def test_prettify_addresses_arr():
     from Panorama import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
