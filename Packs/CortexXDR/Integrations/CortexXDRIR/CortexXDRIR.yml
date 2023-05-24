@@ -3439,7 +3439,7 @@ script:
       description: Group names associated with the Role.
       type: array
     - contextPath: PaloAltoNetworksXDR.Role.users
-      description: Email address of users associated with the Role.
+      description: Email address of users associated with the role.
       type: array
   - arguments:
     - description: A comma-separated list of one or more user emails of users you want to add to a role.
