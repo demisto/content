@@ -12,8 +12,8 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
-import test_data.fetch_incidents_input as fetch_incidents_input
-import test_data.mock_rules as mock_rules
+from test_data import fetch_incidents_input
+from test_data import mock_rules
 from freezegun import freeze_time
 
 integration_firewall_params = {
@@ -1818,8 +1818,8 @@ class TestPanoramaCommitCommand:
     def create_mock_responses(job_commit_status_count):
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
-                text='<response status="success" code="19"><result><msg>''<line>Commit job '
-                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                text='<response status="success" code="19"><result><msg><line>Commit job '
+                     'enqueued with jobid 123</line></msg><job>123</job></result></response>',
                 status_code=200,
             )
         ]
@@ -1865,7 +1865,7 @@ class TestPanoramaCommitCommand:
                                            id='only admin changes commit'),
                               pytest.param({'device-group': 'some_device', 'force_commit': 'true', 'polling': 'false'},
                                            {'cmd': '<commit><device-group><entry name="some_device"/>'
-                                                   '</device-group><force>''</force></commit>',
+                                                   '</device-group><force></force></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
                                            MockedResponse(text='<response status="success" code="19"><result><msg>'
@@ -1879,7 +1879,7 @@ class TestPanoramaCommitCommand:
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
                                                    '<partial><device-and-network>excluded</'
-                                                   'device-and-network></partial>''</commit>',
+                                                   'device-and-network></partial></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
                                            MockedResponse(text='<response status="success" code="19"><result><msg>'
@@ -2029,8 +2029,8 @@ class TestPanoramaPushToDeviceGroupCommand:
     def create_mock_responses(push_to_devices_job_status_count):
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
-                text='<response status="success" code="19"><result><msg>''<line>Push job '
-                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                text='<response status="success" code="19"><result><msg><line>Push job '
+                     'enqueued with jobid 123</line></msg><job>123</job></result></response>',
                 status_code=200,
             )
         ]
@@ -3409,7 +3409,7 @@ def test_panorama_apply_dns_command2(mocker):
     apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
 
     request_params = request_mock.call_args.kwargs['params']  # The body part of the request
-    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']" # noqa
+    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
 
 
 class TestHygieneFunctions:
@@ -6739,4 +6739,4 @@ def test_panorama_list_rules():
 
     assert rules['application']['member'][0] == 'dns'
     assert mock_request.last_request.qs['xpath'][0] == \
-           "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
+        "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
