@@ -8,8 +8,18 @@ default:
       - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
 
+auto secure cicd:
+  stage: security
+  variables:
+    PYTHONPATH: "/root/prodsec_tools/"
+  trigger:
+    include:
+      - file: "/.gitlab/test-ref.yml"
+        ref: test_refs
+        project: "xsoar/content-test-conf"
+    strategy: depend
+
 stages:
-  - security
   - unittests-and-validations
   - prepare-testing-bucket
   - run-instances
@@ -60,6 +70,3 @@ include:
   - local: .gitlab/ci/sdk-nightly.yml
   - local: .gitlab/ci/miscellaneous.yml
   - local: .gitlab/ci/test-native-candidate.yml
-  - file: '/.gitlab/test-ref.yml'
-    ref: test_refs
-    project: 'xsoar/content-test-conf'
