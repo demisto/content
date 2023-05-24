@@ -2843,7 +2843,7 @@ def main():  # pragma: no cover
         'tenable-sc-get-device': get_device_command,
         'tenable-sc-create-remediation-scan': create_remediation_scan_command
     }
- 
+
     try:
         with Client(verify_ssl=verify_ssl, proxy=proxy, user_name=user_name, password=password, access_key=access_key,
                     secret_key=secret_key, url=url) as client:

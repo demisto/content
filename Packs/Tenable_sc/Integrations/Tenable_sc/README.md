@@ -165,7 +165,7 @@ It is possible to obtain the banner of the remote FTP server by connecting to a 
 ### Hosts
 |IP|MAC|Port|Protocol|
 |---|---|---|---|
-| <IP> | <MAC> | 21 | TCP |
+| {IP} | {MAC} | 21 | TCP |
 ### Risk Information
 |RiskFactor|
 |---|
@@ -619,7 +619,7 @@ Requires security manager authentication. Get details for a given asset in Tenab
 ### Tenable.sc Asset
 |ID|Name|Description|Created|Modified|Owner|Group|IPs|
 |---|---|---|---|---|---|---|---|
-| 1 | asset_1_name | asset_1_description | 2023-01-09T13:14:43Z | 2023-05-21T09:12:52Z | test | Full Access | <IPs_list> |
+| 1 | asset_1_name | asset_1_description | 2023-01-09T13:14:43Z | 2023-05-21T09:12:52Z | test | Full Access | {IPs_list} |
 
 ### tenable-sc-delete-asset
 
@@ -773,7 +773,7 @@ Requires security manager authentication. Gets the specified device information.
 ### Tenable.sc Device
 |IP| UUID | MacAddress|
 |---|---|---|
-| <IP> | <UUID> | <MacAddress> |
+| {IP} | {UUID} | {MacAddress} |
 
 ### tenable-sc-list-users
 
@@ -1175,7 +1175,7 @@ This command can be executed with both authentication types (admin or security m
 
 #### Human Readable Output
 
-User <user_id> is deleted.
+User {user_id} is deleted.
 
 #### Context Output
 
@@ -1300,7 +1300,7 @@ Requires security manager authentication. This command is prerequisite for creat
 ### Policy was created successfully:
 |Policy type|name|Created Time|Plugin Families|Policy  Status|Policy UUID|Policy can Manage|Creator Username|policyTemplate Name|
 |---|---|---|---|---|---|---|---|---|
-| regular | scan_name | 1684923394 | {'id': '1', 'name': 'Red Hat Local Security Checks', 'count': '9297', 'plugins': []} | 0 | <policy UUID> | true | yuv | Advanced Scan |
+| regular | scan_name | 1684923394 | {'id': '1', 'name': 'Red Hat Local Security Checks', 'count': '9297', 'plugins': []} | 0 | {policy UUID} | true | yuv | Advanced Scan |
 
 ### tenable-sc-list-query
 
@@ -1448,7 +1448,7 @@ If query_id isn't given:
 | 2 | test_name | test_description |  | True | False |
 
 If query_id is given:
-### Query <query_id>
+### Query {query_id}
 |Query Id|Query  Name|Query Description|
 |---|---|---|
 | test_id | test_name | test_description |
@@ -1479,7 +1479,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-asset <asset_id> was updated successfully.
+asset {asset_id} was updated successfully.
 
 ### tenable-sc-create-remediation-scan
 

@@ -3,7 +3,7 @@ import json
 from Tenable_sc import update_asset_command, list_zones_command, list_queries, create_policy_request_body, list_groups_command, \
     list_plugin_family_command, validate_create_scan_inputs, Client, validate_user_body_params, get_query, \
     create_get_device_request_params_and_path, create_user_request_body, list_query_command, list_users_command, launch_scan, \
-    list_report_definitions_command, get_server_url
+    list_report_definitions_command
 import io
 
 client_mocker = Client(verify_ssl=False, proxy=True, access_key="access_key", secret_key="secret_key",
