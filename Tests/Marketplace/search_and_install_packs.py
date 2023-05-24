@@ -184,8 +184,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
 def search_pack(client: demisto_client,
                 pack_display_name: str,
                 pack_id: str,
-                lock: Lock,
-                service_account: str) -> dict:
+                lock: Lock) -> dict:
     """ Make a pack search request.
 
     Args:
@@ -193,7 +192,6 @@ def search_pack(client: demisto_client,
         pack_display_name (string): The pack display name.
         pack_id (string): The pack ID.
         lock (Lock): A lock object.
-        service_account: #TODO
     Returns:
         (dict): Returns the pack data if found, or empty dict otherwise.
     """
@@ -431,8 +429,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      installation_request_body: list,
                                      lock: Lock,
                                      one_pack_and_its_dependencies_in_batch: bool = False,
-                                     batch_packs_install_request_body: list = None,
-                                     service_account: str = None
+                                     batch_packs_install_request_body: list = None
                                      ):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
@@ -447,14 +444,13 @@ def search_pack_and_its_dependencies(client: demisto_client,
             If false - install all packs in one batch.
         batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
             Each list contain one pack and its dependencies.
-        service_account: #TODO
 
     """
     pack_data = {}
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
-            pack_data = search_pack(client, pack_display_name, pack_id, lock, service_account)
+            pack_data = search_pack(client, pack_display_name, pack_id, lock)
         if pack_data is None:
             pack_data = {
                 'id': pack_id,
