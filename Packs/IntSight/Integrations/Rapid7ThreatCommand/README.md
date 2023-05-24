@@ -3111,9 +3111,9 @@ Runs reputation on files.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.md5 | String | The MD5 hash of the file. | 
-| File.sha1 | String | The SHA1 hash of the file. | 
-| File.sha256 | String | The SHA256 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
 | File.sha512 | String | The SHA512 hash of the file. | 
 | File.name | String | The full file name \(including file extension\). | 
 | File.description | String | The description of the file. | 
@@ -3225,6 +3225,7 @@ Checks the reputation of a domain.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.domain | String | Domain found. | 
+| Domain.Name | String | The name of the domain that was checked. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
