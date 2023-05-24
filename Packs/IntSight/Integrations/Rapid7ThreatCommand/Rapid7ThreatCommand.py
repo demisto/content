@@ -928,7 +928,7 @@ class Parser:
         Args:
             obj (dict[str, Any]): Domain enrichment response from the API.
             reliability (_type_): Reliability of the source providing the intelligence data.
-            domain (bool): domain value.
+            domain (str): domain value.
 
         Returns:
             dict[str, Any]: XSOAR outputs.
