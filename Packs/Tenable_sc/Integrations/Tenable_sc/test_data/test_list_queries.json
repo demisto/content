@@ -1,6 +1,5 @@
 {
     "test_case_1": {
-        "query_id": "test_id",
         "mock_response": {"error_code":0,"error_msg":"",
         "response": {
             "manageable": [

@@ -30,13 +30,10 @@ class Client(BaseClient):
                  password: str = "", access_key: str = "", secret_key: str = "", url: str = ""):
 
         if not proxy:
-            try:
-                del os.environ['HTTP_PROXY']
-                del os.environ['HTTPS_PROXY']
-                del os.environ['http_proxy']
-                del os.environ['https_proxy']
-            except Exception as e:
-                demisto.debug(f"Encountered the following error: {e}")
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
 
         self.url = f"{get_server_url(url)}/rest"
         self.verify_ssl = verify_ssl
@@ -1354,7 +1351,7 @@ def delete_asset_command(client: Client, args: Dict[str, Any]):
 
 def list_report_definitions_command(client: Client, args: Dict[str, Any]):
     """
-    Lists report defenitions.
+    Lists report definitions.
     Args:
         client (Client): The tenable.sc client object.
         args (Dict): demisto.args() object.
@@ -1471,9 +1468,9 @@ def get_elements(elements, manageable):
         List: The desired extracted list.
     """
     if manageable == 'false':
-        return elements.get('usable')
+        return elements.get('usable', [])
 
-    return elements.get('manageable')
+    return elements.get('manageable', [])
 
 
 def create_scan_command(client: Client, args: Dict[str, Any]):
@@ -1629,12 +1626,12 @@ def launch_scan(client: Client, args: Dict[str, Any]):
     target_password = args.get('diagnostic_password')
 
     if (target_address and not target_password) or (target_password and not target_address):
-        raise DemistoException('Error: If a target is provided, both IP/Hostname and the password must be provided')
+        raise DemistoException("Error: If one of diagnostic target or password is provided, both of them must be provided.")
 
     res = client.launch_scan(scan_id, {'address': target_address, 'password': target_password})
 
     if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
-        raise DemistoException('Error: Could not retrieve the scan')
+        raise DemistoException('Error: Could not retrieve the scan.')
 
     return res
 
@@ -2261,7 +2258,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
         raise DemistoException('Alert not found')
 
     alert = res['response']
-    query_res = client.get_query(alert['query'].get('id'))
+    query_res = client.get_query(alert.get('query', {}).get('id'))
     query = query_res.get('response')
 
     alert_headers = ['ID', 'Name', 'Description', 'LastTriggered', 'State', 'Behavior', 'Actions']
@@ -2877,6 +2874,8 @@ def main():  # pragma: no cover
             secret_key=secret_key,
             url=url
         )
+        print(client._base_url)
+        print(client._verify)
         if command == 'fetch-incidents':
             first_fetch = params.get('fetch_time').strip()
             fetch_incidents(client, first_fetch)

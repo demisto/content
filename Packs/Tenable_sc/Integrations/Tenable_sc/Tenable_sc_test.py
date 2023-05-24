@@ -1,6 +1,9 @@
 import pytest
 import json
-from Tenable_sc import *
+from Tenable_sc import update_asset_command, list_zones_command, list_queries, create_policy_request_body, list_groups_command, \
+    list_plugin_family_command, validate_create_scan_inputs, Client, validate_user_body_params, get_query, \
+    create_get_device_request_params_and_path, create_user_request_body, list_query_command, list_users_command, launch_scan, \
+    list_report_definitions_command
 import io
 
 client_mocker = Client(verify_ssl=False, proxy=True, access_key="access_key", secret_key="secret_key",
@@ -229,7 +232,7 @@ def test_validate_credentials(test_case):
     password = test_data.get('password')
 
     with pytest.raises(Exception) as e:
-        Client(access_key=access_key, secret_key=secret_key, user_name=user_name, password=password)
+        Client(proxy=True, access_key=access_key, secret_key=secret_key, user_name=user_name, password=password)
 
     assert "Please provide either user_name and password or secret_key and access_key" in str(e.value)
 
@@ -352,7 +355,7 @@ def test_get_query(mocker, test_case):
         Given:
         - test case that point to the relevant test case in the json test data which include:
           query_id, response mock, expected hr, and expected_ec.
-        - Case 1: response mock that misses filters section
+        - Case 1: response mock that misses filters section.
 
         When:
         - Running get_query.
@@ -383,7 +386,7 @@ def test_list_queries(mocker, test_case):
 
         Then:
         - Ensure that the response was parsed correctly and right HR and EC is returned.
-        - Case 1: Should Include the filters section in the HR, 
+        - Case 1: Should Include the filters section in the HR,
         should have "True" in both manageable and usable columns for the mutual query and fill False in the none-mutual queries.
     """
     test_data = load_json("./test_data/test_list_queries.json").get(test_case, {})
@@ -391,3 +394,118 @@ def test_list_queries(mocker, test_case):
     _, hr, query = list_queries(client_mocker, "")
     assert test_data.get('expected_hr') == hr
     assert test_data.get('expected_ec') == query
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_list_query_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, function to mock, response mock, expected hr, and expected_ec.
+        - Case 1: empty args, mocked_function = list_queries, response mock with 2 manageable and 2 usable queries,
+                  one of the queries appears in both lists, some queries with filters and some don't.
+        - Case 2: args with query_id, mocked_function = get_query, response mock that misses filters section.
+
+        When:
+        - Running list_query_command.
+
+        Then:
+        - Ensure that the right function is mocked and the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should call list_queries, Include the filters section in the HR,
+        should have "True" in both manageable and usable columns for the mutual query and fill False in the none-mutual queries.
+        - Case 2: Should call get_query, exclude the filters section from the HR and EC.
+    """
+    test_data = load_json("./test_data/test_list_query_command.json").get(test_case, {})
+    mocked_function = test_data.get("mocked_function")
+    args = test_data.get("args")
+    mocker.patch(f"Tenable_sc.Client.{mocked_function}", return_value=test_data.get('mock_response'))
+    command_results = list_query_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3"])
+def test_list_users_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with id and email pointing to an email different from the email in the response,
+                  response of a get user request.
+        - Case 2: args with email and username, response of a list users request with 3 users.
+        - Case 2: Empty args, response of a list users request with 3 users.
+
+        When:
+        - Running list_users_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should include the retrieved user in the response.
+        - Case 2: Should filter out the user with un matched username and ignore the email argument.
+        - Case 2: Should retrieve HR and EC including all 3 users.
+    """
+    test_data = load_json("./test_data/test_list_users_command.json").get(test_case, {})
+    args = test_data.get("args")
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = list_users_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3", "test_case_4", "test_case_5"])
+def test_launch_scan_errors(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, command_type flag and the expected error message.
+        - Case 1: Args with diagnostic_target but no diagnostic_password.
+        - Case 2: Args with diagnostic_password but no diagnostic_target.
+        - Case 3: Args with both diagnostic_password and diagnostic_target, and an empty mock response.
+        - Case 4: Args without both diagnostic_password and diagnostic_target,
+        and an empty mock response with empty response section.
+        - Case 5: Args with both diagnostic_password and diagnostic_target,
+        and a response with missing scanResult from response section.
+
+        When:
+        - Running launch_scan.
+
+        Then:
+        - Ensure that the right error was thrown.
+        - Case 1: Should throw an error for none-number argument.
+        - Case 2: Should throw an error for invalid time_zone.
+        - Case 3: Should throw aCould not retrieve the scans error.
+        - Case 4: Should throw aCould not retrieve the scans error.
+        - Case 5: Should throw aCould not retrieve the scans error.
+    """
+    test_data = load_json("./test_data/test_launch_scan_errors.json").get(test_case, {})
+    args = test_data.get('args')
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response', {}))
+
+    with pytest.raises(Exception) as e:
+        launch_scan(client_mocker, args)
+
+    assert test_data.get('expected_error_msg') in str(e.value)
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_list_report_definitions_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with manageable = true, and mock response to response with 2 report definitions with the same name,
+                  where one report is later than the second.
+
+        When:
+        - Running list_report_definitions_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return only one report definition, the one that occurred later.
+    """
+    test_data = load_json("./test_data/test_list_report_definitions_command.json").get(test_case, {})
+    args = test_data.get("args")
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = list_report_definitions_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs

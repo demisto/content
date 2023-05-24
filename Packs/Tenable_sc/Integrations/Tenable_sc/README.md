@@ -64,6 +64,10 @@ Requires security manager authentication. Get a list of Tenable.sc existing scan
 
 #### Human Readable Output
 
+### Tenable.sc Scans
+|ID|Name|Description|Policy|Group|Owner|
+|---|---|---|---|---|---|
+| 3 | test_scan_2023 | Test scan | Network Scan | Full Access | secman |
 
 ### tenable-sc-launch-scan
 
@@ -145,6 +149,32 @@ Requires security manager authentication. Get details about a given vulnerabilit
 | TenableSC.ScanResults.Vulnerability.Host.Protocol | string | Vulnerability Host Protocol. | 
 
 #### Human Readable Output
+
+## Vulnerability: FTP Server Detection (10092)
+### Synopsis
+An FTP server is listening on a remote port.
+### Description
+It is possible to obtain the banner of the remote FTP server by connecting to a remote port.
+### Solution
+
+### Hosts
+|IP|MAC|Port|Protocol|
+|---|---|---|---|
+| <IP> | <MAC> | 21 | TCP |
+### Risk Information
+|RiskFactor|
+|---|
+| None |
+### Exploit Information
+|ExploitAvailable|
+|---|
+| false |
+### Plugin Details
+|CheckType|Family|Modified|Published|
+|---|---|---|---|
+| remote | Service detection | 2019-11-22T17:00:00Z | 1999-10-12T16:00:00Z |
+### Vulnerability Information
+**No entries.**
 
 ### tenable-sc-get-scan-status
 
@@ -362,14 +392,14 @@ There are no input arguments for this command.
 |---|---|---|
 | 2 | RHEL6 Scanner | 1 |
 
-### Requires security manager authentication. tenable-sc-create-scan
+### tenable-sc-create-scan
 
 ***
-Create a scan on Tenable.sc
+Requires security manager role. Create a scan on Tenable.sc
 
 #### Base Command
 
-`Requires security manager authentication. tenable-sc-create-scan`
+`tenable-sc-create-scan`
 
 #### Input
 
@@ -412,6 +442,8 @@ Create a scan on Tenable.sc
 | TenableSC.Scan.Reports | unknown | Scan report definition IDs. | 
 
 #### Human Readable Output
+
+Scan successfully deleted
 
 ### tenable-sc-delete-scan
 
@@ -543,6 +575,9 @@ Requires security manager authentication. Delete the Asset with the given ID fro
 There is no context output for this command.
 
 #### Human Readable Output
+
+Asset successfully deleted
+
 ### tenable-sc-list-alerts
 
 ***
@@ -896,6 +931,8 @@ This command can be executed with both authentication types (admin or security m
 
 #### Human Readable Output
 
+
+
 ### tenable-sc-update-user
 
 ***
@@ -987,6 +1024,8 @@ update user details by given user_id.
 
 #### Human Readable Output
 
+
+
 ### tenable-sc-delete-user
 
 ***
@@ -1002,11 +1041,14 @@ This command can be executed with both authentication types (admin or security m
 | --- | --- | --- |
 | user_id | The id of the user we want to delete. | Required | 
 
+#### Human Readable Output
+
+User <user_id> is deleted.
+
 #### Context Output
 
 There is no context output for this command.
 
-#### Human Readable Output
 ### tenable-sc-list-plugin-family
 
 ***
@@ -1035,6 +1077,19 @@ Requires security manager authentication. list plugin families / return informat
 | TenableSC.PluginFamily.Type | String | PluginFamily type. | 
 
 #### Human Readable Output
+
+When plugin_id isn't given:
+### Plugin families:
+|Plugin ID|Plugin Name|
+|---|---|
+| 0 | N/A |
+| 1 | Red Hat Local Security Checks |
+
+When plugin_id is given:
+### Plugin families:
+|Plugin ID|Plugin Name|Is Active|
+|---|---|---|
+| 2 | HP-UX Local Security Checks | true |
 
 ### tenable-sc-create-policy
 
@@ -1109,6 +1164,11 @@ Requires security manager authentication. This command is prerequisite for creat
 | TenableSC.ScanPolicy.UUID | String | Policy UUID. | 
 
 #### Human Readable Output
+
+### Policy was created successfully:
+|Policy type|name|Created Time|Plugin Families|Policy  Status|Policy UUID|Policy can Manage|Creator Username|policyTemplate Name|
+|---|---|---|---|---|---|---|---|---|
+| regular | scan_name | 1684923394 | {'id': '1', 'name': 'Red Hat Local Security Checks', 'count': '9297', 'plugins': []} | 0 | <policy UUID> | true | yuv | Advanced Scan |
 
 ### tenable-sc-list-query
 
@@ -1247,6 +1307,19 @@ Requires security manager authentication. Lists queries.
 | TenableSC.Query.Type | String | Relevant only when query_id is given. Query type. | 
 
 #### Human Readable Output
+
+If query_id isn't given:
+### Queries:
+|Query Id|Query  Name|Query Description|Query Filters|Query Manageable|Query Usable|
+|---|---|---|---|---|---|
+| 1 | test_name | test_description | filter | True | True |
+| 2 | test_name | test_description |  | True | False |
+
+If query_id is given:
+### Query <query_id>
+|Query Id|Query  Name|Query Description|
+|---|---|---|
+| test_id | test_name | test_description |
 
 ### tenable-sc-update-asset
 
@@ -1399,6 +1472,11 @@ Requires security manager authentication. This command is prerequisite for creat
 
 #### Human Readable Output
 
+### Remediation scan created successfully
+|Scan ID|Scan Name|Scan Type|Dhcp Tracking status|Created Time|Modified Time|Max Scan Time|Policy id |Policy context|Schedule type|Group|Owner|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 69 | my_Test_scan | policy | false | 2023-05-24T10:12:27Z | 1684923147 | 3600 | 1000044 | scan | now | Full Access | yuv |
+
 ### tenable-sc-launch-scan-report
 
 ***
@@ -1443,9 +1521,15 @@ Requires security manager authentication. Polling command. Launch a scan by give
 | TenableSC.ScanResults.ImportTime | date | Scan import time | 
 
 #### Human Readable Output
-
-#### Human Readable Output
-
+### Tenable.sc Scan 130 Report
+|ID|Name|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 130 | test_scan_2023 | Test scan 2023 | Network Scan | Full Access | hayun_test_sec_man | 156 | 2023-05-16T12:18:10Z | 2023-05-16T17:20:00Z | 301.8333333333333 | 22649640 | 2023-05-16T17:20:02Z | Local | Completed | regular | 156 |
+### Vulnerabilities
+|ID|Name|Family|Severity|Total|
+|---|---|---|---|---|
+| 10092 | FTP Server Detection | Service detection | Info | 6 |
+| 10107 | HTTP Server Type and Version | Web Servers | Info | 61 |
 
 ## Troubleshooting
 For errors within Tenable.sc, the cause is generally specified, e.g., The currently logged in used is not an administrator, Unable to retrieve Asset #2412. Asset #2412 does not exist or Invalid login credentials. However there might be connection errors, for example when the server URL provided is incorrect.

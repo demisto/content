@@ -714,9 +714,9 @@ script:
       secret: false
       defaultValue: 'true'
     deprecated: false
-    description: Create a scan on Tenable.sc
+    description:  Requires security manager role. Create a scan on Tenable.sc
     execution: false
-    name: Requires security manager role. tenable-sc-create-scan
+    name: tenable-sc-create-scan
     outputs:
     - contextPath: TenableSC.Scan.ID
       description: Scan ID.
