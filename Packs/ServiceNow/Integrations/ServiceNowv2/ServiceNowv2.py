@@ -515,8 +515,8 @@ def split_notes(raw_notes, note_type, time_info):
     notes: List = []
     # The notes should be in this form:
     # '16/05/2023 15:49:56 - John Doe (Additional comments)\nsecond note first line\n\nsecond line\n\nthird
-    # line\n\n16/05/2023 15:41:38 - John Doe (Additional comments)\nfirst note first line\n\nsecond line\n\n
-    delimiter = '([0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} - [A-z ]*\([A-z ]*\))'
+    # line\n\n2023-05-10 15:41:38 - John Doe (Additional comments)\nfirst note first line\n\nsecond line\n\n
+    delimiter = '([0-9]{1,4}(?:\/|-)[0-9]{1,2}(?:\/|-)[0-9]{1,4} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} - [A-z ]*\([A-z ]*\))'
     notes_split = list(filter(None, re.split(delimiter, raw_notes)))
     retrieved_last_note = False
     for note_info, note_value in zip(notes_split[::2], notes_split[1::2]):
