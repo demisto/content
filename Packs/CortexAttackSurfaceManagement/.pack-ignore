@@ -10,6 +10,9 @@ ignore=PB121
 [file:Cortex_ASM_-_Tenable.io_Enrichment.yml]
 ignore=PB114
 
+[file:1_6_16.md]
+ignore=RN115
+
 [known_words]
 ASM
 CMDB
