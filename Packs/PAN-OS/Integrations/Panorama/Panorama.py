@@ -1518,7 +1518,7 @@ def panorama_get_address_command(args: dict):
     address_name = args.get('name')
 
     if not (address := panorama_get_address(address_name)):
-        return_results('Address name does not exist')
+        return_results('Address name {address_name} was not found')
         return
     address_output = prettify_address(address)
 
