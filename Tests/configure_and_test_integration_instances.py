@@ -1911,7 +1911,6 @@ def main():
 
     build.configure_servers_and_restart()
     build.disable_instances()
-    build.pack_ids_to_install
 
     if build.is_nightly:
         build.install_nightly_pack()
