@@ -19,7 +19,7 @@ olefile = "==0.44"
 ordered-set = "==2.0.1"
 python-dateutil = "==2.6.0"
 python-whois = "==0.7.0"
-requests = "==2.13.0"
+requests = "==2.31.0"
 six = "==1.10.0"
 stix = "==1.2.0.2"  # disable-secrets-detection
 urllib3 = "==1.24"
