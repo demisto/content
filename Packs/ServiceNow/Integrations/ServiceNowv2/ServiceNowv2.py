@@ -660,7 +660,8 @@ class Client(BaseClient):
         return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False):
+                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False,
+                     no_record_found_res: dict = {'result': []}):
         """Generic request to ServiceNow.
 
         Args:
@@ -751,7 +752,7 @@ class Client(BaseClient):
                         message = json_res.get('error', {}).get('message')
                         details = json_res.get('error', {}).get('detail')
                         if message == 'No Record found':
-                            return {'result': []}  # Return an empty results array
+                            return no_record_found_res
                         else:
                             raise Exception(f'ServiceNow Error: {message}, details: {details}')
                     else:
@@ -874,7 +875,8 @@ class Client(BaseClient):
 
         return entries
 
-    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None) -> dict:
+    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None,
+            no_record_found_res: dict = {'result': []}) -> dict:
         """Get a ticket by sending a GET request.
 
         Args:
@@ -901,7 +903,7 @@ class Client(BaseClient):
             # Only in cases where the table is of type ticket
             raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
 
-        return self.send_request(path, 'GET', params=query_params)
+        return self.send_request(path, 'GET', params=query_params, no_record_found_res=no_record_found_res)
 
     def update(self, table_name: str, record_id: str, fields: dict = {}, custom_fields: dict = {},
                input_display_value: bool = False) -> dict:
@@ -2175,9 +2177,8 @@ def fetch_incidents(client: Client) -> list:
             if datetime.strptime(ticket[client.timestamp_field], DATE_FORMAT) < snow_time_as_date:
                 continue
             parse_dict_ticket_fields(client, ticket)
-        except Exception:
-            pass
-
+        except Exception as e:
+            demisto.debug(f"got the following error: {e}")
         incidents.append({
             'name': f"ServiceNow Incident {ticket.get(client.incident_name)}",
             'labels': [
@@ -2298,7 +2299,8 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
 
 def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
     if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
+        user_result = client.get('sys_user', assigned_to.get('value'),  # type: ignore[arg-type]
+                                 no_record_found_res={'result': {}})
         user = user_result.get('result', {})
         if user:
             user_email = user.get('email')
@@ -2316,7 +2318,7 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     assignment_group = ticket.get('assignment_group', {})
 
     if assignment_group:
-        group_result = client.get('sys_user_group', assignment_group.get('value'))
+        group_result = client.get('sys_user_group', assignment_group.get('value'), no_record_found_res={'result': {}})
         group = group_result.get('result', {})
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
@@ -2325,7 +2327,7 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     ticket['assigned_to'] = user_assigned
 
     if caller:
-        user_result = client.get('sys_user', caller.get('value'))
+        user_result = client.get('sys_user', caller.get('value'), no_record_found_res={'result': {}})
         user = user_result.get('result', {})
         user_email = user.get('email')
         ticket['caller_id'] = user_email
