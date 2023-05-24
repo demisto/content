@@ -127,7 +127,7 @@ call arista_switch_common_fields_modeling
 call arista_switch_common_fields_modeling
 | filter process = "Ebra" or facility="LINEPROTO"
 | alter 
-    interface =  arrayindex(regextract(message, "on Interface (\w+)"), 0),
+    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
     state =  arrayindex(regextract(message, "changed state to (\S+)"), 0)
 | alter 
     ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
@@ -151,9 +151,9 @@ call arista_switch_common_fields_modeling
 | filter facility = "LAG" 
 | alter 
     interface =  arrayindex(regextract(message, "^Interface (\w+)"), 0),  
-    remote_switch_name = arrayindex(regextract(message, "\((\w+)\)\s*[a-fA-F\d\.\:]\--"), 0),
-    remote_switch_ip = arrayindex(regextract(message, "\(\w+\)\s*([a-fA-F\d\.\:])\--"), 0),
-    remote_switch_interface = arrayindex(regextract(message, "\(\w+\)\s*[a-fA-F\d\.\:]\--\s*([^\*]+)"), 0),
+    remote_switch_name = arrayindex(regextract(message, "\((\w+)\)\s*[a-fA-F\d\.\:]+\--"), 0),
+    remote_switch_ip = arrayindex(regextract(message, "\(\w+\)\s*([a-fA-F\d\.\:]+)\--"), 0),
+    remote_switch_interface = arrayindex(regextract(message, "\(\w+\)\s*[a-fA-F\d\.\:]+\--\s*([^\*]+)"), 0),
     reason =  arrayindex(regextract(message, "due to:\s*(.+)"), 0)
 | alter 
     dst_ipv4 = if(remote_switch_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remote_switch_ip, null),
@@ -169,12 +169,27 @@ call arista_switch_common_fields_modeling
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
+/*** LLDP (Link Layer Discovery Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-link-layer-discovery-protocol) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "LLDP" 
+| alter 
+    interface =  arrayindex(regextract(message, "on interface ([\w\/]+)"), 0),  
+    remote_chassis_id = arrayindex(regextract(message, "neighbor with chassisId (\S+)"), 0),
+    remote_interface = arrayindex(regextract(message,  "neighbor with chassisId \S+ and portId \"*([\w\/]+)\"*"), 0)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.interface = remote_interface,
+    xdm.target.host.device_id = remote_chassis_id,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
 /*** Strata & Flow Control Events 
     (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
 call arista_switch_common_fields_modeling
 | filter process = "Strata" or facility="FLOWCONTROL"
 | alter 
-    interface =  arrayindex(regextract(message, "on Interface (\w+)"), 0),
+    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
     ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
     ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
 | alter 
