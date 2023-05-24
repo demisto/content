@@ -376,7 +376,7 @@ def manual_list_user_pagination(client: Client, next_page_token: str | None,
 
 def manual_list_channel_pagination(client: Client, next_page_token: str | None,
                                    limit: int, url_suffix: str):
-    res = []
+    res = {}
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
     while limit > 0 and next_page_token != '':
         response = client.zoom_list_channels(page_size=page_size,
@@ -384,14 +384,14 @@ def manual_list_channel_pagination(client: Client, next_page_token: str | None,
                                              url_suffix=url_suffix)
         next_page_token = response.get("next_page_token")
 
-        res.append(response)
+        res.update(response)
         limit -= MAX_RECORDS_PER_PAGE
     return res
 
 
 def manual_list_user_channel_pagination(client: Client, user_id: str, next_page_token: str | None,
                                         limit: int, url_suffix: str):
-    res = []
+    res = {}
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
     while limit > 0 and next_page_token != '':
         response = client.zoom_list_user_channels(user_id=user_id,
@@ -400,7 +400,7 @@ def manual_list_user_channel_pagination(client: Client, user_id: str, next_page_
                                                   url_suffix=url_suffix)
         next_page_token = response.get("next_page_token")
 
-        res.append(response)
+        res.update(response)
         limit -= MAX_RECORDS_PER_PAGE
     return res
 
@@ -454,12 +454,11 @@ def remove_extra_info_list(name, limit, raw_data):
         raw_data (dict):the entire response from the pagination function
     """
     all_info = []
-    for page in raw_data:
-        channel_info = page.get(name, [page])
-        for channel in channel_info:
-            all_info.append(channel)
-            if len(all_info) >= limit:
-                return all_info
+    channel_info = raw_data.get(name, [raw_data])
+    for channel in channel_info:
+        all_info.append(channel)
+        if len(all_info) >= limit:
+            return all_info
     return all_info
 
 
@@ -856,7 +855,7 @@ def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
                 client=client, next_page_token=next_page_token, limit=limit, url_suffix=url_suffix)
 
             data = remove_extra_info_list('channels', limit, raw_data)
-            token = raw_data[0].get('next_page_token', None)
+            token = raw_data.get('next_page_token', None)
     else:
         # only one request is needed
         raw_data = client.zoom_list_channels(page_size=page_size, next_page_token=next_page_token,
@@ -873,14 +872,15 @@ def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
                         'Channel ID': i.get('id'),
                         'Channel name': i.get('name'),
                         'Channel type': i.get('type'),
-                        'Channel url': i.get('channel_url'),
-                        'Channel next token': token})
+                        'Channel url': i.get('channel_url')})
+
     md = tableToMarkdown('Channels', outputs, removeNull=True)
+    md += '\n' + f'Channels Next Token: {token}'
 
     return CommandResults(
-        outputs_prefix='Zoom',
+        outputs_prefix='Zoom.Channel',
         readable_output=md,
-        outputs={'Channel': raw_data,
+        outputs={**raw_data,
                  'ChannelsNextToken': token},
         raw_response=raw_data
     )
@@ -898,6 +898,10 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
     next_page_token = args.get('next_page_token')
     limit = arg_to_number(args.get('limit'))
     page_number = arg_to_number(args.get('page_number', 1))
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
     data = []
     url_suffix = f'users/{user_id}/channels/{channel_id}' if channel_id else f'users/{user_id}/channels'
     if limit:
@@ -910,7 +914,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
                                                            next_page_token=next_page_token, limit=limit,
                                                            url_suffix=url_suffix)
             data = remove_extra_info_list('channels', limit, raw_data)
-            token = raw_data[0].get('next_page_token', None)
+            token = raw_data.get('next_page_token', None)
     else:
         # only one request is needed
         raw_data = client.zoom_list_user_channels(user_id=user_id, page_size=page_size,
@@ -933,9 +937,10 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
     md = tableToMarkdown('Channels', outputs)
 
     return CommandResults(
-        outputs_prefix='Zoom',
+        outputs_prefix='Zoom.Channel',
+        outputs_key_field='id',
         readable_output=md,
-        outputs={'Channel': raw_data,
+        outputs={**raw_data,
                  'UserChannelsNextToken': token},
         raw_response=raw_data
     )
@@ -959,6 +964,8 @@ def zoom_create_channel_command(client, **args) -> CommandResults:
     json_all_data = {}
     email_json = [{"email": email} for email in member_emails]
 
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
     # special section for recurring meeting with fixed time
     json_all_data.update({
         "channel_settings": {
@@ -989,6 +996,7 @@ def zoom_create_channel_command(client, **args) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Zoom.Channel',
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=raw_data,
         raw_response=raw_data
@@ -1003,6 +1011,10 @@ def zoom_delete_channel_command(client, **args) -> CommandResults:
     channel_id = args.get('channel_id')
     user_id = args.get('user_id')
     url_suffix = f'/chat/users/{user_id}/channels/{channel_id}'
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
     client.zoom_delete_channel(url_suffix)
     return CommandResults(
         readable_output=f'Channel {channel_id} was deleted successfully',
@@ -1024,6 +1036,8 @@ def zoom_update_channel_command(client, **args) -> CommandResults:
     user_id = args.get('user_id')
     json_all_data = {}
 
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
     # special section for recurring meeting with fixed time
     json_all_data.update({
         "name": channel_name,
@@ -1052,6 +1066,9 @@ def zoom_invite_to_channel_command(client, **args) -> CommandResults:
     url_suffix = f'/chat/users/{user_id}/channels/{channel_id}/members'
     json_members = [{"email": email} for email in members]
 
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
     members_json = {'members': json_members}
 
     raw_data = client.zoom_invite_to_channel(members_json, url_suffix)
@@ -1066,6 +1083,7 @@ def zoom_invite_to_channel_command(client, **args) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Zoom.Channel',
+        outputs_key_field='id',
         readable_output=human_readable,
         outputs=raw_data,
         raw_response=raw_data
@@ -1080,6 +1098,10 @@ def zoom_remove_from_channel_command(client, **args) -> CommandResults:
     channel_id = args.get('channel_id')
     member_id = args.get('member_id')
     user_id = args.get('user_id')
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
     url_suffix = f'/chat/users/{user_id}/channels/{channel_id}/members/{member_id}'
     client.zoom_remove_from_channel(url_suffix)
     return CommandResults(
@@ -1096,6 +1118,9 @@ def zoom_send_file_command(client, **args) -> CommandResults:
     to_channel = args.get('to_channel')
     to_contact = args.get('to_contact')
     entry_id = args.get('entry_id')
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
 
     if "to_contact" not in args and "to_channel" not in args:
         raise DemistoException(MISSING_ARGUMENT)
@@ -1133,6 +1158,9 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     to_channel = args.get('to_channel', None)
     to_contact = args.get('to_contact', None)
 
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
     url_suffix = f'/chat/users/{user_id}/messages'
     uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
     zoom_file_id: List = []
@@ -1142,14 +1170,14 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         res = client.zoom_upload_file(uplaod_file_url, file_info)
         zoom_file_id.append(res.get('id'))
     demisto.debug('uplod the file without error')
-    json_data_all = {
-        "at_items": [
-            {
-                "at_contact": at_contact,
-                "at_type": at_type,
-                "end_position": end_position,
-                "start_position": start_position
-            }],
+
+    json_data_all = {"at_items": [
+        {
+            "at_contact": at_contact,
+            "at_type": at_type,
+            "end_position": end_position,
+            "start_position": start_position
+        }],
         "rich_text":
             [{"start_position": rt_start_position,
               "end_position": rt_end_position,
@@ -1175,6 +1203,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     return CommandResults(
         outputs_prefix='Zoom.ChatMessage',
         readable_output=md,
+        outputs_key_field='id',
         outputs=raw_data,
         raw_response=raw_data
     )
@@ -1189,6 +1218,9 @@ def zoom_delete_message_command(client, **args) -> CommandResults:
     to_contact = args.get('to_contact', None)
     user_id = args.get('user_id')
     to_channel = args.get('to_channel')
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
 
     if to_channel:
         url_suffix = f'/chat/users/{user_id}/messages/{message_id}?to_channel={to_channel}'
@@ -1214,6 +1246,9 @@ def zoom_update_message_command(client, **args) -> CommandResults:
     to_channel = args.get('to_channel')
     message = args.get('message')
     entry_ids = argToList(args.get('entry_ids', []))
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
 
     uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
     zoom_file_id: List = []
@@ -1343,7 +1378,7 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
 
     url_suffix = f'users/{user_id}/messages'
     all_messages: List = []
-    next_page_token = None
+    next_page_token = args.get('next_page_token', None)
     while True:
         raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,
                                                   user_id=user_id,
@@ -1386,11 +1421,12 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
             'To': str(to_arg)})
 
     md = tableToMarkdown('Messages', outputs)
+    md += '\n' + 'Messages next token:' + raw_data.get('next_page_token', '')
 
     return CommandResults(
         outputs_prefix='Zoom.ChatMessage',
         readable_output=md,
-        outputs={'ChatMessage': all_messages,
+        outputs={'messages': all_messages,
                  'ChatMessageNextToken': raw_data.get('next_page_token')},
         raw_response=raw_data
     )

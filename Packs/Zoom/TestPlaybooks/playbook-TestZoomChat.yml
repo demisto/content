@@ -1,6 +1,6 @@
 id: 7e010435-f76c-4044-8422-c14e5eab1b5e
 fromversion: 5.0.0
-version: 29
+version: 0
 vcShouldKeepItemLegacyProdMachine: false
 name: Zoom_Chat_Test
 starttaskid: "0"
@@ -907,10 +907,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: ddaec546-c862-4e87-8715-e7246e4fe75a
+    taskid: a1cfa9b2-fa09-4e6a-8025-383916c89499
     type: condition
     task:
-      id: ddaec546-c862-4e87-8715-e7246e4fe75a
+      id: a1cfa9b2-fa09-4e6a-8025-383916c89499
       version: -1
       name: Verify message created
       type: condition
@@ -926,7 +926,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Zoom.ChatMessage.ChatMessage.message
+              simple: Zoom.ChatMessage.messages.message
             iscontext: true
           right:
             value:

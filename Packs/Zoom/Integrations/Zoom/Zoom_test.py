@@ -964,13 +964,12 @@ def test_zoom_list_user_channels_command(mocker):
 
     expected_results = {
         'UserChannelsNextToken': None,
-        'Channel': {
-            "channels": [
-                {"jid": "channel_jid_1_t", "id": "channel_id_1", "name": "Channel 1", "type": "public",
+        "channels": [
+            {"jid": "channel_jid_1_t", "id": "channel_id_1", "name": "Channel 1", "type": "public",
                     "channel_url": "https://test1.com", "next_page_token": "token1"},
-                {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
+            {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
                     "channel_url": "https://test1.com", "next_page_token": "token2"}
-            ]}
+        ]
     }
 
     zoom_list_user_channels_mock = mocker.patch.object(client, "zoom_list_user_channels")
@@ -993,8 +992,8 @@ def test_zoom_list_user_channels_command(mocker):
     )
 
     assert result.outputs == expected_results
-    assert result.outputs['Channel']['channels'][0]['id'] == expected_results['Channel']['channels'][0]['id']
-    assert result.outputs['Channel']['channels'][0]['jid'] == expected_results['Channel']['channels'][0]['jid']
+    assert result.outputs['channels'][0]['id'] == expected_results['channels'][0]['id']
+    assert result.outputs['channels'][0]['jid'] == expected_results['channels'][0]['jid']
 
 
 def test_zoom_create_channel_command(mocker):
@@ -1250,20 +1249,18 @@ def test_zoom_list_account_public_channels_command(mocker):
     )
 
     expected_results = {
-        "Channel": {
-            "channels": [
-                {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
-                 "channel_url": "https://test1.com", "next_page_token": "token1"},
-                {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
+        "channels": [
+            {"jid": "channel_jid_1", "id": "channel_id_1", "name": "Channel 1", "type": "public",
+             "channel_url": "https://test1.com", "next_page_token": "token1"},
+            {"jid": "channel_jid_2", "id": "channel_id_2", "name": "Channel 2", "type": "public",
                     "channel_url": "https://test1.com", "next_page_token": "token2"}
-            ]
-        },
+        ],
         "ChannelsNextToken": None
     }
 
     assert result.outputs == expected_results
-    assert result.outputs['Channel']['channels'][0]['id'] == expected_results['Channel']['channels'][0]['id']
-    assert result.outputs['Channel']['channels'][0]['jid'] == expected_results['Channel']['channels'][0]['jid']
+    assert result.outputs['channels'][0]['id'] == expected_results['channels'][0]['id']
+    assert result.outputs['channels'][0]['jid'] == expected_results['channels'][0]['jid']
 
 
 def test_zoom_list_account_public_channels_command__limit(mocker):
@@ -1385,13 +1382,14 @@ def test_zoom_list_messages_command(mocker):
         ]
     }
     expacted_result = {
-        "ChatMessage": [
+        "messages": [
             {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
-                "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
+             "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
             {"id": "message_id_2", "message": "Message 2", "sender": "sender_2",
-                "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
+             "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
         ],
         "ChatMessageNextToken": None
+
     }
     client.zoom_list_user_messages = mocker.MagicMock(return_value=expected_raw_data)
     from Zoom import zoom_list_messages_command
@@ -1414,11 +1412,11 @@ def test_zoom_list_messages_command(mocker):
     )
 
     assert result.outputs == expacted_result
-    assert result.outputs['ChatMessage'][0]['id'] == expacted_result['ChatMessage'][0]['id']
-    assert result.outputs['ChatMessage'][0]['message'] == expacted_result['ChatMessage'][0]['message']
-    assert result.outputs['ChatMessage'][0]['sender'] == expacted_result['ChatMessage'][0]['sender']
-    assert result.outputs['ChatMessage'][0]['sender_display_name'] == expacted_result['ChatMessage'][0]['sender_display_name']
-    assert result.outputs['ChatMessage'][0]['date_time'] == expacted_result['ChatMessage'][0]['date_time']
+    assert result.outputs['messages'][0]['id'] == expacted_result['messages'][0]['id']
+    assert result.outputs['messages'][0]['message'] == expacted_result['messages'][0]['message']
+    assert result.outputs['messages'][0]['sender'] == expacted_result['messages'][0]['sender']
+    assert result.outputs['messages'][0]['sender_display_name'] == expacted_result['messages'][0]['sender_display_name']
+    assert result.outputs['messages'][0]['date_time'] == expacted_result['messages'][0]['date_time']
 
 
 def test_zoom_update_message_command(mocker):
