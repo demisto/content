@@ -3405,7 +3405,7 @@ script:
       description: Timestamp of when the User Group was last updated.
       type: Number
     - contextPath: PaloAltoNetworksXDR.UserGroup.user_email
-      description: List of email addresses belonging to the users associated with the User Group.
+      description: List of email addresses belonging to the users associated with the user group.
       type: array
     - contextPath: PaloAltoNetworksXDR.UserGroup.source
       description: Type of User Group.
