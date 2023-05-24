@@ -45,7 +45,7 @@ The highest privileged builtin role is the Instance Admin.
 For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.  
 
 #### URL
-1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **Integrations** > **API Keys**.
+1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API key** page > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
 
 ## Playbooks
