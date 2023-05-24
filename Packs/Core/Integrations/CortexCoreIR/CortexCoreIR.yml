@@ -3742,7 +3742,7 @@ script:
       description: Timestamp of when the user group was last updated.
       type: Number
     - contextPath: Core.UserGroup.user_email
-      description: List of email addresses belonging to the users associated with the User Group.
+      description: List of email addresses belonging to the users associated with the user group.
       type: array
     - contextPath: Core.UserGroup.source
       description: Type of User Group.
