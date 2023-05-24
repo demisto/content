@@ -4,7 +4,8 @@
     "FireEye NX IPS Event",
     "FireEye NX Alert",
     "FireEye EX Alert",
-    "AWS Security Hub Finding"
+    "AWS Security Hub Finding",
+    "Graph Security Alert"
   ],
   "breachScript": "",
   "caseInsensitive": true,

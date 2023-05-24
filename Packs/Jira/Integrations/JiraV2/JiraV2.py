@@ -551,9 +551,10 @@ def get_project_id(project_key='', project_name=''):
         result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
     except DemistoException as de:
 
-        if de.message != 'Status code: 404\nMessage: Issue Does Not Exist':
+        if 'Status code: 404' not in de.message:
             raise de
 
+        demisto.debug('Exception after first api call: {de.message}')
         demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
                       f'Trying another endpoint: {BASE_URL}/api/latest/project.')
 

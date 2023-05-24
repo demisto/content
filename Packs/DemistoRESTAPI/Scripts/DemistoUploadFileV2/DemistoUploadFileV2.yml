@@ -42,7 +42,7 @@ args:
   - 'incident attachment'
   required: false
   secret: false
-comment: Deprecated. Use UploadFileV2 instead.
+comment: Deprecated. Use UploadFile instead.
 subtype: python3
 dockerimage: demisto/python3:3.10.6.33415
 system: false
