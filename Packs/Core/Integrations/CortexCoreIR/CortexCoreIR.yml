@@ -3767,7 +3767,7 @@ script:
       description: Timestamp of when the role was last updated.
       type: Number
     - contextPath: Core.Role.created_by
-      description: Email of the user who created the Role.
+      description: Email of the user who created the role.
       type: String
     - contextPath: Core.Role.description
       description: Description of the Role, if available.
