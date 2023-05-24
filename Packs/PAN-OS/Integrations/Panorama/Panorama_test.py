@@ -189,13 +189,15 @@ def test_get_address_command(mocker):
      - running the panorama_get_address_command function
 
     Then:
-     - Ensure the return value is None, without any errors
+     - Ensure the return value is None, without any errors, and return_results contains the correct informative message.
     """
     import Panorama
     from Panorama import panorama_get_address_command
     mocker.patch.object(Panorama, "panorama_get_address", return_value={})
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
     result = panorama_get_address_command({'name': 'lksdhgkjhdsga'})
     assert not result
+    assert return_results_mock.call_args[0][0] == 'Address name does not exist'
 
 
 def test_prettify_addresses_arr():
