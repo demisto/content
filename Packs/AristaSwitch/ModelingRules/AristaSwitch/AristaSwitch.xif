@@ -104,6 +104,23 @@ call arista_switch_common_fields_modeling
     xdm.auth.auth_method = login_process;
 
 
+/*** Security Events 
+    (https://www.arista.com/en/um-eos/eos-security) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SECURITY" 
+| alter 
+    user =  arrayindex(regextract(message, "Session for user (\S+) on"), 0),  
+    session_service =  arrayindex(regextract(message, "Session for user \S+ on service (\S+)"), 0),
+    outcome =  arrayindex(regextract(message, "(\w+) due to"), 0),  
+    reason =  arrayindex(regextract(message, "due to ([^\.]+)"), 0)
+| alter 
+    xdm.source.user.username  = user,
+    xdm.source.process.name = session_service,
+    xdm.event.outcome = outcome, 
+    xdm.event.outcome_reason = reason,
+    xdm.auth.auth_method = session_service;
+
+
 /*** ETH Events 
     (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
 call arista_switch_common_fields_modeling
