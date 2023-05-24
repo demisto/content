@@ -3393,7 +3393,7 @@ script:
       description: Name of the User Group.
       type: String
     - contextPath: PaloAltoNetworksXDR.UserGroup.description
-      description: Description of the User Group, if available.
+      description: Description of the user group, if available.
       type: String
     - contextPath: PaloAltoNetworksXDR.UserGroup.pretty_name
       description: Name of the user group as it appears in the management console.
