@@ -33,8 +33,8 @@ class Client(BaseClient):  # pragma: no cover
         scopes: List[str],
     ) -> None:
         self.company_id = company_id
-        headers = self.get_jwt_token(api_key, scopes)
-        super().__init__(base_url, verify_certificate, proxy, headers=headers)
+        super().__init__(base_url, verify_certificate, proxy)
+        self._headers = {"Authorization": f'JWT {self.get_jwt_token(api_key, scopes)}'}
 
     def get_jwt_token(self, api_key: str, scopes: list) -> Dict[str, Any]:
         try:
@@ -43,14 +43,13 @@ class Client(BaseClient):  # pragma: no cover
                 url_suffix="/get-token/",
                 json_data={"key": api_key, "scopes": scopes},
             )
+            return jwt_key["jwt"]
         except DemistoException as e:
             if "FORBIDDEN" in str(e):
                 raise DemistoException(
                     "Authorization Error: make sure API Key is correctly set"
                 )
             raise e
-
-        return {"Authorization": f'JWT {jwt_key["jwt"]}'}
 
     def get_incident(self, incident_id: int) -> Dict[str, Any]:
         """Gets a specific Incident
