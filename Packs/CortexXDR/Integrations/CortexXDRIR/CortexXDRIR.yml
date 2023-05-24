@@ -3427,7 +3427,7 @@ script:
       description: Timestamp of when the Role was created.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Role.update_time
-      description: Timestamp of when the Role was last updated.
+      description: Timestamp of when the role was last updated.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Role.created_by
       description: Email of the user who created the Role.
