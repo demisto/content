@@ -3436,7 +3436,7 @@ script:
       description: Description of the Role, if available.
       type: String
     - contextPath: PaloAltoNetworksXDR.Role.groups
-      description: Group names associated with the Role.
+      description: Group names associated with the role.
       type: array
     - contextPath: PaloAltoNetworksXDR.Role.users
       description: Email address of users associated with the role.
