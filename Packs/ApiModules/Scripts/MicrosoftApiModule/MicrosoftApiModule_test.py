@@ -125,7 +125,7 @@ def test_page_not_found_error(mocker):
     mocker.patch.object(BaseClient, '_http_request', return_value=error_404)
     mocker.patch.object(client, 'get_access_token')
 
-    with pytest.raises(NotFoundError):  # Validate that a `NotFoundError` was raised
+    with pytest.raises(NotFoundError):
         client.http_request()
 
 

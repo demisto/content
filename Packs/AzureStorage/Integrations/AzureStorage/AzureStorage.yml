@@ -1033,7 +1033,7 @@ script:
     execution: false
     name: azure-storage-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false
   longRunning: false

@@ -310,7 +310,7 @@ script:
     execution: false
     name: azure-ks-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false
   longRunning: false
@@ -320,3 +320,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
