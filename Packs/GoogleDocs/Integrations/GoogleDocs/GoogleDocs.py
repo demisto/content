@@ -348,13 +348,6 @@ def main():
     disable_ssl = params.get('insecure', False)
     service_account_credentials = json.loads(params.get('service_account_credentials'))
 
-    if command == 'test-module':
-        try:
-            get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
-            return_results('ok')
-        except Exception as e:
-            raise Exception(f"Failed to execute test. Error: {str(e)}", e)
-
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
         if command == 'google-docs-update-document':
@@ -363,8 +356,12 @@ def main():
             document, human_readable_text = create_document_command(service)
         elif command == 'google-docs-get-document':
             document, human_readable_text = get_document_command(service)
+        elif command == 'test-module':
+            if not service:
+                raise DemistoException('Failed to create client')
+            return_results('ok')
         else:
-            raise Exception(f"Command {command} does not exist")
+            raise DemistoException(f"Command {command} does not exist.")
 
         res = {
             'RevisionId': document['revisionId'],
