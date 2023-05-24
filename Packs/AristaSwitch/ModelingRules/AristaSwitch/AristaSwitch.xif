@@ -167,7 +167,7 @@ call arista_switch_common_fields_modeling
 call arista_switch_common_fields_modeling
 | filter facility = "LAG" 
 | alter 
-    interface =  arrayindex(regextract(message, "^Interface (\w+)"), 0),  
+    interface =  arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
     remote_switch_name = arrayindex(regextract(message, "\((\w+)\)\s*[a-fA-F\d\.\:]+\--"), 0),
     remote_switch_ip = arrayindex(regextract(message, "\(\w+\)\s*([a-fA-F\d\.\:]+)\--"), 0),
     remote_switch_interface = arrayindex(regextract(message, "\(\w+\)\s*[a-fA-F\d\.\:]+\--\s*([^\*]+)"), 0),
@@ -183,6 +183,23 @@ call arista_switch_common_fields_modeling
     xdm.target.interface = remote_switch_interface,
     xdm.event.outcome = mnemonic, 
     xdm.event.outcome_reason = reason,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** STP (Spanning Tree Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-spanning-tree-protocol) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SPANTREE" 
+| alter 
+    interface = arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
+    vlan = to_integer(arrayindex(regextract(message, "instance VL(\d+)"), 0)),
+    action = arrayindex(regextract(message, "has been (\w+ \S+ instance)"), 0),
+    state = arrayindex(regextract(message, "state is now (.+)"), 0)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.vlan = vlan,
+    xdm.event.operation = action, 
+    xdm.event.outcome = if(state = "not stable", XDM_CONST.OUTCOME_FAILED, state = "stable", XDM_CONST.OUTCOME_SUCCESS, null),
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
@@ -242,8 +259,8 @@ call arista_switch_common_fields_modeling
     xdm.source.ipv6 = src_ipv6,
     xdm.target.ipv4 = dst_ipv4,
     xdm.target.ipv6 = dst_ipv6,
-    xdm.target.vlan = vlan,
     xdm.target.interface = interface,
+    xdm.target.vlan = vlan,
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
