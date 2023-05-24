@@ -30,9 +30,10 @@ from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
+from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.Marketplace.marketplace_constants import Metadata
+    upload_zipped_packs, install_all_content_packs_for_nightly, get_latest_version_from_bucket
+from Tests.Marketplace.marketplace_constants import Metadata, GCPConfig
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -212,11 +213,15 @@ class Build(ABC):
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
         self.tests_to_run = self.fetch_tests_list(options.tests_to_run)
         self.content_root = options.content_root
-        self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
+        self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)if self.is_nightly
         self.service_account = options.service_account
         self.marketplace_tag_name = None
         self.artifacts_folder = None
         self.marketplace_buckets = None
+        # we do not want to install packs/versions that were merged to master branch
+        # if they are not in the production bucket
+        self.filtered_pack_ids_to_install = self.filter_pack_ids_to_install() \
+            if self.is_nightly else self.pack_ids_to_install
 
     @property
     @abstractmethod
@@ -239,8 +244,8 @@ class Build(ABC):
                 tests_to_run.append(test_clean)
         return tests_to_run
 
-    @staticmethod
-    def fetch_pack_ids_to_install(packs_to_install_path: str):
+
+    def fetch_pack_ids_to_install(self, packs_to_install_path: str):
         """
         Fetches the test list from the filter.
 
@@ -560,6 +565,15 @@ class Build(ABC):
             upload_zipped_packs(client=server.client,
                                 host=server.name or server.internal_ip,
                                 pack_path=f'{Build.test_pack_target}/test_pack.zip')
+
+    def filter_pack_ids_to_install(self) -> list:
+        # check which packs we want to install
+        # check if the pack version we want to install is in production bucket
+        # if not, write to log and add warning, do not fail the build
+        storage_client = init_storage_client(self.service_account)
+        production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+        all_packs = list(production_bucket.list_blobs(prefix=GCPConfig.PRODUCTION_STORAGE_BASE_PATH))
+        return list(set(all_packs) - set(self.pack_ids_to_install))
 
 
 class XSOARBuild(Build):
@@ -1893,6 +1907,7 @@ def main():
 
     build.configure_servers_and_restart()
     build.disable_instances()
+    build.pack_ids_to_install
 
     if build.is_nightly:
         build.install_nightly_pack()
