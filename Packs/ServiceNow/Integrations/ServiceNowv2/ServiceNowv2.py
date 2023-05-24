@@ -1,3 +1,5 @@
+import re
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
@@ -511,20 +513,23 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
 
 def split_notes(raw_notes, note_type, time_info):
     notes: List = []
-    notes_split = raw_notes.split('\n\n')
+    # The notes should be in this form:
+    # '16/05/2023 15:49:56 - John Doe (Additional comments)\nsecond note first line\n\nsecond line\n\nthird
+    # line\n\n16/05/2023 15:41:38 - John Doe (Additional comments)\nfirst note first line\n\nsecond line\n\n
+    delimiter = '([0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} - [A-z ]*\([A-z ]*\))'
+    notes_split = list(filter(None, re.split(delimiter, raw_notes)))
     retrieved_last_note = False
-    for note in notes_split:
-        if not note:
+    for note_info, note_value in zip(notes_split[::2], notes_split[1::2]):
+        if not note_info or not note_value:
             continue
-        if 'Mirrored from Cortex XSOAR' in note:
+        if 'Mirrored from Cortex XSOAR' in note_value:
             if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
                 notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
-        note_info, note_value = note.split('\n', 1)
         created_on, _, created_by = note_info.partition(" - ")
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
-            raise Exception(f'Failed to extract the required information from the following note: {note}')
+            raise Exception(f'Failed to extract the required information from the following note: {note_info} {note_value}')
 
         # convert note creation time to UTC
         try:
@@ -535,7 +540,7 @@ def split_notes(raw_notes, note_type, time_info):
 
         if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
-            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note}.')
+            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note_info} {note_value}.')
             retrieved_last_note = False
             continue
         note_dict = {
