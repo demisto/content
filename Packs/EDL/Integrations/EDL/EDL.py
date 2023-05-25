@@ -1094,7 +1094,7 @@ def update_edl_command(args: Dict, params: Dict):
     no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):
-        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration." +
+        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration."
                      "This parameter is deprecated, make sure to adjust your queries accordingly.")
         # workaround for "msgpack: invalid code" error
         fields_to_present = 'use_legacy_query'
@@ -1145,7 +1145,7 @@ def initialize_edl_context(params: dict):
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
-        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration." +
+        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration."
                      "This parameter is getting deprecated, make sure to adjust your queries accordingly.")
         fields_to_present = 'use_legacy_query'
     offset = 0
