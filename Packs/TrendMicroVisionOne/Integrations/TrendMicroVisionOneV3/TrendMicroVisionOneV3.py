@@ -462,7 +462,7 @@ class Client(BaseClient):
         )
 
         # Regex expression for validating IPv6
-        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" "([0-9a-fA-F]){1,4}"
+        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" + "([0-9a-fA-F]){1,4}"
 
         # Regex expression for validating MacAddress
         regex2 = "([0-9A-Fa-f]{2}[:-]){5}" + "([0-9A-Fa-f]{2})"
