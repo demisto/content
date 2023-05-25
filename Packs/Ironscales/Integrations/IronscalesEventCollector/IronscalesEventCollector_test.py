@@ -15,9 +15,63 @@ def client(mocker):
             ]
         }
     mocked_client = mocker.Mock()
-    mocked_client.get_open_incidents.return_value = {"incident_ids": [0, 1, 3, 4]}
+    mocked_client.get_open_incident_ids.return_value = [0, 1, 3, 4]
     mocked_client.get_incident.side_effect = mock_get_incident
     return mocked_client
+
+
+def test_fetch_events_by_specific_ids(client):
+    """
+    Given: A mock Ironscales client.
+    When:
+    - Running fetch-events command twice.
+    - `max_fetch` param is 2.
+    - `fetch_ids` is [2, 3, 4].
+    - `first_fetch` param is "1 day ago".
+    Then:
+    - Ensure incidents 2 and 3 are returned from the first fetch.
+    - Ensure incident 4 is return from the second fetch.
+    """
+    first_fetch: datetime = dateparser.parse("1 days ago"),  # type: ignore
+    max_fetch = 2
+    fetch_ids = [2, 3, 4]
+    res, last_id = fetch_events_command(
+        client,
+        first_fetch=first_fetch,
+        max_fetch=max_fetch,
+        fetch_ids=fetch_ids,
+    )
+    assert len(res) == 2
+    assert res[0]["incident_id"] == 2
+    assert res[1]["incident_id"] == 3
+
+    res, last_id = fetch_events_command(
+        client,
+        first_fetch=first_fetch,
+        max_fetch=max_fetch,
+        last_id=last_id,
+        fetch_ids=fetch_ids,
+    )
+    assert len(res) == 1
+    assert res[0]["incident_id"] == 4
+
+
+def test_fetch_events_by_fetch_time(client):
+    """
+    Given: A mock Ironscales client.
+    When: Running fetch-events, where `max_fetch` param is 1 and `first_fetch` param is "2 days ago".
+    Then: Ensure only the first event that occured up to 2 days ago is returned.
+    """
+    events, last_id = fetch_events_command(
+        client,
+        first_fetch=dateparser.parse("2 days ago"),  # type: ignore
+        max_fetch=1,
+    )
+    assert len(events) == 1
+    assert events[0]["incident_id"] == 3
+    assert last_id == 3
+
+
 
 
 def test_fetch_events_by_last_id(client):
@@ -28,29 +82,12 @@ def test_fetch_events_by_last_id(client):
     """
     res, last_run = fetch_events_command(
         client,
-        last_run={"last_id": 1},
         first_fetch=dateparser.parse("2 days ago"),  # type: ignore
         max_fetch=10,
+        last_id=1
     )
     assert res[0]["incident_id"] == 3
     assert res[-1]["incident_id"] == 4
-
-
-def test_fetch_events_by_fetch_time(client):
-    """
-    Given: A mock Ironscales client.
-    When: Running fetch-events, where `max_fetch` param is 1 and `first_fetch` param is "2 days ago".
-    Then: Ensure only the first event that occured up to 2 days ago is returned.
-    """
-    events, last_run = fetch_events_command(
-        client,
-        last_run={},
-        first_fetch=dateparser.parse("2 days ago"),  # type: ignore
-        max_fetch=1,
-    )
-    assert len(events) == 1
-    assert events[0]["incident_id"] == 3
-    assert last_run["last_id"] == 3
 
 
 def test_get_events(client):
