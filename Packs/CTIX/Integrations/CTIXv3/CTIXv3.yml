@@ -1766,6 +1766,90 @@ script:
       description: any parameters you would like to pass, in JSON format
       isArray: false
       required: false
+  - name: ctix-get-vulnerability-data
+    description: Lookup vulnerability info
+    arguments:
+    - name: cve
+      description: "The CVE identifier to look up information about"
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: CTIX.VulnerabilityLookup.cpes
+      description: CPEs
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.cvss2
+      description: CVSS2
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.cvss3
+      description: CVSS3
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.dbot_reputation
+      description: DbotReputation
+      type: integer
+    - contextPath: CTIX.VulnerabilityLookup.description
+      description: Description
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.last_modified
+      description: LastModified
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.created
+      description: LastPublished
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.name
+      description: Name
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.uuid
+      description: UUID
+      type: string
+  - name: cve
+    description: Lookup vulnerability info
+    arguments:
+    - name: cve
+      description: "The CVE identifier to look up information about"
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: CTIX.VulnerabilityLookup.cpes
+      description: CPEs
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.cvss2
+      description: CVSS2
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.cvss3
+      description: CVSS3
+      type: number
+    - contextPath: CTIX.VulnerabilityLookup.dbot_reputation
+      description: DbotReputation
+      type: integer
+    - contextPath: CTIX.VulnerabilityLookup.description
+      description: Description
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.last_modified
+      description: LastModified
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.created
+      description: LastPublished
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.name
+      description: Name
+      type: string
+    - contextPath: CTIX.VulnerabilityLookup.uuid
+      description: UUID
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   dockerimage: demisto/python3:3.10.11.61265
   runonce: false
   subtype: python3
