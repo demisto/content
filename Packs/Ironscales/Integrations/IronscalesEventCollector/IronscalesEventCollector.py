@@ -53,14 +53,6 @@ class Client(BaseClient):  # pragma: no cover
             raise e
 
     def get_incident(self, incident_id: int) -> Dict[str, Any]:
-        """Gets a specific Incident
-
-        :type incident_id: ``str``
-        :param incident_id: id of the incident to return
-
-        :return: dict containing the incident as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
         return self._http_request(
             method="GET",
             url_suffix=f"/incident/{self.company_id}/details/{incident_id}",
@@ -170,11 +162,11 @@ def get_events_command(
 ) -> Tuple[CommandResults, List[Dict[str, Any]]]:
     events: List[Dict[str, Any]] = []
 
-    for incident_id in client.get_open_incident_ids():
+    for i in client.get_open_incident_ids():
+        incident = client.get_incident(i)
+        events.extend(incident_to_events(incident))
         if len(events) >= args.get('limit', DEFAULT_LIMIT):
             break
-        inc = client.get_incident(incident_id)
-        events.extend(incident_to_events(inc))
 
     result = CommandResults(
         readable_output=tableToMarkdown("Open Incidents", events),
@@ -189,25 +181,36 @@ def fetch_events_command(
     max_fetch: int,
     last_id: Optional[int] = None,
     fetch_ids: Optional[List[int]] = None,
-
 ) -> Tuple[List[Dict[str, Any]], int]:
+    """Fetches IRONSCALES incidents as events to XSIAM.
+    Note: each report of incident will be considered as an event.
+
+    Args:
+        client (Client): The client object.
+        first_fetch (datetime): First fetch time.
+        max_fetch (int): Maximum number of events to fetch.
+        last_id (Optional[int]): The ID of the most recent incident ingested in previous runs. Defaults to None.
+        fetch_ids (Optional[List[int]]): Specific IDs of incidents to fetch. Defaults to None.
+
+    Returns:
+        Tuple[List[Dict[str, Any]], int]:
+            - A list of new events.
+            - ID of the most recent incident ingested in the current run.
+    """
     events: List[Dict[str, Any]] = []
-    incident_ids: List[int] = fetch_ids if fetch_ids else get_open_incident_ids(
+    incident_ids: List[int] = fetch_ids or get_open_incident_ids(
         client=client,
         first_fetch=first_fetch,
     )
-
-    if last_id:
-        incident_ids = [i for i in incident_ids if i > last_id]
-
-    for incident_id in incident_ids:
-        if len(events) == max_fetch:
+    last_id = last_id or -1
+    for i in filter(lambda i: i > last_id, incident_ids):
+        incident = client.get_incident(i)
+        events.extend(incident_to_events(incident))
+        last_id = max(i, last_id)
+        if len(events) >= max_fetch:
             break
-        inc = client.get_incident(incident_id)
-        events.extend(incident_to_events(inc))
-        last_id = incident_id
 
-    return events, last_id or 0
+    return events, last_id
 
 
 def main():
@@ -245,7 +248,7 @@ def main():
                 client=client,
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
-                last_id=demisto.getLastRun().get("last_id") or 0,
+                last_id=demisto.getLastRun().get("last_id"),
                 fetch_ids=fetch_ids,
             )
             demisto.setLastRun({"last_id": last_id})

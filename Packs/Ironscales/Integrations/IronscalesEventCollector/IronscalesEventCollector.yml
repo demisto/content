@@ -43,7 +43,6 @@ configuration:
 - additionalinfo: 'Use this parameter for debugging purposes only. Simluates a fetch process of specific incidents as
     events, provided in a comma-separated list of their corresponding IDs. If specified, the `First fetch` parameter
     is not taken into account.'
-  defaultvalue: 3 days
   display: Fetch samples by ID
   name: fetch_ids
   required: false
