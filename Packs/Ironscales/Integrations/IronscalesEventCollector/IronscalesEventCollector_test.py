@@ -72,8 +72,6 @@ def test_fetch_events_by_fetch_time(client):
     assert last_id == 3
 
 
-
-
 def test_fetch_events_by_last_id(client):
     """
     Given: A mock Ironscales client.
