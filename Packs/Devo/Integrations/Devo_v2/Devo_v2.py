@@ -186,7 +186,7 @@ def build_link(query, start_ts_milli, end_ts_milli, mode="loxcope", linq_base=No
     ).decode()
 
     if linq_base:
-        url = f"linq_base/#/vapps/app.custom.queryApp_dev?&targetQuery={myb64str}"
+        url = f"{linq_base}/#/vapps/app.custom.queryApp_dev?&targetQuery={myb64str}"
     else:
         url = (
             f"{LINQ_LINK_BASE}/#/vapps/app.custom.queryApp_dev?&targetQuery={myb64str}"
