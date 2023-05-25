@@ -464,8 +464,11 @@ def url_report_output(url, response_json):
     reputation_statistics = reputations.get("statistics")
     reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
 
-    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n## Analysis\n
-    ### Statistics\n **Unknown**: {analysis_statistics.get("unknown")}
+    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n## Third party reputation statistics\n **Total**: {reputation_statistics.get("total")}
+    **Malicious**: {reputation_statistics.get("malicious")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    \n## Analysis statistics\n **Unknown**: {analysis_statistics.get("unknown")}
     **Suspicious**: {analysis_statistics.get("suspicious")}
     **Malicious**: {analysis_statistics.get("malicious")}
     **Goodware**: {analysis_statistics.get("goodware")}
@@ -473,14 +476,12 @@ def url_report_output(url, response_json):
     \n**First analysis**: {analysis.get("first_analysis")}
     **Analysis count**: {analysis.get("analysis_count")}
     """
+
+    markdown = f"{markdown}\n ## Third party reputation sources\n"
+    markdown = f"{markdown}\n {reputation_sources}"
+
     markdown = f"{markdown}\n {last_analysis}"
     markdown = f"{markdown}\n {analysis_history}"
-    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Total**: {reputation_statistics.get("total")}
-    **Malicious**: {reputation_statistics.get("malicious")}
-    **Clean**: {reputation_statistics.get("clean")}
-    **Undetected**: {reputation_statistics.get("undetected")}
-    """
-    markdown = f"{markdown}\n {reputation_sources}"
 
     d_bot_score = classification_to_score(classification.upper())
 
@@ -533,10 +534,17 @@ def domain_report_output(domain, response_json):
 
     reputations = response_json.get("third_party_reputations")
     reputation_statistics = reputations.get("statistics")
-    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
+    reputation_sources = tableToMarkdown("Third party reputation sources", reputations.get("sources"))
 
     markdown = f"""## ReversingLabs A1000 Domain Report for {domain}\n **Modified time**: {response_json.get("modified_time")}"""
     markdown = f"{markdown}\n {top_threats}"
+
+    markdown = f"""{markdown}\n ### Third party reputation statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+
     markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
     **Suspicious**: {file_statistics.get("suspicious")}
     **Malicious**: {file_statistics.get("malicious")}
@@ -544,12 +552,9 @@ def domain_report_output(domain, response_json):
     **Total**: {file_statistics.get("total")}
     \n**Last DNS records time**: {response_json.get("last_dns_records_time")}
     """
+
     markdown = f"{markdown}\n {last_dns_records}"
-    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Malicious**: {reputation_statistics.get("malicious")}
-    **Undetected**: {reputation_statistics.get("undetected")}
-    **Clean**: {reputation_statistics.get("clean")}
-    **Total**: {reputation_statistics.get("total")}
-    """
+
     markdown = f"{markdown}\n {reputation_sources}"
 
     indicator = Common.Domain(
@@ -590,21 +595,24 @@ def ip_report_output(ip, response_json):
 
     reputations = response_json.get("third_party_reputations")
     reputation_statistics = reputations.get("statistics")
-    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
+    reputation_sources = tableToMarkdown("Third party reputation sources", reputations.get("sources"))
 
     markdown = f"""## ReversingLabs A1000 IP Address Report for {ip}\n **Modified time**: {response_json.get("modified_time")}"""
     markdown = f"{markdown}\n {top_threats}"
+
+    markdown = f"""{markdown}\n ### Third party reputation statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+
     markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
     **Suspicious**: {file_statistics.get("suspicious")}
     **Malicious**: {file_statistics.get("malicious")}
     **Goodware**: {file_statistics.get("goodware")}
     **Total**: {file_statistics.get("total")}
     """
-    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Malicious**: {reputation_statistics.get("malicious")}
-    **Undetected**: {reputation_statistics.get("undetected")}
-    **Clean**: {reputation_statistics.get("clean")}
-    **Total**: {reputation_statistics.get("total")}
-    """
+
     markdown = f"{markdown}\n {reputation_sources}"
 
     dbot_score = Common.DBotScore(
