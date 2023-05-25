@@ -1,0 +1,20 @@
+comment: Cortex XSOAR integration with FullHunt.io API
+commonfields:
+  id: FullHuntIO
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.11.61265
+enabled: true
+name: FullHuntIO
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
