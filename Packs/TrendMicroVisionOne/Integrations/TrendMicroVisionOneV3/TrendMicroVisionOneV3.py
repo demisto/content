@@ -465,7 +465,7 @@ class Client(BaseClient):
         regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" "([0-9a-fA-F]){1,4}"
 
         # Regex expression for validating MacAddress
-        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" "([0-9A-Fa-f]{2})"
+        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" + "([0-9A-Fa-f]{2})"
 
         # Regex expression for validating agentGuid
         regex3 = (
@@ -1347,7 +1347,10 @@ def delete_from_suspicious_list(
     body = [{f"{field}": value}]
     query_params: Dict[str, Any] = {}
     response = client.http_request(
-        POST, DELETE_OBJECT_FROM_SUSPICIOUS_LIST, params=query_params, data=json.dumps(body)
+        POST,
+        DELETE_OBJECT_FROM_SUSPICIOUS_LIST,
+        params=query_params,
+        data=json.dumps(body),
     )
     status_code = response[0]["status"]
     suspicious_list = client.suspicious_list_count()
