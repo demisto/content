@@ -1347,7 +1347,7 @@ def delete_from_suspicious_list(
     body = [{f"{field}": value}]
     query_params: Dict[str, Any] = {}
     response = client.http_request(
-        POST, ADD_OBJECT_TO_SUSPICIOUS_LIST, params=query_params, data=json.dumps(body)
+        POST, DELETE_OBJECT_FROM_SUSPICIOUS_LIST, params=query_params, data=json.dumps(body)
     )
     status_code = response[0]["status"]
     suspicious_list = client.suspicious_list_count()
