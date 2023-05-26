@@ -333,10 +333,28 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "xpanseprotocol",
+                                "height": 22,
+                                "id": "628217e0-fbec-11ed-a0fe-81f3a206e0eb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "xpansehostname",
                                 "height": 22,
                                 "id": "4a073f20-b447-11ed-9fd0-85eb99e8103b",
-                                "index": 3,
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xpanseprovider",
+                                "height": 22,
+                                "id": "6caacd20-fbec-11ed-a0fe-81f3a206e0eb",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -345,7 +363,7 @@
                                 "fieldId": "xpansecategory",
                                 "height": 22,
                                 "id": "4c347f60-b447-11ed-9fd0-85eb99e8103b",
-                                "index": 4,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -354,7 +372,7 @@
                                 "fieldId": "xpanseexternalid",
                                 "height": 22,
                                 "id": "50df69d0-b447-11ed-9fd0-85eb99e8103b",
-                                "index": 5,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -363,7 +381,7 @@
                                 "fieldId": "xpanseprogressstatus",
                                 "height": 22,
                                 "id": "5a6b69e0-b447-11ed-9fd0-85eb99e8103b",
-                                "index": 6,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -372,7 +390,7 @@
                                 "fieldId": "xpansetags",
                                 "height": 22,
                                 "id": "5c16a8e0-b447-11ed-9fd0-85eb99e8103b",
-                                "index": 7,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
