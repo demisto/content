@@ -62,7 +62,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.provider
+              simple: inputs.Provider
             iscontext: true
           right:
             value:
@@ -70,14 +70,14 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ip
+              simple: inputs.IP
             iscontext: true
     - label: GCP
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.provider
+              simple: inputs.Provider
             iscontext: true
           right:
             value:
@@ -85,14 +85,14 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ip
+              simple: inputs.IP
             iscontext: true
     - label: Azure
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.provider
+              simple: inputs.Provider
             iscontext: true
           right:
             value:
@@ -100,7 +100,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.ip
+              simple: inputs.IP
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -192,7 +192,7 @@ tasks:
       - "2"
     scriptarguments:
       GcpIP:
-        simple: ${inputs.ip}
+        simple: ${inputs.IP}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -233,7 +233,7 @@ tasks:
     scriptarguments:
       AwsIP:
         complex:
-          root: inputs.ip
+          root: inputs.IP
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -276,7 +276,7 @@ tasks:
     scriptarguments:
       AzureIP:
         complex:
-          root: inputs.ip
+          root: inputs.IP
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -311,7 +311,7 @@ view: |-
     }
   }
 inputs:
-- key: provider
+- key: Provider
   value:
     complex:
       root: incident
@@ -319,7 +319,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery: null
-- key: ip
+- key: IP
   value:
     complex:
       root: incident

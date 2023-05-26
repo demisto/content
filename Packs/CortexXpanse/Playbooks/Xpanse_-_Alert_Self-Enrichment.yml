@@ -141,7 +141,7 @@ tasks:
       name: Search external service information
       description: Get a list of all your external services filtered by the remote
         IP of the alert
-      script: '|||asm-list-external-service'
+      script: Cortex Xpanse|||asm-list-external-service
       type: regular
       iscommand: true
       brand: ""
@@ -505,12 +505,9 @@ inputs:
 - key: RemoteIP
   value:
     complex:
-      root: alert
-      accessor: remoteip
+      root: incident
+      accessor: xpanseip
   required: false
   description: IP address of service
   playbookInputQuery: null
-outputs:
-- contextPath: ASM.ExternalService.externally_detected_providers
-  description: Providers of the external service.
-  type: unknown
+outputs: []

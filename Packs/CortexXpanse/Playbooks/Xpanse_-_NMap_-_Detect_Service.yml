@@ -365,16 +365,16 @@ inputs:
 - key: RemoteIP
   value:
     complex:
-      root: alert
-      accessor: remoteip
+      root: incident
+      accessor: xpanseip
   required: false
   description: Remote IP address in the alert.
   playbookInputQuery: null
 - key: RemotePort
   value:
     complex:
-      root: alert
-      accessor: remoteport
+      root: incident
+      accessor: xpanseport
   required: false
   description: Remote port number in the alert.
   playbookInputQuery: null
