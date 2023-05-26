@@ -16,7 +16,7 @@ from typing import List
 from signal import signal, SIGPIPE, SIG_DFL  # type: ignore[no-redef]
 signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.urllib3.disable_warnings()
 
 ###############################################################################
 # packages to handle IOerror
@@ -2261,8 +2261,7 @@ def uptycs_get_carves_link_source():
 
 def uptycs_get_carves_link_command():
     query_results = uptycs_get_carves_link_source()
-    human_readable = tableToMarkdown('Uptycs Carves link',
-                                        query_results)
+    human_readable = tableToMarkdown('Uptycs Carves link', query_results)
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2285,9 +2284,9 @@ def get_carve_headers(url):
     headers['x-requested-with'] = 'uptycs'
     headers['Access-Control-Request-Method'] = 'GET'
     access_control_headers = ['x-amz-server-side-encryption-customer-algorithm',
-                                'x-amz-server-side-encryption-customer-key',
-                                'x-amz-server-side-encryption-customer-key-md5',
-                                'x-requested-with']
+                              'x-amz-server-side-encryption-customer-key',
+                              'x-amz-server-side-encryption-customer-key-md5',
+                              'x-requested-with']
     headers['Access-Control-Request-Headers'] = ','.join(access_control_headers)
     _, query_string = url.split('?')
     params = dict(param.split('=') for param in query_string.split('&'))
@@ -2338,9 +2337,9 @@ def uptycs_get_carves_source_command():
     query_results = uptycs_get_carves()
     context = query_results.get('items')
     context_entries_to_keep = ['id', 'assetId', 'path', 'createdAt',
-                                'updatedAt', 'status', 'deletedUserName',
-                                'deletedAt', 'assetHostName', 'offset',
-                                'length']
+                               'updatedAt', 'status', 'deletedUserName',
+                               'deletedAt', 'assetHostName', 'offset',
+                               'length']
 
     if context is not None:
         remove_context_entries(context, context_entries_to_keep)
@@ -2458,20 +2457,20 @@ def uptycs_get_tags_source_command():
     query_results = uptycs_get_tags()
     context = query_results.get('items')
     context_entries_to_keep = ['id', 'tag', 'resourceType', 'seedId',
-                                'key', 'value', 'flagProfileId',
-                                'customProfileId', 'complianceProfileId',
-                                'processBlockRuleId', 'dnsBlockRuleId',
-                                'windowsDefenderPreferenceId', 'createdBy',
-                                'updatedBy', 'createdAt', 'updatedAt',
-                                'status', 'source', 'system', 'custom',
-                                'tagRuleId']
+                               'key', 'value', 'flagProfileId',
+                               'customProfileId', 'complianceProfileId',
+                               'processBlockRuleId', 'dnsBlockRuleId',
+                               'windowsDefenderPreferenceId', 'createdBy',
+                               'updatedBy', 'createdAt', 'updatedAt',
+                               'status', 'source', 'system', 'custom',
+                               'tagRuleId']
 
     if context is not None:
         remove_context_entries(context, context_entries_to_keep)
 
     human_readable = tableToMarkdown('Uptycs tags',
-                                        context,
-                                        context_entries_to_keep)
+                                     context,
+                                     context_entries_to_keep)
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2502,13 +2501,13 @@ def uptycs_get_tag_with_id_source_command():
     query_results = uptycs_get_tag_with_id()
     context = query_results
     context_entries_to_keep = ['tag', 'resourceType', 'seedId',
-                                'key', 'value', 'flagProfileId',
-                                'customProfileId', 'complianceProfileId',
-                                'processBlockRuleId', 'dnsBlockRuleId',
-                                'windowsDefenderPreferenceId', 'createdBy',
-                                'updatedBy', 'createdAt', 'updatedAt',
-                                'status', 'source', 'system', 'custom',
-                                'tagRuleId']
+                               'key', 'value', 'flagProfileId',
+                               'customProfileId', 'complianceProfileId',
+                               'processBlockRuleId', 'dnsBlockRuleId',
+                               'windowsDefenderPreferenceId', 'createdBy',
+                               'updatedBy', 'createdAt', 'updatedAt',
+                               'status', 'source', 'system', 'custom',
+                               'tagRuleId']
 
     if context is not None:
         for key in list(context):
@@ -2516,8 +2515,8 @@ def uptycs_get_tag_with_id_source_command():
                 context.pop(key, None)
 
     human_readable = tableToMarkdown('Uptycs tags',
-                                        context,
-                                        context_entries_to_keep)
+                                     context,
+                                     context_entries_to_keep)
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2545,16 +2544,16 @@ def uptycs_get_lookuptables_command():
     query_results = uptycs_get_lookuptables()
     context = query_results.get('items')
     context_entries_to_keep = ['id', 'seedId', 'name', 'description', 'active',
-                                'idField', 'rowCount', 'forRuleEngine', 'createdBy',
-                                'updatedBy', 'createdAt', 'updatedAt', 'dataLookupTable',
-                                'fetchRowsquery']
+                               'idField', 'rowCount', 'forRuleEngine', 'createdBy',
+                               'updatedBy', 'createdAt', 'updatedAt', 'dataLookupTable',
+                               'fetchRowsquery']
 
     if context is not None:
         remove_context_entries(context, context_entries_to_keep)
 
     human_readable = tableToMarkdown('Uptycs look up tables',
-                                        context,
-                                        context_entries_to_keep)
+                                     context,
+                                     context_entries_to_keep)
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2585,11 +2584,11 @@ def uptycs_get_lookuptable_command():
     query_results = uptycs_get_lookuptable()
     context = query_results
     context_entries_to_keep = ['seedId', 'name', 'description',
-                                'active', 'idField', 'rowCount',
-                                'forRuleEngine', 'createdBy',
-                                'updatedBy', 'createdAt',
-                                'updatedAt', 'dataLookupTable',
-                                'fetchRowsquery']
+                               'active', 'idField', 'rowCount',
+                               'forRuleEngine', 'createdBy',
+                               'updatedBy', 'createdAt',
+                               'updatedAt', 'dataLookupTable',
+                               'fetchRowsquery']
 
     if context is not None:
         for key in list(context):
@@ -2597,8 +2596,8 @@ def uptycs_get_lookuptable_command():
                 context.pop(key, None)
 
     human_readable = tableToMarkdown('Uptycs look up tables',
-                                        context,
-                                        context_entries_to_keep)
+                                     context,
+                                     context_entries_to_keep)
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2778,7 +2777,7 @@ def uptycs_delete_assets_tags():
 
     asset_id = demisto.args().get('asset_id')
     post_data = {'tagId': demisto.args().get('tag_id'),
-                    'filters': {'id': {'in': [asset_id]}}}
+                 'filters': {'id': {'in': [asset_id]}}}
 
     return restcall(http_method, api_call, json=post_data)
 
@@ -2805,14 +2804,14 @@ def uptycs_post_lookuptable_data_source(table_id=None):
         table_id = demisto.getFilePath(demisto.args().get('table_id'))
 
     url = ("https://%s/public/api/customers/%s/lookupTables/%s/csvdata" %
-            (DOMAIN, CUSTOMER_ID, table_id))
+          (DOMAIN, CUSTOMER_ID, table_id))
     header = generate_headers(KEY, SECRET)
 
     filepath = demisto.getFilePath(demisto.args().get('filename'))
     files = {'file': open(filepath.get('path'), 'rb')}
 
     response = requests.post(url, headers=header,
-                                files=files, verify=VERIFY_CERT)
+                             files=files, verify=VERIFY_CERT)
     return response
 
 
