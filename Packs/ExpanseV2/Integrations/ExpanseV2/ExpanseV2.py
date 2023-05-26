@@ -403,7 +403,7 @@ class Client(BaseClient):
                     "annotationType": "TAG",
                     "annotationIds": tag_ids,
                     "assetId": asset_id
-            }]}
+                }]}
 
         return self._http_request(
             method='POST',
@@ -415,7 +415,7 @@ class Client(BaseClient):
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
         # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
         if asset_type == "ip-range":
-            tag_url = f'/v2/{asset_type}/contact-assignments/bulk'
+            poc_url = f'/v2/{asset_type}/contact-assignments/bulk'
             data = {"operations": [{
                 'operationType': operation_type,
                 'contactIds': poc_ids,
@@ -423,18 +423,18 @@ class Client(BaseClient):
             }]}
 
         else:
-            tag_url = '/v3/assets/assets/annotations'
+            poc_url = '/v3/assets/assets/annotations'
             data = {"operations": [
                 {
                     "operationType": operation_type,
                     "annotationType": "CONTACT",
                     "annotationIds": poc_ids,
                     "assetId": asset_id
-            }]}
+                }]}
 
         return self._http_request(
             method='POST',
-            url_suffix=tag_url,
+            url_suffix=poc_url,
             json_data=data,
             retries=3
         )
@@ -611,8 +611,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName']
-                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
+                        ml_feature_list.extend({r['formattedName']
+                                                for r in re if 'formattedName' in r})  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
@@ -2500,11 +2500,11 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def get_risky_flows_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
