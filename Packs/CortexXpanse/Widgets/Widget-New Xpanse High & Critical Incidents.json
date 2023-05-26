@@ -1,0 +1,56 @@
+{
+  "Cache": null,
+  "packName": "",
+  "dataType": "incidents",
+  "itemVersion": "",
+  "params": {
+    "groupBy": [
+      "occurred(d)",
+      "severity"
+    ],
+    "hideLegend": false,
+    "referenceLine": {},
+    "showGraphValues": false,
+    "timeFrame": "days",
+    "valuesFormat": "abbreviated"
+  },
+  "query": "type:\"Xpanse Alert\" and severity:High or severity:Critical",
+  "modified": "2023-03-21T15:53:19.626350511Z",
+  "shouldCommit": false,
+  "fromServerVersion": "",
+  "propagationLabels": [
+    "all"
+  ],
+  "name": "New Xpanse High & Critical Incidents",
+  "definitionId": "",
+  "vcShouldKeepItemLegacyProdMachine": false,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "by": "",
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 30,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "commitMessage": "",
+  "isPredefined": false,
+  "vcShouldIgnore": false,
+  "packID": "",
+  "version": -1,
+  "toServerVersion": "",
+  "id": "90712072-ecf3-4e25-8fc9-f5d11e84b6cb",
+  "cacheVersn": 0,
+  "category": "",
+  "prevName": "New Xpanse High & Critical Incidents",
+  "widgetType": "column",
+  "customCalculation": {
+    "operation": "count",
+    "fieldName": "",
+    "expression": ""
+  }
+}

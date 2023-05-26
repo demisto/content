@@ -1,0 +1,57 @@
+{
+  "Cache": null,
+  "packName": "",
+  "dataType": "incidents",
+  "itemVersion": "",
+  "params": {
+    "colors": {
+      "isEnabled": true,
+      "items": {
+        "#1DB846": {
+          "value": 1
+        }
+      },
+      "type": "above"
+    },
+    "valuesFormat": "abbreviated"
+  },
+  "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and assigneduser:-\"\" -status:closed",
+  "modified": "2023-03-21T20:00:04.081795659Z",
+  "shouldCommit": false,
+  "fromServerVersion": "",
+  "propagationLabels": [
+    "all"
+  ],
+  "name": "Assigned Active Xpanse Incidents",
+  "definitionId": "",
+  "vcShouldKeepItemLegacyProdMachine": false,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "by": "",
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 7,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "commitMessage": "",
+  "isPredefined": false,
+  "vcShouldIgnore": false,
+  "packID": "",
+  "version": -1,
+  "toServerVersion": "",
+  "id": "c21d76eb-3bf8-43e3-891e-7c552a62dc0a",
+  "cacheVersn": 0,
+  "category": "",
+  "prevName": "Assigned Active Xpanse Incidents",
+  "widgetType": "trend",
+  "customCalculation": {
+    "operation": "count",
+    "fieldName": "",
+    "expression": ""
+  }
+}

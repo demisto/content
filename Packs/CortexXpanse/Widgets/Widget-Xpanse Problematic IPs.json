@@ -1,0 +1,53 @@
+{
+  "size": 5,
+  "Cache": null,
+  "packName": "",
+  "dataType": "incidents",
+  "itemVersion": "",
+  "params": {
+    "groupBy": [
+      "xpanseip",
+      "severity"
+    ],
+    "valuesFormat": "abbreviated"
+  },
+  "query": "type:\"Xpanse Alert\" ",
+  "modified": "2023-03-21T19:50:35.405088274Z",
+  "shouldCommit": false,
+  "fromServerVersion": "",
+  "propagationLabels": [
+    "all"
+  ],
+  "name": "Xpanse Problematic IPs",
+  "definitionId": "",
+  "vcShouldKeepItemLegacyProdMachine": false,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "by": "",
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 30,
+      "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "commitMessage": "",
+  "isPredefined": false,
+  "vcShouldIgnore": false,
+  "packID": "",
+  "version": -1,
+  "toServerVersion": "",
+  "id": "debfa1a5-e0d7-4128-8004-31a2407322ff",
+  "cacheVersn": 0,
+  "category": "",
+  "prevName": "Xpanse Problematic IPs",
+  "widgetType": "column",
+  "customCalculation": {
+    "operation": "count",
+    "fieldName": "",
+    "expression": ""
+  }
+}

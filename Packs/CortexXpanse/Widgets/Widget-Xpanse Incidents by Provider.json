@@ -1,0 +1,46 @@
+{
+  "Cache": null,
+  "packName": "",
+  "dataType": "incidents",
+  "itemVersion": "",
+  "params": {
+    "groupBy": [
+      "xpanseprovider"
+    ],
+    "valuesFormat": "abbreviated"
+  },
+  "query": "type:\"Xpanse Alert\"",
+  "modified": "2023-05-26T17:22:54.191249081Z",
+  "shouldCommit": false,
+  "fromServerVersion": "",
+  "propagationLabels": [
+    "all"
+  ],
+  "name": "Xpanse Incidents by Provider",
+  "definitionId": "",
+  "vcShouldKeepItemLegacyProdMachine": false,
+  "dateRange": {
+    "period": {
+      "byFrom": "days",
+      "fromValue": 30
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z"
+  },
+  "commitMessage": "",
+  "isPredefined": false,
+  "vcShouldIgnore": false,
+  "packID": "",
+  "version": 1,
+  "toServerVersion": "",
+  "id": "d32b7678-e28b-4d4f-8ebc-33bb1f7fe9b3",
+  "cacheVersn": 0,
+  "category": "",
+  "prevName": "Xpanse Alerts by Provider",
+  "widgetType": "bar",
+  "customCalculation": {
+    "operation": "count",
+    "fieldName": "",
+    "expression": ""
+  },
+  "shouldPublish": false
+}

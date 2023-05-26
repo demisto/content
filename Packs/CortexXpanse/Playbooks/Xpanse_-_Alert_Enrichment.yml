@@ -1,0 +1,331 @@
+id: 5e146d87-597e-4eb0-81e0-db663522fabe
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
+name: Xpanse - Alert Enrichment
+description: Additional enrichment via cloud service providers and other applicable
+  IT and security tools.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7985bd85-1331-4763-809c-e7290f2e757c
+    type: start
+    task:
+      id: 7985bd85-1331-4763-809c-e7290f2e757c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3ec24317-ddca-44b6-86b2-07abd0adacfe
+    type: condition
+    task:
+      id: 3ec24317-ddca-44b6-86b2-07abd0adacfe
+      version: -1
+      name: What is the provider?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      AWS:
+      - "5"
+      Azure:
+      - "6"
+      GCP:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.provider
+            iscontext: true
+          right:
+            value:
+              simple: Amazon Web Services
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ip
+            iscontext: true
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.provider
+            iscontext: true
+          right:
+            value:
+              simple: Google
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ip
+            iscontext: true
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.provider
+            iscontext: true
+          right:
+            value:
+              simple: Azure
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a3720e48-9eaa-44f2-8387-0b41c9987c78
+    type: title
+    task:
+      id: a3720e48-9eaa-44f2-8387-0b41c9987c78
+      version: -1
+      name: Additional Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c108a033-333d-408a-8c8f-7fec7c072f70
+    type: title
+    task:
+      id: c108a033-333d-408a-8c8f-7fec7c072f70
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: dfce3664-281f-44a6-8320-09f2d003900c
+    type: playbook
+    task:
+      id: dfce3664-281f-44a6-8320-09f2d003900c
+      version: -1
+      name: GCP - Enrichment
+      description: Given the IP address this playbook enriches GCP and Firewall information.
+      playbookName: GCP - Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      GcpIP:
+        simple: ${inputs.ip}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 425b3ea8-7515-489a-8620-2804501babf0
+    type: playbook
+    task:
+      id: 425b3ea8-7515-489a-8620-2804501babf0
+      version: -1
+      name: AWS - Enrichment
+      description: Given the IP address this playbook enriches EC2 and IAM information.
+      playbookName: AWS - Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AwsIP:
+        complex:
+          root: inputs.ip
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 388b5bc3-5160-4506-888d-816b5b57a7d1
+    type: playbook
+    task:
+      id: 388b5bc3-5160-4506-888d-816b5b57a7d1
+      version: -1
+      name: Azure - Enrichment
+      description: Given an IP address, this playbook enriches Azure Compute, Microsoft
+        Graph User, and IAM information and outputs Azure Compute, Microsoft Graph
+        User, and IAM information.
+      playbookName: Azure - Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AzureIP:
+        complex:
+          root: inputs.ip
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 1500,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: provider
+  value:
+    complex:
+      root: incident
+      accessor: xpanseprovider
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ip
+  value:
+    complex:
+      root: incident
+      accessor: xpanseip
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+quiet: true

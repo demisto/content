@@ -1,0 +1,516 @@
+id: Cortex ASM - Enrichment
+version: 12
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Cortex Attack Surface Management
+    itemVersion: 1.6.14
+    fromServerVersion: 6.8.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Xpanse - Alert Self-Enrichment
+description: Enrichment on the alert itself using Cortex Xpanse APIs
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: daf92b34-22bf-4969-8ce1-3def20c61031
+    type: start
+    task:
+      id: daf92b34-22bf-4969-8ce1-3def20c61031
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: dec7317e-2f90-407a-8e53-6e19834f4e17
+    type: condition
+    task:
+      id: dec7317e-2f90-407a-8e53-6e19834f4e17
+      version: -1
+      name: Is Cortex Xpanse enabled?
+      description: Determines if the "Cortex Attack Surface Management" integration
+        instance is configured to continue with cloud enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "88"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Xpanse
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: d5ba9531-b2cc-4c22-82e1-64566bb8c6d6
+    type: title
+    task:
+      id: d5ba9531-b2cc-4c22-82e1-64566bb8c6d6
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 495843d2-8753-4b91-8c33-7c924187ec54
+    type: regular
+    task:
+      id: 495843d2-8753-4b91-8c33-7c924187ec54
+      version: -1
+      name: Search external service information
+      description: Get a list of all your external services filtered by the remote
+        IP of the alert
+      script: '|||asm-list-external-service'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      ip_address:
+        simple: ${inputs.RemoteIP}
+      is_active:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: dc114556-8311-47b4-8d2b-e5cb7083e38d
+    type: regular
+    task:
+      id: dc114556-8311-47b4-8d2b-e5cb7083e38d
+      version: -1
+      name: Search related Xpanse Assets
+      description: Get a list of all your internet exposures filtered by IP address,
+        domain, type, and/or if there is an active external service. Maximum result
+        limit is 100 assets.
+      script: Cortex Xpanse|||asm-list-asset-internet-exposure
+      type: regular
+      iscommand: true
+      brand: Cortex Xpanse
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      has_active_external_services:
+        simple: "yes"
+      ip_address:
+        simple: ${inputs.RemoteIP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: c2b04966-1f12-4be1-8285-2c65b5d2cb80
+    type: condition
+    task:
+      id: c2b04966-1f12-4be1-8285-2c65b5d2cb80
+      version: -1
+      name: Services Exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "89"
+      "yes":
+      - "91"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 7662de48-bb7d-4487-8a37-8cf7134789d4
+    type: regular
+    task:
+      id: 7662de48-bb7d-4487-8a37-8cf7134789d4
+      version: -1
+      name: Set Xpanse Service ID
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      xpanseserviceid:
+        complex:
+          root: ASM.ExternalService
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ASM.ExternalService.port
+                iscontext: true
+              right:
+                value:
+                  simple: incident.xpanseport
+                iscontext: true
+          accessor: service_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: f9e4622a-23be-43b2-81ab-0c89117d1bae
+    type: condition
+    task:
+      id: f9e4622a-23be-43b2-81ab-0c89117d1bae
+      version: -1
+      name: Service Exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "89"
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.xpanseserviceid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: e57bc80a-6faf-4e91-82aa-f7ee29af72c6
+    type: regular
+    task:
+      id: e57bc80a-6faf-4e91-82aa-f7ee29af72c6
+      version: -1
+      name: Get Service Details
+      description: Get service details according to the service ID.
+      script: Cortex Xpanse|||asm-get-external-service
+      type: regular
+      iscommand: true
+      brand: Cortex Xpanse
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      service_id:
+        simple: ${incident.xpanseserviceid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 5e50b320-a439-4117-8a82-73087d7a9c0f
+    type: regular
+    task:
+      id: 5e50b320-a439-4117-8a82-73087d7a9c0f
+      version: -1
+      name: Set Xpanse Protocol
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      xpanseprotocol:
+        complex:
+          root: ASM.ExternalService
+          accessor: protocol
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 05dba623-1867-47d2-8feb-881546b84b13
+    type: regular
+    task:
+      id: 05dba623-1867-47d2-8feb-881546b84b13
+      version: -1
+      name: Set Classifications
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      gridfield:
+        simple: xpanseserviceclassifications
+      keys:
+        simple: Active Classifications
+      overwrite:
+        simple: "true"
+      val1:
+        simple: ${ASM.ExternalService.active_classifications}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 179b5e0a-0604-45bc-8508-0ddb35cc9076
+    type: regular
+    task:
+      id: 179b5e0a-0604-45bc-8508-0ddb35cc9076
+      version: -1
+      name: Set Provider
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      xpanseprovider:
+        complex:
+          root: ASM.ExternalService
+          accessor: externally_detected_providers
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2085,
+        "width": 1410,
+        "x": 460,
+        "y": -180
+      }
+    }
+  }
+inputs:
+- key: RemoteIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: false
+  description: IP address of service
+  playbookInputQuery: null
+outputs:
+- contextPath: ASM.ExternalService.externally_detected_providers
+  description: Providers of the external service.
+  type: unknown
