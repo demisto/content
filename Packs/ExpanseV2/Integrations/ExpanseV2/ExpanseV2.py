@@ -80,7 +80,10 @@ TAGGABLE_ASSET_TYPE_MAP = {
     'Domain': 'domains',
     'Certificate': 'certificates',
     'CloudResource': 'cloud-resources',
-    'IpRange': 'ip-range'
+    'IpRange': 'ip-range',
+    'ResponsiveIP': 'responsive-ip',
+    'Network': 'network',
+    'Device': 'device'
 }
 
 ASSET_TAG_OPERATIONS = ['ASSIGN', 'UNASSIGN']
@@ -383,34 +386,57 @@ class Client(BaseClient):
 
     def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str,
                           tag_ids: List[str]) -> Dict[str, Any]:
-        endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
+        # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
+        if asset_type == "ip-range":
+            tag_url = f'/v2/{asset_type}/tag-assignments/bulk'
+            data = {"operations": [{
+                'operationType': operation_type,
+                'tagIds': tag_ids,
+                'assetId': asset_id
+            }]}
 
-        data: Dict = {"operations": [{
-            'operationType': operation_type,
-            'tagIds': tag_ids,
-            'assetId': asset_id
+        else:
+            tag_url = '/v3/assets/assets/annotations'
+            data = {"operations": [
+                {
+                    "operationType": operation_type,
+                    "annotationType": "TAG",
+                    "annotationIds": tag_ids,
+                    "assetId": asset_id
+            }]}
 
-        }]}
         return self._http_request(
             method='POST',
-            url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
+            url_suffix=tag_url,
             json_data=data,
             retries=3
         )
 
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
-        endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
+        # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
+        if asset_type == "ip-range":
+            tag_url = f'/v2/{asset_type}/contact-assignments/bulk'
+            data = {"operations": [{
+                'operationType': operation_type,
+                'contactIds': poc_ids,
+                'assetId': asset_id
+            }]}
 
-        data: Dict = {"operations": [{
-            'operationType': operation_type,
-            'contactIds': poc_ids,
-            'assetId': asset_id
+        else:
+            tag_url = '/v3/assets/assets/annotations'
+            data = {"operations": [
+                {
+                    "operationType": operation_type,
+                    "annotationType": "CONTACT",
+                    "annotationIds": poc_ids,
+                    "assetId": asset_id
+            }]}
 
-        }]}
         return self._http_request(
             method='POST',
-            url_suffix=f'/v2/{endpoint_base}/contact-assignments/bulk',
-            json_data=data
+            url_suffix=tag_url,
+            json_data=data,
+            retries=3
         )
 
     def update_issue(self, issue_id: str, update_type: str, value: str) -> Dict[str, Any]:

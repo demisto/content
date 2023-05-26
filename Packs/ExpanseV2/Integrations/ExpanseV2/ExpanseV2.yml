@@ -2490,6 +2490,9 @@ script:
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
       secret: false
     - default: false
@@ -2525,6 +2528,9 @@ script:
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
       secret: false
     - default: false
@@ -2731,6 +2737,9 @@ script:
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
       secret: false
     - default: false
@@ -2766,6 +2775,9 @@ script:
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
       secret: false
     - default: false
