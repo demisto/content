@@ -15,8 +15,6 @@ from urllib.parse import unquote
 from typing import List
 from signal import signal, SIGPIPE, SIG_DFL  # type: ignore[no-redef]
 signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
-# disable insecure warnings
-requests.urllib3.disable_warnings()
 
 ###############################################################################
 # packages to handle IOerror
@@ -2345,7 +2343,7 @@ def uptycs_get_carves_source_command():
         remove_context_entries(context, context_entries_to_keep)
 
     human_readable = tableToMarkdown('Uptycs Carves',
-                                        context, context_entries_to_keep)
+                                     context, context_entries_to_keep)
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2804,7 +2802,7 @@ def uptycs_post_lookuptable_data_source(table_id=None):
         table_id = demisto.getFilePath(demisto.args().get('table_id'))
 
     url = ("https://%s/public/api/customers/%s/lookupTables/%s/csvdata" %
-          (DOMAIN, CUSTOMER_ID, table_id))
+           (DOMAIN, CUSTOMER_ID, table_id))
     header = generate_headers(KEY, SECRET)
 
     filepath = demisto.getFilePath(demisto.args().get('filename'))

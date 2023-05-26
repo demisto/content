@@ -2777,12 +2777,12 @@ Return asset details enrolled with Uptycs
             "tags": "assets,macos,darwin",
             "last_enrolled_at": "2019-07-19 14:47:27.485",
             "os_version": "10.14.5",
-            "osqueryVersion": "3.2.6.51-Uptycs",
-            "agentVersion": "5.8.2.9-Uptycs",
+            "osqueryVersion": "3.x.x.x-Uptycs",
+            "agentVersion": "5.x.x.x-Uptycs",
             "created_at": "2018-09-25 16:38:16.440",
             "os_flavor": "darwin",
             "hostName": "kyle-mbp-work",
-            "gateway": "49.37.154.33",
+            "gateway": "x.y.z.a",
             "last_activity_at": "2019-07-19 17:02:41.704",
             "os": "Mac OS X",
             "osKey": "darwin_10.14.5",
@@ -2807,7 +2807,7 @@ Return asset details enrolled with Uptycs
 ### Uptycs Assets
 |status|live|disabled|quarantinedStatus|tags|last_enrolled_at|os_version|osqueryVersion|agentVersion|created_at|os_flavor|hostName|gateway|last_activity_at|os|osKey|id|objectGroupId|cpuBrand|hardwareModel|hardwareSerial|hardwareVendor|cores|logicalCores|memoryMb|arch|osDisplay|location|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|active|true|false|false|assets,macos,darwin|2019-07-19 14:47:27.485 |10.14.5 |3.2.6.51-Uptycs |5.8.2.9-Uptycs|2018-09-25 16:38:16.440|darwin |kyle-mbp-work |49.37.154.33|2019-07-19 17:02:41.704 |Mac OS X |darwin_10.14.5|984d4a7a-9f3a-580a-a3ef-2841a561669b|984d4a7a-9f3a-580a-a3ef-2841a561669b|Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz|HVM domU|ec272101-e5c1-58b2-f847-c439abdadcf4|Xen|2|2|8192|x86_64|macOS 10.14.5|United States|
+|active|true|false|false|assets,macos,darwin|2019-07-19 14:47:27.485 |10.14.5 |3.x.x.x-Uptycs |5.x.x.x-Uptycs|2018-09-25 16:38:16.440|darwin |kyle-mbp-work |x.y.z.a|2019-07-19 17:02:41.704 |Mac OS X |darwin_10.14.5|984d4a7a-9f3a-580a-a3ef-2841a561669b|984d4a7a-9f3a-580a-a3ef-2841a561669b|Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz|HVM domU|ec272101-e5c1-58b2-f847-c439abdadcf4|Xen|2|2|8192|x86_64|macOS 10.14.5|United States|
 
 
 ### 38. uptycs-get-tag
