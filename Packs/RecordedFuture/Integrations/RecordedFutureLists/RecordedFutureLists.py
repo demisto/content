@@ -2,7 +2,6 @@
 
 import platform
 import json
-import base64
 
 # flake8: noqa: F402,F405 lgtm
 import demistomock as demisto
