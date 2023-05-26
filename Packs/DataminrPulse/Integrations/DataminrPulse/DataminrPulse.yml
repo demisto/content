@@ -749,7 +749,7 @@ script:
     - contextPath: DataminrPulse.Alerts.userTopHashtags
       description: User's top hashtags.
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.59581
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false
