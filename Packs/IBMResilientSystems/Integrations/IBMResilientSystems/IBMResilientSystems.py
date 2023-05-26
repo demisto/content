@@ -34,6 +34,7 @@ URL = URL.replace('http://', '').replace('https://', '')
 # Split the URL into two parts hostname & port
 SERVER, PORT = URL.rsplit(":", 1) if ':' in URL else (URL, '443')
 ORG_NAME = DEMISTO_PARAMS['org']
+MAX_FETCH = DEMISTO_PARAMS['max_fetch']
 USERNAME = DEMISTO_PARAMS.get('credentials', {}).get('identifier')
 PASSWORD = DEMISTO_PARAMS.get('credentials', {}).get('password')
 API_KEY_ID = DEMISTO_PARAMS.get('api_key_id')
@@ -202,6 +203,14 @@ def search_incidents_command(client, args):
 
 def search_incidents(client, args):
     conditions = []  # type: Any
+
+    ##Sort the results based on incident ID
+    sorts=[]
+    sorts.append({
+        "field_name": "id",
+        "type": "asc"
+    })
+    
     if 'severity' in args:
         value = []
         severity = args['severity'].split(',')
@@ -339,10 +348,12 @@ def search_incidents(client, args):
     data = {
         'filters': [{
             'conditions': conditions
-        }]
+        }],
+        'sorts': sorts,
+        'length': MAX_FETCH
     }
-    response = client.post('/incidents/query', data)
-    return response
+    response = client.post('/incidents/query_paged?return_level=full', data)
+    return response['data']
 
 
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
