@@ -395,8 +395,8 @@ def test_get_alert_output(requests_mock):
     response = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
 
     assert isinstance(response, list)
-    assert response[0]['alert_group_id'] == '30196321-745f-5x8a-99ba-4291a9b49a6f'
-    assert response[0]['event_id'] == '15ba6b0e-18f8-5903-bb1f-56ac5cb9ec9c'
+    assert response[0]['alert_group_id'] == '00000000-0000-0000-0000-000000000000'
+    assert response[0]['event_id'] == '00000000-0000-0000-0000-000000000000'
     assert response[0]['keyword'] == 'keyword'
 
 

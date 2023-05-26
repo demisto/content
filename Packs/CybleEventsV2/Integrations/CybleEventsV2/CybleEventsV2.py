@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-MAX_ALERTS = 50
+MAX_ALERTS = 1000
 LIMIT_EVENT_ITEMS = 1000
 INCIDENT_SEVERITY = {
     'unknown': 0,
@@ -31,10 +31,10 @@ ROUTES = {
 }
 
 COMMAND = {
-    "fetch-alert-groups": "alerts-groups",
-    "cyble-vision-v2-fetch-alerts": "alerts",
-    "subscribed-services": "services",
-    "cyble-vision-v2-fetch-iocs": "iocs",
+    "cyble-vision-fetch-alert-groups": "alerts-groups",
+    "cyble-vision-fetch-alerts": "alerts",
+    "cyble-vision-subscribed-services": "services",
+    "cyble-vision-fetch-iocs": "iocs",
     "test-module": "test",
     "fetch-incidents": "alerts"
 }
@@ -102,7 +102,7 @@ def test_response(client, method, base_url, token):
         return 'ok'
     else:
         demisto.error("Failed to connect")
-        return 'fail'
+        raise Exception("failed to connect")
 
 
 def fetch_subscribed_services_alert(client, method, base_url, token):
@@ -117,7 +117,7 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
     Returns: subscribed service list
 
     """
-    get_subscribed_service_url = base_url + str(ROUTES[COMMAND['subscribed-services']])
+    get_subscribed_service_url = base_url + str(ROUTES[COMMAND['cyble-vision-subscribed-services']])
     subscribed_services = set_request(client, method, token, {}, get_subscribed_service_url)
     service_name_list = []
 
@@ -127,7 +127,7 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
     markdown = tableToMarkdown('Alerts Group Details:', service_name_list, )
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='CybleEventsV2.ServiceList',
+        outputs_prefix='CybleEvents.ServiceList',
         raw_response=service_name_list,
         outputs=service_name_list
     )
@@ -145,7 +145,7 @@ def fetch_subscribed_services(client, method, base_url, token):
     Returns: subscribed service list
 
     """
-    get_subscribed_service_url = base_url + str(ROUTES[COMMAND['subscribed-services']])
+    get_subscribed_service_url = base_url + str(ROUTES[COMMAND['cyble-vision-subscribed-services']])
     subscribed_services = set_request(client, method, token, {}, get_subscribed_service_url)
     service_name_list = []
 
@@ -212,9 +212,17 @@ def cyble_alert_group(client, method, token, url, args):
 
         return CommandResults(
             readable_output=markdown,
-            outputs_prefix='CybleEventsV2.AlertsGroup',
+            outputs_prefix='CybleEvents.AlertsGroup',
             raw_response=lst_alert_group,
             outputs=lst_alert_group
+        )
+    else:
+
+        return CommandResults(
+            readable_output="There is no alert",
+            outputs_prefix='CybleEvents.AlertsGroup',
+            raw_response="There is no alert",
+            outputs="There is no alert"
         )
 
 
@@ -282,7 +290,7 @@ def cyble_fetch_iocs(client, method, token, args, url):
 
     command_results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='CybleEventsV2.IoCs',
+        outputs_prefix='CybleEvents.IoCs',
         raw_response=lst_iocs,
         outputs=lst_iocs)
 
@@ -341,7 +349,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
     if skip:
         validate_input(args, False)
 
-        input_params['limit'] = arg_to_number(args.get('limit', 0))
+        input_params['limit'] = arg_to_number(args.get('limit', 10))
         input_params['startDate'] = args.get('startDate', 0)
         input_params['endDate'] = args.get('endDate', 0)
 
@@ -570,18 +578,18 @@ def main():
                 demisto.setLastRun(last_run)
                 demisto.incidents(data)
 
-            elif demisto.command() == "subscribed-services":
+            elif demisto.command() == "cyble-vision-subscribed-services":
                 # This is the call made when subscribed-services command.
                 return_results(fetch_subscribed_services_alert(client, "GET", base_url, token))
 
-            elif demisto.command() == "fetch-alert-groups":
+            elif demisto.command() == "cyble-vision-fetch-alert-groups":
                 # Fetch alert group.
 
                 validate_input(args, False)
                 url = base_url + str(ROUTES[COMMAND[demisto.command()]])
                 return_results(cyble_alert_group(client, 'POST', token, url, args))
 
-            elif demisto.command() == 'cyble-vision-v2-fetch-iocs':
+            elif demisto.command() == 'cyble-vision-fetch-iocs':
                 # This is the call made when cyble-vision-v2-fetch-iocs command.
 
                 validate_input(args, True)
@@ -590,7 +598,7 @@ def main():
 
                 return_results(command_results)
 
-            elif demisto.command() == 'cyble-vision-v2-fetch-alerts':
+            elif demisto.command() == 'cyble-vision-fetch-alerts':
                 # This is the call made when cyble-vision-v2-fetch-alerts command.
 
                 url = base_url + str(ROUTES[COMMAND[demisto.command()]])
@@ -600,7 +608,7 @@ def main():
 
                 return_results(CommandResults(
                     readable_output=markdown,
-                    outputs_prefix='CybleEventsV2.Alerts',
+                    outputs_prefix='CybleEvents.Alerts',
                     raw_response=lst_alerts,
                     outputs=lst_alerts
                 ))

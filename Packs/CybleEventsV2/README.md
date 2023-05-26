@@ -18,19 +18,24 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+5. In addition: 
+    * Make sure that under "Incident type" you&#39;ve selected the incident type you want to work with and it is the same one you&#39;ve selected once you created the new field. In our example: "Cyble Vision Alert V2".
+    * The option "Fetch Incidents" is checked.
+
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### subscribed-services
+### cyble-subscribed-services
 
 ***
 Get list of Subscribed services
 
 #### Base Command
 
-`subscribed-services`
+`cyble-subscribed-services`
 
 #### Input
 
@@ -40,7 +45,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEventsV2.SubscribedServices | String | List of subscribed services from Cyble vision | 
+| CybleEvents.SubscribedServices | String | List of subscribed services from Cyble vision | 
 
 ### cyble-vision-v2-fetch-iocs
 
@@ -49,7 +54,7 @@ Fetch the indicators for the given timeline
 
 #### Base Command
 
-`cyble-vision-v2-fetch-iocs`
+`cyble-vision-fetch-iocs`
 
 #### Input
 
@@ -69,16 +74,16 @@ Fetch the indicators for the given timeline
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEventsV2.IoCs.Data | String | Returns indicator with risk score, confident rating, first seen and last seen | 
+| CybleEvents.IoCs.Data | String | Returns indicator with risk score, confident rating, first seen and last seen | 
 
-### cyble-vision-v2-fetch-alerts
+### cyble-vision-fetch-alerts
 
 ***
 Fetch Incident event alerts based on the given parameters. Alerts would have multiple events grouped into one based on specific service type. So user would see in few cases more events than the limit provided.
 
 #### Base Command
 
-`cyble-vision-v2-fetch-alerts`
+`cyble-vision-fetch-alerts`
 
 #### Input
 
@@ -94,19 +99,19 @@ Fetch Incident event alerts based on the given parameters. Alerts would have mul
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEventsV2.Events.name | String | Return Event name | 
-| CybleEventsV2.Events.alert_group_id | String | Return alert group id | 
-| CybleEventsV2.Events.event_id | String | Return event id  | 
-| CybleEventsV2.Events.keyword | Unknown | Return keywords | 
+| CybleEvents.Events.name | String | Return Event name | 
+| CybleEvents.Events.alert_group_id | String | Return alert group id | 
+| CybleEvents.Events.event_id | String | Return event id  | 
+| CybleEvents.Events.keyword | Unknown | Return keywords | 
 
-### fetch-alert-groups
+### cyble-vision-fetch-alert-groups
 
 ***
 Fetch incident event group
 
 #### Base Command
 
-`fetch-alert-groups`
+`cyble-vision-fetch-alert-groups`
 
 #### Input
 
@@ -122,5 +127,5 @@ Fetch incident event group
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEventsV2.AlertGroup | String | Fetch all the alert groups | 
+| CybleEvents.AlertGroup | String | Fetch all the alert groups | 
 

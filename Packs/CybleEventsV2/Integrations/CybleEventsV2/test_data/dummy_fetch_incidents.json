@@ -3,17 +3,17 @@
     "cached": false,
     "data": [
       {
-        "alert_group_id": "30196321-745f-5x8a-99ba-4291a9b49a6f",
+        "alert_group_id": "00000000-0000-0000-0000-000000000000",
         "archive_date": null,
         "archived": null,
         "assignee_id": null,
         "assignment_date": null,
         "created_at": "2022-12-08T05:36:31.000Z",
-        "data_id": "32476a11-4ff6-4626-85d8-f4343928d328",
+        "data_id": "00000000-0000-0000-0000-000000000000",
         "deleted_at": null,
         "description": null,
-        "hash": "579f64e4c1b41b2c547a344ead679a15468ae940",
-        "id": "15ba6b0e-18f8-5903-bb1f-56ac5cb9ec9c",
+        "hash": "00000000000000000000000000000000000000",
+        "id": "00000000-0000-0000-0000-000000000000",
         "data_message" : {
           "metadata" : "sample_data"
       },

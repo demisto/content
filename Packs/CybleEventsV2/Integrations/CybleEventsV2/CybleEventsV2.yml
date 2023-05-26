@@ -28,18 +28,12 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 0
-- additionalinfo: Maximum incidents to be fetched every time. Upper limit is 50 incidents.
+- additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000
+    incidents.
   defaultvalue: '1'
   display: Incident Fetch Limit
   hidden: false
   name: max_fetch
-  required: false
-  type: 0
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  defaultvalue: 1 days
-  display: First fetch time
-  hidden: false
-  name: first_fetch
   required: false
   type: 0
 - display: Incident type
@@ -59,17 +53,27 @@ script:
   - deprecated: false
     description: Get list of Subscribed services
     execution: false
-    name: subscribed-services
+    name: cyble-vision-subscribed-services
     outputs:
-    - contextPath: CybleEventsV2.SubscribedServices
+    - contextPath: CybleEvents.SubscribedServices
       description: List of subscribed services from Cyble vision
       type: String
   - arguments:
-    - default: false
-      defaultValue: Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Domain
       description: Returns record by type like(Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email)
       isArray: true
       name: iocType
+      predefined:
+      - Domain
+      - FileHash-MD5
+      - FileHash-SHA1
+      - FileHash-SHA256
+      - IPv4
+      - IPv6
+      - URL
+      - Emai
       required: false
       secret: false
     - default: false
@@ -105,12 +109,16 @@ script:
       - ioc_type
       required: false
       secret: false
-    - default: true
+    - auto: PREDEFINED
+      default: true
       defaultValue: desc
       description: Sorting order for ioc either Ascending or Descending based on sort
         by
       isArray: false
       name: order
+      predefined:
+      - asc
+      - desc
       required: false
       secret: false
     - default: false
@@ -136,9 +144,9 @@ script:
     deprecated: false
     description: Fetch the indicators for the given timeline
     execution: false
-    name: cyble-vision-v2-fetch-iocs
+    name: cyble-vision-fetch-iocs
     outputs:
-    - contextPath: CybleEventsV2.IoCs.Data
+    - contextPath: CybleEvents.IoCs.Data
       description: Returns indicator with risk score, confident rating, first seen
         and last seen
       type: String
@@ -186,18 +194,18 @@ script:
       would have multiple events grouped into one based on specific service type.
       So user would see in few cases more events than the limit provided.
     execution: true
-    name: cyble-vision-v2-fetch-alerts
+    name: cyble-vision-fetch-alerts
     outputs:
-    - contextPath: CybleEventsV2.Events.name
+    - contextPath: CybleEvents.Events.name
       description: Return Event name
       type: String
-    - contextPath: CybleEventsV2.Events.alert_group_id
+    - contextPath: CybleEvents.Events.alert_group_id
       description: Return alert group id
       type: String
-    - contextPath: CybleEventsV2.Events.event_id
+    - contextPath: CybleEvents.Events.event_id
       description: 'Return event id '
       type: String
-    - contextPath: CybleEventsV2.Events.keyword
+    - contextPath: CybleEvents.Events.keyword
       description: Return keywords
       type: Unknown
   - arguments:
@@ -242,12 +250,12 @@ script:
     deprecated: false
     description: Fetch incident event group
     execution: false
-    name: fetch-alert-groups
+    name: cyble-vision-fetch-alert-groups
     outputs:
-    - contextPath: CybleEventsV2.AlertGroup
+    - contextPath: CybleEvents.AlertGroup
       description: Fetch all the alert groups
       type: String
-  dockerimage: demisto/python3:3.10.11.57293
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false
