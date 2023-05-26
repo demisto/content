@@ -1124,10 +1124,6 @@
             "has_api": false
         },
         {
-            "integrations": "Netmiko",
-            "playbookID": "Netmiko_test"
-        },
-        {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
