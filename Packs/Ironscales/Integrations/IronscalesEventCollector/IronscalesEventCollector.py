@@ -37,6 +37,13 @@ class Client(BaseClient):  # pragma: no cover
         super().__init__(base_url, verify_certificate, proxy)
         self._headers = {"Authorization": f'JWT {self.get_jwt_token(api_key, scopes)}'}
 
+    def client_error_handler(self, res) -> Any:
+        try:
+            err_msg = f"Error in API call [{res.status_code}] - {res.json().get('message')}"
+            raise DemistoException(err_msg, res=res)
+        except ValueError:
+            super().client_error_handler(res)
+
     def get_jwt_token(self, api_key: str, scopes: list) -> Dict[str, Any]:
         try:
             jwt_key = self._http_request(
@@ -46,9 +53,9 @@ class Client(BaseClient):  # pragma: no cover
             )
             return jwt_key["jwt"]
         except DemistoException as e:
-            if "FORBIDDEN" in str(e):
+            if "No company found for API key" in str(e):
                 raise DemistoException(
-                    "Authorization Error: make sure API Key is correctly set"
+                    "Authorization Error: make sure the API is set correctly"
                 )
             raise e
 
@@ -56,10 +63,6 @@ class Client(BaseClient):  # pragma: no cover
         return self._http_request(
             method="GET",
             url_suffix=f"/incident/{self.company_id}/details/{incident_id}",
-            json_data={
-                "company_id": self.company_id,
-                "incident_id": incident_id,
-            },
         )
 
     def get_open_incident_ids(self) -> List[int]:
@@ -213,6 +216,17 @@ def fetch_events_command(
     return events, last_id
 
 
+def test_module_command(
+    client: Client,
+) -> str:
+    try:
+        client.get_incident(1)  # ensures that company_id is set correctly
+    except DemistoException as e:
+        if e.res.status_code != 404:  # it's ok if incident does not exist
+            raise e
+    return "ok"
+
+
 def main():
     command = demisto.command()
     params = demisto.params()
@@ -234,13 +248,12 @@ def main():
             scopes=argToList(params.get("scopes")),
         )
         if command == "test-module":
-            # parameters or client connectivity issues will be raised by now
-            return_results("ok")
+            return_results(test_module_command(client))
 
         elif command == "ironscales-get-events":
             results, events = get_events_command(client, args)
             return_results(results)
-            if argToBoolean(args.get("should_fetch_events")):
+            if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events, VENDOR, PRODUCT)
 
         elif command == "fetch-events":

@@ -185,6 +185,7 @@ def test_test_module(mocker, params, is_valid, result_msg):
     Then: Make sure the correct message is returned.
     """
     mocker.patch.object(Client, "get_jwt_token", return_value="mock_token")
+    mocker.patch.object(Client, "get_incident")
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value=params)
     demisto_result = mocker.patch.object(demisto, "results")
