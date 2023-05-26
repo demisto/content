@@ -1,0 +1,1134 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Suspicious File Activity Mapper",
+    "mapping": {
+        "CVLT - Anomaly Alerts": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Description": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "(?:Alertdescription) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Description = {Alert does not have the Alertdescription field}"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alertdescription) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alertid) = \\{(\\w+)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "Alert: ([\\w\\s]+)\\s+\\w+:?"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Alert:  Alert does not contain the field"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "Alert: ([\\w\\s]+)\\s+\\w+:?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Appliance Name": {
+                    "simple": "app_name"
+                },
+                "Facility": {
+                    "complex": {
+                        "filters": [],
+                        "root": "facility",
+                        "transformers": []
+                    }
+                },
+                "Host Name": {
+                    "simple": "host_name"
+                },
+                "Originating Client": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "Client: ([\\w]+)+:?"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Computer = {Alert does not contain the 'Computer' field}"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "Client: ([\\w]+)+:?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Originating Program": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "Program: ([\\w]+)+:?"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Program = {Alert does not contain 'Program' field}"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "Program: ([\\w]+)+:?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "Source Create time": {
+                    "simple": "timestamp"
+                },
+                "Version": {
+                    "simple": "version"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alerttime) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "CVLT - Backup Alerts": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alertdescription) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alertid) = \\{(\\w+)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "Alert: ([\\w\\s]+)\\s+\\w+:?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "Appliance Name": {
+                    "simple": "app_name"
+                },
+                "Facility": {
+                    "complex": {
+                        "filters": [],
+                        "root": "facility",
+                        "transformers": []
+                    }
+                },
+                "Host Name": {
+                    "simple": "host_name"
+                },
+                "Originating Client": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Computer) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "Originating Program": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Program) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "Source Create time": {
+                    "simple": "timestamp"
+                },
+                "Version": {
+                    "simple": "version"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alerttime) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alertseverity) = \\{(\\w+)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "File Unusual Activity": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Description": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "(?:Alertdescription) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Description = {Alert does not have the Alertdescription field}"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alertdescription) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alertid) = \\{(\\w+)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "Alert: ([\\w\\s]+)\\s+\\w+:?"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Alert:  Alert does not contain the field"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "Alert: ([\\w\\s]+)\\s+\\w+:?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Alert Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Appliance Name": {
+                    "simple": "app_name"
+                },
+                "Facility": {
+                    "complex": {
+                        "filters": [],
+                        "root": "facility",
+                        "transformers": []
+                    }
+                },
+                "Host Name": {
+                    "simple": "host_name"
+                },
+                "Originating Client": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "Client: ([\\w]+)+:?"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Computer = {Alert does not contain the 'Computer' field}"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "Client: ([\\w]+)+:?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Originating Program": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "msg"
+                                        }
+                                    },
+                                    "operator": "match",
+                                    "right": {
+                                        "value": {
+                                            "simple": "Program: ([\\w]+)+:?"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "applyIfEmpty": {},
+                                    "defaultValue": {
+                                        "value": {
+                                            "simple": "Program = {Alert does not contain 'Program' field}"
+                                        }
+                                    }
+                                },
+                                "operator": "SetIfEmpty"
+                            },
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "Program: ([\\w]+)+:?"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "operator": "trim"
+                            }
+                        ]
+                    }
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "Source Create time": {
+                    "simple": "timestamp"
+                },
+                "Version": {
+                    "simple": "version"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alerttime) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "Suspicious File Activity": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Affected Files Count": {
+                    "simple": "affected_files_count"
+                },
+                "Appliance Name": {
+                    "simple": "app_name"
+                },
+                "Backup Type": {
+                    "simple": "backuplevel"
+                },
+                "Backupset": {
+                    "simple": "backupset"
+                },
+                "Created Files Count": {
+                    "simple": "created_files_count"
+                },
+                "Deleted Files Count": {
+                    "simple": "deleted_files_count"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "End Time": {
+                    "simple": "job_end_time"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "Event Time": {
+                    "simple": "event_time"
+                },
+                "External Link": {
+                    "simple": "external_link"
+                },
+                "Facility": {
+                    "complex": {
+                        "filters": [],
+                        "root": "facility",
+                        "transformers": []
+                    }
+                },
+                "Files List": {
+                    "simple": "files_list"
+                },
+                "Host Name": {
+                    "simple": "host_name"
+                },
+                "Job Id": {
+                    "simple": "job_id"
+                },
+                "Media Agent": {
+                    "simple": "destinationclient"
+                },
+                "Modified Files Count": {
+                    "simple": "modified_files_count"
+                },
+                "Originating Client": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_client",
+                        "transformers": []
+                    }
+                },
+                "Originating Program": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_program",
+                        "transformers": []
+                    }
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "Renamed Files Count": {
+                    "simple": "renamed_files_count"
+                },
+                "Scanned Folder List": {
+                    "simple": "scanned_folder_list"
+                },
+                "Source Create time": {
+                    "simple": "timestamp"
+                },
+                "Start Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "job_start_time",
+                        "transformers": []
+                    }
+                },
+                "Subclient": {
+                    "simple": "subclient"
+                },
+                "Subtype": {
+                    "simple": "anomaly_sub_type"
+                },
+                "Version": {
+                    "simple": "version"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "Unclassified": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "link",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "Unusual File Activity": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Affected Files Count": {
+                    "simple": "affected_files_count"
+                },
+                "Alert Description": {
+                    "simple": "alert_description"
+                },
+                "Alert ID": {
+                    "simple": "alert_id"
+                },
+                "Alert Name": {
+                    "simple": "alert_name"
+                },
+                "Alert Time": {
+                    "simple": "alert_time"
+                },
+                "Appliance Name": {
+                    "simple": "app_name"
+                },
+                "Backup Type": {
+                    "simple": "backuplevel"
+                },
+                "Backupset": {
+                    "simple": "backupset"
+                },
+                "Created Files Count": {
+                    "simple": "created_files_count"
+                },
+                "Deleted Files Count": {
+                    "simple": "deleted_files_count"
+                },
+                "End Time": {
+                    "simple": "job_end_time"
+                },
+                "Event Time": {
+                    "simple": "event_time"
+                },
+                "External Link": {
+                    "simple": "external_link"
+                },
+                "Facility": {
+                    "complex": {
+                        "filters": [],
+                        "root": "facility",
+                        "transformers": []
+                    }
+                },
+                "Files List": {
+                    "simple": "files_list"
+                },
+                "Host Name": {
+                    "simple": "host_name"
+                },
+                "Job Id": {
+                    "simple": "job_id"
+                },
+                "Media Agent": {
+                    "simple": "destinationclient"
+                },
+                "Modified Files Count": {
+                    "simple": "modified_files_count"
+                },
+                "Originating Client": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_client",
+                        "transformers": []
+                    }
+                },
+                "Originating Program": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_program",
+                        "transformers": []
+                    }
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "Renamed Files Count": {
+                    "simple": "renamed_files_count"
+                },
+                "Scanned Folder List": {
+                    "simple": "scanned_folder_list"
+                },
+                "Source Create time": {
+                    "simple": "timestamp"
+                },
+                "Start Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "job_start_time",
+                        "transformers": []
+                    }
+                },
+                "Subclient": {
+                    "simple": "subclient"
+                },
+                "Subtype": {
+                    "simple": "anomaly_sub_type"
+                },
+                "Version": {
+                    "simple": "version"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "flags": {},
+                                    "groups": {
+                                        "value": {
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "keys": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "(?:Alerttime) = \\{(.+?)\\}"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            },
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Suspicious File Activity Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
