@@ -1,9 +1,17 @@
-id: Cortex ASM - Detect Service
-version: -1
+id: f4e4988f-236e-4fea-88c8-325b9c3929d3
+version: 9
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: Cortex Attack Surface Management
+    itemVersion: 1.6.3
+    fromServerVersion: 6.5.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Cortex ASM - Detect Service
-description: Playbook that checks to see if an existing ASM service ID is available. If it is available it will begin a Xpanse Remediation Confirmation Scan.
+description: Playbook that looks to see if a service ID exists and choose to start a Remediation Confirmation Scan.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -47,7 +54,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -75,7 +81,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -103,7 +108,8 @@ tasks:
       id: f8e5dec9-9a30-4dc7-87d4-09f323d87a91
       version: -1
       name: Is there a ASM service ID?
-      description: Conditional task to check for an existing ASM service ID. The Remediation Confirmation Scan can only be used to scan existing service IDs found by Xpanse.
+      description: Conditional task to check for an existing ASM service ID. The Remediation
+        Confirmation Scan can only be used to scan existing service IDs found by Xpanse.
       type: condition
       iscommand: false
       brand: ""
@@ -152,7 +158,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -186,32 +191,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: RemoteIP
-  value:
-    complex:
-      root: alert
-      accessor: remoteip
-  required: false
-  description: Remote IP address in the alert.
-  playbookInputQuery:
-- key: RemotePort
-  value:
-    complex:
-      root: alert
-      accessor: remoteport
-  required: false
-  description: Remote port number in the alert.
-  playbookInputQuery:
-- key: ASMRuleID
-  value:
-    complex:
-      root: alert
-      accessor: asmattacksurfaceruleid
-  required: true
-  description: Attack Surface Management Rule ID.
-  playbookInputQuery:
+inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.8.0
+sourceplaybookid: Cortex ASM - Detect Service
