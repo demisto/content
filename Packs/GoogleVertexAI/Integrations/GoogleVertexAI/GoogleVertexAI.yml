@@ -27,17 +27,6 @@ configuration:
   name: ProjectID
   required: true
   type: 0
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: d5265dc6-d028-4da6-88f1-944a21af0a6d
-    packName: Google Vertex AI Contribution Pack
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: |-
   Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
 
