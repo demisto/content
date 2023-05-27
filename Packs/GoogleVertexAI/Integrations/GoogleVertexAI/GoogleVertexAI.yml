@@ -49,9 +49,10 @@ script:
   - arguments: []
     description: This command will generate the authentication url required to generate auth code
     name: google-vertex-ai-generate-auth-url
-  dockerimage: demisto/googleapi-python3:1.0.0.50652
+  dockerimage: demisto/googleapi-python3:1.0.0.62073
   resetContext: true
   runonce: false
   script: ''
   subtype: python3
   type: python
+ fromversion: 5.0.0
