@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-### pack version: 1.0.19
-
-
 
 
 ''' IMPORTS '''
@@ -10,13 +7,12 @@ from CommonServerPython import *  # noqa: F401
 
 import json
 import urllib3
-import time
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-'''GLOBAL VARS'''
+''' GLOBAL Variables '''
 
 DISABLE_SSL = demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy')
@@ -32,6 +28,7 @@ TOKEN = demisto.params().get('token')
 CLIENT_ID = demisto.params().get('ID')
 CLIENT_SECRET = demisto.params().get('Secret')
 AUTH_CODE = demisto.params().get('Authentication_Code')
+
 
 ''' CLIENT CLASS '''
 
@@ -50,7 +47,8 @@ class Client(BaseClient):
             options = {"instances": [{"messages": [{"content": prompt}]}]}
             return self._http_request(method='POST', url_suffix=f'{PROJECT_ID}/locations/us-central1/publishers/google/models/{AI_Model}', json_data=options, headers=self.headers)
 
-'''MAIN FUNCTIONS'''
+        
+''' MAIN FUNCTIONS '''
 
 def createAuthorizationURL():
     # The client ID and access scopes are required.
@@ -75,6 +73,7 @@ def check_access_token_validation():
     else:
         access_token = get_access_token()
         return access_token
+
 
 def get_access_token():
 
@@ -113,6 +112,7 @@ def get_access_token():
     set_integration_context(integration_context)
 
     return access_token
+
 
 def refresh_access_token():
     # A refresh token might stop working for one of these reasons: The user has revoked your app's access. The refresh token has not been used for six months
@@ -154,6 +154,7 @@ def refresh_access_token():
 
     return access_token
 
+
 def epoch_seconds(d: datetime = None) -> int:
     """
     Return the number of seconds for given date. If no date, return current.
@@ -164,6 +165,7 @@ def epoch_seconds(d: datetime = None) -> int:
         d = datetime.utcnow()
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
+
 def resetIntegrationContext():
     integration_context: dict = get_integration_context()
     integration_context['refresh_token'] = ""
@@ -171,6 +173,7 @@ def resetIntegrationContext():
     integration_context['valid_until'] = ""
     set_integration_context(integration_context)
     return True
+
 
 def error_parser(resp_err: requests.Response) -> str:
     """
@@ -199,6 +202,7 @@ def error_parser(resp_err: requests.Response) -> str:
         raise ValueError()
     except ValueError:
         return resp_err.text
+
 
 def test_module(client: Client):
     """
