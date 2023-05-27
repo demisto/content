@@ -634,7 +634,7 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comma
     response = client.get_key_vault_request(vault_name)
     if response.get('error'):
         raise Exception(response)
-    
+
     readable_output = tableToMarkdown(f'{vault_name} Information',
                                       response,
                                       ['id', 'name', 'type', 'location'], removeNull=True,
@@ -666,7 +666,7 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any]) -> Com
     response = client.list_key_vaults_request(limit, offset)
     if type(response) == Dict and response.get('error'):
         raise Exception(response)
-    
+
     readable_output = tableToMarkdown(
         'Key Vaults List',
         response,
@@ -1137,17 +1137,8 @@ def test_module(client: KeyVaultClient) -> None:
         # fetch_credentials(client,[''],[''],'xsoar-test-vault/test-sec-1')
         return_results('ok')
 
-    except Exception as error:
-        if 'InvalidSubscriptionId' in str(error):
-            return_results('Invalid subscription ID. Please verify your subscription ID.')
-        elif 'SubscriptionNotFound' in str(error):
-            return_results('The given subscription ID could not be found.')
-        elif 'perform action' in str(error):
-            return_results('The client does not have Key Vault permissions to the'
-                           ' given resource group name or the resource group name does not exist.'
-                           )
-        else:
-            return_results(str(error))
+    except Exception:
+        raise
 
 
 def fetch_credentials(client: KeyVaultClient,
@@ -1337,8 +1328,15 @@ def main() -> None:
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
-    except Exception as e:
-        return_error(str(e))
+    except Exception as error:
+        if 'InvalidSubscriptionId' in str(error):
+            massage = 'Invalid subscription ID. Please verify your subscription ID.'
+        elif 'SubscriptionNotFound' in str(error):
+            massage = 'The given subscription ID could not be found.'
+        elif 'perform action' in str(error):
+            massage = 'The client does not have Key Vault permissions to the given resource group name or the resource group name does not exist.'
+                         
+        return_error(massage + "\n" + str(error))
 
 
 from MicrosoftApiModule import *  # noqa: E402
