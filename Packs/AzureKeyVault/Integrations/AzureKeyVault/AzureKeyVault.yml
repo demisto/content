@@ -1250,6 +1250,32 @@ script:
     - contextPath: AzureKeyVault.CertificatePolicy.attributes.updated
       description: Last updated time in UTC.
       type: Date
+  - name: azure-sql-subscriptions-list
+    description: List all subscriptions for a tenant.
+    outputs:
+    - contextPath: AzureSQL.Subscription.id
+      description: Subscription ID.
+      type: String
+    - contextPath: AzureSQL.Subscription.displayName
+      description: Subscription display name.
+      type: String
+    - contextPath: AzureSQL.Subscription.state
+      description: Subscription state.
+      type: String
+    - contextPath: AzureSQL.Subscription.subscriptionPolicies # noqa: E501
+      description: Subscription policies.
+      type: Unknown
+    - contextPath: AzureSQL.Subscription.authorizationSource
+      description: Authorization source.
+      type: String
+    - contextPath: AzureSQL.Subscription.managedByTenants
+      description: Managed by tenants.
+      type: Unknown
+    - contextPath: AzureSQL.Subscription.tenantId
+      description: Tenant ID.
+      type: String
+
+
   dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false
