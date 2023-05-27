@@ -1,7 +1,7 @@
-Google Vertex AI
+#### Google Vertex AI
 
-Author: Sameh El-Hakim
-
+#### Integration Author: Sameh El-Hakim
+***
 Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
 
 The current integration of Google Vertex Ai is focusing only on the Generative AI model (PaLM) using the Chat prediction.
@@ -13,7 +13,7 @@ Model Development
 
 Once the New API for (PaLM for Chat & Text) is released to the public from Google, then this integration will be modified to support quick integration. This integration is using an early version of Generative AI API from Google. So, you are expected to face some challenges.
 
-The setup steps as following:
+## The setup steps as following:
 Create a new project on Google Cloud (Recommended instead of using existing project)
 Enable Vertex AI API
 Configure Consent Page
@@ -25,7 +25,7 @@ Troubleshooting
 
 If you have a knowledge of Google Cloud Administration, you can configure the project & API and skip directly to step 2.
 
-Step 1: Create a new project on Google Cloud
+## Step 1: Create a new project on Google Cloud
 In this step, you will need to have permission to create a new project in your GCP console
 
 Login to GCP Console:
@@ -46,7 +46,7 @@ Click Enable
 
 
 
-Step 2: Configure Consent Page
+## Step 2: Configure Consent Page
 Click on Configure Consent Screen
 
 Select Internal as User Type and Click on Create; It is recommended to limit the access to your project scope to Internal users in your organization as later as planned you can build your own Model and fine tune in a confidential environment that is shared publicly
@@ -62,7 +62,7 @@ After added, it will looks like this screenshot
 
 Click Save and Continue; Now Step 3
 
-Step 3: Create OAuth Client ID
+## Step 3: Create OAuth Client ID
 
 Go to APIs & Services > Credentials
 
@@ -81,7 +81,7 @@ Copy Client ID & Client secret, we will use them during XSOAR’s instance confi
 Note: the screenshot contain deleted credential please don’t use it as it will not work in your instance configuration
 
 
-Step 4: Generate Authentication Code (OAuth Code)
+## Step 4: Generate Authentication Code (OAuth Code)
 In this step, we will use the created client ID & secret to generate OAuth Code so, the integration can generate access token for authentication & authorization to Google APIs. For more information about Tokens: please check the following URL from Google:
 
 https://developers.google.com/identity/protocols/oauth2
@@ -131,12 +131,12 @@ https://xsoar.pan.dev/docs/reference/articles/o-proxy
 Copy the auth code to your configured XSOAR instance; the final look for XSOAR Instance should look like Step 5
 
 
-Step 5: Setup XSOAR Instance
+## Step 5: Setup XSOAR Instance
 
 This is the final look for how your XSOAR instance will looks like
 
 
-Step 7: Testing (Instance Test button doesn’t work with OAuth2 method)
+## Step 6: Testing (Instance Test button doesn’t work with OAuth2 method)
 Now it is time to put the integration in test. 
 Execute the following command:
 
@@ -144,7 +144,7 @@ Execute the following command:
 
 
 
-Troubleshooting
+### Troubleshooting
 In case of any failure it will be related to authentication code expired or reset somehow. In that case, you will need to repeat steps of generating a new auth code and adding it to XSOAR. BUT before that most important to reset the cache to the integration as following:
 
 In the instance, click reset integration cache
