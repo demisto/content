@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 
 ''' GLOBAL Variables '''
 
+
 DISABLE_SSL = demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy')
 PROMPT = demisto.params().get('prompt')
@@ -38,7 +39,7 @@ class Client(BaseClient):
         """
 
         def __init__(self, token_str: str, base_url: str, proxy: bool, verify: bool):
-            super().__init__(base_url=URL, proxy=proxy, verify=verify)
+            super().__init__(base_url=URL, proxy=PROXY, verify=verify)
             self.token_str = token_str
             self.base_url = base_url
             self.headers = {'Authorization': f"Bearer {self.token_str}", "Content-Type": "application/json"}
@@ -49,6 +50,7 @@ class Client(BaseClient):
 
         
 ''' MAIN FUNCTIONS '''
+
 
 def createAuthorizationURL():
     # The client ID and access scopes are required.
@@ -279,19 +281,17 @@ def main():
     command = demisto.command()
 
     verify = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-
 
     try:
         proxies = handle_proxy()
 
         if command == 'test-module':
             access_token = check_access_token_validation()
-            client = Client(token_str=access_token, base_url=URL, verify=verify, proxy=proxy)
+            client = Client(token_str=access_token, base_url=URL, verify=verify, proxy=PROXY)
             test_module(client)
         elif command == 'google-vertex-PaLM-chat':
             access_token = check_access_token_validation()
-            client = Client(token_str=access_token, base_url=URL, verify=verify, proxy=proxy)
+            client = Client(token_str=access_token, base_url=URL, verify=verify, proxy=PROXY)
             return_results(send_prompts_PaLM_command(client, **args))
         elif command == 'google-vertex-ai-generate-auth-url':
             return_results(createAuthorizationURL())
