@@ -375,6 +375,16 @@ class KeyVaultClient:
 
         return response
 
+    def list_subscriptions_request(self):
+        """
+        List all subscriptions.
+
+        Returns:
+            Dict[str, Any]: API response from Azure.
+        """
+        url = 'https://management.azure.com/subscriptions?'
+        return self.http_request('GET', full_url=url, resource=MANAGEMENT_RESOURCE, params={'api-version': '2020-01-01'})
+
     ''' INTEGRATION HELPER METHODS  '''
 
     def config_vault_permission(self, keys: List[str], secrets: List[str], certificates: List[str],
@@ -1119,6 +1129,34 @@ def get_certificate_policy_command(client: KeyVaultClient, args: Dict[str, Any])
     return command_results
 
 
+def list_subscriptions_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    List all subscriptions in the tenant.
+
+    Args:
+        client (KeyVaultClient):  Azure Key Vault API client.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+
+    """
+    response = client.list_subscriptions_request()
+    outputs = copy.deepcopy(response.get('value', []))
+    readable_output = tableToMarkdown('Subscriptions List',
+                                      outputs,
+                                      ['subscriptionId', 'tenantId',
+                                       'state', 'displayName'
+                                       ],
+                                      removeNull=True, headerTransform=string_to_table_header)
+    return CommandResults(
+        outputs_prefix='AzureKeyVault.Subscription',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
 def test_module(client: KeyVaultClient) -> None:
     """
      Test instance parameters validity.
@@ -1316,7 +1354,8 @@ def main() -> None:
             'azure-key-vault-secret-delete': delete_secret_command,
             'azure-key-vault-certificate-get': get_certificate_command,
             'azure-key-vault-certificate-list': list_certificates_command,
-            'azure-key-vault-certificate-policy-get': get_certificate_policy_command
+            'azure-key-vault-certificate-policy-get': get_certificate_policy_command,
+            'azure-sql-subscriptions-list': list_subscriptions_command,
         }
 
         if command == 'test-module':
@@ -1329,13 +1368,14 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as error:
+        massage = ''
         if 'InvalidSubscriptionId' in str(error):
             massage = 'Invalid subscription ID. Please verify your subscription ID.'
         elif 'SubscriptionNotFound' in str(error):
             massage = 'The given subscription ID could not be found.'
         elif 'perform action' in str(error):
             massage = 'The client does not have Key Vault permissions to the given resource group name or the resource group name does not exist.'
-                         
+
         return_error(massage + "\n" + str(error))
 
 
