@@ -53,8 +53,9 @@ script:
   commands:
   - arguments:
     - name: prompt
+      description: The text that will be submitted to Google Vertex AI - PaLM for Chat
       required: true
-    description: Fine-tuned to conduct natural conversation
+    description: Send Text to Google Vertex Ai (PaLM for Chat) and receive a generative ai response
     name: google-vertex-PaLM-chat
   - arguments: []
     description: This command will generate the authentication url required to generate auth code
@@ -65,4 +66,3 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Google Vision AI
