@@ -12,14 +12,32 @@ configuration:
   name: auth_id
   required: true
   type: 4
+  hidden: true
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   required: true
   type: 4
+  hidden: true
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   required: false
   type: 4
+  hidden: true
+- displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
+  name: cred_auth_id
+  required: true
+  hiddenusername: true
+  type: 9
+- displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
+  name: cred_token
+  required: true
+  hiddenusername: true
+  type: 9
+- displaypassword:  Key (received from the admin consent - see Detailed Instructions (?)
+  name: cred_enc_key
+  required: true
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -666,7 +684,7 @@ script:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
       description: The address ID.
       type: String
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false
   longRunning: false
