@@ -3,11 +3,11 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 ### Raw syslog audit messages
-In order to configure FireEye HX to send syslog audit logs, refer to FireEye HX "Endpoint Security Server System Administration Guide" (**Configuring a Syslog Server Using the CLI**).
+In order to configure FireEye HX to send syslog audit logs, refer to FireEye HX [Endpoint Security Server System Administration Guide](https://docs.trellix.com/bundle/hx_sag_5-3-0_pdf/resource/HX_SAG_5.3.0_pdf.pdf) (**Configuring a Syslog Server Using the CLI**).
 Make sure to configure the syslog timestamp format to be RFC-3339 UTC.
 
 ### CEF format logs
-In order to configure FireEye HX to send CEF logs, refer to FireEye HX "Endpoint Security Server System Administration Guide".
+In order to configure FireEye HX to send CEF logs, refer to FireEye HX [Endpoint Security Server System Administration Guide](https://docs.trellix.com/bundle/hx_sag_5-3-0_pdf/resource/HX_SAG_5.3.0_pdf.pdf).
 
 For further assistant, contact the tech support of FireEye HX.
 

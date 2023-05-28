@@ -157,17 +157,20 @@ filter _raw_log contains "Action ID"
 | alter
        http_request_method = arrayindex(regextract(_raw_log, "descr: ([A-Z]{2,})\s/"),0),
        http_status = lowercase(arrayindex(regextract(_raw_log, "status: ([A-Za-z].+)$"),0)),
-       param = arrayindex(regextract(_raw_log, "param: (.+)$"),0),
        ip_address = arrayindex(regextract(_raw_log, "IP address: ([^\s,]+)"),0),
-       descr = arrayindex(regextract(_raw_log, "descr: (.+)$"),0)
+       log_level = lowercase(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
 // Mapping fields
 | alter
         xdm.event.type = "user actions",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s(\S+)"),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s([^\[]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[(\d+)\]"),0)),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level)),
         xdm.event.id = arrayindex(regextract(_raw_log, "Action ID (\d+)"),0),
         xdm.source.ipv4 = arrayindex(regextract(ip_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
         xdm.source.ipv6 = arrayindex(regextract(ip_address, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
         xdm.source.interface = arrayindex(regextract(_raw_log, "source interface name: ([^\s,]+)"),0),
-        xdm.event.description = concat(param, ", ", descr),
+        xdm.event.description = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
         xdm.network.session_id = arrayindex(regextract(_raw_log, "session ID (\d+)"),0),
         xdm.network.http.method = if(http_request_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_request_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_request_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_request_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_request_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_request_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_request_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_request_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_request_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_request_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_request_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_request_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_request_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_request_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_request_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_request_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_request_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_request_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_request_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_request_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, http_request_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_request_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, http_request_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_request_method = "POST", XDM_CONST.HTTP_METHOD_POST, http_request_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_request_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_request_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, http_request_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_request_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_request_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_request_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_request_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_request_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_request_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_request_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_request_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_request_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_request_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_request_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_request_method)),
         xdm.network.http.url = arrayindex(regextract(_raw_log, "descr: [A-Z]{2,}\s(/[\w/]+)"),0),
@@ -176,43 +179,68 @@ filter _raw_log contains "Action ID"
         xdm.target.domain = arrayindex(regextract(_raw_log, "domain name: ([^\s,]+)"),0);
 // Modeling for authentication audit logs
 filter _raw_log contains ": User log"
-| alter
-        eventtype = arrayindex(regextract(_raw_log, "AUDIT: ([A-Za-z\s]+):"),0)
 // Extracting fields
 | alter
-        xdm.event.type = eventtype,
+        eventtype = arrayindex(regextract(_raw_log, "AUDIT: ([A-Za-z\s]+):"),0),
         auth_userName = arrayindex(regextract(_raw_log, "username '([^']+)'"),0),
         auth_remote_address = arrayindex(regextract(_raw_log, "remote address '([^']+)'"),0),
         auth_auth_method = arrayindex(regextract(_raw_log, "auth method \'([^']+)\'"),0),
         auth_session_id = arrayindex(regextract(_raw_log, "session ID (\d+)"),0),
-        auth_role = arrayindex(regextract(_raw_log, "role \'([^']+)\'"),0)
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
 //Mapping fields
 | alter
+        xdm.event.type = eventtype,
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s(\S+)"),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s([^\[]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[(\d+)\]"),0)),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level)),
         xdm.auth.auth_method = auth_auth_method,
         xdm.source.user.username = auth_userName,
         xdm.source.ipv4 = arrayindex(regextract(auth_remote_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
         xdm.source.ipv6 = arrayindex(regextract(auth_remote_address, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
         xdm.network.session_id = auth_session_id,
-        xdm.event.description = auth_role;
+        xdm.event.description = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0);
 // Modeling for cli audit logs
 filter _raw_log contains "[cli.NOTICE]: AUDIT:"
+// Extracting fields
+| alter
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
 // Mapping fields
 | alter
         xdm.event.type = "cli audit",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s(\S+)"),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s([^\[]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[(\d+)\]"),0)),
+        xdm.event.description = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level)),
         xdm.source.user.username = arrayindex(regextract(_raw_log, "user ([^:]+):"),0),
         xdm.source.process.command_line = arrayindex(regextract(_raw_log, "command: (.*)$"),0);
 // Modeling for web session audit logs
 filter _raw_log contains "[wsmd.NOTICE]: AUDIT:"
+// Extracting fields
+| alter
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
 // Mapping fields
 | alter
         xdm.event.type = "web session",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s(\S+)"),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s([^\[]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[(\d+)\]"),0)),
         xdm.network.session_id = arrayindex(regextract(_raw_log, "Web session (\d+)"),0),
-        xdm.event.description = arrayindex(regextract(_raw_log, "\[wsmd.NOTICE\]: AUDIT: (.*)$"),0);
+        xdm.event.description = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level));
 // Modeling for change audit logs
 filter _raw_log contains "Config change ID"
+// Extracting fields
+| alter
+        log_level = lowercase(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.(\w+)\]:\s"),0))
 // Mapping fields
 | alter
         xdm.event.type = "changes",
+        xdm.observer.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s(\S+)"),0),
+        xdm.source.process.name = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s([^\[]+)\["),0),
+        xdm.source.process.pid = to_integer(arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[(\d+)\]"),0)),
         xdm.network.session_id = arrayindex(regextract(_raw_log, "session ID (\d+)"),0),
         xdm.source.user.username = arrayindex(regextract(_raw_log, "requested by: user ([^\s]+)"),0),
-        xdm.event.description = arrayindex(regextract(_raw_log, "item 1: (.*)$"),0);
+        xdm.event.description = arrayindex(regextract(_raw_log, "\d+:\d+:\d+\s\S+\s[^\[]+\[\d+\]:\s\[\w+\.\w+\]:\s(.*)$"),0),
+        xdm.event.log_level = if(log_level contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_level contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_level contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_level contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_level contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_level));
