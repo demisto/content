@@ -12,7 +12,7 @@ alter
     dvc_process_tuple = split(arrayindex(regextract(_raw_log, "<\d+>.+?\s+(\S+\s+\S+):\s+"),0)),
     //seq_num = arrayindex(regextract(_raw_log, "<\d+>.+?\s+\S+\s+\w+: (\d+): \S+: .+"), 0),
     facility_severity_mnemonic_tuple = split(arrayindex(regextract(_raw_log, "%(\S+\-\d\-\w+):"), 0), "-"),
-    message = arrayindex(regextract(_raw_log, "<\d+>.+ \S+ \w+: \S+: (.+)"), 0),  
+    message = arrayindex(regextract(_raw_log, "<\d+>.+ \S+ \S+: \S+: (.+)"), 0),  
 
     // extract alternative token for the facility in case it is not in the expected format of %FACILITY-Severity-Mnemonic:
     alternative_facility1 = arrayindex(regextract(_raw_log, "<\d+>.+? \S+ \w+: \d+: %{0,1}(\S+): .+"), 0), //if log includes sequence number 
@@ -377,8 +377,8 @@ call arista_switch_common_fields_modeling
     process2 =  arrayindex(regextract(message, "from \'(\S+)\'"), 0),  
     process3 =  arrayindex(regextract(message, "Restarting \'(\S+)\'"), 0),  
     process4 =  arrayindex(regextract(message, "\'(\S+)\' starting"), 0),  
-    process5 =  arrayindex(regextract(message, "\'(\S+)\' \(PID)"), 0),  
-    pid = to_integer(arrayindex(regextract(message, "[\s\()]PID=(\d+)"), 0)),
+    process5 =  arrayindex(regextract(message, "\'(\S+)\' \(PID"), 0),  
+    pid = to_integer(arrayindex(regextract(message, "[\s\(]PID=(\d+)"), 0)),
     ppid = to_integer(arrayindex(regextract(message, "PPID=(\d+)"), 0)),
     exe_path = arrayindex(regextract(message, "execing \'([^\']+)"), 0)
 | alter 
