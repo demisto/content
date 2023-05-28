@@ -156,11 +156,11 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
     events_result = []
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
-    skip = 0
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         et_events: list = []
         next_batch = True
         events = []
+        skip = 0
         while next_batch:
             if api_version == 'v1':
                 if event_type == 'alert':
