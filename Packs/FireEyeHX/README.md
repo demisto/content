@@ -9,7 +9,7 @@ Make sure to configure the syslog timestamp format to be RFC-3339 UTC.
 ### CEF format logs
 In order to configure FireEye HX to send cef logs, refer to FireEye HX "Endpoint Security Server System Administration Guide".
 
-For further assistant, reach the tech support of FireEye HX.
+For further assistant, contact the tech support of FireEye HX.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
