@@ -19,7 +19,7 @@ configuration:
 - additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   display: Endpoint Type
   name: endpoint_type
-  required: true
+  required: false
   type: 15
   section: Connect
   defaultvalue: Worldwide

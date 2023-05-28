@@ -9,7 +9,7 @@ configuration:
 - defaultvalue: Worldwide
   display: Azure Cloud
   name: azure_cloud
-  required: true
+  required: false
   type: 15
   options:
   - Worldwide
