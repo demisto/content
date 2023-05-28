@@ -415,8 +415,8 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
         """
         function for HTTP requests to validate authentication and Accept headers.
         """
-        accept_headers = remove_spaces_from_header(
-            [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21, MEDIA_TYPE_STIX_V20])
+        accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20,
+                          MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V21, MEDIA_TYPE_STIX_V21]
         credentials = request.authorization
 
         if SERVER.auth:
@@ -438,7 +438,7 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
         # to avoid issues the Accept header is stripped from the spaces before validation.
         accept_header = request_headers.get('Accept')
 
-        if remove_spaces_from_header(accept_header) not in accept_headers:
+        if remove_spaces_from_header(accept_header) not in remove_spaces_from_header(accept_headers):
             return handle_response(HTTP_406_NOT_ACCEPTABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
