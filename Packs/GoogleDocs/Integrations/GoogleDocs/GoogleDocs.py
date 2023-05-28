@@ -60,7 +60,7 @@ def get_http_client_with_proxy(disable_ssl):
     proxies = handle_proxy()
     if not proxies.get('https', True):
         raise Exception('https proxy value is empty. Check Demisto server configuration')
-    https_proxy = proxies['https']
+    https_proxy = proxies.get('https')
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
         https_proxy = f'https://{https_proxy}'
     parsed_proxy = urllib.parse.urlparse(https_proxy)
@@ -364,7 +364,7 @@ def main():
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     params = demisto.params()
-    proxy = params.get('proxy')
+    proxy = params.get('proxy', False)
     disable_ssl = params.get('insecure', False)
     service_account_credentials = json.loads(params.get('service_account_credentials'))
 
