@@ -53,6 +53,12 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
 
 
 def create_packs_json(content_dto: ContentDTO, packs_output: Path):
+    """Create packs.json file, to be used by contribution management project
+
+    Args:
+        content_dto (ContentDTO): Content Repository DTO
+        packs_output (Path): Output path for packs.json
+    """
     packs = content_dto.packs
     packs_json = {pack.object_id: json.loads(
         pack.json(include={"name", "description", "author", "current_version"}, by_alias=True)) for pack in packs}
