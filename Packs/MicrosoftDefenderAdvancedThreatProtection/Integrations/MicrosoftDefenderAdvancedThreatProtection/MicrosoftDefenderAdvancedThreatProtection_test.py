@@ -2640,7 +2640,7 @@ def test_create_filter(args_and_name_list, expected_result):
                           ("", "", "", "some_description", "", "", "", "contains(description, 'some_description')"),
                           ("", "some_name_equal", "", "", "", "", "", "name eq 'some_name_equal'"),
                           ("", "", "some_name_contains", "", "", "", "", "contains(name, 'some_name_contains')"),
-                          ("", "", "some_name", "", "", "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
+                          ("", "", "some_name", "", "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
                            "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and "
                            "(publishedOn ge 2020-12-16T00:00:00Z)")
                           ])
