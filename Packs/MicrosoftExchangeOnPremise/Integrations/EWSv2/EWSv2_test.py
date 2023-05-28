@@ -434,3 +434,30 @@ def test_get_items_from_mailbox(mocker, item_ids, should_throw_exception):
             get_items_from_mailbox(MockAccount(), item_ids=item_ids)
     else:
         assert get_items_from_mailbox(MockAccount(), item_ids=item_ids) == item_ids
+
+
+def test_categories_parse_item_as_dict():
+    """
+    Given -
+        a Message with categories.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the categories were parsed correctly.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+                      categories=['Purple category', 'Orange category']
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert return_value.get("categories") == ['Purple category', 'Orange category']
