@@ -3473,6 +3473,18 @@ def prettify_rule(rule: dict):
         pretty_rule['Tags'] = rule['tag']['member']
     if isinstance(rule.get('log-setting'), dict) and '#text' in rule['log-setting']:
         pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
+        
+    if isinstance(rule.get('source-user'), dict) and 'member' in rule['source-user']:
+        pretty_rule['Source Users'] = rule['source-user']['member']
+    if isinstance(rule.get('hip-profiles'), dict) and 'member' in rule['hip-profiles']:
+        pretty_rule['HIP Profiles'] = rule['hip-profiles']['member']
+    if isinstance(rule.get('action'), dict) and 'member' in rule['action']:
+        pretty_rule['Actions'] = rule['action']['member']
+    if isinstance(rule.get('description'), dict) and 'member' in rule['description']:
+        pretty_rule['Descriptions'] = rule['description']['member']
+    if isinstance(rule.get('profile-setting'), dict) and 'member' in rule['profile-setting']:
+        pretty_rule['Profile Settings'] = rule['profile-setting']['member']
+            
     if disabled := rule.get('disabled'):
         pretty_rule['Disabled'] = disabled
 
@@ -3524,7 +3536,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
         params["xpath"] = f'{params["xpath"]}[{query.replace(" eq ", " = ")}]'
     elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
-
+    
     result = http_request(
         URL,
         'GET',
@@ -11578,7 +11590,6 @@ def get_topology() -> Topology:
     port = arg_to_number(arg=params.get('port', '443'))
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
-    params = demisto.params()
     api_key = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
 
     return Topology.build_from_string(
