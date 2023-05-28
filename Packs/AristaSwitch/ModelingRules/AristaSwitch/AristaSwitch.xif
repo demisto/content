@@ -240,7 +240,7 @@ call arista_switch_common_fields_modeling
     xdm.event.is_completed = if(new_state = "ESTABLISHED", true, new_state != null, false, null),
     xdm.event.outcome = if(new_state in("UP", "ESTABLISHED"), XDM_CONST.OUTCOME_SUCCESS, new_state in("DOWN", "ACTIVE"), XDM_CONST.OUTCOME_FAILED, new_state in("IDLE", "CONNECT", "OPENSENT", "OPENCONFIRM"), XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = trigger_event, 
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);v
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
 
 
 /*** ETH Events 
