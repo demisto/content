@@ -65,7 +65,7 @@ script:
     description: Gets events from NetBox.
     execution: false
     name: netbox-get-events
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.11.59070
   isfetchevents: true
   runonce: false
   script: '-'
