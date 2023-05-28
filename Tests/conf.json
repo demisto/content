@@ -5425,6 +5425,13 @@
         {
           "integrations":  "Cylance Protect v2",
           "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+        },
+        {
+            "integrations": [
+                "LOLBAS Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "FeedLOLBas_test"
         }
     ],
     "skipped_tests": {
