@@ -198,7 +198,6 @@ class TestFetchEventsEdgeCases:
         assert str(MAX_ALERTS_PAGE_SIZE) == requests_mock.request_history[0].qs['$top'][0]
 
     def test_test_module_failed(self, mocker):
-
         """
         Given - Authentication error occured
         When - run the test_module command
