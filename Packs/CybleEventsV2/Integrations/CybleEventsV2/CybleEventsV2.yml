@@ -44,6 +44,14 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum
+    of 7 days for retroactive value is allowed.
+  defaultvalue: '1'
+  display: First fetch time (by days)
+  hidden: false
+  name: first_fetch_timestamp
+  required: false
+  type: 0
 description: Cyble Events for Vision Users. Must have Vision API access to use the
   threat intelligence.
 display: CybleEvents v2

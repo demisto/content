@@ -15,6 +15,7 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
     | Use system proxy settings |  | False |
     | Incidents Fetch Interval |  | False |
     | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | False |
+    |First fetch time| Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed| Truw
 
 4. Click **Test** to validate the URLs, token, and connection.
 

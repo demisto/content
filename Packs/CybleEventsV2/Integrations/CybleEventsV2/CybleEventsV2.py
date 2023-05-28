@@ -1,3 +1,4 @@
+import demistomock
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -356,7 +357,9 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
     else:
 
         if 'event_pull_start_date' not in last_run.keys():
-            last_run['event_pull_start_date'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
+            initial_interval = demisto.params().get('first_fetch_timestamp', 1)
+            event_pull_start_date = datetime.utcnow() - timedelta(days=initial_interval)
+            last_run['event_pull_start_date'] = event_pull_start_date.astimezone().replace(microsecond=0).isoformat()
 
         # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
         max_results = arg_to_number(demisto.params().get('max_fetch', 0))
