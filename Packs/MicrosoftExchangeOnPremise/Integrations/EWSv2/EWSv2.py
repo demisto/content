@@ -1087,6 +1087,11 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         if value:
             raw_dict[list_dict_field] = map(lambda x: parse_object_as_dict(x), value)
 
+    for list_str_field in ["categories"]:
+        value = getattr(item, list_str_field, None)
+        if value:
+            raw_dict[list_str_field] = value
+
     if getattr(item, 'folder', None):
         raw_dict['folder'] = parse_folder_as_json(item.folder)
         folder_path = item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(
