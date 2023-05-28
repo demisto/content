@@ -138,7 +138,7 @@ class TAXII2Server:
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
         self.version = version
-        if not (version == TAXII_VER_2_0 or version == TAXII_VER_2_1):
+        if version not in [TAXII_VER_2_0, TAXII_VER_2_1]:
             raise Exception(f'Wrong TAXII 2 Server version: {version}. '
                             f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
         self._collections_resource: list = []
@@ -438,7 +438,7 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
         # to avoid issues the Accept header is stripped from the spaces before validation.
         accept_header = request_headers.get('Accept')
 
-        if remove_spaces_from_header(accept_header) not in remove_spaces_from_header(accept_headers):
+        if (not accept_header) or (remove_spaces_from_header(accept_header) not in remove_spaces_from_header(accept_headers)):
             return handle_response(HTTP_406_NOT_ACCEPTABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
