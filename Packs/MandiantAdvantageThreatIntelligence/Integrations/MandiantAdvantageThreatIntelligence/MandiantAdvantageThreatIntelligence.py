@@ -1043,6 +1043,7 @@ def get_new_indicators(
             "limit": limit,
             "gte_mscore": minimum_mscore,
             "exclude_osint": exclude_osint,
+            "last_updated": "asc"
         }  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
@@ -1142,8 +1143,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> Tuple[List, D
 
         last_run_dict[indicator_type + "List"] = indicators[limit:]
         if indicators_list:
-            date_key = "last_seen" if indicator_type == "Indicators" else "last_updated"
-            last_run_dict[indicator_type + "LastFetch"] = indicators_list[-1][date_key]
+            last_run_dict[indicator_type + "LastFetch"] = indicators_list[-1]["last_updated"]
 
     return (result, last_run_dict)
 

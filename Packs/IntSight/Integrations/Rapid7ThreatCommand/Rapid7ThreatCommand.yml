@@ -2231,13 +2231,13 @@ script:
       required: false
       defaultValue: '600'
     outputs:
-    - contextPath: File.md5
+    - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-    - contextPath: File.sha1
+    - contextPath: File.SHA1
       description: The SHA1 hash of the file.
       type: String
-    - contextPath: File.sha256
+    - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
     - contextPath: File.sha512
@@ -2444,6 +2444,9 @@ script:
     - contextPath: Domain.domain
       description: Domain found.
       type: String
+    - contextPath: Domain.Name
+      description: The name of the domain that was checked.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -2477,7 +2480,7 @@ script:
     description: Checks the reputation of a domain.
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false
