@@ -4,6 +4,7 @@ alter
     xdm.event.description = EventName,
     xdm.source.user.username = Author,
     xdm.target.resource.name = AffectedItem,
+    xdm.target.resource.name = AffectedItem,
     Entities = json_extract_array(EventDetails,"$.")
 | alter
     OldValue = arraymap(Entities, json_extract_scalar("@element", "$.OldValue")),
