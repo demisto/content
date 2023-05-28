@@ -14,7 +14,7 @@ Follow these steps to configure forwarding of event logs from an Arista switch t
 2. Type "**enable**" (or "**en**") to enter the _Privileged EXEC_ command mode, followed by the password if prompted. 
 3. Type **configure** (or **config**) to enter the _Global Configuration_ command mode. 
 4. Type "**logging host** **_\<IP\>_** **_\<Port\>_**" where _\<IP\>_ and _\<Port\>_ are the corresponding IP address and port of the [XSIAM Syslog Broker VM](#broker-vm). 
-5. Type "**write**" (or "**running-config startup-config**" to commit the updated configuration settings to the _start-up configuration_ file. 
+5. Type **write** (or **running-config startup-config** to commit the updated configuration settings to the _start-up configuration_ file. 
 6. Type "**exit**" to exit the _Global Configuration_ command mode and return back to the _Privileged EXEC_ command mode. 
 7. Type "**exit**" again to terminate the session. 
 
