@@ -607,7 +607,6 @@ def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
 
     params = demisto.params()
-    params.get('creds_api_key', {}).get('password') or params.get('apiKey')
     url = params.get("url")
     namespace = params.get("namespace")
     apikey = params.get("login", {}).get("password")

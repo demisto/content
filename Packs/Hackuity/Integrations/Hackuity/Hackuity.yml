@@ -16,7 +16,7 @@ configuration:
 - defaultvalue: ""
   display: Login
   name: login
-  required: false
+  required: true
   hiddenusername: true
   displaypassword: "Api key"
   type: 9
