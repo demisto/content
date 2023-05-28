@@ -257,8 +257,8 @@ class Build(ABC):
                 tests_to_run.append(test_clean)
 
         logging.info(f"pack ids to install before filtering : {tests_to_run}")
-
-        if self.is_nightly:
+        # TODO change after check
+        if True or self.is_nightly:
             # check which packs we want to install
             # check if the pack version we want to install is in production bucket
             # if not, write to log and add warning, do not fail the nightly build
