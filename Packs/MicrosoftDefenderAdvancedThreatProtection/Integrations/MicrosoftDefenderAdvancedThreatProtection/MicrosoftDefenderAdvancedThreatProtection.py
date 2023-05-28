@@ -2783,26 +2783,26 @@ def get_file_data(file_response):
     Returns:
         dict. File's info
     """
-    file_data = assign_params(**{
-        'Sha1': file_response.get('sha1'),
-        'Size': file_response.get('size'),
-        'Sha256': file_response.get('sha256'),
-        'Md5': file_response.get('md5'),
-        'GlobalPrevalence': file_response.get('globalPrevalence'),
-        'GlobalFirstObserved': file_response.get('globalFirstObserved'),
-        'GlobalLastObserved': file_response.get('globalLastObserved'),
-        'SizeInBytes': file_response.get('size'),
-        'FileType': file_response.get('fileType'),
-        'IsPeFile': file_response.get('isPeFile'),
-        'FilePublisher': file_response.get('filePublisher'),
-        'FileProductName': file_response.get('fileProductName'),
-        'Signer': file_response.get('signer'),
-        'Issuer': file_response.get('issuer'),
-        'SignerHash': file_response.get('signerHash'),
-        'IsValidCertificate': file_response.get('isValidCertificate'),
-        'DeterminationType': file_response.get('determinationType'),
-        'DeterminationValue': file_response.get('determinationValue')
-    })
+    file_data = assign_params(
+        Sha1=file_response.get('sha1'),
+        Size=file_response.get('size'),
+        Sha256=file_response.get('sha256'),
+        Md5=file_response.get('md5'),
+        GlobalPrevalence=file_response.get('globalPrevalence'),
+        GlobalFirstObserved=file_response.get('globalFirstObserved'),
+        GlobalLastObserved=file_response.get('globalLastObserved'),
+        SizeInBytes=file_response.get('size'),
+        FileType=file_response.get('fileType'),
+        IsPeFile=file_response.get('isPeFile'),
+        FilePublisher=file_response.get('filePublisher'),
+        FileProductName=file_response.get('fileProductName'),
+        Signer=file_response.get('signer'),
+        Issuer=file_response.get('issuer'),
+        SignerHash=file_response.get('signerHash'),
+        IsValidCertificate=file_response.get('isValidCertificate'),
+        DeterminationType=file_response.get('determinationType'),
+        DeterminationValue=file_response.get('determinationValue'),
+    )
     return file_data
 
 
@@ -3192,12 +3192,12 @@ def get_domain_statistics_context(domain_stat_response):
     Returns:
         (dict). domain statistics context
     """
-    domain_statistics = assign_params(**{
-        "Host": domain_stat_response.get('host'),
-        "OrgPrevalence": domain_stat_response.get('orgPrevalence'),
-        "OrgFirstSeen": domain_stat_response.get('orgFirstSeen'),
-        "OrgLastSeen": domain_stat_response.get('orgLastSeen')
-    })
+    domain_statistics = assign_params(
+        Host=domain_stat_response.get('host'),
+        OrgPrevalence=domain_stat_response.get('orgPrevalence'),
+        OrgFirstSeen=domain_stat_response.get('orgFirstSeen'),
+        OrgLastSeen=domain_stat_response.get('orgLastSeen'),
+    )
     return domain_statistics
 
 
@@ -3300,28 +3300,28 @@ def get_machine_data(machine):
     Returns:
         dict. Machine's info
     """
-    machine_data = assign_params(**{
-        'ID': machine.get('id'),
-        'ComputerDNSName': machine.get('computerDnsName'),
-        'FirstSeen': machine.get('firstSeen'),
-        'LastSeen': machine.get('lastSeen'),
-        'OSPlatform': machine.get('osPlatform'),
-        'OSVersion': machine.get('version'),
-        'OSProcessor': machine.get('osProcessor'),
-        'LastIPAddress': machine.get('lastIpAddress'),
-        'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
-        'AgentVersion': machine.get('agentVersion'),
-        'OSBuild': machine.get('osBuild'),
-        'HealthStatus': machine.get('healthStatus'),
-        'RBACGroupID': machine.get('rbacGroupId'),
-        'RBACGroupName': machine.get('rbacGroupName'),
-        'RiskScore': machine.get('riskScore'),
-        'ExposureLevel': machine.get('exposureLevel'),
-        'AADDeviceID': machine.get('aadDeviceId'),
-        'IsAADJoined': machine.get('isAadJoined'),
-        'MachineTags': machine.get('machineTags'),
-        'IPAddresses': machine.get('ipAddresses'),
-    })
+    machine_data = assign_params(
+        ID=machine.get('id'),
+        ComputerDNSName=machine.get('computerDnsName'),
+        FirstSeen=machine.get('firstSeen'),
+        LastSeen=machine.get('lastSeen'),
+        OSPlatform=machine.get('osPlatform'),
+        OSVersion=machine.get('version'),
+        OSProcessor=machine.get('osProcessor'),
+        LastIPAddress=machine.get('lastIpAddress'),
+        LastExternalIPAddress=machine.get('lastExternalIpAddress'),
+        AgentVersion=machine.get('agentVersion'),
+        OSBuild=machine.get('osBuild'),
+        HealthStatus=machine.get('healthStatus'),
+        RBACGroupID=machine.get('rbacGroupId'),
+        RBACGroupName=machine.get('rbacGroupName'),
+        RiskScore=machine.get('riskScore'),
+        ExposureLevel=machine.get('exposureLevel'),
+        AADDeviceID=machine.get('aadDeviceId'),
+        IsAADJoined=machine.get('isAadJoined'),
+        MachineTags=machine.get('machineTags'),
+        IPAddresses=machine.get('ipAddresses'),
+    )
     return machine_data
 
 
@@ -3351,15 +3351,15 @@ def get_file_statistics_context(file_stat_response):
     Returns:
         (dict). File statistics context
     """
-    file_stat = assign_params(**{
-        "OrgPrevalence": file_stat_response.get('orgPrevalence'),
-        "OrgFirstSeen": file_stat_response.get('orgFirstSeen'),
-        "OrgLastSeen": file_stat_response.get('orgLastSeen'),
-        "GlobalPrevalence": file_stat_response.get('globalPrevalence'),
-        "GlobalFirstObserved": file_stat_response.get('globalFirstObserved'),
-        "GlobalLastObserved": file_stat_response.get('globalLastObserved'),
-        "TopFileNames": file_stat_response.get('topFileNames')
-    })
+    file_stat = assign_params(
+        OrgPrevalence=file_stat_response.get('orgPrevalence'),
+        OrgFirstSeen=file_stat_response.get('orgFirstSeen'),
+        OrgLastSeen=file_stat_response.get('orgLastSeen'),
+        GlobalPrevalence=file_stat_response.get('globalPrevalence'),
+        GlobalFirstObserved=file_stat_response.get('globalFirstObserved'),
+        GlobalLastObserved=file_stat_response.get('globalLastObserved'),
+        TopFileNames=file_stat_response.get('topFileNames'),
+    )
     return file_stat
 
 
@@ -3411,11 +3411,11 @@ def get_ip_statistics_context(ip_statistics_response):
     Returns:
         (dict). IP statistics context
     """
-    ip_statistics = assign_params(**{
-        "OrgPrevalence": ip_statistics_response.get('orgPrevalence'),
-        "OrgFirstSeen": ip_statistics_response.get('orgFirstSeen'),
-        "OrgLastSeen": ip_statistics_response.get('orgLastSeen')
-    })
+    ip_statistics = assign_params(
+        OrgPrevalence=ip_statistics_response.get('orgPrevalence'),
+        OrgFirstSeen=ip_statistics_response.get('orgFirstSeen'),
+        OrgLastSeen=ip_statistics_response.get('orgLastSeen')
+    )
     return ip_statistics
 
 
@@ -5491,6 +5491,7 @@ def main():  # pragma: no cover
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             token_retrieval_url=token_retrieval_url,
             grant_type=grant_type,
+            endpoint_type=endpoint_type,
             auth_code=auth_code, redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id
         )

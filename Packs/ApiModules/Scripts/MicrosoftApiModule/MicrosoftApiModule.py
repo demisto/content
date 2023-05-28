@@ -1,6 +1,5 @@
 # pylint: disable=E9010, E9011
 import traceback
-from abc import ABC
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -505,17 +504,23 @@ def create_custom_azure_cloud(origin: str,
             batch_resource_id=endpoints.get('batch_resource_id', defaults.endpoints.batch_resource_id),
             gallery=endpoints.get('gallery', defaults.endpoints.gallery),
             active_directory=endpoints.get('active_directory', defaults.endpoints.active_directory),
-            active_directory_resource_id=endpoints.get('active_directory_resource_id', defaults.endpoints.active_directory_resource_id),
-            active_directory_graph_resource_id=endpoints.get('active_directory_graph_resource_id', defaults.endpoints.active_directory_graph_resource_id),
-            microsoft_graph_resource_id=endpoints.get('microsoft_graph_resource_id', defaults.endpoints.microsoft_graph_resource_id),
-            active_directory_data_lake_resource_id=endpoints.get('active_directory_data_lake_resource_id', defaults.endpoints.active_directory_data_lake_resource_id),
+            active_directory_resource_id=endpoints.get('active_directory_resource_id',
+                                                       defaults.endpoints.active_directory_resource_id),
+            active_directory_graph_resource_id=endpoints.get(
+                'active_directory_graph_resource_id', defaults.endpoints.active_directory_graph_resource_id),
+            microsoft_graph_resource_id=endpoints.get('microsoft_graph_resource_id',
+                                                      defaults.endpoints.microsoft_graph_resource_id),
+            active_directory_data_lake_resource_id=endpoints.get(
+                'active_directory_data_lake_resource_id', defaults.endpoints.active_directory_data_lake_resource_id),
             vm_image_alias_doc=endpoints.get('vm_image_alias_doc', defaults.endpoints.vm_image_alias_doc),
             media_resource_id=endpoints.get('media_resource_id', defaults.endpoints.media_resource_id),
             ossrdbms_resource_id=endpoints.get('ossrdbms_resource_id', defaults.endpoints.ossrdbms_resource_id),
             app_insights_resource_id=endpoints.get('app_insights_resource_id', defaults.endpoints.app_insights_resource_id),
             log_analytics_resource_id=endpoints.get('log_analytics_resource_id', defaults.endpoints.log_analytics_resource_id),
-            app_insights_telemetry_channel_resource_id=endpoints.get('app_insights_telemetry_channel_resource_id', defaults.endpoints.app_insights_telemetry_channel_resource_id),
-            synapse_analytics_resource_id=endpoints.get('synapse_analytics_resource_id', defaults.endpoints.synapse_analytics_resource_id),
+            app_insights_telemetry_channel_resource_id=endpoints.get(
+                'app_insights_telemetry_channel_resource_id', defaults.endpoints.app_insights_telemetry_channel_resource_id),
+            synapse_analytics_resource_id=endpoints.get(
+                'synapse_analytics_resource_id', defaults.endpoints.synapse_analytics_resource_id),
             attestation_resource_id=endpoints.get('attestation_resource_id', defaults.endpoints.attestation_resource_id),
             portal=endpoints.get('portal', defaults.endpoints.portal),
             keyvault=endpoints.get('keyvault', defaults.endpoints.keyvault),
@@ -529,8 +534,10 @@ def create_custom_azure_cloud(origin: str,
             mysql_server_endpoint=suffixes.get('mysql_server_endpoint', defaults.suffixes.mysql_server_endpoint),
             postgresql_server_endpoint=suffixes.get('postgresql_server_endpoint', defaults.suffixes.postgresql_server_endpoint),
             mariadb_server_endpoint=suffixes.get('mariadb_server_endpoint', defaults.suffixes.mariadb_server_endpoint),
-            azure_datalake_store_file_system_endpoint=suffixes.get('azure_datalake_store_file_system_endpoint', defaults.suffixes.azure_datalake_store_file_system_endpoint),
-            azure_datalake_analytics_catalog_and_job_endpoint=suffixes.get('azure_datalake_analytics_catalog_and_job_endpoint', defaults.suffixes.azure_datalake_analytics_catalog_and_job_endpoint),
+            azure_datalake_store_file_system_endpoint=suffixes.get(
+                'azure_datalake_store_file_system_endpoint', defaults.suffixes.azure_datalake_store_file_system_endpoint),
+            azure_datalake_analytics_catalog_and_job_endpoint=suffixes.get(
+                'azure_datalake_analytics_catalog_and_job_endpoint', defaults.suffixes.azure_datalake_analytics_catalog_and_job_endpoint),
             acr_login_server_endpoint=suffixes.get('acr_login_server_endpoint', defaults.suffixes.acr_login_server_endpoint),
             synapse_analytics_endpoint=suffixes.get('synapse_analytics_endpoint', defaults.suffixes.synapse_analytics_endpoint),
             attestation_endpoint=suffixes.get('attestation_endpoint', defaults.suffixes.attestation_endpoint),
@@ -616,7 +623,7 @@ class MicrosoftClient(BaseClient):
             self.azure_cloud = azure_cloud
         # base_url = base_url or self.azure_cloud.endpoints.resource_manager
 
-        super().__init__(verify=verify, base_url=base_url, *args, **kwargs)  # type: ignore[misc]
+        super().__init__(*args, verify=verify, base_url=base_url, **kwargs)  # type: ignore[misc]
 
         self.retry_on_rate_limit = retry_on_rate_limit
         if retry_on_rate_limit and (429 not in self._ok_codes):
@@ -644,8 +651,7 @@ class MicrosoftClient(BaseClient):
             self.auth_code = auth_code
             self.grant_type = grant_type
             self.resource = resource
-            self.scope = scope.format(graph_endpoint=
-                                      url_trim_end_slash(self.azure_cloud.endpoints.microsoft_graph_resource_id))
+            self.scope = scope.format(graph_endpoint=url_trim_end_slash(self.azure_cloud.endpoints.microsoft_graph_resource_id))
             self.redirect_uri = redirect_uri
             if certificate_thumbprint and private_key:
                 try:
@@ -663,8 +669,8 @@ class MicrosoftClient(BaseClient):
         self.tenant_id = tenant_id
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
-        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=
-                                                          url_trim_end_slash(self.azure_cloud.endpoints.active_directory))
+        self.azure_ad_endpoint = azure_ad_endpoint.format(
+            endpoint=url_trim_end_slash(self.azure_cloud.endpoints.active_directory))
         self.timeout = timeout  # type: ignore
 
         self.multi_resource = multi_resource
@@ -1362,9 +1368,9 @@ def generate_login_url(client: MicrosoftClient,
         raise DemistoException("Please make sure you entered the Authorization configuration correctly. "
                                f"Missing:{','.join(missing)}")
 
-    login_url = f'{login_url}{client.tenant_id}/oauth2/v2.0/authorize?' \
-                f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}' \
-                f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
+    login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
+                                   f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
+                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.

@@ -179,7 +179,7 @@ class IntegrationGetEvents(ABC):
     @abstractmethod
     def _iter_events(self):
         """Create iterators with Yield"""
-        pass
+        raise NotImplementedError
 
 
 # END COPY OF SiemApiModule

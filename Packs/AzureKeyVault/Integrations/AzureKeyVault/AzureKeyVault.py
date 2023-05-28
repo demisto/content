@@ -10,8 +10,6 @@ from MicrosoftApiModule import *  # noqa: E402
 APP_NAME = 'azure-key-vault'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 AUTHORIZATION_CODE = 'authorization_code'
-#MANAGEMENT_RESOURCE = 'https://management.azure.com'
-#VAULT_RESOURCE = 'https://vault.azure.net'
 VAULT_NAME_CONTEXT_FIELD = 'key_vault_name'
 
 DEFAULT_LIMIT = 50
@@ -35,13 +33,13 @@ class KeyVaultClient:
             enc_key=client_secret,
             token_retrieval_url=urljoin(self.azure_cloud.endpoints.active_directory, f'/{tenant_id}/oauth2/token'),
             app_name=APP_NAME,
-            base_url=urljoin(self.azure_cloud.endpoints.management,
+            base_url=urljoin(self.azure_cloud.endpoints.resource_manager,
                              f'/subscriptions/{subscription_id}/resourceGroups/'
                              f'{resource_group_name}/providers/Microsoft.KeyVault'),
             verify=verify,
             proxy=proxy,
             multi_resource=True,
-            resources=[self.get_management_resource(), self.get_management_resource()],
+            resources=[self.get_management_resource(), self.get_vault_resource()],
             resource='',
             scope='',
             tenant_id=tenant_id,
@@ -65,11 +63,11 @@ class KeyVaultClient:
         Wrapper to MicrosoftClient http_request method.
 
         """
-        resource = resource or self.get_vault_resource()
+        resource = resource or self.get_management_resource()
         if not params:
             params = {}
 
-        params['api-version'] = '2019-09-01' if resource == self.get_vault_resource() else '7.2'
+        params['api-version'] = '2019-09-01' if resource == self.get_management_resource() else '7.2'
         res = self.ms_client.http_request(method=method,
                                           url_suffix=url_suffix,
                                           full_url=full_url,
@@ -305,7 +303,7 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = f'https://{vault_name}.{self.azure_cloud.suffixes.keyvault_dns}/secrets'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/secrets'
         response = self.http_request(
             'GET', full_url=url, resource=self.get_vault_resource())
 
@@ -449,7 +447,6 @@ class KeyVaultClient:
                                 enabled_for_disk_encryption: bool,
                                 enabled_for_template_deployment: bool, sku_name: str,
                                 permissions: Dict[str, Any], network_acls: Dict[str, Any]):
-
         """
         Configure the properties of a vault on create or update command.
 

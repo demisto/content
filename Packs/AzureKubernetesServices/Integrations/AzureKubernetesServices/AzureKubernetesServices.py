@@ -13,20 +13,22 @@ API_VERSION = '2021-09-01'
 
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
-                 azure_cloud: Optional[AzureCloud] = AZURE_WORLDWIDE_CLOUD,
                  tenant_id: str = None,
                  enc_key: str = None, auth_type: str = 'Device Code', redirect_uri: str = None, auth_code: str = None,
-                 managed_identities_client_id: str = None):
+                 managed_identities_client_id: str = None,
+                 azure_cloud: Optional[AzureCloud] = None,
+                 ):
+        azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
         auth_types_dict: dict[str, Any] = {
             'Authorization Code': {
                 'grant_type': AUTHORIZATION_CODE,
                 'resource': None,
-                'scope': f'{azure_cloud.endpoints.resource_manager}.default',
+                'scope': urljoin(azure_cloud.endpoints.resource_manager, '.default'),
             },
             'Device Code': {
                 'grant_type': DEVICE_CODE,
                 'resource': azure_cloud.endpoints.management,
-                'scope': f'{azure_cloud.endpoints.resource_manager}user_impersonation offline_access user.read'
+                'scope': urljoin(azure_cloud.endpoints.resource_manager, 'user_impersonation offline_access user.read'),
             }
         }
 
@@ -39,9 +41,9 @@ class AKSClient:
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url=f'{azure_cloud.endpoints.active_directory}organizations/oauth2/v2.0/token',
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, 'organizations/oauth2/v2.0/token'),
             grant_type=auth_types_dict.get(auth_type, {}).get('grant_type'),
-            base_url=f'{azure_cloud.endpoints.resource_manager}subscriptions/{subscription_id}',
+            base_url=urljoin(azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}'),
             verify=verify,
             proxy=proxy,
             resource=auth_types_dict.get(auth_type, {}).get('resource'),
