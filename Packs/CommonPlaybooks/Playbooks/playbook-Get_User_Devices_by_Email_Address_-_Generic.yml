@@ -1,0 +1,2197 @@
+id: Get User Devices by Email Address - Generic
+version: -1
+name: Get User Devices by Email Address - Generic
+description: |-
+  This playbook retrieves information on all of the associated user devices, based on the user email.
+  In order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:
+  - Name
+  - Serial Number
+  - ID
+  - Model
+  - MAC Address
+  - OS
+  - Integration
+
+  Note that not all of the supported integrations will be able to retrieve this information.
+
+  Supported integrations:
+  - jamf v2
+  - Google Workspace (Gsuite)
+  - ServiceNow v2
+  - Active Directory Query v2
+  - Microsoft Graph API (In order to get devices details, provide the permissions as mentioned here: https://learn.microsoft.com/en-us/graph/api/user-list-owneddevices?view=graph-rest-1.0&tabs=http )
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: af53b702-bed1-4168-8bf7-b595e9a88ebf
+    type: start
+    task:
+      id: af53b702-bed1-4168-8bf7-b595e9a88ebf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b39dc8a4-1b7b-4cb9-8f38-2eead03f9fa1
+    type: condition
+    task:
+      id: b39dc8a4-1b7b-4cb9-8f38-2eead03f9fa1
+      version: -1
+      name: UserEmail exists?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "2"
+      - "8"
+      - "15"
+      - "24"
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.UserEmail
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 544397f7-475e-4a00-84dd-3ab24d8e4ca3
+    type: title
+    task:
+      id: 544397f7-475e-4a00-84dd-3ab24d8e4ca3
+      version: -1
+      name: Google Workspace (Gsuite)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2d755788-43a2-4676-8ae3-143261e765f6
+    type: regular
+    task:
+      id: 2d755788-43a2-4676-8ae3-143261e765f6
+      version: -1
+      name: Google Workspace - Get device details
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: '|||gsuite-mobiledevice-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      customer_id:
+        complex:
+          root: inputs.GsuiteCustomerID
+      query:
+        simple: email:${inputs.UserEmail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a50ab795-1aa7-4e4f-8aa2-f4742985f47e
+    type: condition
+    task:
+      id: a50ab795-1aa7-4e4f-8aa2-f4742985f47e
+      version: -1
+      name: Customer ID exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.GsuiteCustomerID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 37e9ddaf-5126-4655-8379-bea5b950e24a
+    type: condition
+    task:
+      id: 37e9ddaf-5126-4655-8379-bea5b950e24a
+      version: -1
+      name: GSuiteAdmin enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: GSuiteAdmin
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6f4cf496-6f9c-4136-8cde-165da884b795
+    type: title
+    task:
+      id: 6f4cf496-6f9c-4136-8cde-165da884b795
+      version: -1
+      name: Done - Jamf
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4542cda1-c64f-400b-8fca-a1800a9b3bdb
+    type: title
+    task:
+      id: 4542cda1-c64f-400b-8fca-a1800a9b3bdb
+      version: -1
+      name: Jamf
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1ebadc42-526d-4d3d-8c4a-f436142037d3
+    type: regular
+    task:
+      id: 1ebadc42-526d-4d3d-8c4a-f436142037d3
+      version: -1
+      name: Jamf Pro - Get computer details
+      description: Matches computers by specific characteristics and returns general data on each of the computers.
+      script: jamf v2|||jamf-get-computer-by-match
+      type: regular
+      iscommand: true
+      brand: jamf v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      match:
+        complex:
+          root: inputs.UserEmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4ce06688-5049-4290-871b-1407d8dd7444
+    type: condition
+    task:
+      id: 4ce06688-5049-4290-871b-1407d8dd7444
+      version: -1
+      name: jamf v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "9"
+      - "11"
+    scriptarguments:
+      brandname:
+        simple: jamf v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 503fdfc8-c837-4070-8e40-57fa280c0d0a
+    type: regular
+    task:
+      id: 503fdfc8-c837-4070-8e40-57fa280c0d0a
+      version: -1
+      name: Jamf Pro - Get mobile device details
+      description: Matches mobile devices by specific characteristics and returns general data on each one of the mobile devices.
+      script: '|||jamf-get-mobile-device-by-match'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      match:
+        complex:
+          root: inputs.UserEmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ccdd5243-0807-4790-82a8-4cdd640c292a
+    type: title
+    task:
+      id: ccdd5243-0807-4790-82a8-4cdd640c292a
+      version: -1
+      name: Done - GSuite
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ea16bf47-d31a-45d5-83a7-704f585cf793
+    type: title
+    task:
+      id: ea16bf47-d31a-45d5-83a7-704f585cf793
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2220,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0e57178d-04ec-4385-8a3a-1f862a63e55d
+    type: title
+    task:
+      id: 0e57178d-04ec-4385-8a3a-1f862a63e55d
+      version: -1
+      name: ServiceNow CMDB
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: cc138021-9029-463e-8771-2d84742a4ef9
+    type: condition
+    task:
+      id: cc138021-9029-463e-8771-2d84742a4ef9
+      version: -1
+      name: ServiceNow v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "17"
+    scriptarguments:
+      brandname:
+        simple: ServiceNow v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3682177f-81cc-43db-8688-9e811de26291
+    type: regular
+    task:
+      id: 3682177f-81cc-43db-8688-9e811de26291
+      version: -1
+      name: Get user ID by email
+      description: Queries the sys_user table in ServiceNow.
+      script: ServiceNow v2|||servicenow-query-users
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      query:
+        simple: email=${inputs.UserEmail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 02252af0-eba9-4d5c-898e-a53827672bed
+    type: condition
+    task:
+      id: 02252af0-eba9-4d5c-898e-a53827672bed
+      version: -1
+      name: User found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.User
+                accessor: ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 5fff1e7b-4ea4-4af8-8be0-ab0618869037
+    type: regular
+    task:
+      id: 5fff1e7b-4ea4-4af8-8be0-ab0618869037
+      version: -1
+      name: Get computer details by UserID
+      description: Queries the cmdb_ci_computer table in ServiceNow.
+      script: ServiceNow v2|||servicenow-query-computers
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      query:
+        simple: assigned_to=${ServiceNow.User.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2a2fcf71-a92c-4875-8dd7-f458b06dec5a
+    type: title
+    task:
+      id: 2a2fcf71-a92c-4875-8dd7-f458b06dec5a
+      version: -1
+      name: Done - SNOW
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c0ac4f79-8171-469c-88c0-9929e7828c57
+    type: condition
+    task:
+      id: c0ac4f79-8171-469c-88c0-9929e7828c57
+      version: -1
+      name: Check if any device found
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: SnowComputers
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleDevices
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: JamfMobileDevices
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: JamfComputers
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ADComputer
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MSGraphDevices
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9293016c-3340-4bb2-870d-48ab12bea3fd
+    type: regular
+    task:
+      id: 9293016c-3340-4bb2-870d-48ab12bea3fd
+      version: -1
+      name: Set UserDevices
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: UserDevices
+      value:
+        complex:
+          root: SnowComputers
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: GoogleDevices
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: JamfMobileDevices
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: JamfComputers
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: ADComputer
+                iscontext: true
+              raw: {}
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: MSGraphDevices
+                iscontext: true
+              raw: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4bfbaf8f-85a4-44bb-8765-9c175a74df93
+    type: title
+    task:
+      id: 4bfbaf8f-85a4-44bb-8765-9c175a74df93
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: aa3e9512-8566-4722-8f8b-2a611c60c2fd
+    type: title
+    task:
+      id: aa3e9512-8566-4722-8f8b-2a611c60c2fd
+      version: -1
+      name: Active Directory
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c6eec195-b3ef-46ff-840d-e13e407bdc4c
+    type: condition
+    task:
+      id: c6eec195-b3ef-46ff-840d-e13e407bdc4c
+      version: -1
+      name: CustomADAttribute exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CustomADAttribute
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 39851b37-ed87-40cf-8826-e09f468f47fd
+    type: condition
+    task:
+      id: 39851b37-ed87-40cf-8826-e09f468f47fd
+      version: -1
+      name: Active Directory Query v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "27"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 29684d8f-17d1-4eb4-8829-78927db140df
+    type: regular
+    task:
+      id: 29684d8f-17d1-4eb4-8829-78927db140df
+      version: -1
+      name: Get user details
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      attributes:
+        complex:
+          root: inputs.CustomADAttribute
+      email:
+        complex:
+          root: inputs.UserEmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 4f68283f-29ac-49c8-8058-c9bdce1cace8
+    type: title
+    task:
+      id: 4f68283f-29ac-49c8-8058-c9bdce1cace8
+      version: -1
+      name: Done - AD
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 184f208a-aad3-424c-842f-f295ae708111
+    type: regular
+    task:
+      id: 184f208a-aad3-424c-842f-f295ae708111
+      version: -1
+      name: Save the custom attribute value
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      key:
+        simple: ADComputerName
+      value:
+        complex:
+          root: ActiveDirectory
+          accessor: Users
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: inputs.CustomADAttribute
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8e29f1d1-c9e0-4d5e-87c7-9cb9d5c31aa8
+    type: condition
+    task:
+      id: 8e29f1d1-c9e0-4d5e-87c7-9cb9d5c31aa8
+      version: -1
+      name: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: JAMF.Computer
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 718119f3-882d-4126-878f-89e3ce9ca174
+    type: condition
+    task:
+      id: 718119f3-882d-4126-878f-89e3ce9ca174
+      version: -1
+      name: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: JAMF.MobileDevice
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 3853d860-e3a9-45c7-8462-42c88f1a0587
+    type: regular
+    task:
+      id: 3853d860-e3a9-45c7-8462-42c88f1a0587
+      version: -1
+      name: Get computer information
+      description: 'Returns the "general" subset of a specific computer, e.g.: name, MAC address, IP, serial number, UDID, etc.'
+      script: '|||jamf-get-computer-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      id:
+        complex:
+          root: JAMF.Computer
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 910a38ab-dbb4-42b1-8efb-e047703d1c5e
+    type: regular
+    task:
+      id: 910a38ab-dbb4-42b1-8efb-e047703d1c5e
+      version: -1
+      name: Get mobile device information
+      description: 'Returns the "general" subset of a specific mobile device, e.g.: name, MAC address, IP, serial number, UDID. etc.'
+      script: '|||jamf-get-mobile-device-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      id:
+        complex:
+          root: JAMF.MobileDevice
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: b9eed896-0f9f-47b1-843b-5ce5749e3288
+    type: regular
+    task:
+      id: b9eed896-0f9f-47b1-843b-5ce5749e3288
+      version: -1
+      name: set JamfComputers
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      key:
+        simple: JamfComputers
+      value:
+        simple: '${JAMF.Computer={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''platform''], MACAddress: val[''mac_address''], OS: '''', Integration: ''jamf v2''}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 20a86189-8aaf-47b3-81ca-36fc70ad4181
+    type: regular
+    task:
+      id: 20a86189-8aaf-47b3-81ca-36fc70ad4181
+      version: -1
+      name: set JamfMobileDevices
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: JamfMobileDevices
+      value:
+        simple: '${JAMF.MobileDevice={Name: val[''name''], SerialNumber: val[''serial_number''], ID: val[''id''], Model: val[''model''], MACAddress: val[''wifi_mac_address''], OS: '''', Integration: ''jamf v2''}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 6ad641e8-da8e-4101-817b-dc24f655ab2f
+    type: regular
+    task:
+      id: 6ad641e8-da8e-4101-817b-dc24f655ab2f
+      version: -1
+      name: Remove null results
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: JamfComputers
+      value:
+        complex:
+          root: JamfComputers
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: JamfComputers.ID
+                iscontext: true
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: b443b306-b64f-459b-8759-47c930ea73f7
+    type: condition
+    task:
+      id: b443b306-b64f-459b-8759-47c930ea73f7
+      version: -1
+      name: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GSuite.MobileDevices.MobileListObjects
+                accessor: deviceId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: e0010aad-6fdd-49dd-8a08-c446a014c14f
+    type: regular
+    task:
+      id: e0010aad-6fdd-49dd-8a08-c446a014c14f
+      version: -1
+      name: Set GoogleDevices
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: GoogleDevices
+      value:
+        simple: '${GSuite.MobileDevices.MobileListObjects={Name: val[''name''], SerialNumber: val[''serialNumber''], ID: val[''deviceId''], Model: val[''model''], MACAddress: val[''wifiMacAddress''], OS: val[''os''], Integration: ''GSuiteAdmin''}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 383b2b83-ee82-4013-8d3c-42d004722163
+    type: condition
+    task:
+      id: 383b2b83-ee82-4013-8d3c-42d004722163
+      version: -1
+      name: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.Computer
+                accessor: ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: e30ea76a-0a74-4596-84c6-328438aa6024
+    type: regular
+    task:
+      id: e30ea76a-0a74-4596-84c6-328438aa6024
+      version: -1
+      name: Set SnowComputers
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: SnowComputers
+      value:
+        simple: '${ServiceNow.Computer={Name: val[''Name''], SerialNumber: '''', ID: val[''ID''], Model: '''', MACAddress: '''', OS: val[''OperatingSystem''], Integration: ''ServiceNow v2''}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 96a68565-f28f-4a7d-882f-28c6aa15ab0a
+    type: regular
+    task:
+      id: 96a68565-f28f-4a7d-882f-28c6aa15ab0a
+      version: -1
+      name: Set ADComputer
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      keys:
+        simple: Name,SerialNumber,ID,Model,MACAddress,OS,Integration
+      parent:
+        simple: ADComputer
+      values:
+        simple: ${ADComputerName},,,,,,Active Directory Query v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 1e1a0002-70c4-448b-8c36-faa96e372365
+    type: condition
+    task:
+      id: 1e1a0002-70c4-448b-8c36-faa96e372365
+      version: -1
+      name: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Users
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: inputs.CustomADAttribute
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 6f42217d-7791-434e-80ce-1b65b0483b85
+    type: title
+    task:
+      id: 6f42217d-7791-434e-80ce-1b65b0483b85
+      version: -1
+      name: Microsoft Graph API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: b3ca6346-d3f9-41e6-8085-ed27033345a9
+    type: condition
+    task:
+      id: b3ca6346-d3f9-41e6-8085-ed27033345a9
+      version: -1
+      name: Microsoft Graph API enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "46"
+      "yes":
+      - "45"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph API
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: f0d84075-0543-4c7b-8ee4-b5451507b771
+    type: regular
+    task:
+      id: f0d84075-0543-4c7b-8ee4-b5451507b771
+      version: -1
+      name: MSGraphAPI - Get user owned devices
+      description: Run a Microsoft Graph API query.
+      script: Microsoft Graph API|||msgraph-api-request
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph API
+    nexttasks:
+      '#error#':
+      - "46"
+      '#none#':
+      - "47"
+    scriptarguments:
+      resource:
+        simple: /users/${inputs.UserEmail}/ownedDevices
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 0d576358-3344-45c0-85ed-735ace5ffb99
+    type: title
+    task:
+      id: 0d576358-3344-45c0-85ed-735ace5ffb99
+      version: -1
+      name: MSGraph API - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 60e068dd-b484-40eb-8432-8f729d3e6391
+    type: condition
+    task:
+      id: 60e068dd-b484-40eb-8432-8f729d3e6391
+      version: -1
+      name: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftGraph
+                accessor: deviceId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 9c9a33be-a077-4903-8a1e-0bc8a6c7983c
+    type: regular
+    task:
+      id: 9c9a33be-a077-4903-8a1e-0bc8a6c7983c
+      version: -1
+      name: Set MSGraphDevices
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      key:
+        simple: MSGraphDevices
+      value:
+        simple: '${MicrosoftGraph={Name: val[''displayName''], SerialNumber: '''', ID: val[''deviceId''], Model: '''', MACAddress: '''', OS: val[''operatingSystem''], Integration: ''Microsoft Graph API''}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_7_no": 0.29,
+      "16_17_yes": 0.36,
+      "16_20_no": 0.13,
+      "18_19_yes": 0.46,
+      "18_20_#default#": 0.1,
+      "1_15_yes": 0.46,
+      "25_26_yes": 0.38,
+      "25_28_#default#": 0.1,
+      "26_28_no": 0.12,
+      "30_32_yes": 0.39,
+      "30_7_#default#": 0.18,
+      "31_33_yes": 0.51,
+      "31_7_#default#": 0.2,
+      "37_13_#default#": 0.13,
+      "39_20_#default#": 0.33,
+      "42_28_#default#": 0.11,
+      "42_29_yes": 0.43,
+      "44_46_no": 0.15,
+      "45_46_#error#": 0.18,
+      "47_46_#default#": 0.12,
+      "5_13_#default#": 0.1,
+      "5_6_yes": 0.52,
+      "6_13_no": 0.15,
+      "6_4_yes": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2335,
+        "width": 3980,
+        "x": -2220,
+        "y": -60
+      }
+    }
+  }
+inputs:
+- key: UserEmail
+  value: {}
+  required: false
+  description: The email address of the user.
+  playbookInputQuery:
+- key: GsuiteCustomerID
+  value: {}
+  required: false
+  description: If using Google Workspace, a customer ID is needed.
+  playbookInputQuery:
+- key: CustomADAttribute
+  value: {}
+  required: false
+  description: |-
+    A custom Active Directory attribute.
+    In case there is a custom attribute in Active Directory which stores the name of the computer assigned to the user in the user object, it would be fetched.
+  playbookInputQuery:
+outputs:
+- contextPath: GSuite.MobileDevices
+  description: Gsuite mobile devices.
+  type: unknown
+- contextPath: GSuite.MobileDevices.MobileListObjects
+  description: A list of mobile device objects.
+- contextPath: GSuite.MobileDevices.MobileListObjects.kind
+  description: The type of the API resource.
+- contextPath: GSuite.MobileDevices.MobileListObjects.etag
+  description: ETag of the resource.
+- contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
+  description: The unique ID the API service uses to identify the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
+  description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
+- contextPath: GSuite.MobileDevices.MobileListObjects.name
+  description: A list of the owner's usernames.
+- contextPath: GSuite.MobileDevices.MobileListObjects.email
+  description: A list of the owner's email addresses.
+- contextPath: GSuite.MobileDevices.MobileListObjects.model
+  description: The mobile device's model name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.os
+  description: The mobile device's operating system.
+- contextPath: GSuite.MobileDevices.MobileListObjects.type
+  description: The type of mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.status
+  description: The mobile device's status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
+  description: The IMEI/MEID unique identifier for Android hardware.
+- contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
+  description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
+- contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
+  description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
+- contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
+  description: Information about the mobile device such as the operating system version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
+  description: The mobile device's serial number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.imei
+  description: The mobile device's IMEI number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.meid
+  description: The mobile device's MEID number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.wifiMacAddress
+  description: The mobile device's MAC address on Wi-Fi networks.
+- contextPath: GSuite.MobileDevices.MobileListObjects.networkOperator
+  description: Mobile device mobile or network operator.
+- contextPath: GSuite.MobileDevices.MobileListObjects.defaultLanguage
+  description: The default locale used on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.managedAccountIsOnOwnerProfile
+  description: Boolean indicating if this account is on the owner/primary profile.
+- contextPath: GSuite.MobileDevices.MobileListObjects.deviceCompromisedStatus
+  description: The compromised device status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.buildNumber
+  description: The mobile device's operating system build number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.kernelVersion
+  description: The mobile device's kernel version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.basebandVersion
+  description: The mobile device's baseband version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.unknownSourcesStatus
+  description: Unknown sources enabled or disabled on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.adbStatus
+  description: Whether adb (USB debugging) is enabled on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.developerOptionsStatus
+  description: Whether developer options are enabled on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.otherAccountsInfo
+  description: A list of accounts added on the device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.supportsWorkProfile
+  description: Work profile supported on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.manufacturer
+  description: Mobile device manufacturer.
+- contextPath: GSuite.MobileDevices.MobileListObjects.releaseVersion
+  description: Mobile device release version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.securityPatchLevel
+  description: Mobile device security patch level.
+- contextPath: GSuite.MobileDevices.MobileListObjects.brand
+  description: Mobile device brand.
+- contextPath: GSuite.MobileDevices.MobileListObjects.bootloaderVersion
+  description: Mobile device bootloader version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.hardware
+  description: Mobile device hardware.
+- contextPath: GSuite.MobileDevices.MobileListObjects.encryptionStatus
+  description: Mobile device encryption status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.devicePasswordStatus
+  description: Mobile device password status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.privilege
+  description: DM agent permission.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications
+  description: GSuite mobile device applications.
+  type: unknown
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.packageName
+  description: The application's package name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.displayName
+  description: The application's display name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionName
+  description: The application's version name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionCode
+  description: The application's version code.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.permission
+  description: The list of permissions of this application.
+- contextPath: JAMF.Computer
+  description: Jamf computer object.
+  type: unknown
+- contextPath: JAMF.Computer.id
+  description: The computer ID.
+- contextPath: JAMF.Computer.name
+  description: The computer name.
+- contextPath: JAMF.Computer.udid
+  description: The computer UDID.
+- contextPath: JAMF.Computer.serial_number
+  description: The computer serial number.
+- contextPath: JAMF.Computer.mac_address
+  description: The computer MAC address.
+- contextPath: JAMF.Computer.alt_mac_address
+  description: The computer alt MAC address.
+- contextPath: JAMF.Computer.asset_tag
+  description: The computer asset tag.
+- contextPath: JAMF.Computer.bar_code_1
+  description: The computer barcode 1.
+- contextPath: JAMF.Computer.bar_code_2
+  description: The computer barcode 2.
+- contextPath: JAMF.Computer.username
+  description: The computer username.
+- contextPath: JAMF.Computer.realname
+  description: The computer real name.
+- contextPath: JAMF.Computer.email
+  description: The computer email address.
+- contextPath: JAMF.Computer.email_address
+  description: The computer email address.
+- contextPath: JAMF.Computer.room
+  description: The computer room.
+- contextPath: JAMF.Computer.position
+  description: The computer position.
+- contextPath: JAMF.Computer.building
+  description: The computer building.
+- contextPath: JAMF.Computer.building_name
+  description: The computer building name.
+- contextPath: JAMF.Computer.department
+  description: The computer department.
+- contextPath: JAMF.Computer.department_name
+  description: The computer department name.
+- contextPath: JAMF.MobileDevice
+  description: Jamf mobile device object.
+  type: unknown
+- contextPath: JAMF.MobileDevice.id
+  description: The mobile device ID.
+- contextPath: JAMF.MobileDevice.name
+  description: The mobile device name.
+- contextPath: JAMF.MobileDevice.udid
+  description: The mobile device UDID.
+- contextPath: JAMF.MobileDevice.serial_number
+  description: The mobile device serial number.
+- contextPath: JAMF.MobileDevice.mac_address
+  description: The mobile device MAC address.
+- contextPath: JAMF.MobileDevice.wifi_mac_address
+  description: The mobile device WI-FI MAC address.
+- contextPath: JAMF.MobileDevice.username
+  description: The mobile device username.
+- contextPath: JAMF.MobileDevice.realname
+  description: The mobile device real name.
+- contextPath: JAMF.MobileDevice.email
+  description: The mobile device user email address.
+- contextPath: JAMF.MobileDevice.email_address
+  description: The mobile device user email address.
+- contextPath: JAMF.MobileDevice.room
+  description: The mobile device room.
+- contextPath: JAMF.MobileDevice.position
+  description: The mobile device position.
+- contextPath: JAMF.MobileDevice.building
+  description: The mobile device building.
+- contextPath: JAMF.MobileDevice.building_name
+  description: The mobile device building name.
+- contextPath: JAMF.MobileDevice.department
+  description: The mobile device department.
+- contextPath: JAMF.MobileDevice.department_name
+  description: The mobile device department name.
+- contextPath: ServiceNow.Computer
+  description: ServiceNow computer object.
+  type: unknown
+- contextPath: ServiceNow.Computer.ID
+  description: Computer system ID.
+- contextPath: ServiceNow.Computer.AssetTag
+  description: Computer asset tag.
+- contextPath: ServiceNow.Computer.Name
+  description: Computer name.
+- contextPath: ServiceNow.Computer.DisplayName
+  description: Computer display name.
+- contextPath: ServiceNow.Computer.SupportGroup
+  description: Computer support group.
+- contextPath: ServiceNow.Computer.OperatingSystem
+  description: Computer operating system.
+- contextPath: ServiceNow.Computer.Company
+  description: Computer company system ID.
+- contextPath: ServiceNow.Computer.AssignedTo
+  description: Computer assigned to user system ID.
+- contextPath: ServiceNow.Computer.State
+  description: Computer state.
+- contextPath: ServiceNow.Computer.Cost
+  description: Computer cost.
+- contextPath: ServiceNow.Computer.Comments
+  description: Computer comments.
+- contextPath: UserDevices
+  description: Devices retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.Name
+  description: Devices names retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.SerialNumber
+  description: Devices serial numbers retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.ID
+  description: Devices IDs retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.Model
+  description: Devices models retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.OS
+  description: Devices operating systems retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.Integration
+  description: The integration which retrieved the devices.
+  type: unknown
+- contextPath: UserDevices.MACAddress
+  description: Devices MAC Address retrieved by this playbook.
+  type: unknown
+- contextPath: MicrosoftGraph
+  description: MicrosoftGraph results.
+  type: unknown
+- contextPath: MicrosoftGraph.profileType
+  description: Device profile type.
+  type: unknown
+- contextPath: MicrosoftGraph.operatingSystemVersion
+  description: Device OS version.
+  type: unknown
+- contextPath: MicrosoftGraph.displayName
+  description: Device display name.
+  type: unknown
+- contextPath: MicrosoftGraph.operatingSystem
+  description: Device OS.
+  type: unknown
+- contextPath: MicrosoftGraph.deviceId
+  description: Device ID.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
+marketplaces:
+  - xsoar
+  - marketplacev2
