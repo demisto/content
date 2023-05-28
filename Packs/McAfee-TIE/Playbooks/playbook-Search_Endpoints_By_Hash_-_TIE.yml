@@ -326,6 +326,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "4"
       "yes":
       - "11"
     scriptarguments:

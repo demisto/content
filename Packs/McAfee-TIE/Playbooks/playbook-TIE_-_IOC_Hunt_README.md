@@ -26,8 +26,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* tie-file-references
 * epo-find-system
+* tie-file-references
 
 ## Playbook Inputs
 
