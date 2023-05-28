@@ -42,7 +42,7 @@ This playbook does not use any scripts.
 | --- | --- | --- |
 | CVE | The CVE object. | unknown |
 | CVE.ID | The ID of the CVE. | string |
-| CVE.CVSS | The CVSS score of the CVE | number |
+| CVE.CVSS | The CVSS score of the CVE. | number |
 | CVE.Published | The date this was published | date |
 | CVE.Modified | When CVE was last modified | date |
 | CVE.Description | The CVE description | string |
