@@ -15,8 +15,8 @@ configuration:
   type: 0
   required: true
   section: Connect
-- display: API Authentication Token
-  name: auth_token
+- display: API Authentication Token (deprecated)
+  name: auth_token_deprecated
   defaultvalue: ""
   type: 4
   required: true
