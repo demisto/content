@@ -54,7 +54,7 @@ Use the following arguments in the URL to change the request:
 | **n** | The maximum number of entries in the output. If no value is provided, will use the value specified in the *List Size* parameter configured in the instance configuration. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?n=50 |
 | **s** | The starting entry index from which to export the indicators. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
 | **v** | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`). | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
-| **q** | The query used to retrieve indicators from the system. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
+| **q** | The query used to retrieve indicators from the system. If you are using this argument, no more than 100,000 can be exported through the EDL. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
 | **t** | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip |
 | **sp** | If set. will strip ports off URLs, otherwise will ignore URLs with ports. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=text&sp |
 | **di** | Only with `PAN-OS (text)` format. If set, will ignore URLs which are not compliant with PAN-OS URL format instead of being re-written. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=text&di |
@@ -66,3 +66,7 @@ Use the following arguments in the URL to change the request:
 
 ### When Running in On-Demand Mode
 Make sure you run the ***!export-indicators-list-update*** command for the first time to initialize the export process.
+
+### Important Notes:
+- If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
+- When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
