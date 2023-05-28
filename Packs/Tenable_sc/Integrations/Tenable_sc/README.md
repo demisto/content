@@ -251,6 +251,8 @@ Requires security manager authentication. Get a single report with Tenable.sc sc
 | TenableSC.ScanResults.Owner | string | Scan owner user name. | 
 | TenableSC.ScanResults.Duration | number | Scan duration in minutes. | 
 | TenableSC.ScanResults.ImportTime | date | Scan import time. | 
+| TenableSC.ScanResults.IsScanRunning | boolean | Wether scan is still running or not. | 
+| TenableSC.ScanResults.ImportStatus | string | Scan import status. | 
 
 #### Human Readable Output
 

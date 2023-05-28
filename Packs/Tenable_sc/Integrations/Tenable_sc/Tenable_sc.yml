@@ -372,6 +372,12 @@ script:
     - contextPath: TenableSC.ScanResults.ImportTime
       description: Scan import time.
       type: date
+    - contextPath: TenableSC.ScanResults.IsScanRunning
+      description: Wether scan is still running or not.
+      type: boolean
+    - contextPath: TenableSC.ScanResults.ImportStatus
+      description: Scan import status.
+      type: string
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1228,6 +1234,9 @@ script:
       type: string
     - contextPath: TenableSC.ScanResults.RepositoryName
       description: Scan repository name.
+      type: string
+    - contextPath: TenableSC.ScanResults.ImportStatus
+      description: Scan import status.
       type: string
   - arguments:
     - auto: PREDEFINED

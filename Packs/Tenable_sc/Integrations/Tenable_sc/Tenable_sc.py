@@ -353,7 +353,7 @@ class Client(BaseClient, object):
         """
         params = {
             'fields': 'name,description,details,status,scannedIPs,startTime,scanDuration,importStart,'
-            'finishTime,completedChecks,owner,ownerGroup,repository'
+            'finishTime,completedChecks,owner,ownerGroup,repository,importStatus'
         }
         return self.send_request(path='scanResult', params=params)
 
@@ -548,7 +548,7 @@ class Client(BaseClient, object):
 
         params = {
             'fields': 'name,description,details,status,scannedIPs,progress,startTime,scanDuration,importStart,'
-                      'finishTime,completedChecks,owner,ownerGroup,repository,policy'
+                      'finishTime,completedChecks,owner,ownerGroup,repository,policy,importStatus,running'
         }
 
         return self.send_request(path, params=params)
@@ -1721,15 +1721,17 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
         'ScannedIPs': scan_results.get('scannedIPs', ''),
         'Owner': scan_results.get('owner', {}).get('username', ''),
         'RepositoryName': scan_results.get('repository', {}).get('name', ''),
-        'Import Status': scan_results.get('importStatus', ''),
-        'Is Scan Running ': scan_results.get('running', ''),
-        'Completed IPs': scan_results.get('progress', {}).get('completedIPs', '')
+        'ImportStatus': scan_results.get('importStatus', ''),
+        'IsScanRunning': scan_results.get('running', '')
     }
+
+    if progress := scan_results.get('progress', {}):
+        mapped_results["Completed IPs"] = progress.get('completedIPs', '')
 
     hr = tableToMarkdown('Tenable.sc Scan ' + mapped_results['ID'] + ' Report',
                          mapped_results, headers, removeNull=True)
 
-    if len(vulnerabilities_to_get) > 0:
+    if len(vulnerabilities_to_get) > 0 and scan_results.get("importStatus", "") != "Error":
         vulns = get_vulnerabilities(client, scan_results_id)
 
         if isinstance(vulns, list):
@@ -1856,7 +1858,7 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
         'Name': vuln['name'],
         'Description': vuln['description'],
         'Type': vuln['type'],
-        'Severity': vuln['severity'].get('name'),
+        'Severity': vuln.get('severity', {}).get('name'),
         'Synopsis': vuln['synopsis'],
         'Solution': vuln['solution']
     }
@@ -2371,8 +2373,6 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
             mapped_groups[index]['Users'] = users
             group_id = group.get('id')
             hr += f"{tableToMarkdown(f'Group id:{group_id}', users, headers, removeNull=True)}\n"
-    groups = mapped_groups
-
     return CommandResults(
         outputs=createContext(response_to_context(groups), removeNull=True),
         outputs_prefix='TenableSC.Group',
@@ -2420,7 +2420,8 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
         'ImportTime': timestamp_to_utc(elem['importStart']),
         'ScannedIPs': elem['scannedIPs'],
         'Owner': elem['owner'].get('username'),
-        'RepositoryName': elem['repository'].get('name')
+        'RepositoryName': elem['repository'].get('name'),
+        'ImportStatus': elem.get('importStatus', '')
     } for elem in elements[page:page + limit]]
 
     readable_title = 'Tenable.sc Scan results - {0}-{1}'.format(page, page + limit - 1)
@@ -2483,7 +2484,7 @@ def process_update_and_create_user_response(res, hr_header):
     response = res.get("response", {})
     mapped_response = {
         "User type": res.get("type"),
-        "User Id": response.get("id"),
+        "User ID": response.get("id"),
         "User Status": response.get("status"),
         "User Name": response.get("username"),
         "First Name": response.get("firstname"),
@@ -2517,7 +2518,7 @@ def delete_user_command(client: Client, args: Dict[str, Any]):
 
     return CommandResults(
         raw_response=res,
-        readable_output="User {user_id} is deleted."
+        readable_output=f"User {user_id} is deleted."
     )
 
 
@@ -2589,7 +2590,7 @@ def create_policy_command(client: Client, args: Dict[str, Any]):
 
     return CommandResults(
         outputs=createContext(response_to_context(created_policy), removeNull=True),
-        outputs_prefix='TenableSC.Query',
+        outputs_prefix='TenableSC.ScanPolicy',
         raw_response=res,
         outputs_key_field='ID',
         readable_output=tableToMarkdown('Policy was created successfully:', mapped_created_policy, headers, removeNull=True)
