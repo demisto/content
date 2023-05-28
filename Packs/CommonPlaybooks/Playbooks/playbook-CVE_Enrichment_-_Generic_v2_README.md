@@ -1,4 +1,4 @@
-This playbook performs CVE Enrichment using the following integrations:
+This playbook performs CVE enrichment using the following integrations:
 - VulnDB
 - CVE Search
 - IBM X-Force Exchange
