@@ -8577,6 +8577,7 @@ def setup_proxy():
 
 
 def main():
+    # Some comment.
     LOG('command is {}'.format(str(demisto.command())))
     command = demisto.command()
 
