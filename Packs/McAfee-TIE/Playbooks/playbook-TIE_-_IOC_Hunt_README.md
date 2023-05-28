@@ -17,8 +17,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* McAfee-TIE
 * McAfeeTIEV2
+* McAfee-TIE
 
 ### Scripts
 
@@ -26,8 +26,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* epo-find-system
 * tie-file-references
+* epo-find-system
 
 ## Playbook Inputs
 

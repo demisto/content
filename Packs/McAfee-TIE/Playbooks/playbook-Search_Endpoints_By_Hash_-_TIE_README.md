@@ -17,9 +17,9 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* McAfee-TIE
-* McAfeeTIEV2
 * McAfee ePO v2
+* McAfeeTIEV2
+* McAfee-TIE
 
 ### Scripts
 

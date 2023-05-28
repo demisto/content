@@ -193,7 +193,9 @@ tasks:
       - "4"
     scriptarguments:
       searchText:
-        simple: ${File.References.AgentGuid}
+        complex:
+          root: McAfee.TIE.FilesReferences.References
+          accessor: AgentGuid
       verbose:
         simple: "false"
     separatecontext: false
