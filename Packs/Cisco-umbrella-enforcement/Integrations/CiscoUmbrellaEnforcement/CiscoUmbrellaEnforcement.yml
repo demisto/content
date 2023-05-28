@@ -9,11 +9,11 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  name: api_key_
+  name: api_key
   required: true
   type: 4
   hidden: true
-- name: api_key
+- name: cred_api_key
   required: true
   type: 9
   displaypassword: API Key

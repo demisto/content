@@ -12,12 +12,18 @@ configuration:
   name: credentials
   required: true
   type: 9
+- display: Tenant name
+  name: tenant_name
+  required: true
+  type: 4
+  hidden: true
 - display: Token
   name: token
   required: true
   type: 4
   hidden: true
-- name: Tenant name
+- display: Tenant name
+  name: cred_tenant_name
   required: false
   type: 9
   displaypassword: token
