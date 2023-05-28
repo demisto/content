@@ -443,8 +443,7 @@ call arista_switch_common_fields_modeling
 
 /*** Fallback for All Other Arista Switch Event Types. 
     This filter is defined for handling all other Arista event types 
-    that do not have an explicit dedicated filter, hence only generic mapping is applied. 
- ***/  
+    that do not have an explicit dedicated filter, hence only generic mapping is applied. ***/  
 call arista_switch_common_fields_modeling
 | filter 
     facility not in ("AAA", "ACCOUNTING", "ACL", "BFD", "BGP", "ETH", "FLOWCONTROL", "IGMP", "LAG", "LINEPROTO", "LLDP", "PROCMGR", "SECURITY", "SPANTREE", "SYS") 
@@ -461,3 +460,5 @@ call arista_switch_common_fields_modeling
     xdm.source.user.groups = roles,
     xdm.source.user.username = user,
     xdm.source.user.identifier = uid; 
+
+/*** End of Arista EOS Switch Modeling Rules ***/
