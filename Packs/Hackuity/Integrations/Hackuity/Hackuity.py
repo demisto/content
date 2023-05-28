@@ -31,11 +31,15 @@ class Client(BaseClient):
         self,
         url: str,
         namespace: str,
+        login: str,
+        password: str,
         apikey: str,
         verify: bool = True,
         proxy: bool = True,
     ):
         self.namespace = namespace
+        self.login = login
+        self.password = password
         self.apikey = apikey
         base_url = f"{url.rstrip('/')}/api/v1"
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
@@ -69,10 +73,14 @@ class Client(BaseClient):
         resp_type: str = "json",
     ):  # pragma: no cover
         headers = {
-            "authorization": f"Basic {self.apikey}",
             "content-type": "application/json",
             "user-agent": USER_AGENT,
         }
+        if self.login and self.password:
+            access_token = self.get_access_token()
+            headers["authorization"] = f"Bearer {access_token}"
+        else:
+            headers["authorization"] = f"Basic {self.apikey}"
         demisto.info(f"API call: HTTP {method} on {url_suffix}")
         return self._http_request(
             method=method,
@@ -82,6 +90,55 @@ class Client(BaseClient):
             resp_type=resp_type,
             error_handler=self.http_error_handler,
         )
+
+    def get_access_token(self) -> str:
+        """Get an access token from integration cache or by loggin in"""
+        integration_context = get_integration_context()
+        access_token = integration_context.get("access_token")
+        access_token_expiration = integration_context.get("access_token_expiration", 0)
+
+        # use already existing access token if possible
+        if access_token and time.time() < access_token_expiration:
+            return access_token
+
+        # log in
+        demisto.info("API login")
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix="/authentication/idp/oauth2/token",
+                data={
+                    "grant_type": "password",
+                    "scope": self.namespace,
+                    "username": self.login,
+                    "password": self.password,
+                },
+                headers={
+                    "content-type": "application/x-www-form-urlencoded",
+                    "user-agent": USER_AGENT,
+                },
+            )
+        except DemistoException as e:
+            # extract error description in case of OAuth error
+            try:
+                error_description = e.res.json()["error_description"]
+            except Exception:
+                raise e  # failled to get error description
+            # format error message
+            raise DemistoException(
+                message=f"Authentication error: {error_description}",
+                exception=e.exception,
+                res=e.res,
+            ) from e
+
+        set_integration_context(
+            {
+                # clear other keys to force refresh
+                "access_token": response["access_token"],
+                "access_token_expiration": int(time.time()) + response["expires_in"],
+            }
+        )
+        return response["access_token"]
 
     def get_user_id(self) -> str:
         """Get the id of the user"""
@@ -606,9 +663,13 @@ def hackuity_dashboard_data_command(
 def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
 
-    url = demisto.params()["url"]
-    namespace = demisto.params()["namespace"]
-    apikey = demisto.params().get("apikey")
+    params = demisto.params()
+    params.get('creds_api_key', {}).get('password') or params.get('apiKey')
+    login = params.get('login', {}).get('identifier')
+    password = params.get("password", {}).get("password")
+    url = params.get("url")
+    namespace = params.get("namespace")
+    apikey = params.get("apikey")
 
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
@@ -631,6 +692,8 @@ def main() -> None:  # pragma: no cover
         client = Client(
             url=url,
             namespace=namespace,
+            login=login,
+            password=password,
             apikey=apikey,
             verify=verify_certificate,
             proxy=proxy,
