@@ -65,7 +65,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Account.Groups | Groups for which the user is a member. | unknown |
 | Account.Manager | The user manager. | unknown |
 | Account.ID | The user distinguished name. | unknown |
-| Account.Username | The user samAccountName. | unknown |
+| Account.Username | The user sAMAccountName. | unknown |
 | Account.Email | The user email address. | unknown |
 | ActiveDirectory.Users.userAccountControl | The user account control flag. | unknown |
 | ActiveDirectory.Users.sAMAccountName | The user sAMAccountName. | unknown |
