@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 from functools import lru_cache
 import glob
@@ -588,7 +587,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
     index_folder_path, _, _ = download_and_extract_index(build_bucket, extract_destination_path, bucket_packs_root_path)
 
     for pack_id in os.listdir(index_folder_path):
-        if os.path.isdir(os.path.join(index_folder_path, pack_id)):
+        if Path.is_dir(os.path.join(index_folder_path, pack_id)):
             metadata_path = os.path.join(index_folder_path, pack_id, Pack.METADATA)
             pack_metadata = load_json(metadata_path)
             if 'partnerId' in pack_metadata:  # not installing private packs
@@ -623,7 +622,7 @@ def upload_zipped_packs(client: demisto_client,
         'Content-Type': 'multipart/form-data'
     }
     auth_settings = ['api_key', 'csrf_token', 'x-xdr-auth-id']
-    file_path = os.path.abspath(pack_path)
+    file_path = Path.resolve(pack_path)
     files = {'file': file_path}
 
     logging.info(f'Making "POST" request to server {host} - to install all packs from file {pack_path}')
