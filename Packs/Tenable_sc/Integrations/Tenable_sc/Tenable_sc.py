@@ -478,7 +478,7 @@ class Client(BaseClient, object):
         Args:
             name (str): The name for the asset.
             description (str): The description for the asset.
-            owner_id (str): The Id of the owner of the asset.
+            owner_id (str): The ID of the owner of the asset.
             tags (str): The tags for the asset.
             ips (str): The IP list for the asset.
         Returns:
@@ -2479,7 +2479,7 @@ def process_update_and_create_user_response(res, hr_header):
     """
     if not res or not res.get('response', {}):
         raise DemistoException("User wasn't created successfully.")
-    headers = ["User type", "User Id", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
+    headers = ["User type", "User ID", "User Status", "User Name", "First Name", "Lat Name ", "Email ", "User Role Name",
                "User Group Name", "User  LDAP  Name"]
     response = res.get("response", {})
     mapped_response = {
@@ -2584,7 +2584,7 @@ def create_policy_command(client: Client, args: Dict[str, Any]):
         "policyTemplate ID": created_policy.get("policyTemplate", {}).get("id"),
         "policyTemplate Name": created_policy.get("policyTemplate", {}).get("name")
     }
-    headers = ["Policy type", "Policy Id", "name", "Description", "Created Time", "Plugin Families", "Policy  Status",
+    headers = ["Policy type", "Policy ID", "name", "Description", "Created Time", "Plugin Families", "Policy  Status",
                "Policy UUID", "Policy can Manage", "Creator Username", "Owner ID", "policyTemplate id",
                "policyTemplate Name"]
 
@@ -2711,12 +2711,12 @@ def get_query(client: Client, query_id):
         raise DemistoException(f"The query {query_id} wasn't found")
     query = res.get('response')
     mapped_query = {
-        "Query Id": query_id,
+        "Query ID": query_id,
         "Query  Name": query.get("name"),
         "Query Description": query.get("description"),
         "Query Filters": query.get("filters")
     }
-    headers = ["Query Id", "Query  Name", "Query Description", "Query Filters"]
+    headers = ["Query ID", "Query  Name", "Query Description", "Query Filters"]
     hr = tableToMarkdown(f'Query {query_id}', mapped_query, headers, removeNull=True)
     return res, hr, query
 
@@ -2744,7 +2744,7 @@ def list_queries(client: Client, type):
     for manageable_query in manageable_queries:
         query_id = manageable_query.get("id")
         mapped_queries.append({
-            "Query Id": query_id,
+            "Query ID": query_id,
             "Query  Name": manageable_query.get("name"),
             "Query Description": manageable_query.get("description"),
             "Query Filters": manageable_query.get("filters"),
@@ -2755,7 +2755,7 @@ def list_queries(client: Client, type):
         query_id = usable_query.get("id")
         if query_id not in found_ids:
             mapped_usable_queries.append({
-                "Query Id": usable_query.get("id"),
+                "Query ID": usable_query.get("id"),
                 "Query  Name": usable_query.get("name"),
                 "Query Description": usable_query.get("description"),
                 "Query Filters": usable_query.get("filters"),
@@ -2764,7 +2764,7 @@ def list_queries(client: Client, type):
             })
         else:
             for mapped_query in mapped_queries:
-                if query_id == mapped_query["Query Id"]:
+                if query_id == mapped_query["Query ID"]:
                     mapped_query["Query Usable"] = "True"
 
     for mapped_query in mapped_queries:
@@ -2772,7 +2772,7 @@ def list_queries(client: Client, type):
             mapped_query["Query Usable"] = "False"
 
     mapped_queries.extend(mapped_usable_queries)
-    headers = ["Query Id", "Query  Name", "Query Description", "Query Filters", "Query Manageable", "Query Usable"]
+    headers = ["Query ID", "Query  Name", "Query Description", "Query Filters", "Query Manageable", "Query Usable"]
     hr = tableToMarkdown('Queries:', mapped_queries, headers, removeNull=True)
     return res, hr, queries
 
