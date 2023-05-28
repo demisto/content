@@ -70,41 +70,24 @@ p
 
 </style></head>
 <body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
-<img size="178792" data-outlook-trace="F:1|T:1" src=/entry/download/37@119 style="max-width:100%">
+<img size="178792" data-outlook-trace="F:1|T:1" src=acc_test_tenant/entry/download/37@119 style="max-width:100%">
 </div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
-<img size="8023" data-outlook-trace="F:1|T:1" src=/entry/download/38@120 style="max-width:100%">
+<img size="8023" data-outlook-trace="F:1|T:1" src=acc_test_tenant/entry/download/38@120 style="max-width:100%">
 </div></body></html>
 """
 
 
 @pytest.mark.parametrize(
-    "email_html,entry_id_list,expected",
-    [(EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_1),
-     (EMAIL_HTML_NO_ALT, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_NO_ALT),
-     ]
-)
-def test_create_html_with_image(email_html, entry_id_list, expected):
-    """
-        Given
-        - Html contained images src
-        When
-        3. All images were uploaded to the server
-        Then
-        - The images' src attribute would be replaced as expected
-    """
-    from DisplayHTMLWithImages import create_email_html
-    result = create_email_html(email_html, entry_id_list)
-    assert result == expected
-
-
-@pytest.mark.parametrize(
     "email_html,expected",
-    [(EMAIL_HTML, EXPECTED_RESULT_2)]
+    [
+        (EMAIL_HTML, EXPECTED_RESULT_2),
+        (EMAIL_HTML_NO_ALT, EXPECTED_RESULT_NO_ALT)
+    ]
 )
 def test_main_mt(mocker, email_html, expected):
     """
         Given
-        - The email's Html representation with multi tenant environment
+        - Html contained images src
         When
         - All images were uploaded to the server
         Then
@@ -115,11 +98,7 @@ def test_main_mt(mocker, email_html, expected):
 
     mocked_incident = {
         'CustomFields': {
-            'emailfrom': 'test_from',
-            'emailcc': 'test_cc',
-            'emailto': 'test_to',
-            'emailsubject': 'test_sub',
-            'renderedhtmll': email_html
+            'emailbody': email_html
         },
         'attachment': [
             {'name': 'image_1.png'},

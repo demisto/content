@@ -3,7 +3,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_email_html(email_html='', entry_id_list=None):
+def create_html_with_images(email_html='', entry_id_list=None):
     if not entry_id_list:
         return email_html
 
@@ -48,62 +48,24 @@ def get_entry_id_list(attachments, files):
     demisto.info(f'\n\n idlist \n\n{entry_id_list}')
     return entry_id_list
 
-
-def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, attachments):
-    """Set the email reply from the given details.
-    Args:
-        email_from: The email author mail.
-        email_to: The email recipients.
-        email_cc: The email cc.
-        html_body: The email HTML body.
-    Returns:
-        str. Email reply.
-    """
-    single_reply = f"""
-    From: {email_from}
-    To: {email_to}
-    CC: {email_cc}
-    Subject: {email_subject}
-    """
-    if attachments:
-        attachment_names = [attachment.get('name', '') for attachment in attachments]
-        single_reply += f'Attachments: {attachment_names}\n'
-
-    single_reply += f'\n{html_body}\n'
-
-    return single_reply
-
-
 def main(args):
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields', {})
-    email_from = custom_fields.get('emailfrom')
-    email_cc = custom_fields.get('emailcc')
-    email_to = custom_fields.get('emailto')
-    email_subject = custom_fields.get('emailsubject')
-    email_html = custom_fields.get('renderedhtmll', '') or \
+    html_body = custom_fields.get('renderedhtml', '') or \
         custom_fields.get('emailhtml', '') or \
         custom_fields.get('emailbody', '')
     attachments = incident.get('attachment', {})
     files = demisto.context().get('File', [])
 
-    if 'src="cid' in email_html:
+    if 'src="cid' in html_body:
         entry_id_list = get_entry_id_list(attachments, files)
-        html_body = create_email_html(email_html, entry_id_list)
-        email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, html_body, attachments)
-        return_results({
-            'ContentsFormat': formats['html'],
-            'Type': entryTypes['note'],
-            'Contents': email_reply,
+        html_body = create_html_with_images(html_body, entry_id_list)
+
+    return_results({
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': html_body,
         })
-
-    else:
-        email_reply = set_email_reply(email_from, email_to, email_cc, email_subject, email_html, attachments)
-        return_results({
-            'ContentsFormat': formats['html'],
-            'Type': entryTypes['note'],
-            'Contents': email_reply})
-
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main(demisto.args())
