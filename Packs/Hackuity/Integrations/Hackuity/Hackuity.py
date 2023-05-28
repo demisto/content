@@ -83,55 +83,6 @@ class Client(BaseClient):
             error_handler=self.http_error_handler,
         )
 
-    def get_access_token(self) -> str:
-        """Get an access token from integration cache or by loggin in"""
-        integration_context = get_integration_context()
-        access_token = integration_context.get("access_token")
-        access_token_expiration = integration_context.get("access_token_expiration", 0)
-
-        # use already existing access token if possible
-        if access_token and time.time() < access_token_expiration:
-            return access_token
-
-        # log in
-        demisto.info("API login")
-        try:
-            response = self._http_request(
-                method="POST",
-                url_suffix="/authentication/idp/oauth2/token",
-                data={
-                    "grant_type": "password",
-                    "scope": self.namespace,
-                    "username": self.login,
-                    "password": self.password,
-                },
-                headers={
-                    "content-type": "application/x-www-form-urlencoded",
-                    "user-agent": USER_AGENT,
-                },
-            )
-        except DemistoException as e:
-            # extract error description in case of OAuth error
-            try:
-                error_description = e.res.json()["error_description"]
-            except Exception:
-                raise e  # failled to get error description
-            # format error message
-            raise DemistoException(
-                message=f"Authentication error: {error_description}",
-                exception=e.exception,
-                res=e.res,
-            ) from e
-
-        set_integration_context(
-            {
-                # clear other keys to force refresh
-                "access_token": response["access_token"],
-                "access_token_expiration": int(time.time()) + response["expires_in"],
-            }
-        )
-        return response["access_token"]
-
     def get_user_id(self) -> str:
         """Get the id of the user"""
         integration_context = get_integration_context()
