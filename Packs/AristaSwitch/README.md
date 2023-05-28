@@ -30,7 +30,7 @@ Bellow is an example execution of the commands above:
 ```
 
 Remarks: 
-- By default, the "_**logging host**_" command described above configures the Syslog forwarding over UDP. If you wish to forward the event logs via a secure channel over TCP, check out the documentation in the following links:
+- By default, the _**logging host**_ command described above configures the Syslog forwarding over UDP. If you wish to forward the event logs via a secure channel over TCP, refer to the documentation in the following links:
   - [Syslog with TLS Support](https://www.arista.com/en/um-eos/eos-control-plane-security#xx1117976). 
   - [Logging - Basic Syslog and Beyond](https://arista.my.site.com/AristaCommunity/s/article/logging-basic-syslog-and-beyond) (see the "_Secure Syslog Transmission_" section).
 - You may wish to customize the logging level to filter events from a certain level and/or facility. See [_Understanding Logging Levels_](https://arista.my.site.com/AristaCommunity/s/article/understanding-logging-levels) for additional details.
