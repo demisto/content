@@ -170,14 +170,17 @@ def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
 
 
 def remove_events_before_last_scan(events, last_run):
-    edited_events = []
-    for event in events:
-        if first_found := event.get('DETECTION', {}).get('FIRST_FOUND_DATETIME'):
-            if datetime.strptime(first_found, DATE_FORMAT) < datetime.strptime(last_run, DATE_FORMAT):
-                demisto.debug(f'Removed event with time: {first_found}, qid: {event.get("DETECTION", {}).get("ID")}')
-            else:
-                edited_events.append(event)
-    return edited_events
+    try:
+        edited_events = []
+        for event in events:
+            if first_found := event.get('DETECTION', {}).get('FIRST_FOUND_DATETIME'):
+                if datetime.strptime(first_found, DATE_FORMAT) < datetime.strptime(last_run, DATE_FORMAT):
+                    demisto.debug(f'Removed event with time: {first_found}, qid: {event.get("DETECTION", {}).get("ID")}')
+                else:
+                    edited_events.append(event)
+        return edited_events
+    except Exception as e:
+        print(e)
 
 
 def remove_last_events(events, time_to_remove, time_field):
@@ -244,7 +247,14 @@ def get_detections_from_hosts(hosts):
     fetched_events = []
     for host in hosts:
         if detections_list := host.get('DETECTION_LIST', {}).get('DETECTION'):
-            for detection in detections_list:
+            if isinstance(detections_list, list):
+                for detection in detections_list:
+                    new_detection = copy.deepcopy(host)
+                    del new_detection['DETECTION_LIST']
+                    new_detection['DETECTION'] = detection
+                    fetched_events.append(new_detection)
+            elif isinstance(detections_list, dict):
+                # todo:
                 new_detection = copy.deepcopy(host)
                 del new_detection['DETECTION_LIST']
                 new_detection['DETECTION'] = detection
@@ -291,7 +301,6 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
 
     host_list_detections = client.get_host_list_detection(since_datetime=last_run, max_fetch=max_fetch)
     host_list_events = handle_host_list_detection_result(host_list_detections)
-
     next_run = host_list_events[0].get('LAST_VM_SCANNED_DATE') if host_list_events else last_run
 
     edited_host_detections = get_detections_from_hosts(host_list_events)
