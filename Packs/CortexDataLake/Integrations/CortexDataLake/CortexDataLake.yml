@@ -7,10 +7,12 @@ configuration:
   name: refresh_token
   required: true
   type: 4
+  hidden: true
 - display: ID
   name: reg_id
   required: true
   type: 4
+  hidden: true
 - display: Key
   name: auth_key
   required: true
