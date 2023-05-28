@@ -1,0 +1,34 @@
+{
+    "reply": [
+      {
+        "user_email": "user1@dummy.com",
+        "user_first_name": "<first name>",
+        "user_last_name": "<last name>",
+        "role_name": "dummy Admin",
+        "last_logged_in": 1111111111111,
+        "user_type": "dummy",
+        "groups": [],
+        "scope": []
+      },
+      {
+        "user_email": "dummy@dummy.com",
+        "user_first_name": "<first name>",
+        "user_last_name": "<last name>",
+        "role_name": "dummy Admin",
+        "last_logged_in": null,
+        "user_type": "dummy",
+        "groups": [],
+        "scope": []
+      },
+      {
+        "user_email": "dummy@dummy.com",
+        "user_first_name": "<first name>",
+        "user_last_name": "<last name>",
+        "role_name": "dummy Admin",
+        "last_logged_in": null,
+        "user_type": "dummy",
+        "groups": [],
+        "scope": []
+      }
+    ]
+  }
