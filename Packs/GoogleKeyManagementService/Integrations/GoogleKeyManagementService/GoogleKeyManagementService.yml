@@ -10,7 +10,7 @@ configuration:
   hidden: true
 - displaypassword: User's Service Account JSON
   name: credentials_service_account
-  required: true
+  required: false
   hiddenusername: true
   type: 9 
 - display: Project in Google Cloud KMS

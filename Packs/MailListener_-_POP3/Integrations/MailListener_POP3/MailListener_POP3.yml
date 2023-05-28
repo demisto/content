@@ -23,7 +23,7 @@ configuration:
   hidden: true
 - displaypassword: Password
   name:  credentials_password
-  required: true
+  required: false
   hiddenusername: true
   type: 9
 - defaultvalue: 'true'
