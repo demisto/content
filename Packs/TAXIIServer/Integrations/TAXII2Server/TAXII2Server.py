@@ -403,7 +403,7 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
         function for HTTP requests to validate authentication and Accept headers.
         """
         accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21,
-                          MEDIA_TYPE_STIX_V20, ACCEPT_TYPE_ALL]
+                          MEDIA_TYPE_STIX_V20]
         credentials = request.authorization
 
         if SERVER.auth:
