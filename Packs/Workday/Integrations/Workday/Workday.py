@@ -300,7 +300,7 @@ def main():
     tenant_name: str = params.get('cred_tenant_name', {}).get('identifier') or params.get('cred_tenant_name', None)
     username = f"{user}@{tenant_name}"
     password: str = params.get('credentials', {}).get('password')
-    token = params.get('cred_tenant_name', {}).get('password') 
+    token = params.get('cred_tenant_name', {}).get('password')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
 
