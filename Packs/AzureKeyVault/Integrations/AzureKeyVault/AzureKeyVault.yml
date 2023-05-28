@@ -369,12 +369,12 @@ script:
       required: false
       secret: false
     - name: subscription_id
-      description: Will override instance param ‘subscription_id'.
+      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: Will override instance param ‘resource_group_name'.
+      description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
       type: String
       isArray: false
       required: false
@@ -453,12 +453,12 @@ script:
       required: true
       secret: false
     - name: subscription_id
-      description: Will override instance param ‘subscription_id'.
+      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: Will override instance param ‘resource_group_name'.
+      description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
       type: String
       isArray: false
       required: false
@@ -474,12 +474,12 @@ script:
       required: true
       secret: false
     - name: subscription_id
-      description: Will override instance param ‘subscription_id'.
+      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: Will override instance param ‘resource_group_name'.
+      description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
       type: String
       isArray: false
       required: false
@@ -566,7 +566,7 @@ script:
       required: false
       secret: false
     - name: subscription_id
-      description: Will override instance param ‘subscription_id'.
+      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
       type: String
       isArray: false
       required: false
@@ -753,12 +753,12 @@ script:
       required: false
       secret: false
     - name: subscription_id
-      description: Will override instance param ‘subscription_id'.
+      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: Will override instance param ‘resource_group_name'.
+      description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
       type: String
       isArray: false
       required: false
@@ -1253,29 +1253,57 @@ script:
   - name: azure-sql-subscriptions-list
     description: List all subscriptions for a tenant.
     outputs:
-    - contextPath: AzureSQL.Subscription.id
+    - contextPath: AzureKeyVault.Subscription.id
       description: Subscription ID.
       type: String
-    - contextPath: AzureSQL.Subscription.displayName
+    - contextPath: AzureKeyVault.Subscription.displayName
       description: Subscription display name.
       type: String
-    - contextPath: AzureSQL.Subscription.state
+    - contextPath: AzureKeyVault.Subscription.state
       description: Subscription state.
       type: String
-    - contextPath: AzureSQL.Subscription.subscriptionPolicies # noqa: E501
+    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies # noqa: E501
       description: Subscription policies.
       type: Unknown
-    - contextPath: AzureSQL.Subscription.authorizationSource
+    - contextPath: AzureKeyVault.Subscription.authorizationSource
       description: Authorization source.
       type: String
-    - contextPath: AzureSQL.Subscription.managedByTenants
+    - contextPath: AzureKeyVault.Subscription.managedByTenants
       description: Managed by tenants.
       type: Unknown
-    - contextPath: AzureSQL.Subscription.tenantId
+    - contextPath: AzureKeyVault.Subscription.tenantId
       description: Tenant ID.
       type: String
-
-
+  - name: azure-sql-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: The integration default subscription_id will be used unless argument provide.
+      required: false
+    - name: limit
+      description: Limit on the number of resource groups to return. Default value is 50.
+      required: false
+      defaultValue: 50
+    - name: tag
+      description: A single tag in the form of '"Tag Name":"Tag Value"' to filter the list
+        by.
+      required: false
+      outputs:
+    - contextPath: AzureKeyVault.ResourceGroup.id
+      description: Resource group ID.
+      type: String
+    - contextPath: AzureKeyVault.ResourceGroup.name
+      description: Resource group name.
+      type: String
+    - contextPath: AzureKeyVault.ResourceGroup.location
+      description: Resource group location.
+      type: String
+    - contextPath: AzureKeyVault.ResourceGroup.tags
+      description: Resource group tags.
+      type: Unknown
+    - contextPath: AzureKeyVault.ResourceGroup.properties.provisioningState
+      description: Resource group provisioning state.
+      type: String
   dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false

@@ -4,6 +4,7 @@ from typing import Dict, List, Any
 import requests
 from datetime import datetime
 import copy
+import json
 
 APP_NAME = 'azure-key-vault'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -57,7 +58,8 @@ class KeyVaultClient:
         """
         if not params:
             params = {}
-        params['api-version'] = '2019-09-01' if resource == MANAGEMENT_RESOURCE else '7.2'
+        if 'api-version' not in params:
+            params['api-version'] = '2019-09-01' if resource == MANAGEMENT_RESOURCE else '7.2'
         res = self.ms_client.http_request(method=method,
                                           url_suffix=url_suffix,
                                           full_url=full_url,
@@ -77,7 +79,8 @@ class KeyVaultClient:
 
     """integration commands requests"""
 
-    def create_or_update_key_vault_request(self, vault_name: str, object_id: str, location: str,
+    def create_or_update_key_vault_request(self, subscription_id: str, resource_group_name: str,
+                                           vault_name: str, object_id: str, location: str,
                                            sku_name: str,
                                            keys_permissions: List[str], secrets_permissions: List[str],
                                            certificates_permissions: List[str], storage_accounts: List[str],
@@ -91,6 +94,8 @@ class KeyVaultClient:
         Create or update a key vault in the specified subscription..
 
         Args:
+            subscription_id (str): Subscription ID.
+            resource_group_name (str): Resource group name.
             vault_name (str): Key Vault name.
             object_id (str): The object ID of a user, service principal or security group
                              in the Azure Active Directory.
@@ -128,65 +133,74 @@ class KeyVaultClient:
 
         data = {"location": location, "properties": properties}
 
-        url_suffix = f'/vaults/{vault_name}'
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
+            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
 
-        response = self.http_request('PUT', url_suffix=url_suffix, data=data)
+        return self.http_request('PUT', full_url=full_url, data=data)
 
-        return response
-
-    def delete_key_vault_request(self, vault_name: str) -> Dict[str, Any]:
+    def delete_key_vault_request(self, subscription_id: str, resource_group_name: str,
+                                 vault_name: str) -> Dict[str, Any]:
         """
         Delete Key Vault by name.
 
         Args:
+            subscription_id (str): Subscription ID.
+            resource_group_name (str): Resource group name.
             vault_name (str): Key Vault name.
 
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url_suffix = f'/vaults/{vault_name}'
-        response = self.http_request('DELETE', url_suffix=url_suffix)
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
+            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
 
-        return response
+        return self.http_request('DELETE', full_url=full_url)
 
-    def get_key_vault_request(self, vault_name: str) -> Dict[str, Any]:
+    def get_key_vault_request(self, subscription_id: str, resource_group_name: str,
+                              vault_name: str) -> Dict[str, Any]:
         """
         Retrieve Key Vault by name.
 
         Args:
+            subscription_id (str): Subscription ID.
+            resource_group_name (str): Resource group name.
             vault_name (str): Key Vault name.
 
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url_suffix = f'/vaults/{vault_name}'
-        response = self.http_request('GET', url_suffix=url_suffix)
-        return response
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
+            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
+        return self.http_request('GET', full_url=full_url)
 
-    def list_key_vaults_request(self, limit: int, offset: int) -> List[dict]:
+    def list_key_vaults_request(self, subscription_id: str = None, limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET) -> List[dict]:
         """
         List Key Vaults by limit and offset arguments from the specified resource group and subscription.
 
         Args:
+            subscription_id (str): Subscription ID.
             limit(int): limit the number of key vaults to return.Default is 50.
             offset(int): First index to retrieve from. Default is 0.
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url_suffix = '/vaults'
+        ful_url = f'https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.KeyVault/' \
+            f'vaults?$top={limit}'
         response = self.http_request(
-            'GET', url_suffix=url_suffix)
+            'GET', full_url=ful_url)
         if response.get('error'):
             raise Exception(response)
         return self.get_entities_independent_of_pages(response, limit, offset)
 
-    def update_access_policy_request(self, vault_name: str, operation_kind: str, object_id: str,
+    def update_access_policy_request(self, subscription_id: str, resource_group_name: str, vault_name: str, operation_kind: str, object_id: str,
                                      keys: List[str], secrets: List[str], certificates: List[str],
                                      storage: List[str]) -> Dict[str, Any]:
         """
         Update access policy of an existing Key Vault.
 
         Args:
+            subscription_id (str): Subscription ID.
+            resource_group_name (str): Resource group name.
             vault_name (str): Key Vault name.
             operation_kind (str): The operation to make on the access policy.
             object_id (str): The object ID of a user, service principal or security group in the Azure Active Directory.
@@ -202,11 +216,10 @@ class KeyVaultClient:
             keys, secrets, certificates, storage)
         data = {"properties": {"accessPolicies": [
             {"objectId": object_id, "permissions": permissions, "tenantId": self.ms_client.tenant_id}]}}
-        url_suffix = f'/vaults/{vault_name}/accessPolicies/{operation_kind}'
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
+            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}/accessPolicies/{operation_kind}'
 
-        response = self.http_request('PUT', url_suffix=url_suffix, data=data)
-
-        return response
+        return self.http_request('PUT', full_url=full_url, data=data)
 
     def get_key_request(self, vault_name: str, key_name: str, key_version: str) -> Dict[str, Any]:
         """
@@ -385,6 +398,33 @@ class KeyVaultClient:
         url = 'https://management.azure.com/subscriptions?'
         return self.http_request('GET', full_url=url, resource=MANAGEMENT_RESOURCE, params={'api-version': '2020-01-01'})
 
+    def list_resource_groups_request(self, subscription_id: str, tag: Dict[str, str], limit: int) -> List[dict]:
+        """
+        List all resource groups.
+
+        Args:
+            subscription_id (str): Subscription ID.
+            tag (Dict[str,str]): Tag to filter by.
+            limit (int): Maximum number of resource groups to retrieve. Default is 50.
+
+        Returns:
+            List[dict]: API response from Azure.
+        """
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+        filter_by_tag= ''
+        if tag:
+            try:
+                tag=json.loads(tag)
+                tag_name = next(iter(tag))
+                tag_value = tag[tag_name]
+                filter_by_tag = f"tagName eq {tag_name} and tagValue eq {tag_value}"
+            except Exception as e:
+                raise Exception(f'Invalid tag format: {e}')
+
+        return self.http_request('GET', full_url=full_url, resource=MANAGEMENT_RESOURCE,
+                                   params={'$filter': filter_by_tag, '$top': limit,
+                                           'api-version': '2021-04-01'})
+
     ''' INTEGRATION HELPER METHODS  '''
 
     def config_vault_permission(self, keys: List[str], secrets: List[str], certificates: List[str],
@@ -527,13 +567,15 @@ class KeyVaultClient:
 ''' INTEGRATIONS COMMANDS'''
 
 
-def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, Any],
+                                       params: Dict[str, Any]) -> CommandResults:
     """
     Create or update Key Vault in the specified subscription.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        params (Dict[str, Any]): Configuration parameters from XSOAR.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -575,8 +617,10 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
     ignore_missing_vnet_service_endpoint = argToBoolean(
         args.get('ignore_missing_vnet_service_endpoint', True))
     ip_rules = argToList(args.get('ip_rules'))
+    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
 
-    response = client.create_or_update_key_vault_request(vault_name, object_id, location, sku_name, keys_permissions,
+    response = client.create_or_update_key_vault_request(subscription_id, resource_group_name, vault_name, object_id, location, sku_name, keys_permissions,
                                                          secrets_permissions, certificates_permissions,
                                                          storage_accounts_permissions, enabled_for_deployment,
                                                          enabled_for_disk_encryption, enabled_for_template_deployment,
@@ -601,19 +645,24 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
     return command_results
 
 
-def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     """
     Delete Key Vault by name.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        params (Dict[str, Any]): Configuration parameters from XSOAR.
     Returns:
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
     vault_name = args['vault_name']
-    response = client.delete_key_vault_request(vault_name)
+    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
+    response = client.delete_key_vault_request(subscription_id=subscription_id,
+                                               resource_group_name=resource_group_name,
+                                               vault_name=vault_name)
     if response.get('error'):
         raise Exception(response)
     message = ""
@@ -629,19 +678,23 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> Co
     return command_results
 
 
-def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     """
     Retrieve Key Vault by name.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
+        params (Dict[str, Any]): Configuration parameters from XSOAR.
     Returns:
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
     vault_name = args['vault_name']
-
-    response = client.get_key_vault_request(vault_name)
+    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
+    response = client.get_key_vault_request(subscription_id=subscription_id,
+                                            resource_group_name=resource_group_name,
+                                            vault_name=vault_name)
     if response.get('error'):
         raise Exception(response)
 
@@ -661,19 +714,22 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     """ List Key Vaults associated with the subscription and within the specified resource group.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client
         args (Dict[str, Any]): Command arguments from XSOAR.
+        params (Dict[str, Any]): Configuration parameters from XSOAR.
     Returns:
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     offset = arg_to_number(args.get('offset', DEFAULT_OFFSET))
-    response = client.list_key_vaults_request(limit, offset)
+    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    response = client.list_key_vaults_request(subscription_id=subscription_id,
+                                              limit=limit, offset=offset)
     if type(response) == Dict and response.get('error'):
         raise Exception(response)
 
@@ -693,13 +749,14 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any]) -> Com
     return command_results
 
 
-def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     """
     Updates access policy of a key vault in the specified subscription.
 
     Args:
         client (KeyVaultClient):Azure Key Vault API client
         args (Dict[str, Any]): Command arguments from XSOAR.
+        params (Dict[str, Any]): Configuration parameters from XSOAR.
     Returns:
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
@@ -711,8 +768,11 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any]) -
     certificates = argToList(args.get('certificates'))
     storage_accounts = argToList(args.get('storage', []))
 
-    response = client.update_access_policy_request(
-        vault_name, operation_kind, object_id, keys, secrets, certificates, storage_accounts)
+    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
+
+    response = client.update_access_policy_request(subscription_id, resource_group_name,
+                                                   vault_name, operation_kind, object_id, keys, secrets, certificates, storage_accounts)
     if response.get('error'):
         raise Exception(response)
 
@@ -1129,7 +1189,7 @@ def get_certificate_policy_command(client: KeyVaultClient, args: Dict[str, Any])
     return command_results
 
 
-def list_subscriptions_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def list_subscriptions_command(client: KeyVaultClient) -> CommandResults:
     """
     List all subscriptions in the tenant.
 
@@ -1157,21 +1217,56 @@ def list_subscriptions_command(client: KeyVaultClient, args: Dict[str, Any]) -> 
     )
 
 
-def test_module(client: KeyVaultClient) -> None:
+def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+    """
+    List all resource groups in the subscription.
+
+    Args:
+        client (KeyVaultClient):  Azure Key Vault API client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+
+    """
+    tag = args.get('tag')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
+    outputs = copy.deepcopy(response.get('value', []))
+    readable_output = tableToMarkdown('Resource Groups List',
+                                      outputs,
+                                      ['name', 'location', 'tags',
+                                       'properties.provisioningState'
+                                       ],
+                                      removeNull=True, headerTransform=string_to_table_header)
+    return CommandResults(
+        outputs_prefix='AzureKeyVault.ResourceGroup',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def test_module(client: KeyVaultClient, params: Dict[str, any]) -> None:
     """
      Test instance parameters validity.
      Displays an appropriate message in case of invalid parameters.
 
      Args:
          client (KeyVaultClient):  Azure Key Vault API client.
+         params (Dict[str, Any]): configuration parameters.
 
      Returns:
          None
      """
     try:
+        subscription_id = params.get('subscription_id')
         client.ms_client.get_access_token(resource=MANAGEMENT_RESOURCE)
         client.ms_client.get_access_token(resource=VAULT_RESOURCE)
-        client.list_key_vaults_request(1, 0)
+        client.list_key_vaults_request(subscription_id=subscription_id, limit=1, offset=0)
         # fetch_credentials(client,[''],[''],'xsoar-test-vault/test-sec-1')
         return_results('ok')
 
@@ -1329,10 +1424,10 @@ def main() -> None:
                                                 client_id=params.get(
                                                     'client_id', None),
                                                 client_secret=client_secret,
-                                                subscription_id=args.get('subscription_id',
-                                                params.get('subscription_id')) or None,
-                                                resource_group_name=args.get('resource_group_name',
-                                                params.get('resource_group_name')) or None,
+                                                subscription_id=params.get(
+                                                    'subscription_id', None),
+                                                resource_group_name=params.get(
+                                                    'resource_group_name', None),
                                                 verify=verify_certificate,
                                                 proxy=proxy,
                                                 certificate_thumbprint=certificate_thumbprint,
@@ -1340,12 +1435,7 @@ def main() -> None:
                                                 managed_identities_client_id=managed_identities_client_id
                                                 )
 
-        commands = {
-            'azure-key-vault-create-update': create_or_update_key_vault_command,
-            'azure-key-vault-delete': delete_key_vault_command,
-            'azure-key-vault-get': get_key_vault_command,
-            'azure-key-vault-list': list_key_vaults_command,
-            'azure-key-vault-access-policy-update': update_access_policy_command,
+        commands_with_args = {
             'azure-key-vault-key-get': get_key_command,
             'azure-key-vault-key-list': list_keys_command,
             'azure-key-vault-key-delete': delete_key_command,
@@ -1354,29 +1444,45 @@ def main() -> None:
             'azure-key-vault-secret-delete': delete_secret_command,
             'azure-key-vault-certificate-get': get_certificate_command,
             'azure-key-vault-certificate-list': list_certificates_command,
-            'azure-key-vault-certificate-policy-get': get_certificate_policy_command,
-            'azure-sql-subscriptions-list': list_subscriptions_command,
+            'azure-key-vault-certificate-policy-get': get_certificate_policy_command
+        }
+        commands_without_args = {'azure-sql-subscriptions-list': list_subscriptions_command}
+
+        commands_with_params = {'test-module': test_module}
+
+        commands_with_args_and_params = {
+            'azure-key-vault-create-update': create_or_update_key_vault_command,
+            'azure-key-vault-delete': delete_key_vault_command,
+            'azure-key-vault-get': get_key_vault_command,
+            'azure-key-vault-list': list_key_vaults_command,
+            'azure-key-vault-access-policy-update': update_access_policy_command,
+            'azure-sql-resource-group-list': list_resource_groups_command
         }
 
-        if command == 'test-module':
-            test_module(client)
+        if command in commands_without_args:
+            return_results(commands_without_args[command](client))
+        elif command in commands_with_args:
+            return_results(commands_with_args[command](client, args))
+        elif command in commands_with_params:
+            return_results(commands_with_params[command](client, params))
+        elif command in commands_with_args_and_params:
+            return_results(commands_with_args_and_params[command](client, args, params))
         elif demisto.command() == 'fetch-credentials':
             fetch_credentials(client, key_vaults_to_fetch_from, secrets_to_fetch, identifier)
-        elif command in commands:
-            return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as error:
-        massage = ''
-        if 'InvalidSubscriptionId' in str(error):
+        str_error = str(error)
+        massage = 'Unknown error has occurred.'
+        if 'InvalidSubscriptionId' in str_error:
             massage = 'Invalid subscription ID. Please verify your subscription ID.'
-        elif 'SubscriptionNotFound' in str(error):
+        elif 'SubscriptionNotFound' in str_error:
             massage = 'The given subscription ID could not be found.'
-        elif 'perform action' in str(error):
-            massage = 'The client does not have Key Vault permissions to the given resource group name or the resource group name does not exist.'
+        elif 'perform action' in str_error:
+            massage = 'The client does not have Key Vault permissions to the given resource group name or the resource group name does not exist, or was not provided.'
 
-        return_error(massage + "\n" + str(error))
+        return_error(massage + "\n" + str_error)
 
 
 from MicrosoftApiModule import *  # noqa: E402
