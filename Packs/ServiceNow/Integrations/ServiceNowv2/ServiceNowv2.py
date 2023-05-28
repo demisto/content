@@ -518,18 +518,11 @@ def split_notes(raw_notes, note_type, time_info):
     # line\n\n2023-05-10 15:41:38 - פלוני אלמוני (Additional comments)\nfirst note first line\n\nsecond line\n\n
     delimiter = '([0-9]{1,4}(?:\/|-)[0-9]{1,2}(?:\/|-)[0-9]{1,4}.*\((?:Additional comments|Work notes)\))'
     notes_split = list(filter(None, re.split(delimiter, raw_notes)))
-    retrieved_last_note = False
     for note_info, note_value in zip(notes_split[::2], notes_split[1::2]):
-        if not note_info or not note_value:
-            continue
-        if 'Mirrored from Cortex XSOAR' in note_value:
-            if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
-                notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
-            continue
         created_on, _, created_by = note_info.partition(" - ")
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
-            raise Exception(f'Failed to extract the required information from the following note: {note_info} {note_value}')
+            raise Exception(f'Failed to extract the required information from the following note: {note_info} - {note_value}')
 
         # convert note creation time to UTC
         try:
@@ -540,8 +533,7 @@ def split_notes(raw_notes, note_type, time_info):
 
         if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
-            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note_info} {note_value}.')
-            retrieved_last_note = False
+            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note_info} - {note_value}.')
             continue
         note_dict = {
             "sys_created_on": created_on_UTC.strftime(DATE_FORMAT),
@@ -550,7 +542,6 @@ def split_notes(raw_notes, note_type, time_info):
             "element": note_type
         }
         notes.append(note_dict)
-        retrieved_last_note = True
     return notes
 
 
