@@ -15,7 +15,7 @@ configuration:
   hidden: true
 - displaypassword: API Token
   name: credentials_token
-  required: true
+  required: false
   hiddenusername: true
   type: 9
 - display: Use system proxy settings
