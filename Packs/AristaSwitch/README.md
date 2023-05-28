@@ -58,7 +58,7 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the Syslog Collector, set the following values:
    | Parameter     | Value    
    | :---          | :---                    
-   | `Protocol`    | The protocol that was defined in the [Syslog configuration on the Arista switch](#configure-syslog-forwarding) (**UDP** for the default or **Secure TCP** for the [Syslog with TLS Support](https://www.arista.com/en/um-eos/) configuration.   
+   | `Protocol`    | The protocol that was defined in the [Syslog configuration on the Arista switch](#configure-syslog-forwarding) (**UDP** for the default or **Secure TCP** for the [Syslog with TLS Support](https://www.arista.com/en/um-eos/eos-control-plane-security#xx1117976) configuration.   
    | `Port`        | The Syslog service port that was defined in the [Syslog configuration on the Arista switch](#configure-syslog-forwarding).   
    | `Vendor`      | Enter **_Arista_**. 
    | `Product`     | Enter **_Switch_**. 
