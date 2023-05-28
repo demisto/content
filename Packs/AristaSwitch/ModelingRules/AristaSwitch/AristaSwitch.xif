@@ -439,3 +439,25 @@ call arista_switch_common_fields_modeling
     xdm.source.user.username = user,
     xdm.target.ipv4 = dst_ipv4,
     xdm.target.ipv6 = dst_ipv6;
+
+
+/*** Fallback for All Other Arista Switch Event Types. 
+    This filter is defined for handling all other Arista event types 
+    that do not have an explicit dedicated filter, hence only generic mapping is applied. 
+ ***/  
+call arista_switch_common_fields_modeling
+| filter 
+    facility not in ("AAA", "ACCOUNTING", "ACL", "BFD", "BGP", "ETH", "FLOWCONTROL", "IGMP", "LAG", "LINEPROTO", "LLDP", "PROCMGR", "SECURITY", "SPANTREE", "SYS") 
+    and facility !~= "IGMP|BGP"
+| alter 
+    user = arrayindex(regextract(message, "for user (\S+)"), 0),  
+    uid = arrayindex(regextract(message, "uid=(\d+)"), 0),
+    process_name = arrayindex(regextract(message, "process \'([^\']+)"), 0),
+    role = arrayindex(regextract(message, "role \'([^\']+)"), 0)
+| alter
+    roles = arraycreate(role)
+| alter 
+    xdm.source.process.name = process_name,
+    xdm.source.user.groups = roles,
+    xdm.source.user.username = user,
+    xdm.source.user.identifier = uid; 
