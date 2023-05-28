@@ -1092,7 +1092,8 @@ def main():
         'cred_certificate_thumbprint', {}).get('password')
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
-    subscription_id = demisto.args().get('subscription_id') or demisto.params().get('subscription_id')
+    subscription_id = demisto.args().get('subscription_id') or demisto.params().get(
+        'subscription_id') or params.get('cred_certificate_thumbprint', {}).get('password')
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
     if not self_deployed and not enc_key:

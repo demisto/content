@@ -39,7 +39,7 @@ configuration:
   required: false
   hiddenusername: true
   type: 9
-- displaypassword:  Key (received from the admin consent - see Detailed Instructions (?)
+- displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
   name: cred_enc_key
   required: false
   hiddenusername: true
@@ -59,6 +59,12 @@ configuration:
   name: subscription_id
   required: false
   type: 4
+  hidden: true
+- displaypassword: Default Subscription ID
+  name: cred_subscription_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
