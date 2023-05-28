@@ -172,7 +172,7 @@ def test_generate_login_url(mocker):
     client_id = 'client_id'
     mocked_params = {
         'redirect_uri': redirect_uri,
-        'auth_type': 'Authorization Code',
+        'auth_type': 'Device Code',
         'tenant_id': tenant_id,
         'app_id': client_id,
         'credentials': {
@@ -189,7 +189,7 @@ def test_generate_login_url(mocker):
 
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
-                   'response_type=code&scope=offline_access%20https://management.azure.com/.default' \
+                   'response_type=code&scope=offline_access%20https://login.microsoftonline.com/user_impersonation%20offline_access%20user.read' \
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = AzureKubernetesServices.return_results.call_args[0][0].readable_output
     assert expected_url in res, "Login URL is incorrect"
