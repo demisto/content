@@ -7,15 +7,14 @@ This integration was integrated and tested with version 1.25.0 of Hackuity
 2. Search for Hackuity.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Corporate server URL |  | True |
-    | Namespace |  | True |
-    | API key |  | True |
-    | Login | This authentication method is deprecated by Hackuity in May 2023. | False |
-    | Deprecated Login password |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Corporate server URL | True |
+    | Namespace | True |
+    | Login | False |
+    | Api key | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

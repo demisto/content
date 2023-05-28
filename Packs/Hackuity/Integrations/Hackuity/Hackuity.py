@@ -32,14 +32,10 @@ class Client(BaseClient):
         url: str,
         namespace: str,
         apikey: str,
-        login: str = None,
-        password: str = None,
         verify: bool = True,
         proxy: bool = True,
     ):
         self.namespace = namespace
-        self.login = login
-        self.password = password
         self.apikey = apikey
         base_url = f"{url.rstrip('/')}/api/v1"
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
@@ -75,12 +71,8 @@ class Client(BaseClient):
         headers = {
             "content-type": "application/json",
             "user-agent": USER_AGENT,
+            "authorization": f"Basic {self.apikey}",
         }
-        if self.login and self.password:
-            access_token = self.get_access_token()
-            headers["authorization"] = f"Bearer {access_token}"
-        else:
-            headers["authorization"] = f"Basic {self.apikey}"
         demisto.info(f"API call: HTTP {method} on {url_suffix}")
         return self._http_request(
             method=method,
@@ -665,11 +657,9 @@ def main() -> None:  # pragma: no cover
 
     params = demisto.params()
     params.get('creds_api_key', {}).get('password') or params.get('apiKey')
-    login = params.get('login', {}).get('identifier')
-    password = params.get("password", {}).get("password")
     url = params.get("url")
     namespace = params.get("namespace")
-    apikey = params.get("apikey")
+    apikey = params.get("login", {}).get("password")
 
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
@@ -692,8 +682,6 @@ def main() -> None:  # pragma: no cover
         client = Client(
             url=url,
             namespace=namespace,
-            login=login,
-            password=password,
             apikey=apikey,
             verify=verify_certificate,
             proxy=proxy,
