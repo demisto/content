@@ -13,7 +13,7 @@ MOCK_ENTRY = util_load_json('test_data/mock_events.json')
 EVENTS_RAW_V2 = util_load_json('test_data/events_raw_v2.json')
 EVENTS_RAW_V2_MULTI = util_load_json('test_data/events_raw_v2_2_results.json')
 EVENTS_PAGE_RAW_V1 = util_load_json('test_data/page_raw_v1.json')
-BASE_URL = 'https://netskope.example.com
+BASE_URL = 'https://netskope.example.com'
 FIRST_LAST_RUN = {'alert': 1680182467, 'alert-ids': [], 'application': 1680182467, 'application-ids': [],
                   'audit': 1680182467, 'audit-ids': [], 'network': 1680182467, 'network-ids': [],
                   'page': 1680182467, 'page-ids': []}
