@@ -271,7 +271,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be accrodingly to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property.
+      description: The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be accordingly to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property.
       isArray: false
       name: default_action
       predefined:

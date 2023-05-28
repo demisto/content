@@ -1675,35 +1675,35 @@ Appends new tags to an existing indicator.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.ThreatIndicator.ID | String | The ID of the indicator. | 
-| AzureSentinel.ThreatIndicator.Name | String | The name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator. | 
-| AzureSentinel.ThreatIndicator.Type | String | The type of the indicator. | 
-| AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator. | 
-| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. THis is a number between 0-100. | 
-| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created. | 
-| AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator. | 
-| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator. | 
-| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not. | 
-| AzureSentinel.ThreatIndicator.Source | String | The source of the indicator. | 
-| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator. | 
-| AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator. | 
-| AzureSentinel.ThreatIndicator.Description | String | The description of the indicator. | 
-| AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator. | 
-| AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator. | 
-| AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator. | 
-| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid. | 
-| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid. | 
-| AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator. | 
-| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator. | 
-| AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator. | 
-| AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator. | 
-| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator. | 
+| **Path** | **Type** | **Description**                                                         |
+| --- | --- |-------------------------------------------------------------------------|
+| AzureSentinel.ThreatIndicator.ID | String | The ID of the indicator.                                                | 
+| AzureSentinel.ThreatIndicator.Name | String | The name of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.ETag | String | The ETag of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.Type | String | The type of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.Kind | String | The kind of the indicator.                                              | 
+| AzureSentinel.ThreatIndicators.Confidence | Number | The confidence of the threat indicator. This is a number between 0-100. | 
+| AzureSentinel.ThreatIndicator.Created | Date | When the threat indicator was created.                                  | 
+| AzureSentinel.ThreatIndicator.CreatedByRef | String | The creator of the indicator.                                           | 
+| AzureSentinel.ThreatIndicator.ExternalID | String | The external ID of the indicator.                                       | 
+| AzureSentinel.ThreatIndicator.Revoked | Boolean | Was the threat indicator revoked or not.                                | 
+| AzureSentinel.ThreatIndicator.Source | String | The source of the indicator.                                            | 
+| AzureSentinel.ThreatIndicator.ETags | String | The Etags of the indicator.                                             | 
+| AzureSentinel.ThreatIndicator.DisplayName | String | The display name of the indicator.                                      | 
+| AzureSentinel.ThreatIndicator.Description | String | The description of the indicator.                                       | 
+| AzureSentinel.ThreatIndicator.ThreatTypes | Unknown | The threat types of the indicator.                                      | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.KillChainName | String | The kill chain's name of the indicator.                                 | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeKey | Unknown | The pattern type key of the indicator.                                  | 
+| AzureSentinel.ThreatIndicator.Pattern | String | The pattern of the indicator.                                           | 
+| AzureSentinel.ThreatIndicator.PatternType | String | The pattern type of the indicator.                                      | 
+| AzureSentinel.ThreatIndicator.ValidFrom | Date | The date from which the indicator is valid.                             | 
+| AzureSentinel.ThreatIndicator.ValidUntil | Date | The date until which the indicator is valid.                            | 
+| AzureSentinel.ThreatIndicator.KillChainPhases.PhaseName | String | The phase name of the indicator.                                        | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.Value | String | The value of the indicator.                                             | 
+| AzureSentinel.ThreatIndicator.ParsedPattern.PatternTypeValues.ValueType | String | The value type of the indicator.                                        | 
+| AzureSentinel.ThreatIndicator.LastUpdatedTimeUtc | Date | The last updated time of the indicator.                                 | 
+| AzureSentinel.ThreatIndicator.Tags | Unknown | The tags of the indicator.                                              | 
+| AzureSentinel.ThreatIndicator.Types | Unknown | The threat types of the indicator.                                      | 
 
 
 #### Command Example
@@ -2087,35 +2087,35 @@ Creates a new alert rule.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.AlertRule.name | String | The name of the resource. | 
-| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource. | 
-| AzureSentinel.AlertRule.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
-| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
-| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to create this rule. | 
-| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
-| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time that this alert was modified. | 
-| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
-| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
-| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
-| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers the alert rule. | 
-| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold that triggers this alert rule. | 
+| **Path** | **Type** | **Description**                                                                                            |
+| --- | --- |------------------------------------------------------------------------------------------------------------|
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource.                                                              | 
+| AzureSentinel.AlertRule.name | String | The name of the resource.                                                                                  | 
+| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource.                                                                                | 
+| AzureSentinel.AlertRule.type | String | The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind.                                                                                       | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule.                                                    | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule.                                                                         | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to create this rule.                                              | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule.                                                                             | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule.                                                        | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled.                                                 | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time that this alert was modified.                                                                | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated.                                              | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated.                                               | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated.                                             | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule.                                                               | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run.                                  | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at.                                  | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers the alert rule.                                          | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold that triggers this alert rule.                                                               | 
 | AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since the last time this alert rule was triggered. | 
-| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings. | 
-| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert. | 
-| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings. | 
-| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled.                             | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings.                                                                               | 
+| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert.                               | 
+| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule.                                                            | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings.                                                                       | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule.                   | 
 
 #### Command example
 ```!azure-sentinel-create-alert-rule enabled=true kind=microsoft_security_incident_creation rule_name=test_name displayName="Testing Display Name" product_filter=microsoft_cloud_app_security```
@@ -2192,35 +2192,35 @@ Updates an alert rule.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.AlertRule.name | String | The name of the resource. | 
-| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource. | 
-| AzureSentinel.AlertRule.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
-| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
-| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to update this rule. | 
-| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
-| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
-| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time this alert was modified. | 
-| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated. | 
-| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
-| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
-| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
-| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers alert rule. | 
-| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold triggers this alert rule. | 
+| **Path** | **Type** | **Description**                                                                                             |
+| --- | --- |-------------------------------------------------------------------------------------------------------------|
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource.                                                               | 
+| AzureSentinel.AlertRule.name | String | The name of the resource.                                                                                   | 
+| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource.                                                                                 | 
+| AzureSentinel.AlertRule.type | String | The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"  | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind.                                                                                        | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule.                                                     | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule.                                                                          | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to update this rule.                                               | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule.                                                                              | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule.                                                         | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled.                                                  | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time this alert was modified.                                                                      | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated.                                               | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated.                                                | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated.                                              | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule.                                                                | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run.                                   | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at.                                   | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers alert rule.                                               | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold triggers this alert rule.                                                                     | 
 | AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since the last time this alert rule been triggered. | 
-| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
-| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings. | 
-| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert | 
-| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule. | 
-| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings. | 
-| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled.                              | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings.                                                                                | 
+| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert                                 | 
+| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule.                                                             | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings.                                                                        | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule.                    | 
 
 #### Command example
 ```!azure-sentinel-update-alert-rule enabled=true kind=microsoft_security_incident_creation rule_name=test_name displayName="Testing updating Display Name" product_filter=microsoft_cloud_app_security```

@@ -2010,7 +2010,7 @@ script:
       description: The kind of the indicator.
       type: String
     - contextPath: AzureSentinel.ThreatIndicators.Confidence
-      description: The confidence of the threat indicator. THis is a number between 0-100.
+      description: The confidence of the threat indicator. This is a number between 0-100.
       type: Number
     - contextPath: AzureSentinel.ThreatIndicator.Created
       description: When the threat indicator was created.
@@ -2673,7 +2673,7 @@ script:
       description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.
@@ -2951,7 +2951,7 @@ script:
       description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.
