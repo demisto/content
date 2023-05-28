@@ -12,6 +12,12 @@ configuration:
   name: token
   required: true
   type: 4
+  hidden: true
+- displaypassword: API Token
+  name: credentials_token
+  required: true
+  hiddenusername: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   type: 8
