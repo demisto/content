@@ -165,6 +165,11 @@ configuration:
   - Skip indicators with more than a single observation
   required: false
   type: 15
+- additionalinfo: "Choose whether to import the XSOAR custom fields. Note: this might overwrite the data pulled from other sources."
+  display: Update custom fields
+  name: update_custom_fields
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -242,7 +247,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.52421
+  dockerimage: demisto/taxii2:1.0.0.61540
   feed: true
   isfetch: false
   longRunning: false
