@@ -1088,7 +1088,8 @@ def main():
     tenant = params.get('tenant_id') or params.get('cred_tenant_id', {}).get('password')
     auth_and_token_url = params.get('auth_id') or params.get('cred_auth_id', {}).get('password')
     enc_key = params.get('enc_key') or params.get('cred_enc_key', {}).get('password')
-    certificate_thumbprint = params.get('certificate_thumbprint')
+    certificate_thumbprint = params.get('certificate_thumbprint', None) or params.get(
+        'cred_certificate_thumbprint', {}).get('password')
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
     subscription_id = demisto.args().get('subscription_id') or demisto.params().get('subscription_id')

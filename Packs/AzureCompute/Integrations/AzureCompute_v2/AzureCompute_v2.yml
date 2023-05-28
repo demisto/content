@@ -23,6 +23,11 @@ configuration:
   required: false
   type: 4
   hidden: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
 - displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
   name: cred_auth_id
   required: true
@@ -38,11 +43,12 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
-  name: certificate_thumbprint
-  required: false
-  type: 4
+- displaypassword: Certificate Thumbprint
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  name: cred_certificate_thumbprint
+  required: true
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
