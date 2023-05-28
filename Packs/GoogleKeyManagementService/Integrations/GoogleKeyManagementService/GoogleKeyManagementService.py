@@ -37,7 +37,7 @@ class Client:
         self.project = params.get('project')
         self.location = params.get('location')
         self.key_ring = params.get('key_ring')
-        self.service_account = params.get('service_account')
+        self.service_account = params.get('service_account') or params.get('credentials_service_account', {}).get('password')
 
         handle_proxy()
         # Creates an API client for the KMS API.
