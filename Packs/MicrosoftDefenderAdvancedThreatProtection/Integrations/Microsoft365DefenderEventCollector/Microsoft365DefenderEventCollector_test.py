@@ -17,7 +17,7 @@ Test:
     2.2 - authentication failed - ensure the expected error message returned
 """
 
-REQUESTS_MATCHER = re.compile('https://api\.securitycenter\.microsoft\.com/api/alerts\?.*filter.*orderby.*top.*')
+REQUESTS_MATCHER = re.compile(r'https://api\.securitycenter\.microsoft\.com/api/alerts\?.*filter.*orderby.*top.*')
 MOCKED_EVENTS = {
     "@odata.context": "https://api-us.securitycenter.microsoft.com/api/$metadata#Alerts",
     "value": [

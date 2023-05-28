@@ -12,7 +12,7 @@ from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time,
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
     get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
-    create_filters_disjunctions, create_filter, get_azure_cloud_or_default, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
+    create_filters_disjunctions, create_filter, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -2790,7 +2790,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
             - Ensure the output are as expected.
     """
 
-    from MicrosoftDefenderAdvancedThreatProtection import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    from MicrosoftDefenderAdvancedThreatProtection import main, MANAGED_IDENTITIES_TOKEN_URL
     import re
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
@@ -2827,7 +2827,7 @@ def test_generate_login_url(mocker):
     """
     # prepare
     import demistomock as demisto
-    from MicrosoftDefenderAdvancedThreatProtection import main, Scopes
+    from MicrosoftDefenderAdvancedThreatProtection import main
     import MicrosoftDefenderAdvancedThreatProtection
 
     redirect_uri = 'redirect_uri'
