@@ -119,6 +119,9 @@ class Client:
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
                 demisto.debug(f'Got an error from {feed_url} while fetching indicators {(str(err))} ')
+                if err.response.status_code == 503:
+                    raise Exception(f'The service located at {feed_url} is unavailable while fetching '
+                                    f'indicators {(str(err))} ')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
