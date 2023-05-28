@@ -129,8 +129,8 @@ def test_page_not_found_error(mocker):
 
     with pytest.raises(Exception) as e:
         client.http_request()
-    # Validate that a `NotFoundError` was raised
-    assert type(e).__name__ == 'NotFoundError'
+        # Validate that a `NotFoundError` was raised
+        assert type(e).__name__ == 'NotFoundError'
 
 
 def test_epoch_seconds(mocker):
@@ -485,7 +485,7 @@ def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
 
     with pytest.raises(DemistoException) as err:
         client.http_request(method='GET', url_suffix='test_id')
-    assert 'Rate limit reached!' in err.args[0]['content']
+        assert 'Rate limit reached!' in err.args[0]['content']
 
 
 def test_rate_limit_when_retry_is_false(requests_mock):
@@ -510,7 +510,7 @@ def test_rate_limit_when_retry_is_false(requests_mock):
 
     with pytest.raises(DemistoException) as err:
         client.http_request(method='GET', url_suffix='test_id')
-    assert 'Error in API call [429]' in err.args[0]
+        assert 'Error in API call [429]' in err.args[0]
 
 
 @pytest.mark.parametrize('response, result', [

@@ -17,7 +17,7 @@ Test:
     2.2 - authentication failed - ensure the expected error message returned
 """
 
-REQUESTS_MATCHER = re.compile('https://api\.security\.microsoft\.com/api/alerts\?.*filter.*orderby.*top.*')
+REQUESTS_MATCHER = re.compile('https://api\.securitycenter\.microsoft\.com/api/alerts\?.*filter.*orderby.*top.*')
 MOCKED_EVENTS = {
     "@odata.context": "https://api-us.securitycenter.microsoft.com/api/$metadata#Alerts",
     "value": [
@@ -130,7 +130,7 @@ class TestFetchEventsHappyPath:
         mocker.patch.object(demisto, 'getLastRun', return_value=None)
 
         # run
-        main(command='fetch-events', demisto_params=PARAMS)
+        main(command='fetch-events', params=PARAMS)
 
         # validate
         Microsoft365DefenderEventCollector.dateparser.parse.assert_called_with(
@@ -153,7 +153,7 @@ class TestFetchEventsHappyPath:
         mocker.patch.object(Microsoft365DefenderEventCollector.dateparser, 'parse')
 
         # run
-        main(command='fetch-events', demisto_params=PARAMS)
+        main(command='fetch-events', params=PARAMS)
 
         # validate
         assert stored_creation_time.lower() in requests_mock.request_history[0].qs['$filter'][0]
@@ -171,7 +171,7 @@ class TestFetchEventsHappyPath:
         mocker.patch.object(demisto, 'getLastRun', return_value=None)
 
         # run
-        main(command='fetch-events', demisto_params=PARAMS | {'limit': limit})
+        main(command='fetch-events', params=PARAMS | {'limit': limit})
 
         # validate
         returned_alerts = Microsoft365DefenderEventCollector.send_events_to_xsiam.call_args[0][0]
@@ -192,7 +192,7 @@ class TestFetchEventsEdgeCases:
         mocker.patch.object(demisto, 'getLastRun', return_value=None)
 
         # run
-        main(command='fetch-events', demisto_params=PARAMS | {'limit': limit})
+        main(command='fetch-events', params=PARAMS | {'limit': limit})
 
         # validate
         assert str(MAX_ALERTS_PAGE_SIZE) == requests_mock.request_history[0].qs['$top'][0]
@@ -212,7 +212,7 @@ class TestFetchEventsEdgeCases:
         mocker.patch.object(demisto, 'results')
 
         # run
-        main(command='test-module', demisto_params=PARAMS)
+        main(command='test-module', params=PARAMS)
 
         # validate
         demisto.results.assert_called_with(Microsoft365DefenderEventCollector.AUTH_ERROR_MSG)
@@ -228,7 +228,7 @@ def test_get_events_command(mocker):
     mocker.patch.object(Microsoft365DefenderEventCollector, 'return_results')
 
     # run
-    main(command='microsoft-365-defender-get-events', demisto_params=PARAMS)
+    main(command='microsoft-365-defender-get-events', params=PARAMS)
 
     # validate
     returned_results = Microsoft365DefenderEventCollector.return_results.call_args[0][0]

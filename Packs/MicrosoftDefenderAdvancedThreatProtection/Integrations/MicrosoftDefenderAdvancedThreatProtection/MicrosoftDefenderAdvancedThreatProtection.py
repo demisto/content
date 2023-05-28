@@ -1102,11 +1102,17 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 token_retrieval_url, grant_type, endpoint_type,
-                 redirect_uri, auth_code,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None, managed_identities_client_id: Optional[str] = None):
         self.endpoint_type = endpoint_type
+        if auth_type == 'Authorization Code':
+            token_retrieval_url = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
+                                          '/organizations/oauth2/v2.0/token')
+            grant_type = AUTHORIZATION_CODE
+        else:
+            token_retrieval_url = None
+            grant_type = None
+
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
@@ -2932,6 +2938,11 @@ def request_download_investigation_package_command(client: MsClient, args: dict)
     return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
                                get_machine_investigation_package,
                                get_machine_action_command, download_file_after_successful_status)
+
+
+def generate_login_url_command(client: MsClient):
+    return generate_login_url(client.ms_client,
+                              MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS[client.endpoint_type])
 
 
 def download_file_after_successful_status(client, res):
@@ -5447,9 +5458,9 @@ def main():  # pragma: no cover
     self_deployed = self_deployed or managed_identities_client_id is not None
 
     endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params.get("endpoint_type", "Worldwide"), "com")
-    is_gcc = params.get('is_gcc', False)
-    if is_gcc:  # Backward compatible.
-        endpoint_type = "gcc"
+    is_gcc = params.get('is_gcc')
+    if is_gcc is not None:  # Backward compatible.
+        endpoint_type = "gcc" if is_gcc else "com"
 
     url = MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
 
@@ -5476,22 +5487,13 @@ def main():  # pragma: no cover
     args = demisto.args()
     LOG(f'command is {command}')
     try:
-        if auth_type == 'Authorization Code':
-            token_retrieval_url = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
-                                          '/organizations/oauth2/v2.0/token')
-            grant_type = AUTHORIZATION_CODE
-        else:
-            token_retrieval_url = None
-            grant_type = None
 
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            token_retrieval_url=token_retrieval_url,
-            grant_type=grant_type,
-            endpoint_type=endpoint_type,
+            auth_type=auth_type, endpoint_type=endpoint_type,
             auth_code=auth_code, redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id
         )
@@ -5695,7 +5697,7 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
         elif command == 'microsoft-atp-generate-login-url':
-            return_results(generate_login_url(client.ms_client))
+            return_results(generate_login_url_command(client))
 
     except Exception as err:
         return_error(str(err))
