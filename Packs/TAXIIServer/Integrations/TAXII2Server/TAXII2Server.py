@@ -28,7 +28,6 @@ MEDIA_TYPE_TAXII_V21 = 'application/taxii+json;version=2.1'
 MEDIA_TYPE_STIX_V21 = 'application/stix+json;version=2.1'
 MEDIA_TYPE_TAXII_V20 = 'application/vnd.oasis.taxii+json; version=2.0'
 MEDIA_TYPE_STIX_V20 = 'application/vnd.oasis.stix+json; version=2.0'
-ACCEPT_TYPE_ALL = '*/*'
 TAXII_VER_2_0 = '2.0'
 TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
@@ -396,14 +395,28 @@ def get_limited_extensions(limited_iocs, extensions):
     return limited_extensions
 
 
+def remove_spaces_from_header(header: str | list) -> str | list:
+    """_summary_
+
+    Args:
+        header (str | list): A single header or a list of headers to remove spaces from.
+
+    Returns:
+        str | list: The header or list of headers without spaces.
+    """
+    if isinstance(header, list):
+        return [value.replace(' ', '') for value in header]
+    return header.replace(' ', '')
+
+
 def taxii_validate_request_headers(f: Callable) -> Callable:
     @functools.wraps(f)
     def validate_request_headers(*args, **kwargs):
         """
         function for HTTP requests to validate authentication and Accept headers.
         """
-        accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21,
-                          MEDIA_TYPE_STIX_V20]
+        accept_headers = remove_spaces_from_header(
+            [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21, MEDIA_TYPE_STIX_V20])
         credentials = request.authorization
 
         if SERVER.auth:
@@ -423,28 +436,23 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
         # v2.0 headers has a space while v2.1 does not,
         # this caused confusion with platforms sometimes sending a header with or without space.
         # to avoid issues the Accept header is stripped from the spaces before validation.
-        stripped_v2_0_headers = [value.replace(' ', '') for value in (MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20)]
         accept_header = request_headers.get('Accept')
 
-        if (accept_header not in accept_headers) or (accept_header not in stripped_v2_0_headers):
+        if remove_spaces_from_header(accept_header) not in accept_headers:
             return handle_response(HTTP_406_NOT_ACCEPTABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
 
-        possible_v2_0_headers = stripped_v2_0_headers + [MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20]
-        if SERVER.version == TAXII_VER_2_1 and accept_header in possible_v2_0_headers:
+        possible_v20_headers = [MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20] + list(remove_spaces_from_header([MEDIA_TYPE_TAXII_V20,
+                                                                                                            MEDIA_TYPE_STIX_V20]))
+        if SERVER.version == TAXII_VER_2_1 and accept_header in possible_v20_headers:
             return handle_response(HTTP_406_NOT_ACCEPTABLE, {
                 'title': 'Invalid TAXII Header',
                 'description': 'The media type (version=2.0) provided in the Accept header'
                                ' is not supported on TAXII v2.1.'
             })
-
-        # if Accept header is v2.0 and has no space (like it should) than add the space to the header.
-        if accept_header in stripped_v2_0_headers:
-            request.headers['Accept'] = MEDIA_TYPE_TAXII_V20 if accept_header == MEDIA_TYPE_TAXII_V20.replace(
-                ' ', '') else MEDIA_TYPE_STIX_V20
 
         return f(*args, **kwargs)
 
