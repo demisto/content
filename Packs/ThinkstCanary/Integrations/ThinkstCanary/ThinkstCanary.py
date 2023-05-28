@@ -43,7 +43,7 @@ RELEVANT_TOKEN_ENTRIES = {
 }
 DEF_PARAMS = {
     'auth_token': demisto.params().get('authentication_token', {}).get('password')
-    or demisto.params().get('authentication_token', None)
+    or demisto.params().get('auth_token', None)
 }
 '''HELPER FUNCTIONS'''
 
