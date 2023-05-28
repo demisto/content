@@ -1638,15 +1638,15 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: a2b00860-013f-4ea8-867a-3eceb0f79006
+    taskid: 31b82d2f-dc62-4dc5-8702-3f58845246ba
     type: regular
     task:
-      id: a2b00860-013f-4ea8-867a-3eceb0f79006
+      id: 31b82d2f-dc62-4dc5-8702-3f58845246ba
       version: -1
       name: Create aSTIX file
       description: |
-        Create a file (using the given data input or entry ID) and upload it to the current investigation in the War Room.
-      scriptName: FileCreateAndUpload
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
