@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import argparse
 import json
 
 from typing import List, Set
@@ -30,26 +29,6 @@ XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
 COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
-
-
-def parse_changed_files_names() -> argparse.Namespace:
-    """
-    Arg parser to retrieve the changed files along with the delimiter to separate between them.
-    """
-    parser = argparse.ArgumentParser(description="Parse the changed files names.")
-    parser.add_argument(
-        "-c",
-        "--changed_files",
-        help="The files that are passed to handle external PR (passed as one string).",
-    )
-    parser.add_argument(
-        "-d",
-        "--delimiter",
-        help="The delimiter that is used to separate between all the changes files",
-    )
-    args = parser.parse_args()
-
-    return args
 
 
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
@@ -172,12 +151,11 @@ def main():
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
 
-    parser_args = parse_changed_files_names()
-    changed_files_list = parser_args.changed_files.split(parser_args.delimiter)
-    print(f'{changed_files_list=}')
+    changed_files_paths = [file.filename for file in pr.get_files()]
+    print(f'{changed_files_paths=} for {pr_number=}')
 
     labels_to_add = [CONTRIBUTION_LABEL]
-    if support_label := get_packs_support_level_label(changed_files_list):
+    if support_label := get_packs_support_level_label(changed_files_paths):
         labels_to_add.append(support_label)
 
     # Add 'Contribution' + support Label to the external PR

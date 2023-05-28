@@ -843,7 +843,7 @@ def external_dynamic_list_to_xsoar_format(outputs):
         outputs = [outputs]
     for output in outputs:
         # For pre-defined list, also predefined values are returned, and their structure is different
-        if output.get('folder') == 'predefined':
+        if output.get('snippet') == 'predefined':
             output['type'] = 'predefined'
             output['source'] = 'predefined'
             continue
@@ -856,7 +856,7 @@ def external_dynamic_list_to_xsoar_format(outputs):
                                    f'Type is missing. Dynamic list as returned by the API: {output}')
         output['description'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('description')
         output['source'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('url')
-        output['frequency'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring')
+        output['frequency'] = next(iter(dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring', {})), None)
         output['exception_list'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('exception_list')
         output['type'] = dynamic_list_type
 
@@ -1202,7 +1202,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER, 'name': args.get('name')
     }
     tsg_id = args.get('tsg_id')
     if object_id := args.get('object_id'):
@@ -1214,7 +1214,9 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        outputs = outputs.get('data', [])
+        # A dict containing a list of results (data) is returned from the API.
+        # When filtering by name the key 'data' does not exist in the response, therefore we return the entire response.
+        outputs = outputs.get('data', outputs)
 
     address_to_xsoar_format(outputs)
     return CommandResults(
@@ -1301,7 +1303,8 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
 
     query_params = {
         'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
-        'position': encode_string_results(args.get('position')) or DEFAULT_POSITION
+        'position': encode_string_results(args.get('position')) or DEFAULT_POSITION,
+        'name': args.get('name')
     }
     tsg_id = args.get('tsg_id')
 
@@ -1312,7 +1315,9 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_security_rules(query_params=query_params, tsg_id=tsg_id)  # type: ignore
-        outputs = raw_response.get('data') or {}
+        # A dict containing a list of results is returned by the API.
+        # A single dict is returned when filtering the request by name.
+        outputs = raw_response.get('data', raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
@@ -1362,7 +1367,8 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'name': args.get('name'),
     }
     tsg_id = args.get('tsg_id')
     if tag_id := args.get('tag_id'):
@@ -1372,7 +1378,9 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_tags(query_params=query_params, tsg_id=tsg_id)  # type: ignore
-        outputs = raw_response.get('data', [])
+        # A dict containing a list of results is returned by the API.
+        # A single dict is returned when filtering the request by name.
+        outputs = raw_response.get('data', raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
@@ -1475,7 +1483,8 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'name': args.get('name'),
     }
     tsg_id = args.get('tsg_id')
     if group_id := args.get('group_id'):
@@ -1486,7 +1495,9 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
 
         raw_response = client.list_address_group(query_params=query_params, tsg_id=tsg_id)  # type: ignore
         outputs = raw_response.copy()
-        outputs = outputs.get('data', [])
+        # A dict containing a list of results is returned by the API.
+        # A single dict is returned when filtering the request by name.
+        outputs = outputs.get('data', outputs)
 
     address_group_to_xsoar_format(outputs)
 
@@ -1628,7 +1639,8 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'name': args.get('name'),
     }
     tsg_id = args.get('tsg_id')
     if url_category_id := args.get('id'):
@@ -1640,8 +1652,9 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_custom_url_category(query_params=query_params, tsg_id=tsg_id)  # type: ignore
-
-        outputs = raw_response.get('data', [])
+        # A dict containing a list of results is returned by the API.
+        # A single dict is returned when filtering the request by name.
+        outputs = raw_response.get('data', raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
@@ -1759,7 +1772,8 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'name': args.get('name')
     }
     tsg_id = args.get('tsg_id')
     if external_dynamic_list_id := args.get('id'):
@@ -1773,7 +1787,9 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         raw_response = client.list_external_dynamic_list(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.copy()
-        outputs = outputs.get('data', [])
+        # A dict containing a list of results is returned by the API.
+        # A single dict is returned when filtering the request by name.
+        outputs = outputs.get('data', outputs)
 
     external_dynamic_list_to_xsoar_format(outputs)
 
@@ -2111,14 +2127,19 @@ def main():  # pragma: no cover
     try:
         if command == 'test-module':
             return_results(test_module(client))
-        if command in commands:
+        elif command in commands:
             return_results(commands[command](client, demisto.args()))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     # Log exceptions
-    except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {str(e)}')
+    except DemistoException as e:
+        # special handling for 404 error, which is returned when the item is not found
+        if e.res is not None and e.res.status_code == 404 and "Object Not Present" in e.message:
+            return_results("The item you're searching for does not exist within the Prisma SASE API.")
+
+        else:
+            return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
