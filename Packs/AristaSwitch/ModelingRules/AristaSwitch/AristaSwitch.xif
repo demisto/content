@@ -110,252 +110,6 @@ call arista_switch_common_fields_modeling
     xdm.auth.auth_method = login_process;
 
 
-/*** Security Events 
-    (https://www.arista.com/en/um-eos/eos-security) ***/  
-call arista_switch_common_fields_modeling
-| filter facility = "SECURITY" 
-| alter 
-    user =  arrayindex(regextract(message, "Session for user (\S+) on"), 0),  
-    session_service =  arrayindex(regextract(message, "Session for user \S+ on service (\S+)"), 0),
-    outcome =  arrayindex(regextract(message, "(\w+) due to"), 0),  
-    reason =  arrayindex(regextract(message, "due to ([^\.]+)"), 0)
-| alter 
-    xdm.source.user.username  = user,
-    xdm.source.process.name = session_service,
-    xdm.event.outcome = outcome, 
-    xdm.event.outcome_reason = reason,
-    xdm.auth.auth_method = session_service;
-
-
-/*** ETH Events 
-    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
-call arista_switch_common_fields_modeling
-| filter facility = "ETH" 
-| alter 
-    host_mac_address =  arrayindex(regextract(message, "Host ([a-fA-F\d\:\-]{12,17})"), 0),  
-    src_interface =  arrayindex(regextract(message, "between interface (\S+)"), 0),  
-    dst_interface =  arrayindex(regextract(message, "between interface \S+ and interface (\S+)"), 0),  
-    vlan = to_integer(arrayindex(regextract(message, "in VLAN (\d+)"), 0))
-| alter 
-    xdm.source.vlan = vlan,
-    xdm.source.interface = src_interface,
-    xdm.source.host.mac_addresses = arraycreate(host_mac_address),
-    xdm.target.vlan = vlan, 
-    xdm.target.interface = dst_interface,
-    xdm.target.host.mac_addresses = arraycreate(host_mac_address),
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** Ebra (Ethernet Bridging Agent) Line Protocol Events ***/
-call arista_switch_common_fields_modeling
-| filter facility="LINEPROTO"
-| alter 
-    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
-    state =  arrayindex(regextract(message, "changed state to (\S+)"), 0)
-| alter 
-    ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
-    ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
-| alter 
-    xdm.source.ipv4 = ipv4,
-    xdm.source.ipv6 = ipv6,
-    xdm.source.interface = interface,
-    xdm.source.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
-    xdm.target.ipv4 = ipv4,
-    xdm.target.ipv6 = ipv6,
-    xdm.target.interface = interface,
-    xdm.target.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
-    xdm.event.outcome = state,
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** LAG (Link Aggregation Group) Events 
-    (https://arista.my.site.com/AristaCommunity/s/article/how-to-configure-link-aggregation-groups-in-eos) ***/  
-call arista_switch_common_fields_modeling
-| filter facility = "LAG" 
-| alter 
-    interface =  arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
-    remote_switch_name = arrayindex(regextract(message, "\((\w+)\)\s*[a-fA-F\d\.\:]+\--"), 0),
-    remote_switch_ip = arrayindex(regextract(message, "\(\w+\)\s*([a-fA-F\d\.\:]+)\--"), 0),
-    remote_switch_interface = arrayindex(regextract(message, "\(\w+\)\s*[a-fA-F\d\.\:]+\--\s*([^\*]+)"), 0),
-    reason =  arrayindex(regextract(message, "due to:\s*(.+)"), 0)
-| alter 
-    dst_ipv4 = if(remote_switch_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remote_switch_ip, null),
-    dst_ipv6 = if(remote_switch_ip ~= "\w{1,3}\:", remote_switch_ip, null)
-| alter 
-    xdm.source.interface = interface,
-    xdm.target.ipv4 = dst_ipv4,
-    xdm.target.ipv6 = dst_ipv6,
-    xdm.target.host.hostname = remote_switch_name,
-    xdm.target.interface = remote_switch_interface,
-    xdm.event.outcome = mnemonic, 
-    xdm.event.outcome_reason = reason,
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** STP (Spanning Tree Protocol) Events 
-    (https://www.arista.com/en/um-eos/eos-spanning-tree-protocol) ***/  
-call arista_switch_common_fields_modeling
-| filter facility = "SPANTREE" 
-| alter 
-    interface = arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
-    vlan = to_integer(arrayindex(regextract(message, "instance VL(\d+)"), 0)),
-    action = arrayindex(regextract(message, "has been (\w+ \S+ instance)"), 0),
-    state = arrayindex(regextract(message, "state is now (.+)"), 0)
-| alter 
-    xdm.source.interface = interface,
-    xdm.target.vlan = vlan,
-    xdm.event.operation = action, 
-    xdm.event.outcome = if(state = "not stable", XDM_CONST.OUTCOME_FAILED, state = "stable", XDM_CONST.OUTCOME_SUCCESS, null),
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** System Configuration Agent Events ***/  
-call arista_switch_common_fields_modeling
-| filter facility = "SYS"
-| alter 
-    user = arrayindex(regextract(message, "from \S+ by (\S+)"), 0),  
-    target_ip = arrayindex(regextract(message, "from \S+ by \S+ on \S+\s*\(([^\)]+)"), 0),
-    interface = if(process = "ConfigAgent", arrayindex(regextract(message, "^\w+\(([^\)]+)"), 0), null)
-| alter 
-    dst_ipv4 = if(target_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", target_ip, null),
-    dst_ipv6 = if(target_ip ~= "\w{1,3}\:", target_ip, null)
-| alter 
-    xdm.source.interface = interface,
-    xdm.source.user.username = user,
-    xdm.target.ipv4 = dst_ipv4,
-    xdm.target.ipv6 = dst_ipv6;
-
-
-/*** LLDP (Link Layer Discovery Protocol) Events 
-    (https://www.arista.com/en/um-eos/eos-link-layer-discovery-protocol) ***/  
-call arista_switch_common_fields_modeling
-| filter facility = "LLDP" 
-| alter 
-    interface =  arrayindex(regextract(message, "on interface ([\w\/]+)"), 0),  
-    remote_chassis_id = arrayindex(regextract(message, "neighbor with chassisId (\S+)"), 0),
-    remote_interface = arrayindex(regextract(message,  "neighbor with chassisId \S+ and portId \"*([\w\/]+)\"*"), 0)
-| alter 
-    xdm.source.interface = interface,
-    xdm.target.interface = remote_interface,
-    xdm.target.host.device_id = remote_chassis_id,
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** Flow Control Events 
-    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
-call arista_switch_common_fields_modeling
-| filter facility="FLOWCONTROL"
-| alter 
-    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
-    ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
-    ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
-| alter 
-    xdm.source.ipv4 = ipv4,
-    xdm.source.ipv6 = ipv6,
-    xdm.source.interface = interface,
-    xdm.source.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
-    xdm.target.ipv4 = ipv4,
-    xdm.target.ipv6 = ipv6,
-    xdm.target.interface = interface,
-    xdm.target.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** IGMP (Internet Group Management Protocol) Events 
-    (https://www.arista.com/en/um-eos/eos-igmp-and-igmp-snooping) ***/  
-call arista_switch_common_fields_modeling
-| filter facility contains "IGMP"
-| alter 
-    vlan = to_integer(arrayindex(regextract(message, "VLAN (\d+)"), 0)), 
-    src_ip =  arrayindex(regextract(message, "received from (\S+) on"), 0),  
-    dst_ip =  arrayindex(regextract(message, "received from \S+ on \S+ for (\S+)"), 0),  
-    interface =  arrayindex(regextract(message, "received from \S+ on (\S+)"), 0) 
-| alter 
-    src_ipv4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
-    src_ipv6 = if(src_ip ~= "\w{1,3}\:", src_ip, null),
-    dst_ipv4 = if(dst_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst_ip, null),
-    dst_ipv6 = if(dst_ip ~= "\w{1,3}\:", dst_ip, null),
-    ip_proto = "IGMP"
-| call arista_switch_map_ip_protocol
-| alter 
-    xdm.source.ipv4 = src_ipv4,
-    xdm.source.ipv6 = src_ipv6,
-    xdm.target.ipv4 = dst_ipv4,
-    xdm.target.ipv6 = dst_ipv6,
-    xdm.target.interface = interface,
-    xdm.target.vlan = vlan,
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** BFD (Bidirectional Forwarding Detection) Events 
-    (https://www.arista.com/en/um-eos/eos-bidirectional-forwarding-detection) ***/  
-call arista_switch_common_fields_modeling
-| filter facility = "BFD" 
-| alter 
-    peer_ip =  arrayindex(regextract(message, "ip:\s*([^,]+)"), 0),  
-    interface =  arrayindex(regextract(message, "intf:\s*([^,]+)"), 0),  
-    state = uppercase(arrayindex(regextract(message, "changed state from \S+ to (\S+)"), 0)),
-    old_state = uppercase(arrayindex(regextract(message, "changed state from (\S+) to \S+"), 0)),
-    reason = arrayindex(regextract(message, "diag (\S+)"), 0) // diagnostic code specifying the local system reason for the last change to Down state
-| alter 
-    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
-    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
-| alter 
-    xdm.target.ipv4 = peer_ipv4,
-    xdm.target.ipv6 = peer_ipv6,
-    xdm.target.interface = interface,
-    xdm.target.resource.value = state,
-    xdm.target.resource.type = if(state != null and state != "", "state", null),
-    xdm.target.resource_before.value = old_state,
-    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
-    xdm.observer.action = state,
-    xdm.event.outcome = if(state = "UP", XDM_CONST.OUTCOME_SUCCESS, state="DOWN", XDM_CONST.OUTCOME_FAILED, state != null, XDM_CONST.OUTCOME_UNKNOWN, null),
-    xdm.event.outcome_reason = reason, 
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
-/*** BGP (Border Gateway Protocol) RIB (Routing Information Base) Events 
-    (https://www.arista.com/en/um-eos/eos-border-gateway-protocol-bgp) ***/  
-call arista_switch_common_fields_modeling
-| filter facility contains "BGP" 
-| alter 
-    peer_ip = arrayindex(regextract(message, "peer\s*([a-zA-Z\d\:\.]+)"), 0),  
-    rib_src_peer_ip = arrayindex(regextract(message, "peer\s*([a-zA-Z\d\:\.]+)\+\d{1,5}"), 0),
-    rib_src_peer_port = arrayindex(regextract(message, "peer\s*[a-zA-Z\d\:\.]+\+(\d{1,5})"), 0),   
-    neighbor_ip = arrayindex(regextract(message, "neighbor\s*(\S+)"), 0),  
-    asn =  to_integer(arrayindex(regextract(message, "AS (\d+)"), 0)), 
-    old_state1 = arrayindex(regextract(message, "old state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE:
-    old_state2 = arrayindex(regextract(message, "\(AS \d+\) (\S+) to \S+"), 0),  //  Rib: %BGP-BFD-STATE-CHANGE:
-    new_state1 = arrayindex(regextract(message, "new state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE: 
-    new_state2 = arrayindex(regextract(message, "\(AS \d+\) \S+ to (\S+)"), 0), // Rib: %BGP-BFD-STATE-CHANGE:
-    trigger_event = arrayindex(regextract(message, "old state \S+ event (\S+) new state \S+"), 0),
-    bytes = to_integer(arrayindex(regextract(message, "sent to neighbor .+? (\d+) bytes"), 0))
-| alter 
-    peer_ip = coalesce(peer_ip, rib_src_peer_ip, neighbor_ip),
-    old_state = uppercase(coalesce(old_state1, old_state2)),
-    new_state = uppercase(coalesce(new_state1, new_state2))
-| alter 
-    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
-    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
-| alter 
-    xdm.source.sent_bytes = bytes,
-    xdm.source.ipv4 = if(rib_src_peer_ip != null, peer_ipv4, null),
-    xdm.source.ipv6 = if(rib_src_peer_ip != null, peer_ipv6, null),
-    xdm.source.port = if(rib_src_peer_port != null, rib_src_peer_port, null),
-    xdm.target.ipv4 = peer_ipv4,
-    xdm.target.ipv6 = peer_ipv6,
-    xdm.target.asn.as_number = asn,
-    xdm.target.resource.type = if(new_state != null and new_state != "", "state", null),
-    xdm.target.resource.value = new_state,
-    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
-    xdm.target.resource_before.value = old_state,
-    xdm.observer.action = new_state,
-    xdm.event.is_completed = if(new_state = "ESTABLISHED", true, new_state != null, false, null),
-    xdm.event.outcome = if(new_state in("UP", "ESTABLISHED"), XDM_CONST.OUTCOME_SUCCESS, new_state in("DOWN", "ACTIVE"), XDM_CONST.OUTCOME_FAILED, new_state in("IDLE", "CONNECT", "OPENSENT", "OPENCONFIRM"), XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
-    xdm.event.outcome_reason = trigger_event, 
-    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
-
-
 /*** ACL (Access List) Events 
     (https://www.arista.com/en/um-eos/eos-acls-and-route-maps) ***/  
 call arista_switch_common_fields_modeling
@@ -419,4 +173,269 @@ call arista_switch_common_fields_modeling
     xdm.network.icmp.type = icmp_type,
     xdm.network.icmp.code = icmp_code;
 
-    
+
+/*** BFD (Bidirectional Forwarding Detection) Events 
+    (https://www.arista.com/en/um-eos/eos-bidirectional-forwarding-detection) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "BFD" 
+| alter 
+    peer_ip =  arrayindex(regextract(message, "ip:\s*([^,]+)"), 0),  
+    interface =  arrayindex(regextract(message, "intf:\s*([^,]+)"), 0),  
+    state = uppercase(arrayindex(regextract(message, "changed state from \S+ to (\S+)"), 0)),
+    old_state = uppercase(arrayindex(regextract(message, "changed state from (\S+) to \S+"), 0)),
+    reason = arrayindex(regextract(message, "diag (\S+)"), 0) // diagnostic code specifying the local system reason for the last change to Down state
+| alter 
+    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
+    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
+| alter 
+    xdm.target.ipv4 = peer_ipv4,
+    xdm.target.ipv6 = peer_ipv6,
+    xdm.target.interface = interface,
+    xdm.target.resource.value = state,
+    xdm.target.resource.type = if(state != null and state != "", "state", null),
+    xdm.target.resource_before.value = old_state,
+    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
+    xdm.observer.action = state,
+    xdm.event.outcome = if(state = "UP", XDM_CONST.OUTCOME_SUCCESS, state="DOWN", XDM_CONST.OUTCOME_FAILED, state != null, XDM_CONST.OUTCOME_UNKNOWN, null),
+    xdm.event.outcome_reason = reason, 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** BGP (Border Gateway Protocol) RIB (Routing Information Base) Events 
+    (https://www.arista.com/en/um-eos/eos-border-gateway-protocol-bgp) ***/  
+call arista_switch_common_fields_modeling
+| filter facility contains "BGP" 
+| alter 
+    peer_ip = arrayindex(regextract(message, "peer\s*([a-zA-Z\d\:\.]+)"), 0),  
+    rib_src_peer_ip = arrayindex(regextract(message, "peer\s*([a-zA-Z\d\:\.]+)\+\d{1,5}"), 0),
+    rib_src_peer_port = to_integer(arrayindex(regextract(message, "peer\s*[a-zA-Z\d\:\.]+\+(\d{1,5})"), 0)),   
+    neighbor_ip = arrayindex(regextract(message, "neighbor\s*(\S+)"), 0),  
+    asn =  to_integer(arrayindex(regextract(message, "AS (\d+)"), 0)), 
+    old_state1 = arrayindex(regextract(message, "old state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE:
+    old_state2 = arrayindex(regextract(message, "\(AS \d+\) (\S+) to \S+"), 0),  //  Rib: %BGP-BFD-STATE-CHANGE:
+    new_state1 = arrayindex(regextract(message, "new state (\S+)"), 0), // Rib: %BGP-5-ADJCHANGE: 
+    new_state2 = arrayindex(regextract(message, "\(AS \d+\) \S+ to (\S+)"), 0), // Rib: %BGP-BFD-STATE-CHANGE:
+    trigger_event = arrayindex(regextract(message, "old state \S+ event (\S+) new state \S+"), 0),
+    bytes = to_integer(arrayindex(regextract(message, "sent to neighbor .+? (\d+) bytes"), 0))
+| alter 
+    peer_ip = coalesce(peer_ip, rib_src_peer_ip, neighbor_ip),
+    old_state = uppercase(coalesce(old_state1, old_state2)),
+    new_state = uppercase(coalesce(new_state1, new_state2))
+| alter 
+    peer_ipv4 = if(peer_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", peer_ip, null),
+    peer_ipv6 = if(peer_ip ~= "\w{1,3}\:", peer_ip, null)
+| alter 
+    xdm.source.sent_bytes = bytes,
+    xdm.source.ipv4 = if(rib_src_peer_ip != null, peer_ipv4, null),
+    xdm.source.ipv6 = if(rib_src_peer_ip != null, peer_ipv6, null),
+    xdm.source.port = if(rib_src_peer_port != null, rib_src_peer_port, null),
+    xdm.target.ipv4 = peer_ipv4,
+    xdm.target.ipv6 = peer_ipv6,
+    xdm.target.asn.as_number = asn,
+    xdm.target.resource.type = if(new_state != null and new_state != "", "state", null),
+    xdm.target.resource.value = new_state,
+    xdm.target.resource_before.type = if(old_state != null and old_state != "", "state", null),
+    xdm.target.resource_before.value = old_state,
+    xdm.observer.action = new_state,
+    xdm.event.is_completed = if(new_state = "ESTABLISHED", true, new_state != null, false, null),
+    xdm.event.outcome = if(new_state in("UP", "ESTABLISHED"), XDM_CONST.OUTCOME_SUCCESS, new_state in("DOWN", "ACTIVE"), XDM_CONST.OUTCOME_FAILED, new_state in("IDLE", "CONNECT", "OPENSENT", "OPENCONFIRM"), XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = trigger_event, 
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);v
+
+
+/*** ETH Events 
+    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "ETH" 
+| alter 
+    host_mac_address =  arrayindex(regextract(message, "Host ([a-fA-F\d\:\-]{12,17})"), 0),  
+    src_interface =  arrayindex(regextract(message, "between interface (\S+)"), 0),  
+    dst_interface =  arrayindex(regextract(message, "between interface \S+ and interface (\S+)"), 0),  
+    vlan = to_integer(arrayindex(regextract(message, "in VLAN (\d+)"), 0))
+| alter 
+    xdm.source.vlan = vlan,
+    xdm.source.interface = src_interface,
+    xdm.source.host.mac_addresses = arraycreate(host_mac_address),
+    xdm.target.vlan = vlan, 
+    xdm.target.interface = dst_interface,
+    xdm.target.host.mac_addresses = arraycreate(host_mac_address),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** EBRA (Ethernet Bridging Agent) Line Protocol Events ***/
+call arista_switch_common_fields_modeling
+| filter facility="LINEPROTO"
+| alter 
+    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
+    state =  arrayindex(regextract(message, "changed state to (\S+)"), 0)
+| alter 
+    ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
+| alter 
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.interface = interface,
+    xdm.source.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.target.ipv4 = ipv4,
+    xdm.target.ipv6 = ipv6,
+    xdm.target.interface = interface,
+    xdm.target.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.event.outcome = state,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** FLOW CONTROL Events 
+    (https://www.arista.com/en/um-eos/eos-ethernet-ports) ***/  
+call arista_switch_common_fields_modeling
+| filter facility="FLOWCONTROL"
+| alter 
+    interface =  arrayindex(regextract(message, "on Interface ([\w\/]+)"), 0),
+    ipv4 = if(dvc ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dvc, null),
+    ipv6 = if(dvc ~= "\w{1,3}\:", dvc, null)
+| alter 
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.source.interface = interface,
+    xdm.source.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.target.ipv4 = ipv4,
+    xdm.target.ipv6 = ipv6,
+    xdm.target.interface = interface,
+    xdm.target.host.hostname = if(ipv4 = null and ipv6 = null, dvc, null),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** IGMP (Internet Group Management Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-igmp-and-igmp-snooping) ***/  
+call arista_switch_common_fields_modeling
+| filter facility contains "IGMP"
+| alter 
+    vlan = to_integer(arrayindex(regextract(message, "VLAN (\d+)"), 0)), 
+    src_ip =  arrayindex(regextract(message, "received from (\S+) on"), 0),  
+    dst_ip =  arrayindex(regextract(message, "received from \S+ on \S+ for (\S+)"), 0),  
+    interface =  arrayindex(regextract(message, "received from \S+ on (\S+)"), 0) 
+| alter 
+    src_ipv4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    src_ipv6 = if(src_ip ~= "\w{1,3}\:", src_ip, null),
+    dst_ipv4 = if(dst_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst_ip, null),
+    dst_ipv6 = if(dst_ip ~= "\w{1,3}\:", dst_ip, null),
+    ip_proto = "IGMP"
+| call arista_switch_map_ip_protocol
+| alter 
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.ipv6 = src_ipv6,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.interface = interface,
+    xdm.target.vlan = vlan,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** LAG (Link Aggregation Group) Events 
+    (https://arista.my.site.com/AristaCommunity/s/article/how-to-configure-link-aggregation-groups-in-eos) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "LAG" 
+| alter 
+    interface =  arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
+    remote_switch_name = arrayindex(regextract(message, "\((\w+)\)\s*[a-fA-F\d\.\:]+\--"), 0),
+    remote_switch_ip = arrayindex(regextract(message, "\(\w+\)\s*([a-fA-F\d\.\:]+)\--"), 0),
+    remote_switch_interface = arrayindex(regextract(message, "\(\w+\)\s*[a-fA-F\d\.\:]+\--\s*([^\*]+)"), 0),
+    reason =  arrayindex(regextract(message, "due to:\s*(.+)"), 0)
+| alter 
+    dst_ipv4 = if(remote_switch_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", remote_switch_ip, null),
+    dst_ipv6 = if(remote_switch_ip ~= "\w{1,3}\:", remote_switch_ip, null)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6,
+    xdm.target.host.hostname = remote_switch_name,
+    xdm.target.interface = remote_switch_interface,
+    xdm.event.outcome = mnemonic, 
+    xdm.event.outcome_reason = reason,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** LLDP (Link Layer Discovery Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-link-layer-discovery-protocol) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "LLDP" 
+| alter 
+    interface =  arrayindex(regextract(message, "on interface ([\w\/]+)"), 0),  
+    remote_chassis_id = arrayindex(regextract(message, "neighbor with chassisId (\S+)"), 0),
+    remote_interface = arrayindex(regextract(message,  "neighbor with chassisId \S+ and portId \"*([\w\/]+)\"*"), 0)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.interface = remote_interface,
+    xdm.target.host.device_id = remote_chassis_id,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** PROCMGR (Process Manager) Events ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "PROCMGR" 
+| alter 
+    process1 =  arrayindex(regextract(message, "^\'(\S+)\'"), 0),  
+    process2 =  arrayindex(regextract(message, "from \'(\S+)\'"), 0),  
+    process3 =  arrayindex(regextract(message, "Restarting \'(\S+)\'"), 0),  
+    process4 =  arrayindex(regextract(message, "\'(\S+)\' starting"), 0),  
+    process5 =  arrayindex(regextract(message, "\'(\S+)\' \(PID)"), 0),  
+    pid = to_integer(arrayindex(regextract(message, "[\s\()]PID=(\d+)"), 0)),
+    ppid = to_integer(arrayindex(regextract(message, "PPID=(\d+)"), 0)),
+    exe_path = arrayindex(regextract(message, "execing \'([^\']+)"), 0)
+| alter 
+    process_name = coalesce(process1, process2, process3, process4, process5)
+| alter 
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = pid,
+    xdm.source.process.parent_id = ppid,
+    xdm.source.process.executable.path = exe_path;
+
+
+/*** SECURITY Events 
+    (https://www.arista.com/en/um-eos/eos-security) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SECURITY" 
+| alter 
+    user =  arrayindex(regextract(message, "Session for user (\S+) on"), 0),  
+    session_service =  arrayindex(regextract(message, "Session for user \S+ on service (\S+)"), 0),
+    outcome =  arrayindex(regextract(message, "(\w+) due to"), 0),  
+    reason =  arrayindex(regextract(message, "due to ([^\.]+)"), 0)
+| alter 
+    xdm.source.user.username  = user,
+    xdm.source.process.name = session_service,
+    xdm.event.outcome = outcome, 
+    xdm.event.outcome_reason = reason,
+    xdm.auth.auth_method = session_service;
+
+
+/*** STP (Spanning Tree Protocol) Events 
+    (https://www.arista.com/en/um-eos/eos-spanning-tree-protocol) ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SPANTREE" 
+| alter 
+    interface = arrayindex(regextract(message, "^Interface ([\w\/]+)"), 0),  
+    vlan = to_integer(arrayindex(regextract(message, "instance VL(\d+)"), 0)),
+    action = arrayindex(regextract(message, "has been (\w+ \S+ instance)"), 0),
+    state = arrayindex(regextract(message, "state is now (.+)"), 0)
+| alter 
+    xdm.source.interface = interface,
+    xdm.target.vlan = vlan,
+    xdm.event.operation = action, 
+    xdm.event.outcome = if(state = "not stable", XDM_CONST.OUTCOME_FAILED, state = "stable", XDM_CONST.OUTCOME_SUCCESS, null),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK);
+
+
+/*** SYS (System) Configuration Agent Events ***/  
+call arista_switch_common_fields_modeling
+| filter facility = "SYS"
+| alter 
+    user = arrayindex(regextract(message, "from \S+ by (\S+)"), 0),  
+    target_ip = arrayindex(regextract(message, "from \S+ by \S+ on \S+\s*\(([^\)]+)"), 0),
+    interface = if(process = "ConfigAgent", arrayindex(regextract(message, "^\w+\(([^\)]+)"), 0), null)
+| alter 
+    dst_ipv4 = if(target_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", target_ip, null),
+    dst_ipv6 = if(target_ip ~= "\w{1,3}\:", target_ip, null)
+| alter 
+    xdm.source.interface = interface,
+    xdm.source.user.username = user,
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.ipv6 = dst_ipv6;
