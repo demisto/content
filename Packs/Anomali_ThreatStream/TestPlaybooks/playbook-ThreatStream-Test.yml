@@ -711,6 +711,8 @@ tasks:
       iscommand: true
       brand: Anomali ThreatStream v3
     nexttasks:
+      '#error#':
+      - "27"
       '#none#':
       - "21"
     scriptarguments:
