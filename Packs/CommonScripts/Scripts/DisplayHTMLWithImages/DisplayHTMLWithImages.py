@@ -48,6 +48,7 @@ def get_entry_id_list(attachments, files):
     demisto.info(f'\n\n idlist \n\n{entry_id_list}')
     return entry_id_list
 
+
 def main(args):
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields', {})
@@ -65,7 +66,8 @@ def main(args):
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],
         'Contents': html_body,
-        })
+    })
+
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main(demisto.args())
