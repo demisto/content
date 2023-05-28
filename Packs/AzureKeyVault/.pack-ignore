@@ -55,7 +55,6 @@ listissuers
 listsas
 managecontacts
 manageissuers
-n
 nbf
 northcentralus
 northeurope
@@ -78,3 +77,5 @@ westeurope
 westindia
 westus
 x
+GCC
+n
