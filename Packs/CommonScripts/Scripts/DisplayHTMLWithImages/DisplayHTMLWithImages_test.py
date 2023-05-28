@@ -98,10 +98,10 @@ def test_create_html_with_image(email_html, entry_id_list, expected):
 
 
 @pytest.mark.parametrize(
-    "email_html,entry_id_list,expected",
-    [(EMAIL_HTML, [('image_1.png', '37@119'), ('image_2.png', '38@120')], EXPECTED_RESULT_2)]
+    "email_html,expected",
+    [(EMAIL_HTML, EXPECTED_RESULT_2)]
 )
-def test_create_email_html_mt(mocker, email_html, entry_id_list, expected):
+def test_main_mt(mocker, email_html, expected):
     """
         Given
         - The email's Html representation with multi tenant environment
@@ -110,8 +110,32 @@ def test_create_email_html_mt(mocker, email_html, entry_id_list, expected):
         Then
         - The images' src attribute would be replaced as expected with account tenant name
     """
-    from DisplayHTMLWithImages import create_email_html
-    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://localhost:8443:/acc_test_tenant'})
+    import DisplayHTMLWithImages
+    from DisplayHTMLWithImages import main
 
-    result = create_email_html(email_html, entry_id_list)
-    assert result == expected
+    mocked_incident = {
+        'CustomFields': {
+            'emailfrom': 'test_from',
+            'emailcc': 'test_cc',
+            'emailto': 'test_to',
+            'emailsubject': 'test_sub',
+            'renderedhtmll': email_html
+        },
+        'attachment': [
+            {'name': 'image_1.png'},
+            {'name': 'image_2.png'}
+        ]
+    }
+    mocked_files = [
+        {'Name': 'image_1.png', 'EntryID': '37@119'},
+        {'Name': 'image_2.png', 'EntryID': '38@120'}
+    ]
+
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://localhost:8443:/acc_test_tenant'})
+    mocker.patch.object(demisto, 'incident', return_value=mocked_incident)
+    mocker.patch.object(demisto, 'context', return_value={'File': mocked_files})
+    mocker.patch.object(DisplayHTMLWithImages, 'return_results')
+
+    main({})
+
+    assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']
