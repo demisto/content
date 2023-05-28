@@ -28,9 +28,10 @@ configuration:
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
 - displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
   name: cred_auth_id
-  required: true
+  required: false
   hiddenusername: true
   type: 9
 - displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
