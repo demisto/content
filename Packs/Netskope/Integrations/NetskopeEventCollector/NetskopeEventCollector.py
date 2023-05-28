@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -116,18 +116,20 @@ def dedup_by_id(last_run: dict, results: list, event_type: str, limit: int):
     events = []
     last_run_ids = set(last_run.get(f'{event_type}-ids', []))
     # Sorting the list to Ascending order according to the timestamp (old one first)
-    for event in list(reversed(results))[:limit]:
+    sorted_list = list(reversed(results))
+    for event in sorted_list[:limit]:
         event['event_id'] = event['_id']
         if event.get('timestamp') == last_run[event_type] and event.get('event_id') not in last_run_ids:
             events.append(event)
             last_run_ids.add(event['event_id'])
+
         else:
             last_run[f'{event_type}-ids'] = [event['event_id']]
             last_run_ids.add(event['event_id'])
             last_run[event_type] = event['timestamp']
             events.append(event)
-    demisto.debug(f'Last Run Ids to send to XSIAM - {last_run_ids}')
 
+    demisto.debug(f'Last Run Ids to send to XSIAM - {last_run_ids}')
     return events, last_run, last_run_ids
 
 
@@ -257,7 +259,7 @@ def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
     return results, events
 
 
-def fetch_events_command(client, api_version, last_run, max_fetch, is_command):
+def fetch_events_command(client, api_version, last_run, max_fetch, is_command):  # pragma: no cover
     events = get_all_events(client, last_run=last_run, limit=max_fetch, api_version=api_version, is_command=is_command)
 
     return events
@@ -295,7 +297,7 @@ def main() -> None:  # pragma: no cover
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, api_version, last_run, max_fetch)
+            result = test_module(client, api_version, last_run, max_fetch)   # type: ignore[arg-type]
             return_results(result)
 
         elif demisto.command() == 'netskope-get-events':

@@ -13,10 +13,33 @@ MOCK_ENTRY = util_load_json('test_data/mock_events.json')
 EVENTS_RAW_V2 = util_load_json('test_data/events_raw_v2.json')
 EVENTS_RAW_V2_MULTI = util_load_json('test_data/events_raw_v2_2_results.json')
 EVENTS_PAGE_RAW_V1 = util_load_json('test_data/page_raw_v1.json')
-BASE_URL = 'https://netskope.example.com/'
+BASE_URL = 'https://netskope.example.com
 FIRST_LAST_RUN = {'alert': 1680182467, 'alert-ids': [], 'application': 1680182467, 'application-ids': [],
                   'audit': 1680182467, 'audit-ids': [], 'network': 1680182467, 'network-ids': [],
                   'page': 1680182467, 'page-ids': []}
+
+
+def test_dedup_by_id():
+    """
+    Given:
+        - Results from the API
+    When:
+        - Running the command
+    Then:
+        - Make sure only the limited number of events return.
+        - Make sure that first comes the event that with the earlier timestamp
+        - Make sure that the last_run timestamp has been updated
+        - Make sure that the correct last_run_ids returned.
+    """
+    from NetskopeEventCollector import dedup_by_id
+    results = EVENTS_PAGE_RAW_V1.get('data')
+    events, new_last_run, last_run_ids = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', limit=4,
+                                                     results=results)
+    assert events[0].get('timestamp') == 1684751415
+    assert len(events) == 4
+    assert new_last_run['page'] == 1684751416
+    assert last_run_ids == {'3757761212778242bfda29cd', '98938eb19b4f9bea24ef9a8c', '66544bf5fda515f229592644',
+                            '9e99b72b957416a43222fa7a'}
 
 
 def test_test_module_v2(mocker):
@@ -33,29 +56,6 @@ def test_test_module_v2(mocker):
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
     results = test_module(client, api_version='v2', last_run=FIRST_LAST_RUN, max_fetch=1)
     assert results == 'ok'
-
-
-def test_dedup_by_id():
-    """
-    Given:
-        - Results from the API
-    When:
-        - Running the command
-    Then:
-        - Make sure only the limited number of events return.
-        - Make sure that first comes the event that with the earlier timestamp
-        - Make sure that the last_run timestamp has been updated
-        - Make sure that the correct last_run_ids returned.
-    """
-    from NetskopeEventCollector import dedup_by_id
-    results = EVENTS_PAGE_RAW_V1['data']
-    events, new_last_run, last_run_ids = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', limit=4,
-                                                     results=results)
-    assert events[0].get('timestamp') == 1684751415
-    assert len(events) == 4
-    assert new_last_run['page'] == 1684751416
-    assert last_run_ids == {'3757761212778242bfda29cd', '98938eb19b4f9bea24ef9a8c', '66544bf5fda515f229592644',
-                            '9e99b72b957416a43222fa7a'}
 
 
 def test_populate_parsing_rule_fields():
@@ -85,6 +85,6 @@ def test_get_events_v2(mocker):
     from NetskopeEventCollector import get_all_events, ALL_SUPPORTED_EVENT_TYPES
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
-    response = get_all_events(client, FIRST_LAST_RUN, api_version='v2', limit=1)
+    response = get_all_events(client, FIRST_LAST_RUN, api_version='v2', limit=1, is_command=True)
     assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
     assert 'results' not in response
