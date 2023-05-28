@@ -2678,29 +2678,108 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: b7f344e0-9709-44c6-8c11-c182507f92d2
+    taskid: f4fd2d3b-e19a-4395-81d9-cf5b413abb92
     type: playbook
     task:
-      id: b7f344e0-9709-44c6-8c11-c182507f92d2
+      id: f4fd2d3b-e19a-4395-81d9-cf5b413abb92
       version: -1
       name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
       playbookName: Block Indicators - Generic v3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "40"
     scriptarguments:
       AutoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.BlockIndicatorsAutomatically
       AutoCommit:
         simple: "No"
       CustomBlockRule:
         simple: "True"
       CustomURLCategory:
         simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       IP:
         complex:
           root: DBotScore
