@@ -21,8 +21,18 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Endpoint_Investigation"
+            "integrations": [
+                "WildFire-v2",
+                "Cortex XDR - IR",
+                "Joe Security"
+            ],
+            "instance_names": [
+                "WildFire-v2",
+                "Cortex XDR - IR",
+                "Joe_Security"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR Malware - Investigation And Response",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "Cortex XDR - IR",
