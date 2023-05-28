@@ -15,6 +15,19 @@ configuration:
   name: auth_key
   required: true
   type: 4
+  hidden: true
+- displaypassword: Token
+  additionalinfo: The API Key to use for connection
+  name: credentials_refresh_token
+  required: true
+  hiddenusername: true
+  type: 9
+- display: ID
+  name: credentials_id
+  required: true
+  type: 9
+  displaypassword: auth_key
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -2414,7 +2427,7 @@ script:
     description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     execution: false
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.54576
+  dockerimage: demisto/python_pancloud_v2:1.0.0.60697
   feed: false
   isfetch: true
   longRunning: false

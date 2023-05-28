@@ -18,12 +18,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBAL CONSTS '''
 ACCESS_TOKEN_CONST = 'access_token'  # guardrails-disable-line
-REFRESH_TOKEN_CONST = 'refresh_token'  # guardrails-disable-line
 EXPIRES_IN = 'expires_in'
 INSTANCE_ID_CONST = 'instance_id'
 API_URL_CONST = 'api_url'
-REGISTRATION_ID_CONST = 'reg_id'
-ENCRYPTION_KEY_CONST = 'auth_key'
 FIRST_FAILURE_TIME_CONST = 'first_failure_time'
 LAST_FAILURE_TIME_CONST = 'last_failure_time'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
@@ -90,7 +87,7 @@ class Client(BaseClient):
             INSTANCE_ID_CONST: instance_id
         }
         if refresh_token:
-            updated_integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
+            updated_integration_context.update({'refresh_token': refresh_token})
         demisto.setIntegrationContext(updated_integration_context)
         self.access_token = access_token
         self.api_url = api_url
@@ -1149,15 +1146,15 @@ def fetch_incidents(client: Client,
 def main():
     os.environ['PAN_CREDENTIALS_DBFILE'] = os.path.join(gettempdir(), 'pancloud_credentials.json')
     params = demisto.params()
-    registration_id_and_url = params.get(REGISTRATION_ID_CONST).split('@')
+    registration_id_and_url = (params.get('credentials_id', {}).get('identifier') or params.get('reg_id')).split('@')
     if len(registration_id_and_url) != 2:
         token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
     else:
         token_retrieval_url = registration_id_and_url[1]
     registration_id = registration_id_and_url[0]
     # If there's a stored token in integration context, it's newer than current
-    refresh_token = demisto.getIntegrationContext().get(REFRESH_TOKEN_CONST) or params.get(REFRESH_TOKEN_CONST)
-    enc_key = params.get(ENCRYPTION_KEY_CONST)
+    refresh_token = params.get('credentials_refresh_token').get('password') or params.get('refresh_token')
+    enc_key = params.get('credentials_id', {}).get('password') or params.get('auth_key')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
