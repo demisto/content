@@ -7,7 +7,7 @@ This section describes the basic mandatory steps you should perform on Arista's 
 In addition, you may wish to customize the [logging level](https://arista.my.site.com/AristaCommunity/s/article/understanding-logging-levels) and [logging format](https://www.arista.com/en/um-eos/eos-switch-administration-commands#xx1268462) of the audited events as described below. 
 
 ### Configure Syslog forwarding
-Arista's switch supports forwarding the audited events to a remote Syslog server. This is done via the "_**logging host**_" command. 
+Arista's switch supports forwarding the audited events to a remote Syslog server. This is done via the ***logging host*** command. 
 
 Follow these steps to configure forwarding of event logs from an Arista switch to an XSIAM Syslog Broker VM via UDP:
 1. Connect to the switch CLI (Command Line Interface). 
