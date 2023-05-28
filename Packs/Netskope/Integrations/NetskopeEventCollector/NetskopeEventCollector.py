@@ -11,9 +11,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-ALL_SUPPORTED_EVENT_TYPES = ['audit', 'network', 'page', 'alert', 'application']
+ALL_SUPPORTED_EVENT_TYPES = ['page', 'audit', 'network', 'alert', 'application']
 MAX_EVENTS_PAGE_SIZE = 10000
-MAX_EVENTS_PAGES_PER_FETCH = 3 * MAX_EVENTS_PAGE_SIZE  # more than 3 pages likely to reach a timeout
 MAX_SKIP = 50000
 
 ''' CLIENT CLASS '''
@@ -93,62 +92,13 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def populate_modeling_rule_fields(event: dict, event_type: str):
+def populate_parsing_rule_fields(event: dict, event_type: str):
     event['source_log_event'] = event_type
     try:
         event['_time'] = timestamp_to_datestring(event['timestamp'] * 1000)
     except TypeError:
         # modeling rule will default on ingestion time if _time is missing
         pass
-
-
-def get_all_events(client: Client, event_type: str, last_run: dict, skip: int,
-                   api_version: str) -> list:  # pragma: no cover
-    """
-    This Function is doing a pagination to get all events within the given start and end time.
-    Args:
-        client: Netskope Client
-        event_type (str): the event type
-        last_run (dict): the last run
-        skip (int): the number of events to skip - 10,000
-        api_version (str): The API version: v1 or v2
-
-    Returns (list): list of all the events from a start time.
-    """
-    next_batch = True
-    events = []
-    while next_batch:
-        if api_version == 'v1':
-            if event_type == 'alert':
-                response = client.get_alerts_request_v1(last_run, skip)
-            else:
-                response = client.get_events_request_v1(event_type, last_run, skip)
-
-            if response.get('status') != 'success':  # type: ignore
-                break
-
-            results = response.get('data', [])  # type: ignore
-
-        else:  # API version == v2
-            response = client.get_events_request_v2(event_type, last_run, skip)
-            if response.get('ok') != 1:
-                break
-
-            results = response.get('result', [])
-
-        demisto.debug(f'The number of events pagination - {len(results)}')
-        events.extend(results)
-        skip += MAX_EVENTS_PAGE_SIZE
-
-        if len(results) < MAX_EVENTS_PAGE_SIZE or not results:
-            next_batch = False
-            break
-
-        if len(events) == MAX_SKIP:
-            next_batch = False
-            break
-
-    return events
 
 
 def dedup_by_id(last_run: dict, results: list, event_type: str, limit: int):
@@ -184,70 +134,78 @@ def dedup_by_id(last_run: dict, results: list, event_type: str, limit: int):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, api_version: str, last_run: dict):
+def test_module(client: Client, api_version: str, last_run: dict, max_fetch: int) -> str:
 
-    event_type = 'application'
-    if api_version == 'v1':
-        response = client.get_events_request_v1(event_type, last_run, limit=1, is_command=True)
-        if response.get('status') == 'success':
-            return 'ok'
-    else:
-        response = client.get_events_request_v2(event_type, last_run, limit=1, is_command=True)
-        if response.get('ok') == 1:
-            return 'ok'
-
-    return response
+    fetch_events_command(client, api_version, last_run, max_fetch=max_fetch, is_command=True)
+    return 'ok'
 
 
-def get_events_v1(client: Client, last_run: dict, api_version: str,
-                  limit: Optional[int] = None) -> List[Any] | Any:  # pragma: no cover
+def get_all_events(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> list:
     """
-    Get all events extracted from Saas traffic and or logs.
+    This Function is doing a pagination to get all events within the given start and end time.
+    Maximum events to get per a fetch call is 50,000 (MAX_SKIP)
     Args:
-        client (Client): Netskope Client.
-        last_run (dict): Get alerts from certain time period.
-        limit (Optional[int]): The maximum number of alerts to return (up to 10000).
-        api_version (str): The API version to use.
-    Returns:
-        events (list).
+        client: Netskope Client
+        last_run (dict): the last run
+        limit (int): the number of events to return
+        api_version (str): The API version: v1 or v2
+        is_command (bool): Are we running the commands or test_module or not
+
+    Returns (list): list of all the events from a start time.
     """
     events_result = []
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
-    skip = MAX_EVENTS_PAGE_SIZE
+    skip = 0
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        # et - event_type
         et_events: list = []
-        if event_type == 'alert':
-            response = client.get_alerts_request_v1(last_run)
-        else:
-            response = client.get_events_request_v1(event_type, last_run)
+        next_batch = True
+        events = []
+        while next_batch:
+            if api_version == 'v1':
+                if event_type == 'alert':
+                    response = client.get_alerts_request_v1(last_run, skip, limit, is_command)
+                else:
+                    response = client.get_events_request_v1(event_type, last_run, skip, limit, is_command)
 
-        results = response.get('data', [])  # type: ignore
+                if response.get('status') != 'success':  # type: ignore
+                    break
 
-        if response.get('status') != 'success' or not results:  # type: ignore
-            break
+                results = response.get('data', [])  # type: ignore
 
-        if len(results) == MAX_EVENTS_PAGE_SIZE:
-            all_events = get_all_events(client, event_type, last_run, skip, api_version)
-            results.extend(all_events)
+            else:  # API version == v2
+                response = client.get_events_request_v2(event_type, last_run, skip, limit, is_command)
+                if response.get('ok') != 1:
+                    break
 
-        events, new_last_run, last_run_ids = dedup_by_id(last_run, results, event_type, limit)
-        et_events.extend(events)
+                results = response.get('result', [])
+
+            demisto.debug(f'The number of events pagination - {len(results)}')
+            events.extend(results)
+            if len(results) == MAX_EVENTS_PAGE_SIZE:
+                skip += MAX_EVENTS_PAGE_SIZE
+
+            if len(results) < MAX_EVENTS_PAGE_SIZE or not results or len(events) == MAX_SKIP:
+                # This means that we either finished going over all results or that we have reached the
+                # limit of accumulated events.
+                break
+
+        final_events, new_last_run, last_run_ids = dedup_by_id(last_run, events, event_type, limit)
+        et_events.extend(final_events)
         # prepare for the next iteration
         last_run[f'{event_type}-ids'] = list(last_run_ids)
         demisto.debug(f'Initialize last run after fetch - {event_type} - {last_run[event_type]} \n '
                       f'Events IDs to send to XSIAM - {last_run_ids}')
 
         for event in et_events:
-            populate_modeling_rule_fields(event, event_type)
+            populate_parsing_rule_fields(event, event_type)
         events_result.extend(et_events)
 
     return events_result
 
 
 def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
-    limit = arg_to_number(args.get('limit', 20))
+    limit = arg_to_number(args.get('limit', 50))
     events = []
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         response = client.get_events_request_v1(event_type, last_run, limit, is_command=True)
@@ -270,47 +228,6 @@ def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
                              readable_output=readable_output,
                              raw_response=events)
     return results, events
-
-
-def get_events_v2(client, last_run: dict, api_version: str, limit: Optional[int] = None) -> List[Any] | Any:
-    """
-    Get all events extracted from Saas traffic and or logs.
-    Args:
-        client (Client): Netskope Client.
-        last_run (dict): Get alerts from certain time period.
-        limit (Optional[int]): The maximum number of alerts to return (up to 10000).
-        api_version (str): The API version (v2)
-    Returns:
-        events (list).
-    """
-    events_result = []
-    if limit is None:
-        limit = MAX_EVENTS_PAGE_SIZE
-    skip = MAX_EVENTS_PAGE_SIZE
-    for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        # et - event_type
-        et_events: list = []
-        response = client.get_events_request_v2(event_type, last_run)
-        results = response.get('result', [])
-        if response.get('ok') != 1 or not results:
-            break
-
-        if len(results) == MAX_EVENTS_PAGE_SIZE:
-            all_events = get_all_events(client, event_type, last_run, skip, api_version)
-            results.extend(all_events)
-
-        events, new_last_run, last_run_ids = dedup_by_id(last_run, results, event_type, limit)
-        et_events.extend(events)
-        # prepare for the next iteration
-        last_run[f'{event_type}-ids'] = list(last_run_ids)
-        demisto.debug(f'Initialize last run after fetch - {event_type} - {last_run[event_type]} \n '
-                      f'Events IDs to send to XSIAM - {last_run_ids}')
-
-        for event in et_events:
-            populate_modeling_rule_fields(event, event_type)
-        events_result.extend(et_events)
-
-    return events_result
 
 
 def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
@@ -340,11 +257,8 @@ def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
     return results, events
 
 
-def fetch_events_command(client, api_version, last_run, max_fetch):
-    if api_version == 'v1':
-        events = get_events_v1(client, last_run, limit=max_fetch, api_version=api_version)
-    else:
-        events = get_events_v2(client, last_run, limit=max_fetch, api_version=api_version)
+def fetch_events_command(client, api_version, last_run, max_fetch, is_command):
+    events = get_all_events(client, last_run=last_run, limit=max_fetch, api_version=api_version, is_command=is_command)
 
     return events
 
@@ -362,7 +276,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
-    max_fetch = min(arg_to_number(params.get('max_fetch')), MAX_EVENTS_PAGES_PER_FETCH)  # type: ignore[type-var]
+    max_fetch = arg_to_number(params.get('max_fetch', 1000))
     vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
 
     demisto.debug(f'Command being called is {demisto.command()}')
@@ -381,7 +295,7 @@ def main() -> None:  # pragma: no cover
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, api_version, last_run)
+            result = test_module(client, api_version, last_run, max_fetch)
             return_results(result)
 
         elif demisto.command() == 'netskope-get-events':
@@ -396,7 +310,7 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == 'fetch-events':
             demisto.debug(f'Sending request with last run {last_run}')
-            events = fetch_events_command(client, api_version, last_run, max_fetch)
+            events = fetch_events_command(client, api_version, last_run, max_fetch, is_command=False)
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
             demisto.debug(f'Setting the last_run to: {last_run}')
             demisto.setLastRun(last_run)

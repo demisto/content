@@ -31,7 +31,7 @@ def test_test_module_v2(mocker):
     from NetskopeEventCollector import test_module
     client = Client(BASE_URL, 'dummy_token', 'v2', False, False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
-    results = test_module(client, api_version='v2', last_run=FIRST_LAST_RUN)
+    results = test_module(client, api_version='v2', last_run=FIRST_LAST_RUN, max_fetch=1)
     assert results == 'ok'
 
 
@@ -58,7 +58,7 @@ def test_dedup_by_id():
                             '9e99b72b957416a43222fa7a'}
 
 
-def test_populate_modeling_rule_fields():
+def test_populate_parsing_rule_fields():
     """
     Given:
         - Event from the API of type audit
@@ -67,9 +67,9 @@ def test_populate_modeling_rule_fields():
     Then:
         - Make sure the field _time is populated properly.
     """
-    from NetskopeEventCollector import populate_modeling_rule_fields
+    from NetskopeEventCollector import populate_parsing_rule_fields
     event = EVENTS_RAW_V2.get('result')[0]
-    populate_modeling_rule_fields(event, event_type='audit')
+    populate_parsing_rule_fields(event, event_type='audit')
     assert event.get('_time') == '2022-01-18T19:58:07.000Z'
 
 
@@ -82,9 +82,9 @@ def test_get_events_v2(mocker):
     Then:
         - Make sure only the events returns.
     """
-    from NetskopeEventCollector import get_events_v2, ALL_SUPPORTED_EVENT_TYPES
+    from NetskopeEventCollector import get_all_events, ALL_SUPPORTED_EVENT_TYPES
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
-    response = get_events_v2(client, FIRST_LAST_RUN, 'v2', 1)
+    response = get_all_events(client, FIRST_LAST_RUN, api_version='v2', limit=1)
     assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
     assert 'results' not in response
