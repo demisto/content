@@ -24,6 +24,7 @@ configuration:
   required: false
   hiddenusername: true
   displaypassword: "Deprecated Login password"
+  additionalinfo: This authentication method is deprecated by Hackuity in May 2023.
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure

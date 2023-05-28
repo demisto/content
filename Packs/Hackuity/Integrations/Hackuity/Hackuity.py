@@ -31,9 +31,9 @@ class Client(BaseClient):
         self,
         url: str,
         namespace: str,
-        login: str,
-        password: str,
         apikey: str,
+        login: str = None,
+        password: str = None,
         verify: bool = True,
         proxy: bool = True,
     ):
