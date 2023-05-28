@@ -14,7 +14,7 @@ configuration:
   type: 4
   hidden: true
 - name: cred_api_key
-  required: true
+  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true

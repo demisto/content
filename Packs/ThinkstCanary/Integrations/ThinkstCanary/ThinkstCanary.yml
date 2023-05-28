@@ -23,7 +23,7 @@ configuration:
   section: Connect
   hidden: true
 - name: authentication_token
-  required: true
+  required: false
   type: 9
   displaypassword: authentication_token
   hiddenusername: true
