@@ -470,7 +470,7 @@ tasks:
       id: 0a00d050-c53a-4254-87e7-f0f914644f26
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or URLs. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
@@ -584,7 +584,7 @@ tasks:
       id: 08317731-c83c-4506-86ab-31e6cf87b8a3
       version: -1
       name: Splunk Indicator Hunting
-      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or URLs. It outputs detected users, IP addresses, and hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
@@ -1811,7 +1811,7 @@ inputs:
     simple: "True"
   required: false
   description: |-
-    Possible values: True/False.  Default: True.
+   
     Should the given indicators be automatically blocked, or should the user be given the option to choose?
 
     If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
