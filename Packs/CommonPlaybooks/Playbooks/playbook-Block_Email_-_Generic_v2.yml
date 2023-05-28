@@ -529,7 +529,7 @@ tasks:
       id: 614bc2e7-b289-44d7-8350-5bc69ace90fa
       version: -1
       name: Is Cisco Security Management Appliance Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       type: condition
       iscommand: false
       brand: ""

@@ -280,7 +280,7 @@ tasks:
       id: b077e2fc-cf78-4bba-8810-9bebca2cc5f6
       version: -1
       name: Should use !domain command?
-      description: Check if should run domain reputation command
+      description: Check whether to run domain reputation command.
       type: condition
       iscommand: false
       brand: ""

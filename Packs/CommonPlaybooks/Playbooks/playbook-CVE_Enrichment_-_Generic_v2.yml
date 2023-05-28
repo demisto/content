@@ -269,7 +269,7 @@ tasks:
       id: d2ff276a-dd81-4805-80c3-ee44976b4020
       version: -1
       name: Get CVE information from XFE
-      description: Search for details about the given CVE
+      description: Search for details about the given CVE.
       script: '|||cve-search'
       type: regular
       iscommand: true

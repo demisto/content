@@ -1764,7 +1764,7 @@ outputs:
 - contextPath: Account.ID
   description: The user distinguished name.
 - contextPath: Account.Username
-  description: The user samAccountName.
+  description: The user sAMAccountName.
 - contextPath: Account.Email
   description: The user email address.
 - contextPath: ActiveDirectory.Users.userAccountControl
