@@ -1,9 +1,7 @@
 id: GoogleDocs-test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: GoogleDocs-test
-description: This is a playbook for performing for testing all google docs commands.
-  creation, update and get.
+description: This is a playbook for performing for testing all google docs commands. creation, update and get.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +29,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -55,7 +54,6 @@ tasks:
       title:
         simple: test_file
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -66,6 +64,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -92,7 +91,6 @@ tasks:
           root: GoogleDocs
           accessor: DocumentId
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -103,6 +101,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -131,7 +130,6 @@ tasks:
       required_revision_id:
         simple: ${GoogleDocs.RevisionId}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -142,6 +140,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -163,7 +162,6 @@ tasks:
       document_id:
         simple: ${GoogleDocs.DocumentId}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -174,6 +172,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -198,7 +197,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -209,6 +207,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -227,3 +226,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
