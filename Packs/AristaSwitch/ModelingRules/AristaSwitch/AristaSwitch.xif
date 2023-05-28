@@ -29,8 +29,8 @@ alter
     xdm.observer.name = dvc,
     xdm.observer.type = facility,
     xdm.source.application.name = process,
-    xdm.event.id = mnemonic,
-    xdm.event.type = mnemonic,
+    xdm.event.id = coalesce(mnemonic, facility),
+    xdm.event.type = coalesce(mnemonic, facility),
     xdm.event.description = message,
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
     xdm.alert.severity = severity;
