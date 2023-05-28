@@ -203,6 +203,18 @@ class CollectionResult:
             # at least one is required, unless the reason is DUMMY_OBJECT_FOR_COMBINING
             raise ValueError('neither pack nor test were provided')
 
+        if pack:
+            try:
+                PACK_MANAGER.validate_pack(pack)
+
+            except NonXsoarSupportedPackException:
+                if skip_support_level_compatibility:
+                    logger.info(f'overriding pack support level compatibility check for {pack} - it IS collected')
+                elif is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
+                    pass
+                else:
+                    raise
+
         if test:
             if not is_sanity:  # sanity tests do not show in the id_set
                 if test not in id_set.id_to_test_playbook:  # type: ignore[union-attr]
@@ -228,18 +240,6 @@ class CollectionResult:
 
             if test in conf.private_tests:  # type: ignore[union-attr]
                 raise PrivateTestException(test)
-
-        if pack:
-            try:
-                PACK_MANAGER.validate_pack(pack)
-
-            except NonXsoarSupportedPackException:
-                if skip_support_level_compatibility:
-                    logger.info(f'overriding pack support level compatibility check for {pack} - it IS collected')
-                elif is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
-                    pass
-                else:
-                    raise
 
         if is_nightly:
             if test and test in conf.non_api_tests:  # type: ignore[union-attr]
