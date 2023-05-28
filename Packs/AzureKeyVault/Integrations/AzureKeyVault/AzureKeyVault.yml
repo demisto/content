@@ -1285,7 +1285,7 @@ script:
       required: false
       defaultValue: 50
     - name: tag
-      description: A single tag in the form of '"Tag Name":"Tag Value"' to filter the list
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list
         by.
       required: false
       outputs:

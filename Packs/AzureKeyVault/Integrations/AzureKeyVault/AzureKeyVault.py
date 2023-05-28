@@ -396,7 +396,8 @@ class KeyVaultClient:
             Dict[str, Any]: API response from Azure.
         """
         url = 'https://management.azure.com/subscriptions?'
-        return self.http_request('GET', full_url=url, resource=MANAGEMENT_RESOURCE, params={'api-version': '2020-01-01'})
+        response = self.http_request('GET', full_url=url, resource=MANAGEMENT_RESOURCE, params={'api-version': '2020-01-01'})
+        return self.get_entities_independent_of_pages(first_page=response, resource=MANAGEMENT_RESOURCE)
 
     def list_resource_groups_request(self, subscription_id: str, tag: Dict[str, str], limit: int) -> List[dict]:
         """
@@ -411,19 +412,20 @@ class KeyVaultClient:
             List[dict]: API response from Azure.
         """
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
-        filter_by_tag= ''
+        filter_by_tag = ''
         if tag:
             try:
-                tag=json.loads(tag)
+                tag = json.loads(tag)
                 tag_name = next(iter(tag))
                 tag_value = tag[tag_name]
-                filter_by_tag = f"tagName eq {tag_name} and tagValue eq {tag_value}"
+                filter_by_tag = f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
             except Exception as e:
-                raise Exception(f'Invalid tag format: {e}')
+                raise Exception("""Invalid tag format, please use the following format: '{"key_name":"value_name"}""", e)
 
-        return self.http_request('GET', full_url=full_url, resource=MANAGEMENT_RESOURCE,
-                                   params={'$filter': filter_by_tag, '$top': limit,
-                                           'api-version': '2021-04-01'})
+        response = self.http_request('GET', full_url=full_url, resource=MANAGEMENT_RESOURCE,
+                                     params={'$filter': filter_by_tag, '$top': limit,
+                                             'api-version': '2021-04-01'})
+        return self.get_entities_independent_of_pages(first_page=response, limit=limit, resource=MANAGEMENT_RESOURCE)
 
     ''' INTEGRATION HELPER METHODS  '''
 
@@ -518,7 +520,7 @@ class KeyVaultClient:
 
         return properties
 
-    def get_entities_independent_of_pages(self, first_page: Dict[str, Any], limit: int, offset: int,
+    def get_entities_independent_of_pages(self, first_page: Dict[str, Any], limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET,
                                           resource: str = MANAGEMENT_RESOURCE) -> List[dict]:
         """
         List the entities according to the offset and limit arguments,
@@ -1201,7 +1203,7 @@ def list_subscriptions_command(client: KeyVaultClient) -> CommandResults:
 
     """
     response = client.list_subscriptions_request()
-    outputs = copy.deepcopy(response.get('value', []))
+    outputs = copy.deepcopy(response)
     readable_output = tableToMarkdown('Subscriptions List',
                                       outputs,
                                       ['subscriptionId', 'tenantId',
@@ -1234,7 +1236,7 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
     response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
-    outputs = copy.deepcopy(response.get('value', []))
+    outputs = copy.deepcopy(response)
     readable_output = tableToMarkdown('Resource Groups List',
                                       outputs,
                                       ['name', 'location', 'tags',
