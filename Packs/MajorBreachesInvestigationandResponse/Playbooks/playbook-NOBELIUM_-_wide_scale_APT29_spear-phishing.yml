@@ -114,7 +114,7 @@ tasks:
       id: 951a9ee0-ff37-46e8-8e32-ce85411250ab
       version: -1
       name: Retrieve Volexity blog
-      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      description: This script will extract indicators from a given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
@@ -470,7 +470,7 @@ tasks:
       id: 0a00d050-c53a-4254-87e7-f0f914644f26
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or URLs. '
+      description: 'This playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or URLs. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
@@ -1497,7 +1497,7 @@ tasks:
       version: -1
       name: Block Indicators - Generic v3
       description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
 
         - Block URL - Generic v2
         - Block Account - Generic v2
@@ -1804,7 +1804,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: "possible values: True/False. \nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  description: "Whether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:

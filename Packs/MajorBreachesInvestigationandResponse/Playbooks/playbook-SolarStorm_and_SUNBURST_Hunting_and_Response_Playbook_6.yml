@@ -287,7 +287,7 @@ tasks:
       id: 915d6f50-e12b-4526-8582-8fcb4f78d60e
       version: -1
       name: Investigate further
-      description: "Further investigate the incident (endpoints, entry point, etc.').\nIf Expanse found SolarWinds C2 connection, investigate the internal server too."
+      description: "Further investigate the incident (endpoints, entry point, etc.').\nIf Xpanse found SolarWinds C2 connection, investigate the internal server too."
       type: regular
       iscommand: false
       brand: ""
@@ -2983,7 +2983,7 @@ tasks:
       version: -1
       name: Block Indicators - Generic v3
       description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
 
         - Block URL - Generic v2
         - Block Account - Generic v2
@@ -3196,7 +3196,7 @@ tasks:
       id: 48339eeb-7c30-46db-83a3-e80e890befaa
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
