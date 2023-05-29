@@ -1804,7 +1804,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: "possible values: True/False. \nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  description: "Whether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:
