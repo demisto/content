@@ -21,6 +21,15 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": [
+                "WildFire-v2",
+                "Cortex XDR - IR",
+                "Joe Security"
+            ],
+            "playbookID": "Test_Playbook_-_Cortex_XDR_Malware_-_Investigation_And_Response",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
         },
