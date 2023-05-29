@@ -1,5 +1,5 @@
 id: tenable.sc_test_secman_api_key
-version: 3
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: tenable.sc_test_secman_api_key
 starttaskid: "0"
@@ -75,3 +75,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
