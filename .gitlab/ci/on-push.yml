@@ -211,6 +211,14 @@ xsoar-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
+xsoar-saas-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    MARKETPLACE_VERSION: "xsoar_saas"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
+  extends:
+    - .generic-prepare-testing-bucket
+
 mpv2-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
