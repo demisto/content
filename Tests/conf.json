@@ -3162,6 +3162,7 @@
         },
         {
             "integrations": "QRadar v3",
+            "instance_names": "QRadar_v3_test",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 12000,
             "fromversion": "6.0.0"
