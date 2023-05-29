@@ -608,7 +608,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             # in case new entries created less than a minute after incident creation
 
         demisto_debug(f'tags: {tags}')
-        demisto_debug(f'tags: {categories}')
+        demisto_debug(f'categories: {categories}')
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
             from_date=remote_args.last_update * 1000,
@@ -678,7 +678,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         )
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_tags: Set[str]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_tags: Set[str], custom_fields: List[str]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -695,6 +695,10 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     :type mirror_tags: ``Optional[str]``
     :param mirror_tags:
         The tag that you will mirror out of the incident.
+
+    :type custom_fields: ``List[str]``
+    :param custom_fields:
+        The custom fields to always mirror out of the incident, even when empty in remote system.
 
     :return:
         ``str`` containing the remote incident id - really important if the incident is newly created remotely
@@ -715,7 +719,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
             for changed_key in parsed_args.delta.keys():
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-                if changed_key in old_incident.get('CustomFields', {}).keys():
+                if changed_key in old_incident.get('CustomFields', {}).keys() or changed_key in custom_fields:
                     old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
 
             parsed_args.data = old_incident
@@ -728,7 +732,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
                 'frompong': 'true'
             }
 
-        updated_incident = client.update_incident(incident=parsed_args.data)
+        try:
+            updated_incident = client.update_incident(incident=parsed_args.data)
+        except DemistoException as e:
+            demisto.debug(f'Failed to execute update_incident from update-remote-system command.\n'
+                          f'Error:\n{str(e)}\n'
+                          f'Running it again with json_data:\n{parsed_args.data}')
+            updated_incident = client.update_incident(incident=parsed_args.data)
         new_incident_id = updated_incident['id']
         demisto.debug(f'Got back ID [{new_incident_id}]')
 
@@ -768,6 +778,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
         if demisto.params().get('mirror_tag') else set([])
+    custom_fields = argToList(demisto.params().get('custom_fields'))
 
     query = demisto.params().get('query', '') or ''
     disable_from_same_integration = demisto.params().get('disable_from_same_integration')
@@ -834,7 +845,7 @@ def main() -> None:
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
 
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
+            return_results(update_remote_system_command(client, demisto.args(), mirror_tags, custom_fields))
 
         else:
             raise NotImplementedError('Command not implemented')

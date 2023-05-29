@@ -60,6 +60,13 @@ configuration:
   name: mirror_tag
   required: false
   type: 0
+- additionalinfo: Comma-seperated list of custom fields CLI names you want to send to the other Cortex XSOAR instance even when their original value was empty. Make sure to also add those fields to the incoming mapper.
+  defaultvalue: ""
+  display: Outgoing Custom Fields
+  hidden: false
+  name: custom_fields
+  required: false
+  type: 0
 - defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -147,7 +154,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.51930
   isfetch: true
   runonce: false
   subtype: python3
