@@ -35,50 +35,50 @@ In this step, you will need to have permission to create a new project in your G
 
 2.  Click on Create Project
 
-![image9](Doc_files/image9.png)
+![CreateProject](https://github.com/xsoar-contrib/content/assets/113604678/83320543-66ca-4932-97f6-af78c4a2f504)
 
 3.  Fill project Name: XSOAR\_VertexAI or any name, then click on Create
 
-![image2](Doc_files/image2.png)
+![projName1](https://github.com/xsoar-contrib/content/assets/113604678/6fea4018-f168-4755-93f4-064986a7ec25)
 
 4.  Select the new created project
 5.  Go to marketplace
 
-![image15](Doc_files/image15.png)
+![marketplacesearch](https://github.com/xsoar-contrib/content/assets/113604678/9e425f44-4d02-47da-a9b5-cc8d6722eb9d)
 
 6.  Search & Select Vertex AI API
 
-![image8](Doc_files/image8.png)
+![vertexAPIMarketplace](https://github.com/xsoar-contrib/content/assets/113604678/b8004a0a-cda1-48d7-9298-551fe6e36ede)
 
 7.  Click Enable
 
-![image3](Doc_files/image3.png)
+![enableVertexAIAPI](https://github.com/xsoar-contrib/content/assets/113604678/865c0241-90bf-42a3-bf66-d8a9d3296d0b)
 
 ## Step 2: Configure Consent Page
 
 1.  Click on Configure Consent Screen
 
-![image13](Doc_files/image13.png)
+![consentScreen](https://github.com/xsoar-contrib/content/assets/113604678/3dd03a43-7bbb-4bd6-ab5e-b0b171e4d22c)
 
 2.  Select Internal as User Type and Click on Create; It is recommended to limit the access to your project scope to Internal users in your organization as later as planned you can build your own Model and fine tune in a confidential environment that is shared publicly
 
-![image11](Doc_files/image11.png)
+![userType](https://github.com/xsoar-contrib/content/assets/113604678/c42bc46d-6a91-49ca-8fec-c32201eff267)
 
 3.  Fill the App information (Fill only the mandatory fields as below, rest are optional) - Click on Save and Continue
 
-![image19](Doc_files/image19.png)
+![appInfo](https://github.com/xsoar-contrib/content/assets/113604678/76729fa6-d8a9-42c4-bb67-4c651c580c9b)
 
 4.  Click Add or Remove Scopes; We will add Vertex AI API as part of the project scope; NOTE: Don’t add unnecessary scope as this might reveal other data in the project using the created credential
 
-![image14](Doc_files/image14.png)
+![AppScope](https://github.com/xsoar-contrib/content/assets/113604678/0c48e8d4-c698-48a8-8915-79944f5689f0)
 
 5.  In current version of this integration, it is only require read only permission in the Scope; Then Click Update
 
-![image21](Doc_files/image21.png)
+![readOnlyScope](https://github.com/xsoar-contrib/content/assets/113604678/d101b6ee-6091-47df-81a6-bde9f901007a)
 
 After added, it will looks like this screenshot
 
-![image10](Doc_files/image10.png)
+![finalAppLook](https://github.com/xsoar-contrib/content/assets/113604678/876163ab-1fc4-41d3-a0f6-415114347066)
 
 6.  Click Save and Continue; Now Step 3
 
@@ -86,11 +86,11 @@ After added, it will looks like this screenshot
 
 1.  Go to APIs & Services > Credentials
 
-![image7](Doc_files/image7.png)
+![credential](https://github.com/xsoar-contrib/content/assets/113604678/40b04603-9a39-4120-8d47-8130b520899e)
 
 2.  Click Create Credentials
 
-![image12](Doc_files/image12.png)
+![createCredential](https://github.com/xsoar-contrib/content/assets/113604678/ef82f519-6764-4152-834d-da63cd17ac10)
 
 3.  Fill your Credential Information as following
 
@@ -102,13 +102,11 @@ In Authorized redirect URIs: https://oproxy.demisto.ninja/authcode
 
 This one will be easy as a user experience to generate the auth code; Please see Step 4
 
-![image1](Doc_files/image1.png)
+![authCode](https://github.com/xsoar-contrib/content/assets/113604678/c65133ac-c248-498f-9a06-64955b57f98a)
 
 4.  Copy Client ID & Client secret, we will use them during XSOAR’s instance configurations; Then Click OK
 
-Note: the screenshot contain deleted credential please don’t use it as it will not work in your instance configuration
-
-![image18](Doc_files/image18.png)
+![credentialInfo](https://github.com/xsoar-contrib/content/assets/113604678/28b0e933-16b6-40b0-9b84-e6d7abea6eea)
 
 ## Step 4: Generate Authentication Code (OAuth Code)
 
@@ -122,12 +120,11 @@ https://cloud.google.com/docs/authentication/token-types
 
 First get the project id by clicking on the project name from top left then it will looks as following:
 
-![image17](Doc_files/image17.png)
+![projectID](https://github.com/xsoar-contrib/content/assets/113604678/1407671a-ef77-4e1e-aee8-84f18a604479)
 
 2.  Fill the instance information on XSOAR as following:
 
-  
-![image23](Doc_files/image23.png)
+![instanceInfo](https://github.com/xsoar-contrib/content/assets/113604678/652fb47c-c3dd-43f9-868b-595a5ed2993e)
 
 3.  In XSOAR’s CLI, execute the following command:
 
@@ -135,7 +132,7 @@ First get the project id by clicking on the project name from top left then it w
 
 4.  Copy the generated authorization url to your browser and go to step 6
 
-![image6](Doc_files/image6.png)
+![authorizationURL](https://github.com/xsoar-contrib/content/assets/113604678/56156166-5c42-4d92-ac17-d615fc03c303)
 
 5.  You can skip previous configuration and use the following URL after filling the required parameters
 
@@ -153,11 +150,11 @@ https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?scope=https://www.g
 
 6.  Choose your account or Sign in
 
-![image20](Doc_files/image20.png)
+![image20](https://github.com/xsoar-contrib/content/assets/113604678/29138ccd-9e9d-4241-aa82-7241e1bfb2f9)
 
 7.  Click on Allow
 
-![image5](Doc_files/image5.png)
+![allow](https://github.com/xsoar-contrib/content/assets/113604678/04fc9a9f-8cf9-4ac5-a069-8d0f4eb47da7)
 
 8.  It will redirect you to the REDIRECT\_URI domain
 
@@ -175,7 +172,7 @@ https://xsoar.pan.dev/docs/reference/articles/o-proxy
 
 This is the final look for how your XSOAR instance will looks like
 
-![image4](Doc_files/image4.png)
+![instancePreview](https://github.com/xsoar-contrib/content/assets/113604678/2557d407-a0b3-4ff2-9b9f-f71888594934)
 
 ## Step 7: Testing (Instance Test button doesn’t work with OAuth2 method)
 
@@ -185,7 +182,7 @@ Now it is time to put the integration in test.
 
 !google-vertex-PaLM-chat prompt="Any message"
 
-![image22](Doc_files/image22.png)
+![commandOutput](https://github.com/xsoar-contrib/content/assets/113604678/ca336c1e-97c9-4d78-aa35-df2a12050367)
 
 ***
 ## Troubleshooting
@@ -195,6 +192,6 @@ In case of any failure it will be related to authentication code expired or rese
 1.  In the instance, click reset integration cache
 2.  Save & Exit (Important)
 
-![image16](Doc_files/image16.png)
+![resetIntegrationCache](https://github.com/xsoar-contrib/content/assets/113604678/cedb9fcc-08ca-4a21-abb6-7c2eb73f3339)
 
 3.  Repeat from step 4 to 7 to generate a new authentication code and configure your instance then test
