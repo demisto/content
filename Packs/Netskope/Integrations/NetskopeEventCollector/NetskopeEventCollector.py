@@ -58,7 +58,7 @@ class Client(BaseClient):
             last_run (dict): Get alerts from certain time period.
             skip (int): Skip over some events (useful for pagination in combination with limit).
             limit (int): Limit the number of events to return.
-            is_command (bool): Are we running a get command or test_module or not.
+            is_command (bool): True when running any command besides the automatically triggered fetch mechanism.
 
         Returns:
             List[str, Any]: Netskope alerts.
