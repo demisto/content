@@ -46,6 +46,7 @@ class Client(BaseClient):
         super().__init__(base_url=URL, proxy=PROXY, verify=verify)
         self.token_str = token_str
         self.base_url = base_url
+        self.proxy = proxy
         self.headers = {'Authorization': f"Bearer {self.token_str}", "Content-Type": "application/json"}
 
     def PaLMModel(self, prompt: str):
