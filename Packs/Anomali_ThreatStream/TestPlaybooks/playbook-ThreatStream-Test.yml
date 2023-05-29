@@ -737,7 +737,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
   "21":
     id: "21"
     taskid: 5ea89472-9ba2-4550-8bb3-e94a3251a235
