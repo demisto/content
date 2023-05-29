@@ -6884,7 +6884,8 @@ def test_pan_os_delete_tag_command(mocker, is_shared):
     Panorama.DEVICE_GROUP = 'somedevice'
 
     expected_first_text_response_if_shared = '<response status="success" code="7"><msg>Object doesn\'t exist</msg></response>'
-    expected_second_text_response_if_shared = '<response status="success" code="19"><result total-count="2" count="2"><entry name="somedevice"></entry></result></response>'
+    expected_second_text_response_if_shared = '<response status="success" code="19"><result total-count="2" count="2">' \
+                                              '<entry name="somedevice"></entry></result></response>'
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
     expected_request_count = 3 if is_shared else 1
 
@@ -6892,7 +6893,8 @@ def test_pan_os_delete_tag_command(mocker, is_shared):
     delete_tag_first_mock_response = MockedResponse(text=expected_first_text_response_if_shared, status_code=200)
     delete_tag_second_mock_response = MockedResponse(text=expected_second_text_response_if_shared, status_code=200)
 
-    responses = [delete_tag_first_mock_response, delete_tag_second_mock_response, delete_tag_mock_response] if is_shared else [delete_tag_mock_response]
+    responses = [delete_tag_first_mock_response, delete_tag_second_mock_response,
+                 delete_tag_mock_response] if is_shared else [delete_tag_mock_response]
     request_mocker = mocker.patch.object(requests, 'request', side_effect=responses)
 
     command_results = Panorama.pan_os_delete_tag_command({"name": "testtag", "new_name": "newtesttag"})
