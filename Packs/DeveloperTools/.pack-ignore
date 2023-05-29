@@ -36,6 +36,8 @@ ignore=auto-test
 
 [known_words]
 powershell
+GetIncidentTasksByState
+DemistoGetIncidentTasksByState
 
 [file:FetchFromInstance.yml]
 ignore=BA124
@@ -51,4 +53,3 @@ ignore=BA124
 
 [file:VerifyEnoughIncidents.yml]
 ignore=BA124
-

@@ -19,7 +19,6 @@ from typing import (
     Set,
 )
 
-
 DEFAULT_INTERVAL = 90
 DEFAULT_TIMEOUT = 600
 
@@ -206,7 +205,8 @@ class Client(BaseClient):
 
     def upload_sample(self,
                       files: Optional[Dict] = None,
-                      payload: Optional[Dict] = None) -> Dict[str, Any]:
+                      payload: Optional[Dict] = None,
+                      private: Optional[bool] = None) -> Dict[str, Any]:
         """Submits a sample (file or URL) to Malware Analytics for analysis.
         Args:
             files (dict, optional): File name and path in XSOAR.
@@ -216,12 +216,12 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
 
-        return self._http_request(
-            "POST",
-            urljoin(API_V2_PREFIX, "samples"),
-            files=files,
-            data=payload,
-        )
+        return self._http_request("POST",
+                                  urljoin(API_V2_PREFIX, "samples"),
+                                  files=files,
+                                  data=payload,
+                                  params=remove_empty_elements(
+                                      {'private': private}))
 
     def associated_samples(self, arg_name: str, arg_value: str,
                            url_arg: str) -> Dict[str, Any]:
@@ -839,16 +839,17 @@ def upload_sample_command(
     """
     file_id = args.get("file_id")
     url = args.get("url")
+    private = optional_arg_to_boolean(args.get("private"))
 
     if (file_id and url) or (not file_id and not url):
         raise ValueError("You must specified file_id or url, not both.")
 
     if file_id:
         file = parse_file_to_sample(file_id)
-        response = client.upload_sample(files=file)
+        response = client.upload_sample(files=file, private=private)
     else:
         payload = {"url": url}
-        response = client.upload_sample(payload=payload)
+        response = client.upload_sample(payload=payload, private=private)
     uploaded_sample = response["data"]
 
     return CommandResults(
@@ -1243,10 +1244,7 @@ def parse_file_indicator(
     else:
         readable_output = tableToMarkdown(
             name=f"ThreatGrid File Not Found for {file_hash} \n",
-            t={
-                "file": file_hash
-            }
-        )
+            t={"file": file_hash})
 
     return CommandResults(
         readable_output=readable_output,

@@ -12,7 +12,7 @@ var commandAvailable = function(command) {
     return ret;
 };
 var medium = (args.medium) ? args.medium.toLowerCase() : 'email';
-var slackEnabled = commandAvailable('slack-send');
+var slackEnabled = commandAvailable('send-notification');
 var mattermostEnabled = commandAvailable('mattermost-send');
 var emailEnabled = commandAvailable('send-mail');
 
@@ -47,7 +47,7 @@ users.forEach(function(user) {
         }
     }
     if ((medium === 'all' && slackEnabled) || medium === 'slack') {
-        res = executeCommand("slack-send", {to: user, message: args.message});
+        res = executeCommand("send-notification", {to: user, message: args.message});
         if (isError(res[0])) {
             entries.push(res[0]);
         } else {
