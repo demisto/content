@@ -21,6 +21,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test_Playbook_-_Cortex_XDR_-_Endpoint_Investigation"
         },
