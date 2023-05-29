@@ -46,7 +46,6 @@ DEF_PARAMS = {
     or demisto.params().get('auth_token', None)
 }
 if not DEF_PARAMS['auth_token']:
-    
     raise DemistoException('API Authentication Token must be provided.')
 '''HELPER FUNCTIONS'''
 
