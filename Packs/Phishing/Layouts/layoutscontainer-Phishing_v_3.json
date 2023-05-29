@@ -42,34 +42,6 @@
                         "y": 3
                     },
                     {
-                        "description": "",
-                        "displayType": "CARD",
-                        "h": 6,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 4,
-                                "fieldId": "renderedhtml",
-                                "height": 106,
-                                "id": "08421d50-b022-11ec-8814-456202ce784b",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Email Body",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 8
-                    },
-                    {
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
@@ -181,15 +153,15 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
-							{
-								"endCol": 2,
-								"fieldId": "categories",
-								"height": 22,
-								"id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
-								"index": 11,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
+                            {
+                                "endCol": 2,
+                                "fieldId": "categories",
+                                "height": 22,
+                                "id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -211,6 +183,10 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Incident Files",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 14,
                         "query": {
                             "categories": [
                                 "attachments"
@@ -224,11 +200,7 @@
                         },
                         "queryType": "warRoomFilter",
                         "readOnly": true,
-                        "static": false,
-                        "type": "invTimeline",
-                        "w": 3,
-                        "x": 0,
-                        "y": 14
+                        "type": "invTimeline"
                     },
                     {
                         "displayType": "ROW",
@@ -296,7 +268,6 @@
                         "y": 0
                     },
                     {
-                        "description": "",
                         "h": 1,
                         "hideName": true,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
@@ -311,7 +282,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 5,
+                        "description": ""
                     },
                     {
                         "h": 2,
@@ -328,9 +300,7 @@
                         "y": 6
                     },
                     {
-                        "displayType": "ROW",
                         "h": 2,
-                        "hideName": false,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-93d51e60-a8fe-11ec-927e-2bbbcff3899b",
                         "items": [
                             {
@@ -411,7 +381,9 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 8,
+                        "displayType": "ROW",
+                        "hideName": false
                     },
                     {
                         "displayType": "ROW",
@@ -448,6 +420,17 @@
                         "y": 12
                     },
                     {
+                        "h": 2,
+                        "i": "swtuqptgvs-field-changed-swtuqptgvs-8f724f40-6b37-11ed-b7c0-2904efd8f7fb",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 18,
                         "columns": [
                             {
                                 "displayed": true,
@@ -495,36 +478,41 @@
                                 "width": 300
                             }
                         ],
-                        "h": 2,
-                        "i": "swtuqptgvs-field-changed-swtuqptgvs-8f724f40-6b37-11ed-b7c0-2904efd8f7fb",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "static": false,
-                        "type": "linkedIncidents",
-                        "w": 3,
-                        "x": 0,
-                        "y": 18
+                        "type": "linkedIncidents"
                     },
                     {
-                        "description": "Indicators selected to be blocked.",
                         "h": 2,
                         "i": "swtuqptgvs-1a52c090-c187-11ed-a413-1fc9f082fba8",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Selected indicators to block",
-                        "query": "tags:\"Blocked Indicator In Systems\"",
-                        "queryType": "input",
                         "static": false,
                         "type": "indicators",
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 10,
+                        "description": "Indicators selected to be blocked.",
+                        "query": "tags:\"Blocked Indicator In Systems\"",
+                        "queryType": "input"
+                    },
+                    {
+                        "description": "",
+                        "h": 6,
+                        "i": "swtuqptgvs-ca48f510-f322-11ed-8c15-d92844a806b0",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Email Body",
+                        "query": "DisplayHTMLWithImages",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
                     }
                 ],
                 "type": "custom"
