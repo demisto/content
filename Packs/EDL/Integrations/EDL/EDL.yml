@@ -50,7 +50,7 @@ configuration:
   type: 0
   section: Collect
 - additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
-  defaultvalue: 5 minutes
+  defaultvalue: 30 minutes
   display: Refresh Rate
   name: cache_refresh_rate
   required: false
@@ -214,8 +214,8 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators.
-  defaultvalue: '2000'
+- additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators. Value can be up to 10,000 due to performance limitations.
+  defaultvalue: '10000'
   display: XSOAR Indicator Page Size
   hidden: false
   name: page_size
@@ -254,8 +254,8 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
-  display: 'Advanced: Use Legacy Queries'
+- additionalinfo: 'This parameter will be deprecated from September 2023. Make sure to adjust your default queries accordingly..'
+  display: 'Advanced: Use Legacy Queries (Deprecated)'
   hidden: false
   name: use_legacy_query
   required: false
@@ -537,7 +537,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.58905
+  dockerimage: demisto/flask-nginx:1.0.0.61723
   feed: false
   isfetch: false
   longRunning: true
