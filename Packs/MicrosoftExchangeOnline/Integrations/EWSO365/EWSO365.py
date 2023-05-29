@@ -816,6 +816,11 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if value:
             raw_dict[list_dict_field] = [parse_object_as_dict(x) for x in value]
 
+    for list_str_field in ["categories"]:
+        value = getattr(item, list_str_field, None)
+        if value:
+            raw_dict[list_str_field] = value
+
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
@@ -1935,11 +1940,13 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None):     # pragma: no cover
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
+               renderBody=False):     # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
     reply_to = argToList(replyTo)
+    render_body = argToBoolean(renderBody)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1978,7 +1985,15 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
 
     client.send_email(message)
 
-    return 'Mail sent successfully', {}, {}
+    results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
+    if render_body:
+        results.append(CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=htmlBody,
+        ))
+
+    return results
 
 
 def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, cc=None, htmlBody=None,
@@ -2435,7 +2450,6 @@ def sub_main():     # pragma: no cover
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
-            "send-mail": send_email,
         }
 
         # commands that may return multiple results or non-note result
@@ -2458,6 +2472,9 @@ def sub_main():     # pragma: no cover
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
 
             demisto.incidents(incidents)
+        elif command == "send-mail":
+            commands_res = send_email(client, **args)
+            return_results(commands_res)
 
         # special outputs commands
         elif command in special_output_commands:

@@ -55,7 +55,8 @@ The Panorama integration now supports fetch incidents.
 The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 ##### Max incidents per fetch
-The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+- Important note: Cortex XSOAR standard setup is not designed to handle many hundreds of new incidents every minute. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
 
 ##### Log Type
 The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
@@ -65,6 +66,8 @@ The queries that will be included during the fetch are decided according to the 
 ##### Log Type Query
 - Each log type has its own query field in the instance configuration.
 - Note that the default query values has some example text in it, make sure to enter a valid query.
+- Note: In case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. 
+For example: "and (device_name eq dummy_device)".
 
 ##### Log Type Query Examples
 
@@ -97,14 +100,14 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 | key | API Key | True |
 | device_group | Device group - Panorama instances only \(write shared for Shared location\) | False |
 | vsys | Vsys - Firewall instances only | False |
-| template | Template - Panorama instances only | False |
+| template | Template - Panorama instances only | False |****
 | use_url_filtering | Use URL Filtering for auto enrichment | False |
 | additional_suspicious | URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious. | False |
 | additional_malicious | URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious. | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | First fetch timestamp  | First fetch time interval | False |
 | Max incidents per fetch | Max incidents per fetch for each selected Log Type Query | False |
-| Log Type | Log Types incidents to fetch | False |
+| Log Type | Log Types incidents to fetch | False |****
 | Traffic Log Type Query | Traffic Query for fetch incidents | False |
 | Threat Log Type Query | Threat Query for fetch incidents | False |
 | URL Log Type Query | URL Query for fetch incidents | False |
@@ -724,6 +727,7 @@ Creates an address object.
 | ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
 | device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag               | The tag for the new address. | Optional | 
+| create_tag        | Whether to create the tag if it does not exist. | Optional | 
 
 
 #### Context Output
@@ -736,7 +740,7 @@ Creates an address object.
 | Panorama.Addresses.IP_Netmask | string | Address IP Netmask. | 
 | Panorama.Addresses.IP_Range | string | Address IP range. | 
 | Panorama.Addresses.DeviceGroup | String | Device group for the address \(Panorama instances\). | 
-| Panorama.Addresses.Tag | String | Address tag. | 
+| Panorama.Addresses.Tags | String | Address tags. | 
 
 
 #### Command Example
@@ -827,7 +831,7 @@ Returns a list of address groups.
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.Addresses | String | Static Address group addresses. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tag. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example
@@ -952,7 +956,7 @@ Creates a static or dynamic address group.
 | Panorama.AddressGroups.Addresses | string | Static Address group list of addresses. | 
 | Panorama.AddressGroups.Description | string | Address group description. | 
 | Panorama.AddressGroups.DeviceGroup | String | Device group for the address group \(Panorama instances\). | 
-| Panorama.AddressGroups.Tag | String | Address group tags. | 
+| Panorama.AddressGroups.Tags | String | Address group tags. | 
 
 
 #### Command Example
@@ -3045,23 +3049,23 @@ Deprecated. Retrieves traffic log query data by job id.
 ### pan-os-list-rules
 ***
 Returns a list of predefined Security Rules.
-
+**Note**: When passing a query, all other arguments are overridden. Make sure the query includes all necessary filters.
 
 #### Base Command
 
 `pan-os-list-rules`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | A comma-separated list of tags by which to filter the rules. | Optional | 
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules. | Optional | 
-| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no. | Optional | 
-| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop. | Optional | 
-| query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. | Optional | 
+| **Argument Name** | **Description**                                                                                                                        | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------| --- |
+| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase.                                | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances).                                                                   | Optional | 
+| tag | A comma-separated list of tags by which to filter the rules.                                                                           | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance.                                           | Optional | 
+| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules.                                                       | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no.            | Optional | 
+| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop.            | Optional | 
+| query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden. | Optional | 
 
 
 #### Context Output

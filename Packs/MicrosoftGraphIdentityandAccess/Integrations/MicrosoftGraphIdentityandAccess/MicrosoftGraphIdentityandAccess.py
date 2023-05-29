@@ -17,12 +17,17 @@ class Client:  # pragma: no cover
     def __init__(self, app_id: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', client_credentials: bool = False,
                  tenant_id: str = None, enc_key: str = None,
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: Optional[str] = None, private_key: Optional[str] = None,
+                 certificate_thumbprint: Optional[str] = None):
         if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context['current_refresh_token'] = refresh_token
             set_integration_context(integration_context)
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Either enc_key or (Certificate Thumbprint and Private Key) must be provided. For further '
+                                   'information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         args = {
             "azure_ad_endpoint": azure_ad_endpoint,
             "self_deployed": True,
@@ -34,7 +39,9 @@ class Client:  # pragma: no cover
             "tenant_id": tenant_id,
             "enc_key": enc_key,
             "managed_identities_client_id": managed_identities_client_id,
-            "managed_identities_resource_uri": Resources.graph
+            "managed_identities_resource_uri": Resources.graph,
+            "certificate_thumbprint": certificate_thumbprint,
+            "private_key": private_key
         }
         if not client_credentials:
             args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
@@ -876,7 +883,9 @@ def main():  # pragma: no cover
             tenant_id=params.get("tenant_id"),
             client_credentials=params.get("client_credentials", False),
             enc_key=(params.get('credentials') or {}).get('password'),
-            managed_identities_client_id=get_azure_managed_identities_client_id(params)
+            managed_identities_client_id=get_azure_managed_identities_client_id(params),
+            certificate_thumbprint=params.get('creds_certificate', {}).get('identifier'),
+            private_key=(replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')))
         )
         if command == 'test-module':
             if client.ms_client.managed_identities_client_id:

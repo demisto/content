@@ -6,3 +6,7 @@ ignore=RM104
 
 [tests_require_network]
 Symantec Data Loss Prevention
+
+[known_words]
+incidentStatusId
+Symantec
