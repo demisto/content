@@ -3137,6 +3137,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.11.61265
 tests:
-- sc_test_secman_username_and_password
-- sc_test_secman_api_key
+- tenable.sc_test_secman_username_and_password
+- tenable.sc_test_secman_api_key
 fromversion: 5.0.0
