@@ -29,11 +29,14 @@
         "AWS IAM Policy Misconfiguration",
         "AWS EC2 Instance Misconfiguration",
         "AWS Security Hub Finding",
+		"Prisma Cloud - VM Alert Prioritization",
+        "Rapid7 ThreatCommand Alert",
         "Prisma Cloud - VM Alert Prioritization",
         "FreshworksFreshservice Ticket",
         "FreshworksFreshservice Release Request",
         "FreshworksFreshservice Problem Request",
-        "FreshworksFreshservice Change Request"
+        "FreshworksFreshservice Change Request",
+        "Graph Security Alert"
     ],
     "breachScript": "",
     "caseInsensitive": true,
