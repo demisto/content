@@ -6,14 +6,6 @@ commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
-- defaultvalue: https://api.securitycenter.microsoft.com
-  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
-  name: url
-  required: true
-  type: 0
-  section: Connect
-  additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
-  hidden: true
 - display: Endpoint Type
   name: endpoint_type
   required: false
@@ -29,6 +21,7 @@ configuration:
   - Us GCC
   - Us GCC-High
   - DoD
+  - Custom
   advanced: true
 - display: ID
   name: _auth_id
@@ -214,6 +207,15 @@ configuration:
   type: 4
   hidden: true
   section: Connect
+  advanced: true
+- defaultvalue: https://api.securitycenter.microsoft.com
+  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+  hidden: false
   advanced: true
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint

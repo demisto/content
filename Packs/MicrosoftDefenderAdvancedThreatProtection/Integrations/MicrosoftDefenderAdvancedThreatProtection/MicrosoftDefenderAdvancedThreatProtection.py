@@ -1161,11 +1161,11 @@ class MsClient:
                        "/beta/security/tiIndicators")
 
     def get_security_center_indicator_endpoint(self):
-        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type],
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
                        '/api/indicators')
 
     def get_security_center_indicator_endpoint_batch(self):
-        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS[self.endpoint_type],
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
                        '/api/indicators/import')
 
     def offboard_machine(self, machine_id, comment):
