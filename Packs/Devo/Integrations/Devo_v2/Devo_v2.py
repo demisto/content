@@ -862,7 +862,8 @@ def main():
             fetch_incidents()
         elif demisto.command() == "devo-run-query":
             OFFSET = 0
-            items_per_page = int(demisto.args()["items_per_page"])
+                        items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
+
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
@@ -874,7 +875,7 @@ def main():
                 demisto.results(run_query_command(OFFSET, items_per_page))
         elif demisto.command() == "devo-get-alerts":
             OFFSET = 0
-            items_per_page = int(demisto.args()["items_per_page"])
+            items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
@@ -886,7 +887,7 @@ def main():
                 demisto.results(get_alerts_command(OFFSET, items_per_page))
         elif demisto.command() == "devo-multi-table-query":
             OFFSET = 0
-            items_per_page = int(demisto.args()["items_per_page"])
+            items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
