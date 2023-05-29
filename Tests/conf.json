@@ -26,11 +26,6 @@
                 "Cortex XDR - IR",
                 "Joe Security"
             ],
-            "instance_names": [
-                "WildFire-v2",
-                "Cortex XDR - IR",
-                "Joe_Security"
-            ],
             "playbookID": "Test_Playbook_-_Cortex_XDR_Malware_-_Investigation_And_Response",
             "fromversion": "6.5.0"
         },
