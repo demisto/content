@@ -639,7 +639,11 @@ tasks:
         (If you feel that you are stuck with a question - look for the (:question:) before you submit the answer)
         ![myfile](https://raw.githubusercontent.com/demisto/content/8ff17a54ce49fe7bc5f4587f880cbb16e69fdccc/Packs/ctf01/doc_files/demo.gif)
 
+        Use the following [lab guide](https://docs.google.com/document/d/11hQ3oPxpYTC7EktDgn8lGQX_b4eQFfiFr23UW-H-a7s/edit) to navigate through the CTF challanges.
+        Feel Stuck? Check the [CheatSheet/Walkthrough guide](https://docs.google.com/document/d/1oI5jddRQDwg4ZA5GOQzdCKFONPw40IZAkCHpUI31mRg/edit?usp=sharing)
+
         Ready?? Let's go!
+
 
         ![myfile](https://github.com/demisto/content/raw/8b7d8c69aad403ae2158cf9798ce2661f5ed08ba/Packs/EscapeRoomTier1/images/incident_Snooping.gif)
       type: regular
