@@ -360,7 +360,7 @@ def get_document(service, document_id):
     return service.documents().get(documentId=document_id).execute()
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     params = demisto.params()
