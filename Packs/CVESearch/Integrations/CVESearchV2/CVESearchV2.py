@@ -222,11 +222,12 @@ def generate_indicator(data: dict) -> Common.CVE:
 
     else:
         relationships = []
+        tags = []
 
     cwe = data.get('cwe', '')
 
     if cwe and cwe != 'NVD-CWE-noinfo':
-        tags = [cwe]
+        tags.append(cwe)
 
     cvss_table = []
 
