@@ -19,7 +19,7 @@ configuration:
   name: auth_token
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
   section: Connect
   hidden: true
 - name: authentication_token

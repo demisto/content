@@ -14,12 +14,12 @@ configuration:
   type: 9
 - display: Tenant name
   name: tenant_name
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: Token
   name: token
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: Tenant name
