@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
