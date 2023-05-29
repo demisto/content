@@ -13,7 +13,9 @@ from html.parser import HTMLParser
 ''' GLOBALS/PARAMS '''
 SERVER = demisto.params().get('server', '')
 EMAIL = demisto.params().get('email', '')
-PASSWORD = demisto.params().get('password') or demisto.params().get('credentials_password', {}).get('password')
+PASSWORD = demisto.params().get('credentials_password', {}).get('password') or demisto.params().get('password')
+if not PASSWORD:
+    raise DemistoException('Password must be required')
 PORT = int(demisto.params().get('port', '995'))
 SSL = demisto.params().get('ssl')
 FETCH_TIME = demisto.params().get('fetch_time', '7 days')
