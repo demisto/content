@@ -914,6 +914,7 @@ Requires security manager authentication. Returns all scan results in Tenable.sc
 | TenableSC.ScanResults.ScannedIPs | number | Number of scanned IPs. | 
 | TenableSC.ScanResults.Owner | string | Scan owner name. | 
 | TenableSC.ScanResults.RepositoryName | string | Scan repository name. | 
+| TenableSC.ScanResults.ImportStatus | string | Scan import status. | 
 
 #### Human Readable Output
 
