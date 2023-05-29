@@ -51,7 +51,7 @@ class Client(BaseClient):
 
     def PaLMModel(self, prompt: str):
         options = {"instances": [{"messages": [{"content": prompt}]}]}
-        return self._http_request(method='POST', \
+        return self._http_request(method='POST',
                                   url_suffix=f'{PROJECT_ID}/locations/us-central1/publishers/google/models/{AI_Model}',
                                   json_data=options, headers=self.headers)
 
