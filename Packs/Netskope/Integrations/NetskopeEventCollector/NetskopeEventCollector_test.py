@@ -24,7 +24,7 @@ def test_dedup_by_id():
     Given:
         - Results from the API
     When:
-        - Running the command
+        - Running the dedup_by_id command
     Then:
         - Make sure only the limited number of events return.
         - Make sure that first comes the event that with the earlier timestamp
@@ -33,13 +33,11 @@ def test_dedup_by_id():
     """
     from NetskopeEventCollector import dedup_by_id
     results = EVENTS_PAGE_RAW_V1.get('data')
-    events, new_last_run, last_run_ids = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', limit=4,
-                                                     results=results)
+    events, new_last_run = dedup_by_id(last_run=FIRST_LAST_RUN, event_type='page', limit=4, results=results)
     assert events[0].get('timestamp') == 1684751415
     assert len(events) == 4
-    assert new_last_run['page'] == 1684751416
-    assert last_run_ids == {'3757761212778242bfda29cd', '98938eb19b4f9bea24ef9a8c', '66544bf5fda515f229592644',
-                            '9e99b72b957416a43222fa7a'}
+    assert new_last_run == {'page': 1684751416, 'page-ids': ['3757761212778242bfda29cd', '9e99b72b957416a43222fa7a',
+                                                             '66544bf5fda515f229592644', '98938eb19b4f9bea24ef9a8c']}
 
 
 def test_test_module_v2(mocker):
@@ -73,18 +71,26 @@ def test_populate_parsing_rule_fields():
     assert event.get('_time') == '2022-01-18T19:58:07.000Z'
 
 
-def test_get_events_v2(mocker):
+def test_get_all_events(mocker):
     """
     Given:
         - netskope-get-events call
     When:
-        - Running the command
+        - Running the get_all_events command
     Then:
-        - Make sure only the events returns.
+        - Make sure the number of events returns as expected
+        - Make sure that the _time and event_id fields are populated as expected
+        - Make sure the new_last_run is set.
     """
-    from NetskopeEventCollector import get_all_events, ALL_SUPPORTED_EVENT_TYPES
-    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
-    mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
-    response = get_all_events(client, FIRST_LAST_RUN, api_version='v2', limit=1, is_command=True)
-    assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
-    assert 'results' not in response
+    from NetskopeEventCollector import get_all_events
+    client = Client(BASE_URL, 'netskope_token', 'v1', validate_certificate=False, proxy=False)
+    mocker.patch.object(client, 'get_alerts_request_v1', return_value=EVENTS_PAGE_RAW_V1)
+    mocker.patch.object(client, 'get_events_request_v1', return_value=EVENTS_PAGE_RAW_V1)
+    events, new_last_run = get_all_events(client, FIRST_LAST_RUN, api_version='v1', limit=6, is_command=False)
+    assert len(events) == 25
+    assert events[0].get('event_id') == '3757761212778242bfda29cd'
+    assert events[0].get('_time') == '2023-05-22T10:30:15.000Z'
+    assert new_last_run['page'] == 1684751416
+    assert new_last_run['page-ids'] == ['3757761212778242bfda29cd', '9e99b72b957416a43222fa7a',
+                                        '66544bf5fda515f229592644', '98938eb19b4f9bea24ef9a8c',
+                                        'fe6d7f3a9a1d4e1abce21713']

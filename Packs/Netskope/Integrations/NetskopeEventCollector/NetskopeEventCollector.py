@@ -11,7 +11,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-ALL_SUPPORTED_EVENT_TYPES = ['page', 'audit', 'network', 'alert', 'application']
+ALL_SUPPORTED_EVENT_TYPES = ['audit', 'page', 'network', 'application', 'alert']
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
 
@@ -110,27 +110,43 @@ def dedup_by_id(last_run: dict, results: list, event_type: str, limit: int):
         event_type: the event type.
         limit: the number of events to return.
 
-    Returns: list of events to send to XSIAM.
+    Returns:
+        - list of events to send to XSIAM.
+        - The new last_run (dictionary with the relevant timestamps and the events ids)
 
     """
-    events = []
     last_run_ids = set(last_run.get(f'{event_type}-ids', []))
+    new_events = []
+    new_events_ids = []
+    new_last_run = {}
+
     # Sorting the list to Ascending order according to the timestamp (old one first)
     sorted_list = list(reversed(results))
     for event in sorted_list[:limit]:
-        event['event_id'] = event['_id']
-        if event.get('timestamp') == last_run[event_type] and event.get('event_id') not in last_run_ids:
-            events.append(event)
-            last_run_ids.add(event['event_id'])
+        event_timestamp = event.get('timestamp')
+        event_id = event.get('_id')
+        event['event_id'] = event_id
 
+        # The event we are looking at has the same timestamp as previously fetched events
+        if event_timestamp == last_run[event_type]:
+            if event_id not in last_run_ids:
+                new_events.append(event)
+                last_run_ids.add(event_id)
+
+        # The event has a timestamp we have not yet fetched meaning it is a new event
         else:
-            last_run[f'{event_type}-ids'] = [event['event_id']]
-            last_run_ids.add(event['event_id'])
-            last_run[event_type] = event['timestamp']
-            events.append(event)
+            new_events.append(event)
+            new_events_ids.append(event_id)
+            # Since the event has a timestamp newer than the saved one, we will update the last run to the
+            # current event time
+            new_last_run[event_type] = event_timestamp
 
-    demisto.debug(f'Last Run Ids to send to XSIAM - {last_run_ids}')
-    return events, last_run, last_run_ids
+        # If we have received events with a newer time (new_event_ids list) we save them,
+        # otherwise we save the list that include the old ids together with the new event ids.
+        new_last_run[f'{event_type}-ids'] = new_events_ids or last_run_ids
+
+    demisto.debug(f'Setting new last run - {new_last_run}')
+    return new_events, new_last_run
 
 
 ''' COMMAND FUNCTIONS '''
@@ -142,7 +158,7 @@ def test_module(client: Client, api_version: str, last_run: dict, max_fetch: int
     return 'ok'
 
 
-def get_all_events(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> list:
+def get_all_events(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> Tuple[list, dict]:
     """
     This Function is doing a pagination to get all events within the given start and end time.
     Maximum events to get per a fetch call is 50,000 (MAX_SKIP)
@@ -156,14 +172,13 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
     Returns (list): list of all the events from a start time.
     """
     events_result = []
+    new_last_run = {}
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        et_events: list = []
-        next_batch = True
         events = []
         skip = 0
-        while next_batch:
+        while True:
             if api_version == 'v1':
                 if event_type == 'alert':
                     response = client.get_alerts_request_v1(last_run, skip, limit, is_command)
@@ -182,7 +197,7 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
 
                 results = response.get('result', [])
 
-            demisto.debug(f'The number of events pagination - {len(results)}')
+            demisto.debug(f'The number of received events - {len(results)}')
             events.extend(results)
             if len(results) == MAX_EVENTS_PAGE_SIZE:
                 skip += MAX_EVENTS_PAGE_SIZE
@@ -192,21 +207,22 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
                 # limit of accumulated events.
                 break
 
-        final_events, new_last_run, last_run_ids = dedup_by_id(last_run, events, event_type, limit)
-        et_events.extend(final_events)
-        # prepare for the next iteration
-        last_run[f'{event_type}-ids'] = list(last_run_ids)
-        demisto.debug(f'Initialize last run after fetch - {event_type} - {last_run[event_type]} \n '
-                      f'Events IDs to send to XSIAM - {last_run_ids}')
+        if events:
+            final_events, partial_last_run = dedup_by_id(last_run, events, event_type, limit)
+            # prepare for the next iteration
+            new_last_run.update(partial_last_run)
+            demisto.debug(f'Initialize last run after fetch - {event_type} - {new_last_run[event_type]} \n '
+                          f'Events IDs to send to XSIAM - {new_last_run[f"{event_type}-ids"]}')
 
-        for event in et_events:
-            populate_parsing_rule_fields(event, event_type)
-        events_result.extend(et_events)
+            for event in final_events:
+                populate_parsing_rule_fields(event, event_type)
+            events_result.extend(final_events)
 
-    return events_result
+    return events_result, new_last_run
 
 
 def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
+    # pragma: no cover
     limit = arg_to_number(args.get('limit', 50))
     events = []
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
@@ -233,6 +249,7 @@ def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
 
 
 def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
+    # pragma: no cover
     limit = arg_to_number(args.get('limit', 50))
     events = []
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
@@ -260,9 +277,10 @@ def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) 
 
 
 def fetch_events_command(client, api_version, last_run, max_fetch, is_command):  # pragma: no cover
-    events = get_all_events(client, last_run=last_run, limit=max_fetch, api_version=api_version, is_command=is_command)
+    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch, api_version=api_version,
+                                          is_command=is_command)
 
-    return events
+    return events, new_last_run
 
 
 ''' MAIN FUNCTION '''
@@ -286,6 +304,7 @@ def main() -> None:  # pragma: no cover
         client = Client(base_url, token, api_version, verify_certificate, proxy)
 
         last_run = demisto.getLastRun()
+        demisto.debug(f'Running with the following last_run - {last_run}')
         for event_type in ALL_SUPPORTED_EVENT_TYPES:
             # First Fetch
             if not last_run.get(event_type):
@@ -312,10 +331,10 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == 'fetch-events':
             demisto.debug(f'Sending request with last run {last_run}')
-            events = fetch_events_command(client, api_version, last_run, max_fetch, is_command=False)
+            events, new_last_run = fetch_events_command(client, api_version, last_run, max_fetch, is_command=False)
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
-            demisto.debug(f'Setting the last_run to: {last_run}')
-            demisto.setLastRun(last_run)
+            demisto.debug(f'Setting the last_run to: {new_last_run}')
+            demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
     except Exception as e:
