@@ -7,6 +7,15 @@ document = {'title': "'test'", 'body': {'content': [{'endIndex': 1, 'sectionBrea
 
 
 def test_batch_update_document_command(mocker):
+    """Given:
+        - a valid document id and actions argeuments
+
+        When:
+        - running batch_update_document_command
+
+        Then:
+        - validate the results are as expected
+    """
     from GoogleDocs import batch_update_document_command
     args = {'actions': 'action1{param1,param2};action2{param1,param2}', 'document_id': '123'}
     excepted_result = {'human_readable': "### The document with the title 'test' and actions action1{param1,param2};action2{param1,param2} was updated. the results are:\n|DocumentId|RevisionId|Title|\n|---|---|---|\n| 123 | 456 | 'test' |\n"}
@@ -17,6 +26,15 @@ def test_batch_update_document_command(mocker):
 
 
 def test_create_document_command(mocker):
+    """Given:
+        - a valid document title
+
+        When:
+        - running create_document_command
+
+        Then:
+        - validate the results are as expected
+        """
     from GoogleDocs import create_document_command
     args = {'title': 'test'}
     excepted_result = {
@@ -28,6 +46,15 @@ def test_create_document_command(mocker):
 
 
 def test_get_document_command(mocker):
+    """Given:
+        - a valid document id of an existing document
+
+        When:
+        - running get_document_command
+
+        Then:
+        - validate the results are as expected
+    """
     from GoogleDocs import get_document_command
     args = {'document_id': '123'}
     excepted_result = {
@@ -39,6 +66,15 @@ def test_get_document_command(mocker):
 
 
 def test_parse_actions():
+    """Given:
+        - a valid actions string argument string
+
+        When:
+        - running parse_actions
+
+        Then:
+        - the actions string is parsed to a dictionary
+    """
     from GoogleDocs import parse_actions
     assert parse_actions('action1{param1,param2};action2{param1,param2}') == {
         'action1': ['param1', 'param2'], 'action2': ['param1', 'param2']}
