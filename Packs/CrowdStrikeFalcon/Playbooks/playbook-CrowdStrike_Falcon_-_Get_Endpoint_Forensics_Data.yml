@@ -155,4 +155,4 @@ outputs:
   description: The results of the forensics commands.
   type: string
 tests:
- -  No tests
+ -  Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data
