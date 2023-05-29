@@ -31,6 +31,7 @@ FETCH_INCIDENTS_LIMIT = demisto.params().get("fetch_incidents_limit") or 50
 FETCH_INCIDENTS_DEDUPE = demisto.params().get("fetch_incidents_deduplication", None)
 TIMEOUT = demisto.params().get("timeout", "60")
 PORT = arg_to_number(demisto.params().get("port", "443") or "443")
+ITEMS_PER_PAGE = 50
 HEALTHCHECK_WRITER_RECORD = [{"hello": "world", "from": "demisto-integration"}]
 HEALTHCHECK_WRITER_TABLE = "test.keep.free"
 RANGE_PATTERN = re.compile("^[0-9]+ [a-zA-Z]+")
@@ -871,7 +872,7 @@ def main():
             fetch_incidents()
         elif demisto.command() == "devo-run-query":
             OFFSET = 0
-                        items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
+            items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
 
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
@@ -884,7 +885,7 @@ def main():
                 demisto.results(run_query_command(OFFSET, items_per_page))
         elif demisto.command() == "devo-get-alerts":
             OFFSET = 0
-            items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
+            items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
@@ -896,7 +897,7 @@ def main():
                 demisto.results(get_alerts_command(OFFSET, items_per_page))
         elif demisto.command() == "devo-multi-table-query":
             OFFSET = 0
-            items_per_page = int(demisto.args().get('items_per_page', ITEMS_PER_PAGE))
+            items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
