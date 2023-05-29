@@ -87,7 +87,7 @@ LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
 ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
-                         'toRecipients', 'textBody', ]
+                         'toRecipients', 'textBody', 'categories']
 
 # Load integratoin params from demisto
 NON_SECURE = demisto.params().get('insecure', True)
@@ -106,7 +106,7 @@ SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
-
+demisto.debug("params: {}".format(demisto.params()))
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
@@ -802,7 +802,6 @@ class SearchMailboxes(EWSService):
         to_recipients = element.find('{%s}ToRecipients' % TNS)
         if to_recipients:
             to_recipients = map(lambda x: x.text if x is not None else None, to_recipients)
-
         result = {
             ITEM_ID: element.find('{%s}Id' % TNS).attrib['Id'] if element.find('{%s}Id' % TNS) is not None else None,
             MAILBOX: element.find('{%s}Mailbox/{%s}PrimarySmtpAddress' % (TNS, TNS)).text if element.find(
@@ -1102,7 +1101,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         new_dict = {}
         fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
                        'has_attachments', 'importance', 'message_id', 'last_modified_time',
-                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read']
+                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read', 'categories']
 
         # Docker BC
         if exchangelib.__version__ == "1.12.0":
@@ -1835,6 +1834,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
     for item in items:
         item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
                                              compact_fields=True)
+
         for attachment in item.attachments:
             if attachment is not None:
                 attachment.parent_item = item
@@ -1844,10 +1844,10 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
                     item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
                                                          compact_fields=True)
                     break
-        items_result.append(item_attachment)
 
+        items_result.append(item_attachment)
     hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
-                  'receivedBy', 'author', 'toRecipients', ]
+                  'receivedBy', 'author', 'toRecipients', 'categories']
     if exchangelib.__version__ == "1.12.0":  # Docker BC
         hm_headers.append('itemId')
     return get_entry_for_object('Items in folder ' + folder_path,
@@ -2314,6 +2314,7 @@ def sub_main():     # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
+    demisto.debug("args: {}".format(args))
     fix_2010()
     try:
         protocol = get_protocol()

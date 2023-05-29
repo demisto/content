@@ -626,6 +626,9 @@ script:
     - contextPath: EWS.Items.isRead
       description: The read status of the email.
       type: String
+    - contextPath: EWS.Items.categories
+      description: The categories of the email.
+      type: unknown
   - arguments:
     - description: A comma-separated list of item IDs.
       isArray: true
@@ -714,6 +717,9 @@ script:
     - contextPath: Email.HeadersMap
       description: The headers of the email.
       type: String
+    - contextPath: EWS.Items.categories
+      description: The categories of the email.
+      type: unknown
   - arguments:
     - description: The item ID to move.
       name: item-id
