@@ -1,7 +1,6 @@
-# -*- coding: iso-8859-1 -*-
 import base64
-
 from MailListener_POP3 import parse_mail_parts
+# -*- coding: iso-8859-1 -*-
 
 
 def test_parse_mail_parts():
