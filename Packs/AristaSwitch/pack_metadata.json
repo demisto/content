@@ -1,6 +1,6 @@
 {
     "name": "Arista Switch",
-    "description": "Arista EOS Switches",
+    "description": "Modeling & Parsing Rules for Arista EOS Switch Events Logs.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
