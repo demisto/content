@@ -11,7 +11,7 @@ Zero Day Live is our threat intelligence platform. It services multiple security
 
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for ZeroDayTIFusion.
+2. Search for FeedZeroDayTIFusion.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __URL__: Server URL where the feed is.

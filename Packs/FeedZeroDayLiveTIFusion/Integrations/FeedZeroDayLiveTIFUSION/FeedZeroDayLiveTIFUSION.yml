@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ZeroDayLiveTIFUSION
+  id: ZeroDayLiveTIFUSION Feed
   version: -1
 configuration:
 - defaultvalue: "true"
@@ -102,8 +102,8 @@ configuration:
   required: false
   type: 8
 description: 'Zero Day Live is Blackwired’s flagship product that delivers proprietary cyber threat intelligence, enabling our clients to operate at the same speed as the adversary. Zero Day Live specializes in unknown, zero day and early warning threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated, directly into the existing security infrastructure – measurably reducing the risk of breach.'
-display: Zero Day Live TI FUSION
-name: ZeroDayLiveTIFUSION
+display: Zero Day Live TI FUSION Feed
+name: ZeroDayLiveTIFUSION Feed
 script:
   dockerimage: demisto/py3-tools:1.0.0.61685
   feed: true
