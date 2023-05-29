@@ -1811,7 +1811,7 @@ inputs:
     simple: "True"
   required: false
   description: |-
-    Possible values: True/False.  Default: True.
+   
     Should the given indicators be automatically blocked, or should the user be given the option to choose?
 
     If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
