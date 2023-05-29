@@ -21,7 +21,7 @@ PROMPT = demisto.params().get('prompt')
 SERVICE_SCOPES = "https://www.googleapis.com/auth/cloud-platform"
 REDIRECT_URI = 'https://oproxy.demisto.ninja/authcode'
 AUTH_URL = 'https://accounts.google.com/o/oauth2/auth'
-ACCESS_TOKEN_URL= 'https://oauth2.googleapis.com/token'
+ACCESS_TOKEN_URL = 'https://oauth2.googleapis.com/token'
 PROJECT_ID = demisto.params().get('ProjectID')
 URL = 'https://us-central1-aiplatform.googleapis.com/v1/projects/'
 AI_Model = 'chat-bison:predict'
@@ -52,7 +52,7 @@ class Client(BaseClient):
     def PaLMModel(self, prompt: str):
         options = {"instances": [{"messages": [{"content": prompt}]}]}
         return self._http_request(method='POST', \
-                                  url_suffix=f'{PROJECT_ID}/locations/us-central1/publishers/google/models/{AI_Model}', \
+                                  url_suffix=f'{PROJECT_ID}/locations/us-central1/publishers/google/models/{AI_Model}',
                                   json_data=options, headers=self.headers)
 
 
@@ -79,10 +79,10 @@ def check_access_token_validation():
     valid_until: int = integration_context.get('valid_until', int)
     time_now = epoch_seconds()
 
-    if access_token and ( time_now < valid_until ):
+    if access_token and (time_now < valid_until):
         demisto.debug("Access Token still valid")
         return access_token
-    elif access_token and ( time_now > valid_until ):
+    elif access_token and (time_now > valid_until):
         demisto.debug("Access Token is expired, using refresh token")
         access_token = refresh_access_token()
         return access_token
