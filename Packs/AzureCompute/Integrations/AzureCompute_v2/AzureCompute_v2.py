@@ -1086,7 +1086,11 @@ def main():
     params: dict = demisto.params()
     server = params.get('host', 'https://management.azure.com').rstrip('/')
     tenant = params.get('tenant_id') or params.get('cred_tenant_id', {}).get('password')
+    if not tenant:
+        raise DemistoException('Token must be provided.')
     auth_and_token_url = params.get('auth_id') or params.get('cred_auth_id', {}).get('password')
+    if not auth_and_token_url:
+        raise DemistoException('ID must be provided.')
     enc_key = params.get('enc_key') or params.get('cred_enc_key', {}).get('password')
     certificate_thumbprint = params.get('certificate_thumbprint', None) or params.get(
         'cred_certificate_thumbprint', {}).get('password')

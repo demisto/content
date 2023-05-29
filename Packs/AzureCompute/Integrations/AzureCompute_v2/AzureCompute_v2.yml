@@ -10,12 +10,12 @@ configuration:
   type: 0
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: Key (received from the admin consent - see Detailed Instructions (?)

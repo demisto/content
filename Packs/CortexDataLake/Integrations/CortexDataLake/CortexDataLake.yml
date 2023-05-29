@@ -5,17 +5,17 @@ commonfields:
 configuration:
 - display: Token
   name: refresh_token
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: ID
   name: reg_id
-  required: true
+  required: false
   type: 4
   hidden: true
 - display: Key
   name: auth_key
-  required: true
+  required: false
   type: 4
   hidden: true
 - displaypassword: Token
