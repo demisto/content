@@ -272,11 +272,9 @@ class EWSClient:
             item_ids = [item_ids]
         items = [Item(id=x) for x in item_ids]
         result = list(account.fetch(ids=items))
-        result = [x for x in result if not isinstance(x, ErrorItemNotFound)]
+        result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
         if len(result) != len(item_ids):
-            raise Exception(
-                "One or more items were not found. Check the input item ids"
-            )
+            raise Exception("One or more items were not found/malformed. Check the input item ids")
         return result
 
     def get_item_from_mailbox(self, account, item_id):
