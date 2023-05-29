@@ -35,6 +35,8 @@
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload content graph GraphML to GCP" --collapsed
         gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
+        # copy the packs.json file to the bucket, used in contribution management
+        gsutil cp $ARTIFACTS_FOLDER/packs.json "gs://$GCS_MARKET_BUCKET_DEV/content_graph/"$MARKETPLACE_VERSION"_packs.json"
         section_end "Upload content graph GraphML to GCP"
       fi
 
