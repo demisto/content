@@ -2746,7 +2746,6 @@
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
             ],
-            "timeout": 1000,
             "instance_names": "active_directory_ninja"
         },
         {
