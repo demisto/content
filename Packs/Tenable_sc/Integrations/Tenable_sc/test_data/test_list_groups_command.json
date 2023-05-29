@@ -8,11 +8,11 @@
         },
         "expected_hr": "### Tenable.sc groups\n|ID|\n|---|\n| 0 |\n### Group id:0\n|Username|Firstname|\n|---|---|\n| test | test |\n\n",
         "expected_ec": [{
-            "Id": "0",
+            "ID": "0",
             "Users": [
               {
                 "Firstname": "test",
-                "Id": "1",
+                "ID": "1",
                 "Lastname": "",
                 "Username": "test",
                 "Uuid": "uuid"
@@ -30,10 +30,10 @@
         },
         "expected_hr": "### Tenable.sc groups\n|ID|\n|---|\n| 0 |\n| 1 |\n",
         "expected_ec": [{
-            "Id": "0"
+            "ID": "0"
         },
         {
-            "Id": "1"
+            "ID": "1"
         }
       ]
     },
@@ -46,22 +46,22 @@
         },
         "expected_hr": "### Tenable.sc groups\n|ID|\n|---|\n| 0 |\n| 1 |\n### Group id:0\n|Username|Firstname|\n|---|---|\n| test | test |\n\n### Group id:1\n|Username|Firstname|\n|---|---|\n| test | test |\n\n",
         "expected_ec": [{
-            "Id": "0",
+            "ID": "0",
             "Users": [
               {
                 "Firstname": "test",
-                "Id": "1",
+                "ID": "1",
                 "Lastname": "",
                 "Username": "test",
                 "Uuid": "uuid"
               }
             ]
         },{
-            "Id": "1",
+            "ID": "1",
             "Users": [
               {
                 "Firstname": "test",
-                "Id": "1",
+                "ID": "1",
                 "Lastname": "",
                 "Username": "test",
                 "Uuid": "uuid2"
