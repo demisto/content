@@ -178,14 +178,12 @@ def get_error_kind(code):
     """
     Get the kind of the error based on the http error code.
     """
-    if code == 400:
-        return 'BadRequest'
-    elif code == 401:
-        return 'UnAuthorized'
-    elif code == 403:
-        return 'Forbidden'
-    elif code == 404:
-        return 'NotFound'
+    return {
+        400: 'BadRequest',
+        401: 'UnAuthorized',
+        403: 'Forbidden',
+        404: 'NotFound',
+    }.get(code)
 
 
 def error_handler(response: requests.Response):
@@ -778,7 +776,7 @@ def get_incident_by_id_command(client, args):
     )
 
 
-def test_module(client):
+def test_module(client: AzureSentinelClient, _: Dict[str, Any]):
     """
     Test connection to Azure by calling the list incidents API with limit=1
     """
@@ -1284,6 +1282,21 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
                              latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
+def fetch_incidents_command(client, params):
+    # How much time before the first fetch to retrieve incidents
+    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    min_severity = severity_to_level(params.get('min_severity', 'Informational'))
+    # Set and define the fetch incidents command to run after activated via integration settings.
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run=demisto.getLastRun(),
+        first_fetch_time=first_fetch_time,
+        min_severity=min_severity
+    )
+    demisto.setLastRun(next_run)
+    demisto.incidents(incidents)
+
+
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
                       last_incident_number):
     """Processing the raw incidents
@@ -1408,14 +1421,12 @@ def build_query_filter(args):
     indicator_types = argToList(args.get('indicator_types'))
     if indicator_types:
         for ind_type in indicator_types:
-            if ind_type == 'ipv4':
-                filtering_args['patternTypes'].append('ipv4-address')
-            elif ind_type == 'ipv6':
-                filtering_args['patternTypes'].append('ipv6-address')
-            elif ind_type == 'domain':
-                filtering_args['patternTypes'].append('domain-name')
-            else:
-                filtering_args['patternTypes'].append(ind_type)
+            pattern_type = {
+                'ipv4': '{ind_type}-address',
+                'ipv6': '{ind_type}-address',
+                'domain': '{ind_type}-name',
+            }.get(ind_type, "{ind_type}").format(ind_type=ind_type)
+            filtering_args['patternTypes'].append(pattern_type)
 
     include_disabled = args.get('include_disabled', 'false') == 'true'
     filtering_args['includeDisabled'] = include_disabled
@@ -1514,8 +1525,7 @@ def list_threat_indicator_command(client, args):
         next_link = next_link.replace('%20', ' ')  # Next link syntax can't handle '%' character
         result = client.http_request('GET', full_url=next_link)
     else:
-        indicator_name = args.get('indicator_name')
-        if indicator_name:
+        if indicator_name := args.get('indicator_name'):
             url_suffix += f'/{indicator_name}'
 
         result = client.http_request('GET', url_suffix, params={'$top': limit})
@@ -1938,6 +1948,7 @@ def main():
         )
 
         commands = {
+            'test-module': test_module,
             'azure-sentinel-get-incident-by-id': get_incident_by_id_command,
             'azure-sentinel-list-incidents': list_incidents_command,
             'azure-sentinel-update-incident': update_incident_command,
@@ -1972,25 +1983,8 @@ def main():
             'update-remote-system': update_remote_system_command
         }
 
-        if demisto.command() == 'test-module':
-            return_results(test_module(client))
-
-        elif demisto.command() == 'fetch-incidents':
-            # How much time before the first fetch to retrieve incidents
-            first_fetch_time = params.get('fetch_time', '3 days').strip()
-
-            min_severity = severity_to_level(params.get('min_severity', 'Informational'))
-
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,
-                min_severity=min_severity
-            )
-
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents_command(client, params)
 
         # mirroring command
         elif demisto.command() == 'get-mapping-fields':
@@ -2005,5 +1999,5 @@ def main():
         )
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
