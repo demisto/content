@@ -29,25 +29,30 @@ TOKEN = demisto.params().get('token')
 CLIENT_ID = demisto.params().get('ID')
 CLIENT_SECRET = demisto.params().get('Secret')
 AUTH_CODE = demisto.params().get('Authentication_Code')
+ERROR_MSG = ("ERROR: The authentication code has been reset"
+             "Please reset integration cache for Vetex AI Instance"
+             "in XSOAR and regenerate the 'Authorization code'")
 
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-        """
-        Client class to interact with Google Vertex AI API
-        """
+    """
+    Client class to interact with Google Vertex AI API
+    """
 
-        def __init__(self, token_str: str, base_url: str, proxy: bool, verify: bool):
-            super().__init__(base_url=URL, proxy=PROXY, verify=verify)
-            self.token_str = token_str
-            self.base_url = base_url
-            self.headers = {'Authorization': f"Bearer {self.token_str}", "Content-Type": "application/json"}
+    def __init__(self, token_str: str, base_url: str, proxy: bool, verify: bool):
+        super().__init__(base_url=URL, proxy=PROXY, verify=verify)
+        self.token_str = token_str
+        self.base_url = base_url
+        self.headers = {'Authorization': f"Bearer {self.token_str}", "Content-Type": "application/json"}
 
-        def PaLMModel(self, prompt: str):
-            options = {"instances": [{"messages": [{"content": prompt}]}]}
-            return self._http_request(method='POST', url_suffix=f'{PROJECT_ID}/locations/us-central1/publishers/google/models/{AI_Model}', json_data=options, headers=self.headers)
+    def PaLMModel(self, prompt: str):
+        options = {"instances": [{"messages": [{"content": prompt}]}]}
+        return self._http_request(method='POST', \
+                                  url_suffix=f'{PROJECT_ID}/locations/us-central1/publishers/google/models/{AI_Model}', \
+                                  json_data=options, headers=self.headers)
 
 
 ''' MAIN FUNCTIONS '''
@@ -55,7 +60,9 @@ class Client(BaseClient):
 
 def createAuthorizationURL():
     # The client ID and access scopes are required.
-    authorization_url = f"{AUTH_URL}/oauthchooseaccount?scope={SERVICE_SCOPES}&access_type=offline&prompt=consent&response_type=code&state=state_parameter_passthrough_value&redirect_uri={REDIRECT_URI}&client_id={CLIENT_ID}"
+    partOne = f"{AUTH_URL}/oauthchooseaccount?scope={SERVICE_SCOPES}&access_type=offline&prompt=consent"
+    partTwo = f"&response_type=code&state=state_parameter_passthrough_value&redirect_uri={REDIRECT_URI}&client_id={CLIENT_ID}"
+    authorization_url = partOne + partTwo
     return authorization_url
 
 
@@ -64,7 +71,7 @@ def check_access_token_validation():
     Access tokens expires in 1 hour, then using refresh_access_token function we will request for a new access token
     """
 
-    #demisto.log("Start Token Validation")
+    demisto.debug("Start Token Validation")
 
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get('access_token', '')
@@ -72,10 +79,10 @@ def check_access_token_validation():
     time_now = epoch_seconds()
 
     if access_token and ( time_now < valid_until ):
-        #demisto.log("Access Token still valid")
+        demisto.debug("Access Token still valid")
         return access_token
-    elif access_token and (time_now > valid_until):
-        #demisto.log("Access Token is expired, using refresh token")
+    elif access_token and ( time_now > valid_until ):
+        demisto.debug("Access Token is expired, using refresh token")
         access_token = refresh_access_token()
         return access_token
     else:
@@ -89,7 +96,7 @@ def get_access_token():
     Generate a new Access Token using ClientID, ClientSecret and configured Authentication Code
     """
 
-    #demisto.log("Generate a new access token")
+    demisto.debug("Generate a new access token")
 
     integration_context: dict = get_integration_context()
 
@@ -130,11 +137,13 @@ def get_access_token():
 
 def refresh_access_token():
     """
-    A refresh token might stop working for one of these reasons: The user has revoked your app's access. The refresh token has not been used for six months
-    https://developers.google.com/identity/protocols/oauth2#:~:text=Refresh%20token%20expiration,-You%20must%20write&text=A%20refresh%20token%20might%20stop,been%20used%20for%20six%20months.
+    A refresh token might stop working for one of these reasons:
+    The user has revoked your app's access. The refresh token has not been used for six months
+    https://developers.google.com/identity/protocols/oauth2#:~:text=Refresh%20token%20expiration,
+    -You%20must%20write&text=A%20refresh%20token%20might%20stop,been%20used%20for%20six%20months.
     """
 
-    #demisto.log("Refresh Access token using refresh_token from integration_context")
+    demisto.debug("Refresh Access token using refresh_token from integration_context")
 
     integration_context: dict = get_integration_context()
     refresh_token: str = integration_context.get('refresh_token', '')
@@ -154,7 +163,6 @@ def refresh_access_token():
 
     if not response.ok:
         error = error_parser(response)
-        demisto.log(error)
         raise ValueError(f'Failed to get refresh token [{response.status_code}] - {error}')
 
     response_json: dict = response.json()
@@ -190,7 +198,7 @@ def resetIntegrationContext():
     In case of error related to authentication or authorization, the cached context will be reseted
     """
 
-    demisto.log("ERROR: The authentication code has been reset. Please reset integration cache for Vetex AI Instance in XSOAR and regenerate the 'Authorization code")
+    demisto.debug(ERROR_MSG)
 
     integration_context: dict = get_integration_context()
     integration_context['refresh_token'] = ""
@@ -209,22 +217,19 @@ def error_parser(resp_err: requests.Response) -> str:
         response: dict = resp_err.json()
         if "Unauthorized" in response.get('error_description', ''):
             resetIntegrationContext()
-            raise ValueError(
-                "The authentication code has been reset. Please reset integration cache for Vetex AI Instance in XSOAR and regenerate the 'Authorization code'")
+            raise ValueError(ERROR_MSG)
         elif "invalid authentication credentials" in response.get('error_description', ''):
             resetIntegrationContext()
-            raise ValueError(
-                "The authentication code has been reset. Please reset integration cache for Vetex AI Instance in XSOAR and regenerate the 'Authorization code'")
+            raise ValueError(ERROR_MSG)
         elif "Bad" in response.get('error_description', ''):
             resetIntegrationContext()
-            raise ValueError(
-                "The authentication code has been reset. Please reset integration cache for Vetex AI Instance in XSOAR and regenerate the 'Authorization code'")
+            raise ValueError(ERROR_MSG)
         else:
             error = response.get('error', {})
             err_str = (f"{error.get('code', '')}: {error.get('message', '')}" if isinstance(error, dict)
                        else response.get('error_description', ''))
             if err_str:
-                demisto.log(err_str)
+                demisto.debug(err_str)
                 return err_str
             # If no error message
             raise ValueError()
@@ -298,6 +303,7 @@ def PaLM_output(response) -> CommandResults:
 
 ''' MAIN FUNCTION '''
 
+
 def main():
     """
     Main function, runs command functions
@@ -310,8 +316,6 @@ def main():
     verify = not params.get('insecure', False)
 
     try:
-        proxies = handle_proxy()
-
         if command == 'test-module':
             access_token = check_access_token_validation()
             client = Client(token_str=access_token, base_url=URL, verify=verify, proxy=PROXY)
