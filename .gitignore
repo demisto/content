@@ -88,3 +88,6 @@ demisto_sdk_debug.log.*
 
 # Ignore Modeling Rules test conf
 Packs/**/ModelingRules/**/**/*_testdata.json
+Packs/AristaSwitch/ModelingRules/AristaSwitch/AristaSwitch_wo_rules.xif.c
+Packs/AristaSwitch/ModelingRules/AristaSwitch/AristaSwitch.xif.c
+Packs/AristaSwitch/arista_logo.png
