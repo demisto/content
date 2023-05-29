@@ -27,6 +27,8 @@ WRITER_CREDENTIALS = demisto.params().get("writer_credentials", None)
 LINQ_LINK_BASE = demisto.params().get("linq_link_base", "https://us.devo.com/welcome")
 FETCH_INCIDENTS_FILTER = demisto.params().get("fetch_incidents_filters", None)
 FETCH_INCIDENTS_LIMIT = demisto.params().get("fetch_incidents_limit") or 50
+# Deprecated: this parameter is never used
+FETCH_INCIDENTS_DEDUPE = demisto.params().get("fetch_incidents_deduplication", None)
 TIMEOUT = demisto.params().get("timeout", "60")
 PORT = arg_to_number(demisto.params().get("port", "443") or "443")
 HEALTHCHECK_WRITER_RECORD = [{"hello": "world", "from": "demisto-integration"}]
@@ -254,6 +256,13 @@ def check_configuration():
             assert (
                 "value" in filt and filt["value"]
             ), 'Missing key:"value" in fetch_incidents_filters.filters configuration'
+
+    # Deprecated: this parameter is never used
+    if FETCH_INCIDENTS_DEDUPE:
+        dedupe_conf = check_type(FETCH_INCIDENTS_DEDUPE, dict)
+        assert isinstance(
+            dedupe_conf["cooldown"], (int, float)
+        ), "Invalid fetch_incidents_deduplication configuration"
 
     return True
 

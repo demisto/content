@@ -53,7 +53,7 @@ configuration:
     name: fetch_incidents_filters
     type: 12
     required: false
-  - display: (deprecated) Deduplication parameters JSON if required
+  - display: Deduplication parameters JSON if required
     name: fetch_incidents_deduplication
     type: 0
     required: false
