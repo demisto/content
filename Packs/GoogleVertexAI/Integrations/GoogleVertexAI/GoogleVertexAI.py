@@ -35,7 +35,8 @@ AUTH_CODE = demisto.params().get('Authentication_Code')
 
 
 class Client(BaseClient):
-        """ Client class to interact with Google Vertex AI API
+        """
+        Client class to interact with Google Vertex AI API
         """
 
         def __init__(self, token_str: str, base_url: str, proxy: bool, verify: bool):
@@ -48,7 +49,7 @@ class Client(BaseClient):
             options = {"instances": [{"messages": [{"content": prompt}]}]}
             return self._http_request(method='POST', url_suffix=f'{PROJECT_ID}/locations/us-central1/publishers/google/models/{AI_Model}', json_data=options, headers=self.headers)
 
-        
+
 ''' MAIN FUNCTIONS '''
 
 
@@ -59,17 +60,22 @@ def createAuthorizationURL():
 
 
 def check_access_token_validation():
-    # Access tokens expires in 1 hour, then using refresh_token from test_module() function we will request for a new refresh token
+    """
+    Access tokens expires in 1 hour, then using refresh_access_token function we will request for a new access token
+    """
+
+    #demisto.log("Start Token Validation")
 
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get('access_token', '')
     valid_until: int = integration_context.get('valid_until', int)
     time_now = epoch_seconds()
-    if len(access_token) > 0:
-        if access_token and valid_until:
-            if time_now < valid_until:
-                # Token is still valid - did not expire yet
-                return access_token
+
+    if access_token and ( time_now < valid_until ):
+        #demisto.log("Access Token still valid")
+        return access_token
+    elif access_token and (time_now > valid_until):
+        #demisto.log("Access Token is expired, using refresh token")
         access_token = refresh_access_token()
         return access_token
     else:
@@ -78,6 +84,12 @@ def check_access_token_validation():
 
 
 def get_access_token():
+
+    """
+    Generate a new Access Token using ClientID, ClientSecret and configured Authentication Code
+    """
+
+    #demisto.log("Generate a new access token")
 
     integration_context: dict = get_integration_context()
 
@@ -117,8 +129,12 @@ def get_access_token():
 
 
 def refresh_access_token():
-    # A refresh token might stop working for one of these reasons: The user has revoked your app's access. The refresh token has not been used for six months
-    # https://developers.google.com/identity/protocols/oauth2#:~:text=Refresh%20token%20expiration,-You%20must%20write&text=A%20refresh%20token%20might%20stop,been%20used%20for%20six%20months.
+    """
+    A refresh token might stop working for one of these reasons: The user has revoked your app's access. The refresh token has not been used for six months
+    https://developers.google.com/identity/protocols/oauth2#:~:text=Refresh%20token%20expiration,-You%20must%20write&text=A%20refresh%20token%20might%20stop,been%20used%20for%20six%20months.
+    """
+
+    #demisto.log("Refresh Access token using refresh_token from integration_context")
 
     integration_context: dict = get_integration_context()
     refresh_token: str = integration_context.get('refresh_token', '')
@@ -130,6 +146,8 @@ def refresh_access_token():
         'grant_type': 'refresh_token'
     }
 
+    print(data)
+
     response: requests.Response = requests.post(
         ACCESS_TOKEN_URL,
         data=data,
@@ -138,12 +156,12 @@ def refresh_access_token():
 
     if not response.ok:
         error = error_parser(response)
+        demisto.log(error)
         raise ValueError(f'Failed to get refresh token [{response.status_code}] - {error}')
 
     response_json: dict = response.json()
     access_token = response_json.get('access_token', '')
     expires_in: int = response_json.get('expires_in', 3595)
-    refresh_token = response_json.get('refresh_token', '')
 
     time_now: int = epoch_seconds()
     time_buffer = 5  # seconds by which to shorten the validity period
@@ -163,12 +181,19 @@ def epoch_seconds(d: datetime = None) -> int:
     :param d: timestamp datetime object
     :return: timestamp in epoch
     """
+
     if not d:
         d = datetime.utcnow()
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
 def resetIntegrationContext():
+    """
+    In case of error related to authentication or authorization, the cached context will be reseted
+    """
+
+    demisto.log("ERROR: The authentication code has been reset. Please reset integration cache for Vetex AI Instance in XSOAR and regenerate the 'Authorization code")
+
     integration_context: dict = get_integration_context()
     integration_context['refresh_token'] = ""
     integration_context['access_token'] = ""
@@ -181,6 +206,7 @@ def error_parser(resp_err: requests.Response) -> str:
     """
     Parse Error
     """
+
     try:
         response: dict = resp_err.json()
         if "Unauthorized" in response.get('error_description', ''):
@@ -195,13 +221,15 @@ def error_parser(resp_err: requests.Response) -> str:
             resetIntegrationContext()
             raise ValueError(
                 "The authentication code has been reset. Please reset integration cache for Vetex AI Instance in XSOAR and regenerate the 'Authorization code'")
-        error = response.get('error', {})
-        err_str = (f"{error.get('code', '')}: {error.get('message', '')}" if isinstance(error, dict)
-                   else response.get('error_description', ''))
-        if err_str:
-            return err_str
-        # If no error message
-        raise ValueError()
+        else:
+            error = response.get('error', {})
+            err_str = (f"{error.get('code', '')}: {error.get('message', '')}" if isinstance(error, dict)
+                       else response.get('error_description', ''))
+            if err_str:
+                demisto.log(err_str)
+                return err_str
+            # If no error message
+            raise ValueError()
     except ValueError:
         return resp_err.text
 
@@ -246,6 +274,7 @@ def PaLM_output(response) -> CommandResults:
     :return: CommandResults return output of ChatGPT response
     :rtype: ``CommandResults``
     """
+
     if response and isinstance(response, dict):
         rep = json.dumps(response)
         repJSON = json.loads(rep)
@@ -295,7 +324,6 @@ def main():
             return_results(send_prompts_PaLM_command(client, **args))
         elif command == 'google-vertex-ai-generate-auth-url':
             return_results(createAuthorizationURL())
-
     except Exception as e:
         if 'Quota exceeded for quota metric' in str(e):
             return_error('Quota for Google Vertex API exceeded')
