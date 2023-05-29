@@ -9559,6 +9559,103 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
+  - arguments:
+    - description: Whether to include shared tags in the list.
+      isArray: false
+      name: include_shared_tags
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'Yes'
+      - 'No'
+      defaultValue: 'No'
+    - description: The device group that the tags are part of.
+      isArray: false
+      name: device_group
+      required: false
+    description: Returns a list of tags from panorama.
+    name: pan-os-list-tag
+    outputs:
+    - contextPath: Panorama.Tag.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Panorama.Tag.color
+      description: The color of the tag.
+      type: String
+    - contextPath: Panorama.Tag.comment
+      description: The comment in the tag.
+      type: String
+    - contextPath: Panorama.Tag.disable-override
+      description: Whether overriding the tag is disabled.
+      type: String
+  - arguments:
+    - description: The name for the new tag to be created.
+      isArray: false
+      name: name
+      required: true
+    - description: The device group that the tag will be part of.
+      isArray: false
+      name: device_group
+      required: false
+    - description: Whether to disable overriding the tag.
+      isArray: false
+      name: disable_override
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: Whether the tag should be generated in a shared location.
+      isArray: false
+      name: is_shared
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: The comment for the tag.
+      isArray: false
+      name: comment
+      required: false
+    description: Creates a new tag in panorama.
+    name: pan-os-create-tag
+  - arguments:
+    - description: The existing name for the tag to be edited.
+      isArray: false
+      name: name
+      required: true
+    - description: The new name for the tag to be replaced with.
+      isArray: false
+      name: new_name
+      required: false
+    - description: The device group of the tag.
+      isArray: false
+      name: device_group
+      required: false
+    - description: Whether to disable overriding the tag.
+      isArray: false
+      name: disable_override
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: The comment for the tag.
+      isArray: false
+      name: comment
+      required: false
+    description: Edits a tag in panorama.
+    name: pan-os-edit-tag
+  - arguments:
+    - description: The name of the tag to delete.
+      isArray: false
+      name: name
+      required: true
+    description: Deletes a tag from panorama.
+    name: pan-os-delete-tag
   dockerimage: demisto/pan-os-python:1.0.0.58557
   feed: false
   isfetch: true
