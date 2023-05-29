@@ -91,4 +91,3 @@ filter
     xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ",")
     xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), src)
     xdm.source.host.mac_addresses = arraystring(endpointMacAddress, ",")
-    
