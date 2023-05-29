@@ -36,13 +36,15 @@ def append_email_signature(html_body):
     return html_body
 
 
-def validate_email_sent(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc,
-                        reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance):
+def validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, service_mail,
+                        email_cc, email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
+                        mail_sender_instance):
     """
     Validate that the email was actually sent, returns an error string if it wasn't sent successfully.
     Args:
         incident_id: The incident ID.
         email_subject: The email subject.
+        subject_include_incident_id: Should we include the incident id in the email subject.
         email_to: The email's recipients.
         reply_body: The email body.
         service_mail: The service mail (mail listener).
@@ -56,9 +58,9 @@ def validate_email_sent(incident_id, email_subject, email_to, reply_body, servic
     Returns:
         str: a message which indicates that the mail was sent successfully or an error message.
     """
-    email_reply = execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                     email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
-                                     mail_sender_instance)
+    email_reply = execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body,
+                                     service_mail, email_cc, email_bcc, reply_html_body, entry_id_list,
+                                     email_latest_message, email_code, mail_sender_instance)
 
     if is_error(email_reply):
         return f'Error:\n {get_error(email_reply)}'
@@ -72,8 +74,12 @@ def validate_email_sent(incident_id, email_subject, email_to, reply_body, servic
     return msg
 
 
-def execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc,
-                       reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance):
+def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, service_mail,
+                       email_cc, email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
+                       mail_sender_instance):
+    if subject_include_incident_id and f'[{incident_id}]' not in email_subject:
+        email_subject = f'[{incident_id}] {email_subject}'
+
     if f'<{email_code}' not in email_subject:
         subject_with_id = f"<{email_code}> {email_subject}"
 
@@ -88,7 +94,7 @@ def execute_reply_mail(incident_id, email_subject, email_to, reply_body, service
     else:
         subject_with_id = email_subject
 
-    # If a mail sender instance has been set, set the "using" parameter with it. Otherwise do not set "using"
+    # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
     if mail_sender_instance:
         mail_content = {
             "to": email_to,
@@ -208,12 +214,14 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
         return_error(f"Unable to add new email message to Incident {incident_id}. Reason: \n {e}")
 
 
-def send_new_email(incident_id, email_subject, email_to, email_body, service_mail, email_cc, email_bcc, email_html_body,
-                   entry_id_list, email_code, mail_sender_instance, new_attachment_names):
+def send_new_email(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
+                   email_cc, email_bcc, email_html_body, entry_id_list, email_code, mail_sender_instance,
+                   new_attachment_names):
     """Send new email.-
     Args:
         incident_id: The incident ID.
         email_subject: The email subject.
+        subject_include_incident_id: Should we include the incident id in the email subject.
         email_to: The email's recipients.
         email_body: The email body.
         service_mail: The service mail (mail listener).
@@ -228,9 +236,9 @@ def send_new_email(incident_id, email_subject, email_to, email_body, service_mai
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
 
-    email_result = send_new_mail_request(incident_id, email_subject, email_to, email_body, service_mail, email_cc,
-                                         email_bcc, email_html_body, entry_id_list, new_attachment_names, email_code,
-                                         mail_sender_instance)
+    email_result = send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body,
+                                         service_mail, email_cc, email_bcc, email_html_body, entry_id_list,
+                                         new_attachment_names, email_code, mail_sender_instance)
 
     if is_error(email_result):
         return f'Error:\n {get_error(email_result)}'
@@ -244,14 +252,16 @@ def send_new_email(incident_id, email_subject, email_to, email_body, service_mai
     return msg
 
 
-def send_new_mail_request(incident_id, email_subject, email_to, email_body, service_mail, email_cc, email_bcc,
-                          email_html_body, entry_id_list, new_attachment_names, email_code, mail_sender_instance):
+def send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
+                          email_cc, email_bcc, email_html_body, entry_id_list, new_attachment_names, email_code,
+                          mail_sender_instance):
     """
-            Use message details from the selected thread to construct a new mail message, since resending a first-contact
-            email does not have a Message ID to reply to.
+            Use message details from the selected thread to construct a new mail message, since
+            resending a first-contact email does not have a Message ID to reply to.
         Args:
             incident_id: ID of the current incident
             email_subject: The email subject
+            subject_include_incident_id: Should we include the incident id in the email subject.
             email_to: The email's recipients
             email_body: The email body
             email_cc: The email cc
@@ -264,12 +274,15 @@ def send_new_mail_request(incident_id, email_subject, email_to, email_body, serv
             service_mail: Address the email is sent from
         Returns: Results from the 'send-mail' command
         """
+    if subject_include_incident_id and f'[{incident_id}]' not in email_subject:
+        email_subject = f'[{incident_id}] {email_subject}'
+
     if f'<{email_code}' not in email_subject:
         subject_with_id = f"<{email_code}> {email_subject}"
     else:
         subject_with_id = email_subject
 
-    # If a mail sender instance has been set, set the "using" parameter with it. Otherwise do not set "using"
+    # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
     if mail_sender_instance:
         mail_content = {
             "to": email_to,
@@ -515,8 +528,8 @@ def get_incident_by_query(query):
     Returns:
         dict. The details of all incidents matching the query.
     """
-    # In order to avoid performance issues, limit the number of days to query back for modified incidents. By default
-    # the limit is 60 days and can be modified by the user by adding a list called
+    # In order to avoid performance issues, limit the number of days to query back for modified incidents.
+    # By default, the limit is 60 days and can be modified by the user by adding a list called
     # `XSOAR - Email Communication Days To Query` (see README for more information).
     query_time = get_query_window()
 
@@ -541,14 +554,12 @@ def get_unique_code():
     Returns:
         8-digit code returned as a string
     """
-    code_is_unique = False
-    while not code_is_unique:
+    while True:
         code = f'{random.randrange(1, 10 ** 8):08}'
         query = f'emailgeneratedcode: {code}'
         incidents_details = get_incident_by_query(query)
         if incidents_details is None or len(incidents_details) == 0:
-            code_is_unique = True
-    return code
+            return code
 
 
 def reset_fields():
@@ -561,7 +572,8 @@ def reset_fields():
 
 
 def resend_first_contact(email_selected_thread, email_thread, incident_id, new_email_attachments, files, new_email_body,
-                         add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names):
+                         add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+                         subject_include_incident_id):
     """
         Use message details from the selected thread to construct a new mail message, since resending a first-contact
         email does not have a Message ID to reply to.
@@ -577,6 +589,7 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         service_mail: Address the email is sent from
         mail_sender_instance: The service email (sender address)
         new_attachment_names: List of attachment file names
+        subject_include_incident_id: Should we include the incident id in the email subject.
     Returns: Results from send_new_email function
     """
     # Verify the selected thread ID matches this dict
@@ -592,8 +605,8 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
 
         final_email_cc = get_email_cc(thread_cc, add_cc)
         final_email_bcc = get_email_cc(thread_bcc, add_bcc)
-        result = send_new_email(incident_id, reply_subject, new_email_recipients, new_email_body,
-                                service_mail, final_email_cc, final_email_bcc, html_body, entry_id_list,
+        result = send_new_email(incident_id, reply_subject, subject_include_incident_id, new_email_recipients,
+                                new_email_body, service_mail, final_email_cc, final_email_bcc, html_body, entry_id_list,
                                 reply_code, mail_sender_instance, new_attachment_names)
 
         return result
@@ -606,7 +619,7 @@ def format_body(new_email_body):
     """
         Converts markdown included in the email body to HTML
     Args:
-        new_email_body (str): Email body text with or without markdown formatting included
+        new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
     # Replace newlines with <br> element to preserve line breaks
@@ -619,7 +632,8 @@ def format_body(new_email_body):
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
-                        email_to_str, service_mail, email_latest_message, mail_sender_instance):
+                        subject_include_incident_id, email_to_str, service_mail, email_latest_message,
+                        mail_sender_instance):
     """
         Retrieve all entries in the EmailThreads context key
     Args:
@@ -631,6 +645,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         attachments: Entry IDs of file attachments
         files: Dictionary of incident file details
         email_subject: The email subject
+        subject_include_incident_id: Should we include the incident id in the email subject.
         email_to_str: The email's recipients
         service_mail: The service mail (mail listener).
         email_latest_message: The latest message ID in the email thread to reply to.
@@ -649,17 +664,17 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
-        result = validate_email_sent(incident_id, email_subject, email_to_str, reply_body, service_mail,
-                                     final_email_cc, '', reply_html_body, entry_id_list, email_latest_message,
-                                     email_code, mail_sender_instance)
+        result = validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to_str, reply_body,
+                                     service_mail, final_email_cc, '', reply_html_body, entry_id_list,
+                                     email_latest_message, email_code, mail_sender_instance)
         return_results(result)
 
     except Exception as error:
         return_error(f"Failed to send email via new_thread = 'n/a' branch. Reason: {error}")
 
 
-def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, incident_id, email_codes,
-                     new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
+def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body, incident_id,
+                     email_codes, new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
                      new_attachment_names):
     """Validates that all necessary fields are set to send a new email, gets a unique code to associate replies
     to the current incident, prepares the final HTML email message body, then sends the email.
@@ -671,6 +686,7 @@ def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, in
         add_bcc: The email bcc.
         files: Dictionary of incident file details
         new_email_subject: The email subject
+        subject_include_incident_id: Should we include the incident id in the email subject.
         new_email_recipients: The email's recipients
         service_mail: The service mail (mail listener).
         new_email_attachments: Files to attach to the new email message
@@ -710,9 +726,9 @@ def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, in
 
         html_body = format_body(new_email_body)
 
-        result = send_new_email(incident_id, new_email_subject, new_email_recipients, new_email_body,
-                                service_mail, add_cc, add_bcc, html_body, entry_id_list,
-                                thread_code, mail_sender_instance, new_attachment_names)
+        result = send_new_email(incident_id, new_email_subject, subject_include_incident_id, new_email_recipients,
+                                new_email_body, service_mail, add_cc, add_bcc, html_body, entry_id_list, thread_code,
+                                mail_sender_instance, new_attachment_names)
         return_results(result)
 
         # Clear fields for re-use
@@ -799,9 +815,9 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
 
 
 def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                       add_bcc, service_mail, mail_sender_instance, new_attachment_names):
+                       add_bcc, service_mail, mail_sender_instance, new_attachment_names, subject_include_incident_id):
     """Validates that all necessary fields are set to send a reply email, retrieves details about the thread from
-    incident context (subject, list of recipients, etc).  In the event this reply is for an email thread that has no
+    incident context (subject, list of recipients, etc.).  In the event this reply is for an email thread that has no
      inbound messages from end users this function will re-use details from the previous outbound first-contact email
      and create a new email to send. Prepares the final HTML email message body, then sends the email.
     Args:
@@ -815,6 +831,7 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
         new_email_attachments: Files to attach to the new email message
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
+        subject_include_incident_id: Should we include the incident id in the email subject.
     Returns:
         String containing result message from resend_first_contact function or the send_reply function, whichever
         is required by the applicable case
@@ -838,8 +855,8 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
             to be stored as a thread without an existing incident to link to.
             """
             result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id,
-                                          new_email_attachments, files, new_email_body, add_cc, add_bcc,
-                                          service_mail, mail_sender_instance, new_attachment_names)
+                                          new_email_attachments, files, new_email_body, add_cc, add_bcc, service_mail,
+                                          mail_sender_instance, new_attachment_names, subject_include_incident_id)
 
             # Clear fields for re-use
             reset_fields()
@@ -864,7 +881,8 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
                 # first-contact message and must be sent as a new email message.
                 result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
                                               incident_id, new_email_attachments, files, new_email_body, add_cc,
-                                              add_bcc, service_mail, mail_sender_instance, new_attachment_names)
+                                              add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+                                              subject_include_incident_id)
 
                 # Clear fields for re-use
                 reset_fields()
@@ -895,10 +913,14 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
             reply_subject = reply_subject.lstrip("Re: ")
 
             # Send the email reply
-            result = validate_email_sent(incident_id, reply_subject, final_reply_recipients, new_email_body,
-                                         service_mail, final_email_cc, final_email_bcc, reply_html_body, entry_id_list,
-                                         reply_to_message_id, reply_code, mail_sender_instance)
+            result = validate_email_sent(incident_id, reply_subject, subject_include_incident_id,
+                                         final_reply_recipients, new_email_body, service_mail, final_email_cc,
+                                         final_email_bcc, reply_html_body, entry_id_list, reply_to_message_id,
+                                         reply_code, mail_sender_instance)
             return_results(result)
+
+            if subject_include_incident_id and f'[{incident_id}]' not in reply_subject:
+                reply_subject = f'[{incident_id}] ${reply_subject}'
 
             if f'<{reply_code}' not in reply_subject:
                 subject_with_id = f"<{reply_code}> {reply_subject}"
@@ -949,6 +971,7 @@ def main():
     new_email_subject = custom_fields.get('emailnewsubject')
     new_email_body = custom_fields.get('emailnewbody')
     email_selected_thread = custom_fields.get('emailselectedthread')
+    subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
 
     if new_email_attachments:
         new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
@@ -958,18 +981,20 @@ def main():
     if new_thread == 'n/a':
         # This case is run when replying to an email from the 'Email Communication' layout
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
-                            email_to_str, service_mail, email_latest_message, mail_sender_instance)
+                            subject_include_incident_id, email_to_str, service_mail, email_latest_message,
+                            mail_sender_instance)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message
-        multi_thread_new(new_email_subject, new_email_recipients, new_email_body, incident_id, email_codes,
-                         new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
-                         new_attachment_names)
+        multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body,
+                         incident_id, email_codes, new_email_attachments, files, service_mail, add_cc, add_bcc,
+                         mail_sender_instance, new_attachment_names)
 
     elif new_thread == 'false':
         # This case is run when using the 'Email Threads' layout to reply to an existing email thread
         multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                           add_bcc, service_mail, mail_sender_instance, new_attachment_names)
+                           add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+                           subject_include_incident_id)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
