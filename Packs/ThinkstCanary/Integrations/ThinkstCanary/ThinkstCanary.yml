@@ -25,9 +25,8 @@ configuration:
 - name: authentication_token
   required: false
   type: 9
-  displaypassword: authentication_token
+  displaypassword: API Authentication Token
   hiddenusername: true
-  additionalinfo: API Authentication Token
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
