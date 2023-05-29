@@ -141,7 +141,7 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
     return command_results
 
 
-def parse_cpe(cpe: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
+def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
     """
     Parses a CPE to return the correct tags and relationships needed for the CVE.
 
@@ -159,37 +159,48 @@ def parse_cpe(cpe: list[str], cve_id: str) -> tuple[list[str], list[EntityRelati
         "h": "Hardware"
     }
 
-    relationships = []
+    vendors = set()
+    products = set()
+    parts = set()
 
-    try:
-        vendor = cpe[3].capitalize().replace("\\", "").replace("_", " ")
-        if vendor:
-            relationships.append(EntityRelationship(name="targets",
-                                                    entity_a=cve_id,
-                                                    entity_a_type="cve",
-                                                    entity_b=vendor,
-                                                    entity_b_type="identity"))
-    except IndexError:
-        vendor = ''
+    for cpe in cpes:
+        cpe_split = re.split('(?<!\\\):', cpe)
 
-    try:
-        product = cpe[4].capitalize().replace("\\", "").replace("_", " ")
-        if product:
-            relationships.append(EntityRelationship(name="targets",
-                                                    entity_a=cve_id,
-                                                    entity_a_type="cve",
-                                                    entity_b=product,
-                                                    entity_b_type="software"))
-    except IndexError:
-        product = ''
+        try:
+            vendor = cpe_split[3].capitalize().replace("\\", "").replace("_", " ")
+            if vendor:
+                vendors.add(vendor)
 
-    try:
-        part = cpe_parts[cpe[2]]
+        except IndexError:
+            pass
 
-    except IndexError:
-        part = ''
+        try:
+            product = cpe_split[4].capitalize().replace("\\", "").replace("_", " ")
+            if product:
+                products.add(product)
 
-    return [tag for tag in (vendor, product, part) if tag], relationships
+        except IndexError:
+            pass
+
+        try:
+            parts.add(cpe_parts[cpe_split[2]])
+
+        except IndexError:
+            pass
+
+    relationships = [EntityRelationship(name="targets",
+                                        entity_a=cve_id,
+                                        entity_a_type="cve",
+                                        entity_b=vendor,
+                                        entity_b_type="identity") for vendor in vendors]
+
+    relationships.extend([EntityRelationship(name="targets",
+                                             entity_a=cve_id,
+                                             entity_a_type="cve",
+                                             entity_b=product,
+                                             entity_b_type="software") for product in products])
+
+    return list(vendors | products | parts), relationships
 
 
 def generate_indicator(data: dict) -> Common.CVE:
@@ -207,15 +218,15 @@ def generate_indicator(data: dict) -> Common.CVE:
     cpe = data.get("vulnerable_product", '')
 
     if cpe:
-        cpe = re.split('(?<!\\\):', cpe[0])
         tags, relationships = parse_cpe(cpe, cve_id)
-        if data.get('cwe', ''):
-            tags.append(data.get('cwe', ''))
 
     else:
-        if data.get('cwe', ''):
-            tags = [data.get('cwe', '')]
         relationships = []
+
+    cwe = data.get('cwe', '')
+
+    if cwe and cwe != 'NVD-CWE-noinfo':
+        tags = [cwe]
 
     cvss_table = []
 

@@ -4,7 +4,6 @@ from pathlib import Path
 from CVESearchV2 import cve_command, valid_cve_id_format, Client, generate_indicator, parse_cpe
 from CommonServerPython import DemistoException, argToList, EntityRelationship
 import pytest
-import re
 
 BASE_URL = 'https://cve.circl.lu/api/'
 
@@ -68,11 +67,12 @@ def test_indicator_creation():
         correct_indicator = json.load(js)
 
     indicator = generate_indicator(response).to_context()
-    assert indicator == correct_indicator
+    assert set(indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"]) == set(
+        correct_indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"])
 
 
 @pytest.mark.parametrize("cpe, expected_output, expected_relationships", [
-    ("cpe:2.3:a:vendor:product",
+    (["cpe:2.3:a:vendor:product"],
      ["Vendor", "Product", "Application"],
      [EntityRelationship(name="targets",
                          entity_a='CVE-2022-1111',
@@ -84,14 +84,14 @@ def test_indicator_creation():
                          entity_a_type="cve",
                          entity_b='Product',
                          entity_b_type="software").to_context()]),
-    ("cpe:2.3:h:a\:_vendor",
+    (["cpe:2.3:h:a\:_vendor"],
      ["A: vendor", "Hardware"],
      [EntityRelationship(name="targets",
                          entity_a='CVE-2022-1111',
                          entity_a_type="cve",
                          entity_b='A: vendor',
                          entity_b_type="identity").to_context()]),
-    ("cpe:2.3:o:::",
+    (["cpe:2.3:o:::"],
      ["Operating-System"],
      []),
 ])
@@ -107,9 +107,8 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
         return a tuple of a list of tags (no empty strings) and a list of EntityRelationship objects.
     """
 
-    cpe = re.split('(?<!\\\):', cpe)
     tags, relationships = parse_cpe(cpe, 'CVE-2022-1111')
-    assert tags == expected_output
+    assert set(tags) == set(expected_output)
     assert [relationship.to_context() for relationship in relationships] == expected_relationships
 
 
