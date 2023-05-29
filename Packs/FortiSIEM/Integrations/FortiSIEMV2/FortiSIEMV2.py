@@ -1564,21 +1564,23 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
         format_integer_field_to_verbal(incident)  # formatting integer attributes.
 
         for attribute_name in REFORMAT_INCIDENT_FIELDS:  # formatting nested attributes.
-            attribute_value_to_decompose = incident.get(attribute_name)
+            attribute_value_to_decompose = incident.get(attribute_name, '').strip()
             demisto.debug(f'###### [demisto.debug] attribute_value_to_decompose: {str(attribute_value_to_decompose)}')
             if attribute_value_to_decompose:
                 nested_attributes = attribute_value_to_decompose.split(',')
                 demisto.debug(f'###### [demisto.debug] nested_attributes: {str(nested_attributes)}')
                 for index, attrib in enumerate(nested_attributes):
-                    demisto.debug(f'###### [demisto.debug] index, attrib: {str(attrib)}, {str(index)}')
+                    demisto.debug(f'###### [demisto.debug] index, attrib: {str(index), {str(attrib)}}')
                     if attrib:
                         nested_attributes[index] = attrib.lstrip()
+                        demisto.debug(f'###### [demisto.debug] nested_attributes[index]: {str(nested_attributes[index])}')
                         key, value = format_nested_incident_attribute(nested_attributes[index])
                         demisto.debug(f'###### [demisto.debug] key, value: {str(key)}, {str(value)}')
                         if key:
                             formatted_key = build_readable_attribute_key(key, attribute_name)
                             demisto.debug(f'###### [demisto.debug] formatted_key: {str(formatted_key)}')
                             incident[formatted_key] = value
+                            demisto.debug(f'###### [demisto.debug] incident[formatted_key]: {str(incident[formatted_key])}')
     return relevant_incidents
 
 
