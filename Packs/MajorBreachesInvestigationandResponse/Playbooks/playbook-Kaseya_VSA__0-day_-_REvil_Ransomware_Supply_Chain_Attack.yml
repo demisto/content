@@ -460,7 +460,7 @@ tasks:
       id: 6291ed6c-545c-416e-82f9-3c84f4619d81
       version: -1
       name: Splunk Indicator Hunting
-      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or URLs. It outputs detected users, IP addresses, and hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
