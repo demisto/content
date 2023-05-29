@@ -1,0 +1,12 @@
+{
+    "watchguard_xtm_raw": {
+        "leefEventID": {
+          "type": "string",
+          "is_array": false
+        },
+        "leefProductVersion": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+}
