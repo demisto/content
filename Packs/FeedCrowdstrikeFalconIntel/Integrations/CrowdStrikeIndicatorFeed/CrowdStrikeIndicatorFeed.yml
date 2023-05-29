@@ -46,10 +46,11 @@ configuration:
   type: 16
 - display: First fetch time
   name: first_fetch
-  required: false
+  required: true
   type: 0
   additionalinfo: The time range to consider for the initial data fetch. Leave empty
     to fetch from the first available indicator.
+  defaultvalue: '1 week'
 - display: Max. indicators per fetch
   defaultvalue: 5000
   hidden: false
@@ -169,6 +170,13 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'true'
+  required: false
+  type: 8
+  hidden: true
 description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
 display: CrowdStrike Indicator Feed
 name: CrowdStrike Indicator Feed
