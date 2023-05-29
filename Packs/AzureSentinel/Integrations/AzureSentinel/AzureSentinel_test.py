@@ -1914,7 +1914,8 @@ def test_list_incident_comments_command_happy_path(mocker):
     - Calling the list_incident_comments_command function.
 
     Then:
-    - Ensure the function successfully retrieves comments for the given incident ID with and without a specified limit and next link.
+    - Ensure the function successfully retrieves comments for the given incident ID with and without
+    a specified limit and next link.
     - Ensure the function returns the expected CommandResults object.
     """
 
