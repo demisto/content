@@ -2364,11 +2364,11 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
         users = []
         for index, group in enumerate(groups):
             users = [{
-                'Username': user['username'],
-                'Firstname': user['firstname'],
-                'Lastname': user['lastname'],
-                'ID': user['id'],
-                'UUID': user['uuid']
+                'Username': user.get('username', ""),
+                'Firstname': user.get('firstname', ""),
+                'Lastname': user.get('lastname', ""),
+                'ID': user.get('id', ""),
+                'UUID': user.get('UUID', "")
             } for user in group.get('users')]
             mapped_groups[index]['Users'] = users
             group_id = group.get('id')

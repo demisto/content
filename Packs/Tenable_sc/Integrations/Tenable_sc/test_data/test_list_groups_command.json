@@ -15,7 +15,7 @@
                 "ID": "1",
                 "Lastname": "",
                 "Username": "test",
-                "Uuid": "uuid"
+                "UUID": "uuid"
               }
             ]
         }
@@ -24,16 +24,20 @@
     "test_case_2": {
         "args": {"show_users": "False"},
         "mock_response": {
-            "error_code":0, "error_msg":"", "response": [{"id":"0", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"}]},
-            {"id":"1", "users": [{"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid2"}]}],
+            "error_code":0, "error_msg":"", "response": [{"id":"0", "description": "Full Access group", "name": "Full Access"},
+            {"id":"1", "description": "Full Access group", "name": "Full Access"}],
             "timestamp":1684672117,"type":"regular","warnings":[]
         },
-        "expected_hr": "### Tenable.sc groups\n|ID|\n|---|\n| 0 |\n| 1 |\n",
+        "expected_hr": "### Tenable.sc groups\n|ID|Name|Description|\n|---|---|---|\n| 0 | Full Access | Full Access group |\n| 1 | Full Access | Full Access group |\n",
         "expected_ec": [{
-            "ID": "0"
+            "ID": "0",
+            "Description": "Full Access group",
+            "Name": "Full Access"
         },
         {
-            "ID": "1"
+            "ID": "1",
+            "Description": "Full Access group",
+            "Name": "Full Access"
         }
       ]
     },
@@ -53,7 +57,7 @@
                 "ID": "1",
                 "Lastname": "",
                 "Username": "test",
-                "Uuid": "uuid"
+                "UUID": "uuid"
               }
             ]
         },{
@@ -64,7 +68,7 @@
                 "ID": "1",
                 "Lastname": "",
                 "Username": "test",
-                "Uuid": "uuid2"
+                "UUID": "uuid2"
               }
             ]
         }
