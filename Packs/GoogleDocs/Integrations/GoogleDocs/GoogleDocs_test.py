@@ -281,8 +281,8 @@ def test_batch_update_document_command(mocker):
         "document_id": "123",
     }
     excepted_result = {
-        "human_readable": "### The document with the title 'test' and actions action1{param1,param2};action2{param1,param2}\
-            was updated. the results are:\n|DocumentId|RevisionId|Title|\n|---|---|---|\n| 123 | 456 | 'test' |\n"
+        "human_readable": "### The document with the title 'test' and actions action1{param1,param2};action2{param1,param2}"
+        + " was updated. the results are:\n|DocumentId|RevisionId|Title|\n|---|---|---|\n| 123 | 456 | 'test' |\n"
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(GoogleDocs, "batch_update_document", return_value=document)
@@ -304,8 +304,8 @@ def test_create_document_command(mocker):
 
     args = {"title": "test"}
     excepted_result = {
-        "human_readable": "### The document with the title test was created.\
-            The results are:\n|DocumentId|RevisionId|Title|\n|---|---|---|\n| 123 | 456 | 'test' |\n"
+        "human_readable": "### The document with the title test was created."
+        + " The results are:\n|DocumentId|RevisionId|Title|\n|---|---|---|\n| 123 | 456 | 'test' |\n"
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(GoogleDocs, "create_document", return_value=document)
@@ -327,8 +327,8 @@ def test_get_document_command(mocker):
 
     args = {"document_id": "123"}
     excepted_result = {
-        "human_readable": "### The document with the title 'test' was returned.\
-            The results are:\n|DocumentId|RevisionId|Title|\n|---|---|---|\n| 123 | 456 | 'test' |\n"
+        "human_readable": "### The document with the title 'test' was returned."
+        + " The results are:\n|DocumentId|RevisionId|Title|\n|---|---|---|\n| 123 | 456 | 'test' |\n"
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(GoogleDocs, "get_document", return_value=document)
