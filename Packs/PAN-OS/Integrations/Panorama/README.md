@@ -3049,23 +3049,23 @@ Deprecated. Retrieves traffic log query data by job id.
 ### pan-os-list-rules
 ***
 Returns a list of predefined Security Rules.
-
+**Note**: When passing a query, all other arguments are overridden. Make sure the query includes all necessary filters.
 
 #### Base Command
 
 `pan-os-list-rules`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | A comma-separated list of tags by which to filter the rules. | Optional | 
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules. | Optional | 
-| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no. | Optional | 
-| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop. | Optional | 
-| query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. | Optional | 
+| **Argument Name** | **Description**                                                                                                                        | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------| --- |
+| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase.                                | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances).                                                                   | Optional | 
+| tag | A comma-separated list of tags by which to filter the rules.                                                                           | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance.                                           | Optional | 
+| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules.                                                       | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no.            | Optional | 
+| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop.            | Optional | 
+| query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden. | Optional | 
 
 
 #### Context Output
