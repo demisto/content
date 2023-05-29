@@ -410,6 +410,9 @@ script:
     - defaultValue: 'True'
       description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
       name: network_configuration_sni_only
+    - description: Multiple sans adding into the Common name
+      isArray: true
+      name: sans
     description: Create a new enrollment.
     name: akamai-create-enrollment
     outputs:
@@ -1317,11 +1320,17 @@ script:
       - PRODUCTION
     - description: Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time
       name: contract_id
-    - description: Unique identifier for the group. Both contract_id and group_id need to be defined.
+    - description: Unique identifier for the group. contract_id and groupd_id need to be presented at the same time
       name: group_id
-    description: 'Lists active property hostnames for all properties available in an account.'
+    description: 'Lists active property hostnames for all properties available in an account. '
     name: akamai-list-papi-property-by-hostname
-  dockerimage: demisto/akamai:1.0.0.52532
+  - arguments: []
+    description: Returns a list of all Site Shield maps that belong to your account.
+    name: akamai-list-siteshield-map
+    outputs:
+    - contextPath: Akamai.SiteShieldMaps
+      description: Akamai SiteShield Maps
+  dockerimage: demisto/akamai:1.0.0.57618
   runonce: false
   script: ''
   subtype: python3

@@ -155,5 +155,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-- SumoLogic-Test
+- No tests (auto formatted)
 fromversion: 5.0.0

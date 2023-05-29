@@ -1,0 +1,9 @@
+### Host Tags List
+|Tags|
+|---|
+| region:east |
+| environment:production12 |
+| test:123 |
+| source:my_apps |
+| environment:production13 |
+| env:prod |

@@ -1,3 +1,4 @@
+Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
 # O365 - EWS - Extension
 
 This integration enables you to run message traces and manage junk mail rules in Microsoft O365 - Exchange Online.

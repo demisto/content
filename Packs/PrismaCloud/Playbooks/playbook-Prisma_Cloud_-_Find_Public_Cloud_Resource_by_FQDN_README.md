@@ -6,9 +6,9 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Prisma Cloud - Find Azure Resource by FQDN
-* Prisma Cloud - Find GCP Resource by FQDN
-* Prisma Cloud - Find AWS Resource by FQDN
+* Prisma Cloud - Find Azure Resource by FQDN v2
+* Prisma Cloud - Find GCP Resource by FQDN v2
+* Prisma Cloud - Find AWS Resource by FQDN v2
 
 ### Integrations
 This playbook does not use any integrations.

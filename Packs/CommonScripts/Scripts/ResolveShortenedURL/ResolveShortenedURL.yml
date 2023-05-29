@@ -26,6 +26,15 @@ args:
   required: false
   defaultValue: "5"
   description: A maximum number of recursions to run in case of nested shortened-URLs. Use 0 for unlimited (not recommended).
+- name: use_system_proxy
+  predefined:
+  - 'True'
+  - 'False'
+  description: Use system proxy settings
+  auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  isArray: false
 - name: insecure
   required: false
   type: Boolean
@@ -59,4 +68,4 @@ scripttarget: 0
 tests:
 - "No test"
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.11.54132

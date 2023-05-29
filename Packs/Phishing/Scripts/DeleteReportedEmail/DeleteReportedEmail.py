@@ -1,18 +1,19 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 from typing import Callable, Union
 import time
 from urllib.parse import quote, unquote
 
-seconds = time.time()
-
+DOCS_TROUBLESHOOTING_URL = 'https://xsoar.pan.dev/docs/reference/scripts/delete-reported-email#troubleshooting'
 EMAIL_INTEGRATIONS = ['Gmail', 'EWSO365', 'EWS v2', 'Agari Phishing Defense', 'MicrosoftGraphMail',
-                      'SecurityAndCompliance']
+                      'SecurityAndCompliance', 'SecurityAndComplianceV2']
+seconds = time.time()
 
 
 class MissingEmailException(Exception):
     def __init__(self):
-        super().__init__('Email was not found in the mailbox. It is possible that the email was already '
-                         'deleted manually.')
+        super().__init__('Email not found in mailbox. It may have been manually deleted.')
 
 
 class DeletionFailed(Exception):
@@ -272,23 +273,38 @@ def delete_email(search_args: dict, search_function: str,
 def get_search_args(args: dict):
     """
     Get the parsed arguments needed for the search operation
+
     Args:
         args: this script's arguments.
 
     Returns: parsed arguments needed for the search operation
-
     """
     incident_info = demisto.incident()
     custom_fields = incident_info.get('CustomFields', {})
     message_id = custom_fields.get('reportedemailmessageid')
     user_id = custom_fields.get('reportedemailto')
+    email_subject = custom_fields.get('reportedemailsubject')
+    from_user_id = custom_fields.get('reportedemailfrom')
+    email_origin = custom_fields.get('reportedemailorigin')
     delete_type = args.get('delete_type', custom_fields.get('emaildeletetype', 'soft'))
     delete_from_brand = delete_from_brand_handler(incident_info, args)
+
+    missing_field_error_message = "'{field_name}' field could not be found.\n" \
+                                  f"See {DOCS_TROUBLESHOOTING_URL} for possible solutions."
+
+    if not email_origin or email_origin.lower() == 'none':
+        raise ValueError(missing_field_error_message.format(field_name='Reported Email Origin'))
+
+    if not message_id:
+        raise ValueError(missing_field_error_message.format(field_name='Reported Email Message ID'))
+
+    if not user_id:
+        raise ValueError(missing_field_error_message.format(field_name='Reported Email To'))
 
     search_args = {
         'delete-type': delete_type,
         'using-brand': delete_from_brand,
-        'email_subject': custom_fields.get('reportedemailsubject'),
+        'email_subject': email_subject,
         'message-id': message_id,
     }
     additional_args = {
@@ -297,7 +313,8 @@ def get_search_args(args: dict):
         'EWS v2': {'target-mailbox': user_id},
         'MicrosoftGraphMail': {'user_id': user_id, 'odata': f'"$filter=internetMessageId eq '
                                                             f'\'{quote(unquote(message_id))}\'"'},
-        'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': custom_fields.get('reportedemailfrom')},
+        'SecurityAndCompliance': {'to_user_id': user_id, 'from_user_id': from_user_id},
+        'SecurityAndComplianceV2': {'to_user_id': user_id, 'from_user_id': from_user_id}
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -336,9 +353,9 @@ def main():
     search_args = get_search_args(args)
     result, deletion_failure_reason, scheduled_command = '', '', None
     delete_from_brand = search_args['using-brand']
-    try:
 
-        if delete_from_brand == 'SecurityAndCompliance':
+    try:
+        if delete_from_brand in ['SecurityAndCompliance', 'SecurityAndComplianceV2']:
             security_and_compliance_args = {k.replace('-', '_'): v for k, v in search_args.items()}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
 
