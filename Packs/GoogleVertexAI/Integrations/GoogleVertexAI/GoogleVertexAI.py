@@ -146,8 +146,6 @@ def refresh_access_token():
         'grant_type': 'refresh_token'
     }
 
-    print(data)
-
     response: requests.Response = requests.post(
         ACCESS_TOKEN_URL,
         data=data,
