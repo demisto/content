@@ -114,7 +114,7 @@ tasks:
       id: 951a9ee0-ff37-46e8-8e32-ce85411250ab
       version: -1
       name: Retrieve Volexity blog
-      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      description: This script will extract indicators from a given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
