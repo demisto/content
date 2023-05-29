@@ -59,13 +59,13 @@ configuration:
   defaultvalue: '15'
   section: Collect
   advanced: true
-- display: Detections fetch query
+- display: Endpoint Detections fetch query
   name: fetch_query
   required: false
   type: 0
   section: Collect
   advanced: true
-- display: Incidents fetch query
+- display: Endpoint Incidents fetch query
   name: incidents_fetch_query
   required: false
   type: 0
@@ -131,6 +131,10 @@ configuration:
   options:
   - Detections
   - Incidents
+  - IDP Detection
+  - IDP Incident
+  - Endpoint Incident
+  - Endpoint Detection
   section: Collect
   advanced: true
 - defaultvalue: '1'
