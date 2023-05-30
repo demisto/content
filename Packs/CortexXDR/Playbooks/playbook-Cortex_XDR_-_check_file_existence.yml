@@ -5,7 +5,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - check file existence
 description: |
-  Deprecated. Use `xdr-file-exist-script-execute` command instead.Initiates a new endpoint script execution to check if the file exists and retrieve the results.
+  Deprecated. Use the `xdr-file-exist-script-execute` command instead. Initiates a new endpoint script execution to check if the file exists and retrieve the results.
 starttaskid: "0"
 tasks:
   "0":
