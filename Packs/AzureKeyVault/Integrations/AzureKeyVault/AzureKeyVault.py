@@ -59,7 +59,7 @@ class KeyVaultClient:
         if not params:
             params = {}
         if 'api-version' not in params:
-            params['api-version'] = '2019-09-01' if resource == MANAGEMENT_RESOURCE else '7.2'
+            params['api-version'] = '2022-07-01' if resource == MANAGEMENT_RESOURCE else '7.2'
         res = self.ms_client.http_request(method=method,
                                           url_suffix=url_suffix,
                                           full_url=full_url,
