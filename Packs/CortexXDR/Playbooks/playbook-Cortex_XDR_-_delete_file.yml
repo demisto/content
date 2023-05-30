@@ -4,7 +4,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - delete file
-description: Deprecated. Use `xdr-file-delete-script-execute` command instead. Initiates a new endpoint script execution to delete the specified file and retrieve the results.
+description: Deprecated. Use the `xdr-file-delete-script-execute` command instead. Initiates a new endpoint script execution to delete the specified file and retrieve the results.
 starttaskid: "0"
 tasks:
   "0":
