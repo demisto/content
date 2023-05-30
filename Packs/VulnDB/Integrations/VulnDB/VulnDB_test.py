@@ -1,5 +1,5 @@
-from CommonServerPython import DemistoException
-from pytest import raises
+import pytest
+from CommonServerPython import DemistoException, DBotScoreReliability
 
 
 def test_http_request_json_negative(requests_mock):
@@ -17,5 +17,5 @@ def test_http_request_json_negative(requests_mock):
             'details': 'You have exceeded your API usage for the month. Please contact support'
         })
     client = Client(False, False, f'{base_path}/api/v1', 'client_id', 'client_secret')
-    with raises(DemistoException, match='You have exceeded your API usage for the month'):
-        vulndb_get_cve_command({'cve_id': cve_id}, client)
+    with pytest.raises(DemistoException, match='You have exceeded your API usage for the month'):
+        vulndb_get_cve_command({'cve_id': cve_id}, client, DBotScoreReliability.C)

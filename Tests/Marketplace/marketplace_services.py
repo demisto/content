@@ -2099,7 +2099,10 @@ class Pack(object):
                             continue
 
                     # check if content item has to version
-                    to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    try:
+                        to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    except Exception:
+                        logging.exception(f"Failed on {pack_file_path=}. {content_item=}")
 
                     if to_version and Version(to_version) < Version(Metadata.SERVER_DEFAULT_MIN_VERSION):
                         os.remove(pack_file_path)
@@ -2435,11 +2438,12 @@ class Pack(object):
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
+                    content_item_type_and_id = f"{current_directory}_{metadata_output['id']}"
                     if self.is_replace_item_in_folder_collected_list(
                             content_item, content_items_id_to_version_map,
-                            metadata_output['id']):
+                            content_item_type_and_id):
                         latest_fromversion, latest_toversion = self.get_latest_versions(
-                            content_items_id_to_version_map, metadata_output['id'])
+                            content_items_id_to_version_map, content_item_type_and_id)
                         metadata_output['fromversion'] = latest_fromversion
                         metadata_output['toversion'] = latest_toversion
                         folder_collected_items = [metadata_output
@@ -2447,9 +2451,9 @@ class Pack(object):
                                                   else d
                                                   for d in folder_collected_items]
                     elif not content_items_id_to_version_map.get(
-                            metadata_output['id'], {}).get('added_to_metadata_list', ''):
+                            content_item_type_and_id, {}).get('added_to_metadata_list', ''):
                         folder_collected_items.append(metadata_output)
-                        content_items_id_to_version_map.get(metadata_output['id'], {})['added_to_metadata_list'] = True
+                        content_items_id_to_version_map.get(content_item_type_and_id, {})['added_to_metadata_list'] = True
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
@@ -2504,7 +2508,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar'])
+            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
