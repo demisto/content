@@ -1088,12 +1088,16 @@ def main():
     tenant = params.get('cred_tenant_id', {}).get('password') or params.get('tenant_id')
     if not tenant:
         raise DemistoException('Token must be provided.')
+    
+    
     auth_and_token_url = params.get('cred_auth_id', {}).get('password') or params.get('auth_id')
     if not auth_and_token_url:
         raise DemistoException('ID must be provided.')
     enc_key = params.get('cred_enc_key', {}).get('password') or params.get('enc_key')
     certificate_thumbprint = params.get('cred_certificate_thumbprint', {}).get(
         'password') or params.get('certificate_thumbprint', None)
+    if tenant and not certificate_thumbprint:
+        raise DemistoException('When Tenant ID is provided, Certificate Thumbprint and Private Key must be provided.')
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
     subscription_id = params.get('cred_certificate_thumbprint', {}).get(
