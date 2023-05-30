@@ -1115,3 +1115,6 @@ inputs:
 outputs: []
 sourceplaybookid: 810cf469-1703-4b67-845e-434c67536b21
 quiet: true
+fromversion: 6.10.0
+tests:
+  - Run all tests
