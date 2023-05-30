@@ -1,6 +1,6 @@
 GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats.
-This integration was integrated and tested with version 0.7.0 of GreyNoise.
-Supported Cortex XSOAR versions: 5.0.0 and later.
+This integration was integrated and tested with version 2.0.1 of the GreyNoise SDK.
+Supported Cortex XSOAR versions: 5.5.0 and later.
 
 ## Configure GreyNoise on Cortex XSOAR
 
