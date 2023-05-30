@@ -39,3 +39,6 @@ tags:
 - markdown
 - HTML
 type: python
+fromversion: 6.10.0
+tests:
+  - Run all tests
