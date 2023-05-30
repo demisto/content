@@ -1085,8 +1085,7 @@ def create_nic_command(client: MsGraphClient, args: dict):
 def main():
     params: dict = demisto.params()
     server = params.get('host', 'https://management.azure.com').rstrip('/')
-    tenant = params.get('cred_tenant_id', {}).get('password') or params.get('tenant_id')
-    print(tenant)
+    tenant = params.get('cred_token', {}).get('password') or params.get('tenant_id')
     if not tenant:
         raise DemistoException('Token must be provided.')
     auth_and_token_url = params.get('cred_auth_id', {}).get('password') or params.get('auth_id')
@@ -1095,8 +1094,6 @@ def main():
     enc_key = params.get('cred_enc_key', {}).get('password') or params.get('enc_key')
     certificate_thumbprint = params.get('cred_certificate_thumbprint', {}).get(
         'password') or params.get('certificate_thumbprint', None)
-    if tenant and not certificate_thumbprint:
-        raise DemistoException('When Tenant ID is provided, Certificate Thumbprint and Private Key must be provided.')
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
     subscription_id = params.get('cred_certificate_thumbprint', {}).get(
