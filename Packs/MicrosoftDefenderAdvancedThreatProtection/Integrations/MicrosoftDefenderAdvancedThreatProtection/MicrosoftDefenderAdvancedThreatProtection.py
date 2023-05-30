@@ -5438,6 +5438,9 @@ def put_file_get_successful_action_results(client, res):
 
 def main():  # pragma: no cover
     params: dict = demisto.params()
+    params_endpoint_type = params.get('endpoint_type')
+    params_url = params.get('url')
+    is_gcc = params.get('is_gcc')
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     auth_id = params.get('_auth_id') or params.get('auth_id')
     enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
@@ -5458,15 +5461,26 @@ def main():  # pragma: no cover
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed = self_deployed or managed_identities_client_id is not None
 
-    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params.get("endpoint_type", "Worldwide"), "com")
-    is_gcc = params.get('is_gcc')
-    if is_gcc is not None:  # Backward compatible.
-        endpoint_type = "gcc" if is_gcc else "com"
+    # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
+    if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or params_endpoint_type is None:
+        endpoint_type = "com"  # Default to "com"
+        if is_gcc is not None and is_gcc:  # Backward compatible.
+            endpoint_type = "gcc"
+            params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
 
-    # Allow overriding the url endpoint.
-    url: str = params.get('url', MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type))
+        if params_url is None:
+            if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+                raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
+            raise DemistoException("Endpoint type is not set and no URL was provided.")
 
-    base_url: str = urljoin(url, '/api')
+    else:
+        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params_endpoint_type)  # type: ignore[assignment]
+        if endpoint_type is None:
+            raise DemistoException(f"Endpoint type is not valid:{params_endpoint_type}")
+
+        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+
+    base_url: str = urljoin(params_url, '/api')
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:

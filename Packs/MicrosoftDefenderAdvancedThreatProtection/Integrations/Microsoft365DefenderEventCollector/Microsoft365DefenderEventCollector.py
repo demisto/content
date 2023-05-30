@@ -192,6 +192,8 @@ class DefenderIntegrationOptions(IntegrationOptions):
 class DefenderAuthenticator(BaseModel):
     verify: bool
     url: str
+    endpoint_type: str
+    scope_url: str
     tenant_id: str
     client_id: str
     credentials: dict
@@ -206,7 +208,7 @@ class DefenderAuthenticator(BaseModel):
                     tenant_id=self.tenant_id,
                     auth_id=self.client_id,
                     enc_key=self.credentials.get('password'),
-                    scope=urljoin(self.url, "/windowsatpservice/.default"),
+                    scope=urljoin(self.scope_url, "/windowsatpservice/.default"),
                     verify=self.verify,
                     self_deployed=True
                 )
@@ -340,8 +342,32 @@ def test_module(get_events: DefenderGetEvents) -> str:
 def main(command: str, params: dict):
     demisto.debug(f'Command being called is {command}')
     try:
-        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params.get('endpoint_type', 'Worldwide'), 'com')
-        params["url"] = MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+        params_endpoint_type = params.get('endpoint_type')
+        params_url = params.get('url')
+        is_gcc = params.get('is_gcc')
+        # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided,
+        # otherwise use endpoint_type.
+        if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or params_endpoint_type is None:
+            endpoint_type = "com"  # Default to "com"
+            if is_gcc is not None and is_gcc:  # Backward compatible.
+                endpoint_type = "gcc"
+                params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+
+            if params_url is None:
+                if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+                    raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
+                raise DemistoException("Endpoint type is not set and no URL was provided.")
+
+        else:
+            endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params_endpoint_type)  # type: ignore[assignment]
+            if endpoint_type is None:
+                raise DemistoException(f"Endpoint type is not valid:{params_endpoint_type}")
+
+            params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+
+        params["url"] = params_url
+        params["endpoint_type"] = endpoint_type
+        params["scope_url"] = MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[endpoint_type]
 
         options = DefenderIntegrationOptions.parse_obj(params)
         request = DefenderHTTPRequest.parse_obj(params)
