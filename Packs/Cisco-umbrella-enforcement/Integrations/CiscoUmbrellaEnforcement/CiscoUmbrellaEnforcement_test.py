@@ -123,7 +123,6 @@ def test_umbrella_domain_event_add_valid_args(mocker):
     """
     import demistomock as demisto
     from CiscoUmbrellaEnforcement import main
-    # mocker.patch.object(CiscoUmbrellaEnforcement, 'Client',(base_url='https://test.com/1.0/', api_key='valid_api_key', verify=True, proxy=False))
     mocker.patch.object(demisto, 'params', return_value={
                         'url': 'https://test.com', 'cred_api_key': {'password': 'valid_api_key'}})
     mocker.patch.object(demisto, 'command', return_value='umbrella-domain-event-add')
