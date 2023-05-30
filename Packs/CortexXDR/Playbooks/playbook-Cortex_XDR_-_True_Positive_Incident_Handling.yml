@@ -1714,7 +1714,7 @@ inputs:
 - key: TicketProjectName
   value: {}
   required: false
-  description: For ticketing systems such as Jira a project name is required.
+  description: For ticketing systems such as Jira, a project name is required.
   playbookInputQuery:
 - key: TicketingSystemToUse
   value: {}
