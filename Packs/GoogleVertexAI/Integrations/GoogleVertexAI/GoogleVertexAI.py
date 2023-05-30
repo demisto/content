@@ -254,7 +254,8 @@ def test_module(client: Client):
             status = 'ok'
             return status
         else:
-            status = "There is an error in communciating with Google Vertex AI API - Please regenerate the Authentication Code again"
+            status = ("There is an error in communciating with Google Vertex AI API"
+                      "- Please regenerate the Authentication Code again")
     except Exception as e:
         exception_text = str(e).lower()
         if 'Bad Request' in exception_text or 'invalid_grant' in exception_text:
@@ -262,7 +263,6 @@ def test_module(client: Client):
             return status
         else:
             raise e
-            
     return status
 
 
