@@ -148,7 +148,8 @@ class AzureSentinelClient:
         """
         if not full_url:
             params = params or {}
-            params['api-version'] = API_VERSION
+            if not params.get('api-version'):
+                params['api-version'] = API_VERSION
 
         res = self._client.http_request(
             method=method,  # disable-secrets-detection
@@ -1795,6 +1796,25 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
     return CommandResults(readable_output=f'Alert rule {rule_id} was deleted successfully.')
 
 
+def list_subscriptions_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+
+    full_url= 'https://management.azure.com/subscriptions?api-version=2020-01-01'
+
+    response = client.http_request('GET', full_url=full_url)
+
+    clean_response = response.get('value', [])
+    table_headers = ['ID', 'Subscription ID', 'Display Name', 'State', 'Subscription Policies']
+    readable_result = [{header: subscription.get(header) for header in table_headers} for subscription in clean_response]
+    return CommandResults(
+        readable_output=tableToMarkdown('Azure Sentinel Subscriptions', readable_result, table_headers, removeNull=True),
+        outputs_prefix='AzureSentinel.Subscription',
+        outputs=clean_response,
+        outputs_key_field='subscriptionId',
+        raw_response=clean_response
+    )
+
+
+
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
     required_args_by_kind = {
         'fusion': ['rule_name', 'template_name', 'enabled'],
@@ -1944,6 +1964,8 @@ def main():
             'azure-sentinel-delete-alert-rule': delete_alert_rule_command,
             'azure-sentinel-create-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
+            'azure-sentinel-subscriptions-list': list_subscriptions_command,
+            'azure-sentinel-resource-group-list': list_resource_groups_command,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,

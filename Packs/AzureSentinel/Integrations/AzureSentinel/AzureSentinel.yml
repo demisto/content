@@ -3006,6 +3006,10 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
+    - name: azure-sentinel-subscriptions-list
+      description: Lists all subscriptions.
+      outputs:
+      
   dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: true
