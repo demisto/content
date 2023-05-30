@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 50,
           "y": -750
         }
       }
@@ -243,7 +243,7 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "9"
+      - "46"
     scriptarguments:
       asset_ids:
         simple: ${TenableSC.Asset.ID}
@@ -389,7 +389,7 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "46"
+      - "13"
     scriptarguments:
       scan_id:
         simple: ${TenableSC.Scan.ID}
@@ -398,8 +398,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2240
+          "x": 610,
+          "y": 3535
         }
       }
     note: false
@@ -422,7 +422,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -463,7 +463,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 50,
           "y": -620
         }
       }
@@ -524,7 +524,7 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       manageable:
         simple: "true"
@@ -534,7 +534,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3445
+          "y": 3630
         }
       }
     note: false
@@ -546,10 +546,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d0b488c4-038b-4e0b-8c91-be17f8382bb1
+    taskid: d79240d9-fa06-428f-8157-3ca509a1a688
     type: regular
     task:
-      id: d0b488c4-038b-4e0b-8c91-be17f8382bb1
+      id: d79240d9-fa06-428f-8157-3ca509a1a688
       version: -1
       name: Launch my_test_scan
       description: Launch an existing scan from Tenable.sc
@@ -559,21 +559,19 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "15"
+      - "9"
     scriptarguments:
       scan_id:
         complex:
           root: TenableSC.Scan
           accessor: ID
-          transformers:
-          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3620
+          "y": 3440
         }
       }
     note: false
@@ -904,7 +902,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 50,
           "y": -450
         }
       }
@@ -937,8 +935,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": -320
+          "x": 50,
+          "y": -330
         }
       }
     note: false
@@ -2136,8 +2134,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 9365,
-        "width": 390,
-        "x": 40,
+        "width": 940,
+        "x": 50,
         "y": -750
       }
     }
