@@ -420,11 +420,11 @@ STATUS_CODE_MSGS = {
     302: "Verify that your public IP is whitelisted by Group IB."
 }
 
-LEGACY_HEADERS = {
-    "Accept": "application/json",
-    'Connection': 'Keep-Alive',
-    'Keep-Alive': "30"
-}
+# LEGACY_HEADERS = {
+#     "Accept": "application/json",
+#     'Connection': 'Keep-Alive',
+#     'Keep-Alive': "30"
+# }
 
 TIMEOUT = 60.
 RETRIES = 4
@@ -548,61 +548,61 @@ class Client(BaseClient):
                           "starting_date_to": starting_date_to, "current_date_to": date_to}
             yield data, last_fetch
 
-    def _create_legacy_generator(self, action: str, max_requests: int, last: Optional[str] = None) -> Generator:
-        """
-        Legacy generator is similar to update generator.
-
-        :param action: collection to search.
-        :param max_requests: a maximum number of requests to API.
-        :param last: identification number from which to start the session.
-        """
-        requests_count = 0
-        while True:
-            if requests_count >= max_requests:
-                break
-
-            params = {"action": action, "last": last, "module": "get", "lang": 3}
-            params = assign_params(**params)
-            portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                         headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
-            if portion.get("status") != 200:
-                if portion.get("status") in STATUS_CODE_MSGS:
-                    raise DemistoException(STATUS_CODE_MSGS[portion.get("status")])
-                else:
-                    raise DemistoException(
-                        "Something is wrong, status code {0} for request to APIv1".format(portion.get("status"))
-                    )
-            portion = portion.get("data")
-
-            if portion.get("count") == 0:
-                break
-            last = portion.get("last")
-            requests_count += 1
-
-            yield portion.get("new"), last
-
-    def _legacy_get_last(self, date_from, action):
-        """
-        Get last for a certain date.
-
-        :param action: collection to search.
-        :param date_from: date to get the "last" identifier.
-        """
-        params = {"action": "get_last", "date": date_from, "module": "get", "type": action}
-        params = assign_params(**params)
-        resp = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                  headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                  status_list_to_retry=STATUS_LIST_TO_RETRY)
-        if resp.get("status") != 200:
-            if resp.get("status") in STATUS_CODE_MSGS:
-                raise DemistoException(STATUS_CODE_MSGS[resp.get("status")])
-            else:
-                raise DemistoException(
-                    "Something is wrong, status code {0} for request to APIv1".format(resp.get("status"))
-                )
-        last = resp.get("data")
-        return last
+    # def _create_legacy_generator(self, action: str, max_requests: int, last: Optional[str] = None) -> Generator:
+    #     """
+    #     Legacy generator is similar to update generator.
+    #
+    #     :param action: collection to search.
+    #     :param max_requests: a maximum number of requests to API.
+    #     :param last: identification number from which to start the session.
+    #     """
+    #     requests_count = 0
+    #     while True:
+    #         if requests_count >= max_requests:
+    #             break
+    #
+    #         params = {"action": action, "last": last, "module": "get", "lang": 3}
+    #         params = assign_params(**params)
+    #         portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+    #                                      headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+    #                                      status_list_to_retry=STATUS_LIST_TO_RETRY)
+    #         if portion.get("status") != 200:
+    #             if portion.get("status") in STATUS_CODE_MSGS:
+    #                 raise DemistoException(STATUS_CODE_MSGS[portion.get("status")])
+    #             else:
+    #                 raise DemistoException(
+    #                     "Something is wrong, status code {0} for request to APIv1".format(portion.get("status"))
+    #                 )
+    #         portion = portion.get("data")
+    #
+    #         if portion.get("count") == 0:
+    #             break
+    #         last = portion.get("last")
+    #         requests_count += 1
+    #
+    #         yield portion.get("new"), last
+    #
+    # def _legacy_get_last(self, date_from, action):
+    #     """
+    #     Get last for a certain date.
+    #
+    #     :param action: collection to search.
+    #     :param date_from: date to get the "last" identifier.
+    #     """
+    #     params = {"action": "get_last", "date": date_from, "module": "get", "type": action}
+    #     params = assign_params(**params)
+    #     resp = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+    #                               headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+    #                               status_list_to_retry=STATUS_LIST_TO_RETRY)
+    #     if resp.get("status") != 200:
+    #         if resp.get("status") in STATUS_CODE_MSGS:
+    #             raise DemistoException(STATUS_CODE_MSGS[resp.get("status")])
+    #         else:
+    #             raise DemistoException(
+    #                 "Something is wrong, status code {0} for request to APIv1".format(resp.get("status"))
+    #             )
+    #     last = resp.get("data")
+    #     return last
 
     def create_poll_generator(self, collection_name: str, max_requests: int, **kwargs):
         """
@@ -687,37 +687,40 @@ class Client(BaseClient):
         """
         Gets list of available collections from GIB TI&A API.
         """
-        response = self._http_request(method="GET", url_suffix="sequence_list",
+
+        response = self._http_request(method="GET", url_suffix="user/granted_collections",
                                       timeout=TIMEOUT, retries=RETRIES,
                                       status_list_to_retry=STATUS_LIST_TO_RETRY)
-        buffer_list = list(response.get("list").keys())
+        buffer_list = find_element_by_key(response, 'collection')
 
-        try:
-            self._http_request(method="GET", url_suffix="compromised/breached", params={"limit": 1},
-                               timeout=TIMEOUT, retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY)
-            buffer_list.append("compromised/breached")
-        except Exception:
-            pass
-
-        # legacy collection
-        try:
-            params = {"action": "get_last", "date": datetime.now().strftime("%Y-%m-%d"),
-                      "module": "get", "type": "domain"}
-            response = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                          headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
-            last = response.get("data")
-            params = {"action": "domain", "last": last, "module": "get"}
-            portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                         headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
-            if portion.get("status") == 200:
-                buffer_list.append("bp/domain")
-        except Exception:
-            pass
+        # buffer_list = list(response.get("list").keys())
+        #
+        # try:
+        #     self._http_request(method="GET", url_suffix="compromised/breached", params={"limit": 1},
+        #                        timeout=TIMEOUT, retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY)
+        #     buffer_list.append("compromised/breached")
+        # except Exception:
+        #     pass
+        #
+        # # legacy collection
+        # try:
+        #     params = {"action": "get_last", "date": datetime.now().strftime("%Y-%m-%d"),
+        #               "module": "get", "type": "domain"}
+        #     response = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+        #                                   headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+        #                                   status_list_to_retry=STATUS_LIST_TO_RETRY)
+        #     last = response.get("data")
+        #     params = {"action": "domain", "last": last, "module": "get"}
+        #     portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+        #                                  headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+        #                                  status_list_to_retry=STATUS_LIST_TO_RETRY)
+        #     if portion.get("status") == 200:
+        #         buffer_list.append("bp/domain")
+        # except Exception:
+        #     pass
 
         collections_list = []
-        for key in MAPPING:
+        for key in MAPPING.keys():
             if key in buffer_list:
                 collections_list.append(key)
         return {"collections": collections_list}, buffer_list
