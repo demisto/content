@@ -1747,7 +1747,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Enter the File paths you would like to delete.
+  description: Enter the file paths you would like to delete.
   playbookInputQuery:
 - key: ManuallyChooseIOCForHunting
   value:
