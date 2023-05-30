@@ -213,7 +213,7 @@ inputs:
   required: false
   description: |-
     A comma-separated list of file paths to delete.
-    Files will be deleted on all provided endpoint ids
+    Files will be deleted on all provided endpoint IDs.
   playbookInputQuery:
 - key: script_timeout
   value: {}
