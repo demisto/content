@@ -306,7 +306,7 @@ def main():
                     elif indicator_type == 'malware':
 
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
-
+                    demisto.debug(f"Creating {indicator_type} indicator: {value}, with the following kwargs: {kwargs}")
                     indicator = SDOs[indicator_type](
                         name=value,
                         **kwargs
