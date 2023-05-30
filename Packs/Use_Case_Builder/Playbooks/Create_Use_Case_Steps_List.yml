@@ -159,3 +159,6 @@ inputs: []
 outputs: []
 sourceplaybookid: Create Use Case Template List
 quiet: true
+fromversion: 6.10.0
+tests:
+  - Run all tests
