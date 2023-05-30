@@ -48,8 +48,8 @@ configuration:
   name: first_fetch
   required: true
   type: 0
-  additionalinfo: The time range to consider for the initial data fetch. Leave empty
-    to fetch from the first available indicator.
+  additionalinfo: The time range to consider for the initial data fetch.
+    Note, setting this parameter to earlier may cause system overload.
   defaultvalue: '1 week'
 - display: Max. indicators per fetch
   defaultvalue: 5000
