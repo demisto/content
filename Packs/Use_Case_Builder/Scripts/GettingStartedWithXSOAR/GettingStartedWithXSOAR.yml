@@ -10,7 +10,7 @@ contentitemexportablefields:
     packName: Use Case Builder 4-21
     prevname: ""
     toServerVersion: ""
-dockerimage: demisto/python3:3.10.10.51930
+dockerimage: demisto/python3:3.10.11.61265
 enabled: true
 engineinfo: {}
 mainengineinfo: {}
