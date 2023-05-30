@@ -80,7 +80,7 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def domain_event_add_command(client: Client, args: dict) -> str:
+def domain_event_add_command(client: Client, args: dict) -> CommandResults:
     """
     :param client: Cisco Umbrella Client for the api request.
     :param args: args from the user for the command.
@@ -122,7 +122,7 @@ def domain_event_add_command(client: Client, args: dict) -> str:
         action_result = f"New event was added successfully, The Event id is {id}."
     else:
         action_result = "New event's addition failed."
-    return action_result
+    return CommandResults(readable_output=action_result)
 
 
 def domain_delete_command(client: Client, args: dict) -> CommandResults:
@@ -155,7 +155,7 @@ def domain_delete_command(client: Client, args: dict) -> CommandResults:
         if isinstance(curr_context, list):
             curr_context = curr_context[0]
         curr_context['IsDeleted'] = True
-    if response and int(response.status_code) == 204:  # type: ignore
+    if response and int(response.get('status_code')) == 204:  # type: ignore
         message = f"{domain_name if domain_name else domain_id} domain was removed from blacklist"
     else:
         # When deleting a domain by name, if name does not exist the returned code is 200 but the response is empty.
