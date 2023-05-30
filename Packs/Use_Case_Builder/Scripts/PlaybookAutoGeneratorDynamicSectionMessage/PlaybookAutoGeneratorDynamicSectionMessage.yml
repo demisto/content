@@ -24,3 +24,6 @@ subtype: python3
 tags:
 - dynamic-section
 type: python
+fromversion: 6.10.0
+tests:
+  - Run all tests
