@@ -1,4 +1,4 @@
-Deprecated. Use `xdr-script-commands-execute` command instead.Initiates a new script execution of shell commands.
+Deprecated. Use the ***xdr-script-commands-execute*** command instead. Initiates a new script execution of shell commands.
 
 ## Dependencies
 
