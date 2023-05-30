@@ -16,7 +16,7 @@ def test_parse_mail_parts(mocker):
 
     from MailListener_POP3 import parse_mail_parts
     mocker.patch.object(demisto, 'params', return_value={'credentials_password': {'password': 'password'}})
-    
+
     class MockEmailPart:
         pass
 
@@ -42,7 +42,7 @@ def test_base64_mail_decode(mocker):
     """
     from MailListener_POP3 import parse_mail_parts
     mocker.patch.object(demisto, 'params', return_value={'credentials_password': {'password': 'password'}})
-    
+
     class MockEmailPart:
         pass
 

@@ -39,7 +39,6 @@ def connect_pop3_server():
 
         pop3_server_conn.getwelcome()  # type: ignore
         pop3_server_conn.user(EMAIL)  # type: ignore
-        
         pop3_server_conn.pass_(password)  # type: ignore
 
 
