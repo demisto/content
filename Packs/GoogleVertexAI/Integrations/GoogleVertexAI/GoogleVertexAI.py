@@ -243,21 +243,26 @@ def test_module(client: Client):
     This is the call made when pressing the integration test button.
     """
 
-    promptText = "Hi"
+    promptText = "Hi, what is your name"
     status = ''
     try:
         response = client.PaLMModel(promptText)
-        if response:
+        rep = json.dumps(response)
+        repJSON = json.loads(rep)
+        PaLMResp = repJSON.get('predictions', [])[0].get('candidates', [])[0].get('content', "")
+        if "Bard" in PaLMResp:
             status = 'ok'
             return status
+        else:
+            status = "There is an error in communciating with Google Vertex AI API - Please regenerate the Authentication Code again"
     except Exception as e:
         exception_text = str(e).lower()
-        if 'forbidden' in exception_text or 'authorization' in exception_text:
-            status = 'Authorization Error: make sure API Key is correctly set'
+        if 'Bad Request' in exception_text or 'invalid_grant' in exception_text:
+            status = ERROR_MSG
             return status
         else:
             raise e
-
+            
     return status
 
 
@@ -320,7 +325,7 @@ def main():
         if command == 'test-module':
             access_token = check_access_token_validation()
             client = Client(token_str=access_token, base_url=URL, verify=verify, proxy=PROXY)
-            test_module(client)
+            return_results(test_module(client))
         elif command == 'google-vertex-PaLM-chat':
             access_token = check_access_token_validation()
             client = Client(token_str=access_token, base_url=URL, verify=verify, proxy=PROXY)
