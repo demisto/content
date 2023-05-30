@@ -212,7 +212,7 @@ inputs:
   required: false
   description: |2-
      A comma-separated list of process names to kill.
-    Process will be killed on all provided endpoint ids.
+    Process will be killed on all provided endpoint IDs.
   playbookInputQuery:
 - key: script_timeout
   value: {}
