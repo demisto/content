@@ -14,3 +14,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.10.0
+tests:
+  - Run all tests
