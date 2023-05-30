@@ -255,7 +255,7 @@ tasks:
     task:
       id: e16965eb-49c2-4d54-87ca-6861f04b7170
       version: -1
-      name: Cisco Email Security
+      name: Cisco Email Security (Deprecated)
       description: Performs actions on list entries. Supports add, edit, and append.
       script: '|||cisco-email-security-list-entry-add'
       type: regular
