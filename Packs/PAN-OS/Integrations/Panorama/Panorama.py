@@ -3614,7 +3614,7 @@ def panorama_list_rules_command(args: dict):
     """
     List security rules
     """
-    if DEVICE_GROUP:
+    if is_panorama := bool(DEVICE_GROUP):
         if not PRE_POST:
             raise Exception('Please provide the pre_post argument when listing rules in Panorama instance.')
         else:
@@ -3637,15 +3637,19 @@ def panorama_list_rules_command(args: dict):
     pretty_rules, context_rules = prettify_rules(rules, target)
     
     
-
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': rules,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
-                                         ['Name', 'Location', 'Action', 'From', 'To',
-                                          'CustomUrlCategory', 'Service', 'Tags', 'Disabled'],
+                                         ['Name'] + ['Location']*is_panorama + ['Tags','Type',
+                                          'Source Zone', 'Source Address', 'Source User',
+                                          'Source Device', 'Destination Zone',
+                                          'Destination Address', 'Destination Device',
+                                          'Application', 'Service', 'Url Category',
+                                          'Action', 'Profile', 'Profile Group', 'Options'] + \
+                                          ['Target']*is_panorama + ['Log Setting'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.SecurityRule(val.Name == obj.Name)": context_rules
