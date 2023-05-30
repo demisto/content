@@ -1124,7 +1124,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "userdisabledstatus",
+                                "fieldId": "userblockstatus",
                                 "height": 22,
                                 "id": "b5f0e930-90dd-11ed-be71-736de8263a17",
                                 "index": 0,
@@ -1373,7 +1373,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "userdisabledstatus",
+                                "fieldId": "userblockstatus",
                                 "height": 53,
                                 "id": "e642a610-85f6-11ed-bc30-fb13783e8b89",
                                 "index": 0,
