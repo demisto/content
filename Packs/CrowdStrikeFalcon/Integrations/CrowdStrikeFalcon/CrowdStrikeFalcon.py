@@ -14,6 +14,8 @@ from dateutil.parser import parse
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
+# from gql import Client, gql
+# from gql.transport.requests import RequestsHTTPTransport
 ''' GLOBALS/PARAMS '''
 
 INTEGRATION_NAME = 'CrowdStrike Falcon'
@@ -1854,6 +1856,20 @@ def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
     """
     return http_request(method='GET',
                         url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
+
+
+def update_incident_status(payload: str) -> dict:
+    """
+        Returns the files ID's that match the filter / value.
+
+        Args:
+            files_filter: The exclusion type can be either ml (machine learning) or IOA`.
+            query: The exclusion type can be either ml (machine learning) or IOA`.
+            pagination: API query params for pagination (limit, offset).
+        Returns:
+            list: List of exclusions.
+    """
+    return http_request(url_suffix="/identity-protection/combined/graphql/v1", method='POST', data=payload)
 
 
 def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination: dict) -> dict:
@@ -4667,6 +4683,25 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
     )
 
 
+def update_identity_incident_status_command(args: dict) -> CommandResults:
+    """Update the status of an identity incident.
+
+    Args:
+        args: The demisto.args() dict object.
+
+    Returns:
+
+    """
+    id = args.get("incident_id")
+    reason = args.get("reason", "")
+    status = args.get("status")
+    payload = f"{{\"query\":\"mutation {{setIncidentState(input: {{\\r\\nlifeCycleStage: {status},\\r\\nincidentId:\\\"{id}\\\"" \
+              f",\\r\\nreason:\\\"{reason}\\\"}}) {{ incident {{ lifeCycleStage }} }} }}\",\"variables\":{{}} }}"
+    print(payload)
+    res = update_incident_status(payload)
+    print(res)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4859,6 +4894,8 @@ def main():
             return_results(list_quarantined_file_command(args))
         elif command == 'cs-falcon-apply-quarantine-file-action':
             return_results(apply_quarantine_file_action_command(args))
+        elif command == 'cs-falcon-update-identity-incident-status':
+            return_results(update_identity_incident_status_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

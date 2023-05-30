@@ -3605,6 +3605,24 @@ script:
       required: true
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
+  - arguments:
+    - description: The ID of the incident to update.
+      isArray: false
+      name: incident_id
+      required: true
+    - description: The reason for the update.
+      name: reason
+      required: true
+    - name: status
+      predefined:
+      - NEW 
+      - IN_PROGRESS
+      - DISMISS
+      - RESOLVED
+      description: The new status to update to.
+      auto: PREDEFINED
+    description: Updates CrowdStrike identity Incident status.
+    name: cs-falcon-update-identity-incident-status
   dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   ismappable: true
