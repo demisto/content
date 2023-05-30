@@ -171,6 +171,7 @@ parseyaml
 parses
 yaml
 indexerror
+gTLD
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124

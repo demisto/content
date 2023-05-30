@@ -30,6 +30,8 @@ There are two options to use to bind variables:
 2. Use only bind variable values, for example:
     INSERT into Table(ID, Name) VALUES (%s, %s)" bind_variables_values= "123, Ben”
 
+**Note**: Bind variables aren't supported with stored procedures.
+
 ## Default ports
 If the port value is empty, a default port will be selected according to the database type.
 - MySQL: 3306

@@ -3,6 +3,7 @@ ignore=RM112
 
 [known_words]
 commonscripts
+URLEncode
 
 [file:StripChar.yml]
 ignore=BA124
