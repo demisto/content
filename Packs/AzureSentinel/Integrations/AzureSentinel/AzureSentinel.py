@@ -509,7 +509,7 @@ def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str
         GetModifiedRemoteDataResponse object, which contains a list of the modified incidents IDs.
     """
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
+    last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     demisto.debug(f'Getting modified incidents from {last_update}')
 
     raw_incidents = []
