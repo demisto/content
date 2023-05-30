@@ -607,7 +607,7 @@
                                 "fieldId": "phishingpclscore",
                                 "height": 53,
                                 "id": "779062f0-a903-11ec-8585-0dac7af6e9b0",
-                                "index": 2,
+                                "index": 1,
                                 "listId": "swtuqptgvs-2f561750-a903-11ec-8585-0dac7af6e9b0",
                                 "sectionItemType": "field",
                                 "startCol": 1
@@ -705,7 +705,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -741,11 +741,22 @@
                         "i": "swtuqptgvs-8b9776a0-a906-11ec-8585-0dac7af6e9b0",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "domainsquattingresult",
+                                "fieldId": "keywordsfound",
                                 "height": 22,
                                 "id": "9aca7460-a906-11ec-8585-0dac7af6e9b0",
                                 "index": 0,
+                                "listId": "swtuqptgvs-8b9776a0-a906-11ec-8585-0dac7af6e9b0",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domainsquattingresult",
+                                "height": 44,
+                                "id": "9aca7460-a906-11ec-8585-0dac7af6e9b0",
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -753,7 +764,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Domain-squatting Check",
+                        "name": "Spear Phishing Investigation",
                         "static": false,
                         "w": 1,
                         "x": 2,
@@ -805,7 +816,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 9
                     },
                     {
                         "description": "In case there were URLs in the email with a score of 3 or above which the user clicked for the email investigated in this incident, they will appear in the **Clicked URLs** table. **Total Malicious URLs Clicks** represents the number of clicks in all emails (other emails as well) associated with any of the malicious URLs found in this email. **Malicious URL Viewed** will be **True** if the click was allowed or the user clicked through, in case it was blocked.",
@@ -858,6 +869,42 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "swtuqptgvs-fn7ljmkjwi-swtuqptgvs-fn7ljmkjwi-swtuqptgvs-ed6ea880-fec8-11ed-8c2c-79dd47ae5c19",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "relatedcampaign",
+                                "height": 22,
+                                "id": "02a542e0-fec9-11ed-8c2c-79dd47ae5c19",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "relatedreport",
+                                "height": 22,
+                                "id": "07dc19a0-fec9-11ed-8c2c-79dd47ae5c19",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Threat Intelligence Analysis",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
                         "y": 5
                     }
                 ],
