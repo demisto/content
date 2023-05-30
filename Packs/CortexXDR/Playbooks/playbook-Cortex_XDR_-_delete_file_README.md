@@ -1,4 +1,4 @@
-Deprecated. Use `xdr-file-delete-script-execute` command instead. Initiates a new endpoint script execution to delete the specified file and retrieve the results.
+Deprecated. Use the ***xdr-file-delete-script-execute*** command instead. Initiates a new endpoint script execution to delete the specified file and retrieve the results.
 
 ## Dependencies
 
