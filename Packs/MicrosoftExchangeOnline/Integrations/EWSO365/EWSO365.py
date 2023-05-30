@@ -816,7 +816,6 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
 
     for list_str_field in ["categories"]:
         value = getattr(item, list_str_field, None)
-        demisto.debug(f"ctegoriesL {value}")
         if value:
             raw_dict[list_str_field] = value
     
@@ -1516,7 +1515,6 @@ def get_items_from_folder(
         item_attachment = parse_item_as_dict(
             item, account.primary_smtp_address, camel_case=True, compact_fields=True
         )
-        demisto.debug(f"item_attachment: {item_attachment}")
         for attachment in item.attachments:
             if (
                     get_internal_item
@@ -1533,7 +1531,6 @@ def get_items_from_folder(
                 break
         items_result.append(item_attachment)
 
-    demisto.debug(f"items_result: {items_result}")
     hm_headers = [
         "sender",
         "subject",
@@ -1543,7 +1540,6 @@ def get_items_from_folder(
         "author",
         "toRecipients",
         "itemId",
-        "categories"
     ]
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers

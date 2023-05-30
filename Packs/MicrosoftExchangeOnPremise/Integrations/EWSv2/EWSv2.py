@@ -87,7 +87,7 @@ LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
 ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
-                         'toRecipients', 'textBody', 'categories']
+                         'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
 NON_SECURE = demisto.params().get('insecure', True)
@@ -1846,7 +1846,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
 
         items_result.append(item_attachment)
     hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
-                  'receivedBy', 'author', 'toRecipients', 'categories']
+                  'receivedBy', 'author', 'toRecipients', ]
     if exchangelib.__version__ == "1.12.0":  # Docker BC
         hm_headers.append('itemId')
     return get_entry_for_object('Items in folder ' + folder_path,
