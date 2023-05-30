@@ -25,7 +25,7 @@ def test_fetch_incidents(mocker, requests_mock):
                       json={'incidents': [{'description': {'created': 1593579498}}]})
     from ThinkstCanary import fetch_incidents_command
     fetch_incidents_command()
-    assert demisto.setLastRun.call_args[0][0]['time'] == '2020-07-01-07:58:19'
+    assert demisto.setLastRun.call_args[0][0]['time'] == '2020-07-01-04:58:19'
 
 
 def test_check_whitelist_command_not_whitelisted(mocker):
