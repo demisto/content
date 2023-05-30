@@ -110,27 +110,27 @@ MAPPING: dict = {
                 }
             ]
     },
-    "bp/domain": {
-        "date":
-            "ts_create",
-        "name":
-            "attrs.domain",
-        "prefix":
-            "Phishing Domain",
-        "indicators":
-            [
-                {
-                    "main_field": "attrs.domain", "main_field_type": "Domain",
-                    "add_fields": ["phishingDomain.registrar"],
-                    "add_fields_types": ["registrarname"]
-                },
-                {
-                    "main_field": "attrs.server_ip", "main_field_type": "IP",
-                    "add_fields": ["attrs.server_ip_asn", "attrs.server_ip_country_name", "attrs.server_ip_region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
-    },
+    # "bp/domain": {
+    #     "date":
+    #         "ts_create",
+    #     "name":
+    #         "attrs.domain",
+    #     "prefix":
+    #         "Phishing Domain",
+    #     "indicators":
+    #         [
+    #             {
+    #                 "main_field": "attrs.domain", "main_field_type": "Domain",
+    #                 "add_fields": ["phishingDomain.registrar"],
+    #                 "add_fields_types": ["registrarname"]
+    #             },
+    #             {
+    #                 "main_field": "attrs.server_ip", "main_field_type": "IP",
+    #                 "add_fields": ["attrs.server_ip_asn", "attrs.server_ip_country_name", "attrs.server_ip_region"],
+    #                 "add_fields_types": ["asn", "geocountry", "geolocation"]
+    #             }
+    #         ]
+    # },
     "osi/git_leak": {
         "date":
             "dateDetected",
@@ -634,10 +634,10 @@ class Client(BaseClient):
             return self._create_search_generator(collection_name=collection_name, max_requests=max_requests,
                                                  date_to=date_to, page=page, starting_date_from=starting_date_from,
                                                  starting_date_to=starting_date_to)
-        elif collection_name == "bp/domain":
-            if not last_fetch:
-                last_fetch = self._legacy_get_last(date_from=date_from, action="domain")
-            return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
+        # elif collection_name == "bp/domain":
+        #     if not last_fetch:
+        #         last_fetch = self._legacy_get_last(date_from=date_from, action="domain")
+        #     return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
         else:
             return self._create_update_generator(collection_name=collection_name, max_requests=max_requests,
                                                  date_from=date_from, seq_update=last_fetch)  # type: ignore
