@@ -1701,7 +1701,7 @@ inputs:
   value:
     simple: BlockTag
   required: false
-  description: Specify the banning tag name for founded indicators.
+  description: Specify the banning tag name for found indicators.
   playbookInputQuery:
 - key: AutoIsolation
   value:
