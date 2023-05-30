@@ -70,7 +70,7 @@ def test_azure_key_vault_key_vault_create_or_update_command(requests_mock):
     """
 
     mock_response = json.loads(load_mock_response('create_or_update_key_vault.json'))
-    url = f'{BASE_MANAGEMENT_URL}/{VAULT_NAME}{API_MANAGEMENT_VERSION_PARAM}'
+    url = "https://management.azure.com/subscriptions/sub_id/resourceGroups/%5B'group_name'%5D/providers/Microsoft.KeyVault/vaults/myvault"
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.put(url, json=mock_response)
@@ -153,7 +153,7 @@ def test_azure_key_vault_key_vault_delete_command(requests_mock):
     """
 
     mock_response = json.loads(load_mock_response('delete_key_vault.json'))
-    url = f'{BASE_MANAGEMENT_URL}/{VAULT_NAME}{API_MANAGEMENT_VERSION_PARAM}'
+    url = "https://management.azure.com/subscriptions/sub_id/resourceGroups/%5B'group_name'%5D/providers/Microsoft.KeyVault/vaults/myvault?api-version=2019-09-01"
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.delete(url, json=mock_response)
@@ -183,7 +183,7 @@ def test_azure_key_vault_key_vault_access_policy_update_command(requests_mock):
 
     mock_response = json.loads(load_mock_response('update_access_policy.json'))
 
-    url = f'{BASE_MANAGEMENT_URL}/{VAULT_NAME}/accessPolicies/{operation_kind}{API_MANAGEMENT_VERSION_PARAM}'
+    url = "https://management.azure.com/subscriptions/sub_id/resourceGroups/%5B'group_name'%5D/providers/Microsoft.KeyVault/vaults/myvault/accessPolicies/add?api-version=2019-09-01"
 
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.put(url, json=mock_response)
