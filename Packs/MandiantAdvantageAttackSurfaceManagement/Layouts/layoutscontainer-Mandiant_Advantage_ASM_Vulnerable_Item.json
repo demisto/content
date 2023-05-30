@@ -1,4 +1,9 @@
 {
+    "cacheVersn": 0,
+    "close": null,
+    "definitionId": "",
+    "description": "",
+    "detached": false,
     "details": {
         "sections": [
             {
@@ -281,6 +286,7 @@
         ]
     },
     "detailsV2": {
+        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -293,7 +299,7 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
@@ -350,44 +356,6 @@
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "masmproject",
-                                "height": 22,
-                                "id": "ca597620-b474-11ed-acd1-cff9cf8813d0",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "masmcollection",
-                                "height": 22,
-                                "id": "b4013f20-b474-11ed-acd1-cff9cf8813d0",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "masmconfirmed",
-                                "height": 22,
-                                "id": "ba1333a0-b474-11ed-acd1-cff9cf8813d0",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "masmentityname",
-                                "height": 22,
-                                "id": "c909c4a0-b474-11ed-acd1-cff9cf8813d0",
-                                "index": 9,
-                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -400,7 +368,7 @@
                         "y": 0
                     },
                     {
-                        "h": 4,
+                        "h": 6,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "minH": 1,
@@ -470,7 +438,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -512,12 +480,12 @@
                         "name": "Closing Information",
                         "static": false,
                         "w": 1,
-                        "x": 2,
+                        "x": 0,
                         "y": 4
                     },
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 3,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
@@ -538,20 +506,47 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 2
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "caseinfoid-7d8a1d90-e2cd-11ed-9c26-2995f10532d8",
                         "items": [
                             {
                                 "endCol": 2,
+                                "fieldId": "masmproject",
+                                "height": 22,
+                                "id": "ca597620-b474-11ed-acd1-cff9cf8813d0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "masmcollection",
+                                "height": 22,
+                                "id": "b4013f20-b474-11ed-acd1-cff9cf8813d0",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "masmconfirmed",
+                                "height": 22,
+                                "id": "ba1333a0-b474-11ed-acd1-cff9cf8813d0",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "masmentityname",
                                 "height": 22,
                                 "id": "9e0f0170-e2cd-11ed-9c26-2995f10532d8",
-                                "index": 0,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -560,7 +555,7 @@
                                 "fieldId": "masmdescription",
                                 "height": 44,
                                 "id": "9375fe30-e2cd-11ed-9c26-2995f10532d8",
-                                "index": 1,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -569,7 +564,7 @@
                                 "fieldId": "masmremediation",
                                 "height": 44,
                                 "id": "9571a720-e2cd-11ed-9c26-2995f10532d8",
-                                "index": 2,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -894,12 +889,21 @@
             }
         ]
     },
+    "fromServerVersion": "",
     "group": "incident",
-    "id": "Mandiant Advantage ASM Vulnerable Item",
+    "id": "ad4fce61-551b-458c-86b6-a051756cbd80",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "3.2.34",
+    "locked": false,
+    "mobile": null,
     "name": "Mandiant Advantage ASM Vulnerable Item",
+    "packID": "",
+    "packName": "",
+    "propagationLabels": [],
+    "quickView": null,
+    "quickViewV2": null,
     "system": false,
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "description": "",
-    "marketplaces": ["xsoar"]
+    "toServerVersion": "",
+    "version": -1
 }
