@@ -620,7 +620,7 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
         args.get('ignore_missing_vnet_service_endpoint', True))
     ip_rules = argToList(args.get('ip_rules'))
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
+    resource_group_name = argToList(args.get('resource_group_name', params.get('resource_group_name')))
 
     response = client.create_or_update_key_vault_request(subscription_id, resource_group_name, vault_name, object_id, location, sku_name, keys_permissions,
                                                          secrets_permissions, certificates_permissions,
@@ -661,7 +661,7 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
 
     vault_name = args['vault_name']
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
+    resource_group_name = argToList(args.get('resource_group_name', params.get('resource_group_name')))
     response = client.delete_key_vault_request(subscription_id=subscription_id,
                                                resource_group_name=resource_group_name,
                                                vault_name=vault_name)
@@ -771,7 +771,7 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     storage_accounts = argToList(args.get('storage', []))
 
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
+    resource_group_name = argToList(args.get('resource_group_name', params.get('resource_group_name')))
 
     response = client.update_access_policy_request(subscription_id, resource_group_name,
                                                    vault_name, operation_kind, object_id, keys, secrets, certificates, storage_accounts)
@@ -1234,7 +1234,7 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    subscription_id = argToList(args.get('subscription_id', params.get('subscription_id')))
     response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
     outputs = copy.deepcopy(response)
     readable_output = tableToMarkdown('Resource Groups List',
