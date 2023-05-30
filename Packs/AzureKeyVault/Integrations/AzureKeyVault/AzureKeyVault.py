@@ -1269,7 +1269,6 @@ def test_module(client: KeyVaultClient, params: Dict[str, any]) -> None:
         client.ms_client.get_access_token(resource=MANAGEMENT_RESOURCE)
         client.ms_client.get_access_token(resource=VAULT_RESOURCE)
         client.list_key_vaults_request(subscription_id=subscription_id, limit=1, offset=0)
-        # fetch_credentials(client,[''],[''],'xsoar-test-vault/test-sec-1')
         return_results('ok')
 
     except Exception:
