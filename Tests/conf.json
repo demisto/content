@@ -22,7 +22,6 @@
     "tests": [
         {
             "integrations": [
-                "WildFire-v2",
                 "Cortex XDR - IR",
                 "Joe Security"
             ],
