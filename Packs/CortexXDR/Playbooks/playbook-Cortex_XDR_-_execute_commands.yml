@@ -4,7 +4,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - Execute commands
-description: Deprecated. Use `xdr-script-commands-execute` command instead.Initiates a new script execution of shell commands.
+description: Deprecated. Use the `xdr-script-commands-execute` command instead. Initiates a new script execution of shell commands.
 starttaskid: "0"
 tasks:
   "0":
