@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import partial
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
 import enum
@@ -3445,63 +3446,126 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 
 ''' Security Rules Managing '''
 
+def xml_get(elem: dict, key: Any, subkeys = ('member', '#text', '@name')):
+    value = elem.get(key)
+    
+    if type(value) is dict:
+        return next(
+                (xml_get(value, sub)
+                for sub in subkeys
+                if sub in value),
+                None
+            ) or next(
+                (xml_get(value, k)
+                for k in value.keys()
+                if not str(k).startswith('@')),
+                None
+            )
+    if type(value) is list:
+        return [
+            xml_get({0: item}, 0)
+            for item in value
+        ]
+    return value
+        
 
 def prettify_rule(rule: dict):
-    pretty_rule = {
-        'Name': rule['@name'],
-        'Action': rule['action']
-    }
-    if DEVICE_GROUP:
-        pretty_rule['DeviceGroup'] = DEVICE_GROUP
-    if '@loc' in rule:
-        pretty_rule['Location'] = rule['@loc']
-    if isinstance(rule.get('category'), dict) and 'member' in rule['category']:
-        pretty_rule['CustomUrlCategory'] = rule['category']['member']
-    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
-        pretty_rule['Application'] = rule['application']['member']
-    if isinstance(rule.get('destination'), dict) and 'member' in rule['destination']:
-        pretty_rule['Destination'] = rule['destination']['member']
-    if isinstance(rule.get('from'), dict) and 'member' in rule['from']:
-        pretty_rule['From'] = rule['from']['member']
-    if isinstance(rule.get('service'), dict) and 'member' in rule['service']:
-        pretty_rule['Service'] = rule['service']['member']
-    if isinstance(rule.get('to'), dict) and 'member' in rule['to']:
-        pretty_rule['To'] = rule['to']['member']
-    if isinstance(rule.get('source'), dict) and 'member' in rule['source']:
-        pretty_rule['Source'] = rule['source']['member']
-    if isinstance(rule.get('tag'), dict) and 'member' in rule['tag']:
-        pretty_rule['Tags'] = rule['tag']['member']
-    if isinstance(rule.get('log-setting'), dict) and '#text' in rule['log-setting']:
-        pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
-        
-    if isinstance(rule.get('source-user'), dict) and 'member' in rule['source-user']:
-        pretty_rule['Source Users'] = rule['source-user']['member']
-    if isinstance(rule.get('hip-profiles'), dict) and 'member' in rule['hip-profiles']:
-        pretty_rule['HIP Profiles'] = rule['hip-profiles']['member']
-    if isinstance(rule.get('action'), dict) and 'member' in rule['action']:
-        pretty_rule['Actions'] = rule['action']['member']
-    if isinstance(rule.get('description'), dict) and 'member' in rule['description']:
-        pretty_rule['Descriptions'] = rule['description']['member']
-    if isinstance(rule.get('profile-setting'), dict) and 'member' in rule['profile-setting']:
-        pretty_rule['Profile Settings'] = rule['profile-setting']['member']
-            
-    if disabled := rule.get('disabled'):
-        pretty_rule['Disabled'] = disabled
+    
+    rule_get = partial(xml_get, rule)
 
-    return pretty_rule
+    context_rule = {}
+    pretty_rule = {}
+    
+    if DEVICE_GROUP:
+        context_rule['DeviceGroup'] = DEVICE_GROUP
+    if '@loc' in rule:
+        context_rule['Location'] = rule['@loc']
+        
+    context_rule['SecurityProfileGroup'] = \
+    pretty_rule['Profile Group'] = \
+    context_rule['SecurityProfile'] = \
+    pretty_rule['Profile'] = \
+    None
+    
+    if isinstance(rule.get('profile-setting'), dict):
+        if isinstance(rule['profile-setting'].get('group'), dict):
+            context_rule['SecurityProfileGroup'] = \
+            pretty_rule['Profile Group'] = \
+            rule['profile-setting']['group'].get('member')
+        if isinstance(rule['profile-setting'].get('profiles'), dict):
+            profiles = {
+                k: v.get('member')
+                for k ,v
+                in rule['profile-setting']['profiles'].items()
+                if isinstance(v, dict) and not k.startswith('@')
+            }
+            pretty_rule['Profile'] = '\n'.join(
+                f'{k}: {v}'
+                for k ,v in profiles.items()
+            )
+            context_rule['SecurityProfile'] = profiles
+            
+    if isinstance(rule.get('target'), dict):
+        pretty_rule['Target'] = rule['target']
+        
+        context_rule['Target'] = (
+            f'negate: {rule["target"].get("negate")}\n'
+            f'devices: {xml_get(rule["target"], "devices")}'
+        ).replace('[', '').replace(']', '').replace("'", '')
+    else:
+        context_rule['Target'] = pretty_rule['Target'] = None
+    
+    if option := rule.get('option'):
+        context_rule['Option'] = option
+        pretty_rule['Option'] = 'disable-server-response-inspection: ' +\
+                                option.get('disable-server-response-inspection', '')\
+                                if type(option) is dict \
+                                else None
+    else:
+        context_rule['Option'] = pretty_rule['Option'] = None
+        
+    context_rule['Name'] = pretty_rule['Name'] = rule['@name']
+    context_rule['QoSMarking'] = rule.get('qos', {}).get('marking')
+    context_rule['Type'] = pretty_rule['Type'] = rule_get('rule-type')
+    context_rule['From'] = pretty_rule['Source Zone'] = rule_get('from')
+    context_rule['DestinationDevice'] = pretty_rule['Destination Device'] = rule_get('destination-hip')
+    context_rule['NegateSource'] = rule_get('negate-source')
+    context_rule['Action'] = pretty_rule['Action'] = rule_get('action')
+    context_rule['SourceDevice'] = pretty_rule['Source Device'] = rule_get('source-hip')
+    context_rule['Tags'] = pretty_rule['Tags'] = rule_get('tag')
+    context_rule['LogStart'] = rule_get('log-start')
+    context_rule['LogForwardingProfile'] = pretty_rule['Log Setting'] = rule_get('log-setting')
+    context_rule['SourceUser'] = pretty_rule['Source User'] = rule_get('source-user')
+    context_rule['Schedule'] = rule_get('schedule')
+    context_rule['Application'] = pretty_rule['Application'] = rule_get('application')
+    context_rule['Service'] = pretty_rule['Service'] = rule_get('service')
+    context_rule['To'] = pretty_rule['Destination Zone'] = rule_get('to')
+    context_rule['Description'] = rule_get('description')
+    context_rule['GroupTag'] = rule_get('group-tag')
+    context_rule['Source'] = pretty_rule['Source Address'] = rule_get('source')
+    context_rule['NegateDestination'] = rule_get('negate-destination')
+    context_rule['Disabled'] = rule_get('disabled')
+    context_rule['ProfileSetting'] = rule_get('profile-setting')
+    context_rule['CustomUrlCategory'] = pretty_rule['Url Category'] = rule_get('category')
+    context_rule['ICMPUnreachable'] = rule_get('icmp-unreachable')
+    context_rule['Destination'] = pretty_rule['Destination Address'] = rule_get('destination')
+
+    return pretty_rule, context_rule
 
 
 def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None):
     if not isinstance(rules, list):
         rules = [rules]
     pretty_rules_arr = []
+    context_rules_arr = []
     for rule in rules:
         if target and not target_filter(rule, target):
             continue
-        pretty_rule = prettify_rule(rule)
+        pretty_rule, context_rule = prettify_rule(rule)
         pretty_rules_arr.append(pretty_rule)
+        context_rules_arr.append(context_rule)
 
-    return pretty_rules_arr
+    return pretty_rules_arr, context_rules_arr
 
 
 def target_filter(rule: dict, target: str) -> bool:
@@ -3570,7 +3634,9 @@ def panorama_list_rules_command(args: dict):
     if disabled := args.get('disabled'):
         rules = filter_rules_by_status(disabled, rules)
 
-    pretty_rules = prettify_rules(rules, target)
+    pretty_rules, context_rules = prettify_rules(rules, target)
+    
+    
 
     return_results({
         'Type': entryTypes['note'],
@@ -3582,7 +3648,7 @@ def panorama_list_rules_command(args: dict):
                                           'CustomUrlCategory', 'Service', 'Tags', 'Disabled'],
                                          removeNull=True),
         'EntryContext': {
-            "Panorama.SecurityRule(val.Name == obj.Name)": pretty_rules
+            "Panorama.SecurityRule(val.Name == obj.Name)": context_rules
         }
     })
 
