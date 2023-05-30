@@ -106,7 +106,6 @@ SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
-demisto.debug("params: {}".format(demisto.params()))
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
@@ -2314,7 +2313,7 @@ def sub_main():     # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
-    demisto.debug("args: {}".format(args))
+
     fix_2010()
     try:
         protocol = get_protocol()
