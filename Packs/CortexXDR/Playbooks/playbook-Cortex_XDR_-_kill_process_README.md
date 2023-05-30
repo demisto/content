@@ -1,4 +1,4 @@
-Deprecated. Use `xdr-kill-process-script-execute` command instead.Initiates a new endpoint script execution kill process and retrieves the results.
+Deprecated. Use the ***xdr-kill-process-script-execute*** command instead. Initiates a new endpoint script execution kill process and retrieves the results.
 
 ## Dependencies
 
