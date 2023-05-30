@@ -5462,7 +5462,8 @@ def main():  # pragma: no cover
     if is_gcc is not None:  # Backward compatible.
         endpoint_type = "gcc" if is_gcc else "com"
 
-    url = MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+    # Allow overriding the url endpoint.
+    url: str = params.get('url', MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type))
 
     base_url: str = urljoin(url, '/api')
 
