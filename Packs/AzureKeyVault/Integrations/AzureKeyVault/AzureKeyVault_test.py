@@ -77,7 +77,7 @@ def test_azure_key_vault_key_vault_create_or_update_command(requests_mock):
 
     result = create_or_update_key_vault_command(mock_client(), {'vault_name': VAULT_NAME, 'storage': None,
                                                                 'object_id': "00000000-0000-0000-0000-000000000000"},
-                                                params={"subscription_id":"sub_id","resource_group_name":"group_name" })
+                                                params={"subscription_id": "sub_id", "resource_group_name": "group_name"})
 
     assert len(result.outputs) == 6
     assert result.outputs_prefix == KEY_VAULT_PREFIX
@@ -102,7 +102,7 @@ def test_azure_key_vault_key_vault_list_command(requests_mock):
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
     requests_mock.get(url, json=mock_response)
 
-    result = list_key_vaults_command(mock_client(), {},  params={"subscription_id":"sub_id"})
+    result = list_key_vaults_command(mock_client(), {}, params={"subscription_id": "sub_id"})
 
     assert len(result.outputs) == 1
     assert result.outputs_prefix == KEY_VAULT_PREFIX
@@ -131,7 +131,8 @@ def test_azure_key_vault_key_vault_get_command(requests_mock):
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json=mock_response)
     requests_mock.get(url, json=mock_response)
 
-    result = get_key_vault_command(mock_client(), {'vault_name': VAULT_NAME}, params={"subscription_id":"sub_id", "resource_group_name":"group_name"})
+    result = get_key_vault_command(mock_client(), {'vault_name': VAULT_NAME}, params={
+                                   "subscription_id": "sub_id", "resource_group_name": "group_name"})
 
     assert len(result.outputs) == 6
     assert result.outputs_prefix == 'AzureKeyVault.KeyVault'
@@ -158,7 +159,8 @@ def test_azure_key_vault_key_vault_delete_command(requests_mock):
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.delete(url, json=mock_response)
 
-    result = delete_key_vault_command(mock_client(), {'vault_name': VAULT_NAME}, params={"subscription_id":"sub_id", "resource_group_name":"group_name"})
+    result = delete_key_vault_command(mock_client(), {'vault_name': VAULT_NAME}, params={
+                                      "subscription_id": "sub_id", "resource_group_name": "group_name"})
     assert result.outputs is None
 
 
@@ -188,7 +190,8 @@ def test_azure_key_vault_key_vault_access_policy_update_command(requests_mock):
     requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
     requests_mock.put(url, json=mock_response)
 
-    result = update_access_policy_command(mock_client(), command_arguments, params={"subscription_id":"sub_id", "resource_group_name":"group_name"})
+    result = update_access_policy_command(mock_client(), command_arguments, params={
+                                          "subscription_id": "sub_id", "resource_group_name": "group_name"})
     assert len(result.outputs) == 1
     assert result.outputs.get('properties').get('accessPolicies')[0].get(
         'tenantId') == "00000000-0000-0000-0000-000000000000"
