@@ -225,7 +225,7 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: Amount of time to poll action status before declaring a timeout and resuming the playbook (in minutes).
+  description: Amount of time to poll the action status before declaring a timeout and resuming the playbook (in minutes).
   playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.ScriptResult.results._return_value
