@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Group-IB Threat Intelligence
+  id: Group-IB Threat Intelligence & Attribution
   version: -1
 configuration:
 - additionalinfo: The FQDN/IP the integration should connect to.
@@ -38,6 +38,7 @@ configuration:
   - compromised/breached
   - bp/phishing
   - bp/phishing_kit
+  - bp/domain
   - osi/git_leak
   - osi/public_leak
   - malware/targeted_malware
