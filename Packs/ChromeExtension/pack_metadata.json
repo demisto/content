@@ -1,6 +1,6 @@
 {
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "Chrome Extension",
+    "description": "Chrome Extension",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

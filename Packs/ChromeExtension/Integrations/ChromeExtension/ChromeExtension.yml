@@ -75,7 +75,7 @@ display: Chrome Extension Server
 name: Chrome Extension Server
 script:
   commands: []
-  script: '_'
+  script: '-'
   dockerimage: demisto/flask-nginx:1.0.0.58905
   feed: false
   isfetch: false
