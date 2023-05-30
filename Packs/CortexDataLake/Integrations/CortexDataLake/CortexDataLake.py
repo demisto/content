@@ -1155,7 +1155,7 @@ def main():
         token_retrieval_url = registration_id_and_url[1]
     registration_id = registration_id_and_url[0]
     # If there's a stored token in integration context, it's newer than current
-    refresh_token = params.get('credentials_refresh_token').get('password') or params.get('refresh_token')
+    refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
     if not refresh_token:
         raise DemistoException('Token must be provided.')
     enc_key = params.get('credentials_id', {}).get('password') or params.get('auth_key')
