@@ -84,7 +84,7 @@ class Client(BaseClient):
             parsed_args['list_names'] = list_names.split(",")
         if types := parsed_args.get('contains'):
             parsed_args["contains"] = types.split(",")
-        """Get details of a playbook alert"""
+        """Search for lists in Recorded Future"""
         return self._call(url_suffix='/v2/lists/search', demisto_args=parsed_args)
 
     ####################################################
