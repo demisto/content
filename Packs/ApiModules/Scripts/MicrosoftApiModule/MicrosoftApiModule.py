@@ -111,6 +111,16 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS = {
     'dod': 'https://dod-graph.microsoft.us',
 }
 
+MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
+    'com': 'https://securitycenter.onmicrosoft.com',
+    'geo-us': 'https://securitycenter.onmicrosoft.com',
+    'geo-eu': 'https://securitycenter.onmicrosoft.com',
+    'geo-uk': 'https://securitycenter.onmicrosoft.com',
+    'gcc': 'https://securitycenter.onmicrosoft.us',
+    'gcc-high': 'https://securitycenter.onmicrosoft.us',
+    'dod': 'https://securitycenter.onmicrosoft.us',
+}
+
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'

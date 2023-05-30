@@ -1121,7 +1121,8 @@ class MsClient:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope=urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type], "/windowsatpservice/.default"),
+            scope=urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
+                          "/windowsatpservice/.default"),
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
             auth_code=auth_code,
@@ -1145,7 +1146,7 @@ class MsClient:
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
         if kwargs.pop('should_use_security_center', None):
-            kwargs['scope'] = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+            kwargs['scope'] = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type],
                                       "/windowsatpservice/.default")
             kwargs['resource'] = MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
         else:
