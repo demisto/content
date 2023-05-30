@@ -3785,3 +3785,6 @@ inputs:
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: Phishing - Generic v3
+fromversion: 6.10.0
+tests:
+  - Run all tests
