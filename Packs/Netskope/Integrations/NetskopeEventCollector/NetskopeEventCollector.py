@@ -37,7 +37,7 @@ class Client(BaseClient):
             self.headers = {'Netskope-Api-Token': token}
 
     def get_events_request_v1(self, event_type: str, last_run: dict, skip: int = None,
-                              limit: int = None, is_command: bool = False) -> Dict:
+                              limit: int = None, is_command: bool = False) -> Dict:  # pragma: no cover
         body = {
             'starttime': last_run.get(event_type),
             'endtime': int(datetime.now().timestamp()),
@@ -75,7 +75,7 @@ class Client(BaseClient):
         return response
 
     def get_events_request_v2(self, event_type: str, last_run: dict, skip: int = None,
-                              limit: int = None, is_command: bool = False) -> Dict:
+                              limit: int = None, is_command: bool = False) -> Dict:  # pragma: no cover
 
         url_suffix = f'events/data/{event_type}'
         params = {
@@ -221,46 +221,14 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
     return events_result, new_last_run
 
 
-def v1_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
-    # pragma: no cover
-    limit = arg_to_number(args.get('limit', 50))
-    events = []
-    for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        response = client.get_events_request_v1(event_type, last_run, limit, is_command=True)
-        if response.get('status') == 'success':
-            result = response.get('data', [])
-            events.extend(result)
+def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api_version: str,
+                       is_command: bool) -> Tuple[CommandResults, list]:
 
-        for event in events:
-            event['source_log_event'] = event_type
-            event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
+    limit = arg_to_number(args.get('limit')) or 50
+    events, _ = get_all_events(client, last_run, api_version=api_version, limit=limit, is_command=is_command)
 
-    readable_output = tableToMarkdown('Events List:', events,
-                                      removeNull=True,
-                                      headers=['_id', 'timestamp', 'type', 'access_method', 'app', 'traffic_type'],
-                                      headerTransform=string_to_table_header)
-
-    results = CommandResults(outputs_prefix='Netskope.Event',
-                             outputs_key_field='_id',
-                             outputs=events,
-                             readable_output=readable_output,
-                             raw_response=events)
-    return results, events
-
-
-def v2_get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
-    # pragma: no cover
-    limit = arg_to_number(args.get('limit', 50))
-    events = []
-    for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        response = client.get_events_request_v2(event_type, last_run, limit, is_command=True)
-        if response.get('ok') == 1:
-            result = response.get('result', [])
-            events.extend(result)
-
-        for event in events:
-            event['source_log_event'] = event_type
-            event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
+    for event in events:
+        event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
 
     readable_output = tableToMarkdown('Events List:', events,
                                       removeNull=True,
@@ -320,10 +288,7 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif demisto.command() == 'netskope-get-events':
-            if api_version == 'v1':
-                results, events = v1_get_events_command(client, demisto.args(), last_run)
-            else:
-                results, events = v2_get_events_command(client, demisto.args(), last_run)
+            results, events = get_events_command(client, demisto.args(), last_run, api_version, is_command=True)
 
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)  # type: ignore

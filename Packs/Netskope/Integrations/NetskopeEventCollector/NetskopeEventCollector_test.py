@@ -94,3 +94,25 @@ def test_get_all_events(mocker):
     assert new_last_run['page-ids'] == ['3757761212778242bfda29cd', '9e99b72b957416a43222fa7a',
                                         '66544bf5fda515f229592644', '98938eb19b4f9bea24ef9a8c',
                                         'fe6d7f3a9a1d4e1abce21713']
+
+
+def test_get_events_command(mocker):
+    """
+    Given:
+        - netskope-get-events call
+    When:
+        - Running the get_events_command
+    Then:
+        - Make sure the number of events returns as expected
+        - Make sure that human_readable returned as expected
+        - Make sure the outputs are set correctly.
+    """
+    from NetskopeEventCollector import get_events_command
+    client = Client(BASE_URL, 'dummy_token', 'v2', False, False)
+    mocker.patch('NetskopeEventCollector.get_all_events', return_value=[MOCK_ENTRY, {}])
+    results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN, api_version='v2',
+                                         is_command=True)
+    assert 'Events List' in results.readable_output
+    assert len(events) == 9
+    assert results.outputs_prefix == 'Netskope.Event'
+    assert results.outputs == MOCK_ENTRY
