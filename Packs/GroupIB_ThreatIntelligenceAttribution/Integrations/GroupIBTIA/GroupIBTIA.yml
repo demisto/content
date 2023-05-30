@@ -71,9 +71,9 @@ configuration:
   required: false
   type: 13
 description: "Pack helps to integrate Group-IB Threat Intelligence and get incidents\
-  \ directly into Cortex XSOAR. \nThe list of included collections:\nCompromised Accounts,\
-  \ Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI\
-  \ Git Leak, OSI Public Leak, Targeted Malware."
+  \ directly into Cortex XSOAR. \nThe list of included collections: \nCompromised\
+  \ Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing\
+  \ Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
 display: Group-IB Threat Intelligence
 name: Group-IB Threat Intelligence & Attribution
 script:
