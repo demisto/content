@@ -46,7 +46,7 @@ tasks:
       id: f5481eb6-0a92-43ad-84a0-193ca46fc451
       version: -1
       name: Run script file exists
-      description: Initiates a new endpoint script execution to check if file exists.
+      description: Initiates a new endpoint script execution to check if the file exists.
       script: '|||xdr-run-script-file-exists'
       type: regular
       iscommand: true
