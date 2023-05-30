@@ -1,5 +1,6 @@
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
+import copy
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -365,13 +366,14 @@ def main(command: str, params: dict):
 
             params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
 
-        params["url"] = params_url
-        params["endpoint_type"] = endpoint_type
-        params["scope_url"] = MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[endpoint_type]
+        parsed_params = copy.copy(params)
+        parsed_params["url"] = params_url
+        parsed_params["endpoint_type"] = endpoint_type
+        parsed_params["scope_url"] = MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[endpoint_type]
 
-        options = DefenderIntegrationOptions.parse_obj(params)
-        request = DefenderHTTPRequest.parse_obj(params)
-        authenticator = DefenderAuthenticator.parse_obj(params)
+        options = DefenderIntegrationOptions.parse_obj(parsed_params)
+        request = DefenderHTTPRequest.parse_obj(parsed_params)
+        authenticator = DefenderAuthenticator.parse_obj(parsed_params)
 
         client = DefenderClient(request=request, options=options, authenticator=authenticator)
         get_events = DefenderGetEvents(client=client, options=options)
