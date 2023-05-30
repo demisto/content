@@ -1434,7 +1434,8 @@ def test_zoom_send_message_markdown_command(mocker):
             {'text': '@John', 'at_contact': 'user2@example.com', 'at_type': 1, 'start_position': 4, 'end_position': 8}
         ],
         'rich_text': [
-            {'text': 'report', 'format_type': 'AddLink', 'format_attr': 'https://example.com', 'start_position': 39, 'end_position': 44},
+            {'text': 'report', 'format_type': 'AddLink', 'format_attr': 'https://example.com',
+             'start_position': 39, 'end_position': 44},
             {'text': 'HI ', 'format_type': 'paragraph', 'format_attr': 'h1', 'start_position': 0, 'end_position': 2},
             {'text': '@John, please review the following report', 'format_type': 'LeftIndent',
                 'format_attr': 40, 'start_position': 4, 'end_position': 44}

@@ -80,7 +80,8 @@ time is missing this argument: recurrence_type."""
 MISSING_ARGUMENT = """Missing either a contact info or a channel id"""
 USER_NOT_FOUND = """ This user email can't be found """
 MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
-                                       don't enter start_position or end_position or format_type or at_type or rt_start_position or rt_end_position or format_attr"""
+                    don't enter start_position or end_position or format_type or at_type 
+                    or rt_start_position or rt_end_position or format_attr"""
 MARKDOWN_EXTRA_FORMATS = """to many style in text. you can provide only one style type"""
 
 '''CLIENT CLASS'''
@@ -1300,7 +1301,8 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         res = client.zoom_upload_file(uplaod_file_url, file_info)
         zoom_file_id.append(res.get('id'))
 
-    if is_markdown and (start_position or end_position or format_attr or format_type or rt_end_position or rt_start_position or at_type):
+    if is_markdown and (start_position or end_position or 
+                    format_attr or format_type or rt_end_position or rt_start_position or at_type):
         raise DemistoException(MARKDOWN_AND_EXTRA_ARGUMENTS)
 
     if is_markdown:
