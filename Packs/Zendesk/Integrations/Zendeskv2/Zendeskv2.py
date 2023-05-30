@@ -372,7 +372,7 @@ class ZendeskClient(BaseClient):
             return self.__cursor_pagination(url_suffix=url_suffix, data_field_name=data_field_name,
                                             params=params, limit=int(limit))
 
-    # ---- user releated functions ---- #
+    # ---- user related functions ---- #
 
     @staticmethod
     def __command_results_zendesk_users(users: List[Dict]):
@@ -489,7 +489,7 @@ class ZendeskClient(BaseClient):
         self._http_request('DELETE', url_suffix=f'users/{user_id}')
         return f'User deleted. (id: {user_id})'
 
-    # ---- organization releated functions ---- #
+    # ---- organization related functions ---- #
 
     @staticmethod
     def __command_results_zendesk_organizations(organizations: List[Dict]):  # pragma: no cover
@@ -513,7 +513,16 @@ class ZendeskClient(BaseClient):
 
         return self.__command_results_zendesk_organizations(organizations)
 
-    # ---- ticket releated functions ---- #
+    # ---- group related functions ---- #
+
+    def group_user_list_request(self, group_id: str):
+        url_suffix = f'groups/{group_id}/users'
+        return self._http_request('GET', url_suffix)
+
+    def list_group_users_command(self, group_id: str, limit: int = 50, page_number: Optional[int] = None,
+                                 page_size: int = 50):
+
+    # ---- ticket related functions ---- #
 
     @staticmethod
     def __ticket_context(ticket: Dict[str, Any]):
@@ -717,7 +726,7 @@ class ZendeskClient(BaseClient):
     def zendesk_ticket_comment_list(self, ticket_id: str, **kwargs):
         return self.__command_results_zendesk_ticket_comments(list(self._get_comments(ticket_id, **kwargs)))
 
-    # ---- attachment releated functions ---- #
+    # ---- attachment related functions ---- #
 
     def zendesk_ticket_attachment_add(self, file_id: STR_OR_STR_LIST, ticket_id: int, comment: str,
                                       file_name: Optional[STR_OR_STR_LIST] = None, is_mirror: bool = False):
@@ -770,7 +779,7 @@ class ZendeskClient(BaseClient):
 
         return results
 
-    # ---- search releated functions ---- #
+    # ---- search related functions ---- #
 
     def __zendesk_search_results(self, query: str, limit: int = 50, page_number: Optional[int] = None, page_size: int = 50,
                                  additional_params: dict = {}):
@@ -798,7 +807,7 @@ class ZendeskClient(BaseClient):
                                   query=query, limit=limit, page_number=page_number, page_size=page_size
                               ))
 
-    # ---- articles releated functions ---- #
+    # ---- articles related functions ---- #
 
     def zendesk_article_list(self, locale: Optional[str] = '', article_id: Optional[int] = None, **kwargs):
         if locale:
@@ -818,7 +827,7 @@ class ZendeskClient(BaseClient):
         return CommandResults(outputs_prefix='Zendesk.Article', outputs=articles,
                               readable_output='\n\n\n'.join(readable_output))
 
-    # ---- demisto releated functions ---- #
+    # ---- demisto related functions ---- #
 
     def test_module(self):  # pragma: no cover
         exception: Exception
