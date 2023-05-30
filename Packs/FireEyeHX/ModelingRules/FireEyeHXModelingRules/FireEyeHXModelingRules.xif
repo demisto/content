@@ -109,7 +109,7 @@ filter cefVersion = null
         xdm.observer.name = source,
         xdm.observer.type = subtype,
         xdm.event.outcome = resolution,
-        xdm.target.file.md5 = coalesce(md5values,fileWriteEvent_md5);
+        xdm.target.file.md5 = to_string(coalesce(md5values,fileWriteEvent_md5));
 // Syslog CEF logs
 filter cefVersion != null
 | alter
