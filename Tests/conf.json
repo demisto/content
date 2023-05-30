@@ -26,7 +26,7 @@
                 "Cortex XDR - IR",
                 "Joe Security"
             ],
-            "playbookID": "Test_Playbook_-_Cortex_XDR_Malware_-_Investigation_And_Response",
+            "playbookID": "Test Playbook - Cortex XDR Malware - Investigation And Response",
             "fromversion": "6.5.0"
         },
         {
