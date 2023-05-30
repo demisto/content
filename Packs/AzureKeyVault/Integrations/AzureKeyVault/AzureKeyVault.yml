@@ -1149,16 +1149,21 @@ script:
     - name: tag
       description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
       required: false
-    - description: Resource group ID.
+    outputs:
+    - contextPath: AzureKeyVault.ResourceGroup.id
+      description: Resource group ID.
       type: String
-    - description: Resource group name.
+    - contextPath: AzureKeyVault.ResourceGroup.name
+      description: Resource group name.
       type: String
-    - description: Resource group location.
+    - contextPath: AzureKeyVault.ResourceGroup.location
+      description: Resource group location.
       type: String
-    - description: Resource group tags.
+    - contextPath: AzureKeyVault.ResourceGroup.tags
+      description: Resource group tags.
       type: Unknown
-    - description: Resource group provisioning state.
-      type: String
+    - contextPath: AzureKeyVault.ResourceGroup.properties.provisioningState
+      description: Resource group provisioning state.
   dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false
