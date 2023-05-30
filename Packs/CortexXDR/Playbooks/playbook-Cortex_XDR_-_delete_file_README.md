@@ -44,4 +44,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Cortex XDR - delete file](../doc_files/Cortex_XDR_-_delete_file.png)
+![Cortex XDR - delete file](../doc_files/Cortex_XDR_-_Delete_file.png)
