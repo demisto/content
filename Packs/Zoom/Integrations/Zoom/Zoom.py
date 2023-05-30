@@ -1301,8 +1301,8 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         res = client.zoom_upload_file(uplaod_file_url, file_info)
         zoom_file_id.append(res.get('id'))
 
-    if is_markdown and (start_position or end_position or 
-                    format_attr or format_type or rt_end_position or rt_start_position or at_type):
+    if is_markdown and (start_position or end_position
+                        or format_attr or format_type or rt_end_position or rt_start_position or at_type):
         raise DemistoException(MARKDOWN_AND_EXTRA_ARGUMENTS)
 
     if is_markdown:
