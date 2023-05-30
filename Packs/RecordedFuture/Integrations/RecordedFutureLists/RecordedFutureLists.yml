@@ -4,8 +4,6 @@ commonfields:
 name: RecordedFutureLists
 display: 'Recorded Future - Lists'
 category: Data Enrichment & Threat Intelligence
-defaultclassifier: Recorded Future Playbook Alert Classifier
-defaultmapperin: Recorded Future Playbook Alert Mapper
 image:
 description: 'Search and manage watchlists in Recorded Future'
 configuration:

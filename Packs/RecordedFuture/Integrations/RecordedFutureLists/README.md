@@ -24,7 +24,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### recordedfuture-lists-search
 
 ***
-Get Playbook alert details by id.
+Search for lists in Recorded Future
 
 #### Base Command
 
