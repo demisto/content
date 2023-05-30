@@ -4,4 +4,4 @@ alter
 alter
     // 2020-11-29T19:49:46+0000
     _time = to_timestamp(parse_epoch("%Y-%m-%dT%H:%M:%S%z", json_extract_scalar(tmp_payload, "$.timestamp")) , "SECONDS") |
-fields -tmp_payload
+fields -tmp_payload;
