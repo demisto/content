@@ -1318,3 +1318,6 @@ inputs:
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: edac1525-2658-407a-8dc1-0f054eb6cb7e
+fromversion: 6.10.0
+tests:
+  - Run all tests
