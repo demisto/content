@@ -157,3 +157,37 @@ def delete_files():
         os.remove(script_path)
     if yml_path:
         os.remove(yml_path)
+
+
+def test_commit_new_content_item_gitlab(mocker):
+    """
+    Given:
+        - A branch name and a content file.
+    When:
+        - Committing the files to gitlab
+    """
+    from CommitFiles import commit_content_item_gitlab
+    branch_name = 'demisto'
+    expected_args = {
+        'branch': f'{branch_name}',
+        'commit_message': f'Added {content_file.file_name}',
+        'file_content': f'{content_file.file_text}',
+        'file_path': f'{content_file.path_to_file}/{content_file.file_name}'}
+    mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch('CommitFiles.execute_command', return_value=(True, expected_args))
+    commit_content_item_gitlab(branch_name, content_file, [], [])
+
+
+def test_update_content_item_gitlab(mocker):
+    """
+    Given:
+        - A branch name and a content file.
+    When:
+        - Committing the files to gitlab
+    """
+    from CommitFiles import commit_content_item_gitlab
+    branch_name = 'demisto'
+    expected_str = 'already exists'
+    mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch('CommitFiles.execute_command', return_value=(True, expected_str))
+    commit_content_item_gitlab(branch_name, content_file, [], [])

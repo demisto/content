@@ -477,7 +477,9 @@ def parse_finding(finding: dict) -> Dict:
     return parsed_finding
 
 
-def get_findings(client: boto3.client, args: dict) -> CommandResults:
+def get_findings(client: boto3.client, args: dict) -> dict:
+    return_raw_response = argToBoolean(args.get('returnRawResponse', 'false'))
+
     response = client.get_findings(
         DetectorId=args.get('detectorId'),
         FindingIds=argToList(args.get('findingIds')))
@@ -492,11 +494,15 @@ def get_findings(client: boto3.client, args: dict) -> CommandResults:
     headers = ['Id', 'Title', 'Description', 'Type', 'ResourceType', 'CreatedAt', 'AccountId', 'Arn']
     readable_output = tableToMarkdown('AWS GuardDuty Findings', data, removeNull=True, headers=headers) \
         if data else 'No result were found'
-    return CommandResults(readable_output=readable_output,
-                          raw_response=raw,
-                          outputs=data,
-                          outputs_prefix='AWS.GuardDuty.Findings',
-                          outputs_key_field='Id')
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': raw if raw else data,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw if return_raw_response else data}
+    }
 
 
 def parse_incident_from_finding(finding: dict):
@@ -751,6 +757,8 @@ def main():  # pragma: no cover
     first_fetch_time = params.get('first_fetch_time', '10 minutes').strip()
     fetch_limit = arg_to_number(params.get('fetch_limit', 10))
     is_archive = argToBoolean(params.get('is_archive', False))
+    sts_endpoint_url = params.get('sts_endpoint_url') or None
+    endpoint_url = params.get('endpoint_url') or None
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -758,7 +766,7 @@ def main():  # pragma: no cover
 
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
-                               timeout, retries)
+                               timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         args = demisto.args()
 
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'),

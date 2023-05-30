@@ -1,0 +1,23 @@
+{
+    "success_list": [
+        {
+            "status": 200,
+            "message": "success",
+            "profile_name": "bdika"
+        },
+        {
+            "status": 200,
+            "message": "success",
+            "profile_name": "test1234"
+        }
+    ],
+    "failure_list": [
+        {
+            "status": 404,
+            "message": "profile_name 'test343434' doesn't exist",
+            "profile_name": "test343434"
+        }
+    ],
+    "success_count": 2,
+    "failure_count": 1
+}

@@ -1,0 +1,318 @@
+id: Test XDR Playbook retrieve file command
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Test XDR Playbook retrieve file command
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c4045844-37fa-436f-8861-b74f17b86baa
+    type: start
+    task:
+      id: c4045844-37fa-436f-8861-b74f17b86baa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 432.5,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 564a93de-1811-423f-8987-8652ce16633e
+    type: regular
+    task:
+      id: 564a93de-1811-423f-8987-8652ce16633e
+      version: -1
+      name: DeleteContext
+      description: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 432.5,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 985048a2-3720-4975-8284-f05cc93775cd
+    type: regular
+    task:
+      id: 985048a2-3720-4975-8284-f05cc93775cd
+      version: -1
+      name: xdr-retrieve-files
+      description: Retrieves files from selected endpoints. You can retrieve up to
+        20 files, from no more than 10 endpoints. At least one endpoint ID and one
+        file path are necessary in order to run the command. After running this command,
+        you can use the xdr-action-status-get command with returned action_id, to
+        check the action status.
+      script: '|||xdr-file-retrieve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      endpoint_ids:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      windows_file_paths:
+        simple: C:\Users\demisto\Desktop\demisto.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 06520682-d7fe-43c4-89c9-7780b86843bb
+    type: playbook
+    task:
+      id: 06520682-d7fe-43c4-89c9-7780b86843bb
+      version: -1
+      name: Cortex XDR - Check Action Status
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
+      playbookName: Cortex XDR - Check Action Status
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      action_id:
+        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c0e40057-86b0-4c0f-8fef-3917389c16aa
+    type: condition
+    task:
+      id: c0e40057-86b0-4c0f-8fef-3917389c16aa
+      version: -1
+      name: Verify check action status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.GetActionStatus.status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: dae73f05-a898-4eff-8a67-464c741efca0
+    type: playbook
+    task:
+      id: dae73f05-a898-4eff-8a67-464c741efca0
+      version: -1
+      name: Cortex XDR - Retrieve File Playbook
+      description: |-
+        Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+        Inputs for this playbook are:
+        - A comma-separated list of endpoint IDs.
+        - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
+      playbookName: Cortex XDR - Retrieve File Playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      endpoint_ids:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      windows_file_paths:
+        simple: C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 212.5,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a9d84851-0cc7-4171-8617-74d11dca0c2f
+    type: condition
+    task:
+      id: a9d84851-0cc7-4171-8617-74d11dca0c2f
+      version: -1
+      name: Verify retrieve file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 212.5,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b933c9b5-ebd8-405c-86a6-4cbaf1f57913
+    type: title
+    task:
+      id: b933c9b5-ebd8-405c-86a6-4cbaf1f57913
+      version: -1
+      name: Success!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 810,
+        "x": 212.5,
+        "y": 230
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: false
+fromversion: 5.0.0

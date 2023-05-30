@@ -1,8 +1,8 @@
 {
-    "name": "MapPattern",
-    "description": "This transformer will take in a value and transform it based on multiple condition expressions (wildcard, regex, etc) defined in a JSON dictionary structure.",
+    "name": "MapPattern (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
     "support": "community",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",

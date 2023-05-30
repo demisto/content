@@ -1,4 +1,4 @@
-CrowdStrike Falcon X is an automated threat intelligence service built on the Falcon platform.
+CrowdStrike Falcon Intelligence Sandbox is an automated threat intelligence service built on the Falcon platform.
 
 It provides rich content and actionable information to malware analysts and security teams to aid in their malware evaluation. It gives context around the behavior of malicious files and outlines the risk assessment providing related samples. Having this research at your fingertips can aid in the larger investigation.
 
@@ -14,5 +14,5 @@ Understanding malware behavior can help you identify and address potential areas
 
 ## Playbooks
 This pack includes the following built-in playbooks:
-- **Detonate File - CrowdStrike Falcon X**: Detonate a file using CrowdStrike Falcon X sandbox.
-- **Detonate URL - CrowdStrike Falcon X**: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+- **Detonate File - CrowdStrike Falcon Intelligence Sandbox**: Detonate a file using CrowdStrike Falcon Intelligence Sandbox.
+- **Detonate URL - CrowdStrike Falcon Intelligence Sandbox**: Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.

@@ -1,0 +1,280 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "domain": "data_domain",
+        "samples": [
+            {
+                "iocs": [
+                    {
+                        "confidence": "data_samples[0]_iocs[0]_confidence",
+                        "ioc": "data_samples[0]_iocs[0]_ioc",
+                        "severity": "data_samples[0]_iocs[0]_severity",
+                        "sample": "data_samples[0]_iocs[0]_sample"
+                    }
+                ],
+                "private": "data_samples[0]_private",
+                "login": "data_samples[0]_login",
+                "sample": "data_samples[0]_sample",
+                "filename": "data_samples[0]_filename",
+                "details": "data_samples[0]_details",
+                "sha256": "sha256",
+                "timestamp": "data_samples[0]_timestamp",
+                "relation": "data_samples[0]_relation",
+                "owner": "data_samples[0]_owner"
+            },
+            {
+                "iocs": [
+                    {
+                        "confidence": "data_samples[1]_iocs[0]_confidence",
+                        "ioc": "data_samples[1]_iocs[0]_ioc",
+                        "severity": "data_samples[1]_iocs[0]_severity",
+                        "sample": "data_samples[1]_iocs[0]_sample"
+                    }
+                ],
+                "private": "data_samples[1]_private",
+                "login": "data_samples[1]_login",
+                "sample": "data_samples[1]_sample",
+                "filename": "data_samples[1]_filename",
+                "details": "data_samples[1]_details",
+                "sha256": "data_samples[1]_sha256",
+                "timestamp": "data_samples[1]_timestamp",
+                "relation": "data_samples[1]_relation",
+                "owner": "data_samples[1]_owner"
+            },
+            {
+                "iocs": [],
+                "private": "data_samples[2]_private",
+                "login": "data_samples[2]_login",
+                "sample": "data_samples[2]_sample",
+                "filename": "data_samples[2]_filename",
+                "details": "data_samples[2]_details",
+                "sha256": "data_samples[2]_sha256",
+                "timestamp": "data_samples[2]_timestamp",
+                "relation": "data_samples[2]_relation",
+                "owner": "data_samples[2]_owner"
+            },
+            {
+                "iocs": [
+                    {
+                        "confidence": "data_samples[3]_iocs[0]_confidence",
+                        "ioc": "data_samples[3]_iocs[0]_ioc",
+                        "severity": "data_samples[3]_iocs[0]_severity",
+                        "sample": "data_samples[3]_iocs[0]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[3]_iocs[1]_confidence",
+                        "ioc": "data_samples[3]_iocs[1]_ioc",
+                        "severity": "data_samples[3]_iocs[1]_severity",
+                        "sample": "data_samples[3]_iocs[1]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[3]_iocs[2]_confidence",
+                        "ioc": "data_samples[3]_iocs[2]_ioc",
+                        "severity": "data_samples[3]_iocs[2]_severity",
+                        "sample": "data_samples[3]_iocs[2]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[3]_iocs[3]_confidence",
+                        "ioc": "data_samples[3]_iocs[3]_ioc",
+                        "severity": "data_samples[3]_iocs[3]_severity",
+                        "sample": "data_samples[3]_iocs[3]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[3]_iocs[4]_confidence",
+                        "ioc": "data_samples[3]_iocs[4]_ioc",
+                        "severity": "data_samples[3]_iocs[4]_severity",
+                        "sample": "data_samples[3]_iocs[4]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[3]_iocs[5]_confidence",
+                        "ioc": "data_samples[3]_iocs[5]_ioc",
+                        "severity": "data_samples[3]_iocs[5]_severity",
+                        "sample": "data_samples[3]_iocs[5]_sample"
+                    }
+                ],
+                "private": "data_samples[3]_private",
+                "login": "data_samples[3]_login",
+                "sample": "data_samples[3]_sample",
+                "filename": "data_samples[3]_filename",
+                "details": "data_samples[3]_details",
+                "sha256": "data_samples[3]_sha256",
+                "timestamp": "data_samples[3]_timestamp",
+                "relation": "data_samples[3]_relation",
+                "owner": "data_samples[3]_owner"
+            },
+            {
+                "iocs": [
+                    {
+                        "confidence": "data_samples[4]_iocs[0]_confidence",
+                        "ioc": "data_samples[4]_iocs[0]_ioc",
+                        "severity": "data_samples[4]_iocs[0]_severity",
+                        "sample": "data_samples[4]_iocs[0]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[4]_iocs[1]_confidence",
+                        "ioc": "data_samples[4]_iocs[1]_ioc",
+                        "severity": "data_samples[4]_iocs[1]_severity",
+                        "sample": "data_samples[4]_iocs[1]_sample"
+                    }
+                ],
+                "private": "data_samples[4]_private",
+                "login": "data_samples[4]_login",
+                "sample": "data_samples[4]_sample",
+                "filename": "data_samples[4]_filename",
+                "details": "data_samples[4]_details",
+                "sha256": "data_samples[4]_sha256",
+                "timestamp": "data_samples[4]_timestamp",
+                "relation": "data_samples[4]_relation",
+                "owner": "data_samples[4]_owner"
+            },
+            {
+                "iocs": [],
+                "private": "data_samples[5]_private",
+                "login": "data_samples[5]_login",
+                "sample": "data_samples[5]_sample",
+                "filename": "data_samples[5]_filename",
+                "details": "data_samples[5]_details",
+                "sha256": "data_samples[5]_sha256",
+                "timestamp": "data_samples[5]_timestamp",
+                "relation": "data_samples[5]_relation",
+                "owner": "data_samples[5]_owner"
+            },
+            {
+                "iocs": [
+                    {
+                        "confidence": "data_samples[6]_iocs[0]_confidence",
+                        "ioc": "data_samples[6]_iocs[0]_ioc",
+                        "severity": "data_samples[6]_iocs[0]_severity",
+                        "sample": "data_samples[6]_iocs[0]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[1]_confidence",
+                        "ioc": "data_samples[6]_iocs[1]_ioc",
+                        "severity": "data_samples[6]_iocs[1]_severity",
+                        "sample": "data_samples[6]_iocs[1]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[2]_confidence",
+                        "ioc": "data_samples[6]_iocs[2]_ioc",
+                        "severity": "data_samples[6]_iocs[2]_severity",
+                        "sample": "data_samples[6]_iocs[2]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[3]_confidence",
+                        "ioc": "data_samples[6]_iocs[3]_ioc",
+                        "severity": "data_samples[6]_iocs[3]_severity",
+                        "sample": "data_samples[6]_iocs[3]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[4]_confidence",
+                        "ioc": "data_samples[6]_iocs[4]_ioc",
+                        "severity": "data_samples[6]_iocs[4]_severity",
+                        "sample": "data_samples[6]_iocs[4]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[5]_confidence",
+                        "ioc": "data_samples[6]_iocs[5]_ioc",
+                        "severity": "data_samples[6]_iocs[5]_severity",
+                        "sample": "data_samples[6]_iocs[5]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[6]_confidence",
+                        "ioc": "data_samples[6]_iocs[6]_ioc",
+                        "severity": "data_samples[6]_iocs[6]_severity",
+                        "sample": "data_samples[6]_iocs[6]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[7]_confidence",
+                        "ioc": "data_samples[6]_iocs[7]_ioc",
+                        "severity": "data_samples[6]_iocs[7]_severity",
+                        "sample": "data_samples[6]_iocs[7]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[8]_confidence",
+                        "ioc": "data_samples[6]_iocs[8]_ioc",
+                        "severity": "data_samples[6]_iocs[8]_severity",
+                        "sample": "data_samples[6]_iocs[8]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[9]_confidence",
+                        "ioc": "data_samples[6]_iocs[9]_ioc",
+                        "severity": "data_samples[6]_iocs[9]_severity",
+                        "sample": "data_samples[6]_iocs[9]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[10]_confidence",
+                        "ioc": "data_samples[6]_iocs[10]_ioc",
+                        "severity": "data_samples[6]_iocs[10]_severity",
+                        "sample": "data_samples[6]_iocs[10]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[11]_confidence",
+                        "ioc": "data_samples[6]_iocs[11]_ioc",
+                        "severity": "data_samples[6]_iocs[11]_severity",
+                        "sample": "data_samples[6]_iocs[11]_sample"
+                    },
+                    {
+                        "confidence": "data_samples[6]_iocs[12]_confidence",
+                        "ioc": "data_samples[6]_iocs[12]_ioc",
+                        "severity": "data_samples[6]_iocs[12]_severity",
+                        "sample": "data_samples[6]_iocs[12]_sample"
+                    }
+                ],
+                "private": "data_samples[6]_private",
+                "login": "data_samples[6]_login",
+                "sample": "data_samples[6]_sample",
+                "filename": "data_samples[6]_filename",
+                "details": "data_samples[6]_details",
+                "sha256": "data_samples[6]_sha256",
+                "timestamp": "data_samples[6]_timestamp",
+                "relation": "data_samples[6]_relation",
+                "owner": "data_samples[6]_owner"
+            },
+            {
+                "iocs": [],
+                "private": "data_samples[7]_private",
+                "login": "data_samples[7]_login",
+                "sample": "data_samples[7]_sample",
+                "filename": "data_samples[7]_filename",
+                "details": "data_samples[7]_details",
+                "sha256": "data_samples[7]_sha256",
+                "timestamp": "data_samples[7]_timestamp",
+                "relation": "data_samples[7]_relation",
+                "owner": "data_samples[7]_owner"
+            },
+            {
+                "iocs": [
+                    {
+                        "confidence": "data_samples[8]_iocs[0]_confidence",
+                        "ioc": "data_samples[8]_iocs[0]_ioc",
+                        "severity": "data_samples[8]_iocs[0]_severity",
+                        "sample": "data_samples[8]_iocs[0]_sample"
+                    }
+                ],
+                "private": "data_samples[8]_private",
+                "login": "data_samples[8]_login",
+                "sample": "data_samples[8]_sample",
+                "filename": "data_samples[8]_filename",
+                "details": "data_samples[8]_details",
+                "sha256": "data_samples[8]_sha256",
+                "timestamp": "data_samples[8]_timestamp",
+                "relation": "data_samples[8]_relation",
+                "owner": "data_samples[8]_owner"
+            },
+            {
+                "iocs": [],
+                "private": "data_samples[9]_private",
+                "login": "data_samples[9]_login",
+                "sample": "data_samples[9]_sample",
+                "filename": "data_samples[9]_filename",
+                "details": "data_samples[9]_details",
+                "sha256": "data_samples[9]_sha256",
+                "timestamp": "data_samples[9]_timestamp",
+                "relation": "data_samples[9]_relation",
+                "owner": "data_samples[9]_owner"
+            }
+        ]
+    }
+}

@@ -1,0 +1,19 @@
+{
+
+    "description": "Classifier for GenericSQL Record",
+    "feed": false,
+    "id": "GenericSQL Classifier",
+    "keyTypeMap": {
+        "GenericSQL Record": "GenericSQL Record"
+    },
+    "name": "GenericSQL Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

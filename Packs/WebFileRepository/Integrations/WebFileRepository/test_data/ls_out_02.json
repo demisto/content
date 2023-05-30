@@ -1,0 +1,46 @@
+{
+    "data": [{
+            "type": "F",
+            "name": "a.dat",
+            "path": "/a.dat",
+            "base": "/",
+            "size": 3,
+            "last-modified": 1669044167
+        }, {
+            "type": "F",
+            "name": "b.dat",
+            "path": "/b.dat",
+            "base": "/",
+            "size": 3,
+            "last-modified": 1669044167
+        }, {
+            "type": "F",
+            "name": "c.dat",
+            "path": "/c.dat",
+            "base": "/",
+            "size": 3,
+            "last-modified": 1669044167
+        }, {
+            "type": "D",
+            "name": "x",
+            "path": "/x",
+            "base": "/",
+            "size": null,
+            "last-modified": null
+        }, {
+            "type": "D",
+            "name": "y",
+            "path": "/y",
+            "base": "/",
+            "size": null,
+            "last-modified": null
+        }, {
+            "type": "F",
+            "name": "z.dat",
+            "path": "/z.dat",
+            "base": "/",
+            "size": 7198,
+            "last-modified": 1669044167
+        }
+    ]
+}

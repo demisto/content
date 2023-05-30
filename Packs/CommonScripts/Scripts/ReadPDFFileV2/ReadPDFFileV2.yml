@@ -127,7 +127,7 @@ tags:
   - ingestion
 timeout: "0"
 type: python
-dockerimage: demisto/readpdf:1.0.0.38617
+dockerimage: demisto/readpdf:1.0.0.43274
 runonce: false
 runas: DBotRole
 tests:

@@ -1,8 +1,8 @@
 {
-    "name": "Get Fields",
-    "description": "Retrieves fields from an object using dot notation",
+    "name": "Get Fields (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Omar Salim Ahmed",
     "url": "",
     "email": "",
@@ -19,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

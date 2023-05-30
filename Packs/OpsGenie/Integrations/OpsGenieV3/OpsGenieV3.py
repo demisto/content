@@ -1,5 +1,5 @@
 from requests import Response
-
+import urllib3
 import demistomock as demisto
 from typing import Callable, Tuple
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -7,7 +7,7 @@ from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 DEFAULT_POLL_INTERVAL = 5
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DEFAULT_POLL_TIMEOUT = 60
@@ -15,6 +15,7 @@ INTEGRATION_NAME = 'Opsgenie'
 ALERTS_SUFFIX = "alerts"
 REQUESTS_SUFFIX = "requests"
 SCHEDULE_SUFFIX = "schedules"
+USERS_SUFFIX = "users"
 INCIDENTS_SUFFIX = "incidents"
 ESCALATION_SUFFIX = "escalations"
 TEAMS_SUFFIX = "teams"
@@ -302,6 +303,12 @@ class Client(BaseClient):
                                              f"{args.get('incident_id')}/tags",
                                   params={"tags": args.get('tags')},
                                   json_data=args)
+
+    def invite_user(self, args):
+        return self._http_request(method='POST',
+                                  url_suffix=f"/v2/{USERS_SUFFIX}",
+                                  json_data=args
+                                  )
 
     def get_team(self, args: dict):
         return self._http_request(method='GET',
@@ -839,6 +846,17 @@ def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
+def invite_user(client, args) -> CommandResults:
+    args['role'] = {'name': args.get('role')}
+    result = client.invite_user(args)
+    return CommandResults(
+        outputs_prefix="OpsGenie.Users",
+        outputs=result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie Users", result.get("data")),
+        raw_response=result
+    )
+
+
 def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
     result = client.get_team(args) if args.get("team_id") else client.list_teams()
     return CommandResults(
@@ -989,6 +1007,7 @@ def main() -> None:
 
         commands = {
             'opsgenie-create-alert': create_alert,
+            'opsgenie-invite-user': invite_user,
             'opsgenie-get-alerts': get_alerts,
             'opsgenie-delete-alert': delete_alert,
             'opsgenie-ack-alert': ack_alert,

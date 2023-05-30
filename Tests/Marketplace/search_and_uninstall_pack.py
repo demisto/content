@@ -1,10 +1,11 @@
 import ast
 import argparse
+import math
 import os
 import sys
 
 import demisto_client
-from Tests.configure_and_test_integration_instances import XSIAMBuild
+from Tests.configure_and_test_integration_instances import CloudBuild
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.search_and_install_packs import install_packs
@@ -77,7 +78,7 @@ def uninstall_all_packs(client: demisto_client, hostname):
     """ Lists all installed packs and uninstalling them.
     Args:
         client (demisto_client): The client to connect to.
-        hostname (str): xsiam hostname
+        hostname (str): cloud hostname
 
     Returns (list, bool):
         A flag that indicates if the operation succeeded or not.
@@ -135,33 +136,60 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
-def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 30):
+def wait_for_uninstallation_to_complete(client: demisto_client):
     """
     Query if there are still installed packs, as it might take time to complete.
     Args:
         client (demisto_client): The client to connect to.
-        retries: Max number of sleep priods.
 
     Returns: True if all packs were uninstalled successfully
 
     """
     retry = 0
+    sleep_duration = 150
     try:
         installed_packs = get_all_installed_packs(client)
+        # Monitoring when uninstall packs don't work
+        installed_packs_amount_history, failed_uninstall_attempt_count = len(installed_packs), 0
+        # new calculation for num of retries
+        retries = math.ceil(len(installed_packs) / 2)
         while len(installed_packs) > 1:
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
+            if failed_uninstall_attempt_count >= 3:
+                raise Exception(f'Uninstalling packs failed three times. {installed_packs=}')
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
-                         f'packs installed. Sleeping for 10 seconds.')
-            sleep(10)
+                         f'packs installed. Sleeping for {sleep_duration} seconds.')
+            sleep(sleep_duration)
             installed_packs = get_all_installed_packs(client)
-            retry = retry + 1
+
+            if len(installed_packs) == installed_packs_amount_history:
+                # did not uninstall any pack
+                failed_uninstall_attempt_count += 1
+            else:  # uninstalled at least one pack
+                installed_packs_amount_history = len(installed_packs)
+                failed_uninstall_attempt_count = 0
+
+            retry += 1
 
     except Exception as e:
         logging.exception(f'Exception while waiting for the packs to be uninstalled. The error is {e}')
         return False
     return True
+
+
+def sync_marketplace(client: demisto_client):
+    """
+    Syncs marketplace
+    Args:
+        client (demisto_client): The client to connect to.
+    """
+    try:
+        _ = demisto_client.generic_request_func(client, path='/contentpacks/marketplace/sync', method='POST')
+        logging.info('Synced marketplace successfully.')
+    except Exception as e:
+        logging.warning(f'Failed to sync marketplace. Error: {str(e)}')
 
 
 def options_handler():
@@ -171,9 +199,9 @@ def options_handler():
 
     """
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
-    parser.add_argument('--xsiam_servers_api_keys', help='Path to the file with XSIAM Servers api keys.')
+    parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
+    parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
+    parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
 
     options = parser.parse_args()
 
@@ -181,26 +209,30 @@ def options_handler():
 
 
 def main():
-    install_logging('cleanup_xsiam_instance.log', logger=logging)
+    install_logging('cleanup_cloud_instance.log', logger=logging)
 
-    # in xsiam we dont use demisto username
+    # in cloud we dont use demisto username
     os.environ.pop('DEMISTO_USERNAME', None)
 
     options = options_handler()
-    host = options.xsiam_machine
-    api_key, _, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(options.xsiam_machine,
-                                                                           options.xsiam_servers_path,
-                                                                           options.xsiam_servers_api_keys)
-    logging.info(f'Starting cleanup for XSIAM server {host}')
+    host = options.cloud_machine
+    logging.info(f'Starting cleanup for CLOUD server {host}')
+
+    api_key, _, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(options.cloud_machine,
+                                                                           options.cloud_servers_path,
+                                                                           options.cloud_servers_api_keys)
 
     client = demisto_client.configure(base_url=base_url,
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
-
+    # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
+    # in earlier builds they will appear in the bucket as it is cached.
+    sync_marketplace(client=client)
     success = reset_base_pack_version(client) and uninstall_all_packs(client,
                                                                       host) and wait_for_uninstallation_to_complete(
         client)
+    sync_marketplace(client=client)
     if not success:
         sys.exit(2)
     logging.info('Uninstalling packs done.')

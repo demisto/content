@@ -90,7 +90,11 @@ tasks:
       extended_data:
         simple: Yes
       ids:
-        simple: ${CrowdStrike.IncidentDetection.detection_ids}
+        complex:
+          root: CrowdStrike.IncidentDetection
+          accessor: detection_ids
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
@@ -130,6 +134,9 @@ tasks:
     - incidentfield: Technique ID
       output:
         simple: ${CrowdStrike.Detection.Behavior.TechniqueId}
+    - incidentfield: File SHA256
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.SHA256}
     skipunavailable: false
     quietmode: 0
     isoversize: false

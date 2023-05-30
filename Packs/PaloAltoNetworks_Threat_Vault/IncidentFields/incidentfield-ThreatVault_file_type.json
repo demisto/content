@@ -1,0 +1,77 @@
+{
+    "id": "incident_threatvaultbypaloaltonetworksfiletype",
+    "version": -1,
+    "modified": "2022-12-13T15:18:28.981712265Z",
+    "name": "Threat Vault by Palo Alto Networks file type",
+    "ownerOnly": false,
+    "cliName": "threatvaultbypaloaltonetworksfiletype",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Threat Vault Release notes"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "columnheader1",
+            "displayName": "Column Header 1",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "columnheader2",
+            "displayName": "Column Header 2",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "columnheader3",
+            "displayName": "Column Header 3",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

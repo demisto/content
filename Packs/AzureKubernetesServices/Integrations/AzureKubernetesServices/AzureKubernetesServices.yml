@@ -7,9 +7,9 @@ configuration:
   display: Application ID
   hidden: false
   name: app_id
-  required: true
+  required: false
   type: 0
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
   required: true
@@ -17,6 +17,7 @@ configuration:
   options:
   - Authorization Code
   - Device Code
+  - Azure Managed Identities
   type: 15
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
@@ -39,6 +40,12 @@ configuration:
   hiddenusername: true
   name: auth_code
   required: false
+  type: 9
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
   type: 9
 - display: Subscription ID
   hidden: false
@@ -299,7 +306,11 @@ script:
     description: Updates a managed cluster with the specified configuration.
     execution: false
     name: azure-ks-cluster-addon-update
-  dockerimage: demisto/crypto:1.0.0.34720
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-ks-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

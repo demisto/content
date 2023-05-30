@@ -1,5 +1,3 @@
-IT service management
-
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-zendesk-v2).
 
@@ -18,7 +16,11 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
     | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
     | Mirror tags | Comment and files that will be marked with this tag will be pushed into Zendesk. | False |
+    | Ticket Field to Fetch by | Duplications might accrue when choosing 'updated-at' | True |
     | Ticket types to fetch |  | False |
+    | Fetch tickets status filter |  | False |
+    | Fetch tickets priority filter |  | False |
+    | Fetch tickets query filter |  | False |
     | Maximum number of incidents per fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Incidents Fetch Interval |  | False |
@@ -26,13 +28,22 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection. 
+    (The test does not ensure sufficient permissions for all integration commands.)
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+## Required permissions
+This integration enables executing commands with different permission levels. See the commands' descriptions for more information on the required permission. 
+To learn more on Zendesk roles refer to:
+[Understanding Zendesk Support user roles](https://support.zendesk.com/hc/en-us/articles/4408883763866-Understanding-Zendesk-Support-user-roles#topic_ibd_fdq_cc)
+[About team member product roles and access](https://support.zendesk.com/hc/en-us/articles/4408832171034)
+
 ### zendesk-user-list
 ***
-Gets the specified user's data.
+Gets the specified user's data. 
+Required permissions: Admins, Agents and Light Agents.
 
 
 #### Base Command
@@ -43,7 +54,7 @@ Gets the specified user's data.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The user's ID to retrieve. | Optional | 
-| user_name | The user's name. | Optional | 
+| user_name | The user's name. <br/>Required permissions to use this argument: Agents . | Optional | 
 | external_id | The user's unique identifier from another system. | Optional | 
 | role | The user's role. Possible values are: end_user, agent, admin. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
@@ -94,7 +105,8 @@ Gets the specified user's data.
 
 ### zendesk-user-create
 ***
-Creates a new Zendesk user.
+Creates a new Zendesk user. 
+Required permissions: Agents, with restrictions on certain actions.
 
 
 #### Base Command
@@ -168,7 +180,8 @@ Creates a new Zendesk user.
 
 ### zendesk-user-update
 ***
-Update user data.
+Update user data. 
+Required permissions: Agents, with restrictions on certain actions.
 
 
 #### Base Command
@@ -243,7 +256,8 @@ Update user data.
 
 ### zendesk-user-delete
 ***
-Delete a user.
+Delete a user. 
+Required permissions: Admins.
 
 
 #### Base Command
@@ -261,7 +275,10 @@ Delete a user.
 There is no context output for this command.
 ### zendesk-organization-list
 ***
-Get organization's data.
+Get organization's data. 
+Required permissions: Agents, with certain restrictions. 
+If the agent has a custom agent role that restricts the agent's access to only users in their own organization,
+a 403 Forbidden error is returned. See Creating custom agent roles in Zendesk help.
 
 
 #### Base Command
@@ -271,7 +288,7 @@ Get organization's data.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_id | The ID of a specific organization. | Optional | 
+| organization_id | The ID of a specific organization. <br/>Required permissions: Admins, Agents.  | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 | page_size | The page size (used for pagination). | Optional | 
 | page_number | The page number (used for pagination). | Optional | 
@@ -297,7 +314,8 @@ Get organization's data.
 
 ### zendesk-ticket-list
 ***
-List Zendesk tickets.
+List Zendesk tickets. 
+Required permissions: Agents. 
 
 
 #### Base Command
@@ -363,6 +381,7 @@ List Zendesk tickets.
 ### zendesk-ticket-create
 ***
 Create a new zendesk ticket.
+Required permissions: Agents.
 
 
 #### Base Command
@@ -441,6 +460,7 @@ Create a new zendesk ticket.
 ### zendesk-ticket-update
 ***
 Updates a Zendesk ticket.
+Required permissions: Agents.
 
 
 #### Base Command
@@ -513,7 +533,10 @@ Updates a Zendesk ticket.
 
 ### zendesk-ticket-delete
 ***
-Delete ticket.
+Delete ticket. 
+Required permissions: Admins, Agents with permission to delete tickets.
+Agent delete permissions are set in Support.
+See Deleting tickets in the Zendesk Support Help Center.
 
 
 #### Base Command
@@ -532,6 +555,7 @@ There is no context output for this command.
 ### zendesk-ticket-comment-list
 ***
 List comments for a given ticket.
+Required permissions: Agents.
 
 
 #### Base Command
@@ -576,6 +600,7 @@ List comments for a given ticket.
 ### zendesk-ticket-attachment-add
 ***
 Attach file to ticket.
+Required permissions: End users.
 
 
 #### Base Command
@@ -597,6 +622,7 @@ There is no context output for this command.
 ### zendesk-attachment-get
 ***
 Get attachment.
+Required permissions: Admins.
 
 
 #### Base Command
@@ -639,6 +665,7 @@ Search in Zendesk.
 ### zendesk-article-list
 ***
 List all available articles.
+Required permissions: Agents, End users, Anonymous users.
 
 
 #### Base Command

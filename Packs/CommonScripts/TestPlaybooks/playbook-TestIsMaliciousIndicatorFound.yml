@@ -1579,10 +1579,8 @@ tasks:
       "no":
       - "43"
     scriptarguments:
-      includeManual: {}
-      includeSuspicious: {}
-      maliciousQueryOverride: {}
-      queryIndicators: {}
+      queryIndicators:
+        simple: "no"
     separatecontext: false
     view: |-
       {

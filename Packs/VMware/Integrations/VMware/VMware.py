@@ -12,6 +12,35 @@ from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
 
 
+REDIRECT_STD_OUT = argToBoolean(demisto.params().get('redirect_std_out', 'false'))
+real_demisto_info = demisto.info
+real_demisto_debug = demisto.debug
+
+
+def use_demisto_debug(msg):  # pragma: no cover
+    if REDIRECT_STD_OUT:
+        temp = sys.stdout
+        sys.stdout = sys.__stdout__
+        real_demisto_debug(msg)
+        sys.stdout = temp
+    else:
+        real_demisto_debug(msg)
+
+
+def use_demisto_info(msg):  # pragma: no cover
+    if REDIRECT_STD_OUT:
+        temp = sys.stdout
+        sys.stdout = sys.__stdout__
+        real_demisto_info(msg)
+        sys.stdout = temp
+    else:
+        real_demisto_info(msg)
+
+
+demisto.info = use_demisto_info  # type: ignore
+demisto.debug = use_demisto_debug  # type: ignore
+
+
 def parse_params(params):
     full_url = params['url']
     url_arr = full_url.rsplit(':', 1)
@@ -807,8 +836,8 @@ def test_module(si):
 
 
 def main():  # pragma: no cover
-    sout = sys.stdout
-    sys.stdout = StringIO()
+    if REDIRECT_STD_OUT:
+        sys.stdout = StringIO()
     res = []
     si = None
     try:
@@ -865,7 +894,7 @@ def main():  # pragma: no cover
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
-    sys.stdout = sout
+    sys.stdout = sys.__stdout__
     demisto.results(res)
 
 

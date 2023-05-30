@@ -1,0 +1,66 @@
+[MODEL: dataset=cisco_ise_raw]
+alter logSeverity = arrayindex(regextract(_raw_log, "\b(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\b"),0),
+      logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
+| alter xdm.event.type = logType,
+        xdm.alert.severity = logSeverity
+// CISE_Passed_Authentications, CISE_Failed_Attempts, CISE_RADIUS_Diagnostics Parsing
+| filter logType = "CISE_Passed_Authentications" or logType = "CISE_Failed_Attempts" or logType = "CISE_RADIUS_Diagnostics"
+| alter UserName1 = arrayindex(regextract(_raw_log, "User-Name=([a-zA-Z0-9\@\-\\\/\\\._]+)"),0),
+        UserName2 = arrayindex(regextract(_raw_log, "UserName=([a-zA-Z0-9\@\-\\\/\\\._]+)"),0),
+        framedIP_ipv4 = arrayindex(regextract(_raw_log, "Framed-IP-Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+        framedIP_ipv6 = arrayindex(regextract(_raw_log, "Framed-IP-Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
+        DeviceIPAddress_ipv4 = arrayindex(regextract(_raw_log, "Device IP Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+        DeviceIPAddress_ipv6 = arrayindex(regextract(_raw_log, "Device IP Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0)
+| alter xdm.observer.name = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)"),0),
+        xdm.event.id = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s(\d+)"),0),
+        xdm.event.description = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
+        xdm.target.ipv4 = arrayindex(regextract(_raw_log, "DestinationIPAddress=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+        xdm.target.ipv6 = arrayindex(regextract(_raw_log, "DestinationIPAddress=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
+        xdm.source.ipv4 = coalesce(framedIP_ipv4, DeviceIPAddress_ipv4),
+        xdm.source.ipv6 = coalesce(framedIP_ipv6, DeviceIPAddress_ipv6 ),
+        xdm.source.port = to_integer(arrayindex(regextract(_raw_log, "Device Port=(\d+),"),0)),
+        xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
+        xdm.intermediate.ipv4 = arrayindex(regextract(_raw_log, "NAS-IP-Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+        xdm.intermediate.ipv6 = arrayindex(regextract(_raw_log, "NAS-IP-Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
+        xdm.target.port = to_integer(arrayindex(regextract(_raw_log, "DestinationPort=(\d+),"),0)),
+        xdm.intermediate.port = to_integer(arrayindex(regextract(_raw_log, "NAS-Port=(\d+),"),0)),
+        xdm.source.user.username = coalesce(UserName1, UserName2),
+        xdm.network.application_protocol = arrayindex(regextract(_raw_log, "Protocol=([^,]+),"),0)
+| alter xdm.event.outcome = if(xdm.event.description ~= "[Ss][Uu][Cc][Cc][Ee]", XDM_CONST.OUTCOME_SUCCESS, xdm.event.description ~= "[Ff][Aa][Ii][Ll]", XDM_CONST.OUTCOME_FAILED, null);
+// CISE_Alarm Parsing
+alter logSeverity = arrayindex(regextract(_raw_log, "\b(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\b"),0),
+      logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
+| alter xdm.event.type = logType,
+        xdm.alert.severity = logSeverity,
+        observerName1 = arrayindex(regextract(_raw_log, "Server=([^;,]+)"),0),
+        observerName2 = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)\s"),0)
+| filter logType = "CISE_Alarm"
+| alter xdm.alert.name = rtrim(arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\w+:\s([^:]+)"),0)),
+        xdm.observer.name = coalesce(observerName1,observerName2),
+        xdm.alert.description = arrayindex(regextract(_raw_log, "(?:Cause|Details|Error\sMessage|Failure\sReason)=([^,;]+)"),0),
+        xdm.source.ipv4 = arrayindex(regextract(_raw_log, "NAS IP Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3});"),0),
+        xdm.source.ipv6 = arrayindex(regextract(_raw_log, "NAS IP Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5});"),0);
+// CISE_RADIUS_Accounting Parsing
+alter logSeverity = arrayindex(regextract(_raw_log, "\b(DEBUG|INFO|WARN|ERROR|FATAL|CRITICAL|NOTICE)\b"),0),
+      logType = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s(\w+)\s"),0)
+| alter xdm.event.type = logType,
+        xdm.alert.severity = logSeverity
+| filter logType = "CISE_RADIUS_Accounting"
+| alter UserName1 = arrayindex(regextract(_raw_log, "User-Name=([a-zA-Z0-9\@\-\\\/\\\._]+)"),0),
+        UserName2 = arrayindex(regextract(_raw_log, "UserName=([a-zA-Z0-9\@\-\\\/\\\._]+)"),0),
+        framedIP_ipv4 = arrayindex(regextract(_raw_log, "Framed-IP-Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+        framedIP_ipv6 = arrayindex(regextract(_raw_log, "Framed-IP-Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
+        DeviceIPAddress_ipv4 = arrayindex(regextract(_raw_log, "Device IP Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+        DeviceIPAddress_ipv6 = arrayindex(regextract(_raw_log, "Device IP Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0)
+| alter xdm.observer.name = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s([\S]+)"),0),
+        xdm.event.id = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s(\d+)"),0),
+        xdm.event.description = arrayindex(regextract(_raw_log, "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s[\S]+\s\w+\s\d+\s\d{4}-\d{2}-\d{2}\s\d+:\d+:\d+\.\d{3}\s[\S]+\s\d+\s\d+\s\w+\s([^,]+),"),0),
+        xdm.source.ipv4 = coalesce(framedIP_ipv4, DeviceIPAddress_ipv4),
+        xdm.source.ipv6 = coalesce(framedIP_ipv6, DeviceIPAddress_ipv6 ),
+        xdm.source.port = to_integer(arrayindex(regextract(_raw_log, "Device Port=(\d+),"),0)),
+        xdm.source.host.hostname = arrayindex(regextract(_raw_log, "NetworkDeviceName=([^,]+),"),0),
+        xdm.intermediate.ipv4 = arrayindex(regextract(_raw_log, "NAS-IP-Address=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+        xdm.intermediate.ipv6 = arrayindex(regextract(_raw_log, "NAS-IP-Address=([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}),"),0),
+        xdm.intermediate.port = to_integer(arrayindex(regextract(_raw_log, "NAS-Port=(\d+),"),0)),
+        xdm.target.host.hostname = arrayindex(regextract(_raw_log, "Class=([^,]+),"),0),
+        xdm.source.user.username = coalesce(UserName1, UserName2);

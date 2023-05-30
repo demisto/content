@@ -1,0 +1,1769 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "3podiwrjhh",
+                "name": "Alert Overview",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 26,
+                                "id": "ca3282e0-ac81-11ed-90e1-81bc84c0d1fb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "alertid",
+                                "height": 26,
+                                "id": "abb90370-2762-11ec-9959-2922ebe0f011",
+                                "index": 1,
+                                "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 26,
+                                "id": "incident-type-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 26,
+                                "id": "incident-playbookId-field",
+                                "index": 3,
+                                "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcehostname",
+                                "height": 26,
+                                "id": "bfb2d810-2762-11ec-9959-2922ebe0f011",
+                                "index": 4,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 26,
+                                "id": "c28fb940-2762-11ec-9959-2922ebe0f011",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 26,
+                                "id": "incident-severity-field",
+                                "index": 5,
+                                "listId": "3podiwrjhh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 26,
+                                "id": "incident-sourceBrand-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 26,
+                                "id": "incident-sourceInstance-field",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "3podiwrjhh-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "3podiwrjhh-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "3podiwrjhh-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 26,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 26,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 52,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 4,
+                        "i": "3podiwrjhh-9e343160-ac82-11ed-90e1-81bc84c0d1fb",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Command and Task Results",
+                        "query": {
+                            "categories": [
+                                "commandAndResults",
+                                "playbookTaskResult",
+                                "playbookTaskStartAndDone",
+                                "playbookErrors"
+                            ],
+                            "preDefinedFilters": true,
+                            "tags": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "3podiwrjhh-22ce89f0-b040-11ed-95eb-6fbf73c92c07",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Malicious or Suspicious Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "cabada80-b057-11ed-95eb-6fbf73c92c07",
+                                "index": 0,
+                                "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
+                                "name": "Extract indicators from text file",
+                                "scriptId": "ExtractIndicatorsFromTextFile",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "exclude_TLD": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "exclude_indicators": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "unescape_domain": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "cc0ed1c0-b057-11ed-95eb-6fbf73c92c07",
+                                "index": 1,
+                                "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
+                                "name": "Extract indicators from a blog",
+                                "scriptId": "ParseHTMLIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "using-brand": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "cd789af0-b057-11ed-95eb-6fbf73c92c07",
+                                "index": 2,
+                                "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
+                                "name": "Enrich indicators",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "199cd250-b055-11ed-95eb-6fbf73c92c07",
+                                "index": 3,
+                                "listId": "3podiwrjhh-5b7abf80-b040-11ed-95eb-6fbf73c92c07",
+                                "name": "Tag Indicators",
+                                "scriptId": "AppendindicatorFieldWrapper",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "comment": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "1760ec10-b055-11ed-95eb-6fbf73c92c07",
+                                "index": 4,
+                                "name": "Block Hash List",
+                                "scriptId": "Cortex Core - IR|||core-blocklist-files",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "comment": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "18782870-b055-11ed-95eb-6fbf73c92c07",
+                                "index": 5,
+                                "name": "Allow Hash List",
+                                "scriptId": "Cortex Core - IR|||core-allowlist-files",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators Handling",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "3podiwrjhh-c0edb6d0-b1d8-11ed-922b-b50d0a485e48",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "557b46d0-b1db-11ed-922b-b50d0a485e48",
+                                "index": 0,
+                                "name": "Domain Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-domain-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "5231c120-b1db-11ed-922b-b50d0a485e48",
+                                "index": 1,
+                                "name": "IP Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-IP-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "5359ed70-b1db-11ed-922b-b50d0a485e48",
+                                "index": 2,
+                                "name": "Hash Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-hash-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "56c44190-b1db-11ed-922b-b50d0a485e48",
+                                "index": 3,
+                                "name": "Process Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-process-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "57db2fd0-b1db-11ed-922b-b50d0a485e48",
+                                "index": 4,
+                                "name": "CMD Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-cmd-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "59147320-b1db-11ed-922b-b50d0a485e48",
+                                "index": 5,
+                                "name": "Registry Prevalence",
+                                "scriptId": "Cortex Core - IR|||core-get-registry-analytics-prevalence",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Analytics Prevalence Check",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "3podiwrjhh-68821790-b77b-11ed-a817-f75b1612b8eb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostname",
+                                "height": 26,
+                                "id": "81791550-b77b-11ed-a817-f75b1612b8eb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostip",
+                                "height": 26,
+                                "id": "831d4f70-b77b-11ed-a817-f75b1612b8eb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 26,
+                                "id": "88fe9700-b77b-11ed-a817-f75b1612b8eb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Target Identification",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "showEmptyFields": true,
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "qil00jt3lr",
+                "name": "Technical Information",
+                "sections": [
+                    {
+                        "h": 10,
+                        "i": "3podiwrjhh-bc5306a0-9fdd-11ed-882b-b559788954b9",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Mapped Fields",
+                        "query": "displayMappedFields",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "3podiwrjhh-9619ca10-ac7f-11ed-90e1-81bc84c0d1fb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cgoname",
+                                "height": 26,
+                                "id": "bfd7fa20-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cgopath",
+                                "height": 26,
+                                "id": "c18200a0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cgocmd",
+                                "height": 26,
+                                "id": "c43e3a70-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cgomd5",
+                                "height": 26,
+                                "id": "c5abd430-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cgosha256",
+                                "height": 26,
+                                "id": "c6ad3ea0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cgosignature",
+                                "height": 26,
+                                "id": "c77ceab0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cgosigner",
+                                "height": 26,
+                                "id": "c8635310-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Causality Details",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "3podiwrjhh-98e4f800-ac7f-11ed-90e1-81bc84c0d1fb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatedby",
+                                "height": 26,
+                                "id": "cfd329e0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorpath",
+                                "height": 26,
+                                "id": "d1404e70-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorcmd",
+                                "height": 26,
+                                "id": "d58c7710-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorpid",
+                                "height": 26,
+                                "id": "dcaddfc0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatortid",
+                                "height": 26,
+                                "id": "e32bb570-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatormd5",
+                                "height": 26,
+                                "id": "d6d71f80-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorsha256",
+                                "height": 26,
+                                "id": "d7ca0b00-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorsignature",
+                                "height": 26,
+                                "id": "d9106db0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "initiatorsigner",
+                                "height": 26,
+                                "id": "da0e7cc0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actor Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "3podiwrjhh-9d66d6a0-ac7f-11ed-90e1-81bc84c0d1fb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "targetprocessname",
+                                "height": 26,
+                                "id": "07f19e60-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "targetprocesssha256",
+                                "height": 26,
+                                "id": "0aa8cf20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 1,
+                                "listId": "3podiwrjhh-9d66d6a0-ac7f-11ed-90e1-81bc84c0d1fb",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "targetprocesscmd",
+                                "height": 26,
+                                "id": "09406580-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Action Process Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "3podiwrjhh-9e99d860-ac7f-11ed-90e1-81bc84c0d1fb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "filename",
+                                "height": 26,
+                                "id": "e053e100-b77a-11ed-a817-f75b1612b8eb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filemd5",
+                                "height": 26,
+                                "id": "e597fe30-b77a-11ed-a817-f75b1612b8eb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filesha256",
+                                "height": 26,
+                                "id": "e75b3200-b77a-11ed-a817-f75b1612b8eb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filepath",
+                                "height": 26,
+                                "id": "e9b52790-b77a-11ed-a817-f75b1612b8eb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Action File Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "3podiwrjhh-878d7720-ac80-11ed-90e1-81bc84c0d1fb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "localip",
+                                "height": 26,
+                                "id": "3dacd910-ac81-11ed-90e1-81bc84c0d1fb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "localport",
+                                "height": 26,
+                                "id": "3f6e3820-ac81-11ed-90e1-81bc84c0d1fb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remoteip",
+                                "height": 26,
+                                "id": "92bb4050-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remoteport",
+                                "height": 26,
+                                "id": "955fd370-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remotehost",
+                                "height": 26,
+                                "id": "9064f440-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Network Details",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostname",
+                                "height": 26,
+                                "id": "53619990-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostip",
+                                "height": 26,
+                                "id": "55284fd0-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostfqdn",
+                                "height": 26,
+                                "id": "57411db0-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostmacaddress",
+                                "height": 26,
+                                "id": "587a8810-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "hostos",
+                                "height": 26,
+                                "id": "ae9ac290-ac81-11ed-90e1-81bc84c0d1fb",
+                                "index": 4,
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "agentossubtype",
+                                "height": 26,
+                                "id": "bec9f010-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 5,
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "agentid",
+                                "height": 26,
+                                "id": "bd79a250-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 6,
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "agentversion",
+                                "height": 26,
+                                "id": "c54a5dd0-ac80-11ed-90e1-81bc84c0d1fb",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "alias": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "all": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "dist_name": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "endpoint_id_list": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "group_name": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "gte_first_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "gte_last_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "hostname": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "ip_list": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "isolate": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "lte_first_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "lte_last_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "platform": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "81881100-b04a-11ed-95eb-6fbf73c92c07",
+                                "index": 8,
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "name": "Choose host to scan",
+                                "scriptId": "Cortex Core - IR|||core-endpoint-scan",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "alias": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "all": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "dist_name": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "endpoint_id_list": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "group_name": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "gte_first_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "gte_last_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "hostname": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "ip_list": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "isolate": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "lte_first_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "lte_last_seen": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "platform": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "82800590-b04a-11ed-95eb-6fbf73c92c07",
+                                "index": 9,
+                                "listId": "3podiwrjhh-b5124c20-ac80-11ed-90e1-81bc84c0d1fb",
+                                "name": "Abort host scan",
+                                "scriptId": "Cortex Core - IR|||core-endpoint-scan-abort",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "75e16e50-b04a-11ed-95eb-6fbf73c92c07",
+                                "index": 10,
+                                "name": "Choose host to isolate",
+                                "scriptId": "Cortex Core - IR|||core-isolate-endpoint",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "77403b00-b04a-11ed-95eb-6fbf73c92c07",
+                                "index": 11,
+                                "name": "Choose host to unisolate",
+                                "scriptId": "Cortex Core - IR|||core-unisolate-endpoint",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Host Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
+                        "items": [
+                            {
+                                "args": {
+                                    "generic_file_path": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "1c425e90-b04f-11ed-95eb-6fbf73c92c07",
+                                "index": 0,
+                                "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
+                                "name": "Choose file to retrieve",
+                                "scriptId": "Cortex Core - IR|||core-retrieve-files",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "1dcd4450-b04f-11ed-95eb-6fbf73c92c07",
+                                "index": 1,
+                                "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
+                                "name": "Check file existence",
+                                "scriptId": "Cortex Core - IR|||core-run-script-file-exists",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "16dc8890-b04f-11ed-95eb-6fbf73c92c07",
+                                "index": 2,
+                                "name": "Choose file to delete",
+                                "scriptId": "Cortex Core - IR|||core-run-script-delete-file",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "1887c790-b04f-11ed-95eb-6fbf73c92c07",
+                                "index": 3,
+                                "name": "Choose file to quarantine",
+                                "scriptId": "Cortex Core - IR|||core-quarantine-files",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "error",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "84fa8930-b04f-11ed-95eb-6fbf73c92c07",
+                                "index": 4,
+                                "listId": "3podiwrjhh-a2fc5df0-b04a-11ed-95eb-6fbf73c92c07",
+                                "name": "Choose process to kill",
+                                "scriptId": "Cortex Core - IR|||core-run-script-kill-process",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "1a75b4e0-b04f-11ed-95eb-6fbf73c92c07",
+                                "index": 5,
+                                "name": "Choose file to restore",
+                                "scriptId": "Cortex Core - IR|||core-restore-file",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "File and Process Remediation",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "3podiwrjhh-a4c6b620-b77b-11ed-a817-f75b1612b8eb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 26,
+                                "id": "b252baa0-b77b-11ed-a817-f75b1612b8eb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Account Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    }
+                ],
+                "showEmptyFields": true,
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "ne8rnxp0ye",
+                "name": "Investigation Tools",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "3podiwrjhh-caseinfoid-3429b120-9a42-11ed-aff5-5d4496197108",
+                        "items": [
+                            {
+                                "args": {
+                                    "input": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "output_key": {
+                                        "simple": "fileOutputExtension"
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "d2b5eb10-9a42-11ed-aff5-5d4496197108",
+                                "index": 0,
+                                "listId": "caseinfoid-3429b120-9a42-11ed-aff5-5d4496197108",
+                                "name": "Set the output extension",
+                                "scriptId": "ChangeContext",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "3d025e80-9b39-11ed-860b-4d504a46d33a",
+                                "index": 1,
+                                "name": "XML to JSON",
+                                "scriptId": "ConvertXmlToJson",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "format": {
+                                        "complex": {
+                                            "accessor": "",
+                                            "filters": [],
+                                            "root": "fileOutputExtension",
+                                            "transformers": []
+                                        },
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "7a924a00-9a42-11ed-aff5-5d4496197108",
+                                "index": 0,
+                                "listId": "3podiwrjhh-caseinfoid-3429b120-9a42-11ed-aff5-5d4496197108",
+                                "name": "Convert the file",
+                                "scriptId": "ConvertFile",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "508f4080-9b39-11ed-860b-4d504a46d33a",
+                                "index": 2,
+                                "listId": "3podiwrjhh-caseinfoid-3429b120-9a42-11ed-aff5-5d4496197108",
+                                "name": "JSON to CSV",
+                                "scriptId": "JSONtoCSV",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Data Formats",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "3podiwrjhh-caseinfoid-4de9e060-9a44-11ed-aff5-5d4496197108",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "35b03f30-9a44-11ed-aff5-5d4496197108",
+                                "index": 0,
+                                "listId": "3podiwrjhh-caseinfoid-4de9e060-9a44-11ed-aff5-5d4496197108",
+                                "name": "Base64 decode",
+                                "scriptId": "Base64Decode",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "5cac9020-9a44-11ed-aff5-5d4496197108",
+                                "index": 1,
+                                "listId": "3podiwrjhh-caseinfoid-4de9e060-9a44-11ed-aff5-5d4496197108",
+                                "name": "Base64 encode",
+                                "scriptId": "Base64EncodeV2",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Decoding and Encoding",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "3podiwrjhh-63d041e0-9b38-11ed-860b-4d504a46d33a",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "ca3777a0-9b38-11ed-860b-4d504a46d33a",
+                                "index": 0,
+                                "listId": "3podiwrjhh-63d041e0-9b38-11ed-860b-4d504a46d33a",
+                                "name": "Calculate entropy",
+                                "scriptId": "CalculateEntropy",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "File Analysis",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "3podiwrjhh-dc4da2b0-9b39-11ed-860b-4d504a46d33a",
+                        "items": [
+                            {
+                                "args": {
+                                    "server": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "5cbebc90-a16b-11ed-9ca2-fbb17e2c305f",
+                                "index": 0,
+                                "listId": "3podiwrjhh-dc4da2b0-9b39-11ed-860b-4d504a46d33a",
+                                "name": "Dig / nslookup",
+                                "scriptId": "Dig",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "f2142100-9b39-11ed-860b-4d504a46d33a",
+                                "index": 1,
+                                "listId": "3podiwrjhh-dc4da2b0-9b39-11ed-860b-4d504a46d33a",
+                                "name": "Reverse IP lookup to host",
+                                "scriptId": "IPToHost",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "60256ce0-9b39-11ed-860b-4d504a46d33a",
+                                "index": 0,
+                                "listId": "3podiwrjhh-dc4da2b0-9b39-11ed-860b-4d504a46d33a",
+                                "name": "Check if IP address is in CIDR",
+                                "scriptId": "IsInCidrRanges",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "1f664d40-9b3a-11ed-860b-4d504a46d33a",
+                                "index": 2,
+                                "listId": "3podiwrjhh-dc4da2b0-9b39-11ed-860b-4d504a46d33a",
+                                "name": "Expand shortened URL",
+                                "scriptId": "ResolveShortenedURL",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Network Utils",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "description": "When you click a button in this tab - the execution results will be displayed here.\nTo clear this table click “clear results”.",
+                        "h": 8,
+                        "i": "3podiwrjhh-796c1f40-a6d4-11ed-8f16-61aeed0987f5",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Results",
+                        "query": "displayUtilitiesResults",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "Clear the results table",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "3podiwrjhh-2fabcc30-b1d2-11ed-9b75-f5e3e7c3244c",
+                        "items": [
+                            {
+                                "args": {
+                                    "all": {
+                                        "simple": "no"
+                                    },
+                                    "key": {
+                                        "complex": {
+                                            "accessor": "id",
+                                            "filters": [],
+                                            "root": "alert",
+                                            "transformers": [
+                                                {
+                                                    "args": {
+                                                        "limit": {
+                                                            "isContext": false
+                                                        },
+                                                        "replaceWith": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": "Base64,digresults,EntropyResult,ResolveShortenedURL,Endpoint"
+                                                            }
+                                                        },
+                                                        "toReplace": {
+                                                            "isContext": true,
+                                                            "value": {
+                                                                "simple": "alert.id"
+                                                            }
+                                                        }
+                                                    },
+                                                    "operator": "replace"
+                                                },
+                                                {
+                                                    "args": {
+                                                        "delimiter": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": ","
+                                                            }
+                                                        }
+                                                    },
+                                                    "operator": "split"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "buttonClass": "CLEAR",
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 44,
+                                "hexColor": null,
+                                "id": "40ca1f30-b1d2-11ed-9b75-f5e3e7c3244c",
+                                "index": 0,
+                                "listId": "3podiwrjhh-2fabcc30-b1d2-11ed-9b75-f5e3e7c3244c",
+                                "name": "Clear Results",
+                                "scriptId": "DeleteContext",
+                                "sectionItemType": "button",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Clear Results",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Default XDR Alert",
+    "name": "Default XDR Alert",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_phonenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tags",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "description": ""
+}

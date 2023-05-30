@@ -560,8 +560,8 @@ def tc_get_events(client: Client, args: dict) -> None:  # pragma: no cover
 
 def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no cover
     tags = args.get('tag')
-    description = args.get('description', '')
     status = args.get('status', 'Needs Review')
+    owner_name = args.get('owner_name', '')
     group_type = 'Event'
     event_date = args.get('eventDate', '')
     name = args.get('name')
@@ -575,10 +575,10 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
         "name": name,
         "eventDate": event_date,
         "status": status,
+        "ownerName": owner_name if owner_name else None,
         "tags": {
             "data": tags_list
-        },
-        "body": description
+        }
     })
     url = '/api/v3/groups'
     response = client.make_request(Method.POST, url, payload=payload)  # type: ignore

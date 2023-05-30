@@ -495,3 +495,25 @@ Update a user
 #### Context Output
 
 There is no context output for this command.
+### glpi-get-userid
+***
+Get GLPI User ID by Username
+
+
+#### Base Command
+
+`glpi-get-userid`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Username. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GLPI.User | Unknown | GLPI User details | 
+| GLPI.User.id | unknown | User id | 
+| GLPI.User.username | unknown | Username | 

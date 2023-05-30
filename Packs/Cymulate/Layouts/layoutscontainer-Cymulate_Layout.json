@@ -776,5 +776,6 @@
   ]
  },
  "version": -1,
- "description": ""
+ "description": "",
+ "marketplaces": ["xsoar"]
 }

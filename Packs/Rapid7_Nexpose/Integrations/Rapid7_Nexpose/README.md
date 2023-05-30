@@ -1,66 +1,42 @@
-Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
-This integration was integrated and tested with version 3 of Rapid7 Nexpose
-## Configure Rapid7 Nexpose on Cortex XSOAR
-To use Nexpose on XSOAR, you need user credentials for Nexpose. You
-can also use a two-factor authentication token.
+Vulnerability management solution to help reduce threat exposure.
+This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpose.
+
+## Configure Rapid7 InsightVM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rapid7 Nexpose.
+2. Search for Rapid7 InsightVM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://192.168.0.1:8080) | True |
+    | Server URL (e.g., https://192.0.2.0:8080) | True |
     | Username | True |
+    | Password | True |
+    | 2FA Token | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
-    | The 2FA token | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-When using the `sort` parameter, you need to specify the fields to sort
-as they are in the API, for example, `riskScore`. All the available
-fields for any type of response can be found in the [API Documentation.](https://help.rapid7.com/insightvm/en-us/api/index.html#tag/Asset)
-
-1.  [Get a single asset: nexpose-get-asset](#nexpose-get-asset)
-2.  [Get all assets: nexpose-get-assets](#nexpose-get-assets)
-3.  [Get all assets that match the filters: nexpose-search-assets](#nexpose-search-assets)
-4.  [Get a specified scan: nexpose-get-scan](#nexpose-get-scan)
-5.  [Get an asset's details: nexpose-get-asset-vulnerability](#nexpose-get-asset-vulnerability)
-6.  [Create a site: nexpose-create-site](#nexpose-create-site)
-7.  [Delete a site: nexpose-delete-site](#nexpose-delete-site)
-8.  [Retrieve sites: nexpose-get-sites](#expose-get-sites)
-9.  [Get report templates: nexpose-get-report-templates](#nexpose-get-report-templates)
-10. [Create an assets report: nexpose-create-assets-report](#nexpose-create-assets-report)
-11. [Create a sites report: nexpose-create-sites-report](#nexpose-create-sites-report)
-12. [Create a scan report: nexpose-create-scan-report](#nexpose-create-scan-report)
-13. [Start a site scan: nexpose-start-site-scan](#nexpose-start-site-scan)
-14. [Start an assets scan: nexpose-start-assets-scan](#nexpose-start-assets-scan)
-15. [Stop a scan: nexpose-stop-scan](#nexpose-stop-scan)
-16. [Pause a scan: nexpose-pause-scan](#nexpose-pause-scan)
-17. [Resume a scan: nexpose-resume-scan](#nexpose-resume-scan)
-18. [Get a list of scans: nexpose-get-scans](#nexpose-get-scans)
-19. [Get the status of a report generation process: nexpose-get-report-status](#nexpose-get-report-status)
-20. [Get the content of a generated report: nexpose-download-report](#nexpose-download-report)
-
 ### nexpose-get-asset
+
 ***
 Returns the specified asset.
-
 
 #### Base Command
 
 `nexpose-get-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | integer &lt;int64&gt; The identifier of the asset. | Required | 
-
+| id | Asset ID. | Required | 
 
 #### Context Output
 
@@ -70,13 +46,13 @@ Returns the specified asset.
 | Nexpose.Asset.AssetId | number | Id of the asset. | 
 | Nexpose.Asset.Hardware | string | The primary Media Access Control \(MAC\) address of the asset. The format is six groups of two hexadecimal digits separated by colons. | 
 | Nexpose.Asset.Aliases | unknown | All host names or aliases discovered on the asset. | 
-| Nexpose.Asset.HostType | string | The type of asset, Valid values are unknown, guest, hypervisor, physical, mobile | 
+| Nexpose.Asset.HostType | string | The type of asset. Valid values are unknown, guest, hypervisor, physical, mobile | 
 | Nexpose.Asset.Site | string | Asset site name. | 
 | Nexpose.Asset.OperatingSystem | string | Operating system of the asset. | 
 | Nexpose.Asset.Vulnerabilities | number | The total number of vulnerabilities on the asset. | 
 | Nexpose.Asset.CPE | string | The Common Platform Enumeration \(CPE\) of the operating system. | 
 | Nexpose.Asset.LastScanDate | date | Last scan date of the asset. | 
-| Nexpose.Asset.LastScanId | number | Id of the asset's last scan. | 
+| Nexpose.Asset.LastScanId | number | ID of the asset's last scan. | 
 | Nexpose.Asset.RiskScore | number | The risk score \(with criticality adjustments\) of the asset. | 
 | Nexpose.Asset.Software.Software | string | The description of the software. | 
 | Nexpose.Asset.Software.Version | string | The version of the software. | 
@@ -100,192 +76,99 @@ Returns the specified asset.
 | Endpoint.IP | string | Endpoint IP address. | 
 | Endpoint.HostName | string | Endpoint host name. | 
 | Endpoint.OS | string | Endpoint operating system. | 
-| CVE.ID | string | Common Vulnerabilities and Exposures ids | 
+| CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
+### nexpose-get-asset-tags
 
-#### Command Example
-```!nexpose-get-asset id=2```
+***
+Returns the specified tags for an asset.
+
+#### Base Command
+
+`nexpose-get-asset-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Asset ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssetTag.Type | string | Type of asset tag. | 
+| Nexpose.AssetTag.Name | string | The value of the tag. | 
+| Nexpose.AssetTag.CreatedTime | string | Timestamp of when the tag was created. | 
+| Nexpose.AssetTag.RiskModifier | string | The risk modifier value associated with criticality tag type. | 
+
+#### Command example
+
+```!nexpose-get-asset-tags asset_id=1```
 
 #### Context Example
+
 ```json
 {
-    "CVE": [
-        {
-            "ID": "CVE-1999-0524"
-        },
-        {
-            "ID": "CVE-2015-4000"
-        },
-        {
-            "ID": "CVE-2016-2183"
-        }
-    ],
-    "Endpoint": {
-        "HostName": null,
-        "IP": [
-            "192.168.1.1"
-        ],
-        "MAC": [
-            "00:0C:29:9B:D2:3A"
-        ],
-        "OS": "Linux 3.10"
-    },
-    "Nexpose": {
-        "Asset": {
-            "Addresses": [
-                "192.168.1.1"
-            ],
-            "Aliases": null,
-            "AssetId": 2,
-            "CPE": null,
-            "Hardware": [
-                "00:0C:29:9B:D2:3A"
-            ],
-            "HostType": null,
-            "LastScanDate": "2020-11-26T17:13:44.124Z",
-            "LastScanId": 761,
-            "OperatingSystem": "Linux 3.10",
-            "RiskScore": 1605.670654296875,
-            "Service": [
+    "Nexpose":{
+        "AssetTag":[
                 {
-                    "Name": "SSH",
-                    "Port": 22,
-                    "Product": "OpenSSH",
-                    "Protocol": "tcp"
-                }
-            ],
-            "Site": "Test",
-            "Software": null,
-            "User": null,
-            "Vulnerabilities": 7,
-            "Vulnerability": [
-                {
-                    "CVSS": 0,
-                    "Exploit": 0,
-                    "Id": "generic-icmp-timestamp",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2019-06-11",
-                    "PublishedOn": "1997-08-01",
-                    "Risk": 0,
-                    "Severity": "Moderate",
-                    "Title": "ICMP timestamp response"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "Low",
+                    "RiskModifier": "0.75",
+                    "Type": "criticality"
                 },
                 {
-                    "CVSS": 0,
-                    "Exploit": 0,
-                    "Id": "generic-tcp-timestamp",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2018-03-21",
-                    "PublishedOn": "1997-08-01",
-                    "Risk": 0,
-                    "Severity": "Moderate",
-                    "Title": "TCP timestamp response"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "FAKELOCATION",
+                    "RiskModifier": null,
+                    "Type": "location"
                 },
                 {
-                    "CVSS": 0,
-                    "Exploit": 0,
-                    "Id": "ssh-3des-ciphers",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-03-31",
-                    "PublishedOn": "2009-02-01",
-                    "Risk": 0,
-                    "Severity": "Moderate",
-                    "Title": "SSH Server Supports 3DES Cipher Suite"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "FAKEOWNER",
+                    "RiskModifier": null,
+                    "Type": "owner"
                 },
                 {
-                    "CVSS": 2.6,
-                    "Exploit": 0,
-                    "Id": "ssh-cbc-ciphers",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-03-31",
-                    "PublishedOn": "2013-02-08",
-                    "Risk": 490.23,
-                    "Severity": "Moderate",
-                    "Title": "SSH CBC vulnerability"
-                },
-                {
-                    "CVSS": 4.3,
-                    "Exploit": 0,
-                    "Id": "ssh-cve-2015-4000",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-07-13",
-                    "PublishedOn": "2015-05-20",
-                    "Risk": 192.46,
-                    "Severity": "Severe",
-                    "Title": "SSH Server Supports diffie-hellman-group1-sha1"
-                },
-                {
-                    "CVSS": 5,
-                    "Exploit": 1,
-                    "Id": "ssh-cve-2016-2183-sweet32",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-04-01",
-                    "PublishedOn": "2016-08-24",
-                    "Risk": 531.96,
-                    "Severity": "Severe",
-                    "Title": "SSH Birthday attacks on 64-bit block ciphers (SWEET32)"
-                },
-                {
-                    "CVSS": 4.3,
-                    "Exploit": 0,
-                    "Id": "ssh-weak-kex-algorithms",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-04-07",
-                    "PublishedOn": "2017-07-13",
-                    "Risk": 391.02,
-                    "Severity": "Severe",
-                    "Title": "SSH Server Supports Weak Key Exchange Algorithms"
+                    "CreatedTime": "2023-00-00T00:00:00.000Z",
+                    "Name": "AWS",
+                    "RiskModifier": null,
+                    "Type": "custom"
                 }
             ]
-        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### Nexpose asset 2
->|AssetId|Addresses|Hardware|Site|OperatingSystem|LastScanDate|LastScanId|RiskScore|
->|---|---|---|---|---|---|---|---|
->| 2 | 192.168.1.1 | 00:0C:29:9B:D2:3A | Test | Linux 3.10 | 2020-11-26T17:13:44.124Z | 761 | 1605.670654296875 |
->### Vulnerabilities
->|Id|Title|Malware|Exploit|CVSS|Risk|PublishedOn|ModifiedOn|Severity|Instances|
->|---|---|---|---|---|---|---|---|---|---|
->| generic-icmp-timestamp | ICMP timestamp response | 0 | 0 | 0.0 | 0.0 | 1997-08-01 | 2019-06-11 | Moderate | 1 |
->| generic-tcp-timestamp | TCP timestamp response | 0 | 0 | 0.0 | 0.0 | 1997-08-01 | 2018-03-21 | Moderate | 1 |
->| ssh-3des-ciphers | SSH Server Supports 3DES Cipher Suite | 0 | 0 | 0.0 | 0.0 | 2009-02-01 | 2020-03-31 | Moderate | 1 |
->| ssh-cbc-ciphers | SSH CBC vulnerability | 0 | 0 | 2.6 | 490.23 | 2013-02-08 | 2020-03-31 | Moderate | 1 |
->| ssh-cve-2015-4000 | SSH Server Supports diffie-hellman-group1-sha1 | 0 | 0 | 4.3 | 192.46 | 2015-05-20 | 2020-07-13 | Severe | 1 |
->| ssh-cve-2016-2183-sweet32 | SSH Birthday attacks on 64-bit block ciphers (SWEET32) | 0 | 1 | 5.0 | 531.96 | 2016-08-24 | 2020-04-01 | Severe | 1 |
->| ssh-weak-kex-algorithms | SSH Server Supports Weak Key Exchange Algorithms | 0 | 0 | 4.3 | 391.02 | 2017-07-13 | 2020-04-07 | Severe | 1 |
->### Services
->|Name|Port|Product|Protocol|
->|---|---|---|---|
->| SSH | 22 | OpenSSH | tcp |
-
+> ### Nexpose Asset Tags for Asset 1
+>
+> |Type|Name|Risk Modifier|Created Time|
+> |---|---|---|---|
+> | criticality | Low | 0.75 | 2023-00-00T00:00:00.000Z |
+> | location | FAKELOCATION |  | 2023-00-00T00:00:00.000Z |
+> | owner | FAKEOWNER |  | 2023-00-00T00:00:00.000Z |
+> | custom | AWS |  | 2023-00-00T00:00:00.000Z |
 
 ### nexpose-get-assets
+
 ***
 Returns all assets for which you have access.
-
 
 #### Base Command
 
 `nexpose-get-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sort | Multiple criteria of &lt;string&gt; The criteria to sort the records by, in the format: property[,ASC\|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
-| limit | integer &lt;int32&gt; The number of records retrieve. | Optional | 
-
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
 
 #### Context Output
 
@@ -307,74 +190,75 @@ Returns all assets for which you have access.
 | Endpoint.HostName | string | Endpoint host name. | 
 | Endpoint.OS | string | Endpoint operating system. | 
 
-
-#### Command Example
-```!nexpose-get-assets```
-
+#### Command example
+```!nexpose-get-assets limit=3```
 #### Context Example
 ```json
 {
     "Endpoint": [
         {
-            "HostName": null,
-            "IP": "192.168.1.1",
-            "OS": "Linux 3.10"
+            "Hostname": "pool-96-252-18-158.bstnma.fios.verizon.net",
+            "ID": 9,
+            "IPAddress": "192.0.2.1",
+            "Vendor": "Rapid7 Nexpose"
         },
         {
-            "HostName": "angular.testsparker.com",
-            "IP": "20.20.20.20",
-            "OS": "Ubuntu Linux"
+            "Hostname": "angular.testsparker.com",
+            "ID": 11,
+            "IPAddress": "192.0.2.2",
+            "OS": "Ubuntu Linux",
+            "Vendor": "Rapid7 Nexpose"
         },
         {
-            "HostName": "rest.testsparker.com",
-            "IP": "192.168.1.1",
-            "OS": "Debian Linux"
+            "ID": 12,
+            "IPAddress": "192.0.2.3",
+            "OS": "Microsoft Windows",
+            "Vendor": "Rapid7 Nexpose"
         }
-
     ],
     "Nexpose": {
         "Asset": [
             {
-                "Address": "192.168.1.1",
+                "Address": "192.0.2.1",
                 "Assessed": true,
-                "AssetId": 2,
-                "Exploits": 1,
-                "LastScanDate": "2020-11-26T17:13:44.124Z",
-                "LastScanId": 761,
-                "Malware": 0,
-                "Name": null,
-                "OperatingSystem": "Linux 3.10",
-                "RiskScore": 1605.670654296875,
-                "Site": "Test",
-                "Vulnerabilities": 7
-            },
-            {
-                "Address": "10.0.0.2",
-                "Assessed": true,
-                "AssetId": 3,
+                "AssetId": 9,
                 "Exploits": 0,
-                "LastScanDate": "2020-07-27T12:40:34.550Z",
-                "LastScanId": 402,
+                "LastScanDate": "2020-10-01T22:37:33.710Z",
+                "LastScanId": 650,
                 "Malware": 0,
-                "Name": null,
+                "Name": "pool-96-252-18-158.bstnma.fios.verizon.net",
                 "OperatingSystem": null,
                 "RiskScore": 0,
-                "Site": "Test",
+                "Site": "PANW",
                 "Vulnerabilities": 0
             },
             {
-                "Address": "8.8.8.8",
-                "Assessed": false,
-                "AssetId": 4,
-                "Exploits": 0,
-                "LastScanDate": "2020-07-29T11:11:57.552Z",
+                "Address": "192.0.2.2",
+                "Assessed": true,
+                "AssetId": 11,
+                "Exploits": 2,
+                "LastScanDate": "2022-11-02T14:54:19.055Z",
+                "LastScanId": "-",
+                "Malware": 0,
+                "Name": "angular.testsparker.com",
+                "OperatingSystem": "Ubuntu Linux",
+                "RiskScore": 7718.4091796875,
+                "Site": "PANW",
+                "Vulnerabilities": 26
+            },
+            {
+                "Address": "192.0.2.3",
+                "Assessed": true,
+                "AssetId": 12,
+                "Exploits": 4,
+                "LastScanDate": "2049-03-01T04:31:56Z",
                 "LastScanId": "-",
                 "Malware": 0,
                 "Name": null,
-                "OperatingSystem": null,
-                "RiskScore": 0,
-                "Site": "",
-                "Vulnerabilities": 0
+                "OperatingSystem": "Microsoft Windows",
+                "RiskScore": 18819.919921875,
+                "Site": "PANW",
+                "Vulnerabilities": 45
             }
         ]
     }
@@ -383,36 +267,37 @@ Returns all assets for which you have access.
 
 #### Human Readable Output
 
->### Nexpose assets
->|AssetId|Address|Name|Site|Exploits|Malware|OperatingSystem|Vulnerabilities|RiskScore|Assessed|LastScanDate|LastScanId|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2 | 192.168.1.1 |  | Test | 1 | 0 | Linux 3.10 | 7 | 1605.670654296875 | true | 2020-11-26T17:13:44.124Z | 761 |
->| 3 | 10.0.0.2 |  | Test | 0 | 0 |  | 0 | 0.0 | true | 2020-07-27T12:40:34.550Z | 402 |
->| 4 | 8.8.8.8 |  |  | 0 | 0 |  | 0 | 0.0 | false | 2020-07-29T11:11:57.552Z | - |
+>### Nexpose Asset 12
+>|AssetId|Address|Site|Exploits|Malware|OperatingSystem|Vulnerabilities|RiskScore|Assessed|LastScanDate|LastScanId|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 12 | 192.0.2.3 | PANW | 4 | 0 | Microsoft Windows | 45 | 18819.919921875 | true | 2049-03-01T04:31:56Z | - |
 
 
 ### nexpose-search-assets
-***
-Returns all assets for which you have access that match the given search criteria.
 
+***
+Search and return all assets matching specific filters. Returns only assets the user has access to.
 
 #### Base Command
 
 `nexpose-search-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Multiple criteria of &lt;string&gt; Filter to match assets, according to the Search Criteria API standard. multiple filters can be provided using ';' separator. For example: 'ip-address in range 1.2.3.4,1.2.3.8;host-name is myhost'. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses. | Optional | 
-| limit | integer &lt;int32&gt; The number of records retrieve. | Optional | 
-| sort | Multiple criteria of &lt;string&gt; The criteria to sort the records by, in the format: property[,ASC\|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
-| ipAddressIs | &lt;string&gt; Search by a specific IP address. | Optional | 
-| hostNameIs | &lt;string&gt; Search by a specific host name. | Optional | 
-| riskScoreHigherThan | &lt;float&gt; Get all assets whose risk score is higher. | Optional | 
-| vulnerabilityTitleContains | &lt;string&gt; Search by vulnerability title. | Optional | 
-| siteIdIn | Multiple criteria of integer&lt;int32&gt; Search by site ids. | Optional | 
-| match | &lt;string&gt; Operator to determine how to match filters. all requires that all filters match for an asset to be included. any requires only one filter to match for an asset to be included. Possible values are: all, any. Default is all. | Optional | 
-
+| query | Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a ";" separator. For example: "ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost". For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses. | Optional | 
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";" separator. For example: "riskScore,DESC;hostName,ASC". | Optional | 
+| ipAddressIs | A specific IP address to search. | Optional | 
+| hostNameIs | A specific host name to search. | Optional | 
+| riskScoreHigherThan | A minimum risk score to use as a filter. | Optional | 
+| vulnerabilityTitleContains | A string to search for in vulnerabilities titles. | Optional | 
+| siteIdIn | Site IDs to filter for. Can be a comma-separated list. | Optional | 
+| siteNameIn | Site names to filter for. Can be a comma-separated list. | Optional | 
+| match | Operator to determine how to match filters. "all" requires that all filters match for an asset to be included. "any" requires only one filter to match for an asset to be included. Possible values are: all, any. Default is all. | Optional | 
 
 #### Context Output
 
@@ -434,59 +319,104 @@ Returns all assets for which you have access that match the given search criteri
 | Endpoint.HostName | string | Endpoint host name. | 
 | Endpoint.OS | string | Endpoint operating system. | 
 
-
-#### Command Example
-```!nexpose-search-assets ipAddressIs=192.168.1.1```
-
+#### Command example
+```!nexpose-search-assets match=all riskScoreHigherThan=1000 limit=3```
 #### Context Example
 ```json
 {
-    "Endpoint": {
-        "HostName": null,
-        "IP": "192.168.1.1",
-        "OS": "Linux 3.10"
-    },
-    "Nexpose": {
-        "Asset": {
-            "Address": "192.168.1.1",
-            "Assessed": true,
-            "AssetId": 2,
-            "Exploits": 1,
-            "LastScanDate": "2020-11-26T17:13:44.124Z",
-            "LastScanId": 761,
-            "Malware": 0,
-            "Name": null,
-            "OperatingSystem": "Linux 3.10",
-            "RiskScore": 1605.670654296875,
-            "Site": "XSOAR Site",
-            "Vulnerabilities": 7
+    "Endpoint": [
+        {
+            "Hostname": "angular.testsparker.com",
+            "ID": 11,
+            "IPAddress": "192.0.2.2",
+            "OS": "Ubuntu Linux",
+            "Vendor": "Rapid7 Nexpose"
+        },
+        {
+            "ID": 12,
+            "IPAddress": "192.0.2.3",
+            "OS": "Microsoft Windows",
+            "Vendor": "Rapid7 Nexpose"
+        },
+        {
+            "Hostname": "57.27.185.35.bc.googleusercontent.com",
+            "ID": 13,
+            "IPAddress": "192.0.2.4",
+            "OS": "Linux 2.6.18",
+            "Vendor": "Rapid7 Nexpose"
         }
+    ],
+    "Nexpose": {
+        "Asset": [
+            {
+                "Address": "192.0.2.2",
+                "Assessed": true,
+                "AssetId": 11,
+                "Exploits": 2,
+                "LastScanDate": "2022-11-02T14:54:19.055Z",
+                "LastScanId": "-",
+                "Malware": 0,
+                "Name": "angular.testsparker.com",
+                "OperatingSystem": "Ubuntu Linux",
+                "RiskScore": 7718.4091796875,
+                "Site": "PANW",
+                "Vulnerabilities": 26
+            },
+            {
+                "Address": "192.0.2.3",
+                "Assessed": true,
+                "AssetId": 12,
+                "Exploits": 4,
+                "LastScanDate": "2049-03-01T04:31:56Z",
+                "LastScanId": "-",
+                "Malware": 0,
+                "Name": null,
+                "OperatingSystem": "Microsoft Windows",
+                "RiskScore": 18819.919921875,
+                "Site": "PANW",
+                "Vulnerabilities": 45
+            },
+            {
+                "Address": "192.0.2.4",
+                "Assessed": true,
+                "AssetId": 13,
+                "Exploits": 0,
+                "LastScanDate": "2022-11-15T11:53:25.281Z",
+                "LastScanId": "-",
+                "Malware": 0,
+                "Name": "57.27.185.35.bc.googleusercontent.com",
+                "OperatingSystem": "Linux 2.6.18",
+                "RiskScore": 1323.0916748046875,
+                "Site": "PANW",
+                "Vulnerabilities": 2
+            }
+        ]
     }
 }
 ```
 
 #### Human Readable Output
 
->### Nexpose assets
->|AssetId|Address|Site|Exploits|Malware|OperatingSystem|RiskScore|Assessed|LastScanDate|LastScanId|
->|---|---|---|---|---|---|---|---|---|---|
->| 2 | 192.168.1.1 | XSOAR Site | 1 | 0 | Linux 3.10 | 1605.670654296875 | true | 2020-11-26T17:13:44.124Z | 761 |
+>### Nexpose Asset 13
+>|AssetId|Address|Name|Site|Exploits|Malware|OperatingSystem|RiskScore|Assessed|LastScanDate|LastScanId|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 13 | 192.0.2.4 | 57.27.185.35.bc.googleusercontent.com | PANW | 0 | 0 | Linux 2.6.18 | 1323.0916748046875 | true | 2022-11-15T11:53:25.281Z | - |
 
 
 ### nexpose-get-scan
-***
-Returns the specified scan.
 
+***
+Get a specific scan.
 
 #### Base Command
 
 `nexpose-get-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Multiple criteria of integer &lt;int64&gt; Identifiers of scans. | Required | 
-
+| id | ID of a specific scan to retrieve. Can be a comma-separated list. | Required | 
 
 #### Context Output
 
@@ -494,7 +424,7 @@ Returns the specified scan.
 | --- | --- | --- |
 | Nexpose.Scan.Id | number | The identifier of the scan. | 
 | Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | string | The name of the user that started the scan. | 
+| Nexpose.Scan.StartedBy | string | The name of the user who started the scan. | 
 | Nexpose.Scan.Assets | number | The number of assets found in the scan | 
 | Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
 | Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
@@ -504,55 +434,60 @@ Returns the specified scan.
 | Nexpose.Scan.Vulnerabilities.Severe | number | The number of severe vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Total | number | The total number of vulnerabilities. | 
 
-
-#### Command Example
-``` !nexpose-get-scan id=15 ```
-
+#### Command example
+```!nexpose-get-scan id=1```
 #### Context Example
 ```json
 {
     "Nexpose": {
         "Scan": {
-                "Assets": 32,
-                "Completed": "2018-04-29T11:24:58.721Z",
-                "Id": 15,
-                "Message": null,
-                "ScanName": "Sun 29 Apr 2018 11:17 AM",
-                "ScanType": "Manual",
-                "StartedBy": null,
-                "Status": "finished",
-                "TotalTime": "9.76666666667 minutes",
-                "Vulnerabilities": {
-                    "Critical": 0,
-                    "Moderate": 48,
-                    "Severe": 61,
-                    "Total": 109
-                }
+            "Assets": 0,
+            "Completed": "2019-12-03T20:48:01.368Z",
+            "Id": 1,
+            "Message": null,
+            "ScanName": "Tue 03 Dec 2019 10:47 PM",
+            "ScanType": "Manual",
+            "StartedBy": null,
+            "Status": "finished",
+            "TotalTime": "51.316 seconds",
+            "Vulnerabilities": {
+                "Critical": 0,
+                "Moderate": 0,
+                "Severe": 0,
+                "Total": 0
             }
         }
     }
+}
 ```
 
 #### Human Readable Output
 
-[![image](https://user-images.githubusercontent.com/35098543/44337970-24cfbd80-a485-11e8-97d5-5a0cd3d87260.png)](https://user-images.githubusercontent.com/35098543/44337970-24cfbd80-a485-11e8-97d5-5a0cd3d87260.png)
+>### Nexpose Scan ID 1
+>|Id|ScanType|ScanName|Assets|TotalTime|Completed|Status|
+>|---|---|---|---|---|---|---|
+>| 1 | Manual | Tue 03 Dec 2019 10:47 PM | 0 | 51.316 seconds | 2019-12-03T20:48:01.368Z | finished |
+>### Vulnerabilities
+>|Critical|Severe|Moderate|Total|
+>|---|---|---|---|
+>| 0 | 0 | 0 | 0 |
 
 
 ### nexpose-get-asset-vulnerability
-***
-Returns the details and possible remediations for an asset's given vulnerability.
 
+***
+Returns details and possible remediations for an asset's vulnerability.
 
 #### Base Command
 
 `nexpose-get-asset-vulnerability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | integer &lt;int64&gt; The identifier of the asset. | Required | 
-| vulnerabilityId | &lt;string&gt; The identifier of the vulnerability. | Required | 
-
+| id | ID of an asset to search for the vulnerability. | Required | 
+| vulnerabilityId | ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536. | Required | 
 
 #### Context Output
 
@@ -568,7 +503,7 @@ Returns the details and possible remediations for an asset's given vulnerability
 | Nexpose.Asset.Vulnerability.Published | date | The date the vulnerability was first published or announced. The format is an ISO 8601 date, YYYY-MM-DD. | 
 | Nexpose.Asset.Vulnerability.Added | date | The date the vulnerability coverage was added. The format is an ISO 8601 date, YYYY-MM-DD. | 
 | Nexpose.Asset.Vulnerability.Modified | date | The last date the vulnerability was modified. The format is an ISO 8601 date, YYYY-MM-DD. | 
-| Nexpose.Asset.Vulnerability.CVSSScore | number | The CVSS score, which ranges from 0-10. | 
+| Nexpose.Asset.Vulnerability.CVSSScore | number | The CVSS score \(ranges from 0-10\). | 
 | Nexpose.Asset.Vulnerability.CVSSV3Score | number | The CVSS3 score, which ranges from 0-10. | 
 | Nexpose.Asset.Vulnerability.Categories | unknown | All vulnerability categories assigned to this vulnerability. | 
 | Nexpose.Asset.Vulnerability.CVES | unknown | All CVEs assigned to this vulnerability. | 
@@ -582,166 +517,350 @@ Returns the details and possible remediations for an asset's given vulnerability
 | Nexpose.Asset.Vulnerability.Solution.Steps | string | The steps required to remediate the vulnerability. | 
 | Nexpose.Asset.Vulnerability.Solution.Estimate | string | The estimated duration to apply the solution, in minutes. | 
 | Nexpose.Asset.Vulnerability.Solution.AdditionalInformation | string | Additional information or resources that can assist in applying the remediation | 
-| CVE.ID | string | Common Vulnerabilities and Exposures ids | 
+| CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
-
-#### Command Example
-``` !nexpose-get-asset-vulnerability id=37 vulnerabilityId=apache-httpd-cve-2017-3169 ```
-
+#### Command example
+```!nexpose-get-asset-vulnerability id=1 vulnerabilityId=apache-httpd-cve-2017-15710```
 #### Context Example
 ```json
 {
-        "CVE": {
-            "ID": "CVE-2017-3169"
+    "CVE": {
+        "CVSS": {
+            "Score": 7.5,
+            "Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "Version": "3"
         },
-        "Nexpose": {
-            "Asset": {
-                "AssetId": "37",
-                "Vulnerability": [
-                    {
-                        "Added": "2017-06-20",
-                        "CVES": [
-                            "CVE-2017-3169"
-                        ],
-                        "CVSS": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-                        "CVSSScore": 7.5,
-                        "CVSSV3": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-                        "CVSSV3Score": 9.8,
-                        "Categories": [
-                            "Apache",
-                            "Apache HTTP Server",
-                            "Web"
-                        ],
-                        "Check": [
-                            {
-                                "Port": 8080,
-                                "Proof": "Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.6Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.6",
-                                "Protocol": "tcp",
-                                "Since": "2018-04-29T11:36:54.597Z",
-                                "Status": "vulnerable-version"
-                            },
-                            {
-                                "Port": 443,
-                                "Proof": "Running HTTPS serviceProduct HTTPD exists -- Apache HTTPD 2.4.6Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.6",
-                                "Protocol": "tcp",
-                                "Since": "2018-04-29T11:36:54.597Z",
-                                "Status": "vulnerable-version"
-                            }
-                        ],
-                        "Id": "2017-3169",
-                        "Modified": "2018-01-08",
-                        "Published": "2017-06-20",
-                        "RiskScore": 574.63,
-                        "Severity": "Critical",
-                        "Solution": [
-                            {
-                                "AdditionalInformation": "The latest version of Apache HTTPD is 2.4.34.\n\nMany platforms and distributions provide pre-built binary packages for Apache HTTP server. These pre-built packages are usually customized and optimized for a particular distribution, therefore we recommend that you use the packages if they are available for your operating system.",
-                                "Estimate": "120.0 minutes",
-                                "Steps": "Download and apply the upgrade from: http://archive.apache.org/dist/httpd/httpd-2.4.34.tar.gz (http://archive.apache.org/dist/httpd/httpd-2.4.34.tar.gz)",
-                                "Summary": "Upgrade to the latest version of Apache HTTPD",
-                                "Type": "rollup-patch"
-                            }
-                        ],
-                        "Title": "Apache HTTPD: mod_ssl Null Pointer Dereference (CVE-2017-3169)"
-                    }
-                ]
-            }
+        "Description": "The affected asset is vulnerable to this vulnerability ONLY if it is running one of the following modules: mod_authnz_ldap. Review your web server configuration for validation. mod_authnz_ldap, if configured with AuthLDAPCharsetConfig, uses the Accept-Language header value to lookup the right charset encoding when verifying the user's credentials. If the header value is not present in the charset conversion table, a fallback mechanism is used to truncate it to a two characters value to allow a quick retry (for example, 'en-US' is truncated to 'en'). A header value of less than two characters forces an out of bound write of one NUL byte to a memory location that is not part of the string. In the worst case, quite unlikely, the process would crash which could be used as a Denial of Service attack. In the more likely case, this memory is already reserved for future use and the issue has no effect at all.",
+        "ID": "CVE-2017-15710",
+        "Modified": "2020-01-30",
+        "Published": "2018-03-26"
+    },
+    "DBotScore": {
+        "Indicator": "CVE-2017-15710",
+        "Score": 0,
+        "Type": "cve",
+        "Vendor": "Rapid7 Nexpose"
+    },
+    "Nexpose": {
+        "Asset": {
+            "AssetId": "1",
+            "Vulnerability": [
+                {
+                    "Added": "2018-03-26",
+                    "CVES": [
+                        "CVE-2017-15710"
+                    ],
+                    "CVSS": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
+                    "CVSSScore": 5,
+                    "CVSSV3": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                    "CVSSV3Score": 7.5,
+                    "Categories": [
+                        "Apache",
+                        "Apache HTTP Server",
+                        "Denial of Service",
+                        "LDAP",
+                        "Web"
+                    ],
+                    "Check": [
+                        {
+                            "Port": 80,
+                            "Proof": "Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29",
+                            "Protocol": "tcp",
+                            "Since": "2020-10-01T22:40:08.844Z",
+                            "Status": "vulnerable-version"
+                        },
+                        {
+                            "Port": 8000,
+                            "Proof": "Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29",
+                            "Protocol": "tcp",
+                            "Since": "2020-10-01T22:40:08.844Z",
+                            "Status": "vulnerable-version"
+                        }
+                    ],
+                    "Id": "apache-httpd-cve-2017-15710",
+                    "Modified": "2020-01-30",
+                    "Published": "2018-03-26",
+                    "RiskScore": 175.22,
+                    "Severity": "Severe",
+                    "Solution": [
+                        {
+                            "AdditionalInformation": "The latest version of Apache HTTPD is 2.4.48.\n\nMany platforms and distributions provide pre-built binary packages for Apache HTTP server. These pre-built packages are usually customized and optimized for a particular distribution, therefore we recommend that you use the packages if they are available for your operating system.",
+                            "Estimate": "2 hours",
+                            "Steps": "Download and apply the upgrade from: http://archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz (http://archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz)",
+                            "Summary": "Upgrade to the latest version of Apache HTTPD",
+                            "Type": "rollup-patch"
+                        }
+                    ],
+                    "Title": "Apache HTTPD: Out of bound write in mod_authnz_ldap when using too small Accept-Language values (CVE-2017-15710)"
+                }
+            ]
         }
     }
+}
 ```
 
 #### Human Readable Output
 
-[![image](https://user-images.githubusercontent.com/35098543/44338298-31084a80-a486-11e8-881c-99dccae4d854.png)](https://user-images.githubusercontent.com/35098543/44338298-31084a80-a486-11e8-881c-99dccae4d854.png)
+>### Vulnerability apache-httpd-cve-2017-15710
+>|Id|Title|Severity|RiskScore|CVSS|CVSSV3|Published|Added|Modified|CVSSScore|CVSSV3Score|Categories|CVES|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| apache-httpd-cve-2017-15710 | Apache HTTPD: Out of bound write in mod_authnz_ldap when using too small Accept-Language values (CVE-2017-15710) | Severe | 175.22 | AV:N/AC:L/Au:N/C:N/I:N/A:P | CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H | 2018-03-26 | 2018-03-26 | 2020-01-30 | 5.0 | 7.5 | Apache,<br/>Apache HTTP Server,<br/>Denial of Service,<br/>LDAP,<br/>Web | CVE-2017-15710 |
+>### Checks
+>|Port|Protocol|Since|Proof|Status|
+>|---|---|---|---|---|
+>| 80 | tcp | 2020-10-01T22:40:08.844Z | Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29 | vulnerable-version |
+>| 8000 | tcp | 2020-10-01T22:40:08.844Z | Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29 | vulnerable-version |
+>### Solutions
+>|Type|Summary|Steps|Estimate|AdditionalInformation|
+>|---|---|---|---|---|
+>| rollup-patch | Upgrade to the latest version of Apache HTTPD | Download and apply the upgrade from: http:<span>//</span>archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz (http:<span>//</span>archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz) | 2 hours | The latest version of Apache HTTPD is 2.4.48.<br/><br/>Many platforms and distributions provide pre-built binary packages for Apache HTTP server. These pre-built packages are usually customized and optimized for a particular distribution, therefore we recommend that you use the packages if they are available for your operating system. |
 
 
-### nexpose-create-site
+### nexpose-create-shared-credential
+
 ***
-Creates a new site with the specified configuration.
-
+Create a new shared credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential
 
 #### Base Command
 
-`nexpose-create-site`
+`nexpose-create-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | &lt;string&gt; The site name. Name must be unique. | Required | 
-| description | &lt;string&gt; The site's description. | Optional | 
-| assets | Multiple criteria of &lt;string&gt; Specify asset addresses to be included in site scans. | Required | 
-| scanTemplateId | &lt;string&gt; The identifier of a scan template. Use nexpose-get-report-templates to get all templates,  default scan template is selected when not specified. . | Optional | 
-| importance | &lt;string&gt; The site importance. Defaults to "normal" if not specified. Possible values are: very_low, low, normal, high, very_high. | Optional | 
-
+| name | Name of the credential. | Required | 
+| site_assignment | Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites. Possible values are: All-Sites, Specific-Sites. | Required | 
+| service | Credential service type. Possible values are: AS400, CIFS, CIFSHash, CVS, DB2, FTP, HTTP, MS-SQL, MySQL, Notes, Oracle, POP, PostgresSQL, Remote-Exec, SNMP, SNMPv3, SSH, SSH-Key, Sybase, Telnet. | Required | 
+| database | Database name. | Optional | 
+| description | Description for the credential. | Optional | 
+| domain | Domain address. | Optional | 
+| host_restriction | Hostname or IP address to restrict the credentials to. | Optional | 
+| http_realm | HTTP realm. | Optional | 
+| notes_id_password | Password for the notes account that will be used for authenticating. | Optional | 
+| ntlm_hash | NTLM password hash. | Optional | 
+| oracle_enumerate_sids | Whether the scan engine should attempt to enumerate SIDs from the environment. Possible values are: true, false. | Optional | 
+| oracle_listener_password | Oracle Net Listener password. Used to enumerate SIDs from your environment. | Optional | 
+| oracle_sid | Oracle database name. | Optional | 
+| password | Password for the credential. | Optional | 
+| port_restriction | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used. | Optional | 
+| sites | List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan. | Optional | 
+| community_name | SNMP community for authentication. | Optional | 
+| authentication_type | SNMPv3 authentication type for the credential. Possible values are: No-Authentication, MD5, SHA. | Optional | 
+| privacy_password | SNMPv3 privacy password to use. | Optional | 
+| privacy_type | SNMPv3 Privacy protocol to use. Possible values are: No-Privacy, DES, AES-128, AES-192, AES-192-With-3-DES-Key-Extension, AES-256, AES-256-With-3-DES-Key-Extension. | Optional | 
+| ssh_key_pem | PEM formatted private key. | Optional | 
+| ssh_permission_elevation | Elevation type to use for scans. Possible values are: None, sudo, sudosu, su, pbrun, Privileged-Exec. | Optional | 
+| ssh_permission_elevation_password | Password to use for elevation. | Optional | 
+| ssh_permission_elevation_username | Username to use for elevation. | Optional | 
+| ssh_private_key_password | Password for the private key. | Optional | 
+| use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
+| username | Username for the credential. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexpose.Site.Id | number | The created site Id | 
+| Nexpose.SharedCredential.id | number | ID of the generated credential. | 
 
+### nexpose-create-site
 
-#### Command Example
-``` !nexpose-create-site name="site_test" assets="127.0.0.1" ```
-
-#### Context Example
-```json
-{
-    "Nexpose": {
-        "Site": {
-            "Id": 11
-        }
-    }
-}
-
-```
-#### Human Readable Output
->### New site created
->|Id|
->|---|
->| 2 | 
-
-### nexpose-delete-site
 ***
-Deletes a site.
-
+Creates a new site with the specified configuration.
 
 #### Base Command
 
-`nexpose-delete-site`
+`nexpose-create-site`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Id of the site to delete. | Required | 
+| name | Site name. Must be unique. | Required | 
+| description | Site's description. | Optional | 
+| assets | Addresses of assets to include in site scans. Can be a comma-separated list. | Required | 
+| scanTemplateId | ID of a scan template to use. If not specified, the default scan template will be used. Use `nexpose-get-report-templates` to get a list of all available templates. | Optional | 
+| importance | Site importance. Defaults to "normal" if not specified. Possible values are: very_low, low, normal, high, very_high. | Optional | 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.Site.Id | number | ID of the created site. | 
+
+### nexpose-create-vulnerability-exception
+
+***
+Create a new vulnerability exception.
+
+#### Base Command
+
+`nexpose-create-vulnerability-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| expires | The date and time the vulnerability exception is set to expire in ISO 8601 date format. | Optional | 
+| vulnerability_id | ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536. | Required | 
+| scope_type | The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required. Possible values are: Global, Site, Asset, Asset Group. | Required | 
+| state | State of the vulnerability exception. Possible values are: Expired, Approved, Rejected, Under Review. | Required | 
+| comment | A comment from the submitter as to why the exception was submitted. | Optional | 
+| reason | Reason why the vulnerability exception was submitted. Possible values are: False Positive, Compensating Control, Acceptable Use, Acceptable Risk, Other. | Required | 
+| scope_id | ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.VulnerabilityException.id | number | ID of the generated vulnerability exception. | 
+
+### nexpose-delete-asset
+
+***
+Delete an asset.
+
+#### Base Command
+
+`nexpose-delete-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the asset to delete. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` !nexpose-delete-site id=1258 ```
-
+#### Command example
+```!nexpose-delete-asset id=1```
 #### Human Readable Output
-> Site 1258 deleted
 
+>Asset 1 has been deleted.
 
-### nexpose-get-sites
+### nexpose-delete-scan-schedule
+
 ***
-Retrieves accessible sites.
-
+Delete a scheduled scan.
 
 #### Base Command
 
-`nexpose-get-sites`
+`nexpose-delete-scan-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | integer &lt;int32&gt; The number of records retrieve. | Optional | 
-| sort | Multiple criteria of &lt;string&gt; The criteria to sort the records by, in the format: property[,ASC\|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
+| site_id | ID of the site to delete. | Optional | 
+| site_name | Name of the site to delete (can be used instead of `site_id`). | Optional | 
+| schedule_id | ID of the scheduled scan to delete. | Required | 
 
+#### Context Output
+
+There is no context output for this command.
+### nexpose-delete-shared-credential
+
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Delete a shared credential.
+
+#### Base Command
+
+`nexpose-delete-shared-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the shared credential to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-delete-site-scan-credential
+
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Delete a site scan credential.
+
+#### Base Command
+
+`nexpose-delete-site-scan-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| credential_id | ID of the site scan credential to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-delete-site
+
+***
+Deletes a site.
+
+#### Base Command
+
+`nexpose-delete-site`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of a site to delete. | Optional | 
+| site_name | Name of the site to delete (can be used instead of `site_id`). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-delete-vulnerability-exception
+
+***
+Delete a vulnerability exception.
+
+#### Base Command
+
+`nexpose-delete-vulnerability-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the vulnerability exception to delete. | Required | 
+
+
+#### Command example
+```!nexpose-delete-vulnerability-exception id=1```
+#### Human Readable Output
+
+>Vulnerability exception with ID 1 has been deleted.
+
+### nexpose-get-sites
+
+***
+Retrieves accessible sites.
+
+#### Base Command
+
+`nexpose-get-sites`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
 
 #### Context Output
 
@@ -755,32 +874,39 @@ Retrieves accessible sites.
 | Nexpose.Site.Risk | number | The risk score \(with criticality adjustments\) of the site. | 
 | Nexpose.Site.LastScan | date | The date and time of the site's last scan. | 
 
-
-#### Command Example
-```!nexpose-get-sites```
-
+#### Command example
+```!nexpose-get-sites limit=5```
 #### Context Example
 ```json
 {
     "Nexpose": {
         "Site": [
             {
-                "Assets": 8,
+                "Assets": 4,
                 "Id": 1,
-                "LastScan": "2020-10-01T22:43:17.717Z",
-                "Name": "XSOAR",
-                "Risk": 213967,
+                "LastScan": "2021-08-03T14:09:15.321Z",
+                "Name": "Authenticated-Assets",
+                "Risk": 20416,
                 "Type": "static",
-                "Vulnerabilities": 484
+                "Vulnerabilities": 41
             },
             {
-                "Assets": 3,
-                "Id": 1,
-                "LastScan": "2020-11-26T17:13:54.117Z",
-                "Name": "XSOAR Site",
-                "Risk": 1606,
+                "Assets": 18,
+                "Id": 2,
+                "LastScan": "2021-06-29T07:06:54.733Z",
+                "Name": "PANW",
+                "Risk": 213245,
                 "Type": "static",
-                "Vulnerabilities": 7
+                "Vulnerabilities": 455
+            },
+            {
+                "Assets": 10,
+                "Id": 3,
+                "LastScan": "2020-11-26T17:13:54.117Z",
+                "Name": "Test",
+                "Risk": 18820,
+                "Type": "static",
+                "Vulnerabilities": 45
             }
         ]
     }
@@ -789,21 +915,23 @@ Retrieves accessible sites.
 
 #### Human Readable Output
 
->### Nexpose sites
->|Id|Name|Assets|Vulnerabilities|Risk|Type|LastScan|
->|---|---|---|---|---|---|---|
->| 1 | XSOAR | 8 | 484 | 213967.0 | static | 2020-10-01T22:43:17.717Z |
->| 1 | XSOAR Site | 3 | 7 | 1606.0 | static | 2020-11-26T17:13:54.117Z |
+>### Nexpose Sites
+>| Id  |Name|Assets|Vulnerabilities|Risk|Type|LastScan|
+-----|---|---|---|---|---|---|---|
+>| 1   | Authenticated-Assets | 4 | 41 | 20416.0 | static | 2021-08-03T14:09:15.321Z |
+>| 2 | PANW | 18 | 455 | 213245.0 | static | 2021-06-29T07:06:54.733Z |
+>| 3   | Test | 10 | 45 | 18820.0 | static | 2020-11-26T17:13:54.117Z |
 
 
 ### nexpose-get-report-templates
+
 ***
 Returns all available report templates.
-
 
 #### Base Command
 
 `nexpose-get-report-templates`
+
 #### Input
 
 There are no input arguments for this command.
@@ -817,10 +945,8 @@ There are no input arguments for this command.
 | Nexpose.Template.Description | string | The description of the report template. | 
 | Nexpose.Template.Type | string | The type of the report template. document is a templatized, typically printable, report that has various sections of content. export is data-oriented output, typically CSV. file is a printable report template using a report template file. | 
 
-
-#### Command Example
+#### Command example
 ```!nexpose-get-report-templates```
-
 #### Context Example
 ```json
 {
@@ -837,6 +963,36 @@ There are no input arguments for this command.
                 "Id": "baseline-comparison",
                 "Name": "Baseline Comparison",
                 "Type": "document"
+            },
+            {
+                "Description": "Provides a high-level view of security data, including general results information and statistical charts.",
+                "Id": "executive-overview",
+                "Name": "Executive Overview",
+                "Type": "document"
+            },
+            {
+                "Description": "Provides information and metrics about 10 discovered vulnerabilities with the highest risk scores.",
+                "Id": "highest-risk-vulns",
+                "Name": "Highest Risk Vulnerabilities",
+                "Type": "document"
+            },
+            {
+                "Description": "Lists results for standard policy scans (AS/400, Oracle, Domino, Windows Group, CIFS/SMB account). Does not include Policy Manager results.",
+                "Id": "policy-eval",
+                "Name": "Policy Evaluation",
+                "Type": "document"
+            },
+            {
+                "Description": "Provides detailed remediation instructions for each discovered vulnerability.",
+                "Id": "remediation-plan",
+                "Name": "Remediation Plan",
+                "Type": "document"
+            },
+            {
+                "Description": "Lists test results for each discovered vulnerability, including how it was verified.",
+                "Id": "report-card",
+                "Name": "Report Card",
+                "Type": "document"
             }
         ]
     }
@@ -845,169 +1001,225 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### Nexpose templates
+>### Nexpose Templates
 >|Id|Name|Description|Type|
 >|---|---|---|---|
 >| audit-report | Audit Report | Provides comprehensive details about discovered assets, vulnerabilities, and users. | document |
 >| baseline-comparison | Baseline Comparison | Compares current scan results to those of an earlier baseline scan. | document |
+>| executive-overview | Executive Overview | Provides a high-level view of security data, including general results information and statistical charts. | document |
+>| highest-risk-vulns | Highest Risk Vulnerabilities | Provides information and metrics about 10 discovered vulnerabilities with the highest risk scores. | document |
+>| policy-eval | Policy Evaluation | Lists results for standard policy scans (AS/400, Oracle, Domino, Windows Group, CIFS/SMB account). Does not include Policy Manager results. | document |
+>| remediation-plan | Remediation Plan | Provides detailed remediation instructions for each discovered vulnerability. | document |
+>| report-card | Report Card | Lists test results for each discovered vulnerability, including how it was verified. | document |
 
+
+### nexpose-create-asset
+
+***
+Create a new asset.
+
+#### Base Command
+
+`nexpose-create-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| date | The date the data was collected on the asset in ISO 8601 format. | Required | 
+| ip | Primary IPv4 or IPv6 address of the asset. | Required | 
+| host_name | Hostname of the asset. | Optional | 
+| host_name_source | The source used to detect the host name. "User" indicates the host name source is user-supplied. Possible values are: User, DNS, NetBIOS, DCE, EPSEC, LDAP, Other. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.Asset.id | string | ID of the newly created asset. | 
+
+#### Command example
+```!nexpose-create-asset site_id="1" date="2022-01-01T10:00:00Z" ip="192.0.2.0"```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "Asset": {
+            "id": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>New asset has been created with ID 1.
 
 ### nexpose-create-assets-report
+
 ***
 Generates a new report on given assets according to a template and arguments.
-
 
 #### Base Command
 
 `nexpose-create-assets-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assets | Multiple criteria of integer&lt;int64&gt; Asset ids to create the report on, comma separated. | Required | 
-| template | &lt;string&gt; Report template id to create the report with. If none is provided, the first template available will be used. | Optional | 
-| name | &lt;string&gt; The report name. | Optional | 
-| format | &lt;string&gt; The report format, default is PDF. Possible values are: pdf, rtf, xml, html, text. | Optional | 
-| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". | Optional | 
-
+| assets | Asset IDs to create the report on. Can be a comma-separated list. | Required | 
+| template | Report template ID to create the report with. If not provided, the first available template will be used. | Optional | 
+| name | Report name. | Optional | 
+| format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text. | Optional | 
+| download_immediately | Whether to download the report immediately after the report is generated. Defaults to "true". If the report takes longer than 10 seconds to generate, set to "false". Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.EntryId | string | Entry ID of the report file. | 
 | InfoFile.Name | string | Name of the report file. | 
 | InfoFile.Extension | string | File extension of the report file. | 
 | InfoFile.Info | string | Information about the report file. | 
-| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Size | number | Size of the report file \(in bytes\). | 
 | InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
 | Nexpose.Report.Format | string | The report format. | 
 
-
-#### Command Example
-``` !nexpose-create-assets-report assets="1,2,3,4 ```
-
-#### Context Example
-```json
-    {
-        "InfoFile": {
-            "EntryID": "759@cc00e449-9e7b-4609-8a68-1c8c01114562",
-            "Extension": "pdf",
-            "Info": "application/pdf",
-            "Name": "report 2018-08-20 11:41:54.343571.pdf",
-            "Size": 143959,
-            "Type": "PDF document, version 1.4\n"
-        }
-    }
-```
-
-#### Human Readable Output
-> Returned file: report 2018-08-20 11:41:54.343571.pdf [Download]()
-
-
 ### nexpose-create-sites-report
+
 ***
 Generates a new report on given sites according to a template and arguments.
-
 
 #### Base Command
 
 `nexpose-create-sites-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sites | Multiple criteria of integer&lt;int32&gt; Site ids to create the report on, comma separated. | Required | 
-| template | &lt;string&gt; Report template id to create the report with. If none is provided, the first template available will be used. | Optional | 
-| name | &lt;string&gt; The report name. | Optional | 
-| format | &lt;string&gt; The report format, default is PDF. Possible values are: pdf, rtf, xml, html, text. | Optional | 
-| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". | Optional | 
-
+| sites | Site IDs to create the report on. Can be a comma-separated list. | Optional | 
+| site_names | Names of sites to create the report on. Can be a comma-separated list. | Optional | 
+| template | Report template ID to use for report's creation. If not provided, the first available template will be used. | Optional | 
+| name | Report name. | Optional | 
+| format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text. | Optional | 
+| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.EntryId | string | Entry ID of the report file. | 
 | InfoFile.Name | string | Name of the report file. | 
 | InfoFile.Extension | string | File extension of the report file. | 
-| InfoFile.Info | string | Information about the report file. | 
-| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Info | string | Info about the report file. | 
+| InfoFile.Size | number | Size of the report file. | 
 | InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
 | Nexpose.Report.Format | string | The report format. | 
 
-#### Command Example
-```!nexpose-create-sites-report sites=1 name="XSOAR Report1"```
+### nexpose-create-site-scan-credential
 
-#### Context Example
-```json
-{
-    "InfoFile": {
-        "EntryID": "2486@51c113de-6213-4aea-8beb-d4b88551f7f8",
-        "Extension": "pdf",
-        "Info": "application/pdf",
-        "Name": "XSOAR Report.pdf",
-        "Size": 212723,
-        "Type": "PDF document, version 1.4"
-    }
-}
-```
-#### Human Readable Output
-> Returned file: XSOAR Report.pdf [Download]()
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Create a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
+
+#### Base Command
+
+`nexpose-create-site-scan-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| name | Name of the credential. | Required | 
+| service | Credential service type. Possible values are: AS400, CIFS, CIFSHash, CVS, DB2, FTP, HTTP, MS-SQL, MySQL, Notes, Oracle, POP, PostgresSQL, Remote-Exec, SNMP, SNMPv3, SSH, SSH-Key, Sybase, Telnet. | Required | 
+| database | Database name. | Optional | 
+| description | Description for the credential. | Optional | 
+| domain | Domain address. | Optional | 
+| host_restriction | Hostname or IP address to restrict the credentials to. | Optional | 
+| http_realm | HTTP realm. | Optional | 
+| notes_id_password | Password for the notes account that will be used for authenticating. | Optional | 
+| ntlm_hash | NTLM password hash. | Optional | 
+| oracle_enumerate_sids | Whether the scan engine should attempt to enumerate SIDs from the environment. Possible values are: true, false. | Optional | 
+| oracle_listener_password | Oracle Net Listener password. Used to enumerate SIDs from your environment. | Optional | 
+| oracle_sid | Oracle database name. | Optional | 
+| password | Password for the credential. | Optional | 
+| port_restriction | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used. | Optional | 
+| community_name | SNMP community for authentication. | Optional | 
+| authentication_type | SNMPv3 authentication type for the credential. Possible values are: No-Authentication, MD5, SHA. | Optional | 
+| privacy_password | SNMPv3 privacy password to use. | Optional | 
+| privacy_type | SNMPv3 privacy protocol to use. Possible values are: No-Privacy, DES, AES-128, AES-192, AES-192-With-3-DES-Key-Extension, AES-256, AES-256-With-3-DES-Key-Extension. | Optional | 
+| ssh_key_pem | PEM formatted private key. | Optional | 
+| ssh_permission_elevation | Elevation type to use for scans. Possible values are: None, sudo, sudosu, su, pbrun, Privileged-Exec. | Optional | 
+| ssh_permission_elevation_password | Password to use for elevation. | Optional | 
+| ssh_permission_elevation_username | Username to use for elevation. | Optional | 
+| ssh_private_key_password | Password for the private key. | Optional | 
+| use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
+| username | Username for the credential. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.SiteScanCredential.id | number | ID of the generated credential. | 
 
 ### nexpose-create-scan-report
+
 ***
 Generates a new report for a specified scan.
-
 
 #### Base Command
 
 `nexpose-create-scan-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan | integer &lt;int64&gt; The identifier of the scan. | Required | 
-| template | &lt;string&gt; Report template id to create the report with. If none is provided, the first template available will be used. | Optional | 
-| name | &lt;string&gt; The report name. | Optional | 
-| format | &lt;string&gt; The report format, default is PDF. Possible values are: pdf, rtf, xml, html, text. | Optional | 
-| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". | Optional | 
-
+| scan | ID of the scan to create a report about. | Required | 
+| template | Report template ID to use for creation. If not provided, the first available template will be used. | Optional | 
+| name | Report name. | Optional | 
+| format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text. | Optional | 
+| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.EntryId | string | Entry ID of the report file. | 
 | InfoFile.Name | string | Name of the report file. | 
 | InfoFile.Extension | string | File extension of the report file. | 
-| InfoFile.Info | string | Information about the report file. | 
-| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Info | string | Info about the report file. | 
+| InfoFile.Size | number | Size of the report file. | 
 | InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
 | Nexpose.Report.Format | string | The report format. | 
 
-
-#### Command Example
-```!nexpose-create-scan-report scan=245 name="XSOAR test" download_immediately=false```
-
+#### Command example
+```!nexpose-create-scan-report scan=1 download_immediately=false```
 #### Context Example
 ```json
 {
     "Nexpose": {
         "Report": {
             "Format": "pdf",
-            "ID": "1987",
-            "InstanceID": "1980",
-            "Name": "XSOAR test"
+            "ID": 3241,
+            "InstanceID": 3212,
+            "Name": "report 2022-11-30 09:25:36.359529"
         }
     }
 }
@@ -1018,25 +1230,699 @@ Generates a new report for a specified scan.
 >### Report Information
 >|Format|ID|InstanceID|Name|
 >|---|---|---|---|
->| pdf | 1987 | 1980 | XSOAR test |
+>| pdf | 3241 | 3212 | report 2022-11-30 09:25:36.359529 |
 
 
+### nexpose-create-scan-schedule
 
-### nexpose-start-site-scan
 ***
-Starts a scan for the specified site.
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
+Create a new site scan schedule.
 
 #### Base Command
 
-`nexpose-start-site-scan`
+`nexpose-create-scan-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site | integer &lt;int32&gt; The identifier of the site. | Required | 
-| hosts | Multiple criteria of &lt;string&gt; The hosts that should be included as a part of the scan. This should be a mixture of IP Addresses and host names as a comma separated string array. | Optional | 
-| name | &lt;string&gt; The user-driven scan name for the scan. | Optional | 
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| enabled | Whether to enable the scheduled scan after creation. Possible values are: True, False. Default is True. | Optional | 
+| on_scan_repeat | The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration. Possible values are: Restart-Scan, Resume-Scan. | Required | 
+| start | The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time. | Required | 
+| excluded_asset_group_ids | A list of IDs for asset groups to exclude from the scan. | Optional | 
+| excluded_addresses | A list of addresses to exclude from the scan. | Optional | 
+| included_asset_group_ids | A list of IDs for asset groups to include in the scan. | Optional | 
+| included_addresses | A list of addresses to include in the scan. | Optional | 
+| duration_days | Maximum duration of the scan in days. | Optional | 
+| duration_hours | Maximum duration of the scan in hours. | Optional | 
+| duration_minutes | Maximum duration of the scan in minutes. | Optional | 
+| frequency | How frequently the schedule should repeat (Every...). Possible values are: Hour, Day, Week, Date-of-month. | Optional | 
+| interval_time | The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used. | Optional | 
+| date_of_month | Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`. | Optional | 
+| scan_name | A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching. | Optional | 
+| scan_template | ID of the scan template to use. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.ScanSchedule.id | int | ID of the newly created scan schedule. | 
+
+### nexpose-list-assigned-shared-credential
+
+***
+Retrieve information about shared credentials for a specific site.
+
+#### Base Command
+
+`nexpose-list-assigned-shared-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| limit | The number of records to limit the response to. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssignedSharedCredential.enabled | string | Flag indicating whether the shared credential is enabled for the site's scans. | 
+| Nexpose.AssignedSharedCredential.id | string | ID of the shared credential. | 
+| Nexpose.AssignedSharedCredential.name | string | The name of the shared credential. | 
+| Nexpose.AssignedSharedCredential.service | string | Credential service type. | 
+
+#### Command example
+```!nexpose-list-assigned-shared-credential site_id=1 limit=3```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "AssignedSharedCredential": [
+            {
+                "enabled": true,
+                "id": 1,
+                "name": "Test 1",
+                "service": "ftp"
+            },
+            {
+                "enabled": true,
+                "id": 2,
+                "name": "Test 2",
+                "service": "ftp"
+            },
+            {
+                "enabled": true,
+                "id": 3,
+                "name": "Test 3",
+                "service": "ftp"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nexpose Assigned Shared Credentials
+>| Id  |Name|Service|Enabled|
+-----|---|---|---|---|
+>| 1   | Test 1 | ftp | true |
+>| 2  | Test 2 | ftp | true |
+>| 3  | Test 3 | ftp | true |
+
+
+### nexpose-list-vulnerability
+
+***
+Retrieve information about all or a specific vulnerability.
+
+#### Base Command
+
+`nexpose-list-vulnerability`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of a specific vulnerability to retrieve. | Optional | 
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| limit | The number of records to limit the response to. Default is 10. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.Vulnerability.added | string | The date the vulnerability coverage was added in ISO 8601 format. | 
+| Nexpose.Vulnerability.categories | array | All vulnerability categories assigned to this vulnerability. | 
+| Nexpose.Vulnerability.cves | array | All CVEs assigned to this vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.accessComplexity | string | Access Complexity \(AC\) component that measures the complexity of the attack required to exploit the vulnerability once an attacker has gained access to the target system. | 
+| Nexpose.Vulnerability.cvss.v2.accessVector | string | Access Vector \(Av\) component that reflects how the vulnerability is exploited. | 
+| Nexpose.Vulnerability.cvss.v2.authentication | string | Authentication \(Au\) component that measures the number of times an attacker must authenticate to a target in order to exploit a vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.availabilityImpact | string | Availability Impact \(A\) component that measures the impact to availability of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.confidentialityImpact | string | Confidentiality Impact \(C\) component that measures the impact on confidentiality of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.exploitScore | number | The CVSS exploit score. | 
+| Nexpose.Vulnerability.cvss.v2.impactScore | number | The CVSS impact score. | 
+| Nexpose.Vulnerability.cvss.v2.integrityImpact | string | Integrity Impact \(I\) component that measures the impact to integrity of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.score | number | The CVSS score \(ranges from 0-10\). | 
+| Nexpose.Vulnerability.cvss.v2.vector | string | The CVSS v2 vector. | 
+| Nexpose.Vulnerability.cvss.v3.attackComplexity | string | Access Complexity \(AC\) component that measures the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.attackVector | string | Attack Vector \(AV\) component that measures context by which vulnerability exploitation is possible. | 
+| Nexpose.Vulnerability.cvss.v3.availabilityImpact | string | Availability Impact \(A\) that measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.confidentialityImpact | string | Confidentiality Impact \(C\) component that measures the impact on confidentiality of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.exploitScore | number | The CVSS impact score. | 
+| Nexpose.Vulnerability.cvss.v3.impactScore | number | The CVSS exploit score. | 
+| Nexpose.Vulnerability.cvss.v3.integrityImpact | string | Integrity Impact \(I\) that measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information. | 
+| Nexpose.Vulnerability.cvss.v3.privilegeRequired | string | Privileges Required \(PR\) that measures the level of privileges an attacker must possess before successfully exploiting the vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.scope | string | Scope \(S\) that measures the collection of privileges defined by a computing authority \(e.g., an application, an operating system, or a sandbox environment\) when granting access to computing resources \(e.g., files, CPU, memory, etc.\). These privileges are assigned based on some method of identification and authorization. | 
+| Nexpose.Vulnerability.cvss.v3.score | number | The CVSS score \(ranges from 0-10\). | 
+| Nexpose.Vulnerability.cvss.v3.userInteraction | string | User Interaction \(UI\) that measures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerable component. | 
+| Nexpose.Vulnerability.cvss.v3.vector | string | The CVSS v3 vector. | 
+| Nexpose.Vulnerability.denialOfService | boolean | Whether the vulnerability can lead to Denial of Service \(DoS\). | 
+| Nexpose.Vulnerability.description.html | string | Hypertext Markup Language \(HTML\) representation of the content. | 
+| Nexpose.Vulnerability.description.text | string | Textual representation of the content. | 
+| Nexpose.Vulnerability.exploits | number | The exploits that can be used to exploit a vulnerability. | 
+| Nexpose.Vulnerability.id | string | The identifier of the vulnerability. | 
+| Nexpose.Vulnerability.malwareKits | number | The malware kits that are known to be used to exploit the vulnerability. | 
+| Nexpose.Vulnerability.modified | string | The last date the vulnerability was modified in ISO 8601 format. | 
+| Nexpose.Vulnerability.pci.adjustedCVSSScore | number | The CVSS score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10. | 
+| Nexpose.Vulnerability.pci.adjustedSeverityScore | number | The severity score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10. | 
+| Nexpose.Vulnerability.pci.fail | boolean | Whether, if present on a host, this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise. | 
+| Nexpose.Vulnerability.pci.specialNotes | string | Any special notes or remarks about the vulnerability that pertain to PCI compliance. | 
+| Nexpose.Vulnerability.pci.status | string | The PCI compliance status of the vulnerability. Can be either "Pass", or "Fail". | 
+| Nexpose.Vulnerability.published | string | The date the vulnerability was first published or announced in ISO 8601 format. | 
+| Nexpose.Vulnerability.riskScore | number | The risk score of the vulnerability, rounded to a maximum of two digits of precision. If using the default Rapid7 Real Risk model, this value ranges from 0-1000. | 
+| Nexpose.Vulnerability.severity | string | The severity of the vulnerability, can be either "Moderate", "Severe", or "Critical". | 
+| Nexpose.Vulnerability.severityScore | number | The severity score of the vulnerability, on a scale of 0-10. | 
+| Nexpose.Vulnerability.title | string | The title \(summary\) of the vulnerability. | 
+
+#### Command example
+```!nexpose-list-vulnerability limit=3```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "Vulnerability": [
+            {
+                "added": "2018-05-16",
+                "categories": [
+                    "7-Zip"
+                ],
+                "cves": [
+                    "CVE-2008-6536"
+                ],
+                "cvss": {
+                    "v2": {
+                        "accessComplexity": "L",
+                        "accessVector": "N",
+                        "authentication": "N",
+                        "availabilityImpact": "C",
+                        "confidentialityImpact": "C",
+                        "exploitScore": 9.9968,
+                        "impactScore": 10.0008,
+                        "integrityImpact": "C",
+                        "score": 10,
+                        "vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C"
+                    }
+                },
+                "denialOfService": false,
+                "description": {
+                    "html": "<p>Unspecified vulnerability in 7-zip before 4.5.7 has unknown impact and remote attack vectors, as demonstrated by the PROTOS GENOME test suite for Archive Formats (c10).</p>",
+                    "text": "Unspecified vulnerability in 7-zip before 4.5.7 has unknown impact and remote attack vectors, as demonstrated by the PROTOS GENOME test suite for Archive Formats (c10)."
+                },
+                "exploits": 0,
+                "id": "7-zip-cve-2008-6536",
+                "malwareKits": 0,
+                "modified": "2018-06-08",
+                "pci": {
+                    "adjustedCVSSScore": 10,
+                    "adjustedSeverityScore": 5,
+                    "fail": true,
+                    "status": "Fail"
+                },
+                "published": "2009-03-29",
+                "riskScore": 898.63,
+                "severity": "Critical",
+                "severityScore": 10,
+                "title": "7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7"
+            },
+            {
+                "added": "2018-05-16",
+                "categories": [
+                    "7-Zip",
+                    "Remote Execution"
+                ],
+                "cves": [
+                    "CVE-2016-2334"
+                ],
+                "cvss": {
+                    "v2": {
+                        "accessComplexity": "M",
+                        "accessVector": "N",
+                        "authentication": "N",
+                        "availabilityImpact": "C",
+                        "confidentialityImpact": "C",
+                        "exploitScore": 8.5888,
+                        "impactScore": 10.0008,
+                        "integrityImpact": "C",
+                        "score": 9.3,
+                        "vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C"
+                    },
+                    "v3": {
+                        "attackComplexity": "L",
+                        "attackVector": "L",
+                        "availabilityImpact": "H",
+                        "confidentialityImpact": "H",
+                        "exploitScore": 1.8346,
+                        "impactScore": 5.8731,
+                        "integrityImpact": "H",
+                        "privilegeRequired": "N",
+                        "scope": "U",
+                        "score": 7.8,
+                        "userInteraction": "R",
+                        "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                    }
+                },
+                "denialOfService": false,
+                "description": {
+                    "html": "<p>Heap-based buffer overflow in the NArchive::NHfs::CHandler::ExtractZlibFile method in 7zip before 16.00 and p7zip allows remote attackers to execute arbitrary code via a crafted HFS+ image.</p>",
+                    "text": "Heap-based buffer overflow in the NArchive::NHfs::CHandler::ExtractZlibFile method in 7zip before 16.00 and p7zip allows remote attackers to execute arbitrary code via a crafted HFS+ image."
+                },
+                "exploits": 0,
+                "id": "7-zip-cve-2016-2334",
+                "malwareKits": 0,
+                "modified": "2018-06-08",
+                "pci": {
+                    "adjustedCVSSScore": 9,
+                    "adjustedSeverityScore": 5,
+                    "fail": true,
+                    "status": "Fail"
+                },
+                "published": "2016-12-13",
+                "riskScore": 717.53,
+                "severity": "Critical",
+                "severityScore": 9,
+                "title": "7-Zip: CVE-2016-2334: Heap-based buffer overflow vulnerability"
+            },
+            {
+                "added": "2018-05-16",
+                "categories": [
+                    "7-Zip",
+                    "Trojan"
+                ],
+                "cves": [
+                    "CVE-2016-7804"
+                ],
+                "cvss": {
+                    "v2": {
+                        "accessComplexity": "M",
+                        "accessVector": "N",
+                        "authentication": "N",
+                        "availabilityImpact": "P",
+                        "confidentialityImpact": "P",
+                        "exploitScore": 8.5888,
+                        "impactScore": 6.443,
+                        "integrityImpact": "P",
+                        "score": 6.8,
+                        "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+                    },
+                    "v3": {
+                        "attackComplexity": "L",
+                        "attackVector": "L",
+                        "availabilityImpact": "H",
+                        "confidentialityImpact": "H",
+                        "exploitScore": 1.8346,
+                        "impactScore": 5.8731,
+                        "integrityImpact": "H",
+                        "privilegeRequired": "N",
+                        "scope": "U",
+                        "score": 7.8,
+                        "userInteraction": "R",
+                        "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                    }
+                },
+                "denialOfService": false,
+                "description": {
+                    "html": "<p>Untrusted search path vulnerability in 7 Zip for Windows 16.02 and earlier allows remote attackers to gain privileges via a Trojan horse DLL in an unspecified directory.</p>",
+                    "text": "Untrusted search path vulnerability in 7 Zip for Windows 16.02 and earlier allows remote attackers to gain privileges via a Trojan horse DLL in an unspecified directory."
+                },
+                "exploits": 0,
+                "id": "7-zip-cve-2016-7804",
+                "malwareKits": 0,
+                "modified": "2018-06-08",
+                "pci": {
+                    "adjustedCVSSScore": 6,
+                    "adjustedSeverityScore": 4,
+                    "fail": true,
+                    "specialNotes": "The presence of malware, including rootkits, backdoors, or trojan horse programs are a violation of PCI DSS, and result in an automatic failure. ",
+                    "status": "Fail"
+                },
+                "published": "2017-05-22",
+                "riskScore": 578.88,
+                "severity": "Severe",
+                "severityScore": 7,
+                "title": "7-Zip: CVE-2016-7804: Untrusted search path vulnerability"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nexpose Vulnerabilities
+>|Title|MalwareKits|Exploits|CVSS|CVSSv3|Risk|PublishedOn|ModifiedOn|Severity|
+>|---|---|---|---|---|---|---|---|---|
+>| 7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7 | 0 | 0 | 10.0 |  | 898.63 | 2009-03-29 | 2018-06-08 | Critical |
+>| 7-Zip: CVE-2016-2334: Heap-based buffer overflow vulnerability | 0 | 0 | 9.3 | 7.8 | 717.53 | 2016-12-13 | 2018-06-08 | Critical |
+>| 7-Zip: CVE-2016-7804: Untrusted search path vulnerability | 0 | 0 | 6.8 | 7.8 | 578.88 | 2017-05-22 | 2018-06-08 | Severe |
+
+
+### nexpose-list-scan-schedule
+
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Retrieve information about scan schedules for a specific site or a specific scan schedule.
+
+#### Base Command
+
+`nexpose-list-scan-schedule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| schedule_id | ID of the scheduled scan (optional, will return a single specific scan if used). | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.ScanSchedule.assets.excludedAssetGroups.assetGroupIDs | array | List of asset group identifiers that will be excluded from scans. | 
+| Nexpose.ScanSchedule.assets.excludedTargets.addresses | array | List of addresses that will be excluded from scans. | 
+| Nexpose.ScanSchedule.assets.includedAssetGroups.assetGroupIDs | array | List of asset group identifiers that will be included in scans. | 
+| Nexpose.ScanSchedule.assets.includedTargets.addresses | array | List of addresses that will be included in scans. | 
+| Nexpose.ScanSchedule.duration | string | Specifies in ISO 8601 duration format the maximum duration the scheduled scan is allowed to run. | 
+| Nexpose.ScanSchedule.enabled | string | Flag indicating whether the scan schedule is enabled. | 
+| Nexpose.ScanSchedule.id | int | The identifier of the scan schedule. | 
+| Nexpose.ScanSchedule.nextRuntimes | array | List the next 10 dates when the schedule will launch. | 
+| Nexpose.ScanSchedule.onScanRepeat | string | Specifies the desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching is maximum duration. | 
+| Nexpose.ScanSchedule.repeat.dayOfWeek | unknown | Specifies the desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching is maximum duration. | 
+| Nexpose.ScanSchedule.repeat.every | unknown | The frequency in which the schedule repeats. Each value represents a different unit of time and is used in conjunction with the property interval. | 
+| Nexpose.ScanSchedule.repeat.interval | unknown | The interval time the schedule should repeat. This depends on the value set in every. | 
+| Nexpose.ScanSchedule.repeat.weekOfMonth | unknown | This property only applies to schedules with an every value of "day-of-month". The week of the month the scheduled task should repeat. | 
+| Nexpose.ScanSchedule.repeat.scanEngineId | unknown | The identifier of the scan engine to be used for this scan schedule. If not set, the site's assigned scan engine will be used. | 
+| Nexpose.ScanSchedule.repeat.scanName | unknown | A user-defined name for the scan launched by the schedule. | 
+| Nexpose.ScanSchedule.repeat.scanTemplateId | unknown | The identifier of the scan template to be used for this scan schedule. If not set, the site's assigned scan template will be used. | 
+| Nexpose.ScanSchedule.repeat.start | unknown | The scheduled start date and time. Repeating schedules will determine the next schedule to begin based on this date and time. | 
+
+### nexpose-list-shared-credential
+
+***
+Retrieve information about all or a specific shared credential.
+
+#### Base Command
+
+`nexpose-list-shared-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of a specific shared credential to retrieve. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.SharedCredential.account.authenticationType | string | SNMPv3 authentication type for the credential. | 
+| Nexpose.SharedCredential.account.communityName | string | SNMP community for authentication. | 
+| Nexpose.SharedCredential.account.database | string | Database name. | 
+| Nexpose.SharedCredential.account.domain | string | Domain address. | 
+| Nexpose.SharedCredential.account.enumerateSids | boolean | Whether the scan engine should attempt to enumerate SIDs from the environment. | 
+| Nexpose.SharedCredential.account.notesIDPassword | string | Password for the notes account that will be used for authenticating. | 
+| Nexpose.SharedCredential.account.ntlmHash | string | NTLM password hash. | 
+| Nexpose.SharedCredential.account.oracleListenerPassword | string | The Oracle Net Listener password. Used to enumerate SIDs from the environment. | 
+| Nexpose.SharedCredential.account.password | string | Password for the credential. | 
+| Nexpose.SharedCredential.account.pemKey | string | PEM formatted private key. | 
+| Nexpose.SharedCredential.account.permissionElevation | string | Elevation type to use for scans. | 
+| Nexpose.SharedCredential.account.permissionElevationPassword | string | Password to use for elevation. | 
+| Nexpose.SharedCredential.account.permissionElevationUserName | string | Username to use for elevation. | 
+| Nexpose.SharedCredential.account.privacyPassword | string | SNMPv3 privacy password to use. | 
+| Nexpose.SharedCredential.account.privacyType | string | SNMPv3 privacy protocol to use. | 
+| Nexpose.SharedCredential.account.privateKeyPassword | string | Password for the private key. | 
+| Nexpose.SharedCredential.account.realm | string | HTTP realm. | 
+| Nexpose.SharedCredential.account.service | string | Credential service type. | 
+| Nexpose.SharedCredential.account.sid | string | Oracle database name. | 
+| Nexpose.SharedCredential.account.useWindowsAuthentication | boolean | Whether to use Windows authentication. | 
+| Nexpose.SharedCredential.account.username | string | Username for the credential. | 
+| Nexpose.SharedCredential.description | string | Description for the credential. | 
+| Nexpose.SharedCredential.hostRestriction | string | Hostname or IP address to restrict the credentials to. | 
+| Nexpose.SharedCredential.id | number | ID of the shared credential. | 
+| Nexpose.SharedCredential.name | string | Name of the credential. | 
+| Nexpose.SharedCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`hostRestriction\` is used. | 
+| Nexpose.SharedCredential.siteAssignment | string | Site assignment configuration for the credential. | 
+| Nexpose.SharedCredential.sites | array | List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan. | 
+
+#### Command example
+```!nexpose-list-shared-credential limit=3```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "SharedCredential": [
+            {
+                "account": {
+                    "authenticationType": "md5",
+                    "privacyType": "no-privacy",
+                    "service": "snmpv3",
+                    "username": "test"
+                },
+                "id": 1,
+                "name": "shared credentials",
+                "siteAssignment": "specific-sites",
+                "sites": [
+                    1
+                ]
+            },
+            {
+                "account": {
+                    "service": "as400",
+                    "username": "test"
+                },
+                "id": 2,
+                "name": "shared credentials",
+                "siteAssignment": "specific-sites",
+                "sites": [
+                    1
+                ]
+            },
+            {
+                "account": {
+                    "permissionElevation": "sudosu",
+                    "permissionElevationUsername": "test",
+                    "service": "ssh",
+                    "username": "test"
+                },
+                "id": 3,
+                "name": "shared credentials",
+                "siteAssignment": "specific-sites",
+                "sites": [
+                    1
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nexpose Shared Credentials
+>| Id  |Name|Service|UserName|
+-----|---|---|---|---|
+>| 1   | shared credentials | snmpv3 | test |
+>| 2   | shared credentials | as400 | test |
+>| 3   | shared credentials | ssh | test |
+
+
+### nexpose-list-site-scan-credential
+
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Retrieve information about all or a specific sca credential.
+
+#### Base Command
+
+`nexpose-list-site-scan-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| credential_id | ID of a specific scan credential to retrieve. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.SiteScanCredential.account.authenticationType | string | SNMPv3 authentication type for the credential. | 
+| Nexpose.SiteScanCredential.account.communityName | string | SNMP community for authentication. | 
+| Nexpose.SiteScanCredential.account.database | string | Database name. | 
+| Nexpose.SiteScanCredential.account.domain | string | Domain address. | 
+| Nexpose.SiteScanCredential.account.enumerateSids | boolean | Whether the scan engine should attempt to enumerate SIDs from the environment. | 
+| Nexpose.SiteScanCredential.account.notesIDPassword | string | Password for the notes account that will be used for authenticating. | 
+| Nexpose.SiteScanCredential.account.ntlmHash | string | NTLM password hash. | 
+| Nexpose.SiteScanCredential.account.oracleListenerPassword | string | The Oracle Net Listener password. Used to enumerate SIDs from the environment. | 
+| Nexpose.SiteScanCredential.account.password | string | Password for the credential. | 
+| Nexpose.SiteScanCredential.account.pemKey | string | PEM formatted private key. | 
+| Nexpose.SiteScanCredential.account.permissionElevation | string | Elevation type to use for scans. | 
+| Nexpose.SiteScanCredential.account.permissionElevationPassword | string | Password to use for elevation. | 
+| Nexpose.SiteScanCredential.account.permissionElevationUserName | string | Username to use for elevation. | 
+| Nexpose.SiteScanCredential.account.privacyPassword | string | SNMPv3 privacy password to use. | 
+| Nexpose.SiteScanCredential.account.privacyType | string | SNMPv3 privacy protocol to use. | 
+| Nexpose.SiteScanCredential.account.privateKeyPassword | string | Password for the private key. | 
+| Nexpose.SiteScanCredential.account.realm | string | HTTP realm. | 
+| Nexpose.SiteScanCredential.account.service | string | Credential service type. | 
+| Nexpose.SiteScanCredential.account.sid | string | Oracle database name. | 
+| Nexpose.SiteScanCredential.account.useWindowsAuthentication | boolean | Whether to use Windows authentication. | 
+| Nexpose.SiteScanCredential.account.username | string | Username for the credential. | 
+| Nexpose.SiteScanCredential.description | string | Description for the credential. | 
+| Nexpose.SiteScanCredential.hostRestriction | string | Hostname or IP address to restrict the credentials to. | 
+| Nexpose.SiteScanCredential.id | number | ID of the credential. | 
+| Nexpose.SiteScanCredential.name | string | Name of the credential. | 
+| Nexpose.SiteScanCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`hostRestriction\` is used. | 
+
+### nexpose-list-vulnerability-exceptions
+
+***
+Retrieve information about scan schedules for a specific site or a specific scan schedule.
+
+#### Base Command
+
+`nexpose-list-vulnerability-exceptions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the vulnerability exception to retrieve. If not set, retrieve all vulnerability exceptions. | Optional | 
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". Default is submit.date,ASC. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.VulnerabilityException.expires | string | The date and time the vulnerability exception is set to expire. | 
+| Nexpose.VulnerabilityException.id | int | The The identifier of the vulnerability exception. | 
+| Nexpose.VulnerabilityException.scope.id | int | The identifier of the vulnerability to which the exception applies. | 
+| Nexpose.VulnerabilityException.scope.key | string | If the scope type is "Instance", an optional key to discriminate the instance the exception applies to. | 
+| Nexpose.VulnerabilityException.scope.port | int | If the scope type is "Instance" and the vulnerability is detected on a service, the port on which the exception applies. | 
+| Nexpose.VulnerabilityException.scope.type | string | The type of the exception scope. One of: "Global", "Site", "Asset", "Asset Group", "Instance". | 
+| Nexpose.VulnerabilityException.scope.vulnerability | string | The identifier of the vulnerability to which the exception applies. | 
+| Nexpose.VulnerabilityException.state | string | The state of the vulnerability exception. One of: "Deleted", "Expired", "Approved", "Rejected", \`"Under Review". | 
+| Nexpose.VulnerabilityException.submit.comment | string | A comment from the submitter as to why the exception was submitted. | 
+| Nexpose.VulnerabilityException.submit.date | string | The date and time the vulnerability exception was submitted. | 
+| Nexpose.VulnerabilityException.submit.name | string | The login name of the user who submitted the vulnerability exception. | 
+| Nexpose.VulnerabilityException.submit.reason | string | The reason the vulnerability exception was submitted. One of: "False Positive", "Compensating Control", "Acceptable Use", "Acceptable Risk", "Other" | 
+| Nexpose.VulnerabilityException.submit.user | int | The identifier of the user who submitted the vulnerability exception. | 
+
+#### Command example
+```!nexpose-list-vulnerability-exceptions sort="submit.date,ASC" limit=3```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "VulnerabilityException": [
+            {
+                "expires": "2028-03-01T04:31:56Z",
+                "id": 1,
+                "review": {
+                    "comment": "Auto approved by submitter.",
+                    "date": "2022-10-31T14:39:15.736Z",
+                    "name": "admin",
+                    "user": 1
+                },
+                "scope": {
+                    "type": "global",
+                    "vulnerability": "tlsv1_0-enabled"
+                },
+                "state": "approved",
+                "submit": {
+                    "date": "2022-06-29T16:10:06.616880Z",
+                    "name": "admin",
+                    "reason": "false positive",
+                    "user": 1
+                }
+            },
+            {
+                "id": 2,
+                "review": {
+                    "date": "2022-10-30T13:54:31.084Z",
+                    "name": "admin",
+                    "user": 1
+                },
+                "scope": {
+                    "type": "global",
+                    "vulnerability": "php-cve-2018-10545"
+                },
+                "state": "rejected",
+                "submit": {
+                    "date": "2022-07-13T13:27:31.647402Z",
+                    "name": "admin",
+                    "reason": "acceptable use",
+                    "user": 1
+                }
+            },
+            {
+                "id": 3,
+                "scope": {
+                    "type": "global",
+                    "vulnerability": "cifs-smb-signing-disabled"
+                },
+                "state": "under review",
+                "submit": {
+                    "date": "2022-10-27T11:40:34.109268Z",
+                    "name": "admin",
+                    "reason": "acceptable use",
+                    "user": 1
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nexpose Vulnerability Exceptions
+>| Id  |Vulnerability|ExceptionScope|Reason|ReportedBy|ReviewStatus|ReviewedOn|ExpiresOn|
+-----|---|---|---|---|---|---|---|---|
+>| 1   | tlsv1_0-enabled | global | false positive | admin | approved | 2022-10-31T14:39:15.736Z | 2028-03-01T04:31:56Z |
+>| 2   | php-cve-2018-10545 | global | acceptable use | admin | rejected | 2022-10-30T13:54:31.084Z |  |
+>| 3   | cifs-smb-signing-disabled | global | acceptable use | admin | under review |  |  |
+
+
+### nexpose-start-site-scan
+
+***
+Starts a scan for the specified site.
+
+#### Base Command
+
+`nexpose-start-site-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site`). | Optional | 
+| hosts | Specific host(s) on the site to run the scan on. Can be an IP address or a hostname. Can be a comma-separated list. | Optional | 
+| name | Scan name. | Optional | 
 
 
 #### Context Output
@@ -1045,212 +1931,82 @@ Starts a scan for the specified site.
 | --- | --- | --- |
 | Nexpose.Scan.Id | number | The identifier of the scan. | 
 | Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | date | The name of the user that started the scan. | 
-| Nexpose.Scan.Assets | number | The number of assets found in the scan | 
+| Nexpose.Scan.StartedBy | date | The name of the user who started the scan. | 
+| Nexpose.Scan.Assets | number | The number of assets found in the scan. | 
 | Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
 | Nexpose.Scan.Completed | date | The end time of the scan in ISO8601 format. | 
-| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
+| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating. | 
 | Nexpose.Scan.Vulnerabilities.Critical | number | The number of critical vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Moderate | number | The number of moderate vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Severe | number | The number of severe vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Total | number | The total number of vulnerabilities. | 
 
-
-#### Command Example
-``` !nexpose-start-site-scan site=2 hosts=127.0.0.1 ```
-
-#### Context Example
-```json
-{
-    "Nexpose": {
-        "Scan": {
-            "Assets": 0,
-            "Completed": null,
-            "Id": 89391,
-            "Message": null,
-            "ScanName": "scan 2018-08-20 11:54:59.673365",
-            "ScanType": "Manual",
-            "StartedBy": null,
-            "Status": "running",
-            "TotalTime": "0 minutes",
-            "Vulnerabilities": {
-                "Critical": 0,
-                "Moderate": 0,
-                "Severe": 0,
-                "Total": 0
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-[![image](https://user-images.githubusercontent.com/35098543/44340427-7ed48100-a48d-11e8-89ec-dbe8b8958f8c.png)](https://user-images.githubusercontent.com/35098543/44340427-7ed48100-a48d-11e8-89ec-dbe8b8958f8c.png)
-
-
-### nexpose-start-assets-scan
-***
-Starts a scan for specified asset IP addresses and host names.
-
-
-#### Base Command
-
-`nexpose-start-assets-scan`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| IPs | Multiple criteria of &lt;string&gt; IP addresses of assets, comma separated. | Optional | 
-| hostNames | Multiple criteria of &lt;string&gt; Host names of assets, comma separated. | Optional | 
-| name | &lt;string&gt; The user-driven scan name for the scan. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Nexpose.Scan.Id | number | The identifier of the scan. | 
-| Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | date | The name of the user that started the scan. | 
-| Nexpose.Scan.Assets | number | The number of assets found in the scan | 
-| Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
-| Nexpose.Scan.Completed | date | The end time of the scan in ISO8601 format. | 
-| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
-| Nexpose.Scan.Vulnerabilities.Critical | number | The number of critical vulnerabilities. | 
-| Nexpose.Scan.Vulnerabilities.Moderate | number | The number of moderate vulnerabilities. | 
-| Nexpose.Scan.Vulnerabilities.Severe | number | The number of severe vulnerabilities. | 
-| Nexpose.Scan.Vulnerabilities.Total | numberFF | The total number of vulnerabilities. | 
-
-
-#### Command Example
-```!nexpose-start-assets-scan IPs=127.0.0.1```
-
-##### Context Example
-```json
-{
-    "Nexpose": {
-        "Scan": {
-            "Assets": 0,
-            "Completed": null,
-            "Id": 89410,
-            "Message": null,
-            "ScanName": "scan 2018-08-20 12:31:52.951818",
-            "ScanType": "Manual",
-            "StartedBy": null,
-            "Status": "running",
-            "TotalTime": "0 minutes",
-            "Vulnerabilities": {
-                "Critical": 0,
-                "Moderate": 0,
-                "Severe": 0,
-                "Total": 0
-            }
-        }
-    }
-}
-
-```
-
-##### Human Readable Output
-
-[![image](https://user-images.githubusercontent.com/35098543/44340807-b68ff880-a48e-11e8-827d-50ed6dff3798.png)](https://user-images.githubusercontent.com/35098543/44340807-b68ff880-a48e-11e8-827d-50ed6dff3798.png)
-
-
 ### nexpose-stop-scan
-***
-Stop the specified scan
 
+***
+Stop a running scan.
 
 #### Base Command
 
 `nexpose-stop-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | integer &lt;int64&gt; ID of the scan to stop. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` !nexpose-stop-scan id=143200 ```
-
-#### Human Readable Output
-> Successfully stopped the scan
+| id | ID of a running scan. | Required | 
 
 
 ### nexpose-pause-scan
-***
-Pause the specified scan
 
+***
+Pause a running scan.
 
 #### Base Command
 
 `nexpose-pause-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | integer &lt;int64&gt; ID of the scan to pause. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` !nexpose-pause-scan id=143200 ```
-
-#### Human Readable Output
-> Successfully paused the scan
-
+| id | ID of a running scan. | Required | 
 
 
 ### nexpose-resume-scan
-***
-Resume the specified scan
 
+***
+Resume a paused scan.
 
 #### Base Command
 
 `nexpose-resume-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | integer &lt;int64&gt; ID of the scan to resume. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` !nexpose-resume-scan id=143200 ```
-
-#### Human Readable Output
-> Successfully resumed the scan
+| id | ID of a paused scan. | Required | 
 
 
 ### nexpose-get-scans
-***
-Returns a list of scans.
 
+***
+Return a list of scans. Returns only active scans by default (active=true).
 
 #### Base Command
 
 `nexpose-get-scans`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| active | &lt;boolean&gt; Return active or past scans. Possible values are: true, false. Default is true. | Optional | 
-| limit | integer &lt;int32&gt; The number of records retrieve. Default is 10. | Optional | 
-| sort | Multiple criteria of &lt;string&gt; The criteria to sort the records by, in the format: property[,ASC\|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
-
+| active | Whether to return only active scans. Possible values are: true, false. Default is true. | Optional | 
+| page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
 
 #### Context Output
 
@@ -1258,16 +2014,14 @@ Returns a list of scans.
 | --- | --- | --- |
 | Nexpose.Scan.Id | number | The identifier of the scan. | 
 | Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | date | The name of the user that started the scan. | 
+| Nexpose.Scan.StartedBy | date | The name of the user who started the scan. | 
 | Nexpose.Scan.Assets | number | The number of assets found in the scan | 
 | Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
 | Nexpose.Scan.Completed | date | The end time of the scan in ISO8601 format. | 
-| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
+| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating. | 
 
-
-#### Command Example
-```!nexpose-get-scans active=false```
-
+#### Command example
+```!nexpose-get-scans active=false limit=3```
 #### Context Example
 ```json
 {
@@ -1282,7 +2036,7 @@ Returns a list of scans.
                 "ScanType": "Manual",
                 "StartedBy": null,
                 "Status": "finished",
-                "TotalTime": "5.26666666667 minutes"
+                "TotalTime": "51.316 seconds"
             },
             {
                 "Assets": 0,
@@ -1293,18 +2047,18 @@ Returns a list of scans.
                 "ScanType": "Manual",
                 "StartedBy": null,
                 "Status": "finished",
-                "TotalTime": "1.51666666667 minutes"
+                "TotalTime": "29.91 seconds"
             },
             {
-                "Assets": 1,
-                "Completed": "2020-04-20T13:57:00.647Z",
+                "Assets": 0,
+                "Completed": "2019-12-03T21:01:33.970Z",
                 "Id": 3,
                 "Message": null,
-                "ScanName": "Test scan",
+                "ScanName": "scan 2019-12-03 19:58:25.961787",
                 "ScanType": "Manual",
                 "StartedBy": null,
                 "Status": "finished",
-                "TotalTime": "10.7833333333 minutes"
+                "TotalTime": "28.904 seconds"
             }
         ]
     }
@@ -1313,75 +2067,116 @@ Returns a list of scans.
 
 #### Human Readable Output
 
->### Nexpose scans
+>### Nexpose Scans
 >|Id|ScanType|ScanName|Assets|TotalTime|Completed|Status|
 >|---|---|---|---|---|---|---|
->| 1 | Manual | Tue 03 Dec 2019 10:47 PM | 0 | 5.26666666667 minutes | 2019-12-03T20:48:01.368Z | finished |
->| 2 | Manual | Tue 03 Dec 2019 10:52 PM | 0 | 1.51666666667 minutes | 2019-12-03T20:53:09.453Z | finished |
->| 3 | Manual | Test scan | 1 | 10.7833333333 minutes | 2020-04-20T13:57:00.647Z | finished |
+>| 1 | Manual | Tue 03 Dec 2019 10:47 PM | 0 | 51.316 seconds | 2019-12-03T20:48:01.368Z | finished |
+>| 2 | Manual | Tue 03 Dec 2019 10:52 PM | 0 | 29.91 seconds | 2019-12-03T20:53:09.453Z | finished |
+>| 3 | Manual | scan 2019-12-03 19:58:25.961787 | 0 | 28.904 seconds | 2019-12-03T21:01:33.970Z | finished |
 
 
-### nexpose-download-report
+### nexpose-disable-shared-credential
+
 ***
-Returns the generated report.
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
+Disable an assigned shared credential.
 
 #### Base Command
 
-`nexpose-download-report`
+`nexpose-disable-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The identifier of the report. | Required | 
-| instance_id | The identifier of the report instance. Also supports the "latest" keyword. | Required | 
-| name | The report name. | Optional | 
-| format | The report format, default is pdf. Possible values are: pdf, rtf, xml, html, text. Default is pdf. | Optional | 
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| credential_id | ID of the scan schedule to update. | Required | 
 
+
+### nexpose-download-report
+
+***
+Returns the generated report.
+
+#### Base Command
+
+`nexpose-download-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | ID of the report. | Required | 
+| instance_id | ID of the report instance. Supports a "latest" value. | Required | 
+| name | Report name. | Optional | 
+| format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text, nexpose-simple-xml. Default is pdf. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.EntryId | string | Entry ID of the report file. | 
 | InfoFile.Name | string | Name of the report file. | 
 | InfoFile.Extension | string | File extension of the report file. | 
 | InfoFile.Info | string | Information about the report file. | 
-| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Size | number | Size of the report file \(in bytes\). | 
 | InfoFile.Type | string | Type of the report file. | 
 
-#### Command Example
-```!nexpose-download-report report_id=1983 instance_id=1976```
-
+#### Command example
+```!nexpose-download-report report_id=1 instance_id=latest```
 #### Context Example
 ```json
 {
     "InfoFile": {
-        "EntryID": "2498@51c113de-6213-4aea-8beb-d4b88551f7f8",
+        "EntryID": "4127@403762e2-be4e-4f12-8a17-26cdb21b129e",
         "Extension": "pdf",
         "Info": "application/pdf",
-        "Name": "report 2021-02-01 08:31:58.023348.pdf",
-        "Size": 212722,
+        "Name": "report 2022-11-30 09:25:43.835638.pdf",
+        "Size": 76699,
         "Type": "PDF document, version 1.4"
     }
 }
 ```
 
-### nexpose-get-report-status
-***
-Returns the status of a report generation process.
+### nexpose-enable-shared-credential
 
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Enable an assigned shared credential.
 
 #### Base Command
 
-`nexpose-get-report-status`
+`nexpose-enable-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The identifier of the report. | Required | 
-| instance_id | The identifier of the report instance. Also supports the "latest" keyword. | Required | 
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| credential_id | ID of the scan schedule to update. | Required | 
 
+
+### nexpose-get-report-status
+
+***
+Returns the status of a report generation process.
+
+#### Base Command
+
+`nexpose-get-report-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_id | ID of the report. | Required | 
+| instance_id | ID of the report instance. Supports a "latest" value. | Required | 
 
 #### Context Output
 
@@ -1389,18 +2184,17 @@ Returns the status of a report generation process.
 | --- | --- | --- |
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
-| Nexpose.Report.Status | string | The status of the report generation process. Valid values: "aborted", "failed", "complete", "running", "unknown" | 
+| Nexpose.Report.Status | string | The status of the report generation process. Valid values: "aborted", "failed", "complete", "running", "unknown". | 
 
-#### Command Example
-```!nexpose-get-report-status report_id=1983 instance_id=1976```
-
+#### Command example
+```!nexpose-get-report-status report_id=1 instance_id=latest```
 #### Context Example
 ```json
 {
     "Nexpose": {
         "Report": {
-            "ID": "1983",
-            "InstanceID": "1976",
+            "ID": "1",
+            "InstanceID": "latest",
             "Status": "complete"
         }
     }
@@ -1412,13 +2206,183 @@ Returns the status of a report generation process.
 >### Report Generation Status
 >|ID|InstanceID|Status|
 >|---|---|---|
->| 1983 | 1976 | complete |
+>| 1 | latest | complete |
 
 
-Troubleshooting
--
+### nexpose-update-scan-schedule
 
--   In case of a timeout error, the API server address or port may be incorrect.
--   In case of a `400 Bad Request` error, incorrect values were provided to an API resource, e.g incorrect search fields.
--   In case of a `401 Unauthorized` error, incorrect credentials were provided or there are insufficient privileges for a specific resource.
--   In case of a `404 Not Found` error, a specified resource was not found, e.g a vulnerability that doesn't exist in an asset.
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Update an existing site scan schedule.
+
+#### Base Command
+
+`nexpose-update-scan-schedule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| schedule_id | ID of the scan schedule to update. | Optional | 
+| enabled | A flag indicating whether the scheduled scan is enabled. Possible values are: True, False. Default is True. | Optional | 
+| on_scan_repeat | The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration. Possible values are: Restart-Scan, Resume-Scan. | Required | 
+| start | The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time. | Required | 
+| excluded_asset_group_ids | A list of IDs for asset groups to exclude from the scan. | Optional | 
+| excluded_addresses | A list of addresses to exclude from the scan. | Optional | 
+| included_asset_group_ids | A list of IDs for asset groups to include in the scan. | Optional | 
+| included_addresses | A list of addresses to include in the scan. | Optional | 
+| duration_days | Maximum duration of the scan in days. | Optional | 
+| duration_hours | Maximum duration of the scan in hours. | Optional | 
+| duration_minutes | Maximum duration of the scan in minutes. | Optional | 
+| frequency | How frequently should the schedule repeat (Every...). Possible values are: Hour, Day, Week, Date-of-month. | Optional | 
+| interval_time | The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used. | Optional | 
+| date_of_month | Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`. | Optional | 
+| scan_name | A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching. | Optional | 
+| scan_template | ID of the scan template to use. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-update-site-scan-credential
+
+***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
+Update an existing site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials.
+
+#### Base Command
+
+`nexpose-update-site-scan-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | ID of the site. | Optional | 
+| site_name | Name of the site (can be used instead of `site_id`). | Optional | 
+| credential_id | ID of the site scan credential to update. | Required | 
+| name | Name of the credential. | Required | 
+| service | Credential service type. Possible values are: AS400, CIFS, CIFSHash, CVS, DB2, FTP, HTTP, MS-SQL, MySQL, Notes, Oracle, POP, PostgresSQL, Remote-Exec, SNMP, SNMPv3, SSH, SSH-Key, Sybase, Telnet. | Required | 
+| database | Database name. | Optional | 
+| description | Description for the credential. | Optional | 
+| domain | Domain address. | Optional | 
+| host_restriction | Hostname or IP address to restrict the credentials to. | Optional | 
+| http_realm | HTTP realm. | Optional | 
+| notes_id_password | Password for the notes account that will be used for authenticating. | Optional | 
+| ntlm_hash | NTLM password hash. | Optional | 
+| oracle_enumerate_sids | Whether the scan engine should attempt to enumerate SIDs from the environment. Possible values are: true, false. | Optional | 
+| oracle_listener_password | Oracle Net Listener password. Used to enumerate SIDs from your environment. | Optional | 
+| oracle_sid | Oracle database name. | Optional | 
+| password | Password for the credential. | Optional | 
+| port_restriction | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used. | Optional | 
+| community_name | SNMP community for authentication. | Optional | 
+| authentication_type | SNMPv3 authentication type for the credential. Possible values are: No-Authentication, MD5, SHA. | Optional | 
+| privacy_password | SNMPv3 privacy password to use. | Optional | 
+| privacy_type | SNMPv3 Privacy protocol to use. Possible values are: No-Privacy, DES, AES-128, AES-192, AES-192-With-3-DES-Key-Extension, AES-256, AES-256-With-3-DES-Key-Extension. | Optional | 
+| ssh_key_pem | PEM formatted private key. | Optional | 
+| ssh_permission_elevation | Elevation type to use for scans. Possible values are: None, sudo, sudosu, su, pbrun, Privileged Exec. | Optional | 
+| ssh_permission_elevation_password | Password to use for elevation. | Optional | 
+| ssh_permission_elevation_username | Username to use for elevation. | Optional | 
+| ssh_private_key_password | Password for the private key. | Optional | 
+| use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
+| username | Username for the credential. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### nexpose-update-vulnerability-exception-expiration
+
+***
+Update an existing vulnerability exception.
+
+#### Base Command
+
+`nexpose-update-vulnerability-exception-expiration`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the vulnerability exception to update. | Required | 
+| expiration | An expiration date for the vulnerability exception formatted in ISO 8601 format. Must be a date in the future. | Required | 
+
+
+#### Command example
+```!nexpose-update-vulnerability-exception-expiration id=1 expiration=2024-10-10T10:00:00Z```
+#### Human Readable Output
+
+>Successfully updated expiration date of vulnerability exception 1.
+
+### nexpose-update-vulnerability-exception-status
+
+***
+Update an existing vulnerability exception.
+
+#### Base Command
+
+`nexpose-update-vulnerability-exception-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the vulnerability exception to update. | Required | 
+| status | A status to update the vulnerability exception to. Possible values are: Recall, Approve, Reject. | Required | 
+
+
+#### Command example
+```!nexpose-update-vulnerability-exception-status id=1 status=Approve```
+#### Human Readable Output
+
+>Successfully updated status of vulnerability exception 1.
+
+### nexpose-update-shared-credential
+
+***
+Update an existing shared credential.
+
+#### Base Command
+
+`nexpose-update-shared-credential`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the shared credential to update. | Required | 
+| name | Name of the credential. | Required | 
+| site_assignment | Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites. Possible values are: All-Sites, Specific-Sites. | Required | 
+| service | Credential service type. Possible values are: AS400, CIFS, CIFSHash, CVS, DB2, FTP, HTTP, MS-SQL, MySQL, Notes, Oracle, POP, PostgresSQL, Remote-Exec, SNMP, SNMPv3, SSH, SSH-Key, Sybase, Telnet. | Required | 
+| database | Database name. | Optional | 
+| description | Description for the credential. | Optional | 
+| domain | Domain address. | Optional | 
+| host_restriction | Hostname or IP address to restrict the credentials to. | Optional | 
+| http_realm | HTTP realm. | Optional | 
+| notes_id_password | Password for the notes account that will be used for authenticating. | Optional | 
+| ntlm_hash | NTLM password hash. | Optional | 
+| oracle_enumerate_sids | Whether the scan engine should attempt to enumerate SIDs from the environment. Possible values are: true, false. | Optional | 
+| oracle_listener_password | Oracle Net Listener password. Used to enumerate SIDs from your environment. | Optional | 
+| oracle_sid | Oracle database name. | Optional | 
+| password | Password for the credential. | Optional | 
+| port_restriction | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used. | Optional | 
+| sites | List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan. | Optional | 
+| community_name | SNMP community for authentication. | Optional | 
+| authentication_type | SNMPv3 authentication type for the credential. Possible values are: No-Authentication, MD5, SHA. | Optional | 
+| privacy_password | SNMPv3 privacy password to use. | Optional | 
+| privacy_type | SNMPv3 Privacy protocol to use. Possible values are: No-Privacy, DES, AES-128, AES-192, AES-192-With-3-DES-Key-Extension, AES-256, AES-256-With-3-DES-Key-Extension. | Optional | 
+| ssh_key_pem | PEM formatted private key. | Optional | 
+| ssh_permission_elevation | Elevation type to use for scans. Possible values are: None, sudo, sudosu, su, pbrun, Privileged-Exec. | Optional | 
+| ssh_permission_elevation_password | Password to use for elevation. | Optional | 
+| ssh_permission_elevation_username | Username to use for elevation. | Optional | 
+| ssh_private_key_password | Password for the private key. | Optional | 
+| use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
+| username | Username for the credential. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

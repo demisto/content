@@ -83,7 +83,7 @@ tasks:
       - "4"
     scriptarguments:
       filename:
-        simple: test.pdf
+        simple: "# test.pdf"
       method:
         simple: GET
       saveAsFile:
@@ -112,13 +112,13 @@ tasks:
     task:
       id: 584e68fb-7de6-4342-8cd6-557463729486
       version: -1
-      name: Detonate File - CrowsStrike Falcon X
-      playbookName: Detonate File - CrowdStrike Falcon X
+      name: Detonate File - CrowsStrike Falcon Intelligence Sandbox
+      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox
       type: playbook
       iscommand: false
       brand: ""
       description: |-
-        Detonates a File using CrowdStrike Falcon X sandbox.
+        Detonates a File using CrowdStrike Falcon Intelligence Sandbox.
         Accepted file formats:
         Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
         Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub

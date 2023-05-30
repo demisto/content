@@ -1,0 +1,27 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "5fc5c4eb-037a-4bd6-a9c2-c51577c96cbc",
+            "vendor": "unix",
+            "product": "auditd",
+            "dataset": "unix_auditd_raw",
+            "event_data": {
+                "_raw_log": "<13>Jan 29 12:20:01 somehost123 audispd: node=czstlls086.prg-dc.dhl.com type=LOGIN msg=audit(1675162708.814:57688940): pid=26435 uid=0 old auid=7632 new auid=0 old ses=337905 new ses=357883"
+            },
+            "expected_values": {
+                "xdm.source.user.identifier": "0",
+                "xdm.event.outcome": null,
+                "xdm.event.operation": null,
+                "xdm.session_context_id": "337905",
+                "xdm.source.host.hostname": "somehost123",
+                "xdm.source.process.executable.path": null,
+                "xdm.source.user.username": null,
+                "xdm.source.ipv4": null,
+                "xdm.event.id": "57688940",
+                "xdm.source.process.pid": 26435.0,
+                "xdm.event.type": "LOGIN",
+                "xdm.source.process.command_line": null
+            }
+        }
+    ]
+}

@@ -1,10 +1,10 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -36,6 +36,7 @@ class Client(BaseClient):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
+
         return "Bearer " + (self._http_request("POST", "/oauth2/token", headers=headers, data=body)).get('access_token')
 
     def getPasswordById(self, secret_id: str) -> str:
@@ -46,10 +47,12 @@ class Client(BaseClient):
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/username"
         return self._http_request("GET", url_suffix)
 
-    def getSecret(self, secret_id: str) -> str:
+    def getSecret(self, secret_id: str, autocommit: str = '') -> str:
+        params = {
+            "autocomment": autocommit
+        }
         url_suffix = "/api/v1/secrets/" + str(secret_id)
-
-        return self._http_request("GET", url_suffix)
+        return self._http_request("GET", url_suffix, params=params)
 
     def searchSecretIdByName(self, search_name: str) -> list:
         url_suffix = "/api/v1/secrets/lookup?filter.searchText=" + search_name
@@ -77,13 +80,16 @@ class Client(BaseClient):
         idSecret = list(map(lambda x: x.get('id'), response))
         return idSecret
 
-    def updateSecretPassword(self, secret_id: str, new_password: str) -> str:
+    def updateSecretPassword(self, secret_id: str, new_password: str, auto_comment: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password"
         body = {
             "id": secret_id,
             "value": new_password
         }
-        return self._http_request("PUT", url_suffix, json_data=body)
+        params = {
+            "autoComment": auto_comment
+        }
+        return self._http_request("PUT", url_suffix, params=params, json_data=body)
 
     def secret_checkout(self, secret_id: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/check-out"
@@ -94,15 +100,19 @@ class Client(BaseClient):
 
         return self._http_request("POST", url_suffix)
 
-    def secretChangePassword(self, secret_id: str, newPassword: str) -> str:
+    def secretChangePassword(self, secret_id: str, newPassword: str, autoComment: str) -> str:
         body = {
             "newPassword": newPassword
         }
+        params = {
+            "autoComment": autoComment
+        }
 
-        return self._http_request("POST", url_suffix="/api/v1/secrets/" + str(secret_id) + "/change-password", json_data=body)
+        return self._http_request("POST", url_suffix="/api/v1/secrets/" + str(
+            secret_id) + "/change-password", params=params, json_data=body)
 
     def secretCreate(self, name: str, secret_template_id: str, **kwargs) -> str:
-        secretJSON = {'name': name, 'secretTemplateId': secret_template_id, 'items': []}  # type: Dict[str, Any]
+        secretjson = {'name': name, 'secretTemplateId': secret_template_id, 'items': []}  # type: Dict[str, Any]
 
         for key, value in kwargs.items():
             JSON = {}
@@ -110,41 +120,45 @@ class Client(BaseClient):
                 JSON['fieldName'] = 'Domain'
                 JSON['itemValue'] = value
                 JSON['slug'] = 'domain'
-                secretJSON['items'].append(JSON)
+                secretjson['items'].append(JSON)
 
             elif key == 'machine_item':
                 JSON['fieldName'] = 'Machine'
                 JSON['itemValue'] = value
                 JSON['slug'] = 'machine'
-                secretJSON['items'].append(JSON)
+                secretjson['items'].append(JSON)
 
             elif key == 'username_item':
                 JSON['fieldName'] = 'Username'
                 JSON['itemValue'] = value
                 JSON['slug'] = 'username'
-                secretJSON['items'].append(JSON)
+                secretjson['items'].append(JSON)
 
             elif key == 'password_item':
                 JSON['fieldName'] = 'Password'
                 JSON['itemValue'] = value
                 JSON['slug'] = 'password'
                 JSON['isPassword'] = "true"
-                secretJSON['items'].append(JSON)
+                secretjson['items'].append(JSON)
 
             elif key == 'notes_item':
                 JSON['fieldName'] = 'Notes'
                 JSON['itemValue'] = value
                 JSON['slug'] = 'notes'
                 JSON['isNotes'] = "true"
-                secretJSON['items'].append(JSON)
+                secretjson['items'].append(JSON)
 
             else:
-                secretJSON[key] = value
+                secretjson[key] = value
 
-        return self._http_request("POST", url_suffix="/api/v1/secrets", json_data=secretJSON)
+        return self._http_request("POST", url_suffix="/api/v1/secrets", json_data=secretjson)
 
-    def secretDelete(self, id: int) -> str:
-        return self._http_request("DELETE", url_suffix="/api/v1/secrets/" + str(id))
+    def secretDelete(self, id: int, auto_comment: str) -> str:
+        params = {
+            "autoComment": auto_comment
+        }
+
+        return self._http_request("DELETE", url_suffix="/api/v1/secrets/" + str(id), params=params)
 
     def folderCreate(self, name: str, type: int, parent: int, **kwargs) -> str:
         url_suffix = "/api/v1/folders"
@@ -163,8 +177,8 @@ class Client(BaseClient):
         url_suffix = "/api/v1/folders/lookup?filter.searchText=" + search_folder
 
         response_records = self._http_request("GET", url_suffix).get('records')
-        idFolder = list(map(lambda x: x.get('id'), response_records))
-        return idFolder
+        idfolder = list(map(lambda x: x.get('id'), response_records))
+        return idfolder
 
     def folderDelete(self, folder_id: str) -> str:
         url_suffix = "/api/v1/folders/" + folder_id
@@ -220,7 +234,6 @@ def test_module(client) -> str:
 
 def secret_password_get_command(client, secret_id: str = ''):
     secret_password = client.getPasswordById(secret_id)
-
     markdown = tableToMarkdown('Password for secret',
                                {'Secret ID': secret_id, 'Password': secret_password})
 
@@ -235,7 +248,6 @@ def secret_password_get_command(client, secret_id: str = ''):
 
 def secret_username_get_command(client, secret_id: str = ''):
     secret_username = client.getUsernameById(secret_id)
-
     markdown = tableToMarkdown('Username for secret',
                                {'Secret ID': secret_id, 'Password': secret_username})
 
@@ -248,9 +260,8 @@ def secret_username_get_command(client, secret_id: str = ''):
     )
 
 
-def secret_get_command(client, secret_id: str = ''):
-    secret = client.getSecret(secret_id)
-
+def secret_get_command(client, secret_id: str = '', autoComment: str = ''):
+    secret = client.getSecret(secret_id, autoComment)
     markdown = tableToMarkdown('Full secret object', secret)
     markdown += tableToMarkdown('Items for secret', secret['items'])
 
@@ -289,9 +300,8 @@ def secret_search_command(client, **kwargs):
     )
 
 
-def secret_password_update_command(client, secret_id: str = '', newpassword: str = ''):
-    secret_newpassword = client.updateSecretPassword(secret_id, newpassword)
-
+def secret_password_update_command(client, secret_id: str = '', newpassword: str = '', autoComment: str = ''):
+    secret_newpassword = client.updateSecretPassword(secret_id, newpassword, autoComment)
     markdown = tableToMarkdown('Set new password for secret',
                                {'Secret ID': secret_id, 'New password': newpassword})
 
@@ -344,8 +354,8 @@ def secret_create_command(client, name: str = '', secretTemplateId: int = 0, **k
     )
 
 
-def secret_delete_command(client, id: int = 0):
-    delete = client.secretDelete(id)
+def secret_delete_command(client, id: int = 0, autoComment: str = ''):
+    delete = client.secretDelete(id, autoComment)
     markdown = tableToMarkdown('Deleted secret', delete)
 
     return CommandResults(
@@ -359,7 +369,6 @@ def secret_delete_command(client, id: int = 0):
 
 def folder_create_command(client, foldername: str = '', foldertypeid: int = 1, parentfolderid: int = 1, **kwargs):
     folder = client.folderCreate(foldername, foldertypeid, parentfolderid, **kwargs)
-
     markdown = tableToMarkdown('Created new folder', folder)
 
     return CommandResults(
@@ -412,7 +421,6 @@ def folder_delete_command(client, folder_id: str = ''):
 
 def user_create_command(client, **kwargs):
     user = client.userCreate(**kwargs)
-
     markdown = tableToMarkdown('Created new user', user)
 
     return CommandResults(
@@ -463,8 +471,8 @@ def user_delete_command(client, id: str = ''):
     )
 
 
-def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: str = ''):
-    secret = client.secretChangePassword(secret_id, newpassword)
+def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: str = '', autoComment: str = ''):
+    secret = client.secretChangePassword(secret_id, newpassword, autoComment)
     markdown = tableToMarkdown('Change password for remote machine', secret)
 
     return CommandResults(
@@ -476,17 +484,81 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
     )
 
 
-def main():  # pragma: no cover
+def get_credentials(client, secret_id):
+    obj = {}
+    secret = client.getSecret(secret_id)
+    items = secret.get('items')
+    username = None
+    password = None
+    for item in items:
+        if item.get('fieldName') == 'Username':
+            username = item.get('itemValue')
+        if item.get('fieldName') == 'Password':
+            password = item.get('itemValue')
+        obj = {
+            "user": username,
+            "password": password,
+            "name": str(secret.get('id'))
+        }
+    return obj
+
+
+def fetch_credentials_command(client, secretids):
+    credentials: List[Any] = []
+    args: dict = demisto.args()
+    credentials_name: Any = args.get('identifier')
+
+    try:
+        secretsid = argToList(secretids)
+    except Exception as e:
+        demisto.debug(f"Could not fetch credentials: Provide valid secret id.{e}")
+        credentials = []
+
+    for id in secretsid:
+        if id not in secretsid:
+            secretsid.append(id)
+
+    if len(secretsid) == 0:
+        demisto.credentials(credentials)
+        demisto.debug(
+            "Could not fetch credentials: Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
+        credentials = []
+    else:
+        if credentials_name:
+            try:
+                credentials = [get_credentials(client, credentials_name)]
+            except Exception as e:
+                demisto.debug(f"Could not fetch credentials: {credentials_name}. Error: {e}")
+                credentials = []
+        else:
+            for secret_id in secretsid:
+                obj = get_credentials(client, secret_id)
+                credentials.append(obj)
+
+    demisto.credentials(credentials)
+    markdown = tableToMarkdown('Fetched Credentials', credentials)
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix="Delinea.Secret.Fetch.Credentials",
+        outputs_key_field="credentials",
+        raw_response=credentials,
+        outputs=credentials
+    )
+
+
+def main():
     params = demisto.params()
+
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-
     # get the service API url
     url = params.get('url')
     proxy = params.get('proxy', False)
     verify = not params.get('insecure', False)
+    secretids = params.get('secrets')
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {demisto.command()}')
 
     delinea_commands = {
         'delinea-secret-password-get': secret_password_get_command,
@@ -509,17 +581,20 @@ def main():  # pragma: no cover
         'delinea-user-update': user_update_command,
         'delinea-user-delete': user_delete_command
     }
+    command = demisto.command()
     try:
         client = Client(server_url=url,
                         username=username,
                         password=password,
                         proxy=proxy,
                         verify=verify)
-
-        command = demisto.command()
         if command in delinea_commands:
             return_results(
                 delinea_commands[command](client, **demisto.args())  # type: ignore[operator]
+            )
+        if command == 'fetch-credentials':
+            return_results(
+                fetch_credentials_command(client, secretids)
             )
         elif command == 'test-module':
             result = test_module(client)

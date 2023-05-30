@@ -458,8 +458,8 @@ def create_client(timeout: int = 15):
     proxy = demisto.params().get('proxy', False)
 
     client = Client(base_url, verify=verify_certificate, proxy=proxy, self_deployed=True, auth_and_token_url="test",
-                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="",
-                    timeout=timeout)
+                    refresh_token="test", refresh_token_param="test", enc_key="test", auth_code="test",
+                    tenant_id="test", redirect_uri="", timeout=timeout)
 
     return client
 
@@ -658,3 +658,78 @@ def test_timeout(args_timeout, param_timeout, expected_timeout):
     client = create_client(timeout=timeout)
     assert client.timeout == expected_timeout
     assert client.ms_client.timeout == expected_timeout
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftManagementActivity import main, MANAGED_IDENTITIES_TOKEN_URL, Resources, jwt
+    import MicrosoftManagementActivity
+    import demistomock as demisto
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(jwt, 'decode', return_value={'tid': 'test'})
+    mocker.patch.object(MicrosoftManagementActivity, 'return_results')
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in MicrosoftManagementActivity.return_results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.manage_office]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function ms-management-activity-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from MicrosoftManagementActivity import main
+    import MicrosoftManagementActivity
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'self_deployed': 'True',
+        'refresh_token': tenant_id,
+        'auth_id': client_id,
+        'enc_key': 'client_secret',
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='ms-management-activity-generate-login-url')
+    mocker.patch.object(MicrosoftManagementActivity, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   'response_type=code&scope=offline_access%20https://management.azure.com/.default' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = MicrosoftManagementActivity.return_results.call_args[0][0].readable_output
+    assert expected_url in res

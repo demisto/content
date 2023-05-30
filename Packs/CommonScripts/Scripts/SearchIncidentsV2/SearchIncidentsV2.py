@@ -1,9 +1,11 @@
 from enum import Enum
-from typing import Dict, List
 import demistomock as demisto
 from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
+DEFAULT_LIMIT = 100
+DEFAULT_PAGE_SIZE = 100
+STARTING_PAGE_NUMBER = 1
 
 
 class AlertSeverity(Enum):
@@ -30,7 +32,7 @@ def check_if_found_incident(res: List):
             return False
         return True
     else:
-        raise DemistoException(f'failed to get incidents from demisto.\nGot: {res}')
+        raise DemistoException(f'failed to get incidents from xsoar.\nGot: {res}')
 
 
 def is_valid_args(args: Dict):
@@ -61,16 +63,32 @@ def is_valid_args(args: Dict):
 def apply_filters(incidents: List, args: Dict):
     names_to_filter = set(argToList(args.get('name')))
     types_to_filter = set(argToList(args.get('type')))
+
     filtered_incidents = []
     for incident in incidents:
+        incident_id, incident_type = incident.get('id'), incident.get('type')
         if names_to_filter and incident['name'] not in names_to_filter:
             continue
+        demisto.debug(f'{incident_id=}, {incident_type=}')
         if types_to_filter and incident['type'] not in types_to_filter:
             continue
-
         filtered_incidents.append(incident)
 
     return filtered_incidents
+
+
+def summarize_incidents(args, incidents):
+    summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+    if args.get("add_fields_to_summarize_context"):
+        summerized_fields = summerized_fields + args.get("add_fields_to_summarize_context", '').split(",")
+        summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
+    summarized_incidents = []
+    for incident in incidents:
+        summarizied_incident = {}
+        for field in summerized_fields:
+            summarizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
+        summarized_incidents.append(summarizied_incident)
+    return summarized_incidents
 
 
 def add_incidents_link(data: List, platform: str):
@@ -103,18 +121,25 @@ def transform_to_alert_data(incidents: List):
 
 
 def search_incidents(args: Dict):   # pragma: no cover
+    is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     if not is_valid_args(args):
         return
 
-    if fromdate := arg_to_datetime(args.get('fromdate')):
+    if fromdate := arg_to_datetime(args.get('fromdate', '30 days ago' if is_summarized_version else None)):
         from_date = fromdate.isoformat()
         args['fromdate'] = from_date
+
     if todate := arg_to_datetime(args.get('todate')):
         to_date = todate.isoformat()
         args['todate'] = to_date
 
-    if args.get('trimevents') == '0':
-        args.pop('trimevents')
+    if args.get('trimevents'):
+        platform = demisto.demistoVersion().get('platform', 'xsoar')
+        if platform == 'xsoar' or platform == 'xsoar_hosted':
+            raise ValueError('The trimevents argument is not supported in XSOAR.')
+
+        if args.get('trimevents') == '0':
+            args.pop('trimevents')
 
     platform = get_demisto_version().get('platform')
 
@@ -129,22 +154,54 @@ def search_incidents(args: Dict):   # pragma: no cover
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
 
-    data = apply_filters(res[0]['Contents']['data'], args)
-    data = add_incidents_link(data, platform)
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    all_found_incidents = res[0]["Contents"]["data"]
+    demisto.debug(
+        f'Amount of incidents before filtering = {len(all_found_incidents)} with args {args} before pagination'
+    )
+    all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
+    demisto.debug(
+        f'Amount of incidents after filtering = {len(all_found_incidents)} before pagination'
+    )
+    # adding 1 here because the default page number start from 0
+    max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
+    demisto.debug(f'{max_page=}')
+
+    page = STARTING_PAGE_NUMBER
+    while len(all_found_incidents) < limit and page < max_page:
+        args['page'] = page
+        current_page_found_incidents = execute_command('getIncidents', args).get('data') or []
+        demisto.debug(
+            f'before filtering {len(current_page_found_incidents)=} '
+            f' {args=} {page=}'
+        )
+        current_page_found_incidents = add_incidents_link(apply_filters(current_page_found_incidents, args), platform)
+        demisto.debug(f'after filtering = {len(current_page_found_incidents)=}')
+        all_found_incidents.extend(current_page_found_incidents)
+        page += 1
+
+    all_found_incidents = all_found_incidents[:limit]
     headers: List[str]
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
                    'owner', 'targetprocessname', 'username', 'alertLink']
-        data = transform_to_alert_data(data)
-        md = tableToMarkdown(name="Alerts found", t=data, headers=headers, removeNull=True, url_keys=['alertLink'])
+        all_found_incidents = transform_to_alert_data(all_found_incidents)
+        md = tableToMarkdown(name="Alerts found", t=all_found_incidents, headers=headers, removeNull=True, url_keys=['alertLink'])
     else:
         headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
-        md = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-    return md, data, res
+        if is_summarized_version:
+            all_found_incidents = summarize_incidents(args, all_found_incidents)
+            if args.get("add_fields_to_summarize_context"):
+                add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
+                headers = headers + add_headers
+        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers)
+    demisto.debug(f'amount of all the incidents that were found {len(all_found_incidents)}')
+    return md, all_found_incidents, res
 
 
 def main():  # pragma: no cover
     args: Dict = demisto.args()
+    is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     try:
         readable_output, outputs, raw_response = search_incidents(args)
         if search_results_label := args.get('searchresultslabel'):
@@ -155,7 +212,9 @@ def main():  # pragma: no cover
             outputs_key_field='id',
             readable_output=readable_output,
             outputs=outputs,
-            raw_response=raw_response
+            raw_response=raw_response,
+            # in summerized version, ignore auto extract
+            ignore_auto_extract=is_summarized_version
         )
         return_results(results)
     except DemistoException as error:

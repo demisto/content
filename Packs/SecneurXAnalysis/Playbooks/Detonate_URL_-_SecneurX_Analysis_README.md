@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | URL to detonate. | URL.None | Optional |
+| URL | URL to detonate. | URL | Optional |
 | Priority | Analysis priority. Possible values are "High" or "Normal". | Normal | Optional |
 | Duration | Analysis duration in seconds. | 120 | Optional |
 | Reboot | Reboot the system during analysis. The value should be "True" or "False". | False | Optional |

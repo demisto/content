@@ -15,6 +15,25 @@ ENV_URLS = {
     "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
+ALERT_STATUSES = set((
+    "FALSE_POSITIVE",
+    "NOT_ACTIONABLE",
+    "OPEN",
+    "TRUE_POSITIVE_BENIGN",
+    "TRUE_POSITIVE_MALICIOUS",
+))
+ASSET_SEARCH_FIELDS = ((
+    "endpoint_type",
+    "host_id",
+    "hostname",
+    "investigation_id",
+    "ip_address",
+    "mac_address",
+    "os_family",
+    "os_version",
+    "sensor_version",
+    "username",
+))
 COMMENT_TYPES = set((
     "investigation",
 ))
@@ -31,7 +50,7 @@ INVESTIGATION_STATUSES = set((
     "Closed: Not Vulnerable",
     "Closed: Threat Mitigated",
 ))
-INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type"))
+INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type", "assignee_id"))
 
 
 """ CLIENT """
@@ -377,6 +396,83 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_assets_command(client: Client, env: str, args=None):
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size")) or 10
+
+    variables: Dict[str, Any] = {
+        "input": {},
+        "pagination_input": {
+            "limit": page_size,
+            "offset": page_size * page,
+        }
+    }
+
+    # Loop over allowed search fields and add valid search options to the query variables
+    for field in ASSET_SEARCH_FIELDS:
+        if args.get(field):
+            variables["input"][field] = args.get(field).strip()
+
+    query = """
+    query searchAssetsV2($input: SearchAssetsInput!, $pagination_input: SearchAssetsPaginationInput!) {
+         searchAssetsV2(input: $input, paginationInput:$pagination_input) {
+           assets {
+              id
+              ingestTime
+              createdAt
+              updatedAt
+              deletedAt
+              biosSerial
+              firstDiskSerial
+              systemVolumeSerial
+              sensorVersion
+              endpointPlatform
+              architecture
+              osFamily
+              osVersion
+              osDistributor
+              osRelease
+              systemType
+              osCodename
+              kernelRelease
+              kernelVersion
+              hostnames {
+                id
+                hostname
+              },
+              tags {
+                key
+                tag
+              }
+              endpointType
+              hostId
+              sensorId
+            }
+          }
+        }
+    """
+
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        assets = result["data"]["searchAssetsV2"]["assets"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch assets: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Assets",
+        outputs_key_field="id",
+        outputs=assets,
+        readable_output=tableToMarkdown(
+            "Taegis Assets",
+            assets,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def fetch_comment_command(client: Client, env: str, args=None):
     comment_id = args.get("id")
     if not comment_id:
@@ -484,12 +580,67 @@ def fetch_comments_command(client: Client, env: str, args=None):
     return results
 
 
-def fetch_incidents(client: Client, max_fetch: int = 15):
+def fetch_endpoint_command(client: Client, env: str, args=None):
+    if not args.get("id"):
+        raise ValueError("Cannot fetch endpoint information, missing id")
+
+    variables: Dict[str, Any] = {
+        "id": args.get("id")
+    }
+
+    query = """
+    query assetEndpointInfo($id: ID!) {
+      assetEndpointInfo(id: $id) {
+        hostId
+        hostName
+        actualIsolationStatus
+        allowedDomain
+        desiredIsolationStatus
+        firstConnectTime
+        moduleHealth {
+            enabled
+            lastRunningTime
+            moduleDisplayName
+        }
+        lastConnectAddress
+        lastConnectTime
+        sensorVersion
+      }
+    }
+    """
+
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        endpoint = result["data"]["assetEndpointInfo"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch endpoint information: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Endpoint",
+        outputs_key_field="hostId",
+        outputs=endpoint,
+        readable_output=tableToMarkdown(
+            "Taegis Endpoint",
+            endpoint,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = True):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
     """
     if not 0 < int(max_fetch) < 201:
         raise ValueError("Max Fetch must be between 1 and 200")
+
+    asset_query = ""
+    if include_assets:
+        demisto.debug("include_assets=True, fetching assets with investigation")
+        asset_query = "assets {id hostnames {id hostname} tags {tag}}"
 
     query = """
     query investigations(
@@ -542,19 +693,10 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
             latest_activity
             priority
             status
-            assets {
-                id
-                hostnames {
-                    id
-                    hostname
-                }
-                tags {
-                    tag
-                }
-            }
+            %s
         }
     }
-    """
+    """ % (asset_query)
 
     variables = {
         "orderByField": "created_at",
@@ -824,6 +966,163 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_users_command(client: Client, env: str, args=None):
+    page = int(args.get("page", 0))
+    page_size = int(args.get("page_size", 10))
+
+    variables: Dict[str, Any] = {
+        "filters": {
+            "status": args.get("status", ""),
+            "perPage": page_size,
+            "pageOffset": page_size * page,
+        }
+    }
+    fields = "user_id email family_name given_name status"
+    if args.get("id"):
+        if not args["id"].startswith("auth0"):
+            raise ValueError("id MUST be in 'auth0|12345' format")
+
+        query = """
+        query ($ids: [String!]) {
+            tdrusersByIDs (userIDs: $ids) {
+                %s
+            }
+        }
+        """ % (fields)
+        variables = {"ids": [args["id"]]}
+    else:
+        query = """
+        query ($filters: TDRUsersSearchInput) {
+            tdrUsersSearch (filters: $filters) {
+                results {
+                    %s
+                }
+            }
+        }
+        """ % (fields)
+
+    if args.get("email"):
+        variables["filters"]["emails"] = args["email"]
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        if args.get("id"):
+            user = result["data"]["tdrusersByIDs"]
+        else:
+            user = result["data"]["tdrUsersSearch"]["results"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch user information: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Users",
+        outputs_key_field="user_id",
+        outputs=user,
+        readable_output=tableToMarkdown(
+            "Taegis Users",
+            user,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def isolate_asset_command(client: Client, env: str, args=None):
+    if not args.get("id"):
+        raise ValueError("Cannot isolate asset, missing id")
+    if not args.get("reason"):
+        raise ValueError("Cannot isolate asset, missing reason")
+
+    variables: Dict[str, Any] = {
+        "id": args.get("id"),
+        "reason": args.get("reason")
+    }
+
+    query = """
+    mutation isolateAsset ($id: ID!, $reason: String!) {
+      isolateAsset (id: $id, reason: $reason) {
+        id
+      }
+    }
+    """
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        isolation = result["data"]["isolateAsset"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to isolate asset: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.AssetIsolation",
+        outputs_key_field="id",
+        outputs=isolation,
+        readable_output=tableToMarkdown(
+            "Taegis Asset Isolation",
+            isolation,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def update_alert_status_command(client: Client, env: str, args=None):
+    if not args.get("ids"):
+        raise ValueError("Alert IDs must be defined")
+    if not args.get("status"):
+        raise ValueError("Alert status must be defined")
+
+    if args.get("status").upper() not in ALERT_STATUSES:
+        raise ValueError((
+            f"The provided status, {args['status']}, is not valid for updating an alert. "
+            f"Supported Status Values: {ALERT_STATUSES}"))
+
+    variables = {
+        "alert_ids": argToList(args.get("ids")),
+        "reason": args.get("reason", ""),
+        "resolution_status": args.get("status"),
+    }
+
+    query = """
+    mutation alertsServiceUpdateResolutionInfo($alert_ids: [String!], $reason: String, $resolution_status: ResolutionStatus) {
+      alertsServiceUpdateResolutionInfo(
+        in: {
+          alert_ids: $alert_ids,
+            reason: $reason,
+            resolution_status: $resolution_status
+        }
+      ) {
+        resolution_status
+        reason
+      }
+    }
+    """
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        update_result = result["data"]["alertsServiceUpdateResolutionInfo"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to locate/update alert: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.AlertStatusUpdate",
+        outputs_key_field="status",
+        outputs=update_result,
+        readable_output=tableToMarkdown(
+            "Taegis Alert Update",
+            update_result,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def update_comment_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot update comment, comment id cannot be empty")
@@ -872,6 +1171,10 @@ def update_investigation_command(client: Client, env: str, args=None):
     if not investigation_id:
         raise ValueError("Cannot fetch investigation without investigation_id defined")
 
+    if args.get("assignee_id"):
+        if not args["assignee_id"].startswith("auth0") and args["assignee_id"] != "@secureworks":
+            raise ValueError("assignee_id MUST be in 'auth0|12345' format or '@secureworks'")
+
     query = """
     mutation ($investigation_id: ID!, $investigation: UpdateInvestigationInput!) {
         updateInvestigation(investigation_id: $investigation_id, investigation: $investigation) {
@@ -919,6 +1222,98 @@ def update_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def archive_investigation_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot archive investigation, missing investigation id")
+
+    query = """
+    mutation ($investigation_id: ID!) {
+      archiveInvestigation(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["archiveInvestigation"]
+        status = "Successfully Archived Investigation"
+    except (KeyError, TypeError):
+        raise ValueError(f"Could not locate investigation with id: {investigation_id}")
+
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.ArchivedInvestigation",
+        outputs_key_field="id",
+        outputs=archive_results,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Archiving",
+            archive_results,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def unarchive_investigation_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot unarchive investigation, missing investigation id")
+
+    query = """
+    mutation ($investigation_id: ID!) {
+      unArchiveInvestigation(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["unArchiveInvestigation"]
+        status = "Successfully Unarchived Investigation"
+    except (KeyError, TypeError):
+        if result["errors"][0].get("message"):
+            investigation = {}
+            status = "Investigation is not currently archived"
+        else:
+            raise ValueError(f"Could not locate investigation with id: {investigation_id}")
+
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.UnarchivedInvestigation",
+        outputs_key_field="id",
+        outputs=archive_results,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Unarchiving",
+            archive_results,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def test_module(client: Client) -> str:
     """
     Returns success if authentication was successful
@@ -951,13 +1346,20 @@ def main():
         "taegis-create-investigation": create_investigation_command,
         "taegis-execute-playbook": execute_playbook_command,
         "taegis-fetch-alerts": fetch_alerts_command,
+        "taegis-fetch-assets": fetch_assets_command,
         "taegis-fetch-comment": fetch_comment_command,
         "taegis-fetch-comments": fetch_comments_command,
+        "taegis-fetch-endpoint": fetch_endpoint_command,
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
+        "taegis-fetch-users": fetch_users_command,
+        "taegis-isolate-asset": isolate_asset_command,
+        "taegis-update-alert-status": update_alert_status_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
+        "taegis-archive-investigation": archive_investigation_command,
+        "taegis-unarchive-investigation": unarchive_investigation_command,
         "test-module": test_module,
     }
 
@@ -986,7 +1388,7 @@ def main():
             return_results(result)
 
         elif command == "fetch-incidents":
-            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"))
+            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"), include_assets=PARAMS.get("include_assets"))
         else:
             return_results(commands[command](client=client, env=environment, args=demisto.args()))
     except Exception as e:

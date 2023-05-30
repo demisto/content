@@ -2,7 +2,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from collections.abc import Callable
 
-import requests
+import urllib3
 import traceback
 from urllib.parse import urlparse
 
@@ -11,7 +11,7 @@ from gql.transport.requests import RequestsHTTPTransport
 from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 create_incident_mutation = gql("""
 mutation CreateIncident(

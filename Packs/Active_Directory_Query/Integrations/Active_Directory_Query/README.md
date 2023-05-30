@@ -571,6 +571,35 @@ There is no context output for this command.
 "mike" was successfully moved to "OU=Sarah,DC=demisto,DC=int"
 ```
 
+### ad-modify-user-ou
+***
+Modifies the user organizational unit within a domain.
+
+#### Base Command
+
+`ad-modify-user-ou`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user-name | The name of the user to modify. | Required | 
+| full-superior-dn | Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```
+!ad-modify-user-ou user-name=username full-superior-dn=OU=users,DC=demisto,DC=int
+```
+
+##### Human Readable Output
+```
+"username" was successfully moved to "OU=users,DC=demisto,DC=int"
+```
+
 ### ad-get-user
 ***
 Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.

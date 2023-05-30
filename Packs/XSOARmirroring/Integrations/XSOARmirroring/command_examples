@@ -1,0 +1,2 @@
+!xsoar-search-incidents query="-status:closed -category:job"
+!xsoar-get-incident id=4

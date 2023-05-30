@@ -1,7 +1,9 @@
 id: Get File Sample From Path - Generic V2
 version: -1
 name: Get File Sample From Path - Generic V2
+deprecated: true
 description: |
+  Deprecated. Use `Get File Sample From Path - Generic V3` instead.
   This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
   inputs:
   1) Get File Sample From Path - D2.

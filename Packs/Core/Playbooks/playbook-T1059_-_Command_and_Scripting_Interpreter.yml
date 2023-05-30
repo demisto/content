@@ -33,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 2eca42b7-3c92-4b5a-8395-9696e76b2eca
@@ -63,6 +64,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
     taskid: e41ef180-47df-4fc3-8661-b9c760d51cbd
@@ -83,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 1100
+          "y": 1500
         }
       }
     note: false
@@ -93,6 +95,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
     taskid: 93ddf2dd-f186-4e8f-8600-d63d0008f0be
@@ -123,6 +126,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 9bcab523-2706-4c67-8a92-bd215b33334a
@@ -148,8 +152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 930
+          "x": 720,
+          "y": 1320
         }
       }
     note: false
@@ -159,6 +163,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: 44575d80-9fe5-4a34-877a-e0aebb078ffb
@@ -183,7 +188,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 2940
+          "y": 3340
         }
       }
     note: false
@@ -193,6 +198,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: c71ad1c3-4763-48f8-8924-a5829300da3a
@@ -213,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 1425
+          "y": 1825
         }
       }
     note: false
@@ -223,6 +229,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
     taskid: 9584a013-1f93-4b4f-8e0f-9dfc08f4fd77
@@ -244,7 +251,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 1960
+          "y": 2360
         }
       }
     note: false
@@ -254,6 +261,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 65b1e124-5960-4978-8951-db9ab7ec1b66
@@ -289,7 +297,7 @@ tasks:
       {
         "position": {
           "x": 800,
-          "y": 2415
+          "y": 2815
         }
       }
     note: false
@@ -299,6 +307,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
     taskid: a0944a44-9352-42db-8c79-7efb05810cb0
@@ -316,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3110
+          "y": 3510
         }
       }
     note: false
@@ -326,6 +335,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "34":
     id: "34"
     taskid: efb795f3-f412-4285-86d3-c5993ab4affd
@@ -361,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 800,
-          "y": 2770
+          "y": 3170
         }
       }
     note: false
@@ -371,6 +381,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "39":
     id: "39"
     taskid: b1838b4e-9970-4c49-8018-6145798ee35d
@@ -385,7 +396,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+      - "55"
       "yes":
       - "14"
     separatecontext: false
@@ -414,6 +425,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "42":
     id: "42"
     taskid: 7f4600b1-e7eb-4e39-8d1f-d4a60f0f01e4
@@ -464,7 +476,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 2100
+          "y": 2500
         }
       }
     note: false
@@ -474,6 +486,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "43":
     id: "43"
     taskid: 7dd85db5-f1ee-48ac-8c44-2d953ce9e43d
@@ -515,7 +528,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 2590
+          "y": 2990
         }
       }
     note: false
@@ -525,6 +538,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "44":
     id: "44"
     taskid: b7f1d891-9d2e-4dd2-8926-5c3606a9c7f3
@@ -572,7 +586,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1100
+          "y": 1500
         }
       }
     note: false
@@ -582,15 +596,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "47":
     id: "47"
-    taskid: 5abf6156-7dbe-4910-8f60-da9a8e92615b
+    taskid: 2b789413-c965-4c6f-867f-bf3525a2d620
     type: playbook
     task:
-      id: 5abf6156-7dbe-4910-8f60-da9a8e92615b
+      id: 2b789413-c965-4c6f-867f-bf3525a2d620
       version: -1
       name: Command-Line Analysis
-      description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding."
+      description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity"
       playbookName: Command-Line Analysis
       type: playbook
       iscommand: false
@@ -642,6 +657,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
     taskid: ccddf57e-2637-434a-8bb1-2ac71c2111dc
@@ -673,7 +689,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 1750
+          "y": 2150
         }
       }
     note: false
@@ -683,6 +699,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "49":
     id: "49"
     taskid: ec9ef19d-b6cf-4245-862b-0aecee3d7fb1
@@ -703,7 +720,7 @@ tasks:
       {
         "position": {
           "x": 800,
-          "y": 2270
+          "y": 2670
         }
       }
     note: false
@@ -713,6 +730,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 9a7af198-01cb-4a8c-8a67-55cf63a473a2
@@ -777,7 +795,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 1570
+          "y": 1970
         }
       }
     note: false
@@ -787,6 +805,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "51":
     id: "51"
     taskid: 54fef140-47c3-4dfb-846a-8783124320b4
@@ -839,8 +858,6 @@ tasks:
         simple: "False"
       FileRemediation:
         simple: Quarantine
-      IAMUserDomain:
-        simple: ''
       IP:
         complex:
           root: ExtractedIndicators
@@ -927,8 +944,7 @@ tasks:
             - operator: uniq
         FileRemediation:
           simple: Quarantine
-        IAMUserDomain:
-          simple: ''
+        IAMUserDomain: {}
         UserContainment:
           simple: "False"
         Username:
@@ -942,7 +958,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 1250
+          "y": 1650
         }
       }
     note: false
@@ -952,6 +968,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "52":
     id: "52"
     taskid: f9aa1d02-285d-4299-8cbc-6ed55d11a413
@@ -1095,8 +1112,7 @@ tasks:
         FileRemediation:
           complex:
             root: inputs.FileRemediation
-        IAMUserDomain:
-          simple: ''
+        IAMUserDomain: {}
         UserContainment:
           simple: "False"
       exitCondition: ""
@@ -1106,7 +1122,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 2100
+          "y": 2500
         }
       }
     note: false
@@ -1116,6 +1132,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 2af58fe8-289d-4589-80bf-e2807e68813c
@@ -1152,6 +1169,91 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "55":
+    id: "55"
+    taskid: c16a3995-ec20-430a-84f3-1a71844b1316
+    type: regular
+    task:
+      id: c16a3995-ec20-430a-84f3-1a71844b1316
+      version: -1
+      name: Get CMD prevalence
+      description: Get the prevalence of a process_command_line, identified by process_command_line.
+      script: Cortex Core - IR|||core-get-cmd-analytics-prevalence
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      process_command_line:
+        complex:
+          root: commandline
+          accessor: original
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 0102cdcc-b833-47d4-860e-60ce26596881
+    type: condition
+    task:
+      id: 0102cdcc-b833-47d4-860e-60ce26596881
+      version: -1
+      name: Found CMD to be prevalent?
+      description: Check if command line is prevalent or not
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Cmd
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1160,14 +1262,12 @@ view: |-
       "28_34_#default#": 0.51,
       "28_43_yes": 0.43,
       "34_29_#default#": 0.25,
-      "39_14_yes": 0.5,
-      "39_16_#default#": 0.46,
       "48_27_yes": 0.62,
       "48_49_#default#": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 3265,
+        "height": 3665,
         "width": 1510,
         "x": 450,
         "y": -90
@@ -1203,3 +1303,5 @@ tests:
 fromversion: 6.6.0
 contentitemexportablefields:
   contentitemfields: {}
+marketplaces:
+  - marketplacev2

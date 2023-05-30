@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: FortiAuthenticator
   version: -1
@@ -66,7 +66,7 @@ script:
       description: The username that is defined in the User Information on FortiAuthenticator.
     name: fortiauthenticator-update-user
     description: Update the active status for specific user by email
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   script: ''
   subtype: python3

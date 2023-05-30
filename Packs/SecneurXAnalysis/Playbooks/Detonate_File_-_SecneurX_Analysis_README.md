@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | File object of the file to detonate. The File is taken from the context. | File.None | Optional |
+| File | File object of the file to detonate. The File is taken from the context. | File | Optional |
 | Platform | Operating system platform to run the analysis on. Supported values are: ["Windows7", "Windows10", "Android", "Ubuntu"]. | Windows7 | Optional |
 | Duration | Analysis duration in seconds. | 120 | Optional |
 | Priority | Analysis priority. Possible values are "High" or "Normal". | Normal | Optional |

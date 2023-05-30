@@ -15,6 +15,9 @@ def main():
 
     params['feed_url_to_config'] = feed_types
 
+    # Automatically infer the indicator type
+    params['auto_detect_type'] = True
+
     chosen_services = list()
     for service in argToList(demisto.params().get('services', [])):
         chosen_services.append(F'https://lists.blocklist.de/lists/{service}.txt')

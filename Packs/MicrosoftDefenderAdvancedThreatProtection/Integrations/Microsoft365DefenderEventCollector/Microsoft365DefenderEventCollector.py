@@ -14,6 +14,7 @@ from requests.auth import HTTPBasicAuth
 import requests
 import urllib3.util
 
+
 from MicrosoftApiModule import *
 
 # Disable insecure warnings
@@ -355,21 +356,25 @@ def main(command: str, demisto_params: dict):
         if command == 'test-module':
             return_results(test_module(get_events=get_events))
 
-        elif command in ('fetch-events', 'microsoft-365-defender-get-events'):
+        elif command == 'microsoft-365-defender-get-events':
             events = get_events.run()
-            if command == 'microsoft-365-defender-get-events':
-                demisto.debug(f'{command=}, publishing events to the context')
-                human_readable = tableToMarkdown(name="Alerts:", t=events)
-                return_results(
-                    CommandResults('Microsoft365Defender.alerts', 'id', events, readable_output=human_readable))
-            elif events:
-                demisto.setLastRun(get_events.get_last_run(events))
-                demisto.debug(f'Last run set to {demisto.getLastRun()}')
+            demisto.debug(f'{command=}, publishing events to the context')
+            human_readable = tableToMarkdown(name="Alerts:", t=events)
+            return_results(
+                CommandResults('Microsoft365Defender.alerts', 'id', events, readable_output=human_readable))
 
-            if command == 'fetch-events' or argToBoolean(demisto_params.get('push_to_xsiam', False)):
-                # publishing events to XSIAM
+            if argToBoolean(demisto_params.get('push_to_xsiam', False)):
                 demisto.debug(f'{command=}, publishing events to XSIAM')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+        elif command == 'fetch-events':
+            events = get_events.run()
+
+            demisto.debug(f'{command=}, publishing events to XSIAM')
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+            demisto.setLastRun(get_events.get_last_run(events))
+            demisto.debug(f'Last run set to {demisto.getLastRun()}')
 
     # Log exceptions and return errors
     except Exception as e:

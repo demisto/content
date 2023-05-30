@@ -1,7 +1,9 @@
 import demistomock as demisto
+import pytest
 
 
-def test_file_reputation(mocker):
+@pytest.mark.parametrize('contents', ({'Error': 'error'}, None))
+def test_file_reputation(mocker, contents):
     """
     Given:
         - Script args:  MD5 hash string.
@@ -14,7 +16,7 @@ def test_file_reputation(mocker):
     """
     from FileReputation import file_reputation
     mocker.patch.object(demisto, 'args', return_value={'file': 'somefile'})
-    execute_command_res = [{'Type': 4, 'Contents': 'Error', 'Brand': 'brand'}]
+    execute_command_res = [{'Type': 4, 'Contents': contents, 'Brand': 'brand'}]
     execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=execute_command_res)
     results_mock = mocker.patch.object(demisto, 'results')
     file_reputation()
@@ -35,9 +37,9 @@ def test_file_reputation_ignore_offset_error(mocker):
     """
     from FileReputation import file_reputation
     mocker.patch.object(demisto, 'args', return_value={'file': 'somefile'})
-    execute_command_res = [{'Type': 4, 'Contents': "'Offset': 1", 'Brand': 'VirusTotal (API v3)'}]
+    execute_command_res = [{'Type': 4, 'Contents': {'Offset': 1}, 'Brand': 'VirusTotal (API v3)'}]
     execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=execute_command_res)
     results_mock = mocker.patch.object(demisto, 'results')
     file_reputation()
     assert execute_mock.call_count == 1
-    assert 'returned an error' not in results_mock.call_args[0][0][0]['Contents']
+    assert [] == results_mock.call_args[0][0]

@@ -872,5 +872,6 @@
         ]
     },
     "fromVersion": "6.5.0",
-    "description": "Layout for Skyhigh Security Alert incident type."
+    "description": "Layout for Skyhigh Security Alert incident type.",
+    "marketplaces": ["xsoar"]
 }

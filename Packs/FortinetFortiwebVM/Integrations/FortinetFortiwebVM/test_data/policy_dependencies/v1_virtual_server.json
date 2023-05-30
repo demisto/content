@@ -1,0 +1,13 @@
+[
+    {
+        "_id": "sdasd",
+        "id": 1,
+        "name": "sdasd",
+        "ipv4Address": "1.0.0.0/254.0.0.0",
+        "ipv6Address": "::/0",
+        "interface": "port1",
+        "useInterfaceIP": false,
+        "enable": true,
+        "can_delete": false
+    }
+]

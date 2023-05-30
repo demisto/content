@@ -40,7 +40,7 @@ This playbook does not use any integrations.
 | InvolvedFileMD5 | MD5 hashes of files that were involved in the port scan incident. |  | Optional |
 | InvolvedFileSHA1 | SHA1 hashes of files that were involved in the port scan incident. |  | Optional |
 | InvolvedFileSHA256 | SHA256 hashes of files that were involved in the port scan incident. |  | Optional |
-| DBotScore | All the DBotScores that were calculated either automatically by auto-reputation, or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage. | DBotScore.None | Optional |
+| DBotScore | All the DBotScores that were calculated either automatically by auto-reputation, or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage. | DBotScore | Optional |
 
 ## Playbook Outputs
 ---

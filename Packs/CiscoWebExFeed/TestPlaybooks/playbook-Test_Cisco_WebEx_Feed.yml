@@ -1,0 +1,189 @@
+id: Test_Cisco_WebEx_Feed
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: Test_Cisco_WebEx_Feed
+description: Test the connectivity of the CisciWebexFeed integratin
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 97eaa029-7a23-46e2-8c7d-fccdeb30b0c6
+    type: start
+    task:
+      id: 97eaa029-7a23-46e2-8c7d-fccdeb30b0c6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 35b2c450-8b98-4bb3-849e-9b78a0671981
+    type: regular
+    task:
+      id: 35b2c450-8b98-4bb3-849e-9b78a0671981
+      version: -1
+      name: Pull Indicators from Webex web page
+      description: Gets indicators from the feed.
+      script: "|||webex-get-indicators"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "2"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 946fd544-7f43-4c6c-8364-00cb2e22f937
+    type: condition
+    task:
+      id: 946fd544-7f43-4c6c-8364-00cb2e22f937
+      version: -1
+      name: Is There a Web page Error?
+      description:
+        Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+        - "4"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: df71f9fc-d34e-42f2-8bb2-6edc4097fb31
+    type: regular
+    task:
+      id: df71f9fc-d34e-42f2-8bb2-6edc4097fb31
+      version: -1
+      name: Set Webex Status Ok
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "5"
+    scriptarguments:
+      key:
+        simple: Webex.status
+      value:
+        simple: ok
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 481b7d02-291f-4f05-876a-a1d2bfab16b3
+    type: title
+    task:
+      id: 481b7d02-291f-4f05-876a-a1d2bfab16b3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_no": 0.8
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

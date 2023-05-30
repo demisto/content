@@ -96,6 +96,7 @@ Queries Jira issues.
 | Ticket.Status | Unknown | The status of the ticket. | 
 | Ticket.Priority | String | The priority of the ticket. | 
 | Ticket.Description | String | The description of the ticket. | 
+| Ticket.Labels | String | The labels of the ticket. | 
 | Ticket.ProjectName | String | The ticket project name. | 
 | Ticket.DueDate | Date | The due date. | 
 | Ticket.Created | Date | The time the ticket was created. | 
@@ -130,7 +131,7 @@ Queries Jira issues.
 ```
 
 #### Human Readable Output
-### jira-issue-query
+**jira-issue-query**
 |assignee|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | null(null) | 2019-05-04T02:45:09.909+0300 | {creator} | TypeofIssueIdList |  | 12658 | A task that needs to be done. | TES-25 |  | Medium | test1 | {creator} | Done | HelloBlocked11 | https://demistodev.atlassian.net/rest/api/latest/issue/12658 |
@@ -195,7 +196,7 @@ Fetches an issue from Jira.
 ```
 
 #### Human Readable Output
-### jira-get-issue
+**jira-get-issue**
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | null(null) |  | 2020-01-19T12:34:13.784+0200 | {creator} | lala |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {assignee} | To Do | Test issue23 | https://demistodev.atlassian.net/rest/api/latest/issue/15572 |
@@ -258,7 +259,7 @@ Creates a new issue in Jira.
 ```
 
 #### Human Readable Output
-### jira-create-issue
+**jira-create-issue**
 |id|key|projectKey|self|
 |---|---|---|---|
 | 15576 | DEM-5419 | DEM | https://demistodev.atlassian.net/rest/api/latest/issue/15576 |
@@ -291,7 +292,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### jira-issue-upload-file
+**jira-issue-upload-file**
 |attachment_link|attachment_name|id|issueId|
 |---|---|---|---|
 | https://demistodev.atlassian.net/rest/api/2/attachment/13456 | jira_v2_yml.yml | 13456 | 15572 |
@@ -322,7 +323,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### jira-issue-add-comment
+**jira-issue-add-comment**
 |comment|id|key|ticket_link|
 |---|---|---|---|
 | test comment | 13779 | admin | https://demistodev.atlassian.net/rest/api/2/issue/15572/comment/13779 |
@@ -360,7 +361,7 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### jira-issue-add-link
+**jira-issue-add-link**
 |id|ticket_link|
 |---|---|
 | 13722 | https://demistodev.atlassian.net/rest/api/latest/issue/DEM-5415/remotelink/13722 |
@@ -425,7 +426,7 @@ Modifies an issue in Jira.
 
 #### Human Readable Output
 
-### jira-edit-issue
+**jira-edit-issue**
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | https://somejira.atlassian.net/rest/api/latest/issue/10044 |
@@ -475,7 +476,7 @@ Returns the comments added to a ticket.
 }
 ```
 ##### Human Readable Output
-### Comments
+**Comments**
 |Comment|Created|User|
 |---|---|---|
 | test comment | 2020-01-19T12:35:49.194+0200 | admin |
@@ -732,7 +733,7 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 }
 ```
 #### Human Readable Output
-### List Transitions:
+**List Transitions:**
 |Transition Name|
 |---|
 | Backlog |
@@ -811,12 +812,72 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### jira-issue-assign
+
+***
+Edit the assignee of an existing issue.
+
+#### Base Command
+
+`jira-issue-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issueId | The ID of the issue to edit. | Required | 
+| assignee | The name of the assignee. Relevant for Jira Server only, if you are using Jira Cloud, provide the assignee_id argument instead. | Optional | 
+| assignee_id | The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. | 
+| Ticket.Key | String | The ticket key. | 
+| Ticket.Assignee | String | The user assigned to the ticket. | 
+| Ticket.Creator | String | The user who created the ticket. | 
+| Ticket.Summary | String | The ticket summary. | 
+| Ticket.Status | String | The ticket status. | 
+
+#### Command example
+```!jira-issue-assign issueId=21492 assignee_id=1234```
+#### Context Example
+```json
+{
+    "Ticket": {
+        "Assignee": "assignee1(null)",
+        "Created": "2023-03-01T14:05:49.037+0200",
+        "Creator": "assignee1(null)",
+        "Description": null,
+        "DueDate": null,
+        "Id": "21492",
+        "Key": "key",
+        "Labels": [],
+        "LastSeen": "2023-03-15T15:40:44.329+0200",
+        "LastUpdate": "2023-05-03T16:15:32.771+0300",
+        "Priority": "Medium",
+        "ProjectName": "test",
+        "Status": "To Do",
+        "Summary": "something something",
+        "attachment": "attachments"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### jira-issue-assign
+>|assignee| attachment  |created|creator|description|duedate|id|issueType| key |labels|priority| project |reporter|status|summary| ticket_link                                           |
+>|-------------|---|---|---|---|---|---|-----|---|---|---------|---|---|---|-------------------------------------------------------|---|
+>| assignee1(null) | attachments | 2023-03-01T14:05:49.037+0200 | assignee1(null) |  |  | 21492 | Task (Tasks track small, distinct pieces of work.) | key |  | Medium | test    | assignee1(null) | To Do | something something | https:<span>//</span>test/rest/api/latest/issue/21492 |
+>Issue #21492 was updated successfully
 
 ## Configure Incident Mirroring
 **This feature is compliant with Cortex XSOAR version 6.0 and above.**
 This part walks you through setting up the Jira integration to mirror incidents from Jira in Cortex XSOAR. 
 The instructions below include steps for configuring the integration and the incoming and outgoing mappers. However, not every option available in the integration, nor all classification and mapping features are covered. 
-For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping.html).
+For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping).
 
 When mirroring incidents, you can make changes in Jira, which will be reflected in Cortex XSOAR, or vice versa. 
 You can also attach files from either of the systems, which will then be available in the other system. 

@@ -1,0 +1,16 @@
+{
+    "comments": [
+        {
+        "username": "foo.sample",
+        "time": 1671627355000,
+        "incident_id": "bc64f242-ce29-4f35-bc94-230991116564",
+        "message": "first comment"
+        },
+        {
+            "username": "bar.sample",
+            "time": 1671627355090,
+            "incident_id": "bc64f242-ce29-4f35-bc94-230991116564",
+            "message": "second comment"
+        }
+    ]
+}

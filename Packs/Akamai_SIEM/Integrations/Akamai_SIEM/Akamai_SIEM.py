@@ -36,8 +36,8 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_events(self, config_ids: str, offset: Optional[str] = None, limit: Optional[Union[str, int]] = None,
-                   from_epoch: Optional[str] = None, to_epoch: Optional[str] = None) \
+    def get_events(self, config_ids: str, offset: Optional[str] = '', limit: Optional[Union[str, int]] = None,
+                   from_epoch: Optional[str] = '', to_epoch: Optional[str] = '') \
             -> Tuple[List[Any], Any]:
         """
             Get security events from Akamai WAF service by - https://developer.akamai.com/api/cloud_security/siem/v1.html,
@@ -81,8 +81,10 @@ class Client(BaseClient):
         events: List = []
         if '{ "total": 0' not in raw_response:
             events = [json.loads(event) for event in raw_response.split('\n')[:-2]]
-        offset_new = json.loads(raw_response.split('\n')[-2]).get('offset')
-        return events, offset_new
+            new_offset = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]))
+        else:
+            new_offset = str(from_epoch)
+        return events, new_offset
 
 
 '''HELPER FUNCIONS'''
@@ -269,15 +271,8 @@ def fetch_incidents_command(
     """
     raw_response: Optional[List] = []
     if not last_run:
-        datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
-                                                    date_format='%s')
-        raw_response, offset = client.get_events(config_ids=config_ids,
-                                                 from_epoch=datetime_new_last_run,
-                                                 limit=fetch_limit)
-    else:
-        raw_response, offset = client.get_events(config_ids=config_ids,
-                                                 offset=last_run,
-                                                 limit=fetch_limit)
+        last_run, _ = parse_date_range(date_range=fetch_time, date_format='%s')
+    raw_response, offset = client.get_events(config_ids=config_ids, from_epoch=last_run, limit=fetch_limit)
 
     incidents = []
     if raw_response:

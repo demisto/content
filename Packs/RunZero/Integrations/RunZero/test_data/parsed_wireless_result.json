@@ -1,0 +1,20 @@
+{
+    "ID": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+    "ESSID": "Free WiFi",
+    "BSSID": "11:22:33:44:55:66",
+    "Vendor": "Ubiquiti Networks",
+    "Family": "223344",
+    "Type": "infrastructure",
+    "Auth": "wpa2-psk",
+    "Enc": "aes",
+    "Sig": 99,
+    "Int": "wlan0",
+    "Additional": {
+        "additionalProp1": "string",
+        "additionalProp2": "string",
+        "additionalProp3": "string"
+    },
+    "First_seen": "1970-01-19T05:51:40.000Z",
+    "Last_seen": "1970-01-19T05:51:40.000Z",
+    "Site": "Primary"
+}

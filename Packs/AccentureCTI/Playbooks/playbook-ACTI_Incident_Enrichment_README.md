@@ -21,12 +21,12 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ia_uuid | Intelligence Alert unique ID. | ${intelligence_alerts}.None | Optional |
-| ir_uuid | Intelligence Report unique ID. | ${intelligence_reports}.None | Optional |
-| MalwareFamily_uuid | Malware Family unique ID. | ${acti_malware_family_uuid}.None | Optional |
-| ThreatGroup_uuid | Threat Group unique ID. | ${acti_threat_groups_uuid}.None | Optional |
-| ThreatCampaign_uuid | Threat Campaign unique ID. | ${acti_threat_campaigns_uuid}.None | Optional |
-| ThreatActor_uuid | Threat Actor unique ID. | ${acti_threat_actors_uuid}.None | Optional |
+| ia_uuid | Intelligence Alert unique ID. | ${intelligence_alerts} | Optional |
+| ir_uuid | Intelligence Report unique ID. | ${intelligence_reports} | Optional |
+| MalwareFamily_uuid | Malware Family unique ID. | ${acti_malware_family_uuid} | Optional |
+| ThreatGroup_uuid | Threat Group unique ID. | ${acti_threat_groups_uuid} | Optional |
+| ThreatCampaign_uuid | Threat Campaign unique ID. | ${acti_threat_campaigns_uuid} | Optional |
+| ThreatActor_uuid | Threat Actor unique ID. | ${acti_threat_actors_uuid} | Optional |
 
 ## Playbook Image
 ---

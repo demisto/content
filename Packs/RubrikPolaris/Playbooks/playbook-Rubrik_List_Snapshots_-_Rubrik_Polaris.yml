@@ -1,0 +1,404 @@
+id: Rubrik List Snapshots - Rubrik Polaris
+version: -1
+name: Rubrik List Snapshots - Rubrik Polaris
+description: List snapshots for all objects.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 31948268-c718-4a7b-80fc-9320df4c2850
+    type: start
+    task:
+      id: 31948268-c718-4a7b-80fc-9320df4c2850
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 71ea59f1-c9ab-4130-8b70-d09adbfc2432
+    type: regular
+    task:
+      id: 71ea59f1-c9ab-4130-8b70-d09adbfc2432
+      version: -1
+      name: List the snapshots for all objects
+      description: Retrieve Rubrik snapshot(s) of an object, based on the provided
+        object ID.
+      script: '|||rubrik-polaris-object-snapshot-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      object_id:
+        complex:
+          root: inputs.object_id
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 59f75fd1-8314-4fca-85f1-bcdc15120944
+    type: title
+    task:
+      id: 59f75fd1-8314-4fca-85f1-bcdc15120944
+      version: -1
+      description: Done
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 55212b90-9a3e-40cc-8073-82710175cfca
+    type: condition
+    task:
+      id: 55212b90-9a3e-40cc-8073-82710175cfca
+      version: -1
+      name: Is Fileset data returned?
+      description: Checks certain fields related to Fileset Object.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WindowsFileset, LinuxFileset, ShareFileset
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WindowsFielset, LinuxFileset, ShareFileset
+                accessor: cluster.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.Object.Snapshot
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.Object.Snapshot
+                accessor: date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WindowsFileset, LinuxFileset, ShareFileset
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject.physicalPath
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.physicalPath.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PhysicalHost
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: abd28827-1b45-4ffe-88d9-e9898a9f7504
+    type: condition
+    task:
+      id: abd28827-1b45-4ffe-88d9-e9898a9f7504
+      version: -1
+      name: Is VM data returned?
+      description: Checks certain fields related to VM object.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VmwareVirtualMachine, AzureNativeVm
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VmwareVirtualMachine, AzureNativeVm
+                accessor: cluster.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.Object.Snapshot
+                accessor: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.Object.Snapshot
+                accessor: date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VmwareVirtualMachine, AzureNativeVm
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject.physicalPath
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: RubrikPolaris.GlobalSearchObject.physicalPath.objectType
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VSphereVCenter
+                accessor: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 119befb3-5339-448d-8c86-166498a1d914
+    type: regular
+    task:
+      id: 119befb3-5339-448d-8c86-166498a1d914
+      version: -1
+      name: Data not found
+      description: Prints text to war room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: 'No data for this type was obtained for object id: ${inputs.object_id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: object_id
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+  - RubrikPolaris-Test
+fromversion: 6.0.0

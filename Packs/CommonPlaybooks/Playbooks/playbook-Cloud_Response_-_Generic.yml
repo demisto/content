@@ -73,8 +73,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.OriginalAlert.event
-                accessor: cloud_provider
+                root: inputs.cloudProvider
             iscontext: true
           right:
             value:
@@ -86,8 +85,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.OriginalAlert.event
-                accessor: cloud_provider
+                root: inputs.cloudProvider
             iscontext: true
           right:
             value:
@@ -99,8 +97,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.OriginalAlert.event
-                accessor: cloud_provider
+                root: inputs.cloudProvider
             iscontext: true
           right:
             value:
@@ -212,38 +209,37 @@ tasks:
     scriptarguments:
       accessKeyId:
         complex:
-          root: alertJson._all_events._aws_specific_fields
-          accessor: access_key_id
+          root: inputs.accessKeyId
       accessKeyRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.AWS-accessKeyRemediationType
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "False"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "True"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoUserRemediation
       region:
         complex:
-          root: alertJson._all_events
-          accessor: region
+          root: inputs.region
       resourceName:
         complex:
-          root: alertJson._all_events
-          accessor: referenced_resource_name
+          root: inputs.resourceName
       resourceRemediationType:
-        simple: Stop
+        complex:
+          root: inputs.AWS-resourceRemediationType
       userRemediationType:
-        simple: Revoke
+        complex:
+          root: inputs.AWS-userRemediationType
       username:
         complex:
-          root: alertJson._all_events
-          accessor: actor_effective_username
-      sourceIP:
-        complex:
-          root: alertJson._all_events
-          accessor: caller_ip
+          root: inputs.username
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -283,40 +279,29 @@ tasks:
       - "20"
     scriptarguments:
       autoBlockIndicators:
-        simple: "False"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoUserRemediation
       resourceGroup:
         complex:
-          root: alertJson._all_events
-          accessor: referenced_resource
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: /
-              fields:
-                value:
-                  simple: "5"
+          root: inputs.resourceGroup
       resourceName:
         complex:
-          root: alertJson._all_events
-          accessor: referenced_resource_name
+          root: inputs.resourceName
       resourceRemediationType:
-        simple: PowerOff
+        complex:
+          root: inputs.Azure-resourceRemediationType
       userRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.Azure-userRemediationType
       username:
         complex:
-          root: alertJson._all_events
-          accessor: actor_effective_username
-      sourceIP:
-        complex:
-          root: alertJson._all_events
-          accessor: caller_ip
+          root: inputs.username
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -425,36 +410,39 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      accessKeyName:
+        complex:
+          root: inputs.accessKeyName
       accessKeyRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "False"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
       resourceName:
         complex:
-          root: alertJson._all_events
-          accessor: referenced_resource_name
+          root: inputs.resourceName
       resourceRemediationType:
-        simple: Stop
+        complex:
+          root: inputs.GCP-resourceRemediationType
       resourceZone:
         complex:
-          root: alertJson._all_events
-          accessor: zone
+          root: inputs.resourceZone
       userRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.GCP-userRemediationType
       username:
         complex:
-          root: alertJson._all_events
-          accessor: identity_name
-      sourceIP:
-        complex:
-          root: alertJson._all_events
-          accessor: caller_ip
+          root: inputs.username
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -491,7 +479,168 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value: {}
+  required: false
+  description: Whether to execute the resource remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-resourceRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    AWS available types:
+    Stop - for stopping the instances.
+    Terminate - for terminating the instances.
+  playbookInputQuery:
+- key: Azure-resourceRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    Azure available types:
+    Poweroff - for shutting down the instances.
+    Delete - for deleting the instances.
+  playbookInputQuery:
+- key: GCP-resourceRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    GCP available types:
+    Stop - For stopping the instances.
+    Delete - For deleting the instances.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value: {}
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-accessKeyRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    AWS available types:
+    Disable - for disabling the user's access key.
+    Delete - for the user's access key deletion.
+  playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For the deleting user's access key.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value: {}
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-userRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    AWS available types:
+    Delete - for the user deletion.
+    Revoke - for revoking the user's credentials.
+  playbookInputQuery:
+- key: Azure-userRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    Azure available types:
+    Disable - for disabling the user.
+    Delete - for deleting the user.
+  playbookInputQuery:
+- key: GCP-userRemediationType
+  value: {}
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    GCP available types:
+    Delete - For deleting the user.
+    Disable - For disabling the user.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value: {}
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: resourceName
+  value: {}
+  required: false
+  description: |-
+    The resource name to take action on.
+
+    Supports: AWS, GCP and Azure
+  playbookInputQuery:
+- key: resourceZone
+  value: {}
+  required: false
+  description: |-
+    The resource's zone to take action on.
+
+    Supports: GCP
+  playbookInputQuery:
+- key: resourceGroup
+  value: {}
+  required: false
+  description: |-
+    Supports: Azure
+    The resource group to take action on.
+  playbookInputQuery:
+- key: accessKeyName
+  value: {}
+  required: false
+  description: |-
+    The access key name in the following format:
+    projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}.
+
+    Supports: GCP
+  playbookInputQuery:
+- key: accessKeyId
+  value: {}
+  required: false
+  description: |-
+    The user's access key ID.
+
+    Supports: AWS
+  playbookInputQuery:
+- key: region
+  value: {}
+  required: false
+  description: |-
+    The resource's region.
+
+    Supports: AWS
+  playbookInputQuery:
+- key: username
+  value: {}
+  required: false
+  description: |-
+    The username to take action on.
+
+    Supports: AWS, GCP and Azure
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

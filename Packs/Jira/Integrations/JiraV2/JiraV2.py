@@ -1,9 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
-from CommonServerPython import *
+
 import urllib3
 urllib3.disable_warnings()
 
@@ -34,6 +38,9 @@ BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication w
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 USE_SSL = not demisto.params().get('insecure', False)
 
+SESSION = requests.Session()
+SESSION.mount(prefix='https://', adapter=SSLAdapter(verify=USE_SSL))
+
 
 def jira_req(
         method: str,
@@ -42,21 +49,24 @@ def jira_req(
         link: bool = False,
         resp_type: str = 'text',
         headers: Optional[dict] = None,
-        files: Optional[dict] = None
+        files: Optional[dict] = None,
+        params: Optional[dict] = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
     AUTH = get_auth()
     if headers and HEADERS.get('Authorization'):
         headers['Authorization'] = HEADERS.get('Authorization')
     try:
-        result = requests.request(
+
+        result = SESSION.request(
             method=method,
             url=url,
             data=body,
             auth=AUTH,
             headers=headers if headers else HEADERS,
             verify=USE_SSL,
-            files=files
+            files=files,
+            params=params
         )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
@@ -138,13 +148,7 @@ def get_custom_field_names():
     custom_id_name_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        res = jira_req(method='GET', resource_url='rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -172,7 +176,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     }
     """
     demisto.debug(f'querying with: {query}')
-    url = BASE_URL + 'rest/api/latest/search/'
+    url = 'rest/api/latest/search/'
     query_params = {
         'jql': query,
         "startAt": start_at,
@@ -190,13 +194,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         else:
             return_warning(f'{",".join(nofields)} does not exist')
     try:
-        result = requests.get(
-            url=url,
-            headers=HEADERS,
-            verify=USE_SSL,
-            params=query_params,
-            auth=get_auth(),
-        )
+        result = jira_req(method='GET', resource_url=url, headers=HEADERS, params=query_params)
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
 
@@ -236,13 +234,7 @@ def get_custom_fields():
     custom_id_description_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        res = jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -376,6 +368,7 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
         context_obj['Description'] = md_obj['description'] = demisto.get(element, 'fields.description')
+        context_obj['Labels'] = md_obj['labels'] = demisto.get(element, 'fields.labels')
 
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
@@ -558,9 +551,10 @@ def get_project_id(project_key='', project_name=''):
         result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
     except DemistoException as de:
 
-        if de.message != 'Status code: 404\nMessage: Issue Does Not Exist':
+        if 'Status code: 404' not in de.message:
             raise de
 
+        demisto.debug('Exception after first api call: {de.message}')
         demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
                       f'Trying another endpoint: {BASE_URL}/api/latest/project.')
 
@@ -697,6 +691,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
             issue['fields']['reporter'] = {}
         issue['fields']['reporter']['name'] = issue_args['reporter']
 
+    demisto.debug(f'The issue after updating relevant fields: {issue}')
     return issue
 
 
@@ -818,7 +813,7 @@ def __get_field_type(field_id):
 
 def __add_value_by_type(type, current_value, new_value):
     if type == 'string':
-        new_val = current_value + "," + new_value
+        new_val = current_value + " , " + new_value
     elif type == 'array':
         new_val = current_value + [new_value]
     else:
@@ -841,14 +836,15 @@ def edit_status(issue_id, status, issue):
     if not issue:
         issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
-    transitions = [transition.get('name') for transition in j_res.get('transitions')]
-    for i, transition in enumerate(transitions):
+    # When changing the status we search the transition that leads to this status
+    statuses = [transition.get('to', {}).get('name', '') for transition in j_res.get('transitions')]
+    for i, transition in enumerate(statuses):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
             return jira_req('POST', url, json.dumps(issue))
 
-    return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
+    return_error(f'Status "{status}" not found. \nValid statuses are: {statuses} \n')
 
 
 def list_transitions_data_for_issue(issue_id):
@@ -1031,6 +1027,18 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Issue deleted successfully.')
     else:
         demisto.results('Failed to delete issue.')
+
+
+def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
+    if assignee:  # for jira server
+        body = {"name": assignee}
+    elif assignee_id:  # for jira cloud
+        body = {"accountId": assignee_id}
+    else:
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
+    url = f'rest/api/latest/issue/{issue_id}/assignee'
+    jira_req('PUT', url, json.dumps(body))
+    return get_issue(issue_id, is_update=True)
 
 
 def test_module() -> str:
@@ -1268,7 +1276,8 @@ def update_remote_system_command(args):
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data[k] for k in remote_args.delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
+            demisto.debug(f'sending the following data to edit the issue with: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
@@ -1299,8 +1308,7 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return requests.request(method='GET', url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS, verify=USE_SSL,
-                            auth=get_auth())
+    return jira_req(method='GET', resource_url='rest/api/latest/myself', headers=HEADERS)
 
 
 def get_modified_remote_data_command(args):
@@ -1509,6 +1517,10 @@ def main():
             return_results(list_transitions_command(demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
+
+        elif demisto.command() == 'jira-issue-assign':
+            human_readable, outputs, raw_response = update_issue_assignee_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 

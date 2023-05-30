@@ -1,5 +1,7 @@
 [MODEL: dataset=microsoft_365_defender_raw]
 alter
+    outcome_result = json_extract_scalar(evidence, "$.detectionStatus")
+| alter
     //_time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", alertCreationTime),
     xdm.event.id = id,
     xdm.alert.original_alert_id = to_string(incidentId),
@@ -25,6 +27,4 @@ alter
     xdm.source.user.domain = json_extract_scalar(evidence, "$.domainName"),
     xdm.source.user.identifier = json_extract_scalar(evidence, "$.userSid"),
     xdm.target.ipv4 = json_extract_scalar(evidence, "$.ipAddress"),
-    xdm.event.outcome = json_extract_scalar(evidence, "$.detectionStatus"),
-    xdm.observer.vendor = _vendor,
-    xdm.observer.product = _product;
+    xdm.event.outcome = if(outcome_result = "Detected", XDM_CONST.OUTCOME_FAILED, outcome_result = "Blocked", XDM_CONST.OUTCOME_SUCCESS, outcome_result = "Prevented", XDM_CONST.OUTCOME_PARTIAL, outcome_result = null, null, to_string(outcome_result));

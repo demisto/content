@@ -1,0 +1,14 @@
+{
+  "OriginalURL": "https://short.url/a",
+  "RedirectCount": 2,
+  "RedirectHistory": [
+    "https://short.url/a",
+    "https://short.url/b",
+    "https://xsoar.pan.dev/"
+  ],
+  "ResolvedURL": "https://xsoar.pan.dev/",
+  "ServiceName": "unshorten.me",
+  "EncounteredError": false,
+  "APIRateLimit": 10,
+  "APIUsageCount": 2
+}

@@ -1,0 +1,16 @@
+!kmsat-account-info-list
+!kmsat-account-risk-score-history-list page=1 per_page=25
+!kmsat-groups-list page=1 per_page=25
+!kmsat-groups-risk-score-history-list page=1 per_page=25
+!kmsat-groups-members-list group_id=1 page=1 per_page=25
+!kmsat-users-risk-score-history-list user_id=1 page=1 per_page=25
+!kmsat-phishing-security-tests-list page=1 per_page=25
+!kmsat-phishing-security-tests-recipients-list pst_id=1 page=1 per_page=25
+!kmsat-phishing-security-tests-failed-recipients-list pst_id=1
+!kmsat-phishing-campaign-security-tests-list campaign_id=1 page=1 per_page=25
+!kmsat-training-campaigns-list campaign_id=1 page=1 per_page=25
+!kmsat-training-enrollments-list status="Completed" page=1 per_page=25
+!kmsat-user-events-list target_user=1 risk_level=1 page=1 per_page=25
+!kmsat-user-event-types-list name="John"
+!kmsat-user-event-create target_user="John" event_type="New Event"
+!kmsat-user-event-delete id=1

@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Panorama
   version: -1
@@ -7,57 +10,78 @@ configuration:
   name: server
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   name: credentials
   required: false
   type: 9
   hiddenusername: true
+  section: Connect
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
   display: Vsys - Firewall instances only
   name: vsys
   required: false
   type: 0
+  section: Connect
 - display: Template - Panorama instances only
   name: template
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
   display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
   name: additional_suspicious
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
   name: additional_malicious
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: API Key (Deprecated)
   name: key
   required: false
   type: 4
   hidden: true
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -72,6 +96,8 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -82,11 +108,111 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   required: false
   type: 1
+  section: Collect
+  advanced: true
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+  section: Collect
+- defaultvalue: 24 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: "100"
+  display: Max incidents per fetch (for each selected Log Type Query)
+  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- display: Log Type
+  name: log_types
+  required: false
+  type: 16
+  additionalinfo: "Select which log types to fetch.\nSelecting 'All' will use all the log type queries in the fetch.\nTo choose a specific set of queries, select their log types from the dropdown (make sure the 'All' option is unselected)."
+  options:
+  - Traffic
+  - Threat
+  - Url
+  - Data
+  - Correlation
+  - System
+  - Wildfire
+  - Decryption
+  - All
+  section: Connect
+  advanced: true
+- display: Traffic Log Type Query
+  name: traffic_query
+  additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: Threat Log Type Query
+  name: threat_query
+  additionalinfo: "Threat Log Type query example: (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: URL Log Type Query
+  name: url_query
+  additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: Data Log Type Query
+  name: data_query
+  additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: Correlation Log Type Query
+  name: correlation_query
+  additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: System Log Type Query
+  name: system_query
+  additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity}). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: Wildfire Submission Log Type Query
+  name: wildfire_query
+  additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole)). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: Decryption Log Type Query
+  name: decryption_query
+  additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination})). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  required: false
+  type: 12
+  section: Collect
+  advanced: true
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+  section: Connect
 description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -416,6 +542,13 @@ script:
     - description: The tag for the new address.
       isArray: true
       name: tag
+    - auto: PREDEFINED
+      description: Whether to create the tag if it does not exist.
+      defaultValue: 'false'
+      name: create_tag
+      predefined:
+      - 'true'
+      - 'false'
     description: Creates an address object.
     deprecated: true
     name: panorama-create-address
@@ -438,8 +571,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to delete.
@@ -484,8 +617,8 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
-      description: The address group tag.
+    - contextPath: Panorama.AddressGroups.Tags
+      description: The address group tags.
       type: String
   - arguments:
     - description: The address group name.
@@ -563,7 +696,7 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
+    - contextPath: Panorama.AddressGroups.Tags
       description: The address group tags.
       type: String
   - arguments:
@@ -991,7 +1124,7 @@ script:
       isArray: true
       name: sites
     - auto: PREDEFINED
-      description: Adds or removes sites or categories. 
+      description: Adds or removes sites or categories.
       isArray: true
       name: action
       predefined:
@@ -1119,7 +1252,7 @@ script:
       name: url_category
       required: true
     - auto: PREDEFINED
-      description: The action for the URL categories. 
+      description: The action for the URL categories.
       name: action
       predefined:
       - allow
@@ -1420,7 +1553,7 @@ script:
     - description: The description of the rule to create.
       name: description
     - auto: PREDEFINED
-      description: The action for the rule. 
+      description: The action for the rule.
       name: action
       predefined:
       - allow
@@ -1440,13 +1573,13 @@ script:
       isArray: true
       name: destination_zone
     - auto: PREDEFINED
-      description: Whether to negate the source (address, address group). 
+      description: Whether to negate the source (address, address group).
       name: negate_source
       predefined:
       - Yes
       - No
     - auto: PREDEFINED
-      description: Whether to negate the destination (address, address group). 
+      description: Whether to negate the destination (address, address group).
       name: negate_destination
       predefined:
       - Yes
@@ -1456,7 +1589,7 @@ script:
       name: service
     - auto: PREDEFINED
       defaultValue: No
-      description: Whether to disable the rule. 
+      description: Whether to disable the rule.
       name: disable
       predefined:
       - Yes
@@ -1552,7 +1685,7 @@ script:
     - description: The name of the custom block policy rule to create.
       name: rulename
     - auto: PREDEFINED
-      description: The object type to block in the policy rule. 
+      description: The object type to block in the policy rule.
       name: object_type
       predefined:
       - ip
@@ -1667,7 +1800,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The parameter in the security rule to change. 
+      description: The parameter in the security rule to change.
       name: element_to_change
       predefined:
       - source
@@ -2167,7 +2300,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The log type. 
+      description: The log type.
       name: log-type
       predefined:
       - threat
@@ -2582,7 +2715,7 @@ script:
       name: destination
       required: true
     - auto: PREDEFINED
-      description: The type for the next hop. 
+      description: The type for the next hop.
       name: nexthop_type
       predefined:
       - ip-address
@@ -2883,7 +3016,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The security profile for which to get information. 
+      description: The security profile for which to get information.
       name: security_profile
       predefined:
       - data-filtering
@@ -3028,7 +3161,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Security profile type. 
+      description: Security profile type.
       name: profile_type
       predefined:
       - data-filtering
@@ -3527,9 +3660,21 @@ script:
       name: reporttype
     - description: The report name.
       name: reportname
-    - defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
+    - defaultValue: 'config'
       description: The request type, for example export, import, log, config.
       name: type
+      predefined:
+      - 'keygen'
+      - 'config'
+      - 'commit'
+      - 'op'
+      - 'report'
+      - 'log'
+      - 'import'
+      - 'export'
+      - 'user-id'
+      - 'version'
+      auto: PREDEFINED
     - description: The time the PCAP was received on the firewall. Used for threat PCAPs.
       name: search-time
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance. This argument will work only with op type commands.
@@ -3802,8 +3947,8 @@ script:
     - contextPath: Panorama.Addresses.DeviceGroup
       description: The device group for the address (Panorama instances).
       type: String
-    - contextPath: Panorama.Addresses.Tag
-      description: The address tag.
+    - contextPath: Panorama.Addresses.Tags
+      description: The address tags.
       type: String
   - arguments:
     - description: The name of the address to edit.
@@ -3871,8 +4016,8 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
-      description: The address group tag.
+    - contextPath: Panorama.AddressGroups.Tags
+      description: The address group tags.
       type: String
   - arguments:
     - description: The address group name.
@@ -3948,7 +4093,7 @@ script:
     - contextPath: Panorama.AddressGroups.DeviceGroup
       description: The device group for the address group (Panorama instances).
       type: String
-    - contextPath: Panorama.AddressGroups.Tag
+    - contextPath: Panorama.AddressGroups.Tags
       description: The address group tags.
       type: String
   - arguments:
@@ -4368,7 +4513,7 @@ script:
       isArray: true
       name: sites
     - auto: PREDEFINED
-      description: Adds or removes sites or categories. 
+      description: Adds or removes sites or categories.
       isArray: true
       name: action
       predefined:
@@ -4532,7 +4677,7 @@ script:
       name: url_category
       required: true
     - auto: PREDEFINED
-      description: The action for the URL category. 
+      description: The action for the URL category.
       name: action
       predefined:
       - allow
@@ -4839,7 +4984,7 @@ script:
       name: rulename
     - description: The description of the rule to create.
       name: description
-    - description: The action for the rule. 
+    - description: The action for the rule.
       name: action
       auto: PREDEFINED
       predefined:
@@ -4860,13 +5005,13 @@ script:
       isArray: true
       name: destination_zone
     - auto: PREDEFINED
-      description: Whether to negate the source (address, address group). 
+      description: Whether to negate the source (address, address group).
       name: negate_source
       predefined:
       - Yes
       - No
     - auto: PREDEFINED
-      description: Whether to negate the destination (address, address group). 
+      description: Whether to negate the destination (address, address group).
       name: negate_destination
       predefined:
       - Yes
@@ -4876,7 +5021,7 @@ script:
       name: service
     - auto: PREDEFINED
       defaultValue: No
-      description: Whether to disable the rule. 
+      description: Whether to disable the rule.
       name: disable
       predefined:
       - Yes
@@ -4971,7 +5116,7 @@ script:
     - description: The name of the custom block policy rule to create.
       name: rulename
     - auto: PREDEFINED
-      description: The object type to block in the policy rule. 
+      description: The object type to block in the policy rule.
       name: object_type
       predefined:
       - ip
@@ -5084,7 +5229,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The parameter in the security rule to change. 
+      description: The parameter in the security rule to change.
       name: element_to_change
       predefined:
       - source
@@ -5100,6 +5245,7 @@ script:
       - profile-setting
       - source-user
       - service
+      - audit-comment
       required: true
     - description: The new value for the parameter.
       name: element_value
@@ -5197,9 +5343,73 @@ script:
     - description: The device group for which to return applications.
       name: device-group
       required: false
+    - description: When specified, the results returned in the list are limited to applications whose names match the specified string.
+      name: name_match
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to applications whose names contain the specified string.
+      name: name_contain
+      required: false
+      isArray: false
+    - description: The application risk (1 to 5).
+      auto: PREDEFINED
+      name: risk
+      required: false
+      isArray: false
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+    - description: The application category.
+      auto: PREDEFINED
+      name: category
+      required: false
+      isArray: false
+      predefined:
+      - 'collaboration'
+      - 'business-systems'
+      - 'networking'
+      - 'media'
+    - description: The application sub-category.
+      name: sub_category
+      required: false
+      isArray: false
+    - description: The application technology.
+      auto: PREDEFINED
+      name: technology
+      required: false
+      isArray: false
+      predefined:
+      - 'browser-based'
+      - 'client-server'
+      - 'network-protocol'
+      - 'peer-to-peer'
+    - description: "A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'."
+      name: characteristics
+      required: false
+      isArray: false
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the applications to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing applications. Must be a positive number.
+      isArray: false
+      name: page
+      required: false
     description: Returns a list of applications.
     name: pan-os-list-applications
     outputs:
+    - contextPath: Panorama.Applications.Characteristics
+      description: The application characteristics.
+      type: string
     - contextPath: Panorama.Applications.Name
       description: The application name.
       type: string
@@ -5272,7 +5482,7 @@ script:
       - filter-pcap
       - threat-pcap
       - dlp-pcap
-    - description: The serial number of the firewall to download the PCAP from.
+    - description: The serial number of the firewall to download the PCAP from, relevant only for Panorama instances.
       name: serialNumber
     - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
       name: from
@@ -5286,11 +5496,11 @@ script:
       name: pcapID
     - description: The password for Panorama, needed for the 'dlp-pcap' PCAP type only.
       name: password
-    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' when using a Panorama instance.
       name: deviceName
-    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' when using Panorama instance.
       name: sessionID
-    description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
+    description: Returns a PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to connect to the firewall and run the scp export command in order to export the PCAP file. See the Palo Alto Networks documentation.
     name: pan-os-get-pcap
     outputs:
     - contextPath: File.Size
@@ -5541,10 +5751,39 @@ script:
       name: device-group
     - description: The tag to filter the rules.
       name: tag
+      deprecated: true
+    - description: A comma-separated list of tags by which to filter the rules.
+      name: tags
+      isArray: true
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
       required: false
-    description: Returns a list of predefined Security Rules.
+    - description: The name of the rule to retrieve. If not mentioned, will retrieve all the rules.
+      isArray: false
+      name: rulename
+      required: false
+    - auto: PREDEFINED
+      description: Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules.
+      name: disabled
+      isArray: false
+      required: false
+      predefined:
+      - yes
+      - no
+    - auto: PREDEFINED
+      description: The action of the rules to retrieve. If not mentioned, will retrieve all the rules.
+      name: action
+      isArray: false
+      required: false
+      predefined:
+      - allow
+      - deny
+      - drop
+    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden.
+      name: query
+      isArray: false
+      required: false
+    description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
     name: pan-os-list-rules
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -5583,8 +5822,11 @@ script:
     - contextPath: Panorama.SecurityRules.Tags
       description: The rule tags.
       type: String
+    - contextPath: Panorama.SecurityRules.Disabled
+      description: Whether the rule is disabled.
+      type: string
   - arguments:
-    - description: The log type. 
+    - description: The log type.
       name: log-type
       required: true
       auto: PREDEFINED
@@ -5594,6 +5836,9 @@ script:
       - wildfire
       - url
       - data
+      - corr
+      - system
+      - decryption
     - description: The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
       name: query
     - description: |-
@@ -6168,7 +6413,7 @@ script:
       name: destination
       required: true
     - auto: PREDEFINED
-      description: The type for the next hop. 
+      description: The type for the next hop.
       name: nexthop_type
       predefined:
       - ip-address
@@ -6459,7 +6704,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The security profile for which to get information. 
+      description: The security profile for which to get information.
       name: security_profile
       predefined:
       - data-filtering
@@ -6605,7 +6850,7 @@ script:
       description: The rule name.
       type: String
   - arguments:
-    - description: The security profile type. 
+    - description: The security profile type.
       name: profile_type
       required: true
       auto: PREDEFINED
@@ -8357,13 +8602,38 @@ script:
       - post-rulebase
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed rules or not. 
+      description: Whether to show the un-committed rules or not.
       isArray: false
       name: show_uncommitted
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
+      isArray: false
+      name: disabled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+      isArray: false
+      name: nat_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - nat64
+      - nptv6
+    - description: A comma-separated list of tags of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+      isArray: true
+      name: tags
+      required: false
+    - description: Free query to retrieve NAT rule. If not mentioned, will retrieve all the NAT rules.
+      name: query
+      isArray: false
+      required: false
     - defaultValue: '50'
       description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
       isArray: false
@@ -8420,6 +8690,9 @@ script:
     - contextPath: Panorama.NAT.DynamicDestinationTranslation
       description: The dynamic destination translation of the rule.
       type: Unknown
+    - contextPath: Panorama.NAT.Disabled
+      description: Whether the rule is disabled.
+      type: String
   - arguments:
     - description: The name of the NAT rule to create.
       isArray: false
@@ -8644,7 +8917,7 @@ script:
       required: false
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed virtual routers or not. 
+      description: Whether to show the un-committed virtual routers or not.
       isArray: false
       name: show_uncommitted
       required: false
@@ -8901,13 +9174,38 @@ script:
       - post-rulebase
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed rules or not. 
+      description: Whether to show the un-committed rules or not.
       isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
       name: show_uncommitted
+      required: false
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
+      isArray: false
+      name: disabled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
+      isArray: false
+      name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - discard
+      - forward
+      - no-pbf
+    - description: A comma-separated list of tags of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
+      isArray: true
+      name: tags
+      required: false
+    - description: Free query to retrieve PBF rule. If not mentioned, will retrieve all the PBF rules.
+      name: query
+      isArray: false
       required: false
     - defaultValue: '50'
       description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
@@ -8962,6 +9260,9 @@ script:
     - contextPath: Panorama.PBF.Service
       description: The services of the PBF rule.
       type: Unknown
+    - contextPath: Panorama.PBF.Disabled
+      description: Whether the rule is disabled.
+      type: String
   - arguments:
     - description: The name of the PBF-rule to create.
       isArray: false
@@ -9110,6 +9411,7 @@ script:
       - action_forward_nexthop_fqdn
       - action_forward_discard
       - action_forward_no_pbf
+      - disabled
     - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
       isArray: true
       name: element_value
@@ -9153,7 +9455,7 @@ script:
       name: device-group
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed application-groups or not. 
+      description: Whether to show the un-committed application-groups or not.
       isArray: false
       name: show_uncommitted
       auto: PREDEFINED
@@ -9257,9 +9559,9 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.39679
+  dockerimage: demisto/pan-os-python:1.0.0.61510
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
@@ -9272,3 +9574,5 @@ tests:
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
+defaultmapperin: Panorama Mapper
+defaultclassifier: Panorama Classifier

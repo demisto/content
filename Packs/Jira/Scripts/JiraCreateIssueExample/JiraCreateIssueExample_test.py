@@ -1,82 +1,150 @@
-from JiraCreateIssueExample import add_additional_args, get_known_args_from_input, get_additional_args_from_input, DEFAULT_ARGS
+from JiraCreateIssueExample import validate_date_field, parse_custom_fields, add_custom_fields
 import pytest
+from typing import List, Any, Dict
 
 
-@pytest.mark.parametrize("input,expected", [
-    ({DEFAULT_ARGS[0]: "system down"}.items(), {"summary": "system down"}),
-    ({DEFAULT_ARGS[0]: "system down", "unknown_key": "some key"}.items(), {"summary": "system down"}),
-    ({"unknown_key": "some key"}.items(), {})
+@pytest.mark.parametrize("due_date", [
+    ("2022-01-01"),
+    ("2023-01-31"),
+    ("2024-02-29")
 ])
-def test_get_known_args_from_input(input, expected):
+def test_validate_date_field_data_remains(due_date: str):
+    """
+    Given:
+        - A string representing a date in format '%Y-%m-%d'.
+
+    When:
+        - Case A: A valid string is in expected format and passed to `validate_date_field`
+        - Case B: A valid string is in expected format and passed to `validate_date_field`
+        - Case C: A leap year string is in expected format and passed to `validate_date_field`
+
+    Then:
+        - Case A: No exception is thrown.
+        - Case B: No exception is thrown.
+        - Case C: No exception is thrown.
+    """
+
+    validate_date_field(due_date)
+
+
+@pytest.mark.parametrize("due_date", [
+    ("2022-31-31"),
+    ("202-51-XY"),
+    ("ABC")
+])
+def test_validate_date_field_format(due_date: str):
 
     """
     Given:
-        - A dictionary view with Jira fields
-    When:
-        - 1 known argument key is supplied
-        - 1 known argument key is supplied, 1 unknown argument key is supplied
-        - 0 known arguments are supplied,  1 unknown argument key is supplied
+        - An invalid string.
 
+    When:
+        - Case A: Attempting to validate the string with `validate_date_field` but it has an invalid month (31)
+        - Case B: Attempting to validate the string with `validate_date_field` but it has an invalid month (51) and day(XY)
+        - Case C: Attempting to validate the string with `validate_date_field` but it has invalid everything
     Then:
-        - dict with known argument key is returned
-        - dict with known argument key is returned
-        - empty dict
+        - Case A: A `ValueError` exception is thrown.
+        - Case B: A `ValueError` exception is thrown.
+        - Case C: A `ValueError` exception is thrown.
     """
 
-    args = get_known_args_from_input(input)
-
-    assert isinstance(args, dict)
-    assert args == expected
+    with pytest.raises(ValueError, match=r"time data '(.*)' does not match format '%Y-%m-%d'"):
+        raise validate_date_field(due_date)
 
 
-@pytest.mark.parametrize("input,expected", [
-    ({DEFAULT_ARGS[0]: "system down"}.items(), {}),
-    ({DEFAULT_ARGS[0]: "system down", "unknown_key": "some key"}.items(), {"unknown_key": "some key"}),
-    ({"unknown_key": "some key"}.items(), {"unknown_key": "some key"})
+@pytest.mark.parametrize("due_date", [
+    ("2022-12-12T13:00:00"),
+    ("2022-12-12Z12")
 ])
-def test_get_additional_args_from_input(input, expected):
+def test_validate_date_field_time_data_doesnt_match(due_date: str):
+
     """
     Given:
-        - A dictionary view with Jira fields
+        - An invalid string.
+
     When:
-        - 1 unknown argument key is supplied
-        - 1 unknown argument key is supplied, 1 known argument key is supplied
-        - 1 known arguments are supplied, 0 unknown argument key is supplied
+        - Case A: Attempting to validate the string with `validate_date_field` but it has added time.
+        - Case B: Attempting to validate the string with `validate_date_field` but it has added timezone.
 
     Then:
-        - empty dict
-        - dict with unknown argument key is returned
-        - dict with unknown argument key is returned
+        - Case A: A `ValueError` exception is thrown.
+        - Case B: A `ValueError` exception is thrown.
     """
 
-    args = get_additional_args_from_input(input)
-
-    assert isinstance(args, dict)
-    assert args == expected
+    with pytest.raises(ValueError, match=r"unconverted data remains: "):
+        raise validate_date_field(due_date)
 
 
-@pytest.mark.parametrize("known,additional,expected", [
-    ({DEFAULT_ARGS[0]: "system down"}, None, {DEFAULT_ARGS[0]: "system down"}),
-    ({DEFAULT_ARGS[0]: "system down"}, {"unknown_key": "some key"},
-        {'issueJSON': '{"unknown_key": "some key"}', DEFAULT_ARGS[0]: "system down"}),
+@pytest.mark.parametrize("custom_fields, expected", [
+    (["customfield_10096=test"], {"customfield_10096": "test"}),
+    (["customfield_10096=test", "customfield_10040=100"], {"customfield_10096": "test", "customfield_10040": 100}),
+    (["customfield_10096=test", "customfield_10040=0100"], {"customfield_10096": "test", "customfield_10040": "0100"}),
+    (["customfield_10096=test", "customfield_10040=A100"], {"customfield_10096": "test", "customfield_10040": "A100"}),
+    (["customfield_10096:test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
+    (["customfield_10096==test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
+    ([], {}),
 ])
-def test_add_additional_args(known, additional, expected):
+def test_parse_custom_fields(custom_fields: List[str], expected: Dict[str, Any]):
+
     """
     Given:
-        - 2 dictionaries of known and unknown keys
+        - A list of strings of custom fields.
+        - An expected list of dicts of custom fields.
+
     When:
-        - 1 known dict, no unknown dicts
-        - 1 known dict and one unknown dict
+        - Case A: Passing a list of 1 string with text type custom field to `parse_custom_fields`.
+        - Case B: Passing a list of 2 strings, one with text type custom field, one with integer type custom field into
+        `parse_custom_fields`.
+        - Case C: Passing a list of 2 strings, one with text type custom field, one with integer type custom field with 0
+        padding into `parse_custom_fields`.
+        - Case D: Passing a list of 2 strings of text type custom fields into `parse_custom_fields`.
+        - Case E: Passing a list of 2 strings of 1 text type custom field, 1 custom field with unexpected delimiter (:).
+        - Case F: Passing a list of 1 string wit text type custom field, 1 custom field with unexpected delimiter (==).
+        - Case G: Passing an empty list.
 
     Then:
-        - dict with known argument key is returned
-        - dict with known argument and unknown keys returned
+        - Case A: A dictionary with 1 attribute is returned.
+        - Case B: A dictionary with 1 attribute field, 1 integer custom field is returned.
+        - Case C: A dictionary with 2 attributes fields is returned.
+        - Case D: A dictionary with 2 attributes fields is returned.
+        - Case E: A dictionary with 1 attribute field is returned.
+        - Case F: A dictionary with 1 attribute field is returned.
+        - Case G: An empty dictionary is returned.
     """
 
-    args = add_additional_args(known, additional)
+    actual = parse_custom_fields(custom_fields)
+    assert actual == expected
 
-    if additional:
-        assert "issueJSON" in args.keys()
 
-    assert isinstance(args, dict)
-    assert args == expected
+@pytest.mark.parametrize("args, custom_fields, expected", [
+    (
+        {"arg1": "val1", "arg2": 1},
+        {"customfield_10096": "test", "customfield_10040": 100},
+        {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}
+    ),
+    (
+        {},
+        {"customfield_10096": "test", "customfield_10040": 100},
+        {"issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}
+    )
+])
+def test_add_custom_fields(args: Dict[str, Any], custom_fields: Dict[str, Any], expected):
+    """
+    Given:
+        - A dictionary of arguments.
+        - A dictionary representing custom fields.
+        - An expected dictionary result.
+
+    When:
+        - Case A: Passing a dictionary with 2 attributes and another dictionary with 2 attributes into `add_custom_fields`.
+        - Case B: Passing a dictionary with 2 attributes and an empty dictionary into `add_custom_fields`.
+        - Case C: Passing a empty dictionary and another one with 2 attributes into `add_custom_fields`.
+    Then:
+        - Case A: The resulting dictionary will have 4 attributes with `issueJson` root.
+        - Case B: The resulting dictionary will be identical to the first one supplied.
+        - Case C: The resulting dictionary will have 2 attributes with `issueJson` root.
+    """
+
+    actual = add_custom_fields(args, custom_fields)
+
+    assert actual == expected

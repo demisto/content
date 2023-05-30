@@ -1,0 +1,139 @@
+{
+  "actions": [
+    {
+      "action_id": 3061,
+      "action_name": "XMrig Cryptocurrency Miner used by TeamTNT Threat Group .ELF File Download Variant-2",
+      "description": "This attack includes downloading an .elf file of the XMrig cryptocurrency miner used by the TeamTNT Threat Group. TeamTNT is known for exploiting unsecured Docker daemons and deploying malicious container images. Xmrig was used by the TeamTNTs Hildegard Cryptojacking malware. Xmrig is a Monero mining malware. This sample is a stripped binary.",
+      "started_at": 1672402949000,
+      "completed_at": 1672402971000,
+      "affected_os": [
+        "Linux"
+      ],
+      "display_id": 226232,
+      "category": "Malicious Code",
+      "attack_module": "File Download",
+      "node_id": 4,
+      "prevention": "unblocked",
+      "has_detection_analysis": false,
+      "module_based_results": {
+        "file_details": [
+          {
+            "name": "226232.elf",
+            "sha1": "e94aeaeae1a3df5e3778c37f7a77be43da627c7e",
+            "sha256": "78f92857e18107872526feb1ae834edb9b7189df4a2129a4125a3dd8917f9983",
+            "md5": "70330c23a9027ba0d2d6dd552818d97b"
+          }
+        ]
+      },
+      "references": {
+        "virus_total_reference": [
+          {
+            "name": "VirusTotal",
+            "link": "https://www.virustotal.com/gui/file/78f92857e18107872526feb1ae834edb9b7189df4a2129a4125a3dd8917f9983/detection"
+          }
+        ]
+      },
+      "protocol_based_result": [
+        {
+          "started_at": 1672402949000,
+          "completed_at": 1672402971000,
+          "prevention": "unblocked",
+          "protocol": "http",
+          "has_log_analysis": false,
+          "has_alert_analysis": false
+        }
+      ]
+    },
+    {
+      "action_id": 3062,
+      "action_name": "XMrig Cryptocurrency Miner used by TeamTNT Threat Group .ELF File Download Variant-1",
+      "description": "This attack includes downloading an .elf file of the XMrig cryptocurrency miner used by the TeamTNT Threat Group. TeamTNT is known for exploiting unsecured Docker daemons and deploying malicious container images. Xmrig was used by the TeamTNTs Hildegard Cryptojacking malware. Xmrig is a Monero mining malware. This sample is a stripped binary.",
+      "started_at": 1672402905000,
+      "completed_at": 1672402927000,
+      "affected_os": [
+        "Linux"
+      ],
+      "display_id": 859753,
+      "category": "Malicious Code",
+      "attack_module": "File Download",
+      "node_id": 2,
+      "prevention": "unblocked",
+      "has_detection_analysis": false,
+      "module_based_results": {
+        "file_details": [
+          {
+            "name": "859753.elf",
+            "sha1": "59e538c2a3b5a4ccf49b30b88e5571a27931aa4c",
+            "sha256": "a22c2a6c2fdc5f5b962d2534aaae10d4de0379c9872f07aa10c77210ca652fa9",
+            "md5": "35ac482fafb1453f993cb7c447fb9525"
+          }
+        ]
+      },
+      "references": {
+        "virus_total_reference": [
+          {
+            "name": "VirusTotal",
+            "link": "https://www.virustotal.com/gui/file/a22c2a6c2fdc5f5b962d2534aaae10d4de0379c9872f07aa10c77210ca652fa9/detection"
+          }
+        ]
+      },
+      "protocol_based_result": [
+        {
+          "started_at": 1672402905000,
+          "completed_at": 1672402927000,
+          "prevention": "unblocked",
+          "protocol": "http",
+          "has_log_analysis": false,
+          "has_alert_analysis": false
+        }
+      ]
+    },
+    {
+      "action_id": 22743,
+      "action_name": "XMRig Cryptocurrency Miner .EXE File Download Variant-2",
+      "description": "This attack includes downloading an .EXE file of the XMRig cryptocurrency miner. XMRig is a miner, a type of threat that is used to make money at the expense of computer users by using the infected computer users to mine Monero cryptocurrency. XMRig can cause a computer to overheat and perform poorly, since XMRig uses additional system resources, taking these away from the victim. By compromising numerous computers with XMRig, the threat actors can make large amounts of money, leveraging the combined power of numerous computers infected simultaneously.",
+      "started_at": 1672402971000,
+      "completed_at": 1672402973000,
+      "affected_os": [
+        "Windows"
+      ],
+      "display_id": 687178,
+      "category": "Malicious Code",
+      "attack_module": "File Download",
+      "node_id": 5,
+      "prevention": "blocked",
+      "has_detection_analysis": false,
+      "module_based_results": {
+        "file_details": [
+          {
+            "name": "687178.exe",
+            "sha1": "2b011ba93496f316a6d2fbd6d06d7a36d311a439",
+            "sha256": "192f0be2aebb6e6bc86a0fed37fe8f454a449e658da0a04e5bd79e9bde6b99ac",
+            "md5": "f3227fc9ecc270d49e4b24eedfbdfdf2"
+          }
+        ]
+      },
+      "references": {
+        "virus_total_reference": [
+          {
+            "name": "VirusTotal",
+            "link": "https://www.virustotal.com/gui/file/192f0be2aebb6e6bc86a0fed37fe8f454a449e658da0a04e5bd79e9bde6b99ac/detection"
+          }
+        ]
+      },
+      "protocol_based_result": [
+        {
+          "started_at": 1672402971000,
+          "completed_at": 1672402973000,
+          "prevention": "blocked",
+          "protocol": "http",
+          "has_log_analysis": false,
+          "has_alert_analysis": false
+        }
+      ]
+    }
+  ],
+  "total_count": 7,
+  "limit": 10,
+  "offset": 0
+}

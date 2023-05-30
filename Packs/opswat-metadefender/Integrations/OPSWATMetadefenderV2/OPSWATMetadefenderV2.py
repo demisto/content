@@ -2,9 +2,9 @@ import shutil
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 PARAMS = demisto.params()
@@ -14,7 +14,6 @@ API_KEY = PARAMS.get('api_key', '')
 USE_CLOUD = PARAMS.get('cloud', False)
 HIGH_THRESHOLD = int(PARAMS.get('highPercnt', 66))
 LOW_THRESHOLD = int(PARAMS.get('lowPercnt', 34))
-
 
 DEFAULT_HEADERS = {
     'Accept': 'application/json'
@@ -36,7 +35,7 @@ def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
     if USE_CLOUD:
         headers['apikey'] = API_KEY
     if file_name:
-        headers['filename'] = file_name
+        headers['filename'] = file_name.encode('utf-8')  # type: ignore
         with open(file_name, 'rb') as file_:
             res = requests.post(url, verify=USE_SSL, files={'file': file_}, headers=headers)
     elif method.upper() == 'GET':
@@ -245,24 +244,31 @@ def get_scan_result_command():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    # Remove proxy if not set to true in params
-    handle_proxy()
+def main():  # pragma: no cover
+    command = demisto.command()
+    demisto.info(f"Command being called is: {command}")
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        get_hash_info('66DA1A91E1ED5D59BECFAD85F53C05F9')
-        demisto.results('ok')
-    if demisto.command() == 'opswat-scan-file':
-        scan_file_command()
-    if demisto.command() == 'opswat-hash':
-        get_hash_info_command()
-    if demisto.command() == 'opswat-scan-result':
-        get_scan_result_command()
-except Exception as e:
-    message = f'Unexpected error: {e}'
-    LOG(str(e))
-    LOG.print_log()
-    return_error(message)
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+
+        if command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            get_hash_info('66DA1A91E1ED5D59BECFAD85F53C05F9')
+            demisto.results('ok')
+        if command == 'opswat-scan-file':
+            scan_file_command()
+        if command == 'opswat-hash':
+            get_hash_info_command()
+        if command == 'opswat-scan-result':
+            get_scan_result_command()
+    except Exception as e:
+        message = f'Unexpected error: {e}'
+        LOG(str(e))
+        LOG.print_log()
+        return_error(message)
+
+
+if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
+    main()

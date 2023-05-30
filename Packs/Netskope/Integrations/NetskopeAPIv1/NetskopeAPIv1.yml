@@ -719,7 +719,7 @@ script:
         - contextPath: Netskope.Host.agent_status
           description: The status of the agent on the device.
           type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

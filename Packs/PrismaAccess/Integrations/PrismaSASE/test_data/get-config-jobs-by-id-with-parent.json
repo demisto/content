@@ -1,0 +1,13 @@
+{
+    "data": [
+        {
+            "id": "2",
+            "parent_id": "1",
+            "percent": "99",
+            "result_i": "0",
+            "result_str": "OK",
+            "status_str": "ACT",
+            "type_str": "CommitAndPush"
+        }
+    ]
+}

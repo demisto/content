@@ -229,7 +229,7 @@
 				},
 				"params": {
 					"groupBy": [
-						"type"
+						"rawType"
 					],
 					"valuesFormat": "abbreviated"
 				},
@@ -285,7 +285,7 @@
 				},
 				"params": {
 					"groupBy": [
-						"type"
+						"rawType"
 					],
 					"valuesFormat": "abbreviated"
 				},

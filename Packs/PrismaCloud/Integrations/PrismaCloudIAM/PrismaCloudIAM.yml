@@ -1,4 +1,7 @@
 category: Identity and Access Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: PrismaCloud IAM
   version: -1
@@ -7,61 +10,79 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Customer name
-  additionalinfo: If you are a multi-tenant user you will also need to provide the
-    customerName.
+  additionalinfo: If you are a multi-tenant user you will also need to provide the customerName.
   name: customer_name
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create_if_not_exists
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: User Profile - PrismaCloud (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
+  section: Connect
 - defaultvalue: User Profile - PrismaCloud (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
-description: 'The Prisma Cloud IAM API consists of a set of API endpoints that allow
-  customers to perform CRUD operation on their user profiles.'
+  section: Connect
+description: 'The Prisma Cloud IAM API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.'
 display: PrismaCloud IAM
 name: PrismaCloud IAM
 script:
@@ -76,8 +97,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -91,8 +111,7 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -131,8 +150,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -141,14 +159,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -190,8 +206,7 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -233,8 +248,7 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -264,11 +278,10 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: false
   longRunning: false
   longRunningPort: false

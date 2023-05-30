@@ -1,0 +1,424 @@
+id: Phishing - Get Original Email Loop
+version: -1
+name: Phishing - Get Original Email Loop
+description: When the "Get Original Email - Generic v2" playbook is looped, there is no actual way to distinguish which retrieved file is related to which Message-ID. In order to solve this issue, this playbook will be looped instead and will output the "FileAssociation" key with the File-MessageID association.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98e51582-aa46-476c-89f9-de96c38560c1
+    type: start
+    task:
+      id: 98e51582-aa46-476c-89f9-de96c38560c1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3f2d324b-e49b-496b-8f70-ab01ec03d818
+    type: playbook
+    task:
+      id: 3f2d324b-e49b-496b-8f70-ab01ec03d818
+      version: -1
+      name: Get Original Email - Generic v2
+      description: |-
+        This v2 playbook is used inside the phishing flow. The inputs in this version do not use labels and also allow the user to supply an email brand.
+        Note: You must have the necessary permissions in your email service to execute a global search.
+
+        To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
+        - EWS: eDiscovery
+        - Gmail: Google Apps Domain-Wide Delegation of Authority
+        - MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
+        - EmailSecurityGateway retrieves EML files from:
+            * FireEye EX
+            * FireEye CM
+            * Proofpoint Protection Server
+            * Mimecast
+      playbookName: Get Original Email - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EmailBrand:
+        complex:
+          root: inputs.EmailBrand
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      UserID:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3a8cb56c-0be9-4362-8a9d-ba4301b2ac64
+    type: condition
+    task:
+      id: 3a8cb56c-0be9-4362-8a9d-ba4301b2ac64
+      version: -1
+      name: Was the email file retrieved?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File.EntryID
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: File.EntryID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CurrentFilesEntryIDs
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d463a69b-a148-4aa3-8344-cdedf786590d
+    type: regular
+    task:
+      id: d463a69b-a148-4aa3-8344-cdedf786590d
+      version: -1
+      name: Set FileAssociation
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: FileAssociation
+      value:
+        simple: '[{"MessageID":"${inputs.MessageID}", "EntryID": "${EntryID}"}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f58d0b00-222c-4ab5-8d3e-b537f005a134
+    type: title
+    task:
+      id: f58d0b00-222c-4ab5-8d3e-b537f005a134
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b96d91a9-5806-4c61-8a20-45f86b12c4f5
+    type: regular
+    task:
+      id: b96d91a9-5806-4c61-8a20-45f86b12c4f5
+      version: -1
+      name: Save Current Files Entry IDs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: CurrentFilesEntryIDs
+      value:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 527f7d73-3c22-47c5-8492-a3c9020e653b
+    type: regular
+    task:
+      id: 527f7d73-3c22-47c5-8492-a3c9020e653b
+      version: -1
+      name: Save retrieved File's Entry ID
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: EntryID
+      value:
+        complex:
+          root: File.EntryID
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+              right:
+                value:
+                  simple: CurrentFilesEntryIDs
+                iscontext: true
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '&'
+              toReplace:
+                value:
+                  simple: \u0026
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8e930533-4f85-46a6-8fc5-476ce4f0be89
+    type: regular
+    task:
+      id: 8e930533-4f85-46a6-8fc5-476ce4f0be89
+      version: -1
+      name: Delete context
+      description: |-
+        Delete a field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: EntryID
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 380,
+        "x": 450,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: MessageID
+  value: {}
+  required: false
+  description: The original email message ID to retrieve. This should hold the value of the "Message-ID" header of the original email.
+  playbookInputQuery:
+- key: UserID
+  value: {}
+  required: false
+  description: The email address of the user to fetch the original email for. For Gmail, the authenticated user.
+  playbookInputQuery:
+- key: EmailBrand
+  value: {}
+  required: false
+  description: |-
+    If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.
+    Possible values:
+    - Gmail
+    - EWS v2
+    - EWSO365
+    - MicrosoftGraphMail
+    - EmailSecurityGateway
+
+    Choosing EmailSecurityGateway executes the following if enabled:
+        - FireEye EX (Email Security)
+        - Proofpoint TAP
+        - Mimecast
+  playbookInputQuery:
+outputs:
+- contextPath: FileAssociation
+  description: When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
+  type: string
+- contextPath: FileAssociation.EntryID
+  description: The retrieved file EntryID. When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
+  type: string
+- contextPath: FileAssociation.MessageID
+  description: The retrieved email Message-ID. When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
+  type: string
+- contextPath: File
+  description: The original email attachments.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -7,7 +7,7 @@ import re
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/',
                        "https://urldefense.com/"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com/'
-DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[^0-9_/\\\.@\s\"',()\[\]{}<>:?=]{2,})(?:[_/\s\"',)\]}>]|[.]\s|%2F|$)"  # noqa: E501
+DOMAIN_REGEX = r"(?i)(?P<scheme>(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?(?P<domain>(?:[\w\-–_]+(?:\.|\[\.\]))+[^\W\d_]{2,})(?:[_/\s\"',)\]}>]|[.]\s?|%2F|.?$)"  # noqa: E501
 
 
 def atp_get_original_url(safe_url):  # pragma: no cover
@@ -41,7 +41,7 @@ def proofpoint_get_original_url(safe_url):  # pragma: no cover
 
 def unescape_url(escaped_url):
     # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&') \
+    url = escaped_url.lower().replace('[.]', '.').replace('&amp;', '&') \
         .replace('http:\\\\', 'http://')
     # Normalize the URL with http prefix
     if url.find('http:') == 0 and url.find('http://') == -1:
@@ -56,7 +56,7 @@ def get_fqdn(the_input):
     fixed = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True)
     domain = fixed or get_tld(the_input, fail_silently=True, as_object=True)
 
-    if domain and domain.tld != 'zip':
+    if domain:  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
@@ -71,9 +71,9 @@ def pre_process_input(the_input):
     the_input = the_input.removesuffix('.')
     the_input = the_input.removeprefix('/')
 
-    match = re.match(DOMAIN_REGEX, the_input)
+    match = re.search(DOMAIN_REGEX, the_input)
     if match:
-        the_input = match.group(1)
+        the_input = match.group('domain')
 
     return the_input
 
@@ -90,8 +90,13 @@ def check_if_known_url(the_input):
 
 
 def extract_fqdn(the_input):
+    the_input = unquote(the_input)
+    if the_input.endswith("@"):
+        return ''
+    if not the_input[0].isalnum():
+        the_input = the_input[1:]
     the_input = check_if_known_url(the_input)
-    # pre processing the input, removing excessive charecters
+    # pre-processing the input, removing excessive characters
     the_input = pre_process_input(the_input)
 
     # Not ATP Link or Proofpoint URL so just unescape

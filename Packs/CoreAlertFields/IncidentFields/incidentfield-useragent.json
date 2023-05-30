@@ -38,6 +38,11 @@
             "cliName": "proofpointtapuseragent",
             "type": "shortText",
             "name": "Proofpoint TAP User Agent"
+        },
+        {
+            "cliName": "skyhighsecurityuseragent",
+            "type": "multiSelect",
+            "name": "Skyhigh User Agent"
         }
     ]
 }

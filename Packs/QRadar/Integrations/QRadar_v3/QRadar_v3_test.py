@@ -7,7 +7,6 @@ from datetime import datetime
 from typing import Dict, Callable
 import copy
 
-
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
@@ -34,7 +33,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, is_positive, \
     qradar_remote_network_cidr_delete_command, qradar_remote_network_cidr_update_command, \
     qradar_remote_network_deploy_execution_command, migrate_integration_ctx, enrich_offense_with_events, \
-    perform_long_running_loop, validate_integration_context, FetchMode
+    perform_long_running_loop, validate_integration_context, FetchMode, MIRRORED_OFFENSES_FETCHED_CTX_KEY
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
@@ -287,7 +286,7 @@ def test_build_headers(first_headers, all_headers):
                           (32, 'a id     >=           35001 ', 35000),
                           (1523, 'closing_reason_id > 5000', 1523),
                           (0, 'id > 4', 4),
-                          (0, 'id > 2', 3)])
+                          (0, 'id > 1', 2)])
 def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected, mocker):
     """
     Given:
@@ -918,7 +917,7 @@ def test_get_modified_remote_data_command(mocker):
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
-    assert set(int(id_) for id_ in expected.modified_incident_ids) == set(int(id_) for id_ in result.modified_incident_ids)
+    assert {int(id_) for id_ in expected.modified_incident_ids} == {int(id_) for id_ in result.modified_incident_ids}
 
 
 @pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',
@@ -1114,10 +1113,10 @@ def test_get_modified_with_events(mocker):
         and modified incidents returns the modified offenses and the finished queries.
     """
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': QueryStatus.WAIT.value},
-                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
+                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'2': '456', '10': '555'},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012', '1': '123'},
-                                LAST_MIRROR_KEY: 3444}
+                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     set_integration_context(context_data)
     status = {'123': {'status': 'COMPLETED'},
               '456': {'status': 'WAIT'},
@@ -1146,7 +1145,7 @@ def test_remote_data_with_events(mocker, offense_id):
         - Ensure that the offense data is returned and context_data is updated.
     """
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': QueryStatus.WAIT.value},
-                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
+                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     set_integration_context(copy.deepcopy(context_data))
 
     mocker.patch.object(QRadar_v3, 'create_events_search', return_value='555')
@@ -1179,7 +1178,9 @@ def test_remote_data_with_events(mocker, offense_id):
         # offense is already finished, so we expect it to being deleted from the context
         assert offense_id not in updated_context[MIRRORED_OFFENSES_FINISHED_CTX_KEY]
         assert offense_data.get('events') == events['events']
-        assert offense_data.get('events_fetched') == 5 + int(offense_id)
+        expected_events_fetched = 5 + int(offense_id)
+        assert offense_data.get('events_fetched') == expected_events_fetched
+        assert updated_context[MIRRORED_OFFENSES_FETCHED_CTX_KEY][offense_id] == expected_events_fetched
 
     elif offense_id not in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] or \
             (offense_id in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY]
@@ -1228,6 +1229,7 @@ def test_qradar_remote_network_cidr_delete_command(mocker):
     assert result.readable_output == expected_command_result
 
 
+@pytest.mark.parametrize('mirror_options', [MIRROR_OFFENSE_AND_EVENTS, ""])
 @pytest.mark.parametrize('test_case_data',
                          [(ctx_test_data['ctx_compatible']['empty_ctx_no_mirroring_two_loops_offenses']),
                           (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offense_two_loops_offenses']),
@@ -1255,7 +1257,7 @@ def test_qradar_remote_network_cidr_delete_command(mocker):
                           (ctx_test_data['ctx_compatible']['mirror_offense_no_loop_offenses']),
                           (ctx_test_data['ctx_compatible']['mirror_offense_and_events_no_loop_offenses']),
                           ])
-def test_integration_context_during_run(test_case_data, mocker):
+def test_integration_context_during_run(mirror_options, test_case_data, mocker):
     """
     Given:
     - Cortex XSOAR parameters.
@@ -1293,17 +1295,19 @@ def test_integration_context_during_run(test_case_data, mocker):
     """
     mirror_direction = test_case_data['mirror_direction']
 
-    init_context = test_case_data['init_context']
+    init_context = test_case_data['init_context'].copy()
     init_context |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                      MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                     MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                      LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
                      'samples': init_context.get('samples', [])}
 
     set_integration_context(init_context)
-    if test_case_data['offenses_first_loop']:
-        first_loop_offenses = ctx_test_data['offenses_first_loop']
-        first_loop_offenses_with_events = [(dict(offense, events=ctx_test_data['events']), True) for offense in
-                                           first_loop_offenses]
+    if is_offenses_first_loop := test_case_data['offenses_first_loop']:
+        first_loop_offenses_with_success = ctx_test_data['offenses_first_loop']
+        first_loop_offenses_with_events = [(dict(offense, events=ctx_test_data['events']), is_success) for offense, is_success in
+                                           first_loop_offenses_with_success]
+        first_loop_offenses = [offense for offense, _ in first_loop_offenses_with_success]
         mocker.patch.object(client, 'offenses_list', return_value=first_loop_offenses)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=first_loop_offenses)
         enrich_mock = mocker.patch.object(QRadar_v3, 'enrich_offense_with_events')
@@ -1329,9 +1333,12 @@ def test_integration_context_during_run(test_case_data, mocker):
         incident_type=None,
         mirror_direction=mirror_direction,
         first_fetch='3 days',
+        mirror_options=mirror_options,
     )
-    expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+    expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY:
+                                {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                                 LAST_FETCH_KEY: expected_ctx_first_loop.get(LAST_FETCH_KEY, 0),
                                 'samples': expected_ctx_first_loop.get('samples', [])}
 
@@ -1340,9 +1347,10 @@ def test_integration_context_during_run(test_case_data, mocker):
     assert current_context == expected_ctx_first_loop
 
     if test_case_data['offenses_second_loop']:
-        second_loop_offenses = ctx_test_data['offenses_second_loop']
-        second_loop_offenses_with_events = [(dict(offense, events=ctx_test_data['events']), True) for offense in
-                                            second_loop_offenses]
+        second_loop_offenses_with_success = ctx_test_data['offenses_second_loop']
+        second_loop_offenses_with_events = [(dict(offense, events=ctx_test_data['events']), is_success) for offense, is_success in
+                                            second_loop_offenses_with_success]
+        second_loop_offenses = [offense for offense, _ in second_loop_offenses_with_success]
         mocker.patch.object(client, 'offenses_list', return_value=second_loop_offenses)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=second_loop_offenses)
         enrich_mock = mocker.patch.object(QRadar_v3, 'enrich_offense_with_events')
@@ -1363,13 +1371,16 @@ def test_integration_context_during_run(test_case_data, mocker):
         incident_type=None,
         mirror_direction=mirror_direction,
         first_fetch='3 days',
+        mirror_options=mirror_options,
     )
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():
         expected_ctx_second_loop[k] = v
 
-    expected_ctx_second_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+    expected_ctx_second_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY:
+                                 {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
                                  MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                 MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                                  LAST_FETCH_KEY: expected_ctx_second_loop.get(LAST_FETCH_KEY, 0),
                                  'samples': expected_ctx_second_loop.get('samples', [])}
 
@@ -1389,6 +1400,7 @@ def test_convert_ctx():
     new_context = migrate_integration_ctx(ctx_test_data.get('old_ctxs')[0])
     expected = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                 LAST_FETCH_KEY: 15,
                 LAST_MIRROR_KEY: 0,
                 'samples': [],
@@ -1404,6 +1416,7 @@ def test_convert_ctx_to_new_structure():
     validate_integration_context()
     assert get_integration_context() == {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                          MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                                          LAST_FETCH_KEY: 15,
                                          LAST_MIRROR_KEY: 0,
                                          'samples': []}

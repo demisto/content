@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 98c0064b-e483-4097-831f-f7a5c5c3e055
+    taskid: 70e23b24-8fad-473a-8a49-cf67df456194
     type: start
     task:
-      id: 98c0064b-e483-4097-831f-f7a5c5c3e055
+      id: 70e23b24-8fad-473a-8a49-cf67df456194
       version: -1
       name: ""
       iscommand: false
@@ -18,6 +18,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -28,12 +29,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 20195e75-c884-4544-8231-6922ee05f8e5
+    taskid: 2a6e9143-aa37-4d6a-8762-7d398447acde
     type: regular
     task:
-      id: 20195e75-c884-4544-8231-6922ee05f8e5
+      id: 2a6e9143-aa37-4d6a-8762-7d398447acde
       version: -1
       name: azure-list-subscriptions
       description: Lists the subscriptions for this application.
@@ -45,6 +50,7 @@ tasks:
       '#none#':
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -55,12 +61,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 96af46a5-438a-4310-8732-503d77c246fa
+    taskid: 44d15c79-d1dc-4cf6-8f5f-159d42b23d73
     type: regular
     task:
-      id: 96af46a5-438a-4310-8732-503d77c246fa
+      id: 44d15c79-d1dc-4cf6-8f5f-159d42b23d73
       version: -1
       name: azure-list-resource-groups
       description: Lists all resource groups that belong to your Azure subscription.
@@ -71,9 +81,8 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      subscription_id: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -84,12 +93,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: fe3418e8-0cfd-46da-8fea-f9bcc659c5bb
+    taskid: d874578b-6155-4eee-8c83-df9272c8a731
     type: regular
     task:
-      id: fe3418e8-0cfd-46da-8fea-f9bcc659c5bb
+      id: d874578b-6155-4eee-8c83-df9272c8a731
       version: -1
       name: azure-vm-list-instances
       description: Lists the virtual machine instances in the given resource group.
@@ -104,6 +117,7 @@ tasks:
       resource_group:
         simple: compute-integration
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -114,12 +128,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0c9d8586-0106-4831-8422-bdb759ce6cbc
+    taskid: a523f690-2c4a-43b5-8765-b057cf23e3bb
     type: regular
     task:
-      id: 0c9d8586-0106-4831-8422-bdb759ce6cbc
+      id: a523f690-2c4a-43b5-8765-b057cf23e3bb
       version: -1
       name: azure-vm-get-instance-details
       description: Gets the properties of a given virtual machine.
@@ -136,6 +154,7 @@ tasks:
       virtual_machine_name:
         simple: TestOAuth
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -146,12 +165,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d56a266d-3669-4292-8934-9d7b0c9c522b
+    taskid: 765863a7-9210-47ee-8407-046a927fa12c
     type: regular
     task:
-      id: d56a266d-3669-4292-8934-9d7b0c9c522b
+      id: 765863a7-9210-47ee-8407-046a927fa12c
       version: -1
       name: azure-vm-start-instance
       description: Powers on a given virtual machine.
@@ -159,6 +182,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Azure Compute v2
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
       resource_group:
         simple: compute-integration
@@ -167,6 +193,7 @@ tasks:
       virtual_machine_name:
         simple: TestOAuth
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -177,12 +204,45 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9a3523dc-63c5-4eb5-8cc0-67f0815be9cb
+    type: regular
+    task:
+      id: 9a3523dc-63c5-4eb5-8cc0-67f0815be9cb
+      version: -1
+      name: azure-vm-get-public-ip-details
+      description: Gets the properties of a given public IP address.
+      script: 'Azure Compute v2|||azure-vm-get-all-public-ip-details'
+      type: regular
+      iscommand: true
+      brand: Azure Compute v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 995,
+        "height": 1195,
         "width": 380,
         "x": 450,
         "y": 50

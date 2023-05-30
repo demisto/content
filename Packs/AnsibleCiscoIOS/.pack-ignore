@@ -1,8 +1,9 @@
 [file:AnsibleCiscoIOS.yml]
-ignore=IN145
+ignore=IN145,BA124
 
 [file:README.md]
 ignore=RM113
 
 [known_words]
 ansii
+

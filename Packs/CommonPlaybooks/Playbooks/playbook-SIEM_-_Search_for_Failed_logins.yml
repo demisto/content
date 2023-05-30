@@ -1,0 +1,787 @@
+id: SIEM - Search for Failed logins
+version: -1
+name: SIEM - Search for Failed logins
+description: |-
+  This playbook searches for failed logon on a specific user by querying logs from different sources.
+
+  Supported Integrations:
+  -Splunk
+  -QRadar
+  -Azure Log Analytics
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ffe1835b-ae14-4728-88fb-2feb4bbfcf2c
+    type: start
+    task:
+      id: ffe1835b-ae14-4728-88fb-2feb4bbfcf2c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: db1d4f2f-0320-4836-8f7b-9bc2af367ca3
+    type: title
+    task:
+      id: db1d4f2f-0320-4836-8f7b-9bc2af367ca3
+      version: -1
+      name: Splunk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a56e6b38-5c88-4401-83b8-56fa0c6c1fb7
+    type: title
+    task:
+      id: a56e6b38-5c88-4401-83b8-56fa0c6c1fb7
+      version: -1
+      name: QRadar
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a5b9a9a6-679c-4513-89a8-3d9b2e4c735c
+    type: condition
+    task:
+      id: a5b9a9a6-679c-4513-89a8-3d9b2e4c735c
+      version: -1
+      name: Is SIEM enabled and the user name is defined?
+      description: Returns 'yes' if integration brand is available and the user name is defined. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      Azure Log Analytics:
+      - "7"
+      QRadar:
+      - "2"
+      Splunk:
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: QRadar
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2,QRadar v3
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    - label: Splunk
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SplunkPy
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    - label: Azure Log Analytics
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure Log Analytics
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: eaf023ca-5658-4d9d-887c-d65d088917d6
+    type: playbook
+    task:
+      id: eaf023ca-5658-4d9d-887c-d65d088917d6
+      version: -1
+      name: Search for failed logon attempts using QRadar
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10' ${inputs.QRadarSearchTime}
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 945c3b67-2b94-4ac9-8c41-91e440bc38be
+    type: regular
+    task:
+      id: 945c3b67-2b94-4ac9-8c41-91e440bc38be
+      version: -1
+      name: Search for failed logon attempts using Splunk
+      description: Search for failed logon events
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      extend-context:
+        simple: SplunkFailedLogonLogs=
+      ignore-outputs:
+        simple: "true"
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        simple: index=${inputs.SplunkIndex} user=${inputs.Username} (sourcetype="WinEventLog" source="WinEventLog:Security" (EventCode=4771 OR (EventCode=4624 (Logon_Type=2 OR Logon_Type=7 OR Logon_Type=10)))) OR (sourcetype=syslog  (( _raw="*Failed password*" OR _raw="*FAILED LOGIN*" OR _raw="*Invalid user*" )))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 60e4a74a-763f-41bf-8720-28b90269be6b
+    type: title
+    task:
+      id: 60e4a74a-763f-41bf-8720-28b90269be6b
+      version: -1
+      name: Azure Log Analytics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b701829c-66f0-4962-8b7f-c681f482d7ac
+    type: regular
+    task:
+      id: b701829c-66f0-4962-8b7f-c681f482d7ac
+      version: -1
+      name: Search for failed logon attempts using Azure Log Analytics
+      description: Executes an Analytics query for failed logon events.
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      extend-context:
+        simple: AzureFailedLogonLogs=
+      ignore-outputs:
+        simple: "true"
+      query:
+        simple: |-
+          SecurityEvent
+          | where EventID == 4771 or EventID == 4625 and (LogonType ==  2 or LogonType == 7 or LogonType == 10)
+          | where TargetAccount == '${inputs.Username}'
+          | where TimeGenerated > ${inputs.AzureSearchTime}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a48173f0-6482-4f1e-8105-decc6ce27ba7
+    type: regular
+    task:
+      id: a48173f0-6482-4f1e-8105-decc6ce27ba7
+      version: -1
+      name: Count failed logon from Azure Log Analytics logs
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      array:
+        complex:
+          root: AzureFailedLogonLogs.tables
+          accessor: rows
+      contextKey:
+        simple: NumOfSiemFailedLogon
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 925c94af-5475-4dae-8405-3a05818c4780
+    type: regular
+    task:
+      id: 925c94af-5475-4dae-8405-3a05818c4780
+      version: -1
+      name: Count failed logon from QRadar logs
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      array:
+        complex:
+          root: QRadar.Search.Result
+          accessor: events
+      contextKey:
+        simple: NumOfSiemFailedLogon
+      extend-context:
+        simple: NoOfFailedLogon=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5e96a88c-e9aa-45ff-8c6b-e0f346d34f83
+    type: regular
+    task:
+      id: 5e96a88c-e9aa-45ff-8c6b-e0f346d34f83
+      version: -1
+      name: Count failed logon from Splunk logs
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      array:
+        complex:
+          root: SplunkFailedLogonLogs
+      contextKey:
+        simple: NumOfSiemFailedLogon
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7d988d75-6a3d-4e33-8702-aaa6219d0cb8
+    type: condition
+    task:
+      id: 7d988d75-6a3d-4e33-8702-aaa6219d0cb8
+      version: -1
+      name: Found results from QRadar?
+      description: Check if there are results from QRadar
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: QRadar.Search.Result
+                accessor: events
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0a3cbbfa-f864-4557-87e4-58461a1e96ff
+    type: condition
+    task:
+      id: 0a3cbbfa-f864-4557-87e4-58461a1e96ff
+      version: -1
+      name: Found results from Splunk?
+      description: Check if there are results from Splunk
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SplunkFailedLogonLogs
+                accessor: _raw
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 7229fa12-5d3d-4287-83d4-e641a9773069
+    type: condition
+    task:
+      id: 7229fa12-5d3d-4287-83d4-e641a9773069
+      version: -1
+      name: Found results from Azure Log Analytics?
+      description: Check if there are results from Azure Log Analytics
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AzureFailedLogonLogs.tables.rows.[0]
+                accessor: '[0]'
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3f65bbaf-fa67-4cc7-84a7-49d625b95bef
+    type: title
+    task:
+      id: 3f65bbaf-fa67-4cc7-84a7-49d625b95bef
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 97dd0ada-f3d2-4dd8-8152-3d8349706c7d
+    type: regular
+    task:
+      id: 97dd0ada-f3d2-4dd8-8152-3d8349706c7d
+      version: -1
+      name: Set Number Of SIEM Failed Logon to Zero
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: NumOfSiemFailedLogon
+      value:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_23_#default#": 0.1,
+      "17_23_#default#": 0.1,
+      "18_23_#default#": 0.21,
+      "18_9_yes": 0.71,
+      "3_22_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1365,
+        "width": 2560,
+        "x": -810,
+        "y": 170
+      }
+    }
+  }
+inputs:
+- key: SplunkIndex
+  value:
+    simple: '*'
+  required: false
+  description: Splunk's index name in which to search. Default is "*" - All.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -1d
+  required: false
+  description: The earliest time for the Splunk search query.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time for the Splunk search query.
+  playbookInputQuery:
+- key: QRadarSearchTime
+  value:
+    simple: Last 1 days
+  required: false
+  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  playbookInputQuery:
+- key: AzureSearchTime
+  value:
+    simple: ago(1d)
+  required: false
+  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: User name.
+  playbookInputQuery:
+outputs:
+- contextPath: NumOfSiemFailedLogon
+  description: Number of failed login from Siem.
+  type: unknown
+- contextPath: QRadar.Search.Result
+  description: The result of the QRadar search.
+- contextPath: Splunk.Result
+  description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
+- contextPath: AzureFailedLogonLogs
+  description: The result of the Azure Log Analytics search.
+  type: unknown
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

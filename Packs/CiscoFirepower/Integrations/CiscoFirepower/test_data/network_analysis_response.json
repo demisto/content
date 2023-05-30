@@ -1,0 +1,31 @@
+{
+    "name": "Test2Updateupdate",
+    "id": "id",
+    "type": "NetworkAnalysisPolicy",
+    "links": {
+        "self": "links_self"
+    },
+    "basePolicy": {
+        "name": "Connectivity Over Security",
+        "id": "basePolicy_id",
+        "type": "NetworkAnalysisPolicy"
+    },
+    "description": "Test2Updateupdate",
+    "inspectionMode": "DETECTION",
+    "isSystemDefined": false,
+    "metadata": {
+        "mappedPolicy": {
+            "name": "Test2Updateupdate",
+            "id": "metadata_mappedPolicy_id",
+            "type": "NetworkAnalysisPolicy",
+            "inspectionMode": "DETECTION",
+            "snortEngine": "SNORT2"
+        },
+        "domain": {
+            "name": "Global",
+            "id": "metadata_domain_id",
+            "type": "Domain"
+        },
+        "snortEngine": "SNORT3"
+    }
+}

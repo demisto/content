@@ -1,23 +1,24 @@
 id: Test_URLhaus
-version: 45
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test_URLhaus
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0a525511-8b3b-4021-8110-1347cfba9901
+    taskid: 7403bdb7-d928-4a62-8796-5e54700f784c
     type: start
     task:
-      id: 0a525511-8b3b-4021-8110-1347cfba9901
+      id: 7403bdb7-d928-4a62-8796-5e54700f784c
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 99ccd21b-6052-412c-8de1-3291a577e105
+    taskid: 0f47f568-01f0-492b-8197-272bcd7a8b6f
     type: regular
     task:
-      id: 99ccd21b-6052-412c-8de1-3291a577e105
+      id: 0f47f568-01f0-492b-8197-272bcd7a8b6f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -52,13 +53,13 @@ tasks:
       - "7"
       - "9"
       - "11"
-      - "15"
       - "19"
       - "20"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -75,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3651d1a3-f448-4820-8a3f-cc2239281a53
+    taskid: 518702c7-bc82-4d98-8f36-0a59b4ea7b00
     type: regular
     task:
-      id: 3651d1a3-f448-4820-8a3f-cc2239281a53
+      id: 518702c7-bc82-4d98-8f36-0a59b4ea7b00
       version: -1
       name: url - with data
       description: Retrieve URL information from URLhaus
@@ -93,6 +94,7 @@ tasks:
       url:
         simple: http://ekamjewels.com/anklet/WQG1/?i=1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -109,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9c45f5ba-3672-40e4-81df-34660b6639c7
+    taskid: 87d3fb09-d061-4f97-8dd3-007288449c64
     type: condition
     task:
-      id: 9c45f5ba-3672-40e4-81df-34660b6639c7
+      id: 87d3fb09-d061-4f97-8dd3-007288449c64
       version: -1
       name: verify url context
       type: condition
@@ -179,6 +181,7 @@ tasks:
                         simple: http://ekamjewels.com/anklet/WQG1/?i=1
                 accessor: Relationships
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -195,16 +198,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 45c96163-82fa-4863-8463-be97e128f4bf
+    taskid: 7da63f01-6f56-45b2-8d4c-76bb1fa827ac
     type: title
     task:
-      id: 45c96163-82fa-4863-8463-be97e128f4bf
+      id: 7da63f01-6f56-45b2-8d4c-76bb1fa827ac
       version: -1
       name: complete
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -221,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 890fc448-ab47-4959-8469-5c46f6f85db4
+    taskid: 6806f683-a210-4065-8e48-1f77e7dd7d08
     type: regular
     task:
-      id: 890fc448-ab47-4959-8469-5c46f6f85db4
+      id: 6806f683-a210-4065-8e48-1f77e7dd7d08
       version: -1
       name: url - nonexisting
       description: Retrieve URL information from URLhaus
@@ -239,6 +244,7 @@ tasks:
       url:
         simple: http://gfrewdfsersfsfersfgergre.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -255,10 +261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4644f9ff-d34f-4f05-8a29-2c4869ff5623
+    taskid: cdb46a68-5d7f-4230-818e-d27ea734f3c3
     type: condition
     task:
-      id: 4644f9ff-d34f-4f05-8a29-2c4869ff5623
+      id: cdb46a68-5d7f-4230-818e-d27ea734f3c3
       version: -1
       name: verify url nonexsiting
       type: condition
@@ -298,6 +304,7 @@ tasks:
           right:
             value:
               simple: Relationships
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -314,10 +321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 31066365-dfc2-4627-874e-595574314b03
+    taskid: 594dcedd-37ad-429d-8357-d4ca07a76325
     type: regular
     task:
-      id: 31066365-dfc2-4627-874e-595574314b03
+      id: 594dcedd-37ad-429d-8357-d4ca07a76325
       version: -1
       name: domain - with data
       description: Retrieve domain information from URLhaus
@@ -330,8 +337,9 @@ tasks:
       - "8"
     scriptarguments:
       domain:
-        simple: coin-coin-file-9.com
+        simple: chobemaster.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -348,10 +356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 6b90a227-cba9-4ae3-89d9-e221d34bfa50
+    taskid: e4dd243b-b1f6-4d31-8d7d-577d608e22d5
     type: condition
     task:
-      id: 6b90a227-cba9-4ae3-89d9-e221d34bfa50
+      id: e4dd243b-b1f6-4d31-8d7d-577d608e22d5
       version: -1
       name: verify domain context
       type: condition
@@ -364,7 +372,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -377,12 +385,9 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: coin-coin-file-9.com
+                        simple: chobemaster.com
                 accessor: Score
             iscontext: true
-          right:
-            value:
-              simple: "3"
       - - operator: greaterThanOrEqual
           left:
             value:
@@ -396,14 +401,15 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: coin-coin-file-9.com
+                        simple: chobemaster.com
                 accessor: Relationships
                 transformers:
                 - operator: count
             iscontext: true
           right:
             value:
-              simple: "10"
+              simple: "4"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -420,10 +426,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 43b78bf3-5b3b-4fa6-8893-597e9f91eade
+    taskid: f5d4cdec-a389-4855-86d4-3f5a746801f3
     type: regular
     task:
-      id: 43b78bf3-5b3b-4fa6-8893-597e9f91eade
+      id: f5d4cdec-a389-4855-86d4-3f5a746801f3
       version: -1
       name: domain - no data
       description: Retrieve domain information from URLhaus
@@ -438,6 +444,7 @@ tasks:
       domain:
         simple: google.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -454,10 +461,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: cc001582-e44b-4e5a-8352-ba46f14835bc
+    taskid: 8c96c519-967d-4033-8906-d10dc438088c
     type: condition
     task:
-      id: cc001582-e44b-4e5a-8352-ba46f14835bc
+      id: 8c96c519-967d-4033-8906-d10dc438088c
       version: -1
       name: verify context
       type: condition
@@ -489,6 +496,7 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -505,10 +513,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: aec17632-9b2b-43d9-862b-9944b6a7ac78
+    taskid: 2b873867-7a06-47bd-84b7-2489241a659b
     type: regular
     task:
-      id: aec17632-9b2b-43d9-862b-9944b6a7ac78
+      id: 2b873867-7a06-47bd-84b7-2489241a659b
       version: -1
       name: file - no data
       description: Retrieve file information from URLhaus
@@ -527,6 +535,7 @@ tasks:
       hash_type:
         simple: SHA256
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -543,10 +552,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 42c60a0a-7350-433d-832a-d17f5b786ff7
+    taskid: 55e67095-536e-4528-8dbc-a2e1d55f0b71
     type: condition
     task:
-      id: 42c60a0a-7350-433d-832a-d17f5b786ff7
+      id: 55e67095-536e-4528-8dbc-a2e1d55f0b71
       version: -1
       name: verify file context
       type: condition
@@ -604,6 +613,7 @@ tasks:
           right:
             value:
               simple: "10"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -618,97 +628,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 390d4f99-462b-427f-8f34-2937f07fe5ad
-    type: regular
-    task:
-      id: 390d4f99-462b-427f-8f34-2937f07fe5ad
-      version: -1
-      name: urlhaus-download-sample - with data
-      description: Download a malware sample from URLhaus
-      script: URLhaus|||urlhaus-download-sample
-      type: regular
-      iscommand: true
-      brand: URLhaus
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      file:
-        simple: c0e8e6f210186eddae9e30690aad94099277d7991e130c666426cbc1b813bd12
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2630,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 18d2cc95-dc1e-4aee-865f-cd1b3d4daea9
-    type: condition
-    task:
-      id: 18d2cc95-dc1e-4aee-865f-cd1b3d4daea9
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: File
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: File.SHA256
-                      iscontext: true
-                    right:
-                      value:
-                        simple: c0e8e6f210186eddae9e30690aad94099277d7991e130c666426cbc1b813bd12
-                accessor: MD5
-            iscontext: true
-          right:
-            value:
-              simple: c3d0754022504ca34bf165a933666b11
-    view: |-
-      {
-        "position": {
-          "x": 2630,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: a08fa9c9-51e0-4a8a-8744-188f036ec9e5
+    taskid: e712eba5-814e-48b2-8f21-4f11698fc3bd
     type: regular
     task:
-      id: a08fa9c9-51e0-4a8a-8744-188f036ec9e5
+      id: e712eba5-814e-48b2-8f21-4f11698fc3bd
       version: -1
       name: urlhaus-download-sample - w/o data
       description: Download a malware sample from URLhaus
@@ -723,10 +648,11 @@ tasks:
       file:
         simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337c
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 2630,
           "y": 545
         }
       }
@@ -739,10 +665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 8db1ccc8-bdec-4ca5-87b8-38b6c806d823
+    taskid: ea005adb-20a5-41ae-8fe0-8c8b90797d29
     type: regular
     task:
-      id: 8db1ccc8-bdec-4ca5-87b8-38b6c806d823
+      id: ea005adb-20a5-41ae-8fe0-8c8b90797d29
       version: -1
       name: file - with data
       description: Retrieve file information from URLhaus
@@ -761,6 +687,7 @@ tasks:
       hash_type:
         simple: SHA256
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -777,10 +704,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 807f2af5-4bd2-4c47-8405-576369514ebb
+    taskid: e4e39cd8-ec97-46d5-8d6e-682f94ff2a97
     type: condition
     task:
-      id: 807f2af5-4bd2-4c47-8405-576369514ebb
+      id: e4e39cd8-ec97-46d5-8d6e-682f94ff2a97
       version: -1
       name: verify context
       type: condition
@@ -801,6 +728,7 @@ tasks:
           right:
             value:
               simple: Size
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -821,7 +749,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 3390,
+        "width": 2960,
         "x": 50,
         "y": 50
       }
@@ -830,3 +758,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

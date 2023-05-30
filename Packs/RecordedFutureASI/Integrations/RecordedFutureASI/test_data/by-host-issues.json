@@ -1,0 +1,115 @@
+{
+  "data": [
+    {
+      "added_rules": [
+        {
+          "classification": "high",
+          "description": "Using a version of OpenSSL (1.0.2k) which is linked to 25 vulnerabilities with CVE-2022-1292 having the highest risk score of 89.",
+          "id": "cve-OpenSSL",
+          "name": "Vulnerable Version of OpenSSL",
+          "rule_metadata": {
+            "additional": "OpenSSL 1.0.2k",
+            "references": [
+              "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2022-1292",
+              "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2023-0286",
+              "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2022-2068"
+            ]
+          }
+        }
+      ],
+      "counts": {
+        "added_rules": 1,
+        "removed_rules": 0
+      },
+      "id": "registration.example.com",
+      "previous_risk_score": 0,
+      "previous_snapshot": "2023-03-13 04:54:44",
+      "removed_rules": [],
+      "risk_score": 95,
+      "snapshot": "2023-03-20 07:46:40"
+    },
+    {
+      "added_rules": [
+        {
+          "classification": "moderate",
+          "description": "WordPress Core before 4.7.1 is susceptible to user enumeration because it does not properly restrict listings of post authors via wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php in the REST API, which allows a remote attacker to obtain sensitive information via a wp-json/wp/v2/users request.",
+          "id": "CVE-2017-5487",
+          "name": "WordPress Core < 4.7.1 - Username Enumeration (CVE-2017-5487)",
+          "rule_metadata": {
+            "references": [
+              "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2017-5487",
+              "https://nvd.nist.gov/vuln/detail/CVE-2017-5487",
+              "https://www.exploit-db.com/exploits/41497",
+              "https://wordpress.org/news/2017/01/wordpress-4-7-1-security-and-maintenance-release/",
+              "https://www.wordfence.com/blog/2016/12/wordfence-blocks-username-harvesting-via-new-rest-api-wp-4-7/"
+            ],
+            "target": "https://ip.example.com/wp-json/wp/v2/users/"
+          }
+        }
+      ],
+      "counts": {
+        "added_rules": 1,
+        "removed_rules": 0
+      },
+      "id": "ip.example.com",
+      "previous_risk_score": 0,
+      "previous_snapshot": "2023-03-13 04:54:44",
+      "removed_rules": [],
+      "risk_score": 65,
+      "snapshot": "2023-03-20 07:46:40"
+    },
+    {
+      "added_rules": [
+        {
+          "classification": "moderate",
+          "description": "WordPress Core before 4.7.1 is susceptible to user enumeration because it does not properly restrict listings of post authors via wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php in the REST API, which allows a remote attacker to obtain sensitive information via a wp-json/wp/v2/users request.",
+          "id": "CVE-2017-5487",
+          "name": "WordPress Core < 4.7.1 - Username Enumeration (CVE-2017-5487)",
+          "rule_metadata": {
+            "references": [
+              "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2017-5487",
+              "https://nvd.nist.gov/vuln/detail/CVE-2017-5487",
+              "https://www.exploit-db.com/exploits/41497",
+              "https://wordpress.org/news/2017/01/wordpress-4-7-1-security-and-maintenance-release/",
+              "https://www.wordfence.com/blog/2016/12/wordfence-blocks-username-harvesting-via-new-rest-api-wp-4-7/"
+            ],
+            "target": "https://ip.example.com/wp-json/wp/v2/users/"
+          }
+        },
+        {
+          "classification": "informational",
+          "description": "This host was seen supporting Basic Authentication: \"Basic realm=\"Catdog\"\"",
+          "id": "crawl_basic-authentication",
+          "name": "Host with Basic Authentication",
+          "rule_metadata": {
+            "additional": "Basic realm=\"Catdog\"",
+            "references": []
+          }
+        }
+      ],
+      "counts": {
+        "added_rules": 2,
+        "removed_rules": 0
+      },
+      "id": "stage.example.com",
+      "previous_risk_score": 20,
+      "previous_snapshot": "2023-03-13 04:54:44",
+      "removed_rules": [],
+      "risk_score": 26,
+      "snapshot": "2023-03-20 07:46:40"
+    }
+  ],
+  "meta": {
+    "counts": {
+      "hosts": {
+        "returned": 3,
+        "total": 10
+      }
+    },
+    "params": {
+      "classification": [],
+      "query": null,
+      "rule_action": "added"
+    }
+  }
+}

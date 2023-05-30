@@ -1,5 +1,2 @@
 [INGEST:vendor="fireeye", product="mps", target_dataset="fireeye_mps_raw", no_hit = keep]
-alter tmp_year_number = format_timestamp("%Y", _insert_time)
-    , tmp_time_extract = arrayindex(regextract(_raw_log ,"\>\s*([a-zA-Z]+\s+\d+\s+\d+\:\d+\:\d+)"),0)
-| alter _time = parse_timestamp("%b %d %H:%M:%S %Y",concat(tmp_time_extract , " " ,tmp_year_number ))
-| fields - tmp_time_extract , tmp_year_number;
+alter _time = to_timestamp(to_integer(RT), "millis");

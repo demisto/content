@@ -11,7 +11,7 @@
 	"id": "AWS CloudTrail Misconfiguration",
 	"locked": false,
 	"name": "AWS CloudTrail Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - AWS CloudTrail Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - AWS CloudTrail Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

@@ -1,0 +1,428 @@
+id: Reco Google Drive Automation
+version: -1
+name: Reco Google Drive Automation
+description: Automate Google Drive alert remediation with our solution that revokes over-access permissions and shares file details and links with end-users via Slack. Reco workflow seamlessly integrates with Palo Alto Networks' Demisto platform to resolve the alert and streamline your organization's security operations. By automating remediation, you can ensure that sensitive data is protected and that end-users are promptly notified of any changes to their file access. With our solution, you can close alerts in Demisto and improve your organization's security posture with minimal effort.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47c24362-22a2-4e48-8ee1-3852575bac6d
+    type: start
+    task:
+      id: 47c24362-22a2-4e48-8ee1-3852575bac6d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 6843c20b-7eca-46d0-83e5-d5f2ae8a89aa
+    type: regular
+    task:
+      id: 6843c20b-7eca-46d0-83e5-d5f2ae8a89aa
+      version: -1
+      name: Get Slack User
+      description: Get details about a specified user.
+      script: SlackV3|||slack-get-user-details
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      user:
+        simple: ${incident.labels.asset_owner}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 992b9b7b-964f-408f-8022-90f4b8bb4ddc
+    type: condition
+    task:
+      id: 992b9b7b-964f-408f-8022-90f4b8bb4ddc
+      version: -1
+      name: Is a Slack user?
+      type: condition
+      iscommand: false
+      description: "Is a Slack user?"
+      brand: ""
+    nexttasks:
+      "no":
+      - "86"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Slack.User.ID
+            iscontext: true
+          right:
+            value: {}
+    - label: "no"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Slack.User.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: f19c0804-107d-460c-8f94-bafa7092441b
+    type: regular
+    task:
+      id: f19c0804-107d-460c-8f94-bafa7092441b
+      version: -1
+      name: Notify Asset Owner
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Hello ${incident.labels.asset_owner},\\n\\nWe have identified sensitive file(s) belonging to you that are publicly exposed.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"*Sensitive File(s) with revoked public permissions:*\\n ${finalstring}\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Selecting \\\"Anyone with this link\\\" widely exposes the file to anyone who has the link. Therefore, if the resource should not be shared *publicly*, you are requested to limit the access permissions to specified identities or restricted users only.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"For more information please contact security team\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
+      to:
+        simple: ${incident.labels.asset_owner}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: b078afdb-4287-481c-8fe0-615cb626003d
+    type: regular
+    task:
+      id: b078afdb-4287-481c-8fe0-615cb626003d
+      version: -1
+      name: Notify SecOps
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Reco finding remediated by PAWN XSOAR.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"**Sensitive File(s) with revoked public permissions:*\\n ${finalstring}\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*DM to the user for more information:*\\n${incident.labels.asset_owner}\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Link to Finding:*\\nhttps://[customer].reco.ai/inicdent/${incident.dbotMirrorId}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 34e92315-7a4f-4d01-8bcb-7c002bba15f8
+    type: condition
+    task:
+      id: 34e92315-7a4f-4d01-8bcb-7c002bba15f8
+      version: -1
+      name: Check is message exists
+      type: condition
+      iscommand: false
+      description: "Check if message exists"
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "90"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${finalstring}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: ce2624aa-c542-4ed7-84fd-db3d8f2fa6df
+    type: regular
+    task:
+      id: ce2624aa-c542-4ed7-84fd-db3d8f2fa6df
+      version: -1
+      name: Close incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Permissions_automatically_removed
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 5fc52161-e44e-41c3-8d19-41216eb33c42
+    type: playbook
+    task:
+      id: 5fc52161-e44e-41c3-8d19-41216eb33c42
+      version: -1
+      name: Reco-Google-Drive-Revoke-Permissions
+      playbookName: Reco-Google-Drive-Revoke-Permissions
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 766ab176-319a-4d76-83af-9eba2d513cd0
+    type: condition
+    task:
+      id: 766ab176-319a-4d76-83af-9eba2d513cd0
+      version: -1
+      name: Google Drive Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "94"
+      "yes":
+      - "93"
+    scriptarguments:
+      brandname:
+        simple: GoogleDrive
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 78fb589b-0feb-48ed-8897-a0a0401fa2f3
+    type: condition
+    task:
+      id: 78fb589b-0feb-48ed-8897-a0a0401fa2f3
+      version: -1
+      name: Is Slack Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "94"
+      "yes":
+      - "91"
+    scriptarguments:
+      brandname:
+        simple: SlackV3
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: bb8a3a00-a1f1-4b08-8a9d-e99d2b2946af
+    type: title
+    task:
+      id: bb8a3a00-a1f1-4b08-8a9d-e99d2b2946af
+      version: -1
+      name: Slack & Google Drive integrations Disabled - Contact Administrator
+      tags:
+      - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "87_90_#default#": 0.35
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 1050,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

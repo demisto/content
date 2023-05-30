@@ -1,17 +1,20 @@
 {
-    "name": "Remove Empty Evidence",
-    "description": "The automation removes evidence based on a query performed on the evidence content,\nif the provided string is found within the evidence- it will be removed.",
+    "name": "Remove Empty Evidence (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Gavriel Filippov",
     "url": "",
     "email": "",
     "created": "2022-07-27T19:16:41Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "GavrielFilippov"
-    ]
+    ],
+    "hidden": true
 }

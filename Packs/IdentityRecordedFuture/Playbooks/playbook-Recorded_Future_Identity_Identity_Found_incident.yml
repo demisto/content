@@ -1,0 +1,594 @@
+id: 'Recorded Future Identity - Identity Found (incident)'
+version: -1
+name: 'Recorded Future Identity - Identity Found (incident)'
+description: This playbook was developed as a template response when an Identity has been found and a Recorded Future Identity Incident has been created.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f833631c-fe63-4260-854d-2ddd58fc8d92
+    type: start
+    task:
+      id: f833631c-fe63-4260-854d-2ddd58fc8d92
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 48097c0d-d34a-4711-87f4-0694e0b0e3ca
+    type: regular
+    task:
+      id: 48097c0d-d34a-4711-87f4-0694e0b0e3ca
+      version: -1
+      name: Query Specific Identity
+      description: Lookup for identities in Recorded Future Identity Dataset
+      script: Recorded Future Identity|||recordedfuture-identity-lookup
+      type: regular
+      iscommand: true
+      brand: Recorded Future Identity
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      identities:
+        simple: ${incident.accountname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 82c3346d-2257-461a-8ff6-f0565df4e215
+    type: regular
+    task:
+      id: 82c3346d-2257-461a-8ff6-f0565df4e215
+      version: -1
+      name: Check AD if account is Active
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email:
+        simple: ${incident.accountname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0b2cb2a5-242f-4266-8d0c-cb3c3403cb20
+    type: collection
+    task:
+      id: 0b2cb2a5-242f-4266-8d0c-cb3c3403cb20
+      version: -1
+      description: ''
+      name: Analyst Prompt | Review Identity Information
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Is this a true positive?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Review Exposed Identity Information
+      description: Review Exposure Date, Malware Log, Malware Family
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 43452802-6eb5-48cb-8f7b-0cfbe963b8d7
+    type: condition
+    task:
+      id: 43452802-6eb5-48cb-8f7b-0cfbe963b8d7
+      version: -1
+      description: ''
+      name: True Positive?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "YES":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: True Positive?.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6fcf676f-d046-42f9-802f-72a696aedaba
+    type: regular
+    task:
+      id: 6fcf676f-d046-42f9-802f-72a696aedaba
+      version: -1
+      name: Disable AD account
+      description: Disables an Active Directory user account.
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      username:
+        simple: ${ActiveDirectory.Users.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2f430722-fd29-4b82-85ef-4b578e97b108
+    type: regular
+    task:
+      id: 2f430722-fd29-4b82-85ef-4b578e97b108
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9bbdd40b-43fe-40a0-864b-4d224a334fba
+    type: regular
+    task:
+      id: 9bbdd40b-43fe-40a0-864b-4d224a334fba
+      version: -1
+      description: ''
+      name: Create Ticket in IM System & Contact User
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bd2cc77f-1b20-4505-810d-61361cfb9f25
+    type: collection
+    task:
+      id: bd2cc77f-1b20-4505-810d-61361cfb9f25
+      version: -1
+      description: ''
+      name: Analyst Prompt | Take Automated Action?
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to automate the IR plan?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Take Automated Action
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e7dbaa42-f76a-447f-8fe8-52e4c278bf12
+    type: condition
+    task:
+      id: e7dbaa42-f76a-447f-8fe8-52e4c278bf12
+      version: -1
+      description: ''
+      name: Automate IR?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Take Automated Action.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1684e045-2103-46b4-8b33-5f73c6a2dae7
+    type: regular
+    task:
+      id: 1684e045-2103-46b4-8b33-5f73c6a2dae7
+      version: -1
+      name: Manual Response
+      description: ''
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 77695706-9181-47fd-8354-c98b2b102208
+    type: regular
+    task:
+      id: 77695706-9181-47fd-8354-c98b2b102208
+      version: -1
+      name: Expire Password
+      description: Expires the password of an Active Directory user.
+      script: Active Directory Query v2|||ad-expire-password
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      username:
+        simple: ${ActiveDirectory.Users.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 86c43a07-4aff-4b77-8063-e74b8c825181
+    type: title
+    task:
+      id: 86c43a07-4aff-4b77-8063-e74b8c825181
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 803577b8-ce99-4b4c-8d40-dee7ccae084a
+    type: condition
+    task:
+      id: 803577b8-ce99-4b4c-8d40-dee7ccae084a
+      version: -1
+      name: Is Active Directory integration available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "17"
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 6f5f0c11-1483-42f4-8980-8743fd05d068
+    type: regular
+    task:
+      id: 6f5f0c11-1483-42f4-8980-8743fd05d068
+      version: -1
+      name: Review account
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Recorded Future Identity - Identity Found (incident)
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

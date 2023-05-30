@@ -50,6 +50,8 @@ def test_caclulate_event(mocker, query, expected, return_value):
     mocker.patch.object(client, "phisher_gql_request", return_value=return_value)
     result = phisher.calculate_number_of_events(client, query)
     assert result == expected
+    assert "X-KB4-Integration" in client._headers.keys()
+    assert client._headers["X-KB4-Integration"] == "Cortex XSOAR PhishER"
 
 
 test_fetch = [({"last_fetch": None}, "30 days", '50', expected_fetch[0], response_fetch[0]),

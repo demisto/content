@@ -91,14 +91,14 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
 ]
 
 DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS = [
-    "geoData.location.coordinates",
-    "geoData.geoAddress.city",
-    "geoData.geoAddress.state",
-    "geoData.geoAddress.countryCode",
-    "geoData.geoAddress.country",
-    "geoData.locationTechnology",
-    "geoData.accuracy",
-    "geoData.lastUpdate",
+    "geoData.location.point.coordinates",
+    "geoData.location.geoAddress.city",
+    "geoData.location.geoAddress.state",
+    "geoData.location.geoAddress.countryCode",
+    "geoData.location.geoAddress.country",
+    "geoData.location.locationTechnology",
+    "geoData.location.accuracy",
+    "geoData.location.lastUpdateDateTimeUtc",
 ]
 
 
@@ -685,14 +685,23 @@ def create_filter_query_from_args_helper(args, arg_name, source_name, query):
     return query
 
 
-def create_filter_query_from_args(args: dict, change_device_name_to_system=False):
+def create_filter_query_from_args(args: dict, change_device_name_to_system=False, change_device_id=False):
+    """
+
+    Args:
+        args: args given from the user.
+        change_device_name_to_system: True if to filter by "systemName" parameter and False to filter by "deviceName".
+        change_device_id: True if to filter by "id" parameter and False to filter by "deviceUid".
+
+    Returns: filter query to send to the API.
+
+    """
     custom_filter = args.get('filter')
     if custom_filter:
         return f"$filter={custom_filter}"
     query = ""
 
     query = create_filter_query_from_args_helper(args, 'account_uids', "accountUid", query)
-    query = create_filter_query_from_args_helper(args, 'device_ids', "deviceUid", query)
     query = create_filter_query_from_args_helper(args, 'app_names', "appName", query)
     query = create_filter_query_from_args_helper(args, 'app_publishers', "appPublisher", query)
     query = create_filter_query_from_args_helper(args, 'user_names', "userName", query)
@@ -706,6 +715,12 @@ def create_filter_query_from_args(args: dict, change_device_name_to_system=False
         query = add_list_to_filter_string("systemName", device_names, query)
     else:
         query = add_list_to_filter_string("deviceName", device_names, query)
+
+    device_ids = remove_duplicates_from_list_arg(args, 'device_ids')
+    if device_ids and change_device_id:
+        query = add_list_to_filter_string("id", device_ids, query)
+    else:
+        query = add_list_to_filter_string("deviceUid", device_ids, query)
 
     if args.get('agent_status'):
         agent_status = ABSOLUTE_AGET_STATUS[args.get('agent_status')]  # type: ignore
@@ -775,7 +790,7 @@ def parse_geo_location_outputs(response):
         parsed_device['Coordinates'] = geo_data.get('point', {}).get('coordinates')
         parsed_device['LocationTechnology'] = geo_data.get('locationTechnology')
         parsed_device['Accuracy'] = geo_data.get('accuracy')
-        parsed_device['LastUpdate'] = geo_data.get('lastUpdate')
+        parsed_device['LastUpdate'] = geo_data.get('lastUpdateDateTimeUtc')
         parsed_device['City'] = geo_data.get('geoAddress', {}).get('city')
         parsed_device['State'] = geo_data.get('geoAddress', {}).get('state')
         parsed_device['CountryCode'] = geo_data.get('geoAddress', {}).get('countryCode')
@@ -838,7 +853,7 @@ def get_device_command(args, client) -> CommandResults:
         raise_demisto_exception(
             "at least one of the commands args (device_ids, device_names, local_ips, public_ips must be provided.")
 
-    query_string = create_filter_query_from_args(args, change_device_name_to_system=True)
+    query_string = create_filter_query_from_args(args, change_device_name_to_system=True, change_device_id=True)
     custom_fields_to_return = remove_duplicates_from_list_arg(args, 'fields')
     if custom_fields_to_return:
         custom_fields_to_return.extend(DEVICE_GET_COMMAND_RETURN_FIELDS)
@@ -860,7 +875,7 @@ def get_device_command(args, client) -> CommandResults:
 
 
 def get_device_location_command(args, client) -> CommandResults:
-    query_string = create_filter_query_from_args(args)
+    query_string = create_filter_query_from_args(args, change_device_id=True)
     query_string = parse_return_fields(",".join(DEVICE_GET_LOCATION_COMMAND_RETURN_FIELDS), query_string)
 
     res = client.api_request_absolute('GET', '/v2/reporting/devices', query_string=query_string)

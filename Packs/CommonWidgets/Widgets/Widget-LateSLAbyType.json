@@ -2,7 +2,7 @@
     "dataType": "incidents",
     "params": {
         "groupBy": [
-            "type"
+            "rawType"
         ],
         "valuesFormat": "abbreviated"
     },

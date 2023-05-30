@@ -8,7 +8,10 @@
         "CrowdStrike Falcon Incident",
         "Microsoft Defender For Endpoint",
         "Skyhigh Security Alert",
-        "Skyhigh Security Threat"
+        "Skyhigh Security Threat",
+        "Exabeam Incident",
+        "Microsoft Sentinel Incident",
+        "Graph Security Alert"
     ],
     "breachScript": "",
     "caseInsensitive": true,

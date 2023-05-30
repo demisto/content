@@ -5,4 +5,4 @@ To obtain an API Access Token for BPA, go to https://customersuccess.paloaltonet
 To obtain an API Key for Panorama, run the following REST command and copy the key:  
 https://[PanoramaIP]/api/?type=keygen&user=[user]&password=[password]
 
-For more information, visit the [Palo Alto Networks documentation](https://www.paloaltonetworks.com/documentation).
+For more information, visit the [Palo Alto Networks documentation](https://docs.paloaltonetworks.com/panorama).

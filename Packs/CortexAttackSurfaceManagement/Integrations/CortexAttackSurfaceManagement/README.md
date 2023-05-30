@@ -177,7 +177,7 @@ Get a list of all your external services filtered by business units, externally 
 #### Human Readable Output
 
 >### External Services
->|active_classifications|business_units|discovery_type|domain|externally_detected_providers|first_observed|ip_address|is_active|last_observed|port|protocol|service_id|service_name|service_type|
+>|Active Classifications|Business Units|Discovery Type|Domain|Externally Detected Providers|First Observed|Ip Address|Is Active|Last Observed|Port|Protocol|Service Id|Service Name|Service Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| HttpServer,<br/>MicrosoftOWAServer,<br/>ServerSoftware,<br/>MicrosoftIisWebServer,<br/>ApplicationServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | autodiscover.acme.com | Microsoft Azure | 1659395040000 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Active | 1663024320000 | 80 | TCP | 4c755fea-59e8-3719-8829-9f6adde65068 | HTTP Server at autodiscover.acme.com:80 | HttpServer |
 >| HttpServer,<br/>ServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | web.acme.com | Amazon Web Services | 1659396480000 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Active | 1663029060000 | 80 | TCP | 32c85ab1-fc98-3061-a813-2fe5daf7e7c5 | HTTP Server at web.acme.com:80 | HttpServer |
@@ -563,7 +563,7 @@ Get service details according to the service ID.
 #### Human Readable Output
 
 >### External Service
->|active_classifications|business_units|details|discovery_type|externally_detected_providers|externally_inferred_cves|externally_inferred_vulnerability_score|first_observed|ip_address|is_active|last_observed|port|protocol|service_id|service_name|service_type|
+>|Active Classifications|Business Units|Details|Discovery Type|Externally Detected Providers|Externally Inferred Cves|Externally Inferred Vulnerability Score|First Observed|Ip Address|Is Active|Last Observed|Port|Protocol|Service Id|Service Name|Service Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| SSHWeakMACAlgorithmsEnabled,<br/>SshServer,<br/>OpenSSH | Acme | serviceKey: 1.1.1.1:22<br/>serviceKeyType: IP<br/>businessUnits: {'name': 'Acme'}<br/>providerDetails: {'name': 'AWS', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>certificates: <br/>domains: <br/>ips: {'ip': 873887795, 'protocol': 'TCP', 'provider': 'AWS', 'geolocation': {'latitude': 39.0438, 'longitude': -77.4879, 'countryCode': 'US', 'city': 'ASHBURN', 'regionCode': 'VA', 'timeZone': None}, 'activityStatus': 'Active', 'lastObserved': 1663026500000, 'firstObserved': 1662774169000}<br/>classifications: {'name': 'SshServer', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"2.0","serverVersion":"OpenSSH_7.6p1","extraInfo":"Ubuntu-4ubuntu0.7"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'SSHWeakMACAlgorithmsEnabled', 'activityStatus': 'Active', 'values': [{'jsonValue': '{}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'OpenSSH', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"7.6"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000}<br/>tlsVersions: <br/>inferredCvesObserved: {'inferredCve': {'cveId': 'CVE-2020-15778', 'cvssScoreV2': 6.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.8, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-41617', 'cvssScoreV2': 4.4, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.0, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6110', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6109', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2020-14145', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6111', 'cvssScoreV2': 5.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-20685', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15919', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2016-20012', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15473', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-36368', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 3.7, 'cveSeverityV3': 'LOW', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>enrichedObservationSource: CLOUD<br/>ip_ranges: {} | ColocatedOnIp | Amazon Web Services | CVE-2020-15778,<br/>CVE-2021-41617,<br/>CVE-2019-6110,<br/>CVE-2019-6109,<br/>CVE-2020-14145,<br/>CVE-2019-6111,<br/>CVE-2018-20685,<br/>CVE-2018-15919,<br/>CVE-2016-20012,<br/>CVE-2018-15473,<br/>CVE-2021-36368 | 7.8 | 1662774120000 | 1.1.1.1 | Active | 1663026480000 | 22 | TCP | 94232f8a-f001-3292-aa65-63fa9d981427 | SSH Server at 1.1.1.1:22 | SshServer |
 
@@ -643,7 +643,7 @@ Get a list of all your internet exposure filtered by business units and organiza
 #### Human Readable Output
 
 >### External IP Address Ranges
->|active_responsive_ips_count|business_units|date_added|first_ip|ips_count|last_ip|organization_handles|range_id|
+>|Active Responsive Ips Count|Business Units|Date Added|Details|First Ip|Ips Count|Last Ip|Organization Handles|Range Id|
 >|---|---|---|---|---|---|---|---|
 >| 0 | VanDelay Industries | 1663031000145 | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 >| 0 | VanDelay Industries | 1663031000144 | 1.1.1.1 | 16 | 1.1.1.1 | AR17615-RIPE,<br/>EASYNET-UK-MNT,<br/>JW372-RIPE,<br/>EH92-RIPE | 6ef4638e-7788-3ef5-98a5-ad5b7f4e02f5 |
@@ -770,7 +770,7 @@ Get external IP address range details according to the range IDs.
 #### Human Readable Output
 
 >### External IP Address Range
->|active_responsive_ips_count|business_units|date_added|details|first_ip|ips_count|last_ip|organization_handles|range_id|
+>|Active Responsive Ips Count|Business Units|Date Added|First Ip|Ips Count|Last Ip|Organization Handles|Range Id|
 >|---|---|---|---|---|---|---|---|---|
 >| 0 | VanDelay Industries | 1663031000145 | networkRecords: {'handle': '1.1.1.1 - 1.1.1.1', 'firstIp': '1.1.1.1', 'lastIp': '1.1.1.1', 'name': 'SEARS-HK', 'whoIsServer': 'whois.apnic.net', 'lastChanged': 1663030241931, 'organizationRecords': [{'handle': 'MAINT-HK-PCCW-BIA-CS', 'dateAdded': 1663029346957, 'address': '', 'email': 'noc@acme.com', 'phone': '', 'org': '', 'formattedName': '', 'kind': 'group', 'roles': ['registrant'], 'lastChanged': None, 'firstRegistered': None, 'remarks': ''}, {'handle': 'BNA2-AP', 'dateAdded': 1663029346957, 'address': "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ", 'email': 'cs@acme.com', 'phone': '+852-2888-6932', 'org': '', 'formattedName': 'BIZ NETVIGATOR ADMINISTRATORS', 'kind': 'group', 'roles': ['administrative'], 'lastChanged': 1514892767000, 'firstRegistered': 1220514857000, 'remarks': ''}, {'handle': 'TA66-AP', 'dateAdded': 1663029346957, 'address': 'HKT Limited\nPO Box 9896 GPO          ', 'email': 'noc@acme.com', 'phone': '+852-2883-5151', 'org': '', 'formattedName': 'TECHNICAL ADMINISTRATORS', 'kind': 'group', 'roles': ['technical'], 'lastChanged': 1468555410000, 'firstRegistered': 1220514856000, 'remarks': ''}], 'remarks': 'Sears Holdings Global Sourcing Ltd'} | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 
@@ -914,7 +914,7 @@ Get a list of all your internet exposure filtered by ip address, domain, type, a
 #### Human Readable Output
 
 >### Asset Internet Exposures
->|asm_ids|asset_type|business_units|certificate_algorithm|certificate_classifications|certificate_issuer|domain_resolves|has_active_externally_services|has_xdr_agent|name|sensor|
+>|Asm Ids|Asset Type|Business Units|Certificate Algorithm|Certificate Classifications|Certificate Issuer|Domain Resolves|Has Active Externally Services|Has Xdr Agent|Name|Sensor|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| cfa1cd5a-77f1-3963-8557-7f652309a143 | CERTIFICATE | Acme,<br/>VanDelay Industries | SHA256withRSA | LongExpiration,<br/>Wildcard,<br/>Expired | DigiCert | false | false | NA | *.digital-dev.acme.com | XPANSE |
 >| 78a11e94-58a9-329c-99ca-e527d2db6cfb | CERTIFICATE | Acme,<br/>VanDelay Industries | SHA256withRSA | LongExpiration,<br/>Wildcard,<br/>Expired | DigiCert | false | false | NA | *.digital-prod.acme.com | XPANSE |
@@ -1049,7 +1049,78 @@ Get internet exposure asset details according to the asset ID.
 #### Human Readable Output
 
 >### Asset Internet Exposure
->|asm_ids|business_units|certificate_algorithm|certificate_classifications|certificate_issuer|created|details|name|resolves|type|
+>|Asm Ids|Business Units|Certificate Algorithm|Certificate Classifications|Certificate Issuer|Created|Details|Name|Resolves|Type|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3c176460-8735-333c-b618-8262e2fb660c | Acme | SHA1withRSA | Wildcard,<br/>Expired,<br/>InsecureSignature | Thawte | 1663030146931 | providerDetails: <br/>domain: null<br/>topLevelAssetMapperDomain: null<br/>domainAssetType: null<br/>isPaidLevelDomain: false<br/>domainDetails: null<br/>dnsZone: null<br/>latestSampledIp: null<br/>subdomainMetadata: null<br/>recentIps: <br/>businessUnits: {'name': 'Acme'}<br/>certificateDetails: {"issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA", "issuerAlternativeNames": "", "issuerCountry": "US", "issuerEmail": null, "issuerLocality": null, "issuerName": "Thawte SSL CA", "issuerOrg": "Thawte\\\\, Inc.", "formattedIssuerOrg": "Thawte", "issuerOrgUnit": null, "issuerState": null, "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB", "publicKeyAlgorithm": "RSA", "publicKeyRsaExponent": 65537, "signatureAlgorithm": "SHA1withRSA", "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.babiesrus.com", "subjectAlternativeNames": "*.babiesrus.com", "subjectCountry": "US", "subjectEmail": null, "subjectLocality": "Wayne", "subjectName": "*.babiesrus.com", "subjectOrg": "Acme", "subjectOrgUnit": "MIS", "subjectState": "New Jersey", "serialNumber": "91384582774546160650506315451812470612", "validNotBefore": 1413158400000, "validNotAfter": 1444780799000, "version": "3", "publicKeyBits": 2048, "publicKeyModulus": "a76d56fd0547ba8d0dcb2f65e90a7a61eef29e2b8271ca6558b7642f7e29074ae83560629252c915fb454d724bb54b981018446d4b4e3ed36be50459168f8b4128fe24c42c19a8c480dbc820c0e6b36c6d73ebd892e25e351b0dff4cd19bc8818c2344674cc16d676ea4eeb179ef8b9e0ab9462c91cc0376f90e479661e654e71cecdb58e5521085a8e9ddae4673bb662d76bb671c106fe69f765a661348afe19c665c5c87c253d75252317c44c30e3b6fd84cc082b9e96798eea3b4c415903b023b13d253ba702daa3c4f71f640b4d8f782d477a0e2159fef40ac5dc29006ca6b2eabacacf60cf7e3987d99e3f83abd8fa163643df5e0dcf8a931b0999af00d", "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=", "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb", "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8", "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"}<br/>inferredCvesObserved: <br/>ip_ranges: {} | *.babiesrus.com | false | Certificate |
+
+### asm-list-remediation-rule
+***
+Returns list of remediation path rules.
+
+
+#### Base Command
+
+`asm-list-remediation-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asm_rule_id | A string representing the ASM Rule ID you want to get association remediation path rules for. | Required | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.RemediationRule.rule_id | String | Remediation path rule UUID. | 
+| ASM.RemediationRule.rule_name | String | Remediation path rule name. | 
+| ASM.RemediationRule.description | String | Remediation path rule description. | 
+| ASM.RemediationRule.attack_surface_rule_id | String | Association ASM rule ID for Remediation path rules. | 
+| ASM.RemediationRule.criteria | Unknown | Array of remediation path rule criteria. | 
+| ASM.RemediationRule.criteria_conjunction | String | Whether criteria is processes with AND or OR. | 
+| ASM.RemediationRule.action | String | Action to take on rule match. | 
+| ASM.RemediationRule.created_by | String | Email of who created the rule. | 
+| ASM.RemediationRule.created_by_pretty | String | Readable name of who created the rule. | 
+| ASM.RemediationRule.created_at | Date | Date the rule was created. | 
+
+#### Command example
+```!asm-list-remediation-rule asm_rule_id=RdpServer sort_by_creation_time=desc```
+#### Context Example
+```json
+{
+    "ASM": {
+        "RemediationRule": {
+            "action": "Email",
+            "attack_surface_rule_id": "RdpServer",
+            "created_at": 1672897301000,
+            "created_by": "test@test.com",
+            "created_by_pretty": "Test User",
+            "criteria": [
+                {
+                    "field": "severity",
+                    "operator": "eq",
+                    "value": "high"
+                },
+                {
+                    "field": "isCloudManaged",
+                    "operator": "eq",
+                    "value": "true"
+                }
+            ],
+            "criteria_conjunction": "AND",
+            "description": "for testing",
+            "rule_id": "b935cf69-add9-4e75-8c3d-fe32ee471554",
+            "rule_name": "TestRule"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Remediation Rules
+>|Action|Attack Surface Rule Id|Created At|Created By|Created By Pretty|Criteria|Criteria Conjunction|Description|Rule Id|Rule Name|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Email | RdpServer | 1672897301000 | test@test.com | Test User | {'field': 'severity', 'value': 'high', 'operator': 'eq'},<br/>{'field': 'isCloudManaged', 'value': 'true', 'operator': 'eq'} | AND | for testing | b935cf69-add9-4e75-8c3d-fe32ee471554 | TestRule |
 

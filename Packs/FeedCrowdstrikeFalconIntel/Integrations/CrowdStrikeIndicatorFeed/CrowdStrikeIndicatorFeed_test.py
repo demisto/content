@@ -93,7 +93,29 @@ def test_empty_first_fetch(mocker, requests_mock):
     assert True
 
 
-def test_create_relationships_unknown_key():
+@pytest.mark.parametrize(
+    'field, indicator, resource, expected_results',
+    [
+        (
+            'relations',
+            {"type": "hash_md5", "value": "1234567890"},
+            {"relations": [{"type": "password"}, {"type": 'username', 'indicator': 'abc'}]},
+            [{'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': '1234567890',
+              'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
+              'entityBType': 'Account', 'fields': {}}]
+        ),
+        (
+            'malware_families',
+            {"type": "type non support", "value": "1234567890"},
+            {"malware_families": {"relations": "Test indicator"}},
+            [{'name': 'type non support', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator',
+              'entityA': '1234567890', 'entityAFamily': 'Indicator', 'entityAType': 'type non support',
+              'entityB': 'relations', 'entityBFamily': 'Indicator',
+              'entityBType': 'Malware', 'fields': {}}]
+        )
+    ]
+)
+def test_create_relationships_unknown_key(field, indicator, resource, expected_results):
     """
         Given
             - Field type, indicator and a resource with an unknown relation type.
@@ -103,11 +125,8 @@ def test_create_relationships_unknown_key():
             - validate that no Key Error exception was thrown, and that only 1 relationship was created.
     """
     from CrowdStrikeIndicatorFeed import create_relationships
-    rs_ls = create_relationships('relations', {"type": "hash_md5", "value": "1234567890"},
-                                 {"relations": [{"type": "password"}, {"type": 'username', 'indicator': 'abc'}]})
-    assert rs_ls == [{'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': '1234567890',
-                      'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
-                      'entityBType': 'Account', 'fields': {}}]
+    rs_ls = create_relationships(field, indicator, resource)
+    assert rs_ls == expected_results
     assert len(rs_ls) == 1
 
 
@@ -124,3 +143,188 @@ def test_reset_last_run(mocker):
     demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
     reset_last_run()
     assert demisto_set_context_mocker.call_args.args == ({},)
+
+
+def test_fetch_no_indicators(mocker, requests_mock):
+    """
+    Given
+        - no indicators api response
+    When
+        - fetching indicators
+    Then
+        - Ensure empty list is returned and no exception is raised.
+    """
+    from CrowdStrikeIndicatorFeed import Client
+
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
+
+    feed_tags = ['Tag1', 'Tag2']
+    client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
+
+    mocker.patch.object(client, 'get_indicators', return_value={'resources': []})
+
+    assert client.fetch_indicators(limit=10, offset=5, fetch_command=True) == []
+
+
+def test_crowdstrike_to_xsoar_types():
+
+    from CrowdStrikeIndicatorFeed import CROWDSTRIKE_TO_XSOAR_TYPES
+
+    assert None not in CROWDSTRIKE_TO_XSOAR_TYPES
+
+
+@pytest.mark.parametrize(
+    'first_fetch, filter, integration_context, get_indicators_response, filter_arg_call, expected_results',
+    [
+        (
+            '1662650320',
+            '',
+            {'last_updated': '1662650343'},
+            {},
+            '(last_updated:>=1662650343)',
+            ('', 0)
+        ),
+        (
+            '1662650320',
+            '',
+            {'last_updated': '1662650343'},
+            {'resources': [
+                {
+                    "id": "dummy",
+                    "indicator": "dummy",
+                    "type": "hash_md5",
+                    "deleted": "False",
+                    "published_date": 1622198010,
+                    "last_updated": 1662650343,
+                    "reports": [],
+                    "actors": [
+                        "DOPPELSPIDER"
+                    ],
+                    "malware_families": [
+                        "DoppelDridex"
+                    ],
+                    "kill_chains": [],
+                    "ip_address_types": [],
+                    "domain_types": [],
+                    "malicious_confidence": "high",
+                    "_marker": "test_marker_test",
+                    "labels": []
+                }
+            ]},
+            '(last_updated:>=1662650343)',
+            ("(_marker:>'test_marker_test')", 1)
+        ),
+        (
+            '1662650320',
+            '',
+            {},
+            {'resources': [
+                {
+                    "id": "dummy",
+                    "indicator": "dummy",
+                    "type": "hash_md5",
+                    "deleted": "False",
+                    "published_date": 1622198010,
+                    "last_updated": 1662650343,
+                    "reports": [],
+                    "actors": [
+                        "DOPPELSPIDER"
+                    ],
+                    "malware_families": [
+                        "DoppelDridex"
+                    ],
+                    "kill_chains": [],
+                    "ip_address_types": [],
+                    "domain_types": [],
+                    "malicious_confidence": "high",
+                    "_marker": "test_marker_test",
+                    "labels": []
+                }
+            ]},
+            '(last_updated:>=1662650320)',
+            ("(_marker:>'test_marker_test')", 1)
+        ),
+        (
+            '',
+            '',
+            {},
+            {'resources': [
+                {
+                    "id": "dummy",
+                    "indicator": "dummy",
+                    "type": "hash_md5",
+                    "deleted": "False",
+                    "published_date": 1622198010,
+                    "last_updated": 1662650343,
+                    "reports": [],
+                    "actors": [
+                        "DOPPELSPIDER"
+                    ],
+                    "malware_families": [
+                        "DoppelDridex"
+                    ],
+                    "kill_chains": [],
+                    "ip_address_types": [],
+                    "domain_types": [],
+                    "malicious_confidence": "high",
+                    "_marker": "test_marker_test",
+                    "labels": []
+                }
+            ]},
+            None,
+            ("(_marker:>'test_marker_test')", 1)
+        )
+    ]
+)
+def test_handling_first_fetch_and_old_integration_context(mocker,
+                                                          requests_mock,
+                                                          first_fetch,
+                                                          filter,
+                                                          integration_context,
+                                                          get_indicators_response,
+                                                          filter_arg_call,
+                                                          expected_results):
+
+    from CrowdStrikeIndicatorFeed import Client
+
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='ALL', include_deleted='false', limit=2, first_fetch=first_fetch)
+    mocker.patch('CrowdStrikeIndicatorFeed.demisto.getIntegrationContext', return_value=integration_context)
+    get_indicator_call = mocker.patch.object(client, 'get_indicators', return_value=get_indicators_response)
+
+    results = client.handle_first_fetch_context_or_pre_2_1_0(filter)
+
+    assert get_indicator_call.call_args.kwargs['params'].get('filter') == filter_arg_call
+    assert results[0] == expected_results[0]
+    assert len(results[1]) == expected_results[1]
+
+
+@pytest.mark.parametrize(
+    'indicator, expected_results',
+    [
+        (
+            {'indicator': '1.1.1.1', 'type': 'ip_address'},
+            'IP'
+        ),
+        (
+            {'indicator': 'fe80:0000:0000:0000:91ba:7558:26d3:acde', 'type': 'ip_address'},
+            'IPv6'
+        ),
+        (
+            {'indicator': 'test_test', 'type': 'username'},
+            'Account'
+        ),
+        (
+            {'indicator': 'test_test', 'type': 'password'},
+            None
+        )
+    ]
+)
+def test_auto_detect_indicator_type_from_cs(indicator: dict, expected_results: str | None):
+    from CrowdStrikeIndicatorFeed import auto_detect_indicator_type_from_cs
+
+    assert auto_detect_indicator_type_from_cs(indicator['indicator'], indicator['type']) == expected_results

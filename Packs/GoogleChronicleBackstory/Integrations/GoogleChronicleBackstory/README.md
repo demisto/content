@@ -2714,3 +2714,188 @@ Updates an existing reference list.
 >|Name|Description|Creation Time|Content|
 >|---|---|---|---|
 >| XSOAR_GoogleChronicle_Backstory_README_List | list created for readme | 2022-06-16T07:11:11.380991Z | Line1,<br/>Line2,<br/>Line3 |
+
+
+### 24. gcb-test-rule-stream
+---
+Test a rule over a specified time range. Return any errors and any detections up to the specified maximum.
+
+
+#### Base Command
+
+`gcb-test-rule-stream`
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                           | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| rule_text | Rule text in YARA-L 2.0 format for the rule to stream.                                                                                                                                                                                                                                                                                                                                                                                    | Required | 
+| start_time | Start time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. <br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.<br/><br/><br/>Note: The time window between start_time and end_time cannot be greater than 2 weeks. | Required | 
+| end_time | End time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. <br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.<br/><br/><br/>Note: The time window between start_time and end_time cannot be greater than 2 weeks.   | Required | 
+| max_results | Maximum number of results to return. Specify a value between 1 and 10,000.  Default is 1000.                                                                                                                                                                                                                                                                                                                                              | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.StreamRules.list.detection.type | String | Type of detection. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleName | String | Name of the rule generating the detection, as parsed from ruleText. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleType | String | Whether the rule generating this detection is a single event or multi-event rule. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleLabels | Unknown | Information about the rule | 
+| GoogleChronicleBackstory.StreamRules.list.detection.id | String | Identifier for the detection. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.timeWindow.startTime | Date | The start time of the window the detection was found in. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.timeWindow.endTime | Date | The end time of the window the detection was found in. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productLogId | String | A vendor-specific event identifier to uniquely identify the event \(a GUID\). Users might use this identifier to search the vendor's proprietary console for the event in question. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.eventTimestamp | Date | The GMT timestamp when the event was generated. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.eventType | String | Specifies the type of the event. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.vendorName | String | Specifies the product vendor's name. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productName | String | Specifies the name of the product. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productEventType | String | Short, descriptive, human-readable, and product-specific event name or type. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.ingestedTimestamp | Date | The GMT timestamp when the event was ingested in the vendor's instance. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.id | String | Stores the ID of metadata. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.hostname | String | Client hostname or domain name field. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.userid | String | Stores the user ID. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.userDisplayName | String | Stores the display name for the user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.windowsSid | String | Stores the Microsoft Windows security identifier \(SID\) associated with a user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.emailAddresses | Unknown | Stores the email addresses for the user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.productObjectId | String | Stores the products object ID. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.attribute.labels | Unknown | Stores users session metrics | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.firstName | String | Stores the first name for the user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.lastName | String | Stores the last name for the user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.phoneNumbers | Unknown | Stores the phone numbers for the user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.personalAddress.city | String | Stores city of user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.personalAddress.state | String | Stores state of user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.personalAddress.name | String | Stores address name of user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.title | String | Stores the job title for the user. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.companyName | String | Stores users company name. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.department | Unknown | Stores users departments | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.officeAddress.name | String | Stores company official address name. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.process.pid | String | Stores the process ID. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.process.file.fullPath | String | Full path identifying the location of the file on the system. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.process.productSpecificProcessId | String | Stores the product specific process ID. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.administrativeDomain | String | Domain which the device belongs to \(for example, the Windows domain\). | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.about | Unknown | Stores event labels. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.securityResult | Unknown | Provide a description of the security result. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.network.applicationProtocol | String | Indicates the network application protocol. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.network.dns.questions | Unknown | Stores the domain name. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.network.dns.answers | Unknown | Stores dns associated data. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.label | String | The variable a given set of UDM events belongs to. | 
+| GoogleChronicleBackstory.StreamRules.list.detection.detectionTime | Date | The time period the detection was found in. | 
+
+#### Command example
+```!gcb-test-rule-stream rule_text="rule demoRuleCreatedFromAPIVersion2 {meta:author = \"securityuser2\" description = \"double event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition:$e}" start_time="2022-11-24T00:00:00Z" end_time="2022-12-08T00:00:00Z" max_results=1```
+#### Context Example
+```json
+{
+    "GoogleChronicleBackstory": {
+        "StreamRules": [
+            {
+                "detection": {
+                    "collectionElements": [
+                        {
+                            "label": "e",
+                            "references": [
+                                {
+                                    "event": {
+                                        "about": [
+                                            {
+                                                "labels": [
+                                                    {
+                                                        "key": "Category ID",
+                                                        "value": "DnsQuery"
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        "metadata": {
+                                            "eventTimestamp": "2022-11-24T06:56:59.165381Z",
+                                            "eventType": "NETWORK_DNS",
+                                            "id": "AAAAABUCUis+2ym6lpWhubmxGDAAAAAAAQAAAN4AAAA=",
+                                            "ingestedTimestamp": "2022-11-24T06:57:02.729226Z",
+                                            "productEventType": "22",
+                                            "productLogId": "278953",
+                                            "productName": "Microsoft-Windows-Sysmon",
+                                            "vendorName": "Microsoft"
+                                        },
+                                        "network": {
+                                            "applicationProtocol": "DNS",
+                                            "dns": {
+                                                "answers": [
+                                                    {
+                                                        "data": "activedir.stackedpads.local",
+                                                        "type": 5
+                                                    }
+                                                ],
+                                                "questions": [
+                                                    {
+                                                        "name": "7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "principal": {
+                                            "administrativeDomain": "NT AUTHORITY",
+                                            "hostname": "activedir.stackedpads.local",
+                                            "process": {
+                                                "file": {
+                                                    "fullPath": "C:\\ProgramData\\Microsoft\\Windows Defender\\Platform\\4.18.2205.7-0\\MsMpEng.exe"
+                                                },
+                                                "pid": "3224",
+                                                "productSpecificProcessId": "SYSMON:{3be6fa21-31d0-62c8-5500-000000001100}"
+                                            },
+                                            "user": {
+                                                "userid": "SYSTEM",
+                                                "windowsSid": "S-1-5-18"
+                                            }
+                                        },
+                                        "securityResult": [
+                                            {
+                                                "severity": "INFORMATIONAL",
+                                                "summary": "Dns query"
+                                            },
+                                            {
+                                                "ruleName": "EventID: 22",
+                                                "summary": "QueryStatus: 0"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "detection": [
+                        {
+                            "ruleLabels": [
+                                {
+                                    "key": "author",
+                                    "value": "securityuser2"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "double event rule that should generate detections"
+                                }
+                            ],
+                            "ruleName": "demoRuleCreatedFromAPIVersion2",
+                            "ruleType": "SINGLE_EVENT"
+                        }
+                    ],
+                    "detectionTime": "2022-11-24T06:56:59.165381Z",
+                    "id": "de_681b4417-27dc-ba3a-7db9-0388a7954c07",
+                    "timeWindow": {
+                        "endTime": "2022-11-24T06:56:59.165381Z",
+                        "startTime": "2022-11-24T06:56:59.165381Z"
+                    },
+                    "type": "RULE_DETECTION"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Detection(s)
+>|Detection ID|Detection Type|Detection Time|Events|
+>|---|---|---|---|
+>| de_681b4417-27dc-ba3a-7db9-0388a7954c07 | RULE_DETECTION | 2022-11-24T06:56:59.165381Z | **Event Timestamp:** 2022-11-24T06:56:59.165381Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** activedir.stackedpads.local<br/>**Queried Domain:** 7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local |

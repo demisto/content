@@ -16,6 +16,12 @@ configuration:
   required: true
   type: 4
   section: Connect
+- display: Cybersixgill Organization ID
+  name: org_id
+  type: 0
+  required: false
+  defaultvalue: ''
+  section: Connect
 - defaultvalue: '25'
   display: Maximum number of incidents to fetch - maximum is 25
   name: max_fetch
@@ -106,7 +112,7 @@ script:
     - required: false
       description: The aggregate alert id.
       name: aggregate_alert_id
-  dockerimage: demisto/sixgill:1.0.0.32143
+  dockerimage: demisto/sixgill:1.0.0.50510
   feed: false
   isfetch: true
   longRunning: false

@@ -39,10 +39,15 @@
       "event_useridentity_principalid": {
           "type": "string",
           "is_array": false
+        },
+      "event_errormessage": {
+            "type": "string",
+            "is_array": false
       },
       "event_useridentity_username": {
           "type": "string",
           "is_array": false
       }
+      
   }
 }

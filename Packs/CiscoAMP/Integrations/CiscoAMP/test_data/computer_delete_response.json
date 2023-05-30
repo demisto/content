@@ -1,0 +1,12 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "deleted": true,
+        "connector_guid": "data_connector_guid"
+    }
+}

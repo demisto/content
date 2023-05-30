@@ -34,6 +34,12 @@ configuration:
   type: 0
   defaultvalue: 5
   required: false
+- additionalinfo: A comma-delimited string that specifies the initial order and type in which to get logs from the available APIs. Possible values are AUTHENTICATION, ADMINISTRATION, and TELEPHONY.
+  display: APIs to use
+  name: logs_type_array
+  type: 0
+  defaultvalue: AUTHENTICATION,ADMINISTRATION,TELEPHONY
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -56,7 +62,7 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: duo-get-events
-  dockerimage: demisto/duoadmin3:1.0.0.32862
+  dockerimage: demisto/duoadmin3:1.0.0.61106
   runonce: false
   isfetchevents: true
   subtype: python3

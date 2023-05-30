@@ -461,5 +461,6 @@
 	"name": "MicrosoftCloudAppSecurity",
 	"quickView": {},
 	"system": false,
-	"version": -1
+	"version": -1,
+ "marketplaces": ["xsoar"]
 }

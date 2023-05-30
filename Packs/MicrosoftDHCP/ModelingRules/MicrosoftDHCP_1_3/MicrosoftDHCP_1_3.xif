@@ -1,0 +1,13 @@
+[MODEL: dataset="microsoft_dhcp_raw"]
+alter
+xdm.event.description=description,
+xdm.source.ipv4=ipAddress,
+xdm.source.host.hostname=hostName,
+xdm.source.host.mac_addresses=arraycreate(coalesce(macAddress,"")),
+xdm.source.user.username=userName,
+xdm.event.operation_sub_type=id,
+xdm.session_context_id=transactionID,
+xdm.event.outcome=if(qResult="6",XDM_CONST.OUTCOME_SUCCESS ,qResult="0",XDM_CONST.OUTCOME_SUCCESS,XDM_CONST.OUTCOME_FAILED),
+xdm.event.outcome_reason=if(qResult="6","No Quarantine",qResult="0","NoQuarantine",qResult="1", "Quarantine", qResult="2", "Drop Packet", qResult="3", "Probation",qResult),
+xdm.target.host.hostname=json_extract_scalar(fb_host,"$.hostname"),
+xdm.target.ipv4=arrayindex(regextract(fb_host,"\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\""),0);

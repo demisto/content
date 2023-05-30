@@ -1,9 +1,10 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 
 from typing import Tuple
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 VENDOR = "slack"
 PRODUCT = "slack"
@@ -201,15 +202,9 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module_command(client, params))
 
-        else:
-            if command == 'slack-get-events':
-                events, results = get_events_command(client, args)
-                return_results(results)
-
-            else:  # command == 'fetch-events'
-                last_run = demisto.getLastRun()
-                events, last_run = fetch_events_command(client, params, last_run)
-                demisto.setLastRun(last_run)
+        elif command == 'slack-get-events':
+            events, results = get_events_command(client, args)
+            return_results(results)
 
             if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(
@@ -217,6 +212,18 @@ def main() -> None:  # pragma: no cover
                     vendor=VENDOR,
                     product=PRODUCT
                 )
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            events, last_run = fetch_events_command(client, params, last_run)
+
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            demisto.setLastRun(last_run)
+
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
 

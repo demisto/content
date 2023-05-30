@@ -3,14 +3,32 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import traceback
 
 
 class IncorrectUsageError(Exception):
     pass
 
 
+def _version_header():
+    demisto_version = get_demisto_version()
+    return f"Palo Alto XSOAR/{demisto_version.get('version')}." \
+           f"{demisto_version.get('buildNumber')} " \
+           f"Hatching Triage Pack/{get_pack_version()}"
+
+
 class Client(BaseClient):
     def __init__(self, base_url, *args, **kwarg):
+        # Catch base exception (for now) as version retrieving unpredictably
+        # throws errors sometimes. We never want to stop an API request for
+        # a version header.
+        try:
+            kwarg.setdefault("headers", {})["User-Agent"] = _version_header()
+        except Exception as e:
+            demisto.debug(
+                f"Error creating version header: {e}. "
+                f"{traceback.format_exc(limit=10)}"
+            )
         super().__init__(base_url, *args, **kwarg)
 
 
@@ -62,13 +80,30 @@ def query_samples(client, **args) -> CommandResults:
 
 
 def submit_sample(client: Client, **args) -> CommandResults:
-    data = {"kind": args.get("kind"), "interactive": False}
+    data = {
+        "kind": args.get("kind"),
+        "interactive": argToBoolean(args.get("interactive", False))
+    }
+
+    if args.get("password"):
+        data["password"] = args["password"]
+
+    if args.get("timeout"):
+        data.setdefault("defaults", {})["timeout"] = arg_to_number(
+            args["timeout"]
+        )
+
+    if args.get("network"):
+        data.setdefault("defaults", {})["network"] = args["network"]
 
     if args.get("profiles", []):
         profiles_data = []
         for i in args.get("profiles", "").split(","):
             profiles_data.append({"profile": i, "pick": "sample"})
         data["profiles"] = profiles_data
+
+    if args.get("user_tags"):
+        data["user_tags"] = argToList(args["user_tags"])
 
     if data["kind"] in ("url", "fetch"):
         data.update({"url": args.get("data")})
@@ -86,8 +121,8 @@ def submit_sample(client: Client, **args) -> CommandResults:
             )
     else:
         raise IncorrectUsageError(
-            f'Type of sample needs to be selected, either "file" or "url", '
-            f'the selected type was: {data["kind"]}'
+            f'Type of submission needs to be selected, either "file", "url", '
+            f'or fetch. The selected type was: {data["kind"]}'
         )
 
     return CommandResults(
@@ -105,12 +140,21 @@ def get_sample(client: Client, **args) -> CommandResults:
 
 
 def get_sample_summary(client: Client, **args) -> CommandResults:
-    sample_id = args.get("sample_id")
-    r = client._http_request("GET", f"samples/{sample_id}/summary")
+    outputs = []
+    for sample_id in argToList(args.get("sample_id", "")):
+        try:
+            res = client._http_request(
+                "GET", f"samples/{sample_id}/summary", ok_codes=(200,)
+            )
+        except DemistoException as e:
+            e.message += f" - Sample ID: {sample_id}"
+            raise
+
+        outputs.append(res)
 
     return CommandResults(
         outputs_prefix="Triage.sample-summaries", outputs_key_field="sample",
-        outputs=r
+        outputs=outputs
     )
 
 
@@ -123,7 +167,8 @@ def delete_sample(client: Client, **args) -> str:
 
 def set_sample_profile(client: Client, **args) -> str:
     """
-    Used to move a submitted sample from static analysis to behavioural by giving it a profile to run under
+    Used to move a submitted sample from static analysis to behavioural by
+    giving it a profile to run under
     """
     sample_id = args.get("sample_id")
 
@@ -143,7 +188,7 @@ def set_sample_profile(client: Client, **args) -> str:
 
 def get_static_report(client: Client, **args) -> CommandResults:
     """
-    Get's the static analysis report from a given sample
+    Gets the static analysis report for a given sample id
     """
     sample_id = args.get("sample_id")
 
@@ -158,9 +203,9 @@ def get_static_report(client: Client, **args) -> CommandResults:
     if 'sample' in r:
         target = r['sample']['target']
         if r['sample']['kind'] == "file":
-            # Static can include data on multiple files e.g. in case of .zip upload.
-            # sample.target identifies the actual analysis subject so only get
-            # the results for that file
+            # Static can include data on multiple files e.g. in case of
+            # .zip upload. sample.target identifies the actual analysis subject
+            # so only get the results for that file
             for file in r['files']:
                 if file['filename'] == target:
                     dbot_score = Common.DBotScore(
@@ -208,7 +253,9 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     sample_id = args.get("sample_id")
     task_id = _get_behavioral_task_id(args.get("task_id"))
 
-    r = client._http_request("GET", f"samples/{sample_id}/{task_id}/report_triage.json")
+    r = client._http_request(
+        "GET", f"samples/{sample_id}/{task_id}/report_triage.json"
+    )
     score = 0
     indicator: Any
     if 'sample' in r:
@@ -255,7 +302,8 @@ def get_kernel_monitor(client: Client, **args) -> dict:
     task_id = _get_behavioral_task_id(args.get("task_id"))
 
     r = client._http_request(
-        "GET", f"samples/{sample_id}/{task_id}/logs/onemon.json", resp_type="text"
+        "GET", f"samples/{sample_id}/{task_id}/logs/onemon.json",
+        resp_type="text"
     )
 
     return_results("Kernel monitor results:")
@@ -285,7 +333,8 @@ def get_dumped_files(client: Client, **args) -> dict:
     file_name = args.get("file_name")
 
     r = client._http_request(
-        "GET", f"samples/{sample_id}/{task_id}/{file_name}", resp_type="content"
+        "GET", f"samples/{sample_id}/{task_id}/{file_name}",
+        resp_type="content"
     )
 
     return fileResult(f"{file_name}", r)
@@ -299,7 +348,8 @@ def get_users(client: Client, **args) -> CommandResults:
 
     r = client._http_request("GET", url_suffix)
 
-    # Depending on the api endpoint used, the results are either in the 'data' key or not
+    # Depending on the api endpoint used, the results are either in the
+    # 'data' key or not
     if r.get("data"):
         r = r["data"]
 
@@ -354,7 +404,8 @@ def get_apikey(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"users/{userID}/apikeys")
 
     return CommandResults(
-        outputs_prefix="Triage.apikey", outputs_key_field="key", outputs=r.get("data")
+        outputs_prefix="Triage.apikey", outputs_key_field="key",
+        outputs=r.get("data")
     )
 
 

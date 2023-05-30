@@ -27,16 +27,12 @@ In the self-deployed mode, you can authenticate by using one of the following fl
 ### Authentication Code flow
 
 ---
-1. Copy the following URL and replace `CLIENT_ID` and `REDIRECT_URI` with your own client ID and redirect URI:
-   ```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
-2. Enter the link.
-   You will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You are automatically redirected to a link with the following structure:
-   ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-1. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
-2. Enter your client ID in the **ID** parameter. 
-3. Enter your client secret in the **password** parameter.
-4. Enter your tenant ID in the **Token** parameter.
-5. Enter your redirect URI in the **Redirect URI** parameter.
+1. Enter your client ID in the **ID** parameter. 
+2. Enter your client secret in the **password** parameter.
+3. Enter your tenant ID in the **Token** parameter.
+4. Enter your redirect URI in the **Redirect URI** parameter.
+5. Save the integration settings.
+6. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
 
 
 ### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)
@@ -50,6 +46,19 @@ Follow these steps for client-credentials configuration.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
 5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 
-## Get the additional instance parameters
+### Azure Managed Identities Authentication
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
+   3. Select the **Use Azure Managed Identities** checkbox.
+
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+## Get the Additional Instance Parameters
 
 To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resource Group** parameters, in the Azure Portal, go to **Log Analytics workspaces > YOUR-WORKSPACE > Settings** and click the **Workspace Settings** tab.

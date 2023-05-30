@@ -227,3 +227,6 @@ outputs:
   description: Groups the user is a member of.
 tests:
 - Account Enrichment - Generic v2.1 - Test
+marketplaces:
+  - xsoar
+  - marketplacev2

@@ -91,7 +91,7 @@ ERROR_DICT = {
     '421': 'Invalid arguments',
     '500': 'Internal error',
     '502': 'Bad Gateway',
-    '513': 'File upload failed'
+    '513': 'File upload failed. This may happen for unsupported files such as empty files.'
 }
 
 VERDICTS_DICT = {
@@ -99,6 +99,7 @@ VERDICTS_DICT = {
     '1': 'malware',
     '2': 'grayware',
     '4': 'phishing',
+    '5': 'c2',
     '-100': 'pending, the sample exists, but there is currently no verdict',
     '-101': 'error',
     '-102': 'unknown, cannot find sample record in the database',
@@ -111,6 +112,7 @@ VERDICTS_TO_DBOTSCORE = {
     '1': 3,
     '2': 2,
     '4': 3,
+    '5': 3,
     '-100': 0,
     '-101': 0,
     '-102': 0,
@@ -156,6 +158,20 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     )
     if str(result.reason) == 'Not Found':
         raise NotFoundError('Not Found.')
+
+    # invalid argument
+    if result.status_code == 421:
+        try:
+            error_message = json.loads(xml2json(result.text))
+            error_message = error_message.get('error', {}).get('error-message')
+        except Exception:
+            raise Exception(f'Failed to parse response to json. response: {result.text}')
+
+        demisto.results({
+            'Type': entryTypes["error"],
+            'Contents': error_message,
+            'ContentsFormat': formats['text']
+        })
 
     if result.status_code < 200 or result.status_code >= 300:
         if str(result.status_code) in ERROR_DICT:
@@ -1398,7 +1414,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         )
         # we get the report and file info from the XML object
         reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
-        file_info = json_res.get('wildfire').get('file_info')
+        file_info = json_res.get('wildfire', {}).get('file_info')
 
         # extra options to provide in the query
         verbose = args.get('verbose', 'false').lower() == 'true'
@@ -1435,7 +1451,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
                                              outputs=remove_empty_elements(entry_context),
                                              readable_output=human_readable, indicator=indicator, raw_response=json_res,
                                              relationships=relationships)
-            return command_results, entry_context['Status']
+            return command_results, entry_context.get('Status')
         except Exception:
             raise DemistoException('Error while trying to get the report from the API.')
 

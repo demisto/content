@@ -1,0 +1,134 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: MockSubplaybook
+inputs:
+- description: "Test value"
+  key: one
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${input1}
+- description: ' Test value'
+  key: two
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${input2}
+name: MockSubplaybook
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 50a0f280-acb0-4d0a-8c6e-e9a79b1d9d3f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 50a0f280-acb0-4d0a-8c6e-e9a79b1d9d3f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f4ce5bce-b8f3-4499-8ea3-904f65dc7379
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: f4ce5bce-b8f3-4499-8ea3-904f65dc7379
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "2":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: '${inputs.one}, ${inputs.two} '
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 090f9724-72dc-4d9b-84e7-7e3cf3693c35
+      iscommand: false
+      name: Print Inputs
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 090f9724-72dc-4d9b-84e7-7e3cf3693c35
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 285
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: ''

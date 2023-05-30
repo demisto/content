@@ -17,8 +17,12 @@ ignore=IN126
 ignore=RM102,RM104
 
 [file:CBLiveGetFile_V2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,BA124
 
 [known_words]
 cb
 watchlists
+
+[file:CBFindIP.yml]
+ignore=BA124
+

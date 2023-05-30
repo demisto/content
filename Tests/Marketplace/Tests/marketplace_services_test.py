@@ -1,5 +1,5 @@
 # type: ignore[attr-defined]
-
+import copy
 import shutil
 import pytest
 import json
@@ -15,13 +15,14 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from pathlib import Path
+
 # pylint: disable=no-member
 
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
-    is_the_only_rn_in_block, get_pull_request_numbers_from_file
+    is_the_only_rn_in_block, get_pull_request_numbers_from_file, remove_old_versions_from_changelog
 from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
 
@@ -65,6 +66,201 @@ AGGREGATED_CHANGELOG = {
 
 DUMMY_PACKS_DICT = {'HelloWorld': '', 'ServiceNow': '', 'Ipstack': '', 'Active_Directory_Query': '', 'SlackV2': '',
                     'CommonTypes': '', 'CommonPlaybooks': '', 'Base': ''}
+
+CHANGELOG_ONE_LAST_YEAR_SAME_MINOR = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.1": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.1 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.2 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.3": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.3 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.4": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.4 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.5": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.5 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.6": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.6 - 123456',
+        'released': '2023-01-01T23:01:58Z'
+    }
+}
+
+CHANGELOG_TEN_LAST_YEAR_DIFFERENT_MINOR = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2022-05-05T13:39:33Z"
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2022-09-27T23:01:58Z'
+    },
+    "1.2.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.3 - 123456',
+        'released': '2022-10-27T23:01:58Z'
+    },
+    "1.3.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.3.0 - 123456',
+        'released': '2022-11-27T23:01:58Z'
+    },
+    "1.3.1": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.3.1 - 123456',
+        'released': '2022-12-01T23:01:58Z'
+    },
+    "1.3.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.3.2 - 123456',
+        'released': '2023-01-01T23:01:58Z'
+    }
+}
+
+CHANGELOG_MINOR_CHANGED_LAST_RELEASE_OLD_CHANGES = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.1": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.2 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.3": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.3 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.4": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.4 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+}
+
+CHANGELOG_MINOR_CHANGED_LONG_TIME_AGO = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.1": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.1 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.2 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.3": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.3 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.4": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.4 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.5": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.5 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.6": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.6 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+    "1.1.7": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.7 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+}
+
+CHANGELOG_MINOR_MAJOR_CHANGES = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "2.0.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '2.0.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "2.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '2.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "3.0.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '3.0.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "3.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '3.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "4.0.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '4.0.0- 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "4.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '4.1.0 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+}
 
 
 @pytest.fixture(scope="module")
@@ -491,44 +687,65 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed, is_actually_siem',
+    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, single_integration, is_actually_feed,'
+                             ' is_actually_siem, is_actually_data_source',
                              [
                                  # Check is_feed by Integration
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
-                                  'Integration', True, False),
+                                  'Integration', ["xsoar"], True, True, False, False),
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
-                                  'Integration', False, False),
+                                  'Integration', ["xsoar"], True, False, False, False),
                                  # Checks no feed parameter
                                  ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla'}},
-                                  'Integration', False, False),
+                                  'Integration', ["xsoar"], True, False, False, False),
 
                                  # Check is_feed by playbook
                                  ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
-                                  'Playbook', True, False),
+                                  'Playbook', ["xsoar"], True, True, False, False),
                                  ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
-                                  'Playbook', False, False),
+                                  'Playbook', ["xsoar"], True, False, False, False),
 
                                  # Check is_siem for integration
-                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', False, True),
-                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', False, False),
+                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', ["xsoar"], True,
+                                  False, True, False),
+                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', ["xsoar"], True,
+                                  False, False, False),
 
                                  # Check is_siem for rules
-                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', False, True),
-                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', False, True),
-                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', False, True),
+                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', ["xsoar"], True, False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', ["xsoar"], True, False, True, False),
+                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', ["xsoar"], True, False, True, False),
+
+                                 # Check is_data_source for integration
+                                 # case 1: one integration, contains isfetchevents, in marketplacev2 -> data source
+                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration',
+                                  ['xsoar', 'marketplacev2'], True, False, True, True),
+                                 # case 2: one integration, contains isfetch, not in marketplacev2 -> not data source
+                                 ({'id': 'some-id', 'script': {'isfetch': True}}, 'Integration',
+                                  ['xsoar'], True, False, False, False),
+                                 # case 3: one integration (deprecated), with is_fetch, in marketplacev2 -> data source
+                                 ({'id': 'some-id', 'deprecated': True, 'script': {'isfetch': True}}, 'Integration',
+                                  ['xsoar', 'marketplacev2'], True, False, False, True),
+                                 # case 4: not one integration, with isfetch, in marketplacev2 -> not data source
+                                 ({'id': 'some-id', 'deprecated': False, 'script': {'isfetch': True}}, 'Integration',
+                                  ['xsoar', 'marketplacev2'], False, False, False, False)
                              ])
-    def test_add_pack_type_tags(self, yaml_context, yaml_type, is_actually_feed, is_actually_siem):
+    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces, single_integration,
+                                is_actually_feed, is_actually_siem, is_actually_data_source):
         """ Tests is_feed or is_seem is set to True for pack changes for tagging.
         """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
+        dummy_pack._marketplaces = marketplaces
+        dummy_pack._single_integration = single_integration
         dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
         assert dummy_pack.is_siem == is_actually_siem
+        assert dummy_pack.is_data_source == is_actually_data_source
 
     def test_remove_unwanted_files(self):
         """
@@ -566,6 +783,46 @@ class TestHelperFunctions:
         assert res
         assert len(pack._content_items.get('modelingrule')) == 1
 
+    def test_collect_content_items_with_same_id(self):
+        """
+        Given: pack with IncidentType, Layout with same id
+
+        When: collecting content item to upload.
+
+        Then: collect IncidentType and Layout and the up to date playbook.
+
+        """
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
+        expected_id = 'Phishing'
+
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        layout_containers = pack._content_items['layoutscontainer']
+        assert len(layout_containers) == 1
+        assert layout_containers[0]['id'] == expected_id
+
+        incident_types = pack._content_items['incidenttype']
+        assert len(incident_types) == 1
+        assert incident_types[0]['id'] == expected_id
+
+    def test_collect_content_items_only_relevant_playbook(self):
+        """
+        Given: 3 Playbook from which 2 are deprecated.
+
+        When: collecting content item to upload.
+
+        Then: collect the relevant playbook.
+
+        """
+        expected_description = "Expected description"
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        assert len(pack._content_items.get('playbook')) == 1
+        assert pack._content_items.get('playbook')[0]['description'] == expected_description
+
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
@@ -600,7 +857,7 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -641,7 +898,7 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch('builtins.open', open_mocker)
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -676,7 +933,7 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is False
@@ -713,7 +970,7 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -736,23 +993,21 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
 
-    def test_get_version_to_pr_numbers(self, mocker):
+    def test_get_pr_numbers_for_version(self, mocker):
         """
            Given:
                - Mocked pr numbers for 3 files.
            When:
-               - Calling get_version_to_pr_numbers.
+               - Calling get_pr_numbers_for_version.
            Then:
                - Receive a dict with the proper version to pr number.
         """
-        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
-        mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch("os.path.exists", return_value=True)
 
         mocker.patch("git.Git", return_value=GitMock())
 
-        versions_dict = Pack(pack_name='SomeName', pack_path='SomePath').get_version_to_pr_numbers('')
-        assert versions_dict == {'1.0.1': ['11', '111'], '1.0.2': ['22'], '1.0.3': ['33']}
+        versions_pr_numbers = Pack(pack_name='SomeName', pack_path='SomePath').get_pr_numbers_for_version('1.0.2')
+        assert versions_pr_numbers == ['22']
 
     def test_get_pull_request_numbers_from_file(self, mocker):
         """
@@ -792,7 +1047,7 @@ class TestChangelogCreation:
         mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
         same_block_versions_dict = {'1.0.2': modified_rn_file, '1.0.3': modified_rn_file}
         assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) == \
-               (same_block_versions_dict, higher_nearest_version)
+            (same_block_versions_dict, higher_nearest_version)
 
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
         """
@@ -1004,6 +1259,26 @@ This is visible
 
         assert not version_changelog
 
+    def test_create_changelog_entry_pack_with_override(self, dummy_pack):
+        """
+            Given:
+                - release notes, display version and build number
+            When:
+                - overriding the packs in bucket so pack is marked as modified
+            Then:
+                - return an empty dict
+        """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False,
+                                                                  is_override=True)
+
+        assert not version_changelog
+
     def test_create_filtered_changelog_entry_modified_unrelated_entities(self, dummy_pack: Pack):
         """
            Given:
@@ -1079,7 +1354,7 @@ This is visible
                                                                   id_set=id_set)
 
         assert version_changelog['releaseNotes'] == \
-               "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
+            "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
 
     def test_create_filtered_changelog_entry_no_related_modifications(self, dummy_pack: Pack):
         """
@@ -1530,7 +1805,7 @@ class TestFilterChangelog:
                 - Ensure the filtered entries resulte is as expected.
         """
         assert dummy_pack.filter_entries_by_display_name(self.RN_ENTRIES_DICTIONARY, id_set) == \
-               expected_result
+            expected_result
 
     @pytest.mark.parametrize('changelog_entry, marketplace, id_set, expected_rn', [
         ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
@@ -1719,66 +1994,6 @@ class TestImagesUpload:
                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
-    def test_copy_readme_images(self, mocker, dummy_pack):
-        """
-           Given:
-               - Readme Image.
-           When:
-               - Performing copy and upload of all the pack's Readme images.
-           Then:
-               - Validate that the image has been copied from build bucket to prod bucket
-       """
-        dummy_build_bucket = mocker.MagicMock()
-        dummy_prod_bucket = mocker.MagicMock()
-        blob_name = "content/packs/TestPack/readme_images/test_image.png"
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        images_data = {"TestPack": {BucketUploadFlow.README_IMAGES: [os.path.basename(blob_name)]}}
-        task_status = dummy_pack.copy_readme_images(dummy_prod_bucket, dummy_build_bucket, images_data,
-                                                    GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
-        assert task_status
-
-    def test_collect_images_from_readme_and_replace_with_storage_path(self, dummy_pack):
-        """
-           Given:
-               - A README.md file with external urls
-           When:
-               - uploading the pack images to gcs
-           Then:
-               - replace the readme images url with the new path to gcs return a list of all replaces urls.
-       """
-        readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data',
-                                                      'readme_images_test_data')
-        path_readme_to_replace_url = os.path.join(readme_images_test_folder_path, 'url_replace_README.md')
-        with open(os.path.join(readme_images_test_folder_path, 'original_README.md')) as original_readme:
-            data = original_readme.read()
-        with open(path_readme_to_replace_url, 'w') as to_replace:
-            to_replace.write(data)
-
-        expected_urls_ret = {
-            'original_read_me_url': 'https://raw.githubusercontent.com/crestdatasystems/content/'
-                                    '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
-                                    'Retrieve_Asset_Details_-_Lansweeper.png',
-            'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
-            'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
-        }
-        ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url,
-                                                                                  'gcs_test_path', 'marketplacev2')
-        assert ret == [expected_urls_ret]
-
-        with open(path_readme_to_replace_url) as replaced_readme:
-            replaced = replaced_readme.read()
-        with open(os.path.join(readme_images_test_folder_path, 'README_after_replace.md')) as expected_res:
-            expected = expected_res.read()
-
-        assert replaced == expected
-
-    @pytest.mark.parametrize('path, expected_res', [('Packs/TestPack/README.md', True),
-                                                    ('Packs/Integrations/dummyIntegration/README.md', False),
-                                                    ('Packs/NotExists/README.md', False)])
-    def test_is_file_readme(self, dummy_pack, path, expected_res):
-        assert expected_res == dummy_pack.is_raedme_file(path)
-
 
 class TestCopyAndUploadToStorage:
     """ Test class for copying and uploading a pack to storage.
@@ -1816,7 +2031,7 @@ class TestCopyAndUploadToStorage:
         }
 
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
-            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict,
+            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict, {},
             GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
         assert not task_status
@@ -1835,7 +2050,7 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {},
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {}, {},
                                                                           GCPConfig.CONTENT_PACKS_PATH,
                                                                           GCPConfig.BUILD_BASE_PATH)
         assert task_status
@@ -1859,6 +2074,34 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
             dummy_prod_bucket, dummy_build_bucket, {
+                "TestPack": {
+                    BucketUploadFlow.STATUS: "status1",
+                    BucketUploadFlow.AGGREGATED: "False",
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                }
+            }, {}, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
+        )
+        assert task_status
+        assert not skipped_pack
+
+    def test_copy_and_upload_to_storage_dependencies(self, mocker, dummy_pack):
+        """
+           Given:
+               - A pack that updated its dependencies file in the build bucket but not in the production bucket.
+           When:
+               - Copying the pack from the build bucket to the production bucket.
+           Then:
+               - Validate that the task succeeds and that the pack isn't skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_pack.latest_version = "2.0.0"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
+            dummy_prod_bucket, dummy_build_bucket, {}, {
                 "TestPack": {
                     BucketUploadFlow.STATUS: "status1",
                     BucketUploadFlow.AGGREGATED: "False",
@@ -1923,63 +2166,6 @@ class TestSetDependencies:
 
         return pack_metadata
 
-    def test_set_dependencies_new_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - New generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be merged with the generated ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        generated_dependencies = {
-            'ImpossibleTraveler': {
-                'dependencies': {
-                    'HelloWorld': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'HelloWorld',
-                        'certification': 'certified'
-                    },
-                    'ServiceNow': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    },
-                    'Active_Directory_Query': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Active Directory Query v2',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
-        p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
-
     def test_set_dependencies_no_user_dependencies(self):
         """
            Given:
@@ -2035,25 +2221,6 @@ class TestSetDependencies:
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
-
-    def test_set_dependencies_no_generated_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - No generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be the user ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        dependencies = metadata['dependencies']
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._user_metadata = metadata
-        p.set_pack_dependencies({}, {})
-        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -2140,53 +2307,6 @@ class TestSetDependencies:
             p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
-
-    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
-        """
-           Given:
-               - Core pack with new dependencies
-               - Mandatory dependencies that are not core packs that were overridden in the user metadata
-           When:
-               - Formatting metadata
-           Then:
-               - Metadata should be formatted correctly
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-
-        generated_dependencies = {
-            'HelloWorld': {
-                'dependencies': {
-                    'CommonPlaybooks': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-
-        generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('HelloWorld', 'dummy_path')
-        user_dependencies = metadata['dependencies']
-        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(user_dependencies)
-        p._user_metadata = metadata
-
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:
@@ -2690,6 +2810,10 @@ class TestStoreInCircleCIArtifacts:
         BucketUploadFlow.AGGREGATED: '[1.0.0, 1.0.1] => 1.0.1',
         BucketUploadFlow.LATEST_VERSION: '1.0.1'
     }
+    SUCCESSFUL_DEPENDENCIES_PACK_DICT = {
+        BucketUploadFlow.STATUS: PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name,
+        BucketUploadFlow.LATEST_VERSION: '1.0.1'
+    }
 
     @staticmethod
     def get_successful_packs():
@@ -2719,6 +2843,17 @@ class TestStoreInCircleCIArtifacts:
     def get_updated_private_packs():
         return ['TestPack5', 'TestPack6']
 
+    @staticmethod
+    def get_successful_dependencies_packs():
+        successful_dependencies = [
+            Pack(pack_name='TestPack7', pack_path='.'),
+            Pack(pack_name='TestPack8', pack_path='.'),
+        ]
+        for pack in successful_dependencies:
+            pack._status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+            pack.latest_version = '1.0.1'
+        return successful_dependencies
+
     def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):
         """
            Given:
@@ -2735,10 +2870,11 @@ class TestStoreInCircleCIArtifacts:
         successful_packs = self.get_successful_packs()
         failed_packs = self.get_failed_packs()
         updated_private_packs = self.get_updated_private_packs()
+        successful_uploaded_dependencies = list()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-            updated_private_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+            successful_uploaded_dependencies, failed_packs, updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2771,7 +2907,7 @@ class TestStoreInCircleCIArtifacts:
         successful_packs = self.get_successful_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list()
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list(), list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2796,7 +2932,7 @@ class TestStoreInCircleCIArtifacts:
         failed_packs = self.get_failed_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), failed_packs, list()
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), failed_packs, list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2821,7 +2957,7 @@ class TestStoreInCircleCIArtifacts:
         updated_private_packs = self.get_updated_private_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), updated_private_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), list(), updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2829,6 +2965,39 @@ class TestStoreInCircleCIArtifacts:
                 f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
                     'TestPack5': {},
                     'TestPack6': {}
+                }
+            }
+        }
+
+    def test_store_successful_and_successful_dependencies_in_ci_artifacts(self, tmp_path):
+        """
+           Given:
+               - Successful packs list - TestPack1, TestPack2
+               - Successful dependencies packs list - TestPack7, TestPack8
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful packs TestPack1 & TestPack2.
+               - Verify that the file content contains the successful dependencies packs TestPack7 & TestPack8.
+       """
+        successful_packs = self.get_successful_packs()
+        successful_dependencies_packs = self.get_successful_dependencies_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+            successful_dependencies_packs, list(), list()
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
+                    'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS}': {
+                    'TestPack7': TestStoreInCircleCIArtifacts.SUCCESSFUL_DEPENDENCIES_PACK_DICT,
+                    'TestPack8': TestStoreInCircleCIArtifacts.SUCCESSFUL_DEPENDENCIES_PACK_DICT
                 }
             }
         }
@@ -2856,10 +3025,11 @@ class TestGetSuccessfulAndFailedPacks:
         file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
+        assert successful_uploaded_dependencies == {}
         assert failed == {}
         assert private_packs == {}
         assert images == {}
@@ -2867,10 +3037,11 @@ class TestGetSuccessfulAndFailedPacks:
         # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
+        assert successful_uploaded_dependencies == {}
         assert failed == {}
         assert private_packs == {}
         assert images == {}
@@ -2905,7 +3076,7 @@ class TestGetSuccessfulAndFailedPacks:
                     }
                 }
             }))
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {"TestPack1": {
@@ -3062,8 +3233,7 @@ class TestDetectModified:
         status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
 
         assert dummy_pack._modified_files['Integrations'][0] == \
-               'Packs/TestPack/Integrations/integration/integration.yml'
-        assert dummy_pack._is_modified
+            'Packs/TestPack/Integrations/integration/integration.yml'
         assert status is True
 
 
@@ -3232,3 +3402,47 @@ class TestCheckChangesRelevanceForMarketplace:
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
+
+
+@freeze_time("2023-01-01")
+@pytest.mark.parametrize('changelog, expected_result', [
+    (copy.deepcopy(CHANGELOG_DATA_INITIAL_VERSION), ["1.0.0"]),
+    (copy.deepcopy(CHANGELOG_DATA_MULTIPLE_VERSIONS), ["1.0.0", "1.1.0"]),
+    (copy.deepcopy(CHANGELOG_ONE_LAST_YEAR_SAME_MINOR), ["1.0.2", "1.0.3", "1.0.4", "1.0.5", "1.0.6"]),
+    (copy.deepcopy(CHANGELOG_TEN_LAST_YEAR_DIFFERENT_MINOR), ["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.3.1", "1.3.2"]),
+    (copy.deepcopy(CHANGELOG_MINOR_CHANGED_LAST_RELEASE_OLD_CHANGES),
+     ["1.0.1", "1.0.2", "1.0.3", "1.0.4", "1.1.0"]),
+    (copy.deepcopy(CHANGELOG_MINOR_CHANGED_LONG_TIME_AGO), ["1.1.0", "1.0.0", "1.1.1", "1.1.2", "1.1.3",
+                                                            "1.1.4", "1.1.5", "1.1.6", "1.1.7"]),
+    (copy.deepcopy(CHANGELOG_MINOR_MAJOR_CHANGES), ["2.1.0", "3.0.0", "3.1.0", "4.0.0", "4.1.0"]),
+])
+def test_remove_old_versions_from_changelog(changelog, expected_result):
+    """
+    Given:
+        7 different changelog files:
+        1. Changelog with only 1 initial version
+        2. Changelog with only 2 versions
+        3. Changelog with only one version released in last year, and all versions with same major-minor version
+        4. Changelog with ten versions released in last year, and minor versions changed almost every release
+        5. Changelog without versions released in last year, and the minor version changed in last release
+        6. Changelog without versions released in last year,
+        and the minor version bumped at second release (from total 9 releases)
+        7. Changelog where a lot of major and minor versions changes
+    When:
+        Removing old versions from changelog file, following the policy:
+        We are keeping the maximum number of versions between the following options:
+            1.  Versions were released last year.
+            2.  Last minor version and one version before it.
+            3.  Last five versions.
+    Then:
+        We decide to keep the following versions:
+        1. All existing versions.
+        2. All existing versions.
+        3. Last 5 versions.
+        4. Ten versions released in last year
+        5. Last 5 versions.
+        6. All versions from last minor, and one before it.
+        7. Last 5 versions.
+
+    """
+    assert remove_old_versions_from_changelog(changelog) == expected_result

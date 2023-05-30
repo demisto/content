@@ -1,11 +1,35 @@
 from datetime import datetime
-
+from freezegun import freeze_time
 import pytest
 
 MAIL_STRING = br"""Delivered-To: to@test1.com
 MIME-Version: 1.0
 From: John Smith <from@test1.com>
 Date: Mon, 10 Aug 2020 10:17:16 +0300
+Subject: Testing email for mail listener
+To: to@test1.com
+Content-Type: multipart/alternative; boundary="0000000000002b271405ac80bf8b"
+
+
+--0000000000002b271405ac80bf8b
+Content-Type: text/plain; charset="UTF-8"
+
+
+
+--0000000000002b271405ac80bf8b
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr"><br></div>
+<p>C:\Users</p>
+<p>C:\\Users</p>
+
+--0000000000002b271405ac80bf8b--
+"""
+
+MAIL_STRING_NO_DATE = br"""Delivered-To: to@test1.com
+MIME-Version: 1.0
+From: John Smith <from@test1.com>
+Date:
 Subject: Testing email for mail listener
 To: to@test1.com
 Content-Type: multipart/alternative; boundary="0000000000002b271405ac80bf8b"
@@ -64,7 +88,11 @@ EXPECTED_LABELS = [
     {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>\n<p>C:\\\\Users</p>'}]
 
 
-def test_convert_to_incident():
+@freeze_time("2022-12-11 13:40:00 UTC")
+@pytest.mark.parametrize('mail_string, mail_date',
+                         [(MAIL_STRING, '2020-08-10T07:17:16+00:00'),
+                          (MAIL_STRING_NO_DATE, "2022-12-11T13:40:00+00:00")])
+def test_convert_to_incident(mail_string, mail_date):
     """
     Given:
         - Bytes representation of a mail
@@ -76,84 +104,85 @@ def test_convert_to_incident():
         - Validate the 'attachments', 'occurred', 'details' and 'name' fields are parsed as expected
     """
     from MailListenerV2 import Email
-    email = Email(MAIL_STRING, False, False, 0)
+    email = Email(mail_string, False, False, 0)
     incident = email.convert_to_incident()
-    assert incident['attachment'] == []
-    assert incident['occurred'] == email.date.isoformat()
+    assert incident['occurred'] == mail_date
     assert incident['details'] == email.text or email.html
     assert incident['name'] == email.subject
 
 
 @pytest.mark.parametrize(
     'time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
+    # noqa: E501
     [
         (
-            datetime(year=2020, month=10, day=1),
-            False,
-            ['test1@mail.com', 'test2@mail.com'],
-            ['test1.com', 'domain2.com'],
-            4,
-            [
-                'OR',
-                'OR',
-                'OR',
-                'FROM',
-                'domain2.com',
-                'FROM',
-                'test1.com',
-                'FROM',
-                'test1@mail.com',
-                'FROM',
-                'test2@mail.com',
-                'SINCE',
-                datetime(year=2020, month=10, day=1),
-                'UID',
-                '4:*'
-            ]
+                datetime(year=2020, month=10, day=1),  # noqa: E126
+                False,  # noqa: E126
+                ['test1@mail.com', 'test2@mail.com'],
+                ['test1.com', 'domain2.com'],
+                4,
+                [
+                    'OR',
+                    'OR',
+                    'OR',
+                    'FROM',
+                    'domain2.com',
+                    'FROM',
+                    'test1.com',
+                    'FROM',
+                    'test1@mail.com',
+                    'FROM',
+                    'test2@mail.com',
+                    'SINCE',
+                    datetime(year=2020, month=10, day=1),
+                    'UID',
+                    '4:*'
+                ]
         ),
         (
-            datetime(year=2020, month=10, day=1),
-            True,
-            ['test1@mail.com', 'test2@mail.com'],
-            ['test1.com', 'domain2.com'],
-            4,
-            [
-                'OR',
-                'OR',
-                'OR',
-                'HEADER',
-                'FROM',
-                'domain2.com',
-                'HEADER',
-                'FROM',
-                'test1.com',
-                'HEADER',
-                'FROM',
-                'test1@mail.com',
-                'HEADER',
-                'FROM',
-                'test2@mail.com',
-                'SINCE',
-                datetime(year=2020, month=10, day=1),
-                'UID',
-                '4:*'
-            ]
+                datetime(year=2020, month=10, day=1),  # noqa: E126
+                True,  # noqa: E126
+                ['test1@mail.com', 'test2@mail.com'],
+                ['test1.com', 'domain2.com'],
+                4,
+                [
+                    'OR',
+                    'OR',
+                    'OR',
+                    'HEADER',
+                    'FROM',
+                    'domain2.com',
+                    'HEADER',
+                    'FROM',
+                    'test1.com',
+                    'HEADER',
+                    'FROM',
+                    'test1@mail.com',
+                    'HEADER',
+                    'FROM',
+                    'test2@mail.com',
+                    'SINCE',
+                    datetime(year=2020, month=10, day=1),
+                    'UID',
+                    '4:*'
+                ]
         ),
         (
-            None,
-            '',
-            [],
-            [],
-            1,
-            [
-                'UID',
-                '1:*'
-            ]
+                None,  # noqa: E126
+                '',  # noqa: E126
+                [],
+                [],
+                1,
+                [
+                    'UID',
+                    '1:*'
+                ]
         )
     ]
 )
 def test_generate_search_query(
-        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from,
+        expected_query
 ):
     """
     Given:
@@ -226,3 +255,20 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
     assert mail_mocker.call_args[0][0] == expected
+
+
+def test_get_eml_attachments():
+    from MailListenerV2 import Email
+    import email
+    # Test an email with a PNG attachment
+    with open(
+            'test_data/eml-with-jpeg.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+    assert res == []
+    # Test an email with EML attachment
+    with open(
+            'test_data/eml-with-eml-with-attachment.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+    assert res[0]['filename'] == 'Test with an image.eml'

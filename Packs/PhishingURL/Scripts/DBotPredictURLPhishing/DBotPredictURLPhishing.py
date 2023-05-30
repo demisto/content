@@ -5,14 +5,14 @@ import urllib
 from typing import List, Dict, Tuple
 import pandas as pd
 import base64
-import requests
 import dill
 import copy
 import numpy as np
+import urllib3
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 dill.settings['recurse'] = True
 
@@ -291,12 +291,14 @@ def verdict_to_int(verdict):
         return 2
 
 
-def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rasterize: Dict, verdict: str):
+def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rasterize: Dict, verdict: str,
+                         reliability: str = DBotScoreReliability.A_PLUS):
     """
     Return entry to demisto
     :param pred_json: json with output of the model
     :param url: url
     :param whitelist: if url belongs to whitelist of the model
+    :param reliability: reliability of the source providing the intelligence data.
     :return: entry to demisto
     """
     if whitelist:
@@ -326,12 +328,12 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
         KEY_CONTENT_VERDICT: verdict,
         KEY_CONTENT_IS_WHITELISTED: str(whitelist)
     }
-    context_DBot_score = {
-        'Indicator': url,
-        'Type': 'URL',
-        'Vendor': 'DBotPhishingURL',
-        'Score': verdict_to_int(verdict)
-    }
+    dbot_score = Common.DBotScore(indicator=url,
+                                  indicator_type=DBotScoreType.URL,
+                                  integration_name='DBotPhishingURL',
+                                  score=verdict_to_int(verdict),
+                                  reliability=reliability)
+    context_DBot_score = dbot_score.to_context().get(dbot_score.get_context_path())
 
     if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain[KEY_CONTENT_AGE] = str(pred_json[DOMAIN_AGE_KEY])
@@ -502,8 +504,8 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
     if len(res_rasterize) > 0 and isinstance(res_rasterize[0]['Contents'], str):
         return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
-    if KEY_IMAGE_RASTERIZE not in res_rasterize[0]['Contents'].keys() or KEY_IMAGE_HTML \
-            not in res_rasterize[0]['Contents'].keys():
+    if not res_rasterize[0]['Contents'].get(KEY_IMAGE_RASTERIZE) or \
+            not res_rasterize[0]['Contents'].get(KEY_IMAGE_HTML):
         return create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed,
                                    {})
 
@@ -581,7 +583,7 @@ def return_general_summary(results, tag="Summary"):
     return df_summary_json
 
 
-def return_detailed_summary(results):
+def return_detailed_summary(results, reliability: str):
     outputs = []
     severity_list = [x.get('score') for x in results]
     indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
@@ -594,7 +596,7 @@ def return_detailed_summary(results):
         url = results[index].get('url')
         is_white_listed = results[index].get('is_white_listed')
         output_rasterize = results[index].get('output_rasterize')
-        summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize, verdict)
+        summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize, verdict, reliability)
         outputs.append(summary_json)
         outputs = [x for x in outputs if x]
     return outputs
@@ -761,6 +763,11 @@ def main():
         email_html = demisto.args().get('emailHTML', "")
         max_urls = int(demisto.args().get('maxNumberOfURL', 5))
         urls_argument = demisto.args().get('urls', '')
+        reliability = demisto.args().get("reliability", DBotScoreReliability.A_PLUS)
+
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
+            reliability
+        )
 
         # Update model if necessary and load the model
         model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version,
@@ -776,7 +783,7 @@ def main():
 
         # Return outputs
         general_summary = return_general_summary(results)
-        detailed_summary = return_detailed_summary(results)
+        detailed_summary = return_detailed_summary(results, reliability)
         if debug:
             return_results(msg_list)
         return general_summary, detailed_summary, msg_list

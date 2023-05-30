@@ -10,7 +10,7 @@ type: python
 tags:
 - dynamic-section
 subtype: python3
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.9.46807
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

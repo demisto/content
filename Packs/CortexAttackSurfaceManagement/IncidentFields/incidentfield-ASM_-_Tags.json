@@ -53,7 +53,7 @@
     "description": "Tags from objects that can be used to determine other information (if server is Dev for example)",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmtags",
     "isReadOnly": false,
     "locked": false,

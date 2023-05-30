@@ -1,0 +1,7 @@
+!zoom-create-meeting topic=test type=scheduled user=example@example.com start-time=2023-01-29T12:12:12Z
+!zoom-create-user email=example@example.com first_name=john last_name=smith user_type=Basic
+!zoom-delete-user user_id=example@example.com action=disassociate
+!zoom-list-users status=pending limit=10
+!zoom-meeting-get meeting_id=88949894296
+!zoom-meeting-list user_id=example@example.com type=scheduled limit=7
+!zoom-fetch-recording meeting_id=83622325727 delete_after=false

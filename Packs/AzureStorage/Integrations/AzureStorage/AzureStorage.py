@@ -16,7 +16,8 @@ SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_imperso
 class ASClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  connection_type: str, tenant_id: str = None, enc_key: str = None, auth_code: str = None,
-                 redirect_uri: str = None):
+                 redirect_uri: str = None,
+                 managed_identities_client_id: str = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -27,16 +28,18 @@ class ASClient:
             self_deployed=True,
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=GRANT_BY_CONNECTION[connection_type],
+            grant_type=GRANT_BY_CONNECTION.get(connection_type),
             base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
             verify=verify,
             proxy=proxy,
             resource='https://management.core.windows.net' if 'Device' in connection_type else None,
-            scope=SCOPE_BY_CONNECTION[connection_type],
+            scope=SCOPE_BY_CONNECTION.get(connection_type),
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
-            redirect_uri=redirect_uri
+            redirect_uri=redirect_uri,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
@@ -359,10 +362,10 @@ def storage_account_list(client: ASClient, args: Dict) -> CommandResults:
     for account in accounts:
 
         if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', account.get('id', '')):
-            subscription_id = subscription_id.group(1)
+            subscription_id = subscription_id.group(1)  # type: ignore
 
         if resource_group := re.search('resourceGroups/(.+?)/providers', account.get('id', '')):
-            resource_group = resource_group.group(1)
+            resource_group = resource_group.group(1)  # type: ignore
 
         readable_output.append({
             'Account Name': account.get('name'),
@@ -406,10 +409,10 @@ def storage_account_create_update(client: ASClient, args: Dict) -> Union[Command
 
     response = response.json()
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     readable_output = {
         'Account Name': response.get('name'),
@@ -453,13 +456,13 @@ def storage_blob_service_properties_get(client: ASClient, args: Dict) -> Command
     response = client.storage_blob_service_properties_get_request(account_name)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -501,13 +504,13 @@ def storage_blob_service_properties_set(client: ASClient, args: Dict):
     response = client.storage_blob_service_properties_set_request(args)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -552,13 +555,13 @@ def storage_blob_containers_create(client, args):
     response = client.storage_blob_containers_create_update_request(args, 'PUT')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -594,13 +597,13 @@ def storage_blob_containers_update(client, args):
     response = client.storage_blob_containers_create_update_request(args, 'PATCH')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
-        subscription_id = subscription_id.group(1)
+        subscription_id = subscription_id.group(1)  # type: ignore
 
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
-        resource_group = resource_group.group(1)
+        resource_group = resource_group.group(1)  # type: ignore
 
     if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
-        account_name = account_name.group(1)
+        account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
         'Name': response.get('name'),
@@ -641,13 +644,13 @@ def storage_blob_containers_list(client, args):
     for container in containers:
 
         if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', container.get('id', '')):
-            subscription_id = subscription_id.group(1)
+            subscription_id = subscription_id.group(1)  # type: ignore
 
         if resource_group := re.search('resourceGroups/(.+?)/providers', container.get('id', '')):
-            resource_group = resource_group.group(1)
+            resource_group = resource_group.group(1)  # type: ignore
 
         if account_name := re.search('storageAccounts/(.+?)/blobServices', container.get('id', '')):
-            account_name = account_name.group(1)
+            account_name = account_name.group(1)  # type: ignore
 
         readable_output.append({
             'Container Name': container.get('name'),
@@ -721,6 +724,9 @@ def test_module(client: ASClient) -> str:
                                "You can validate the connection by running `!azure-storage-auth-test`\n"
                                "For more details press the (?) button.")
 
+    elif client.connection_type == 'Azure Managed Identities':
+        client.ms_client.get_access_token()
+        return 'ok'
     else:
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-storage-auth-test command in order to test it")
@@ -743,10 +749,13 @@ def main() -> None:
             tenant_id=params.get('tenant_id'),
             enc_key=params.get('credentials', {}).get('password'),
             auth_code=(params.get('auth_code', {})).get('password'),
-            redirect_uri=params.get('redirect_uri')
+            redirect_uri=params.get('redirect_uri'),
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))
+        elif command == 'azure-storage-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
         elif command == 'azure-storage-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-storage-auth-complete':

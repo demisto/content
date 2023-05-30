@@ -338,7 +338,7 @@ def test_get_findings(mocker):
 
     get_findings_mock.assert_called_with(DetectorId='some_id',
                                          FindingIds=['finding_id1', 'finding_id2'])
-    assert command_results.outputs == EXPECTED_FINDING_OUTPUTS
+    assert command_results.get('EntryContext') == EXPECTED_FINDING_OUTPUTS
 
 
 class MockedPaginator:

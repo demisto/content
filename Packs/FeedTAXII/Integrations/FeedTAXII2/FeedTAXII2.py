@@ -76,7 +76,7 @@ def fetch_indicators_command(
         else None
     )
 
-    if client.collection_to_fetch is None:
+    if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
@@ -88,7 +88,9 @@ def fetch_indicators_command(
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
+            last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
+                if client.last_fetched_indicator__modified \
+                else added_after
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
@@ -139,7 +141,7 @@ def get_indicators_command(
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
     raw = argToBoolean(raw)
 
-    if client.collection_to_fetch is None:
+    if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
@@ -155,14 +157,20 @@ def get_indicators_command(
 
     else:
         indicators = client.build_iterator(limit=limit, added_after=added_after)
+    relationships_list: list = []
+    parsed_relationships: str = ""
+    if indicators and indicators[-1].get('value', ) == "$$DummyIndicator$$":
+        relationships_list = indicators[-1].get('relationships', )
+        parsed_relationships = f"\n\n\nRelations ships:\n{tableToMarkdown('', relationships_list)}"
+        md = f"Found {len(indicators) - 1} results:\n" \
+             f"{tableToMarkdown('', indicators[:-1], ['value', 'type'])}{parsed_relationships}"
+    else:
+        md = f"Found {len(indicators)} results:\n{tableToMarkdown('', indicators, ['value', 'type'])}{parsed_relationships}"
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
         return
 
-    md = f"Found {len(indicators)} results:\n" + tableToMarkdown(
-        "", indicators, ["value", "type"]
-    )
     if indicators:
         return CommandResults(
             outputs_prefix=CONTEXT_PREFIX + ".Indicators",
@@ -202,7 +210,7 @@ def reset_fetch_command(client):
     )
 
 
-def main():
+def main():  # pragma: no cover
     objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
                      'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()
@@ -225,10 +233,12 @@ def main():
     is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
-    certificate = params.get('certificate', None)
-    key = params.get('key', None)
+    certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
+                   or params.get('certificate', None))
+    key = params.get('creds_certificate', {}).get('password') or params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root')
+    update_custom_fields = params.get('update_custom_fields') or False
 
     demisto.info(f'{objects_to_fetch=}')
 
@@ -251,6 +261,7 @@ def main():
             certificate=certificate,
             key=key,
             default_api_root=default_api_root,
+            update_custom_fields=update_custom_fields,
         )
         client.initialise()
         commands = {

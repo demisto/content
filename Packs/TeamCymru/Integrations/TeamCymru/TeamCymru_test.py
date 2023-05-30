@@ -3,13 +3,13 @@
 import json
 import demistomock as demisto
 import pytest
-from unittest.mock import MagicMock
 import TeamCymru
+from TeamCymru import CymruClient
 
 
 '''GLOBALS'''
 
-client = MagicMock()
+client = CymruClient()
 MOCK_ENTRY_ID = '@123'
 MOCK_BULK_LIST = "1.1.1.1, b, 2.2.2, n, 3.3.3.3,2001:0db8:85a3:0000:0000:8a2e:0370:7334,a,\"8.8.8.8\"," \
                  "4.4.4.4, 1.1.2.2, 6,6.6.6.6, 1.1.2.2"
@@ -60,7 +60,7 @@ def test_ip_command(mocker):
     mock_arg = {'ip': '8.8.8.8'}
     test_data = load_test_data('test_data/test_ip_command.json')
     return_value = test_data.get('ip_command_response')
-    mocker.patch.object(TeamCymru, 'team_cymru_ip', return_value=return_value)
+    mocker.patch.object(CymruClient, 'lookup', return_value=return_value)
     response = ip_command(client, mock_arg)
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
@@ -83,7 +83,7 @@ def test_ip_command_with_list(mocker):
     mock_arg = {"ip": MOCK_BULK_LIST}
     test_data = load_test_data('test_data/test_cymru_bulk_whois_command.json')
     return_value = test_data.get('cymru_bulk_whois_command_response')
-    mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
+    mocker.patch.object(CymruClient, 'lookupmany_dict', return_value=return_value)
     warning = mocker.patch.object(TeamCymru, 'return_warning')
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
@@ -111,7 +111,7 @@ def test_cymru_bulk_whois_command_with_file(mocker):
     mock_arg = {"entry_id": MOCK_ENTRY_ID}
     test_data = load_test_data('test_data/test_cymru_bulk_whois_command.json')
     return_value = test_data.get('cymru_bulk_whois_command_response')
-    mocker.patch.object(TeamCymru, 'team_cymru_bulk_whois', return_value=return_value)
+    mocker.patch.object(CymruClient, 'lookupmany_dict', return_value=return_value)
 
     mocker.patch.object(demisto, 'getFilePath', return_value=MOCK_FILE_RES)
     mock_outputs = test_data.get('mock_output')
@@ -212,10 +212,10 @@ def test_empty_command_result(mocker):
         - Verify the functions doesn't fail and returns empty list
     """
     from TeamCymru import ip_command, cymru_bulk_whois_command
-    mocker.patch("TeamCymru.team_cymru_ip", return_value=None)
+    mocker.patch.object(CymruClient, "lookup", return_value=None)
     result = ip_command(client, {'ip': '1.1.1.1'})
     assert not result
-    mocker.patch("TeamCymru.team_cymru_bulk_whois", return_value=None)
+    mocker.patch.object(CymruClient, "lookupmany_dict", return_value=None)
     mocker.patch.object(demisto, 'getFilePath', return_value=MOCK_FILE_RES)
     result = cymru_bulk_whois_command(client, {'entry_id': MOCK_ENTRY_ID})
     assert not result
@@ -233,6 +233,6 @@ def test_test_command(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'command', return_value='test-module')
     return_value = load_test_data('test_data/test_ip_command.json').get('ip_command_response')
-    mocker.patch("TeamCymru.team_cymru_ip", return_value=return_value)
+    mocker.patch.object(CymruClient, "lookup", return_value=return_value)
     TeamCymru.main()
     assert_results_ok()

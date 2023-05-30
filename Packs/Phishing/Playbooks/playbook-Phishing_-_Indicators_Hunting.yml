@@ -1,0 +1,351 @@
+id: Phishing - Indicators Hunting
+version: -1
+name: Phishing - Indicators Hunting
+description: |
+  Hunt indicators related to phishing with available integrations and then handle the results. Handling the results will include setting relevant incident fields which will be displayed in the layout and optionally, opening new incidents according to the findings.
+  Current integration in this playbook:
+  - Microsoft 365 Defender (using "Advanced Hunting")
+
+  Note that this playbook should be used as a sub-playbook inside a phishing incident and not as a main playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ae9d5f25-f689-44b5-8644-1d1ff8da2c53
+    type: start
+    task:
+      id: ae9d5f25-f689-44b5-8644-1d1ff8da2c53
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f0a7a0b1-156d-4f73-8a68-e0c06661cb54
+    type: playbook
+    task:
+      id: f0a7a0b1-156d-4f73-8a68-e0c06661cb54
+      version: -1
+      name: Microsoft 365 Defender - Threat Hunting Generic
+      description: |
+        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`, and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+
+        - **Microsoft 365 Defender - Get Email URL clicks**:
+                Retrieves data based on URL click events.
+
+
+        - **Microsoft 365 Defender - Emails Indicators Hunt**:
+                Retrieves data based on several different email events.
+
+        Read the playbooks' descriptions in order to get the full details.
+      playbookName: Microsoft 365 Defender - Threat Hunting Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+      ListenerMailbox:
+        complex:
+          root: inputs.ListenerMailbox
+      SHA256:
+        complex:
+          root: inputs.DBotScore.Indicator
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: inputs.DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      URLDomain:
+        complex:
+          root: inputs.DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: inputs.DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 45f91f5a-63cd-4eb1-89c5-9c4d45a9201e
+    type: playbook
+    task:
+      id: 45f91f5a-63cd-4eb1-89c5-9c4d45a9201e
+      version: -1
+      name: Phishing - Handle Microsoft 365 Defender Results
+      description: |-
+        This playbook is used to handle the results from the "Microsoft 365 Defender - Threat Hunting Generic" playbook inside a phishing incident. It will perform the following actions:
+        1) Set the relevant incident fields based on the results, such as "Clicked URLs", "Malicious URL Viewed", and "Malicious URL Clicked".
+        2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results. First, it will try to retrieve the original emails' files and then it will create an incident for each retrieved email.
+        3) Link the newly created incidents to the main originating incident.
+
+        Note that this playbook should only be used inside a phishing incident and not as a main playbook.
+      playbookName: Phishing - Handle Microsoft 365 Defender Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      CreateNewIncidents:
+        complex:
+          root: inputs.EmailHuntingCreateNewIncidents
+      EmailBrand:
+        simple: MicrosoftGraphMail
+      RetrievedEmails:
+        complex:
+          root: Microsoft365Defender
+          accessor: RetrievedEmails
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e480e0e4-cf08-4ac6-8897-48cf53991382
+    type: condition
+    task:
+      id: e480e0e4-cf08-4ac6-8897-48cf53991382
+      version: -1
+      name: Any emails found using Microsoft 365 Defender?
+      description: Did the previous task returned any emails in its output?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Microsoft365Defender
+                accessor: RetrievedEmails
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4a0761e3-523a-46c5-89d0-2e4daa11ebfc
+    type: title
+    task:
+      id: 4a0761e3-523a-46c5-89d0-2e4daa11ebfc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_2_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 1710,
+        "y": 1990
+      }
+    }
+  }
+inputs:
+- key: DBotScore
+  value:
+    complex:
+      root: DBotScore
+  required: false
+  description: |-
+    The DBotScore object containing these keys:
+    - Indicator
+    - Type
+    - Score
+  playbookInputQuery:
+- key: EmailHuntingCreateNewIncidents
+  value:
+    simple: "False"
+  required: false
+  description: When "True", the "Phishing - Handle Microsoft 365 Defender Results" sub-playbook will create new phishing incidents for each email that contains one of the malicious indicators. Default is "False".
+  playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

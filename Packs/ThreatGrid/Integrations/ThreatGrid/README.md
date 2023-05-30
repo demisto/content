@@ -10,24 +10,24 @@
 <h2>Configure Threat Grid on Cortex XSOAR</h2>
 <hr>
 <ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Threat Grid.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>You should configure the following settings:</li>
+<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>You should configure the following settings:</li>
 </ol>
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
+<li><strong>Server URL (e.g. <a href="https://192.168.0.1/" rel="nofollow">https://192.168.0.1</a>)</strong></li>
 <li><strong>API token</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
 <ol start="4">
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
+<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_16996161761540718403094">Get samples: threat-grid-get-samples</a></li>
 <li><a href="#h_1561995056331540718972103">Get a sample by sample ID: threat-grid-get-sample-by-id</a></li>
@@ -68,10 +68,12 @@
 <li><a href="#h_805126484175651540728192194">Get the analysis for a threat stream: threat-grid-get-analysis-network-streams</a></li>
 <li><a href="#h_462852935181201540728608321">Get data for a process ID in an analysis: threat-grid-get-analysis-process</a></li>
 <li><a href="#h_601161801186731540728863204">Get data for an analysis process: threat-grid-get-analysis-processes</a></li>
+<li><a href="#h_601161801186731540728863304">Submit URL for analysis: threat-grid-submit-urls</a></li>
+<li><a href="#h_601161801186731540728863404">Run advanced search using the ThreatGrid search query: threat-grid-advanced-search</a></li>
 </ol>
 <h3 id="h_16996161761540718403094">1. Get samples</h3>
 <hr>
-<p>Get samples on the Threat Grid platform. Input parameters are combined with <em>AND</em> statements. Only finished samples can be searched. Finished samples have a status of <em>succ</em> or <em>fail</em>.</p>
+<p>Get samples on the Threat Grid platform. Input parameters are combined with <em>AND</em> statements. Only finished samples can be searched. Finished samples have a status of <em>succ</em> or <em>fail</em>.</p>
 <h5>Base Command</h5>
 <pre><code>threat-grid-get-samples</code></pre>
 <h5>Input</h5>
@@ -146,7 +148,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -202,7 +204,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-ip after=2018-01-18T00:00:00 before=2018-01-18T01:00:00 confidence=75 severity=75</pre>
 <h5>Context Output</h5>
@@ -263,7 +265,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -319,7 +321,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-sample-by-id id=052de338e02c4e013a4e9f5da8a87d5b</pre>
 <h5>Context Example</h5>
@@ -370,7 +372,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -390,7 +392,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-sample-state-by-id id=052de338e02c4e013a4e9f5da8a87d5b</pre>
 <h5>Context Example</h5>
@@ -422,7 +424,7 @@
 <tbody>
 <tr>
 <td style="width: 161px;">file-id</td>
-<td style="width: 476px;">The sample file. Click the chain icon after you upload a file in Cortex XSOAR to find the file-id. </td>
+<td style="width: 476px;">The sample file. Click the chain icon after you upload a file in Cortex XSOAR to find the file-id. </td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -452,7 +454,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -500,7 +502,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-upload-sample file-id=98@16 filename=Suspicious_File_To_Be_Scanned</pre>
 <h5>Context Example</h5>
@@ -618,7 +620,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 750px;" border="2" cellpadding="6">
 <thead>
@@ -666,7 +668,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-search-submissions limit=2</pre>
 <h5>Context Example</h5>
@@ -729,7 +731,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -747,7 +749,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-video-by-id id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Context Example</h5>
@@ -800,8 +802,8 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
-<h5> </h5>
+<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -933,7 +935,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-by-id id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Context Example</h5>
@@ -963,7 +965,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -981,7 +983,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-processes-by-id id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Context Example</h5>
@@ -1029,7 +1031,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -1047,7 +1049,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-pcap-by-id id=a6cc7ae4e3318e98d94e8a053dd72c47</pre>
 <h5>Context Example</h5>
@@ -1095,7 +1097,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -1113,7 +1115,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-warnings-by-id id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Context Example</h5>
@@ -1161,7 +1163,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -1209,7 +1211,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-summary-by-id id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Context Example</h5>
@@ -1259,7 +1261,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -1322,7 +1324,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-threat-summary-by-id id=58e5e66b31484a8529b80a18a33e0814</pre>
 <h5>Context Example</h5>
@@ -1369,7 +1371,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -1387,7 +1389,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-html-report-by-id id=6712d1b712dda4aa63d6073477c367c4</pre>
 <h5>Context Example</h5>
@@ -1431,7 +1433,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -1449,7 +1451,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-download-sample-by-id id=6712d1b712dda4aa63d6073477c367c4</pre>
 <h5>Context Example</h5>
@@ -1502,12 +1504,12 @@
 </tr>
 <tr>
 <td>limit</td>
-<td>Limit the number of indicators you would like to see. The list is sorted by indicator severity in descending order. </td>
+<td>Limit the number of indicators you would like to see. The list is sorted by indicator severity in descending order. </td>
 <td>Optional</td>
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 746px;" border="2" cellpadding="6">
 <thead>
@@ -1579,7 +1581,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-iocs id=a6cc7ae4e3318e98d94e8a053dd72c47</pre>
 <h5>Context Example</h5>
@@ -2137,7 +2139,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-who-am-i</pre>
 <h5>Context Example</h5>
@@ -2157,7 +2159,7 @@
 <p><a href="https://user-images.githubusercontent.com/20818773/47437441-43b63d00-d7b1-11e8-916b-41bb5a119b1a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47437441-43b63d00-d7b1-11e8-916b-41bb5a119b1a.png" alt="screen shot 2018-10-24 at 17 19 31" width="750" height="134"></a></p>
 <h3 id="h_14456317689011540723175792">17. Get the rate limit for a specified user</h3>
 <hr>
-<p>Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.</p>
+<p>Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.</p>
 <h5>Base Command</h5>
 <pre><code>threat-grid-user-get-rate-limit</code></pre>
 <h5>Input</h5>
@@ -2177,7 +2179,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -2210,7 +2212,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-user-get-rate-limit login="user_name"</pre>
 <h5>Context Example</h5>
@@ -2261,7 +2263,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -2290,7 +2292,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -2299,7 +2301,7 @@
 <p><a href="https://user-images.githubusercontent.com/20818773/47480262-82dba100-d838-11e8-9e4b-9c7d2c9bb643.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47480262-82dba100-d838-11e8-9e4b-9c7d2c9bb643.png" alt="image" width="749" height="186"></a></p>
 <h3 id="h_677431094103841540723877811">20. Get rate limits for an organization</h3>
 <hr>
-<p>Get rate limits applied to an organization. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by an entire organization and/or per a license basis. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.</p>
+<p>Get rate limits applied to an organization. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by an entire organization and/or per a license basis. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.</p>
 <h5>Base Command</h5>
 <pre><code>threat-grid-organization-get-rate-limit</code></pre>
 <h5>Input</h5>
@@ -2319,7 +2321,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -2352,7 +2354,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-organization-get-rate-limit adminLogin="admin"</pre>
 <h5>Context Example</h5>
@@ -2440,7 +2442,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -2469,7 +2471,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -2509,7 +2511,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-annotations id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Context Example</h5>
@@ -2675,7 +2677,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -2695,7 +2697,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-search-samples checksum=d3c852ed16a7e4a4cde88266c060ee064ed047a8a43685ae52ce6c82f40e5b3f</pre>
 <h5>Context Example</h5>
@@ -2802,7 +2804,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -2829,7 +2831,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <table style="width: 746px;" border="2" cellpadding="6">
 <thead>
@@ -2849,7 +2851,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-samples-state ids=9798717402a40970a2d043014d9a6170</pre>
 <h5>Context Example</h5>
@@ -2941,7 +2943,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-artifacts after=2018-01-18T00:00:00 before=2018-01-18T00:02:07 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
@@ -3008,7 +3010,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-domain after=2018-01-18T00:00:00 before=2018-01-18T00:10:00 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
@@ -3075,7 +3077,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-ip after=2018-01-18T00:00:00 before=2018-01-18T01:00:00 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
@@ -3147,7 +3149,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-feeds-network-stream after=2018-01-18T00:00:00 before=2018-01-18T00:02:10 confidence=75 severity=75</pre>
 <h5>Human Readable Output</h5>
@@ -3214,7 +3216,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -3283,7 +3285,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -3317,7 +3319,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-artifact id=a6cc7ae4e3318e98d94e8a053dd72c47 aid=1</pre>
 <h5>Human Readable Output</h5>
@@ -3344,7 +3346,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -3373,12 +3375,12 @@
 </tr>
 <tr>
 <td style="width: 276px;">ioc</td>
-<td style="width: 270px;">The requested IOC</td>
+<td style="width: 270px;">The requested IOC</td>
 <td style="width: 162px;">Required</td>
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-ioc id=8ee72188b95b7d8f4e1a6c4842e98566 ioc=network-communications-http-get-url</pre>
 <h5>Human Readable Output</h5>
@@ -3405,7 +3407,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-metadata id=58e5e66b31484a8529b80a18a33e0814</pre>
 <h5>Human Readable Output</h5>
@@ -3437,7 +3439,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -3466,7 +3468,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -3500,7 +3502,7 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
@@ -3529,10 +3531,66 @@
 </tr>
 </tbody>
 </table>
-<h5> </h5>
+<h5> </h5>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
 <pre>!threat-grid-get-analysis-processes id=9798717402a40970a2d043014d9a6170</pre>
 <h5>Human Readable Output</h5>
 <p><a href="https://user-images.githubusercontent.com/20818773/47497306-3e64fb00-d862-11e8-8f1b-c2aa623b33ff.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47497306-3e64fb00-d862-11e8-8f1b-c2aa623b33ff.png" alt="image" width="751" height="187"></a></p>
+<h3 id="h_601161801186731540728863304">40. Submit URLs for analysis</h3>
+<hr>
+<p>Submit the URL for Threat analysis processes.</p>
+<h5>Base Command</h5>
+<pre><code>threat-grid-submit-urls</code></pre>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 297px;"><strong>Argument Name</strong></th>
+<th style="width: 235px;"><strong>Description</strong></th>
+<th style="width: 176px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 297px;">url</td>
+<td style="width: 235px;">The URL to submit to ThreatGrid</td>
+<td style="width: 176px;">Required</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<p>There is no context output for this command.</p>
+<h5>Command Example</h5>
+<pre>threat-grid-submit-urls url="www.example.com"</pre>
+<h3 id="h_601161801186731540728863404">41. Advanced search for URLs/Samples already submitted for analysis</h3>
+<hr>
+<p>Perform advanced search on ThreatGrid</p>
+<h5>Base Command</h5>
+<pre><code>threat-grid-advanced-search</code></pre>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 297px;"><strong>Argument Name</strong></th>
+<th style="width: 235px;"><strong>Description</strong></th>
+<th style="width: 176px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 297px;">query</td>
+<td style="width: 235px;">ThreatGrid search query to run</td>
+<td style="width: 176px;">Required</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<p>There is no context output for this command.</p>
+<h5>Command Example</h5>
+<pre>!threat-grid-advanced-search query="{
+\"query\": \"query get_sample($q_json:
+String) {sample(, q_json: $q_json,limit: 3) {submitted_at id submitted_file_type status threat_score state login url}}\",\"variables\": {\"q_json\": \"{\\\"op\\\": \\\"and\\\",\\\"clauses\\\": [{\\\"op\\\": \\\"attr\\\",\\\"attr\\\": \\\"submitted_file_name\\\",\\\"comp_op\\\": \\\"eq\\\",\\\"value\\\": \\\"www.example.com_.url\\\"}]}\"}}"</pre>

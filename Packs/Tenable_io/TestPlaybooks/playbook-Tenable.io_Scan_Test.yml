@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 44f901f3-0641-4dd2-8bd4-a27d26c2b1d8
+    taskid: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
     type: start
     task:
-      id: 44f901f3-0641-4dd2-8bd4-a27d26c2b1d8
+      id: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -25,12 +26,19 @@ tasks:
         }
       }
     note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b03c3491-b59b-4fe1-86be-e510119d6f89
+    taskid: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
     type: regular
     task:
-      id: b03c3491-b59b-4fe1-86be-e510119d6f89
+      id: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -40,60 +48,170 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 175
         }
       }
     note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
+    taskid: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
     type: playbook
     task:
-      id: ed072f62-3151-4c4c-89d5-3cf6e9a42dfa
+      id: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
       version: -1
       name: Tenable.io Scan
       playbookName: Tenable.io Scan
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       retry-count:
         simple: "2"
       scan-id:
         simple: "16"
-      targets: {}
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 375
+          "y": 650
         }
       }
     note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6174091e-cfc1-4fc4-87ea-115a501e6c53
+    type: playbook
+    task:
+      id: 6174091e-cfc1-4fc4-87ea-115a501e6c53
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Ids:
+        complex:
+          root: TenableIO.Scan.Id
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: TenableIO.Scan.Id
+                iscontext: true
+              right:
+                value:
+                  simple: "16"
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scanId
+      PollingCommandName:
+        simple: tenable-io-get-scan-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: TenableIO.Scan(val.Status == 'pending' || val.Status == 'running' || val.Status == 'publishing').Id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 906f1daf-f844-4d7c-884a-8892b71ca63e
+    type: regular
+    task:
+      id: 906f1daf-f844-4d7c-884a-8892b71ca63e
+      version: -1
+      name: 'tenable.io list scans '
+      description: Retrieves scans from the Tenable platform.
+      script: '|||tenable-io-list-scans'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 420,
+        "height": 695,
         "width": 380,
         "x": 50,
         "y": 50
@@ -103,3 +221,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

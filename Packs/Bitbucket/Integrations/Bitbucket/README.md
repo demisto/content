@@ -21,6 +21,9 @@ This integration was integrated and tested with version 7.21.0 of Bitbucket
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+* Note: The test-module command uses 'bitbucket-project-list' command. In order to perform it, add to the **app password**, **Read** permissions to **Projects**.  
+
 ### bitbucket-project-list
 ***
 If a project_key is given, returns the requested project. Else, returns a list of the projects in the workspace.

@@ -1,0 +1,9 @@
+[
+    {
+        "error": {
+            "code": 400,
+            "message": "generic::invalid_argument: compiling rule: : variable full_path used in both condition section and match section, should only be used in one\nline: 23 \ncolumn: 30-39 ",
+            "status": "INVALID_ARGUMENT"
+        }
+    }
+]

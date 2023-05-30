@@ -1,6 +1,0 @@
-[INGEST:vendor="duo", product="duo", target_dataset="duo_duo_raw", no_hit=drop]
-alter tmp_time_part = to_string(TIMESTAMP),
-    tmp_mili_part = arraystring(regextract(ISOTIMESTAMP, "\:\d{2}\.(\d{3})"), "")
-| alter tmp_con_time = to_integer(concat(tmp_time_part, tmp_mili_part))
-| alter _time = to_timestamp(tmp_con_time, "millis")
-| fields -tmp_time_part, tmp_mili_part, tmp_con_time;

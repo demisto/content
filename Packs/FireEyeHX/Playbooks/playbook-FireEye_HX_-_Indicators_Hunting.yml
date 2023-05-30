@@ -1,0 +1,570 @@
+id: FireEye HX - Indicators Hunting
+version: -1
+name: FireEye HX - Indicators Hunting
+description: |-
+  This playbook facilitates threat hunting and detection of IOCs within FireEye Endpoint Security (HX) utilizing three sub-playbooks. The sub-playbooks query FireEye HX for different indicators including files, traffic, and execution flow indicators.
+
+  Note that multiple search values should be separated by commas only (without spaces or any special characters).
+
+  Supported IOCs for this playbook:
+  - MD5
+  - SHA1
+  - SHA256
+  - IP Address
+  - URLDomain
+  - Registry Value
+  - Registry Key
+  - File Name
+  - Process Name
+  - Port Number
+  - File Path
+  - FileType
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a52d8420-7a8c-4987-866d-15dd05511bae
+    type: start
+    task:
+      id: a52d8420-7a8c-4987-866d-15dd05511bae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+      - "33"
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2720,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c9a4d741-cb13-4350-8973-b2514b1058e9
+    type: title
+    task:
+      id: c9a4d741-cb13-4350-8973-b2514b1058e9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2720,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 8dc51aab-477f-4710-8ee1-432a8ac82dce
+    type: title
+    task:
+      id: 8dc51aab-477f-4710-8ee1-432a8ac82dce
+      version: -1
+      name: Traffic Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2290,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 7137773a-f3ae-4b8d-8880-6d25a5984ce6
+    type: title
+    task:
+      id: 7137773a-f3ae-4b8d-8880-6d25a5984ce6
+      version: -1
+      name: File Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2720,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a5bb0ebf-e2af-434c-85b7-fd57b564b859
+    type: title
+    task:
+      id: a5bb0ebf-e2af-434c-85b7-fd57b564b859
+      version: -1
+      name: Execution Flow Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: e8913685-05b3-4867-8e3a-13c7bcef5e05
+    type: playbook
+    task:
+      id: e8913685-05b3-4867-8e3a-13c7bcef5e05
+      version: -1
+      name: FireEye HX - Traffic Indicators Hunting
+      playbookName: FireEye HX - Traffic Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.IPAddress
+      PortNumber:
+        complex:
+          root: inputs.PortNumber
+      URLDomain:
+        complex:
+          root: inputs.URLDomain
+      exhaustive:
+        simple: "no"
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2290,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c5b19104-cea3-4a45-83e7-7b411fd14af9
+    type: playbook
+    task:
+      id: c5b19104-cea3-4a45-83e7-7b411fd14af9
+      version: -1
+      name: FireEye HX - File Indicators Hunting
+      playbookName: FireEye HX - File Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      FileName:
+        complex:
+          root: inputs.FileName
+      FilePath:
+        complex:
+          root: inputs.FilePath
+      FileType:
+        complex:
+          root: inputs.FileType
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+      exhaustive:
+        complex:
+          root: inputs.exhaustive
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2720,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: f7373911-d925-42bc-8047-a162f79214db
+    type: playbook
+    task:
+      id: f7373911-d925-42bc-8047-a162f79214db
+      version: -1
+      name: FireEye HX - Execution Flow Indicators Hunting
+      playbookName: FireEye HX - Execution Flow Indicators Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      Application:
+        complex:
+          root: inputs.Application
+      HTTPRequestMethods:
+        complex:
+          root: inputs.HTTPRequestMethods
+      ProcessName:
+        complex:
+          root: inputs.ProcessName
+      RegistryKey:
+        complex:
+          root: inputs.RegistryKey
+      RegistryValue:
+        complex:
+          root: inputs.RegistryValue
+      exhaustive:
+        complex:
+          root: inputs.exhaustive
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 525,
+        "width": 1250,
+        "x": 2290,
+        "y": -360
+      }
+    }
+  }
+inputs:
+- key: IPAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP address to search for in FireEye HX logs. Used for both source and destination IP addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: PortNumber
+  value: {}
+  required: false
+  description: |-
+    A single or multiple port numbers to search for in FireEye HX logs. Used for both remote and local ports.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: URLDomain
+  value: {}
+  required: false
+  description: |-
+    Single or multiple URLs and/or domains to search for in FireEye HX logs.
+    By default, the 'contains' clause is used.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA256 file hashes to search for in FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA1
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA1 file hashes to search for in FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: MD5
+  value: {}
+  required: false
+  description: |-
+    A single or multiple MD5 file hashes to search for in FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FilePath
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file paths to search for in FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file names to search for in FireEye HX logs.
+    By default, the 'contains' clause is used.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileType
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file types to search for in FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: ProcessName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple process names to search for in FireEye HX logs.
+    By default, the 'contains' clause is used.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: RegistryKey
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry keys to search for in FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: RegistryValue
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry values to search for in FireEye HX logs.
+    By default, the 'contains' clause is used.
+  playbookInputQuery:
+- key: Application
+  value: {}
+  required: false
+  description: |-
+    Single or multiple application names or codes to search for in FireEye HX logs.
+    By default, the 'contains' clause is used.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: hostSetName
+  value: {}
+  required: true
+  description: The name of the host set to be searched.
+  playbookInputQuery:
+- key: exhaustive
+  value: {}
+  required: false
+  description: |-
+    Whether a search is exhaustive.
+    Possible values are: yes, no. Default is yes.
+  playbookInputQuery:
+- key: interval_in_seconds
+  value: {}
+  required: false
+  description: The interval in seconds between each poll. Default is 60.
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: Limits the results count. (When the limit is reached, the search stops).
+  playbookInputQuery:
+outputs:
+- contextPath: FireEyeHX.HuntingResults
+  description: Email message objects and fields that were retrieved from FireEye HX.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Timestamp - Event
+  description: The timestamp of the event.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.Timestamp - Accessed
+  description: The time when the entry was last accessed.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.Timestamp - Modified
+  description: The time when the entry was last modified.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.File Name
+  description: The name of the file.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.File Full Path
+  description: The full path of the file.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.DNS Hostname
+  description: The name of the DNS host.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.URL
+  description: The event URL.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Username
+  description: The event username.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.File MD5 Hash
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Port
+  description: The port.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.Process ID
+  description: The ID of the process.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Local IP Address
+  description: The local IP address.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Local Port
+  description: The local port.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.Remote Port
+  description: The remote port.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.IP Address
+  description: The IP address.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Process Name
+  description: The process name.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.type
+  description: The type of the event.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.id
+  description: The ID of the result.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

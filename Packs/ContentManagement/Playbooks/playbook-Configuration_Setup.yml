@@ -498,6 +498,9 @@ tasks:
     scriptarguments:
       job_name:
         simple: ${ConfigurationSetup.Jobs.name}
+      using:
+        complex:
+          root: inputs.InstanceName
     separatecontext: false
     view: |-
       {
@@ -1096,3 +1099,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+marketplaces:
+- xsoar

@@ -477,6 +477,8 @@ tasks:
     scriptarguments:
       odata:
         simple: $filter=from/emailAddress/name eq 'testuser_DO_NOT_DELETE'
+      page_size:
+        simple: "1"
       user_id:
         simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
@@ -617,11 +619,11 @@ tasks:
       body:
         simple: test-playbook
       from:
-        simple: testbox@demistodev.onmicrosoft.com
+        simple: testbox2@demistodev.onmicrosoft.com
       subject:
         simple: test-playbook
       to:
-        simple: testbox@demistodev.onmicrosoft.com
+        simple: testbox2@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {

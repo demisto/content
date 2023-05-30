@@ -26,7 +26,7 @@ def test_exit_on_error(mocker, response, expected_output):
 
 def test_polling(mocker):
     atd_file_upload_resp = [{"Type": "Results", "Contents": {"results": [{"taskId": "1"}]}}]
-    atd_check_status_resp = [[{"Type": "Results", "Contents": {"results": {"status": "1", "istate": "0"}}}],
+    atd_check_status_resp = [[{"Type": "Results", "Contents": {"results": {"status": "1"}}}],
                              [{"Type": "Results", "Contents": {"results": {"status": "1", "istate": "1"}}}]]
     atd_get_report_resp = {"Type": "Results", "Contents": "Success!"}
     responses = [atd_file_upload_resp, atd_check_status_resp[0], atd_check_status_resp[1], atd_get_report_resp]

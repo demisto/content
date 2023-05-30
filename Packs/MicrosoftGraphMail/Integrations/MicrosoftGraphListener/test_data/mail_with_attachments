@@ -1,0 +1,136 @@
+[
+  {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('d1a2fae9-db66-4cc9-8133-2184c77af1b8')/messages('AAMkADA1M-zAAA%3D')/attachments/$entity",
+    "@odata.type": "#microsoft.graph.itemAttachment",
+    "id": "exampleID0",
+    "lastModifiedDateTime": "2017-07-21T00:20:34Z",
+    "name": "Test it0",
+    "contentType": null,
+    "size": 1000,
+    "isInline": false,
+    "item@odata.context": "example0",
+    "item": {
+      "@odata.type": "#microsoft.graph.message",
+      "id": "",
+      "createdDateTime": "2017-07-21T00:20:41Z",
+      "lastModifiedDateTime": "2017-07-21T00:20:34Z",
+      "receivedDateTime": "2017-07-21T00:19:55Z",
+      "sentDateTime": "2017-07-21T00:19:52Z",
+      "hasAttachments": false,
+      "internetMessageId": "<example>",
+      "subject": "Test it0",
+      "bodyPreview": "PFA\r\n\r\nThanks,\r\nRob",
+      "importance": "normal",
+      "conversationId": "example",
+      "conversationIndex": "example",
+      "isDeliveryReceiptRequested": false,
+      "isReadReceiptRequested": false,
+      "isRead": false,
+      "isDraft": false,
+      "webLink": "https:example",
+      "internetMessageHeaders": [],
+      "body": {
+        "contentType": "html",
+        "content": "<html><head>\r\n</head>\r\n<body>\r\n</body>\r\n</html>"
+      },
+      "sender": {
+        "emailAddress": {
+          "name": "Test Test",
+          "address": "test@test.onmicrosoft.com"
+        }
+      },
+      "from": {
+        "emailAddress": {
+          "name": "Test Test",
+          "address": "test@test.onmicrosoft.com"
+        }
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        }
+      ],
+      "ccRecipients": [
+        {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        }
+      ],
+      "flag": {
+        "flagStatus": "notFlagged"
+      }
+    }
+  },
+  {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('d1a2fae9-db66-4cc9-8133-2184c77af1b8')/messages('AAMkADA1M-zAAA%3D')/attachments/$entity",
+    "@odata.type": "#microsoft.graph.itemAttachment",
+    "id": "exampleID1",
+    "lastModifiedDateTime": "2017-07-21T00:20:34Z",
+    "name": "Test it1",
+    "contentType": null,
+    "size": 1000,
+    "isInline": false,
+    "item@odata.context": "example1",
+    "item": {
+      "@odata.type": "#microsoft.graph.message",
+      "id": "",
+      "createdDateTime": "2017-07-21T00:20:41Z",
+      "lastModifiedDateTime": "2017-07-21T00:20:34Z",
+      "receivedDateTime": "2017-07-21T00:19:55Z",
+      "sentDateTime": "2017-07-21T00:19:52Z",
+      "hasAttachments": false,
+      "internetMessageId": "<example>",
+      "subject": "Test it1",
+      "bodyPreview": "PFA\r\n\r\nThanks,\r\nRob",
+      "importance": "normal",
+      "conversationId": "example",
+      "conversationIndex": "example",
+      "isDeliveryReceiptRequested": false,
+      "isReadReceiptRequested": false,
+      "isRead": false,
+      "isDraft": false,
+      "webLink": "https:example",
+      "internetMessageHeaders": [],
+      "body": {
+        "contentType": "html",
+        "content": "<html><head>\r\n</head>\r\n<body>\r\n</body>\r\n</html>"
+      },
+      "sender": {
+        "emailAddress": {
+          "name": "Test Test",
+          "address": "test@test.onmicrosoft.com"
+        }
+      },
+      "from": {
+        "emailAddress": {
+          "name": "Test Test",
+          "address": "test@test.onmicrosoft.com"
+        }
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        }
+      ],
+      "ccRecipients": [
+        {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        }
+      ],
+      "flag": {
+        "flagStatus": "notFlagged"
+      }
+    }
+  }
+]

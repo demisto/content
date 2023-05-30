@@ -28,7 +28,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 49
         }
       }
@@ -96,7 +96,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 590
         }
       }
@@ -157,7 +157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 1150
         }
       }
@@ -198,7 +198,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 195
         }
       }
@@ -240,7 +240,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 385
         }
       }
@@ -285,7 +285,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 800
         }
       }
@@ -344,7 +344,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": 460,
           "y": 970
         }
       }
@@ -375,7 +375,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 1290
         }
       }
@@ -438,7 +438,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 1453
         }
       }
@@ -488,7 +488,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 1670
         }
       }
@@ -550,7 +550,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
+          "x": 500,
           "y": 1290
         }
       }
@@ -613,7 +613,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
+          "x": 500,
           "y": 1453
         }
       }
@@ -663,7 +663,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
+          "x": 500,
           "y": 1670
         }
       }
@@ -689,7 +689,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+      - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -708,10 +708,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: d2baa447-e80c-4ea5-8a36-33fa609633a2
+    taskid: e47282e7-f860-4707-883f-623837a431b9
     type: regular
     task:
-      id: d2baa447-e80c-4ea5-8a36-33fa609633a2
+      id: e47282e7-f860-4707-883f-623837a431b9
       version: -1
       name: Check Reputation
       description: Checks the reputation of an IP address using all available integrations.
@@ -725,9 +725,64 @@ tasks:
     scriptarguments:
       ip:
         complex:
-          root: IP
-          accessor: Address
+          root: IP.Address
+          filters:
+          - - operator: IsNotInCidrRanges
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: 192.168.0.0/16,172.16.0.0/12,10.0.0.0/8
+          transformers:
+            - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: c55e9651-e6f5-48ec-8bbc-995c4e87808b
+    type: condition
+    task:
+      id: c55e9651-e6f5-48ec-8bbc-995c4e87808b
+      version: -1
+      name: Should use !IP command?
+      description: Should use !IP command?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.UseReputationCommand
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -739,7 +794,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -752,15 +807,16 @@ view: |-
       "28_39_#default#": 0.35,
       "34_27_#default#": 0.49,
       "34_35_yes": 0.53,
-      "37_24_#default#": 0.2,
+      "37_24_#default#": 0.28,
       "37_38_yes": 0.52,
-      "42_24_#default#": 0.1,
-      "42_43_yes": 0.51
+      "42_24_#default#": 0.2,
+      "42_43_yes": 0.51,
+      "46_24_#default#": 0.53
     },
     "paper": {
       "dimensions": {
         "height": 1876,
-        "width": 1620,
+        "width": 1480,
         "x": -600,
         "y": 49
       }
@@ -779,16 +835,24 @@ inputs:
   playbookInputQuery:
 - key: InternalRange
   value:
-    simple: inputs.InternalRange
+    simple: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
   required: false
   description: 'A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: ResolveIP
   value:
-    complex:
-      root: inputs.ResolveIP
+    simple: "True"
   required: true
   description: Whether to convert the IP address to a hostname using a DNS query (True/False).
+  playbookInputQuery:
+- key: UseReputationCommand
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    Define if you would like to use the !IP command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
   playbookInputQuery:
 outputs:
 - contextPath: IP
@@ -814,4 +878,6 @@ outputs:
   description: Endpoint domain name.
   type: string
 tests:
-- IP Enrichment - Generic v2 - Test
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

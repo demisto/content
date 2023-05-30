@@ -20,5 +20,3 @@ API credentials can be created and managed from Druva Cloud Platform Console. Re
 Please connect to our [Developer portal](https://developer.druva.com/docs) to learn more about our APIs
 
 Important: The API Credentials which is a combination of the Client ID and Secret Key are equivalent to user name and password. One can access all the Druva APIs and in turn, access the data stored within Druva products. It is strongly recommended not to share the Client ID and Secret Key with unauthorized sources.
-
-

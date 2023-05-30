@@ -1,4 +1,3 @@
-
 [file:incidentfield-Actions_On_Campaign_Incidents.json]
 ignore=IF100
 
@@ -18,4 +17,8 @@ ignore=SC106
 ignore=RM109
 
 [file:GetCampaignIncidentsInfo.yml]
-ignore=RM109
+ignore=RM109,BA124
+
+[file:ShowCampaignUniqueRecipients.yml]
+ignore=BA124
+

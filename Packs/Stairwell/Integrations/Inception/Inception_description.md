@@ -1,9 +1,9 @@
 ## Stairwell Inception
-Inceptions APIs leverage auth tokens via the web interface. Directions for generating these tokens, along with API documentation, are available within your Inception tenant.
+Inception's APIs leverage auth tokens via the web interface. Directions for generating these tokens, along with API documentation, are available within your Inception tenant.
 
 Not a customer and interested in signing up? You can request access [here](https://stairwell.com/contact/).
 
-### Variant Analysis
+### Variant Discovery
 - This command enables rapid, DFIR-level hunts for variants of a provided hash. This hunt will leverage data from your organization, along with Inceptions shared malware corpus.
 - The results will include any variant file hashes discovered, along with a `similarity` score.
 

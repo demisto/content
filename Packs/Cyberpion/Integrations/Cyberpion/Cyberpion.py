@@ -1,15 +1,15 @@
+''' IMPORTS '''
 import demistomock as demisto  # noqa: F401
 from typing import Dict, Tuple, List
 from datetime import timezone
-
 from CommonServerPython import *
+import urllib3
+
+urllib3.disable_warnings()
 
 """Cyberpion Integration for Cortex XSOAR (aka Demisto)
 """
 
-''' IMPORTS '''
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -74,7 +74,7 @@ class Client(BaseClient):
             raise Exception(
                 f'in server\'s response: domain_types is none. response: {json.dumps(http_response, indent=2)}')
         domain_info = ''
-        for idx, domain_type in enumerate(domain_types, 1):
+        for idx, domain_type in enumerate(domain_types, start=1):
             domain_info += f'{idx}.\n'
             domain_info += '\n'.join(
                 [f'{k}: {v}' for k, v in domain_type.items()])
@@ -361,7 +361,7 @@ def get_domain_action_items_command(client: Client, args: Dict[str, Any], min_se
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:

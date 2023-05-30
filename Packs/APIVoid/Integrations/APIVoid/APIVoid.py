@@ -549,7 +549,7 @@ def main():
     # get the service API url (This is static for this service)
     base_url = API_ENDPOINT
 
-    apikey = params.get('apikey', None)
+    apikey = params.get('credentials', {}).get('password') or params.get('apikey', None)
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

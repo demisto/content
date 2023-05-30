@@ -6,11 +6,12 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+import urllib3
 from datetime import datetime
 from typing import Dict
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

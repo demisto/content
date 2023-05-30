@@ -1,8 +1,9 @@
 [INGEST:vendor="salesforce", product="salesforce", target_dataset="salesforce_event_audit_raw", no_hit=drop]
-alter tmp_date_part = arraystring(regextract(TIMESTAMP_DERIVED, "(\d{4}\-\d{2}\-\d{2})T"), ""),
-    tmp_time_part = arraystring(regextract(TIMESTAMP_DERIVED, "T(\d{2}\:\d{2}\:\d{2})"), ""),
-    tmp_mili_part = to_integer(arraystring(regextract(TIMESTAMP_DERIVED, "\.(\d{3})Z"), ""))
+alter tmp_timestamp_derived = to_string(TIMESTAMP_DERIVED)
+| alter tmp_date_part = arraystring(regextract(tmp_timestamp_derived, "(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_time_part = arraystring(regextract(tmp_timestamp_derived, "T(\d{2}\:\d{2}\:\d{2})"), ""),
+    tmp_mili_part = to_integer(arraystring(regextract(tmp_timestamp_derived, "\.(\d{3})Z"), ""))
 | alter tmp_time = to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")), "millis")
 | alter tmp_ftime = add(tmp_time, tmp_mili_part)
 | alter _time = to_timestamp(tmp_ftime, "millis")
-| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time, tmp_ftime;
+| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time, tmp_ftime, tmp_timestamp_derived;

@@ -77,6 +77,7 @@ class TestHttpRequest:
         assert e.value.res.status_code == status_code
 
     def test_http_request_bad_json(self, requests_mock):
+        # For an unknown reason, this does not pass locally, but only on the CI.
         """
             Given:
                 - a client
@@ -93,7 +94,7 @@ class TestHttpRequest:
             client.http_request('suffix', requests_kwargs={})
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
-        assert isinstance(e.value.exception, json.JSONDecodeError)
+        assert isinstance(e.value.exception, (requests.exceptions.JSONDecodeError, json.decoder.JSONDecodeError))
         assert e.value.exception.args == ('Expecting value', 'not a json')
 
 
@@ -443,11 +444,11 @@ class TestDemistoIOCToXDR:
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': 'test'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['test']}    # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}, {'type': 'IndicatorCommentRegular', 'content': 'this is the comment'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': 'this is the comment'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['this is the comment']}    # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'aggregatedReliability': 'A - Completely reliable'},
@@ -866,3 +867,123 @@ def test_severity_fix_info(value: str):
 def test_severity_validate(value: str):
     with pytest.raises(DemistoException):
         validate_fix_severity_value(value)
+
+
+def test_parse_demisto_comments__default():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the default comment field
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_value = 'here be comment'
+    assert _parse_demisto_comments(
+        ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}]},
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False
+    ) == [comment_value]
+
+
+def test_parse_demisto_comments__default_empty():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the default comment field
+    Then    check parsing a comment results in None.
+    """
+    from XDR_iocs import _parse_demisto_comments
+    assert _parse_demisto_comments(
+        ioc={},
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False
+    ) is None
+
+
+def test_parse_demisto_comments__default_as_tag():
+    """
+    Given   a custom field name
+    When    parsing a comment of the default comment field, passing comments_as_tags=True
+    Then    make sure an appropriate exception is raised
+    """
+    from XDR_iocs import _parse_demisto_comments
+    with pytest.raises(DemistoException) as exc:
+        _parse_demisto_comments(
+            ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': 'whatever'}]},
+            comment_field_name=Client.xsoar_comments_field,
+            comments_as_tags=True
+        )
+    assert exc.value.message == "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."\
+                                "Set a different value."
+
+
+@pytest.mark.parametrize('comment_value,comments_as_tags,expected', (
+    ('hello', True, ['hello']),
+    ('hello', False, ['hello']),
+    ('hello,world', True, ['hello', 'world']),
+    ('hello,world', False, ['hello,world']),
+))
+def test_parse_demisto_comments__custom_field(comment_value: str, comments_as_tags: bool, expected: str):
+    """
+    Given   a custom field name
+    When    parsing a comment of a non-default comment field
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_field = 'comment_field'
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {comment_field: comment_value}},
+        comment_field_name=comment_field,
+        comments_as_tags=comments_as_tags
+    ) == expected
+
+
+@pytest.mark.parametrize('comments_as_tags', (True, False))
+def test_parse_demisto_comments__custom_field_empty_value(comments_as_tags: bool):
+    """
+    Given   a custom field name, and an empty value as
+    When    parsing a comment of a non-default comment field
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_field = 'comment_field'
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {comment_field: ''}},
+        comment_field_name=comment_field,
+        comments_as_tags=comments_as_tags
+    ) is None
+
+
+@pytest.mark.parametrize('comments_as_tags', (True, False))
+def test_parse_demisto_comments__custom_field_missing(comments_as_tags: bool):
+    """
+    Given   a custom field name, which does not exist in the IOC
+    When    parsing a comment
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {}},
+        comment_field_name='comment_field',
+        comments_as_tags=comments_as_tags
+    ) is None
+
+
+@pytest.mark.parametrize(
+    'raw_comment,comments_as_tags,expected_comment', (
+        ('hello', True, ['hello']),
+        ('hello', False, ['hello']),
+        ('hello,world', True, ['hello', 'world']),
+        ('hello,world', False, ['hello,world']),
+        ('', True, []),
+        ('', False, []),
+    ))
+def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool, expected_comment: str | None):
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    converting an XSOAR IOC to XDR
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_xdr_comments
+    assert _parse_xdr_comments(raw_comment, comments_as_tags) == expected_comment

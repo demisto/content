@@ -1,4 +1,4 @@
-'''IMPORTS'''
+"""IMPORTS"""
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa: F401
@@ -6,144 +6,162 @@ from CommonServerUserPython import *  # noqa: F401
 import base64
 import json
 import requests
+import urllib3
 import re
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Union
 from requests.models import HTTPError
 
-'''CONSTANTS'''
-USER_AGENT = 'TMV1CortexXSOARApp/1.1'
-URL = 'url'
-POST = 'post'
-GET = 'get'
-PUT = 'put'
-AUTHORIZATION = 'Authorization'
-BEARER = 'Bearer '
-CONTENT_TYPE_JSON = 'application/json'
-EMPTY_STRING = ''
-ASCII = 'ascii'
-API_TOKEN = 'apikey'
-VALUE_TYPE = 'value_type'
-TARGET_VALUE = 'target_value'
-PRODUCT_ID = 'product_id'
-DESCRIPTION = 'description'
-MESSAGE_ID = 'message_id'
-MAILBOX = 'mailbox'
-MESSAGE_DELIVERY_TIME = 'message_delivery_time'
-COMPUTER_ID = 'computer_id'
-FIELD = 'field'
-ENDPOINT = 'endpoint'
-DATA = 'data'
-TYPE = 'type'
-VALUE = 'value'
-FILESHA = 'file_sha1'
-FILENAME = 'filename'
-CRITERIA = 'criteria'
-EXCEPTION_LIST = 'exceptionList'
-SUSPICIOUS_LIST = 'suspiciousObjectList'
-LAST_MODIFIED = 'lastModified'
-SCAN_ACTION = 'scan_action'
-RISK_LEVEL = 'risk_level'
-EXPIRYDAY = 'expiry_days'
-TASKID = 'task_id'
-REPORT_ID = 'report_id'
-OS_TYPE = 'os'
-FILE_PATH = 'file_path'
-FILE_URL = 'file_url'
-FILE_NAME = 'filename'
-DOCUMENT_PASSWORD = 'document_password'
-ARCHIVE_PASSWORD = 'archive_password'
-ACTION_ID = 'actionId'
-WORKBENCH_ID = 'workbench_id'
-CONTENT = 'content'
-STATUS = 'status'
+"""CONSTANTS"""
+USER_AGENT = "TMV1CortexXSOARApp/1.1"
+VENDOR_NAME = "TrendMicroVisionOne"
+URL = "url"
+POST = "post"
+GET = "get"
+PUT = "put"
+AUTHORIZATION = "Authorization"
+BEARER = "Bearer "
+CONTENT_TYPE_JSON = "application/json"
+EMPTY_STRING = ""
+ASCII = "ascii"
+API_TOKEN = "apikey"
+VALUE_TYPE = "value_type"
+TARGET_VALUE = "target_value"
+PRODUCT_ID = "product_id"
+DESCRIPTION = "description"
+MESSAGE_ID = "message_id"
+MAILBOX = "mailbox"
+MESSAGE_DELIVERY_TIME = "message_delivery_time"
+COMPUTER_ID = "computer_id"
+FIELD = "field"
+ENDPOINT = "endpoint"
+DATA = "data"
+TYPE = "type"
+VALUE = "value"
+FILESHA = "file_sha1"
+FILENAME = "filename"
+CRITERIA = "criteria"
+EXCEPTION_LIST = "exceptionList"
+SUSPICIOUS_LIST = "suspiciousObjectList"
+LAST_MODIFIED = "lastModified"
+SCAN_ACTION = "scan_action"
+RISK_LEVEL = "risk_level"
+EXPIRYDAY = "expiry_days"
+TASKID = "task_id"
+REPORT_ID = "report_id"
+ENTRY_ID = "entry_id"
+TASKSTATUS = "taskStatus"
+OS_TYPE = "os"
+FILE_PATH = "file_path"
+FILE_URL = "file_url"
+FILE_NAME = "filename"
+DOCUMENT_PASSWORD = "document_password"
+ARCHIVE_PASSWORD = "archive_password"
+ACTION_ID = "actionId"
+WORKBENCH_ID = "workbench_id"
+CONTENT = "content"
+STATUS = "status"
 # End Points
-ADD_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/block'
-REMOVE_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/restoreBlock'
-QUARANTINE_EMAIL_ENDPOINT = '/v2.0/xdr/response/quarantineMessage'
-DELETE_EMAIL_ENDPOINT = '/v2.0/xdr/response/deleteMessage'
-ISOLATE_CONNECTION_ENDPOINT = '/v2.0/xdr/response/isolate'
-TERMINATE_PROCESS_ENDPOINT = '/v2.0/xdr/response/terminateProcess'
-RESTORE_CONNECTION_ENDPOINT = '/v2.0/xdr/response/restoreIsolate'
-ADD_OBJECT_TO_EXCEPTION_LIST = '/v2.0/xdr/threatintel/suspiciousObjects/exceptions'
-DELETE_OBJECT_FROM_EXCEPTION_LIST = '/v2.0/xdr/threatintel/suspiciousObjects/exceptions/delete'
-ADD_OBJECT_TO_SUSPICIOUS_LIST = '/v2.0/xdr/threatintel/suspiciousObjects'
-DELETE_OBJECT_FROM_SUSPICIOUS_LIST = '/v2.0/xdr/threatintel/suspiciousObjects/delete'
-TASK_DETAIL_ENDPOINT = '/v2.0/xdr/response/getTask'
-GET_COMPUTER_ID_ENDPOINT = '/v2.0/xdr/eiqs/query/agentInfo'
-GET_ENDPOINT_INFO_ENDPOINT = '/v2.0/xdr/eiqs/query/endpointInfo'
-GET_FILE_STATUS = '/v2.0/xdr/sandbox/tasks/{taskId}'
-GET_FILE_REPORT = '/v2.0/xdr/sandbox/reports/{reportId}'
-ADD_NOTE_ENDPOINT = '/v2.0/xdr/workbench/workbenches/{workbenchId}/notes'
-UPDATE_STATUS_ENDPOINT = '/v2.0/xdr/workbench/workbenches/{workbenchId}'
-COLLECT_FORENSIC_FILE = '/v2.0/xdr/response/collectFile'
-DOWNLOAD_INFORMATION_COLLECTED_FILE = '/v2.0/xdr/response/downloadInfo'
-SUBMIT_FILE_TO_SANDBOX = '/v2.0/xdr/sandbox/file'
-WORKBENCH_HISTORIES = '/v2.0/xdr/workbench/workbenchHistories'
+ADD_BLOCKLIST_ENDPOINT = "/v2.0/xdr/response/block"
+REMOVE_BLOCKLIST_ENDPOINT = "/v2.0/xdr/response/restoreBlock"
+QUARANTINE_EMAIL_ENDPOINT = "/v2.0/xdr/response/quarantineMessage"
+DELETE_EMAIL_ENDPOINT = "/v2.0/xdr/response/deleteMessage"
+ISOLATE_CONNECTION_ENDPOINT = "/v2.0/xdr/response/isolate"
+TERMINATE_PROCESS_ENDPOINT = "/v2.0/xdr/response/terminateProcess"
+RESTORE_CONNECTION_ENDPOINT = "/v2.0/xdr/response/restoreIsolate"
+ADD_OBJECT_TO_EXCEPTION_LIST = "/v2.0/xdr/threatintel/suspiciousObjects/exceptions"
+DELETE_OBJECT_FROM_EXCEPTION_LIST = (
+    "/v2.0/xdr/threatintel/suspiciousObjects/exceptions/delete"
+)
+ADD_OBJECT_TO_SUSPICIOUS_LIST = "/v2.0/xdr/threatintel/suspiciousObjects"
+DELETE_OBJECT_FROM_SUSPICIOUS_LIST = "/v2.0/xdr/threatintel/suspiciousObjects/delete"
+TASK_DETAIL_ENDPOINT = "/v2.0/xdr/response/getTask"
+GET_COMPUTER_ID_ENDPOINT = "/v2.0/xdr/eiqs/query/agentInfo"
+GET_ENDPOINT_INFO_ENDPOINT = "/v2.0/xdr/eiqs/query/endpointInfo"
+GET_FILE_STATUS = "/v2.0/xdr/sandbox/tasks/{taskId}"
+GET_FILE_REPORT = "/v2.0/xdr/sandbox/reports/{reportId}"
+ADD_NOTE_ENDPOINT = "/v2.0/xdr/workbench/workbenches/{workbenchId}/notes"
+UPDATE_STATUS_ENDPOINT = "/v2.0/xdr/workbench/workbenches/{workbenchId}"
+COLLECT_FORENSIC_FILE = "/v2.0/xdr/response/collectFile"
+DOWNLOAD_INFORMATION_COLLECTED_FILE = "/v2.0/xdr/response/downloadInfo"
+SUBMIT_FILE_TO_SANDBOX = "/v2.0/xdr/sandbox/file"
+WORKBENCH_HISTORIES = "/v2.0/xdr/workbench/workbenchHistories"
 # Error Messages
-RESPONSE_ERROR = 'Error in API call: [%d] - %s'
-RETRY_ERROR = 'The max tries exceeded [%d] - %s'
-COMMAND_CALLED = 'Command being called is {command}'
-COMMAND_EXECUTION_ERROR = 'Failed to execute {error} command. Error'
-AUTHORIZATION_ERROR = "Authorization Error: make sure URL/API Key is correctly set. Error - {error}"
-PARAMETER_ISSUE = '{param} is not a valid paramter. Kindly provide valid parameter'
+RESPONSE_ERROR = "Error in API call: [%d] - %s"
+RETRY_ERROR = "The max tries exceeded [%d] - %s"
+COMMAND_CALLED = "Command being called is {command}"
+COMMAND_EXECUTION_ERROR = "Failed to execute {error} command. Error"
+AUTHORIZATION_ERROR = (
+    "Authorization Error: make sure URL/API Key is correctly set. Error - {error}"
+)
+PARAMETER_ISSUE = "{param} is not a valid parameter. Kindly provide valid parameter"
 FILE_TYPE_ERROR = "Kindly provide valid file 'type'"
-FILE_NOT_FOUND = 'No such file present in {filepath}'
+FILE_NOT_FOUND = "No such file present in {filepath}"
 # General Messages:
 RAW_RESPONSE = "The raw response data - {raw_response}"
-SUCCESS_RESPONSE = 'success with url {url} and response status {status}'
+SUCCESS_RESPONSE = "success with url {url} and response status {status}"
 EXCEPTION_MESSAGE = "Successfully {task} object to exception list with response {code}, Total items in exception list - {length}"
-SUCCESS_TEST = 'Successfully connected to the vision one API.'
-POLLING_MESSAGE = (
-    "The task has not completed, will check status again in 30 seconds"
-)
+SUCCESS_TEST = "Successfully connected to the vision one API."
+POLLING_MESSAGE = "The task has not completed, will check status again in 30 seconds"
 # Workbench Statuses
 NEW = 0
 IN_PROGRESS = 1
 RESOLVED_TRUE_POSITIVE = 2
 RESOLVED_FALSE_POSITIVE = 3
 # Table Heading
-TABLE_ADD_TO_BLOCKLIST = 'Add to block list '
-TABLE_REMOVE_FROM_BLOCKLIST = 'Remove from block list '
-TABLE_QUARANTINE_EMAIL_MESSAGE = 'Quarantine email message '
-TABLE_DELETE_EMAIL_MESSAGE = 'Delete email message '
-TABLE_ISOLATE_ENDPOINT_MESSAGE = 'Isolate endpoint connection '
-TABLE_RESTORE_ENDPOINT_MESSAGE = 'Restore endpoint connection '
-TABLE_TERMINATE_PROCESS = 'Terminate process '
-TABLE_ADD_EXCEPTION_LIST = 'Add object to exception list '
-TABLE_DELETE_EXCEPTION_LIST = 'Delete object from exception list '
-TABLE_ADD_SUSPICIOUS_LIST = 'Add object to suspicious list '
-TABLE_ENDPOINT_INFO = 'Endpoint info '
-TABLE_DELETE_SUSPICIOUS_LIST = 'Delete object from suspicious list '
-TABLE_GET_FILE_ANALYSIS_STATUS = 'File analysis status '
-TABLE_GET_FILE_ANALYSIS_REPORT = 'File analysis report '
-TABLE_COLLECT_FILE = 'Collect forensic file '
-TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = 'The download information for collected forensic file '
-TABLE_SUBMIT_FILE_TO_SANDBOX = 'Submit file to sandbox '
-TABLE_ADD_NOTE = 'Add note to workbench alert '
-TABLE_UPDATE_STATUS = 'Update workbench alert status'
+TABLE_ADD_TO_BLOCKLIST = "Add to block list "
+TABLE_REMOVE_FROM_BLOCKLIST = "Remove from block list "
+TABLE_QUARANTINE_EMAIL_MESSAGE = "Quarantine email message "
+TABLE_DELETE_EMAIL_MESSAGE = "Delete email message "
+TABLE_ISOLATE_ENDPOINT_MESSAGE = "Isolate endpoint connection "
+TABLE_RESTORE_ENDPOINT_MESSAGE = "Restore endpoint connection "
+TABLE_TERMINATE_PROCESS = "Terminate process "
+TABLE_ADD_EXCEPTION_LIST = "Add object to exception list "
+TABLE_DELETE_EXCEPTION_LIST = "Delete object from exception list "
+TABLE_ADD_SUSPICIOUS_LIST = "Add object to suspicious list "
+TABLE_ENDPOINT_INFO = "Endpoint info "
+TABLE_DELETE_SUSPICIOUS_LIST = "Delete object from suspicious list "
+TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
+TABLE_GET_FILE_ANALYSIS_REPORT = "File analysis report "
+TABLE_COLLECT_FILE = "Collect forensic file "
+TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = (
+    "The download information for collected forensic file "
+)
+TABLE_SUBMIT_FILE_TO_SANDBOX = "Submit file to sandbox "
+TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX = "Submit file entry to sandbox "
+TABLE_SANDBOX_SUBMISSION_POLLING = "Sandbox submission polling status "
+TABLE_ADD_NOTE = "Add note to workbench alert "
+TABLE_UPDATE_STATUS = "Update workbench alert status"
 # COMMAND NAMES
-ADD_BLOCKLIST_COMMAND = 'trendmicro-visionone-add-to-block-list'
-REMOVE_BLOCKLIST_COMMAND = 'trendmicro-visionone-remove-from-block-list'
-QUARANTINE_EMAIL_COMMAND = 'trendmicro-visionone-quarantine-email-message'
-DELETE_EMAIL_COMMAND = 'trendmicro-visionone-delete-email-message'
-ISOLATE_ENDPOINT_COMMAND = 'trendmicro-visionone-isolate-endpoint'
-RESTORE_ENDPOINT_COMMAND = 'trendmicro-visionone-restore-endpoint-connection'
-TERMINATE_PROCESS_COMMAND = 'trendmicro-visionone-terminate-process'
-ADD_EXCEPTION_LIST_COMMAND = 'trendmicro-visionone-add-objects-to-exception-list'
-DELETE_EXCEPTION_LIST_COMMAND = 'trendmicro-visionone-delete-objects-from-exception-list'
-ADD_SUSPICIOUS_LIST_COMMAND = 'trendmicro-visionone-add-objects-to-suspicious-list'
-DELETE_SUSPICIOUS_LIST_COMMAND = 'trendmicro-visionone-delete-objects-from-suspicious-list'
-GET_FILE_ANALYSIS_STATUS = 'trendmicro-visionone-get-file-analysis-status'
-GET_FILE_ANALYSIS_REPORT = 'trendmicro-visionone-get-file-analysis-report'
-COLLECT_FILE = 'trendmicro-visionone-collect-forensic-file'
-DOWNLOAD_COLLECTED_FILE = 'trendmicro-visionone-download-information-for-collected-forensic-file'
-FILE_TO_SANDBOX = 'trendmicro-visionone-submit-file-to-sandbox'
-CHECK_TASK_STATUS = 'trendmicro-visionone-check-task-status'
-GET_ENDPOINT_INFO_COMMAND = 'trendmicro-visionone-get-endpoint-info'
-UPDATE_STATUS = 'trendmicro-visionone-update-status'
-ADD_NOTE = 'trendmicro-visionone-add-note'
-FETCH_INCIDENTS = 'fetch-incidents'
+ADD_BLOCKLIST_COMMAND = "trendmicro-visionone-add-to-block-list"
+REMOVE_BLOCKLIST_COMMAND = "trendmicro-visionone-remove-from-block-list"
+QUARANTINE_EMAIL_COMMAND = "trendmicro-visionone-quarantine-email-message"
+DELETE_EMAIL_COMMAND = "trendmicro-visionone-delete-email-message"
+ISOLATE_ENDPOINT_COMMAND = "trendmicro-visionone-isolate-endpoint"
+RESTORE_ENDPOINT_COMMAND = "trendmicro-visionone-restore-endpoint-connection"
+TERMINATE_PROCESS_COMMAND = "trendmicro-visionone-terminate-process"
+ADD_EXCEPTION_LIST_COMMAND = "trendmicro-visionone-add-objects-to-exception-list"
+DELETE_EXCEPTION_LIST_COMMAND = (
+    "trendmicro-visionone-delete-objects-from-exception-list"
+)
+ADD_SUSPICIOUS_LIST_COMMAND = "trendmicro-visionone-add-objects-to-suspicious-list"
+DELETE_SUSPICIOUS_LIST_COMMAND = (
+    "trendmicro-visionone-delete-objects-from-suspicious-list"
+)
+GET_FILE_ANALYSIS_STATUS = "trendmicro-visionone-get-file-analysis-status"
+GET_FILE_ANALYSIS_REPORT = "trendmicro-visionone-get-file-analysis-report"
+COLLECT_FILE = "trendmicro-visionone-collect-forensic-file"
+DOWNLOAD_COLLECTED_FILE = (
+    "trendmicro-visionone-download-information-for-collected-forensic-file"
+)
+FILE_TO_SANDBOX = "trendmicro-visionone-submit-file-to-sandbox"
+FILE_ENTRY_TO_SANDBOX = "trendmicro-visionone-submit-file-entry-to-sandbox"
+SANDBOX_SUBMISSION_POLLING = "trendmicro-visionone-run-sandbox-submission-polling"
+CHECK_TASK_STATUS = "trendmicro-visionone-check-task-status"
+GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
+UPDATE_STATUS = "trendmicro-visionone-update-status"
+ADD_NOTE = "trendmicro-visionone-add-note"
+FETCH_INCIDENTS = "fetch-incidents"
 
 table_name = {
     ADD_BLOCKLIST_COMMAND: TABLE_ADD_TO_BLOCKLIST,
@@ -156,10 +174,10 @@ table_name = {
     DELETE_EXCEPTION_LIST_COMMAND: TABLE_DELETE_EXCEPTION_LIST,
     ADD_SUSPICIOUS_LIST_COMMAND: TABLE_ADD_SUSPICIOUS_LIST,
     GET_ENDPOINT_INFO_COMMAND: TABLE_ENDPOINT_INFO,
-    DELETE_SUSPICIOUS_LIST_COMMAND: TABLE_DELETE_SUSPICIOUS_LIST
+    DELETE_SUSPICIOUS_LIST_COMMAND: TABLE_DELETE_SUSPICIOUS_LIST,
 }
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def check_datetime_aware(d):
@@ -187,7 +205,9 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
-    def http_request(self, method: str, url_suffix: str, json_data=None, params=None, data=None) -> Any:
+    def http_request(
+        self, method: str, url_suffix: str, json_data=None, params=None, data=None
+    ) -> Any:
         """
         Override http_request method from BaseClient class. This method will print an error based on status code
         and exceptions.
@@ -206,20 +226,32 @@ class Client(BaseClient):
         """
         header = {
             "Authorization": "Bearer {token}".format(token=self.api_key),
-            "Content-Type": f'{CONTENT_TYPE_JSON};charset=utf-8',
+            "Content-Type": f"{CONTENT_TYPE_JSON};charset=utf-8",
             "User-Agent": USER_AGENT,
         }
         try:
-            response = self._http_request(method=method, full_url=f'{self.base_url}{url_suffix}', retries=3, json_data=json_data,
-                                          params=params, headers=header, resp_type='response',
-                                          ok_codes=(200, 201), data=data)
+            response = self._http_request(
+                method=method,
+                full_url=f"{self.base_url}{url_suffix}",
+                retries=3,
+                json_data=json_data,
+                params=params,
+                headers=header,
+                resp_type="response",
+                ok_codes=(200, 201),
+                data=data,
+            )
         except DemistoException as error:
             demisto.error(error.message)
             return_error(error.message)
         if response.ok:
-            demisto.info(SUCCESS_RESPONSE.format(url=f'{self.base_url}{url_suffix}', status=response.status_code))
+            demisto.info(
+                SUCCESS_RESPONSE.format(
+                    url=f"{self.base_url}{url_suffix}", status=response.status_code
+                )
+            )
             self.status = response.status_code
-            content_type = response.headers.get('Content-Type', '')
+            content_type = response.headers.get("Content-Type", "")
             if content_type.__contains__(CONTENT_TYPE_JSON):
                 # Handle empty response
                 if response.text == EMPTY_STRING:
@@ -242,46 +274,114 @@ class Client(BaseClient):
         response = self.http_request(GET, TASK_DETAIL_ENDPOINT, params=params)
         message = {
             "actionId": action_id,
-            "taskStatus": response.get("data").get("taskStatus")
+            "taskStatus": response.get("data").get("taskStatus"),
         }
         return CommandResults(
-            readable_output=tableToMarkdown("Status of task ", message, removeNull=True),
-            outputs_prefix=(
-                "VisionOne.Task_Status"
+            readable_output=tableToMarkdown(
+                "Status of task ", message, removeNull=True
             ),
+            outputs_prefix=("VisionOne.Task_Status"),
             outputs_key_field="actionId",
-            outputs=message)
+            outputs=message,
+        )
+
+    def sandbox_submission_polling(self, data: Dict[str, Any]) -> Any:
+        """
+        Check the status of sandbox submission
+        :type data: ``dict``
+        :param method: Response data received from sandbox.
+        :return: Sandbox submission response data.
+        :rtype: ``Any``
+        """
+        task_id = data.get(TASKID)
+        result = self.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
+        risk = result.get("data", {}).get("analysisSummary", {}).get("riskLevel", "")
+        risk_score = self.incident_severity_to_dbot_score(risk)
+        sha256 = result.get("data", {}).get("digest", {}).get("sha256")
+        md5 = result.get("data", {}).get("digest", {}).get("md5")
+        sha1 = result.get("data", {}).get("digest", {}).get("sha1")
+        reliability = demisto.params().get("integrationReliability")
+        dbot_score = Common.DBotScore(
+            indicator=sha256,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=VENDOR_NAME,
+            score=risk_score,
+            reliability=reliability,
+        )
+        file_entry = Common.File(
+            sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score
+        )
+        message = {
+            "message": result.get("message", ""),
+            "code": result.get("code", ""),
+            "task_id": result.get("data", {}).get("taskId", ""),
+            "taskStatus": result.get("data", {}).get("taskStatus", ""),
+            "digest": result.get("data", {}).get("digest", ""),
+            "analysis_completion_time": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("analysisCompletionTime", ""),
+            "risk_level": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("riskLevel", ""),
+            "description": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("description", ""),
+            "detection_name_list": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("detectionNameList", ""),
+            "threat_type_list": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("threatTypeList", ""),
+            "file_type": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("trueFileType", ""),
+            "report_id": result.get("data", {}).get("reportId", ""),
+            "DBotScore": {
+                "Score": dbot_score.score,
+                "Vendor": dbot_score.integration_name,
+                "Reliability": dbot_score.reliability,
+            },
+        }
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                TABLE_SANDBOX_SUBMISSION_POLLING, message, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Sandbox_Submission_Polling",
+            outputs_key_field="report_id",
+            outputs=message,
+            indicator=file_entry,
+        )
 
     def lookup_type(self, param: Any) -> str:
 
         # Regex expression for validating IPv4
-        regex = "(([0-9]|[1-9][0-9]|1[0-9][0-9]|"\
-                "2[0-4][0-9]|25[0-5])\\.){3}"\
-                "([0-9]|[1-9][0-9]|1[0-9][0-9]|"\
-                "2[0-4][0-9]|25[0-5])"
+        regex = (
+            "(([0-9]|[1-9][0-9]|1[0-9][0-9]|"
+            "2[0-4][0-9]|25[0-5])\\.){3}"
+            "([0-9]|[1-9][0-9]|1[0-9][0-9]|"
+            "2[0-4][0-9]|25[0-5])"
+        )
 
         # Regex expression for validating IPv6
-        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}"\
-                 "([0-9a-fA-F]){1,4}"
+        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}" "([0-9a-fA-F]){1,4}"
 
         # Regex expression for validating mac
-        regex2 = "([0-9A-Fa-f]{2}[:-]){5}"\
-                 "([0-9A-Fa-f]{2})"
+        regex2 = "([0-9A-Fa-f]{2}[:-]){5}" "([0-9A-Fa-f]{2})"
 
         p = re.compile(regex)
         p1 = re.compile(regex1)
         p2 = re.compile(regex2)
 
         # Checking if it is a valid IPv4 addresses
-        if (re.search(p, param)):
+        if re.search(p, param):
             return "ip"
 
         # Checking if it is a valid IPv6 addresses
-        elif (re.search(p1, param)):
+        elif re.search(p1, param):
             return "ipv6"
 
         # Checking if it is a valid IPv6 addresses
-        elif (re.search(p2, param)):
+        elif re.search(p2, param):
             return "macaddr"
 
         # Otherwise use hostname type
@@ -297,15 +397,12 @@ class Client(BaseClient):
         :return: value of computer id.
         :rtype: ``str``
         """
-        body = {
-            CRITERIA: {
-                FIELD: field,
-                VALUE: value
-            }
-        }
-        response = self.http_request(POST, GET_COMPUTER_ID_ENDPOINT, data=json.dumps(body))
+        body = {CRITERIA: {FIELD: field, VALUE: value}}
+        response = self.http_request(
+            POST, GET_COMPUTER_ID_ENDPOINT, data=json.dumps(body)
+        )
 
-        if response["status"] == 'FAIL':
+        if response["status"] == "FAIL":
             return_error("kindly provide valid field value")
         computer_id = response.get("result").get("computerId")
         return computer_id
@@ -340,25 +437,50 @@ class Client(BaseClient):
             end = end.astimezone()
         start = start.astimezone(timezone.utc)
         end = end.astimezone(timezone.utc)
-        start = start.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
-        end = end.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        start = start.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+        end = end.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
-        params = dict([('startTime', start),
-                       ('endTime', end),
-                       ('sortBy', 'createdTime')]
-                      + ([('offset', offset)] if offset is not None else [])
-                      + ([('limit', size)] if size is not None else []))
+        params = dict(
+            [("startTime", start), ("endTime", end), ("sortBy", "createdTime")]
+            + ([("offset", offset)] if offset is not None else [])
+            + ([("limit", size)] if size is not None else [])
+        )
 
-        response = self.http_request(GET, WORKBENCH_HISTORIES, params=params)['data']['workbenchRecords']
+        response = self.http_request(GET, WORKBENCH_HISTORIES, params=params)["data"][
+            "workbenchRecords"
+        ]
         return response
+
+    def incident_severity_to_dbot_score(self, severity: str):
+        """
+        Converts an priority string to DBot score representation
+            alert severity. Can be one of:
+            Unknown -> 0
+            No Risk -> 1
+            Low or Medium -> 2
+            Critical or High -> 3
+        Args:
+            severity: String representation of severity.
+        Returns:
+            Dbot representation of severity
+        """
+        if not isinstance(severity, str):
+            return 0
+
+        if severity == "noRisk":
+            return 1
+        if severity in ["low", "medium"]:
+            return 2
+        if severity in ["high", "critical"]:
+            return 3
+        return 0
 
 
 def run_polling_command(
-    args: Dict[str, Any],
-    cmd: str, client: Client
+    args: Dict[str, Any], cmd: str, client: Client
 ) -> Union[str, CommandResults]:
     """
-    Performs polling interval to check status of task.
+    Performs polling interval to check status of task or sandbox submission result.
     :type args: ``args``
     :param client: argument required for polling.
 
@@ -369,32 +491,40 @@ def run_polling_command(
     :param client: client object to use http_request.
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = int(args.get('interval_in_seconds', 30))
-    command_results = client.status_check(args)
-    action_id = args.get("actionId")
-    if command_results.outputs.get(
-        "taskStatus") not in (
-            "success", "failed", "timeout", "skipped"):
+    interval_in_secs = int(args.get("interval_in_seconds", 30))
+    action_id = args.get(ACTION_ID)
+    task_id = args.get(TASKID)
+    if cmd == CHECK_TASK_STATUS:
+        command_results = client.status_check(args)
+        value = ACTION_ID
+    else:
+        command_results = client.sandbox_submission_polling(args)
+        value = TASKID
+    if command_results.outputs.get("taskStatus") not in (
+        "success",
+        "failed",
+        "timeout",
+        "skipped",
+        "finished",
+    ):
         # schedule next poll
         polling_args = {
-            'actionId': action_id,
-            'interval_in_seconds': interval_in_secs,
-            'polling': True,
-            **args
+            f"{value}": action_id if action_id else task_id,
+            "interval_in_seconds": interval_in_secs,
+            "polling": True,
+            **args,
         }
         scheduled_command = ScheduledCommand(
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
-            timeout_in_seconds=1500)  # The timeout interval set for 25 minutes.
+            timeout_in_seconds=1500,
+        )  # The timeout interval set for 25 minutes.
         command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
 
 
-def get_task_status(
-    args: Dict[str, Any],
-    client: Client
-) -> Union[str, CommandResults]:
+def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandResults]:
     """
     check status of task.
 
@@ -407,14 +537,29 @@ def get_task_status(
     return run_polling_command(args, CHECK_TASK_STATUS, client)
 
 
+def get_sandbox_submission_status(
+    args: Dict[str, Any], client: Client
+) -> Union[str, CommandResults]:
+    """
+    call polling command to check status of sandbox submission.
+
+    :type args: ``args``
+    :param client: argument required for polling.
+
+    :type client: ``Client``
+    :param client: client object to use http_request.
+    """
+    return run_polling_command(args, SANDBOX_SUBMISSION_POLLING, client)
+
+
 def test_module(client: Client) -> Any:
     """
     Performs basic get request to get item samples.
     :type client: ``Client``
     :param client: client object to use http_request.
     """
-    client.http_request('GET', '/v2.0/xdr/threatintel/suspiciousObjects/exceptions')
-    return 'ok'
+    client.http_request("GET", "/v2.0/xdr/threatintel/suspiciousObjects/exceptions")
+    return "ok"
 
 
 def get_endpoint_info(
@@ -438,9 +583,7 @@ def get_endpoint_info(
     field = client.lookup_type(value)
 
     computer_id = client.get_computer_id(field, value)
-    body = {
-        'computerId': computer_id
-    }
+    body = {"computerId": computer_id}
     response = client.http_request(
         POST, GET_ENDPOINT_INFO_ENDPOINT, data=json.dumps(body)
     )
@@ -452,23 +595,13 @@ def get_endpoint_info(
         "logonAccount": response.get("result", {})
         .get("logonAccount", "")
         .get("value", ""),
-        "hostname": response.get("result", {})
-        .get("hostname", "")
-        .get("value", ""),
-        "macAddr": response.get("result", {})
-        .get("macAddr", "")
-        .get("value", ""),
-        "ip": response.get("result", {})
-        .get("ip", "")
-        .get("value", ""),
-        "osName": response.get("result", {})
-        .get("osName", ""),
-        "osVersion": response.get("result", {})
-        .get("osVersion", ""),
-        "osDescription": response.get("result", {})
-        .get("osDescription", ""),
-        "productCode": response.get("result", {})
-        .get("productCode", ""),
+        "hostname": response.get("result", {}).get("hostname", "").get("value", ""),
+        "macAddr": response.get("result", {}).get("macAddr", "").get("value", ""),
+        "ip": response.get("result", {}).get("ip", "").get("value", ""),
+        "osName": response.get("result", {}).get("osName", ""),
+        "osVersion": response.get("result", {}).get("osVersion", ""),
+        "osDescription": response.get("result", {}).get("osDescription", ""),
+        "productCode": response.get("result", {}).get("productCode", ""),
     }
 
     results = CommandResults(
@@ -482,9 +615,7 @@ def get_endpoint_info(
     return results
 
 
-def add_delete_block_list_mapping(
-    data: Dict[str, Any]
-) -> Dict[str, Any]:
+def add_delete_block_list_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Mapping add to block list response data.
 
@@ -529,10 +660,10 @@ def add_or_remove_from_block_list(
     if not description:
         description = EMPTY_STRING
     body = {
-        'valueType': value_type,
-        'targetValue': target_value,
-        'productId': product_id,
-        'description': description,
+        "valueType": value_type,
+        "targetValue": target_value,
+        "productId": product_id,
+        "description": description,
     }
     if command == ADD_BLOCKLIST_COMMAND:
         response = client.http_request(
@@ -545,7 +676,9 @@ def add_or_remove_from_block_list(
 
     mapping_data = add_delete_block_list_mapping(response)
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], mapping_data, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command], mapping_data, removeNull=True
+        ),
         outputs_prefix="VisionOne.BlockList",
         outputs_key_field="actionId",
         outputs=mapping_data,
@@ -559,13 +692,13 @@ def fetch_incidents(client: Client):
     the parameters of both 'offset' and 'size'.
     """
     offset = 0
-    size = demisto.params().get('max_fetch')
+    size = demisto.params().get("max_fetch")
     end = datetime.now(timezone.utc)
-    days = int(demisto.params().get('first_fetch'))
+    days = int(demisto.params().get("first_fetch"))
 
     last_run = demisto.getLastRun()
-    if last_run and 'start_time' in last_run:
-        start = datetime.fromisoformat(last_run.get('start_time'))
+    if last_run and "start_time" in last_run:
+        start = datetime.fromisoformat(last_run.get("start_time"))
     else:
         start = end + timedelta(days=-days)
 
@@ -576,18 +709,17 @@ def fetch_incidents(client: Client):
     if alerts:
         for record in alerts:
             incident = {
-                'name': record['workbenchName'],
-                'occurred': record['createdTime'],
-                'rawJSON': json.dumps(record)
+                "name": record["workbenchName"],
+                "occurred": record["createdTime"],
+                "severity": client.incident_severity_to_dbot_score(record["severity"]),
+                "rawJSON": json.dumps(record),
             }
             incidents.append(incident)
-            last_event = datetime.strptime(record['createdTime'], "%Y-%m-%dT%H:%M:%SZ")
+            last_event = datetime.strptime(record["createdTime"], "%Y-%m-%dT%H:%M:%SZ")
 
         next_search = last_event + timedelta(0, 1)
 
-        demisto.setLastRun({
-            'start_time': next_search.isoformat()
-        })
+        demisto.setLastRun({"start_time": next_search.isoformat()})
 
     if incidents:
         demisto.incidents(incidents)
@@ -597,9 +729,7 @@ def fetch_incidents(client: Client):
     return incidents
 
 
-def quarantine_delete_email_mapping(
-    data: Dict[str, Any]
-) -> Dict[str, Any]:
+def quarantine_delete_email_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Mapping quarantine email message response data.
 
@@ -643,11 +773,11 @@ def quarantine_or_delete_email_message(
     if not description:
         description = EMPTY_STRING
     body = {
-        'messageId': message_id,
-        'mailBox': mailbox,
-        'messageDeliveryTime': message_delivery_time,
-        'productId': product_id,
-        'description': description
+        "messageId": message_id,
+        "mailBox": mailbox,
+        "messageDeliveryTime": message_delivery_time,
+        "productId": product_id,
+        "description": description,
     }
     if command == QUARANTINE_EMAIL_COMMAND:
         response = client.http_request(
@@ -661,7 +791,9 @@ def quarantine_or_delete_email_message(
 
     mapping_data = quarantine_delete_email_mapping(response)
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], mapping_data, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command], mapping_data, removeNull=True
+        ),
         outputs_prefix="VisionOne.Email",
         outputs_key_field="actionId",
         outputs=mapping_data,
@@ -669,9 +801,7 @@ def quarantine_or_delete_email_message(
     return results
 
 
-def isolate_restore_endpoint_mapping(
-    data: Dict[str, Any]
-) -> Dict[str, Any]:
+def isolate_restore_endpoint_mapping(data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Mapping isolate endpoint and restore endpoint response data.
 
@@ -715,9 +845,9 @@ def isolate_or_restore_connection(
         description = EMPTY_STRING
     computer_id = client.get_computer_id(field, value)
     body = {
-        'computerId': computer_id,
-        'productId': product_id,
-        'description': description
+        "computerId": computer_id,
+        "productId": product_id,
+        "description": description,
     }
     if command == ISOLATE_ENDPOINT_COMMAND:
         response = client.http_request(
@@ -729,11 +859,12 @@ def isolate_or_restore_connection(
             POST, RESTORE_CONNECTION_ENDPOINT, data=json.dumps(body)
         )
 
-    mapping_data = isolate_restore_endpoint_mapping(
-        response)
+    mapping_data = isolate_restore_endpoint_mapping(response)
 
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], mapping_data, removeNull=True),
+        readable_output=tableToMarkdown(
+            table_name[command], mapping_data, removeNull=True
+        ),
         outputs_prefix="VisionOne.Endpoint_Connection",
         outputs_key_field="actionId",
         outputs=mapping_data,
@@ -770,11 +901,11 @@ def terminate_process(
     if filename:
         file_list.append(filename)
     body = {
-        'computerId': computer_id,
-        'fileSha1': file_sha1,
-        'productId': product_id,
-        'description': description,
-        'filename': file_list
+        "computerId": computer_id,
+        "fileSha1": file_sha1,
+        "productId": product_id,
+        "description": description,
+        "filename": file_list,
     }
     response = client.http_request(
         POST, TERMINATE_PROCESS_ENDPOINT, data=json.dumps(body)
@@ -784,7 +915,9 @@ def terminate_process(
     task_status = response.get("taskStatus", {})
     message = {"actionId": action_id, "taskStatus": task_status}
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_TERMINATE_PROCESS, message, removeNull=True),
+        readable_output=tableToMarkdown(
+            TABLE_TERMINATE_PROCESS, message, removeNull=True
+        ),
         outputs_prefix="VisionOne.Terminate_Process",
         outputs_key_field="actionId",
         outputs=message,
@@ -815,15 +948,13 @@ def add_or_delete_from_exception_list(
     """
     types = args.get(TYPE)
     value = args.get(VALUE)
-    body = {DATA: [{'type': types, 'value': value}]}
+    body = {DATA: [{"type": types, "value": value}]}
     if command == ADD_EXCEPTION_LIST_COMMAND:
         description = args.get(DESCRIPTION)
         if not description:
             description = EMPTY_STRING
         body[DATA][0][DESCRIPTION] = description
-        client.http_request(
-            POST, ADD_OBJECT_TO_EXCEPTION_LIST, data=json.dumps(body)
-        )
+        client.http_request(POST, ADD_OBJECT_TO_EXCEPTION_LIST, data=json.dumps(body))
 
     elif command == DELETE_EXCEPTION_LIST_COMMAND:
         client.http_request(
@@ -879,18 +1010,16 @@ def add_to_suspicious_list(
     body = {
         DATA: [
             {
-                'type': types,
-                'value': value,
-                'description': description,
-                'scanAction': scan_action,
-                'riskLevel': risk_level,
-                'expiredDay': expiry
+                "type": types,
+                "value": value,
+                "description": description,
+                "scanAction": scan_action,
+                "riskLevel": risk_level,
+                "expiredDay": expiry,
             }
         ]
     }
-    client.http_request(
-        POST, ADD_OBJECT_TO_SUSPICIOUS_LIST, data=json.dumps(body)
-    )
+    client.http_request(POST, ADD_OBJECT_TO_SUSPICIOUS_LIST, data=json.dumps(body))
     suspicious_list = client.suspicious_list_count()
 
     message = {
@@ -927,10 +1056,8 @@ def delete_from_suspicious_list(
     """
     types = args.get(TYPE)
     value = args.get(VALUE)
-    body = {DATA: [{'type': types, 'value': value}]}
-    client.http_request(
-        POST, DELETE_OBJECT_FROM_SUSPICIOUS_LIST, data=json.dumps(body)
-    )
+    body = {DATA: [{"type": types, "value": value}]}
+    client.http_request(POST, DELETE_OBJECT_FROM_SUSPICIOUS_LIST, data=json.dumps(body))
 
     exception_list = client.suspicious_list_count()
 
@@ -968,6 +1095,21 @@ def get_file_analysis_status(
     """
     task_id = args.get(TASKID)
     response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
+    risk = response.get("data", {}).get("analysisSummary", {}).get("riskLevel", "")
+    risk_score = client.incident_severity_to_dbot_score(risk)
+    sha256 = response.get("data", {}).get("digest", {}).get("sha256")
+    md5 = response.get("data", {}).get("digest", {}).get("md5")
+    sha1 = response.get("data", {}).get("digest", {}).get("sha1")
+    reliability = demisto.params().get("integrationReliability")
+    dbot_score = Common.DBotScore(
+        indicator=sha256,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=VENDOR_NAME,
+        score=risk_score,
+        reliability=reliability,
+    )
+
+    file_entry = Common.File(sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score)
 
     message = {
         "message": response.get("message", ""),
@@ -994,18 +1136,27 @@ def get_file_analysis_status(
         .get("analysisSummary", "")
         .get("trueFileType", ""),
         "report_id": response.get("data", {}).get("reportId", ""),
+        "DBotScore": {
+            "Score": dbot_score.score,
+            "Vendor": dbot_score.integration_name,
+            "Reliability": dbot_score.reliability,
+        },
     }
     results = CommandResults(
         readable_output=tableToMarkdown(
-            TABLE_GET_FILE_ANALYSIS_STATUS, message, removeNull=True),
+            TABLE_GET_FILE_ANALYSIS_STATUS, message, removeNull=True
+        ),
         outputs_prefix="VisionOne.File_Analysis_Status",
         outputs_key_field="message",
         outputs=message,
+        indicator=file_entry,
     )
     return results
 
 
-def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_file_analysis_report(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Get the report of file based on report id and sends the result to demist war room
     :type client: ``Client``
@@ -1017,42 +1168,50 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
     """
     report_id = args.get(REPORT_ID)
     types = args.get(TYPE)
-    if types not in ('vaReport', 'investigationPackage', 'suspiciousObject'):
+    if types not in ("vaReport", "investigationPackage", "suspiciousObject"):
         return_error(FILE_TYPE_ERROR)
-    params = {
-        TYPE: types
-    }
-    response = client.http_request(GET, GET_FILE_REPORT.format(reportId=report_id), params=params)
+    params = {TYPE: types}
+    response = client.http_request(
+        GET, GET_FILE_REPORT.format(reportId=report_id), params=params
+    )
     if isinstance(response, dict):
 
         message = {
-            'message': response.get("message", ""),
-            'code': response.get("code", ""),
-            'data': []
+            "message": response.get("message", ""),
+            "code": response.get("code", ""),
+            "data": [],
         }
-        if len(response.get('data', [])) > 0:
-            for data in response.get('data', {}):
+        if len(response.get("data", [])) > 0:
+            for data in response.get("data", {}):
                 data_value = {
-                    'type': data.get("type", ""),
-                    'value': data.get("value", ""),
-                    'risk_level': data.get("riskLevel", ""),
-                    'analysis_completion_time': data.get("analysisCompletionTime", ""),
-                    'expired_time': data.get("expiredTime", ""),
-                    'root_file_sha1': data.get("rootFileSha1", "")
+                    "type": data.get("type", ""),
+                    "value": data.get("value", ""),
+                    "risk_level": data.get("riskLevel", ""),
+                    "analysis_completion_time": data.get("analysisCompletionTime", ""),
+                    "expired_time": data.get("expiredTime", ""),
+                    "root_file_sha1": data.get("rootFileSha1", ""),
                 }
-                message.get('data', {}).append(data_value)
+                message.get("data", {}).append(data_value)
         results = CommandResults(
-            readable_output=tableToMarkdown(TABLE_GET_FILE_ANALYSIS_REPORT, message, removeNull=True),
-            outputs_prefix='VisionOne.File_Analysis_Report',
-            outputs_key_field='message',
-            outputs=message
+            readable_output=tableToMarkdown(
+                TABLE_GET_FILE_ANALYSIS_REPORT, message, removeNull=True
+            ),
+            outputs_prefix="VisionOne.File_Analysis_Report",
+            outputs_key_field="message",
+            outputs=message,
         )
-    elif response.headers.get('Content-Type', '') == 'binary/octet-stream':
+    elif response.headers.get("Content-Type", "") == "binary/octet-stream":
         data = response.content
-        if types == 'vaReport':
-            results = fileResult('Sandbox_Analysis_Report.pdf', data, file_type=EntryType.ENTRY_INFO_FILE)
+        if types == "vaReport":
+            results = fileResult(
+                "Sandbox_Analysis_Report.pdf", data, file_type=EntryType.ENTRY_INFO_FILE
+            )
         else:
-            results = fileResult('Sandbox_Investigation_Package.zip', data, file_type=EntryType.ENTRY_INFO_FILE)
+            results = fileResult(
+                "Sandbox_Investigation_Package.zip",
+                data,
+                file_type=EntryType.ENTRY_INFO_FILE,
+            )
     return results
 
 
@@ -1072,34 +1231,33 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     description = args.get(DESCRIPTION)
     if not description:
         description = EMPTY_STRING
-    computer_id = client.get_computer_id(field, value)    # type: ignore
+    computer_id = client.get_computer_id(field, value)  # type: ignore
     file_path = args.get(FILE_PATH)
     os = args.get(OS_TYPE)
     body = {
-        'description': description,
-        'productId': product_id,
-        'computerId': computer_id,
-        'filePath': file_path,
-        'os': os
+        "description": description,
+        "productId": product_id,
+        "computerId": computer_id,
+        "filePath": file_path,
+        "os": os,
     }
     response = client.http_request(POST, COLLECT_FORENSIC_FILE, data=json.dumps(body))
 
     task_status = response.get("taskStatus", {})
-    action_id = response.get('actionId', {})
-    message = {
-        'actionId': action_id,
-        'taskStatus': task_status
-    }
+    action_id = response.get("actionId", {})
+    message = {"actionId": action_id, "taskStatus": task_status}
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_COLLECT_FILE, message, removeNull=True),
-        outputs_prefix='VisionOne.Collect_Forensic_File',
-        outputs_key_field='actionId',
-        outputs=message
+        outputs_prefix="VisionOne.Collect_Forensic_File",
+        outputs_key_field="actionId",
+        outputs=message,
     )
     return results
 
 
-def download_information_collected_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def download_information_collected_file(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Gets the download information for collected forensic file and sends the result to demist war room
     :type client: ``Client``
@@ -1110,29 +1268,35 @@ def download_information_collected_file(client: Client, args: Dict[str, Any]) ->
     :rtype: ``dict`
     """
     action_id = args.get(ACTION_ID)
-    params = {'actionId': action_id}
-    response = client.http_request(GET, DOWNLOAD_INFORMATION_COLLECTED_FILE, params=params)
+    params = {"actionId": action_id}
+    response = client.http_request(
+        GET, DOWNLOAD_INFORMATION_COLLECTED_FILE, params=params
+    )
 
-    file_url = response.get('data', '').get('url', '')
-    expires = response.get('data', '').get('expires', '')
-    password = response.get('data', '').get('password', '')
-    filename = response.get('data', '').get('filename', '')
+    file_url = response.get("data", "").get("url", "")
+    expires = response.get("data", "").get("expires", "")
+    password = response.get("data", "").get("password", "")
+    filename = response.get("data", "").get("filename", "")
     message = {
-        'url': file_url,
-        'expires': expires,
-        'password': password,
-        'filename': filename
+        "url": file_url,
+        "expires": expires,
+        "password": password,
+        "filename": filename,
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION, message, removeNull=True),
-        outputs_prefix='VisionOne.Download_Information_For_Collected_Forensic_File',
-        outputs_key_field='url',
-        outputs=message
+        readable_output=tableToMarkdown(
+            TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION, message, removeNull=True
+        ),
+        outputs_prefix="VisionOne.Download_Information_For_Collected_Forensic_File",
+        outputs_key_field="url",
+        outputs=message,
     )
     return results
 
 
-def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def submit_file_to_sandbox(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     submit file to sandbox and sends the result to demist war room
     :type client: ``Client``
@@ -1148,16 +1312,27 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
     file_name = args.get(FILE_NAME)
     document_pass = args.get(DOCUMENT_PASSWORD)
     if document_pass:
-        data['documentPassword'] = base64.b64encode(document_pass.encode(ASCII)).decode(ASCII)
+        data["documentPassword"] = base64.b64encode(document_pass.encode(ASCII)).decode(
+            ASCII
+        )
     archive_pass = args.get(ARCHIVE_PASSWORD)
     if archive_pass:
-        data['archivePassword'] = base64.b64encode(archive_pass.encode(ASCII)).decode(ASCII)
-    headers = {AUTHORIZATION: f'{BEARER}{client.api_key}'}
+        data["archivePassword"] = base64.b64encode(archive_pass.encode(ASCII)).decode(
+            ASCII
+        )
+    headers = {AUTHORIZATION: f"{BEARER}{client.api_key}"}
     try:
         file_content = requests.get(file_url, allow_redirects=True)  # type: ignore
-        files = {'file': (file_name, file_content.content, 'application/x-zip-compressed')}
-        result = requests.post(f'{client.base_url}{SUBMIT_FILE_TO_SANDBOX}', params=params,
-                               headers=headers, data=data, files=files)
+        files = {
+            "file": (file_name, file_content.content, "application/x-zip-compressed")
+        }
+        result = requests.post(
+            f"{client.base_url}{SUBMIT_FILE_TO_SANDBOX}",
+            params=params,
+            headers=headers,
+            data=data,
+            files=files,
+        )
         result.raise_for_status()
     except HTTPError as http_err:
         demisto.error(http_err)
@@ -1169,16 +1344,73 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
         response = result.json()
 
     message = {
-        'message': response.get("message", ""),
-        'code': response.get("code", ""),
-        'task_id': response.get("data", "").get("taskId", ""),
-        'digest': response.get("data", "").get("digest", ""),
+        "message": response.get("message", ""),
+        "code": response.get("code", ""),
+        "task_id": response.get("data", "").get("taskId", ""),
+        "digest": response.get("data", "").get("digest", ""),
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_SUBMIT_FILE_TO_SANDBOX, message, removeNull=True),
-        outputs_prefix='VisionOne.Submit_File_to_Sandbox',
-        outputs_key_field='message',
-        outputs=message
+        readable_output=tableToMarkdown(
+            TABLE_SUBMIT_FILE_TO_SANDBOX, message, removeNull=True
+        ),
+        outputs_prefix="VisionOne.Submit_File_to_Sandbox",
+        outputs_key_field="message",
+        outputs=message,
+    )
+    return results
+
+
+def submit_file_entry_to_sandbox(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    entry = args.get(ENTRY_ID)
+    file_ = demisto.getFilePath(entry)
+    file_name = file_.get("name")
+    file_path = file_.get("path")
+    archive_pass = args.get(ARCHIVE_PASSWORD)
+    document_pass = args.get(DOCUMENT_PASSWORD)
+    query_params: Dict[Any, Any] = {}
+    headers = {AUTHORIZATION: f"{BEARER} {client.api_key}"}
+    with open(file_path, "rb") as f:
+        contents = f.read()
+    data = {}
+    if document_pass:
+        data["documentPassword"] = base64.b64encode(document_pass.encode(ASCII)).decode(
+            ASCII
+        )
+    if archive_pass:
+        data["archivePassword"] = base64.b64encode(archive_pass.encode(ASCII)).decode(
+            ASCII
+        )
+    files = {"file": (f"{file_name}", contents, "application/octet-stream")}
+    try:
+        result = requests.post(
+            f"{client.base_url}{SUBMIT_FILE_TO_SANDBOX}",
+            params=query_params,
+            headers=headers,
+            data=data,
+            files=files,
+        )
+    except HTTPError as http_err:
+        demisto.error(http_err)
+        return_error(http_err)
+    response = result.json()
+    message = {
+        "filename": file_name,
+        "entryId": entry,
+        "file_path": file_.get("path", ""),
+        "message": response.get("message"),
+        "task_id": response.get("data", {}).get("taskId", ""),
+        "code": response.get("code", ""),
+        "digest": response.get("data", {}).get("digest", {}),
+    }
+    results = CommandResults(
+        readable_output=tableToMarkdown(
+            TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX, message, removeNull=True
+        ),
+        outputs_prefix="VisionOne.Submit_File_Entry_to_Sandbox",
+        outputs_key_field="entryId",
+        outputs=message,
     )
     return results
 
@@ -1196,9 +1428,7 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     workbench_id = args.get(WORKBENCH_ID)
     content = args.get(CONTENT)
 
-    body = {
-        'content': content
-    }
+    body = {"content": content}
     response = client.http_request(
         POST, ADD_NOTE_ENDPOINT.format(workbenchId=workbench_id), data=json.dumps(body)
     )
@@ -1206,7 +1436,12 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     note_id = response.get("data").get("id")
     response_code = response.get("info").get("code")
     response_msg = response.get("info").get("msg")
-    message = {"Workbench_Id": workbench_id, "noteId": note_id, "response_code": response_code, "response_msg": response_msg}
+    message = {
+        "Workbench_Id": workbench_id,
+        "noteId": note_id,
+        "response_code": response_code,
+        "response_msg": response_msg,
+    }
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_ADD_NOTE, message, removeNull=True),
         outputs_prefix="VisionOne.Add_Note",
@@ -1229,25 +1464,29 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     workbench_id = args.get(WORKBENCH_ID)
     status = args.get(STATUS)
 
-    if status == 'new':
+    if status == "new":
         update_status = NEW
-    elif status == 'in_progress':
+    elif status == "in_progress":
         update_status = IN_PROGRESS
-    elif status == 'resolved_true_positive':
+    elif status == "resolved_true_positive":
         update_status = RESOLVED_TRUE_POSITIVE
-    elif status == 'resolved_false_positive':
+    elif status == "resolved_false_positive":
         update_status = RESOLVED_FALSE_POSITIVE
 
-    body = {
-        'investigationStatus': update_status
-    }
+    body = {"investigationStatus": update_status}
     response = client.http_request(
-        PUT, UPDATE_STATUS_ENDPOINT.format(workbenchId=workbench_id), data=json.dumps(body)
+        PUT,
+        UPDATE_STATUS_ENDPOINT.format(workbenchId=workbench_id),
+        data=json.dumps(body),
     )
 
     response_code = response.get("info").get("code")
     response_msg = response.get("info").get("msg")
-    message = {"Workbench_Id": workbench_id, "response_code": response_code, "response_msg": response_msg}
+    message = {
+        "Workbench_Id": workbench_id,
+        "response_code": response_code,
+        "response_msg": response_msg,
+    }
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_UPDATE_STATUS, message, removeNull=True),
         outputs_prefix="VisionOne.Update_Status",
@@ -1259,13 +1498,13 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
 
 def main():
     try:
-        ''' GLOBAL VARS '''
+        """GLOBAL VARS"""
         params = demisto.params()
 
         base_url = params.get(URL)
-        api_key = params.get(API_TOKEN).get('password')
-        proxy = params.get('proxy', False)
-        verify = not params.get('insecure', False)
+        api_key = params.get(API_TOKEN).get("password")
+        proxy = params.get("proxy", False)
+        verify = not params.get("insecure", False)
 
         client = Client(base_url, api_key, proxy, verify)
 
@@ -1273,10 +1512,10 @@ def main():
         demisto.debug(COMMAND_CALLED.format(command=command))
         args = demisto.args()
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             return_results(fetch_incidents(client))
 
         elif command in (ADD_BLOCKLIST_COMMAND, REMOVE_BLOCKLIST_COMMAND):
@@ -1318,6 +1557,17 @@ def main():
         elif command == FILE_TO_SANDBOX:
             return_results(submit_file_to_sandbox(client, args))
 
+        elif command == FILE_ENTRY_TO_SANDBOX:
+            return_results(submit_file_entry_to_sandbox(client, args))
+
+        elif command == SANDBOX_SUBMISSION_POLLING:
+            if args.get("polling") == "true":
+                cmd_res = get_sandbox_submission_status(args, client)
+                if cmd_res is not None:
+                    return_results(cmd_res)
+            else:
+                return_results(client.sandbox_submission_polling(args))
+
         elif command == UPDATE_STATUS:
             return_results(update_status(client, args))
 
@@ -1333,12 +1583,12 @@ def main():
                 return_results(client.status_check(args))
 
         else:
-            demisto.error(f'{command} command is not implemented.')
-            raise NotImplementedError(f'{command} command is not implemented.')
+            demisto.error(f"{command} command is not implemented.")
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as error:
         demisto.error(COMMAND_EXECUTION_ERROR.format(error=error))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

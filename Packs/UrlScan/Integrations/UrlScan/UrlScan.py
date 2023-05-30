@@ -47,7 +47,8 @@ RELATIONSHIP_TYPE = {
 class Client:
     def __init__(self, api_key='', user_agent='', scan_visibility=None, threshold=None, use_ssl=False,
                  reliability=DBotScoreReliability.C):
-        self.base_url = 'https://urlscan.io/api/v1/'
+        self.base_url = 'https://urlscan.io/'
+        self.base_api_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
         self.user_agent = user_agent
         self.threshold = threshold
@@ -103,11 +104,11 @@ def http_request(client, method, url_suffix, json=None, retries=0):
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
-        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix,
+        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_api_url + url_suffix,
                                                                              json))
     r = requests.request(
         method,
-        client.base_url + url_suffix,
+        client.base_api_url + url_suffix,
         data=json,
         headers=headers,
         verify=client.use_ssl
@@ -172,13 +173,13 @@ def schedule_and_report(command_results, items_to_schedule, execution_metrics, r
 
 def get_result_page(client):
     uuid = demisto.args().get('uuid')
-    uri = client.base_url + 'result/{}'.format(uuid)
+    uri = client.base_api_url + 'result/{}'.format(uuid)
     return uri
 
 
 def polling(client, uuid):
     TIMEOUT = int(demisto.args().get('timeout', 60))
-    uri = client.base_url + 'result/{}'.format(uuid)
+    uri = client.base_api_url + 'result/{}'.format(uuid)
 
     headers = {'API-Key': client.api_key}
     if client.user_agent:
@@ -342,6 +343,8 @@ def format_results(client, uuid, use_url_as_name):
 
     feed_related_indicators = []
 
+    cont['ResultPage'] = client.base_url + 'result/{}'.format(uuid)
+
     LIMIT = int(demisto.args().get('limit', 20))
     if 'certificates' in scan_lists:
         cert_md = []
@@ -391,6 +394,12 @@ def format_results(client, uuid, use_url_as_name):
             for ip in scan_lists.get('ips'):
                 feed_related_indicators.append({'value': ip, 'type': 'IP'})
         IP_HEADERS = ['Count', 'IP', 'ASN']
+    if 'links' in scan_data:
+        links = []
+        for o in scan_data['links']:
+            if 'href' in o:
+                links.append(o['href'])
+        cont['links'] = links
     # add redirected URLs
     if 'requests' in scan_data:
         redirected_urls = []
@@ -794,11 +803,10 @@ def main():
         Exception("Please provide a valid value for the Source Reliability parameter.")
 
     demisto_version = get_demisto_version_as_str()
-    pack_version = get_pack_version()
-
+    instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     client = Client(
         api_key=api_key,
-        user_agent='xsoar-{}/urlscan-{}'.format(demisto_version, pack_version),
+        user_agent='xsoar-{}/urlscan-{}'.format(demisto_version, instance_name),
         scan_visibility=scan_visibility,
         threshold=threshold,
         use_ssl=use_ssl,

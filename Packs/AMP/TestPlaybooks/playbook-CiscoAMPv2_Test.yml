@@ -1,0 +1,3391 @@
+id: AMPv2_Test
+version: -1
+name: AMPv2_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d46fa305-db13-4b34-8c85-1872fa3a2f64
+    type: start
+    task:
+      id: d46fa305-db13-4b34-8c85-1872fa3a2f64
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b5d66363-1afa-4b4b-8960-97670f494d7b
+    type: regular
+    task:
+      id: b5d66363-1afa-4b4b-8960-97670f494d7b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2bdd0333-86e3-4a1f-8123-8e923d018fa6
+    type: regular
+    task:
+      id: 2bdd0333-86e3-4a1f-8123-8e923d018fa6
+      version: -1
+      name: cisco-amp-computer-list
+      script: CiscoAMP|||cisco-amp-computer-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1c4c231c-894a-49fd-83d3-35d96af9bb38
+    type: condition
+    task:
+      id: 1c4c231c-894a-49fd-83d3-35d96af9bb38
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.connector_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.windows_processor_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.connector_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.operating_system
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.internal_ips
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.external_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.group_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.install_date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Computer.is_compromised
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Computer.demo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.network_addresses.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.network_addresses.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.policy.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.policy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.groups.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.groups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.last_seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Computer.isolation.available
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.isolation.status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2bcbede3-3f4e-4351-85d2-d17eb2dfe8e2
+    type: regular
+    task:
+      id: 2bcbede3-3f4e-4351-85d2-d17eb2dfe8e2
+      version: -1
+      name: cisco-amp-computer-trajectory-list
+      script: CiscoAMP|||cisco-amp-computer-trajectory-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      connector_guid:
+        simple: ${CiscoAMP.Computer.connector_guid}
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1171ca7d-f351-4f7e-8a73-bbf3ce788b48
+    type: condition
+    task:
+      id: 1171ca7d-f351-4f7e-8a73-bbf3ce788b48
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerTrajectory.connector_guid
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerTrajectory.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerTrajectory.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerTrajectory.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerTrajectory.event_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerTrajectory.event_type_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerTrajectory.group_guids
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c9bb0a76-2bd9-46f6-823c-a1dafe15913b
+    type: regular
+    task:
+      id: c9bb0a76-2bd9-46f6-823c-a1dafe15913b
+      version: -1
+      name: cisco-amp-computer-user-activity-list
+      script: CiscoAMP|||cisco-amp-computer-user-activity-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+      username:
+        simple: johndoe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6414227b-a02c-440f-87cb-393f55b193f9
+    type: condition
+    task:
+      id: 6414227b-a02c-440f-87cb-393f55b193f9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserActivity.connector_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserActivity.hostname
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserActivity.active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: bf64cfce-a879-4627-8a84-dae923b1c8cd
+    type: regular
+    task:
+      id: bf64cfce-a879-4627-8a84-dae923b1c8cd
+      version: -1
+      name: cisco-amp-computer-user-trajectory-list
+      script: CiscoAMP|||cisco-amp-computer-user-trajectory-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      connector_guid:
+        simple: ${CiscoAMP.Computer.connector_guid}
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9dea2217-226f-4c5c-813a-dd5bdde359ad
+    type: condition
+    task:
+      id: 9dea2217-226f-4c5c-813a-dd5bdde359ad
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.connector_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.timestamp_nanoseconds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.event_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.event_type_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerUserTrajectory.group_guids
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f44f23a0-fcc7-40f4-818c-122ebec53140
+    type: regular
+    task:
+      id: f44f23a0-fcc7-40f4-818c-122ebec53140
+      version: -1
+      name: cisco-amp-computer-vulnerabilities-list
+      script: CiscoAMP|||cisco-amp-computer-vulnerabilities-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      connector_guid:
+        simple: ${CiscoAMP.Computer.connector_guid}
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b2448caa-41a2-4b0b-864f-e09c19f6344c
+    type: condition
+    task:
+      id: b2448caa-41a2-4b0b-864f-e09c19f6344c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.connector_guid
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.file.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.file.identity.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.cves.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.cves.link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.cves.cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.latest_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerVulnerability.latest_date
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a8b64693-29bc-4581-89a8-d758f3f50941
+    type: regular
+    task:
+      id: a8b64693-29bc-4581-89a8-d758f3f50941
+      version: -1
+      name: cisco-amp-computer-move
+      script: CiscoAMP|||cisco-amp-computer-move
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      connector_guid:
+        simple: ${CiscoAMP.Computer.connector_guid}
+      group_guid:
+        simple: ${CiscoAMP.Computer.groups.guid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 686be1b3-197c-46a3-8f98-a0789f1cb11b
+    type: condition
+    task:
+      id: 686be1b3-197c-46a3-8f98-a0789f1cb11b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.connector_guid
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.windows_processor_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Computer.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.connector_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.operating_system
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.internal_ips
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.external_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.group_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.install_date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Computer.is_compromised
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Computer.demo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.network_addresses.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.network_addresses.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.policy.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.policy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.groups.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Computer.groups.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Computer.isolation.available
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 63648d1c-88dd-4310-8ab0-6fd7cd6d757b
+    type: regular
+    task:
+      id: 63648d1c-88dd-4310-8ab0-6fd7cd6d757b
+      version: -1
+      name: cisco-amp-computer-activity-list
+      script: CiscoAMP|||cisco-amp-computer-activity-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      limit:
+        simple: "1"
+      query_string:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: da4720ea-3231-468f-8cd6-2944fb55f3d2
+    type: condition
+    task:
+      id: da4720ea-3231-468f-8cd6-2944fb55f3d2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerActivity.connector_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerActivity.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerActivity.windows_processor_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.ComputerActivity.active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 09d44aa1-04f4-4b39-8722-f1a67aa4d87c
+    type: regular
+    task:
+      id: 09d44aa1-04f4-4b39-8722-f1a67aa4d87c
+      version: -1
+      name: cisco-amp-computer-isolation-feature-availability-get
+      script: CiscoAMP|||cisco-amp-computer-isolation-feature-availability-get
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      connector_guid:
+        simple: ${CiscoAMP.Computer.connector_guid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4b71fa13-f9cd-460d-8b31-a1484b916ed9
+    type: regular
+    task:
+      id: 4b71fa13-f9cd-460d-8b31-a1484b916ed9
+      version: -1
+      name: cisco-amp-computer-isolation-get
+      script: CiscoAMP|||cisco-amp-computer-isolation-get
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      connector_guid:
+        simple: ${CiscoAMP.Computer.connector_guid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 4cd9fd41-22c2-48b4-8311-ee1f6c4f83eb
+    type: condition
+    task:
+      id: 4cd9fd41-22c2-48b4-8311-ee1f6c4f83eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.connector_guid
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.available
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.status
+            iscontext: true
+          right:
+            value:
+              simple: not_isolated
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.unlock_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.comment
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ac9cef8c-f757-4bbe-8afc-c55307f2d3b6
+    type: regular
+    task:
+      id: ac9cef8c-f757-4bbe-8afc-c55307f2d3b6
+      version: -1
+      name: cisco-amp-computer-isolation-create
+      script: CiscoAMP|||cisco-amp-computer-isolation-create
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      comment:
+        simple: Playbook Test Create
+      connector_guid:
+        simple: ${CiscoAMP.ComputerIsolation.connector_guid}
+      interval_in_seconds:
+        simple: "5"
+      unlock_code:
+        simple: playbooktest
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 4862f575-a3d3-4a89-8967-05b4bb846c2c
+    type: condition
+    task:
+      id: 4862f575-a3d3-4a89-8967-05b4bb846c2c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.connector_guid
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.available
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.unlock_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.comment
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4af9d3a8-955d-46f4-85ad-1d04248852f0
+    type: regular
+    task:
+      id: 4af9d3a8-955d-46f4-85ad-1d04248852f0
+      version: -1
+      name: cisco-amp-computer-isolation-delete
+      script: CiscoAMP|||cisco-amp-computer-isolation-delete
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      comment:
+        simple: Playbook Test Delete
+      connector_guid:
+        simple: ${CiscoAMP.ComputerIsolation.connector_guid}
+      interval_in_seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a839955f-25ee-4aef-8fc7-6ed086bff5c9
+    type: condition
+    task:
+      id: a839955f-25ee-4aef-8fc7-6ed086bff5c9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.available
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.unlock_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.comment
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 3dee0ab6-6d04-4f0c-828a-4920adc5bf1b
+    type: regular
+    task:
+      id: 3dee0ab6-6d04-4f0c-828a-4920adc5bf1b
+      version: -1
+      name: cisco-amp-event-list
+      script: CiscoAMP|||cisco-amp-event-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2d269a81-423b-4f0d-8633-03ed049af201
+    type: condition
+    task:
+      id: 2d269a81-423b-4f0d-8633-03ed049af201
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.timestamp_nanoseconds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.event_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.event_type_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.connector_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.group_guids
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.computer.connector_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.computer.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.computer.external_ip
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Event.computer.active
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.computer.network_addresses.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Event.computer.network_addresses.mac
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: faaceb9e-2888-4a25-8a67-78b6e02f5640
+    type: regular
+    task:
+      id: faaceb9e-2888-4a25-8a67-78b6e02f5640
+      version: -1
+      name: cisco-amp-event-type-list
+      script: CiscoAMP|||cisco-amp-event-type-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 4a4ff81b-e478-4a28-8649-de3193b84272
+    type: condition
+    task:
+      id: 4a4ff81b-e478-4a28-8649-de3193b84272
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.EventType.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.EventType.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.EventType.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: afdee4bc-b3be-4e8c-8510-e1183ddcb19c
+    type: regular
+    task:
+      id: afdee4bc-b3be-4e8c-8510-e1183ddcb19c
+      version: -1
+      name: cisco-amp-file-list-list
+      script: CiscoAMP|||cisco-amp-file-list-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 083afcec-2e74-4391-86b8-cb106855a26b
+    type: condition
+    task:
+      id: 083afcec-2e74-4391-86b8-cb106855a26b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileList.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileList.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileList.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 121a9e07-f56e-4adc-83f8-75ae054cbc8c
+    type: regular
+    task:
+      id: 121a9e07-f56e-4adc-83f8-75ae054cbc8c
+      version: -1
+      name: cisco-amp-file-list-item-list
+      script: CiscoAMP|||cisco-amp-file-list-item-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      file_list_guid:
+        simple: ${CiscoAMP.FileList.guid}
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 8507c865-e19e-4993-8ae0-89c0168c70bb
+    type: condition
+    task:
+      id: 8507c865-e19e-4993-8ae0-89c0168c70bb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileListItem.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileListItem.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileListItem.policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileListItem.policies.guid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 53f6a5cf-432b-407a-8fde-91ed23156e23
+    type: regular
+    task:
+      id: 53f6a5cf-432b-407a-8fde-91ed23156e23
+      version: -1
+      name: cisco-amp-file-list-item-create
+      script: CiscoAMP|||cisco-amp-file-list-item-create
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      file_list_guid:
+        simple: ${CiscoAMP.FileList.guid}
+      sha256:
+        simple: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 6f0aa667-f5ec-44fa-8828-3e8246ef2102
+    type: condition
+    task:
+      id: 6f0aa667-f5ec-44fa-8828-3e8246ef2102
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileListItem.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.FileListItem.source
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 80c2cb2a-74c9-4990-85f4-360261ff7e15
+    type: regular
+    task:
+      id: 80c2cb2a-74c9-4990-85f4-360261ff7e15
+      version: -1
+      name: cisco-amp-file-list-item-delete
+      script: CiscoAMP|||cisco-amp-file-list-item-delete
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      file_list_guid:
+        simple: ${CiscoAMP.FileListItem.guid}
+      sha256:
+        simple: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 1bf3c704-f4f7-4eee-823f-ecfd8e3ed0d6
+    type: regular
+    task:
+      id: 1bf3c704-f4f7-4eee-823f-ecfd8e3ed0d6
+      version: -1
+      name: cisco-amp-group-list
+      script: CiscoAMP|||cisco-amp-group-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: cba12b40-6dd6-4f2d-8dd5-fcf959b58075
+    type: condition
+    task:
+      id: cba12b40-6dd6-4f2d-8dd5-fcf959b58075
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.guid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 453a1cbd-dc74-4525-8dbf-b7180c39baff
+    type: regular
+    task:
+      id: 453a1cbd-dc74-4525-8dbf-b7180c39baff
+      version: -1
+      name: cisco-amp-group-policy-update
+      script: CiscoAMP|||cisco-amp-group-policy-update
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      group_guid:
+        simple: ${CiscoAMP.Group.guid}
+      windows_policy_guid:
+        simple: ${CiscoAMP.Policy.guid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 7880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: ee3f6309-6d9e-4b37-84c3-1f357787d5e2
+    type: condition
+    task:
+      id: ee3f6309-6d9e-4b37-84c3-1f357787d5e2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.created_at
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.Group.computers_count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.Group.descendant_computers_count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.product
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.default
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.serial_number
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.inherited
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.exclusion_sets.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.exclusion_sets.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.guid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 8150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 7f5a1f67-f0a9-446e-8a2b-0c64a78d3dee
+    type: regular
+    task:
+      id: 7f5a1f67-f0a9-446e-8a2b-0c64a78d3dee
+      version: -1
+      name: cisco-amp-group-parent-update
+      script: CiscoAMP|||cisco-amp-group-parent-update
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      child_guid:
+        simple: ${CiscoAMP.Group.guid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 8350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 27400429-3994-4447-8050-f2b0559a305b
+    type: condition
+    task:
+      id: 27400429-3994-4447-8050-f2b0559a305b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.created_at
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.Group.computers_count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.Group.descendant_computers_count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.product
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.default
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.serial_number
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.inherited
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.exclusion_sets.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.exclusion_sets.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.guid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 8500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 76053eb3-3c67-4bff-8333-fb9597af27fd
+    type: regular
+    task:
+      id: 76053eb3-3c67-4bff-8333-fb9597af27fd
+      version: -1
+      name: cisco-amp-group-create
+      script: CiscoAMP|||cisco-amp-group-create
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      description:
+        simple: Delete this group
+      name:
+        simple: Playbook Group Creation Test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 8900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 55c92db0-9a44-4ae2-8abc-86e7f8dba022
+    type: condition
+    task:
+      id: 55c92db0-9a44-4ae2-8abc-86e7f8dba022
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.created_at
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.Group.computers_count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.Group.descendant_computers_count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.product
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.default
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.serial_number
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.inherited
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.file_lists.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.exclusion_sets.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.exclusion_sets.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Group.policies.used_in_groups.guid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 9090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 1c878996-09e0-459a-8b7a-5e49043b31d6
+    type: regular
+    task:
+      id: 1c878996-09e0-459a-8b7a-5e49043b31d6
+      version: -1
+      name: cisco-amp-group-delete
+      script: CiscoAMP|||cisco-amp-group-delete
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      group_guid:
+        simple: ${CiscoAMP.Group.guid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 9290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: b451a422-8b92-4b8a-80cd-79009ff13c93
+    type: regular
+    task:
+      id: b451a422-8b92-4b8a-80cd-79009ff13c93
+      version: -1
+      name: cisco-amp-indicator-list
+      script: CiscoAMP|||cisco-amp-indicator-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 9490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 74ef2572-675d-449b-8f10-dbeecd6275a1
+    type: condition
+    task:
+      id: 74ef2572-675d-449b-8f10-dbeecd6275a1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Indicator.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Indicator.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Indicator.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Indicator.severity
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.Indicator.observed_compromises
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 9690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: bb126bee-cfa6-4a55-8c57-3ec3ecc0d18f
+    type: regular
+    task:
+      id: bb126bee-cfa6-4a55-8c57-3ec3ecc0d18f
+      version: -1
+      name: cisco-amp-policy-list
+      script: CiscoAMP|||cisco-amp-policy-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      limit:
+        simple: "1"
+      product:
+        simple: windows
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: ef15ce70-f050-4253-813f-6abc2584ad92
+    type: condition
+    task:
+      id: ef15ce70-f050-4253-813f-6abc2584ad92
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Policy.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Policy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Policy.guid
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoAMP.Policy.product
+            iscontext: true
+          right:
+            value:
+              simple: windows
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Policy.default
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Policy.serial_number
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 8f356108-b6e9-49a4-8dec-954e9669dbc7
+    type: regular
+    task:
+      id: 8f356108-b6e9-49a4-8dec-954e9669dbc7
+      version: -1
+      name: cisco-amp-app-trajectory-query-list
+      script: CiscoAMP|||cisco-amp-app-trajectory-query-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      ios_bid:
+        simple: com.apple.Safari.SafeBrowsing
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 9930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 6c8e399f-7b6d-4c69-8cac-905f06e9783f
+    type: condition
+    task:
+      id: 6c8e399f-7b6d-4c69-8cac-905f06e9783f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.connector_guid
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.bundle_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.group_guids
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.timestamp
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.timestamp_nanoseconds
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.query_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.network_info.dirty_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.network_info.remote_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.network_info.remote_port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.network_info.local_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.network_info.local_port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.network_info.direction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.AppTrajectoryQuery.network_info.protocol
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 10130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 44a06e85-d4b3-42dc-82d0-5b2466424948
+    type: regular
+    task:
+      id: 44a06e85-d4b3-42dc-82d0-5b2466424948
+      version: -1
+      name: cisco-amp-version-get
+      script: CiscoAMP|||cisco-amp-version-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 10330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: d7dcb606-3bff-44c8-8e7b-178ef96289f5
+    type: condition
+    task:
+      id: d7dcb606-3bff-44c8-8e7b-178ef96289f5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Version.version
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 10530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: bcb008d2-dc02-4fb7-853c-8a64876328b7
+    type: regular
+    task:
+      id: bcb008d2-dc02-4fb7-853c-8a64876328b7
+      version: -1
+      name: cisco-amp-vulnerability-list
+      script: CiscoAMP|||cisco-amp-vulnerability-list
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 10730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: c9a1c880-f3c5-4805-8f34-6f093a68d34c
+    type: condition
+    task:
+      id: c9a1c880-f3c5-4805-8f34-6f093a68d34c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.application
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.file.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.file.identity.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.latest_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.latest_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.computers_total_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.cves.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.cves.link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.cves.cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.groups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.groups.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.groups.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.computers.connector_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.computers.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.computers.windows_processor_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.Vulnerability.computers.active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 10930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 3400de75-91f4-442a-83e4-aeefd58e4783
+    type: regular
+    task:
+      id: 3400de75-91f4-442a-83e4-aeefd58e4783
+      version: -1
+      name: endpoint
+      script: CiscoAMP|||endpoint
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      id:
+        simple: ${CiscoAMP.Computer.connector_guid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 2baa0595-c21c-4a38-8925-a7afd3591ed5
+    type: condition
+    task:
+      id: 2baa0595-c21c-4a38-8925-a7afd3591ed5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.IPAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.OS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.OSVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.MACAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.Vendor
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 7879c995-a882-4373-8e54-c212326a7490
+    type: regular
+    task:
+      id: 7879c995-a882-4373-8e54-c212326a7490
+      version: -1
+      name: file
+      script: CiscoAMP|||file
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      file:
+        simple: ${CiscoAMP.Vulnerability.file.identity.sha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: dce6e508-1b98-4cf2-86b9-bdf03ba4985b
+    type: condition
+    task:
+      id: dce6e508-1b98-4cf2-86b9-bdf03ba4985b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 145b4571-c5fc-4895-8b05-009aa7bde2d2
+    type: title
+    task:
+      id: 145b4571-c5fc-4895-8b05-009aa7bde2d2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 491c8503-d9ef-4541-82a8-08db9a679959
+    type: regular
+    task:
+      id: 491c8503-d9ef-4541-82a8-08db9a679959
+      version: -1
+      name: cisco-amp-computer-isolation-delete
+      script: CiscoAMP|||cisco-amp-computer-isolation-delete
+      type: regular
+      iscommand: true
+      brand: CiscoAMP
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      comment:
+        simple: Playbook Test Delete
+      connector_guid:
+        simple: ${CiscoAMP.ComputerIsolation.connector_guid}
+      interval_in_seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: c46c8444-0fb6-45a3-8994-be1dcf0c4bb3
+    type: condition
+    task:
+      id: c46c8444-0fb6-45a3-8994-be1dcf0c4bb3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.available
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.unlock_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoAMP.ComputerIsolation.comment
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 0ccc540f-36d9-4b9a-8446-3b946e678d9e
+    type: regular
+    task:
+      id: 0ccc540f-36d9-4b9a-8446-3b946e678d9e
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      key:
+        simple: CiscoAMP.Group.guid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 8700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 11945,
+        "width": 960,
+        "x": -280,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: ''

@@ -1,4 +1,4 @@
-Use Demisto REST APIs
+Deprecated. Use Core REST API instead.
 
 ## Configure Demisto REST API on Cortex XSOAR
 
@@ -14,6 +14,7 @@ Use Demisto REST APIs
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False        |
     | Demisto Server API Key |  | False        |
     | Use system proxy settings | Use system proxy settings. | False        |
+    | Use tenant | Whether API calls should be made to the current tenant instead of the master tenant. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -25,7 +26,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### demisto-api-post
 ***
 send HTTP POST request
-
 
 #### Base Command
 

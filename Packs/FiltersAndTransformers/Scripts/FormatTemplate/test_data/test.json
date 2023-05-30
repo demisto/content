@@ -98,6 +98,25 @@
   {
     "args": {
       "value": null,
+      "template": "{\"1\": \"aaa ${name1} bbb\", \"2\": \"aaa ${name2} ccc\"}",
+      "template_type": "json",
+      "ctx_data": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "ctx_inputs": null,
+      "ctx_inc": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "results": {
+      "1": "aaa value1 bbb",
+      "2": "aaa value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "value": null,
       "template": "aaa ${inputs.name1} bbb ${inputs.name2} ccc",
       "ctx_data": null,
       "ctx_inputs": {

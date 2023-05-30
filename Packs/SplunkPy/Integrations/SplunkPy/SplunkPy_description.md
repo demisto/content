@@ -2,19 +2,35 @@
 Use the SplunkPy integration to fetch incidents from Splunk ES, and query results by SID.
 ***
 
-To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
+ - To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
 To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens).
+ - In case of inconsistent authentication issues when using username & password, try to use **\<USERNAME\>@_basic** as the username.
+this will set the integration to use basic authentication when connecting to the Splunk server.
+For example:
+TestUser@_basic
 
 There are two main use cases for the SplunkPy integration. Refer to the following sections based on your needs.
 - [Splunk Enterprise Security Users](#splunk-enterprise-security-users)
+  - [Fetching notable events](#fetching-notable-events)
+    - [How to configure](#how-to-configure)
+    - [Enriching Notable Events](#enriching-notable-events)
+      - [Enrichment types](#enrichment-types)
+      - [How to configure](#how-to-configure-1)
+      - [Troubleshooting enrichment status](#troubleshooting-enrichment-status)
+      - [Resetting the enriching fetch mechanism](#resetting-the-enriching-fetch-mechanism)
+      - [Limitations](#limitations)
+    - [Incident Mirroring](#incident-mirroring)
+    - [Existing users](#existing-users)
 - [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users)
+    - [Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users](#configure-splunk-to-produce-alerts-for-splunkpy-for-non-es-splunk-users)
+    - [Constraints](#constraints)
 
 ***
 # Splunk Enterprise Security Users
 
 ## Fetching notable events
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
-Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/splunk-use-case.html) before starting to use this integration.
+Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
 This article will help you configure your Splunk integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
 
 ### How to configure
@@ -103,11 +119,12 @@ To set up mirroring:
     - Outgoing - Any changes in Cortex XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
     - Incoming And Outgoing - Changes in Cortex XSOAR incidents and Splunk notables will be reflected in both directions.
     - None - Turns off incident mirroring.
-5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on the Splunk side.
+5. Optional: Check the *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on the Splunk side.
+   By default, only Notables closed with a "Closed" label will be mirrored. You can specify specific statuses (comma-separated) in the *Additional Splunk status labels to close on mirror (Incoming Mirroring)*, and enable the *Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and to add additional statuses to the mirroring process.
 6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
 7. Fill in the **timezone** integration parameter with the timezone the Splunk server is using.
 Newly fetched incidents will be mirrored in the chosen direction.
-**Note: This will not effect existing incidents.**
+**Note: This will not affect existing incidents.**
 
 ### Existing users
 **NOTE: The enrichment and mirroring mechanisms use a new default fetch query.** 
@@ -162,4 +179,4 @@ Use the following naming convention: (demisto_fields_{type}).
 The following features are not supported in non-ES (Enterprise Security) Splunk.
 - Incident Mirroring
 - Enrichment.
-- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html) for information.
+- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.

@@ -6,7 +6,6 @@ from CommonServerUserPython import *  # noqa
 from CrowdStrikeApiModule import *  # noqa: E402
 
 # IMPORTS
-from datetime import datetime
 import urllib3
 
 urllib3.disable_warnings()
@@ -81,7 +80,7 @@ CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ['reports', 'actors', 'malware_families'
 class Client(CrowdStrikeClient):
 
     def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
-                 malicious_confidence=None, filter=None, generic_phrase=None, insecure=True, proxy=False,
+                 malicious_confidence=None, filter_string=None, generic_phrase=None, insecure=True, proxy=False,
                  first_fetch=None, create_relationships=True, timeout='10'):
         params = assign_params(credentials=credentials,
                                server_url=base_url,
@@ -92,7 +91,7 @@ class Client(CrowdStrikeClient):
         super().__init__(params)
         self.type = type
         self.malicious_confidence = malicious_confidence
-        self.filter = filter
+        self.filter_string = filter_string
         self.generic_phrase = generic_phrase
         self.include_deleted = include_deleted
         self.tlp_color = tlp_color
@@ -110,7 +109,11 @@ class Client(CrowdStrikeClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, manual_last_run=0) -> list:
+    def fetch_indicators(self,
+                         limit: int,
+                         offset: int = 0,
+                         fetch_command: bool = False,
+                         manual_last_run: int = 0) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
@@ -122,86 +125,121 @@ class Client(CrowdStrikeClient):
         Returns:
             (list): parsed indicators
         """
-        filter = f'({self.filter})' if self.filter else ''
+        indicators: list[dict] = []
+        filter_string = f'({self.filter_string})' if self.filter_string else ''
         if self.type:
             type_fql = self.build_type_fql(self.type)
-            filter = f'({type_fql})+{filter}' if filter else f'({type_fql})'
+            filter_string = f'({type_fql})+{filter_string}' if filter_string else f'({type_fql})'
 
         if self.malicious_confidence:
             malicious_confidence_fql = ','.join([f"malicious_confidence:'{item}'"
                                                  for item in self.malicious_confidence])
-            filter = f"{filter}+({malicious_confidence_fql})" if filter else f'({malicious_confidence_fql})'
-
-        if fetch_command:
-            offset = demisto.getIntegrationContext().get('offset', 0)
-            demisto.info(f' current offset: {offset}')
+            filter_string = f"{filter_string}+({malicious_confidence_fql})" if filter_string else f'({malicious_confidence_fql})'
 
         if manual_last_run:
-            filter = f'{filter}+(last_updated:>={manual_last_run})' if filter else f'(last_updated:>={manual_last_run})'
+            filter_string = f'{filter_string}+(last_updated:>={manual_last_run})' \
+                            if filter_string else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
             if last_run := self.get_last_run():
-                filter = f'{filter}+({last_run})' if filter else f'({last_run})'
-            elif self.first_fetch:
-                last_run = f'last_updated:>={int(self.first_fetch)}'
-                filter = f'{filter}+({last_run})' if filter else f'({last_run})'
+                filter_string = f'{filter_string}+({last_run})' if filter_string else f'({last_run})'
+            else:
+                filter_string, indicators = self.handle_first_fetch_context_or_pre_2_1_0(filter_string)
+                if indicators:
+                    limit = limit - len(indicators)
 
-        demisto.info(f' filter {filter}')
-        params = assign_params(include_deleted=self.include_deleted,
-                               limit=limit,
-                               offset=offset, q=self.generic_phrase,
-                               filter=filter,
-                               sort='last_updated|asc')
+        if filter_string or not fetch_command:
+            demisto.debug(f'{filter_string=}')
+            params = assign_params(include_deleted=self.include_deleted,
+                                   limit=limit,
+                                   offset=offset, q=self.generic_phrase,
+                                   filter=filter_string,
+                                   sort='_marker|asc')
 
-        response = self.get_indicators(params=params)
-        timestamp = self.set_last_run()
+            response = self.get_indicators(params=params)
 
-        last_modified_time = demisto.getIntegrationContext().get('last_modified_time')
-        if fetch_command and response.get('resources', [])[-1].get('last_updated') == last_modified_time:
-            offset = demisto.getIntegrationContext().get('offset', 0) + limit
-        else:
-            offset = 0
-        demisto.info(f' set new offset: {offset}')
+            # need to fetch all indicators after the limit
+            if resources := response.get('resources', []):
+                new_last_marker_time = resources[-1].get('_marker')
+            else:
+                new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
+                last_marker_time_for_debug = new_last_marker_time or 'No data yet'
+                demisto.debug('There are no indicators, '
+                              f'using last_marker_time={last_marker_time_for_debug} from Integration Context')
 
-        # need to fetch all indicators after the limit
-        if pagination := response.get('meta', {}).get('pagination'):
-            pagination_offset = pagination.get('offset', 0)
-            pagination_limit = pagination.get('limit')
-            total = pagination.get('total', 0)
-            if pagination_offset + pagination_limit < total:
-                timestamp = response.get('resources', [])[-1].get('last_updated')
+            if fetch_command:
+                context = demisto.getIntegrationContext()
+                demisto.info(f"last_marker_time before updating: {context.get('last_marker_time')}")
+                context.update({'last_marker_time': new_last_marker_time})
+                demisto.setIntegrationContext(context)
+                demisto.info(f'set last_run to: {new_last_marker_time}')
 
-        if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
-            ctx = demisto.getIntegrationContext()
-            ctx.update({'last_modified_time': timestamp})
-            ctx.update({'offset': offset})
-            demisto.setIntegrationContext(ctx)
-            demisto.info(f'set last_run: {timestamp}')
-
-        indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
+            indicators.extend(self.create_indicators_from_response(response,
+                                                                   self.tlp_color,
+                                                                   self.feed_tags,
+                                                                   self.create_relationships))
         return indicators
 
-    @staticmethod
-    def set_last_run():
-        """
-        Returns: Current timestamp
-        """
-        current_time = datetime.now()
-        current_timestamp = datetime.timestamp(current_time)
-        timestamp = str(int(current_timestamp))
-        return timestamp
+    def handle_first_fetch_context_or_pre_2_1_0(self, filter_string: str) -> tuple[str, list[dict]]:
+        '''
+        Checks whether the context integration uses the format used up to version 2_1_0
+        (when the `last_update` parameter was removed),
+        or whether this is the first time of the fetch,
+        If so, the function imports one indicator
+        and extracts the `_marker` from it to import the following indicators.
+
+        The function is only called in the following two cases:
+            1. At the first run of v2.1.0 or newer.
+            2. In order to transfer the context integration to the new implementation
+
+        Returns:
+            Tuple:
+                1. filter_string with the _marker key - str.
+                2. parse indicator that retrieved - list[dict].
+        '''
+        filter_for_first_fetch = filter_string
+        if last_run := demisto.getIntegrationContext().get('last_updated') or self.first_fetch:
+            last_run = f'last_updated:>={int(last_run)}'
+            filter_for_first_fetch = f'{filter_string}+({last_run})' if filter_string else f'({last_run})'
+
+        params = assign_params(include_deleted=self.include_deleted,
+                               limit=1,
+                               q=self.generic_phrase,
+                               filter=filter_for_first_fetch,
+                               sort='last_updated|asc')
+        response = self.get_indicators(params=params)
+
+        # In case there is an indicator for extracting the `_marker`
+        # it allows fetching following indicators better.
+        if resources := response.get('resources', []):
+            _marker = resources[-1].get('_marker')
+            demisto.debug(f'Importing the indicator marker in first time: {_marker=}')
+            last_run = f"_marker:>'{_marker}'"
+            parse_indicator = self.create_indicators_from_response(response,
+                                                                   self.tlp_color,
+                                                                   self.feed_tags,
+                                                                   self.create_relationships)
+            filter_string = f'{filter_string}+({last_run})' if filter_string else f'({last_run})'
+            return filter_string, parse_indicator
+
+        # In case no indicator is returned
+        demisto.debug('No indicator returned')
+        return '', []
 
     @staticmethod
     def get_last_run() -> str:
         """ Gets last run time in timestamp
 
         Returns:
-            last run in timestamp, or '' if no last run
+            last run in timestamp, or '' if no last run.
+            Taken from Integration Context key last_marker_time.
+
         """
-        if last_run := demisto.getIntegrationContext().get('last_modified_time'):
+        if last_run := demisto.getIntegrationContext().get('last_marker_time'):
             demisto.info(f'get last_run: {last_run}')
-            params = f'last_updated:>={last_run}'
+            params = f"_marker:>'{last_run}'"
         else:
+            demisto.debug('There is no last_run (last_marker_time in Integration Context)')
             params = ''
         return params
 
@@ -223,8 +261,11 @@ class Client(CrowdStrikeClient):
         indicator: dict = {}
 
         for resource in raw_response['resources']:
+            if not (type_ := auto_detect_indicator_type_from_cs(resource['indicator'], resource['type'])):
+                demisto.debug(f"Indicator {resource['indicator']} of type {resource['type']} is not supported in XSOAR, skipping")
+                continue
             indicator = {
-                'type': CROWDSTRIKE_TO_XSOAR_TYPES.get(resource.get('type'), resource.get('type')),
+                'type': type_,
                 'value': resource.get('indicator'),
                 'rawJSON': resource,
                 'fields': {'actor': resource.get('actors'),
@@ -310,12 +351,16 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
     """
     relationships = []
     for relation in resource[field]:
-        if field == 'relations' and relation.get('type', "") == "password":
+        if field == 'relations' and not CROWDSTRIKE_TO_XSOAR_TYPES.get(relation.get('type')):
+            demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
             continue
-        related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
-            CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
-        relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'], indicator['type']) \
-            if field != 'relations' else EntityRelationship.Relationships.RELATED_TO
+        if field == 'relations':
+            related_indicator_type = auto_detect_indicator_type_from_cs(relation['indicator'], relation['type'])
+            relation_name = EntityRelationship.Relationships.RELATED_TO
+        else:
+            related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field]
+            relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'],
+                                                                                               indicator['type'])
 
         indicator_relation = EntityRelationship(
             name=relation_name,
@@ -323,12 +368,24 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
             entity_a_type=indicator['type'],
             entity_b=relation['indicator'] if field == 'relations' else relation,
             entity_b_type=related_indicator_type,
-            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES[relation_name]
+            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get(relation_name, '')
         ).to_indicator()
 
         relationships.append(indicator_relation)
 
     return relationships
+
+
+def auto_detect_indicator_type_from_cs(value: str, crowdstrike_resource_type: str) -> str | None:
+    '''
+    The function determines the type of indicator according to two cases::
+    1. In case the type is ip_address then the type is detected by auto_detect_indicator_type function (CSP).
+    2. In any other case, the type is converted by the table CROWDSTRIKE_TO_XSOAR_TYPES to a type of XSOAR.
+    '''
+    if crowdstrike_resource_type == 'ip_address':
+        return auto_detect_indicator_type(value)
+
+    return CROWDSTRIKE_TO_XSOAR_TYPES.get(crowdstrike_resource_type)
 
 
 def fetch_indicators_command(client: Client):
@@ -361,9 +418,9 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
         readable_output, raw_response
     """
 
-    offset = arg_to_number(args.get('offset', 0))
-    limit = arg_to_number(args.get('limit', 50))
-    last_run = arg_to_number(args.get('last_run', 0))
+    offset = arg_to_number(args.get('offset', 0)) or 0
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    last_run = arg_to_number(args.get('last_run', 0)) or 0
     parsed_indicators = client.fetch_indicators(
         limit=limit,
         offset=offset,
@@ -425,7 +482,7 @@ def main() -> None:
     include_deleted = params.get('include_deleted', False)
     type = argToList(params.get('type'), 'ALL')
     malicious_confidence = argToList(params.get('malicious_confidence'))
-    filter = params.get('filter')
+    filter_string = params.get('filter')
     generic_phrase = params.get('generic_phrase')
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
     max_fetch = min(max_fetch, 10000)  # type: ignore
@@ -449,7 +506,7 @@ def main() -> None:
             include_deleted=include_deleted,
             type=type,
             malicious_confidence=malicious_confidence,
-            filter=filter,
+            filter_string=filter_string,
             generic_phrase=generic_phrase,
             limit=max_fetch,
             first_fetch=first_fetch,

@@ -1,0 +1,2 @@
+[INGEST:vendor="corelight", product="zeek", target_dataset="corelight_zeek_raw", no_hit=keep]
+alter _time = ts;

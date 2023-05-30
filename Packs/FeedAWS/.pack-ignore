@@ -9,3 +9,7 @@ ignore=BA101
 
 [file:classifier-FeedAWS.json]
 ignore=BA101
+
+[file:FeedAWS.yml]
+ignore=BA124
+

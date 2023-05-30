@@ -71,6 +71,12 @@
                 "Jira Due Date": {
                     "simple": "fields.duedate"
                 },
+                "Jira ID": {
+                    "simple": "id"
+                },
+                "Jira Issue Key": {
+                    "simple": "key"
+                },
                 "Jira Labels": {
                     "simple": "fields.labels"
                 },

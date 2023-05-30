@@ -1,15 +1,17 @@
 id: Cortex ASM - Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex ASM - Enrichment
 description: Used as a container folder for all enrichments of ASM alerts.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d1449df8-7d76-4d3e-8502-dce3ac8a941b
+    taskid: bd81427f-0b18-4854-8067-12d30ecd305b
     type: start
     task:
-      id: d1449df8-7d76-4d3e-8502-dce3ac8a941b
+      id: bd81427f-0b18-4854-8067-12d30ecd305b
       version: -1
       name: ""
       iscommand: false
@@ -17,14 +19,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "11"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -120
+          "x": 460,
+          "y": -180
         }
       }
     note: false
@@ -36,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 88da618e-e478-47b5-8298-7390513d0299
+    taskid: e93cd351-12f2-4f18-85d5-5e534de22c16
     type: condition
     task:
-      id: 88da618e-e478-47b5-8298-7390513d0299
+      id: e93cd351-12f2-4f18-85d5-5e534de22c16
       version: -1
       name: Is there an IP address?
       description: Determines if the IP address has been supplied to proceed with cloud enrichment.
@@ -48,10 +50,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "57"
+      - "68"
       "yes":
-      - "35"
-      - "45"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -68,8 +69,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 10
+          "x": 110,
+          "y": 1845
         }
       }
     note: false
@@ -81,10 +82,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c35888ff-0b77-42a0-87fc-33c8188cbb1f
+    taskid: ed49e8a4-f7d6-4f3f-8ec0-afe044ff8b2a
     type: title
     task:
-      id: c35888ff-0b77-42a0-87fc-33c8188cbb1f
+      id: ed49e8a4-f7d6-4f3f-8ec0-afe044ff8b2a
       version: -1
       name: ServiceNow CMDB Enrichment
       type: title
@@ -93,14 +94,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "56"
+      - "61"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 2610
+          "x": 460,
+          "y": 2270
         }
       }
     note: false
@@ -112,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 89e760fd-b66c-4fbd-86e2-0e2799edb6db
+    taskid: 8d8d3caa-9c02-4792-81d7-5f159e37ebef
     type: condition
     task:
-      id: 89e760fd-b66c-4fbd-86e2-0e2799edb6db
+      id: 8d8d3caa-9c02-4792-81d7-5f159e37ebef
       version: -1
       name: Was there a result?
       description: Determines if there was a result from the previous command to continue cloud enrichment.
@@ -124,9 +125,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "85"
       "yes":
-      - "7"
+      - "67"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -142,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 765
+          "x": 460,
+          "y": 345
         }
       }
     note: false
@@ -155,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4917e65e-d407-42d6-8512-24aa3bcac514
+    taskid: bb77938e-2420-4151-8c9f-c44127d282ac
     type: condition
     task:
-      id: 4917e65e-d407-42d6-8512-24aa3bcac514
+      id: bb77938e-2420-4151-8c9f-c44127d282ac
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -167,9 +168,13 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "1"
       AWS:
-      - "60"
+      - "84"
+      Azure:
+      - "69"
+      GCP:
+      - "76"
     separatecontext: false
     conditions:
     - label: AWS
@@ -184,127 +189,54 @@ tasks:
           right:
             value:
               simple: Amazon Web Services
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RemoteIP
+            iscontext: true
+    - label: GCP
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ASM.ExternalService
+                accessor: externally_detected_providers
+            iscontext: true
+          right:
+            value:
+              simple: Google
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RemoteIP
+            iscontext: true
+    - label: Azure
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ASM.ExternalService
+                accessor: externally_detected_providers
+            iscontext: true
+          right:
+            value:
+              simple: Azure
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RemoteIP
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 0613c067-8533-4071-8bc3-8826bde21bd2
-    type: regular
-    task:
-      id: 0613c067-8533-4071-8bc3-8826bde21bd2
-      version: -1
-      name: Get external service information
-      description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
-      script: Cortex Attack Surface Management|||asm-list-external-service
-      type: regular
-      iscommand: true
-      brand: Cortex Attack Surface Management
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      ip_address:
-        complex:
-          root: alert
-          accessor: remoteip
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 5a29551f-cd20-4b04-8880-f45814e20e8f
-    type: title
-    task:
-      id: 5a29551f-cd20-4b04-8880-f45814e20e8f
-      version: -1
-      name: Set Field
-      description: commands.local.cmd.set.incident
-      type: title
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "16"
-      - "17"
-      - "22"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: a0abd2e5-ec98-4d8d-891a-77411aa9e1da
-    type: regular
-    task:
-      id: a0abd2e5-ec98-4d8d-891a-77411aa9e1da
-      version: -1
-      name: Set private IP grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      gridfield:
-        simple: asmprivateip
-      keys:
-        simple: IP,Source
-      val1:
-        complex:
-          root: AWS.EC2.Instances.NetworkInterfaces
-          accessor: PrivateIpAddress
-      val2:
-        simple: AWS
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1000,
-          "y": 1800
+          "x": 460,
+          "y": 1550
         }
       }
     note: false
@@ -316,10 +248,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 8d707797-b68f-40a1-84d6-7b4ee6f12c87
+    taskid: bf9bc181-4d75-436f-808a-3390fe289517
     type: condition
     task:
-      id: 8d707797-b68f-40a1-84d6-7b4ee6f12c87
+      id: bf9bc181-4d75-436f-808a-3390fe289517
       version: -1
       name: Is Cortex ASM enabled?
       description: Determines if the "Cortex Attack Surface Management" integration instance is configured to continue with cloud enrichment.
@@ -328,9 +260,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "1"
       "yes":
-      - "8"
+      - "66"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -364,690 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 97ddc74e-063b-4ddf-85e4-5eb0916c1873
-    type: regular
-    task:
-      id: 97ddc74e-063b-4ddf-85e4-5eb0916c1873
-      version: -1
-      name: Set service owner grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      gridfield:
-        simple: asmserviceowner
-      keys:
-        simple: Name,Email,Source,Timestamp
-      val1:
-        complex:
-          root: AWS.IAM.Users
-          accessor: UserName
-      val2:
-        simple: n/a
-      val3:
-        simple: AWS
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 1800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 085ab0b0-e3b5-453d-8c08-ac918e57d3d9
-    type: condition
-    task:
-      id: 085ab0b0-e3b5-453d-8c08-ac918e57d3d9
-      version: -1
-      name: Is there EC2 information?
-      description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "19"
-      - "29"
-      - "32"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AWS.EC2.Instances.NetworkInterfaces
-                accessor: PrivateIpAddress
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1420,
-          "y": 1475
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: bb6581a1-db3b-4253-8f99-63d0e271a148
-    type: condition
-    task:
-      id: bb6581a1-db3b-4253-8f99-63d0e271a148
-      version: -1
-      name: Is there IAM information?
-      description: Determines if there is IAM information to set in the service owner field.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AWS.IAM.Users
-                accessor: UserName
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 1475
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 0a410ef7-7688-495b-8628-06fdb95cee05
-    type: title
-    task:
-      id: 0a410ef7-7688-495b-8628-06fdb95cee05
-      version: -1
-      name: Private IP
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "10"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1000,
-          "y": 1675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 76af9bd7-dba5-468c-83e8-da04f223cef8
-    type: title
-    task:
-      id: 76af9bd7-dba5-468c-83e8-da04f223cef8
-      version: -1
-      name: Service Owner
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "14"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 1675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 4d1d41d5-bfa2-4326-84ea-3791b54b4870
-    type: title
-    task:
-      id: 4d1d41d5-bfa2-4326-84ea-3791b54b4870
-      version: -1
-      name: System IDs
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "23"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 1675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 34519907-ecc9-4aea-81e6-82e272f42072
-    type: condition
-    task:
-      id: 34519907-ecc9-4aea-81e6-82e272f42072
-      version: -1
-      name: Is there EC2 and security group information?
-      description: Determines if there is EC2 and security group information to set in the system IDs field.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AWS.EC2
-                accessor: Instances
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AWS.EC2.SecurityGroups
-                accessor: GroupId
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 1475
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 93798a60-5a5c-4e81-8e5b-5475f1960b9f
-    type: regular
-    task:
-      id: 93798a60-5a5c-4e81-8e5b-5475f1960b9f
-      version: -1
-      name: Set system IDs grid field (VPC)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: AWS-VPC
-      val2:
-        complex:
-          root: AWS.EC2.SecurityGroups
-          accessor: VpcId
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 1800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 18b394a3-b4d7-4947-898f-92ef37ae520c
-    type: regular
-    task:
-      id: 18b394a3-b4d7-4947-898f-92ef37ae520c
-      version: -1
-      name: Set system IDs grid field (SG)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: AWS-SG
-      val2:
-        complex:
-          root: AWS.EC2.SecurityGroups
-          accessor: GroupId
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 1950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: cb8d06e1-5925-417d-8860-fb6a5a83dd9c
-    type: regular
-    task:
-      id: cb8d06e1-5925-417d-8860-fb6a5a83dd9c
-      version: -1
-      name: Set system IDs grid field (NET)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: AWS-NET
-      val2:
-        complex:
-          root: AWS.EC2.Instances
-          accessor: SubnetId
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 2100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: 8f373eaf-2f76-4fcf-856e-21221aab0dc9
-    type: regular
-    task:
-      id: 8f373eaf-2f76-4fcf-856e-21221aab0dc9
-      version: -1
-      name: Set system IDs grid field (NIC)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: AWS-NIC
-      val2:
-        complex:
-          root: AWS.EC2.Instances.NetworkInterfaces
-          accessor: NetworkInterfaceId
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 2260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 5fa1b96f-35e2-4b6a-8b7e-fd0c2e920de8
-    type: regular
-    task:
-      id: 5fa1b96f-35e2-4b6a-8b7e-fd0c2e920de8
-      version: -1
-      name: Set system IDs grid field (EC2)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: AWS-EC2
-      val2:
-        complex:
-          root: AWS.EC2.Instances
-          accessor: InstanceId
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 2410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: e6f22bc3-90bb-4ac8-8401-6ebd2142c442
-    type: title
-    task:
-      id: e6f22bc3-90bb-4ac8-8401-6ebd2142c442
-      version: -1
-      name: Cloud
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "30"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1420,
-          "y": 1675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: f503bd85-9ead-41ae-8c53-9a8c0c98da93
-    type: regular
-    task:
-      id: f503bd85-9ead-41ae-8c53-9a8c0c98da93
-      version: -1
-      name: Set cloud grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      gridfield:
-        simple: asmcloud
-      keys:
-        simple: Provider,Organization,Project,Region,Other
-      val1:
-        simple: AWS
-      val2:
-        simple: n/a
-      val3:
-        simple: n/a
-      val4:
-        complex:
-          root: AWS.EC2.Instances
-          accessor: Region
-      val5:
-        complex:
-          root: AWS.EC2.Instances.Placement
-          accessor: AvailabilityZone
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1420,
-          "y": 1800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: e5009251-008f-4a9d-8010-41c756092369
-    type: title
-    task:
-      id: e5009251-008f-4a9d-8010-41c756092369
-      version: -1
-      name: Tags
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "33"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1860,
-          "y": 1675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: eaca1dc1-1571-48d6-8d79-019e20183feb
-    type: regular
-    task:
-      id: eaca1dc1-1571-48d6-8d79-019e20183feb
-      version: -1
-      name: Set tags grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      gridfield:
-        simple: asmtags
-      keys:
-        simple: Key,Value,Source
-      val1:
-        complex:
-          root: AWS.EC2.Instances.Tags
-          accessor: Key
-      val2:
-        complex:
-          root: AWS.EC2.Instances.Tags
-          accessor: Value
-      val3:
-        simple: AWS
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1860,
-          "y": 1800
+          "x": 460,
+          "y": -40
         }
       }
     note: false
@@ -1059,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e653e8d9-c904-4c6d-8f4f-70ebe4e0ffcc
+    taskid: 2946f0ab-a0b2-4ca3-80ba-f92b8e15958a
     type: title
     task:
-      id: e653e8d9-c904-4c6d-8f4f-70ebe4e0ffcc
+      id: 2946f0ab-a0b2-4ca3-80ba-f92b8e15958a
       version: -1
       name: Cloud Enrichment
       type: title
@@ -1071,14 +321,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 460,
+          "y": 1405
         }
       }
     note: false
@@ -1090,10 +340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f175160f-44bd-43b8-8d3d-08e14bc6fb00
+    taskid: ac5266ca-1735-46be-81a6-63b924837e89
     type: title
     task:
-      id: f175160f-44bd-43b8-8d3d-08e14bc6fb00
+      id: ac5266ca-1735-46be-81a6-63b924837e89
       version: -1
       name: Complete
       type: title
@@ -1105,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1260,
-          "y": 4210
+          "x": 110,
+          "y": 5210
         }
       }
     note: false
@@ -1116,29 +366,69 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: e0c3ed6d-3e3f-4c56-8d1b-1715cd280336
+  "61":
+    id: "61"
+    taskid: fbbfa1d7-0b7f-4ade-84c2-b8c3770128f2
+    type: playbook
+    task:
+      id: fbbfa1d7-0b7f-4ade-84c2-b8c3770128f2
+      version: -1
+      name: Cortex ASM - ServiceNow CMDB Enrichment
+      playbookName: Cortex ASM - ServiceNow CMDB Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      RemoteIP:
+        complex:
+          root: inputs.RemoteIP
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f9e407eb-b8cd-46aa-8fee-cd49815ddba5
     type: title
     task:
-      id: e0c3ed6d-3e3f-4c56-8d1b-1715cd280336
+      id: f9e407eb-b8cd-46aa-8fee-cd49815ddba5
       version: -1
-      name: Set Field
+      name: Tenable.io Enrichment
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "54"
-      - "55"
+      - "63"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 2870
+          "x": 460,
+          "y": 2590
         }
       }
     note: false
@@ -1148,58 +438,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 678ef2e8-fed3-4d2f-8666-eed51fe18480
-    type: condition
+  "63":
+    id: "63"
+    taskid: 4f4d8a1f-f39d-4efb-85fe-63c7a7913197
+    type: playbook
     task:
-      id: 678ef2e8-fed3-4d2f-8666-eed51fe18480
+      id: 4f4d8a1f-f39d-4efb-85fe-63c7a7913197
       version: -1
-      name: Is ServiceNow v2 enabled?
-      description: Determines if the "ServiceNow v2" integration instance is enabled in order to find email accounts for ServiceNow usernames.
-      type: condition
+      name: Cortex ASM - Tenable.io Enrichment
+      description: Given the IP address this playbook enriches Tenable.io information relevant to ASM alerts.
+      playbookName: Cortex ASM - Tenable.io Enrichment
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "46"
-      "yes":
-      - "41"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ServiceNow v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
+      '#none#':
+      - "70"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.RemoteIP
+          transformers:
+          - operator: uniq
+    separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 3360
+          "x": 460,
+          "y": 2740
         }
       }
     note: false
@@ -1209,34 +481,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: b088532b-1030-429c-881d-3cdcbf90ea84
+  "66":
+    id: "66"
+    taskid: d44c0e22-65e8-4bc4-816f-3affc2334a1c
     type: regular
     task:
-      id: b088532b-1030-429c-881d-3cdcbf90ea84
+      id: d44c0e22-65e8-4bc4-816f-3affc2334a1c
       version: -1
-      name: Pull ServiceNow user information
-      description: Pull information on the user that was "assigned_to" for a CMDB object.
-      script: ServiceNow v2|||servicenow-query-users
+      name: Get external service information
+      description: Get service details according to the service ID.
+      script: Cortex Attack Surface Management|||asm-get-external-service
       type: regular
       iscommand: true
-      brand: ServiceNow v2
+      brand: Cortex Attack Surface Management
     nexttasks:
       '#none#':
-      - "48"
+      - "6"
     scriptarguments:
-      user_id:
+      service_id:
         complex:
-          root: ServiceNowCMDB.Record.Attributes.assigned_to
-          accessor: value
+          root: alert
+          accessor: asmserviceid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '[\"]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -940,
-          "y": 3535
+          "x": 460,
+          "y": 170
         }
       }
     note: false
@@ -1246,28 +524,147 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: a7e08571-a1aa-4848-8866-be691dc009aa
+  "67":
+    id: "67"
+    taskid: bbdf6750-10f4-49a2-8fd9-3ec98925e7e8
+    type: regular
+    task:
+      id: bbdf6750-10f4-49a2-8fd9-3ec98925e7e8
+      version: -1
+      name: Set protocol
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      protocol:
+        complex:
+          root: ASM.ExternalService
+          accessor: protocol
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 54398952-9c5c-4f93-8090-f32d0f58f4a3
+    type: regular
+    task:
+      id: 54398952-9c5c-4f93-8090-f32d0f58f4a3
+      version: -1
+      name: Infer whether service is used for development (vs. production)
+      description: Identify whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
+      scriptName: InferWhetherServiceIsDev
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      active_classifications:
+        complex:
+          root: ASM.ExternalService
+          accessor: active_classifications
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 869e8493-816d-4548-8908-4cbc088e09be
+    type: playbook
+    task:
+      id: 869e8493-816d-4548-8908-4cbc088e09be
+      version: -1
+      name: Cortex ASM - Azure Enrichment
+      description: Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
+      playbookName: Cortex ASM - Azure Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      RemoteIP:
+        complex:
+          root: inputs.RemoteIP
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: ad08d1b9-9745-4123-82cc-b5a4db969781
     type: title
     task:
-      id: a7e08571-a1aa-4848-8866-be691dc009aa
+      id: ad08d1b9-9745-4123-82cc-b5a4db969781
       version: -1
-      name: Service Owner
+      name: Splunk Enrichment
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "40"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 3230
+          "x": 460,
+          "y": 2910
         }
       }
     note: false
@@ -1277,28 +674,114 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: d5d83f77-4542-4627-86b0-c67e43401c92
+  "71":
+    id: "71"
+    taskid: 8026d630-6577-4f7e-8ee4-91afb1dd33c6
+    type: playbook
+    task:
+      id: 8026d630-6577-4f7e-8ee4-91afb1dd33c6
+      version: -1
+      name: Cortex ASM - Splunk Enrichment
+      description: 'Given the IP address this playbook enriches information from Splunk results relevant to ASM alerts. '
+      playbookName: Cortex ASM - Splunk Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.RemoteIP
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 7a1aa580-c79e-4def-832a-6c76f919b3e4
+    type: playbook
+    task:
+      id: 7a1aa580-c79e-4def-832a-6c76f919b3e4
+      version: -1
+      name: Cortex ASM - Rapid7 Enrichment
+      description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose) information relevant to ASM alerts.
+      playbookName: Cortex ASM - Rapid7 Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.RemoteIP
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: c4460aec-1b5d-4189-8d52-fe7c71803501
     type: title
     task:
-      id: d5d83f77-4542-4627-86b0-c67e43401c92
+      id: c4460aec-1b5d-4189-8d52-fe7c71803501
       version: -1
-      name: System IDs
+      name: Rapid7 Enrichment
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "49"
+      - "72"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 3230
+          "x": 460,
+          "y": 3220
         }
       }
     note: false
@@ -1308,229 +791,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
-    taskid: 5894ca6d-7998-4465-8955-96ef714ccf1b
-    type: regular
+  "74":
+    id: "74"
+    taskid: a56a4cbf-3445-44b4-8d74-7641b034c244
+    type: title
     task:
-      id: 5894ca6d-7998-4465-8955-96ef714ccf1b
+      id: a56a4cbf-3445-44b4-8d74-7641b034c244
       version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
+      name: Qualys Enrichment
+      type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - "75"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
-    taskid: 17a556f3-f295-42d4-873c-a85bd7081195
-    type: regular
-    task:
-      id: 17a556f3-f295-42d4-873c-a85bd7081195
-      version: -1
-      name: Set service owner grid field (no email)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      gridfield:
-        simple: asmserviceowner
-      keys:
-        simple: Name,Email,Source,Timestamp
-      val1:
-        complex:
-          root: ServiceNowCMDB.Record.Attributes.assigned_to
-          accessor: display_value
-      val2:
-        simple: n/a
-      val3:
-        simple: SNOW-CMDB
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -440,
-          "y": 3690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
-    taskid: ee6e9f2b-f35d-4cf5-8585-c8d13e62f054
-    type: regular
-    task:
-      id: ee6e9f2b-f35d-4cf5-8585-c8d13e62f054
-      version: -1
-      name: Set service owner grid field (email)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      gridfield:
-        simple: asmserviceowner
-      keys:
-        simple: Name,Email,Source,Timestamp
-      val1:
-        complex:
-          root: ServiceNowCMDB.Record.Attributes.assigned_to
-          accessor: display_value
-      val2:
-        complex:
-          root: ServiceNow.User
-          accessor: Email
-      val3:
-        simple: SNOW-CMDB
-      val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -940,
-          "y": 3690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: ded18949-09bf-4717-87d9-e554cd2b9333
-    type: regular
-    task:
-      id: ded18949-09bf-4717-87d9-e554cd2b9333
-      version: -1
-      name: Set system IDs grid field (NIC)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "51"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: SNOW-CMDB-NIC
-      val2:
-        complex:
-          root: ServiceNowCMDB.Records.[0]
-          accessor: sys_id
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 3360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
-    taskid: 793e96e1-1524-4b64-833d-9f3061cc59d7
-    type: regular
-    task:
-      id: 793e96e1-1524-4b64-833d-9f3061cc59d7
-      version: -1
-      name: Set system IDs grid field (Parent)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "52"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: SNOW-CMDB-Parent
-      val2:
-        complex:
-          root: ServiceNowCMDB.Record
-          accessor: SysID
-      val3:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
+          "x": 460,
           "y": 3520
         }
       }
@@ -1541,227 +822,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "52":
-    id: "52"
-    taskid: 85390d43-e7a0-4805-8626-833588f29aec
-    type: regular
-    task:
-      id: 85390d43-e7a0-4805-8626-833588f29aec
-      version: -1
-      name: Set system IDs grid field (Assigned)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "53"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: SNOW-CMDB-ASSIGN
-      val2:
-        complex:
-          root: ServiceNowCMDB.Record.Attributes.assigned_to
-          accessor: value
-      val3:
-        complex:
-          root: ServiceNowCMDB.Record.Attributes.assigned_to
-          accessor: link
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 3690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
-    taskid: 9a116cc5-1cd1-493e-8d2d-01048f9dfcd6
-    type: regular
-    task:
-      id: 9a116cc5-1cd1-493e-8d2d-01048f9dfcd6
-      version: -1
-      name: Set system IDs grid field (Company)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      gridfield:
-        simple: asmsystemids
-      keys:
-        simple: Type,ID,Link
-      val1:
-        simple: SNOW-CMDB-COMPANY
-      val2:
-        complex:
-          root: ServiceNowCMDB.Record.Attributes.company
-          accessor: value
-      val3:
-        complex:
-          root: ServiceNowCMDB.Record.Attributes.company
-          accessor: link
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 3860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 982b585a-afe8-4cbe-8caf-956967f44a4b
-    type: condition
-    task:
-      id: 982b585a-afe8-4cbe-8caf-956967f44a4b
-      version: -1
-      name: Is there ServiceNow record information?
-      description: Determines if there is ServiceNow record information to set in the service owner field.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "38"
-      "yes":
-      - "42"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ServiceNowCMDB
-                accessor: Record
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -440,
-          "y": 3030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: c479944e-27dd-4d27-89e4-8baa60d5c6a9
-    type: condition
-    task:
-      id: c479944e-27dd-4d27-89e4-8baa60d5c6a9
-      version: -1
-      name: Is there ServiceNow record and records information?
-      description: Determines if there is ServiceNow record and records information to set in the service owner field.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "38"
-      "yes":
-      - "43"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ServiceNowCMDB
-                accessor: Records
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ServiceNowCMDB
-                accessor: Record
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 3030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
-    taskid: 8e74798f-ebf8-4cde-82a8-c3f07a8868c4
+  "75":
+    id: "75"
+    taskid: 2a1d1161-ef36-4bac-8348-0804e9bc8597
     type: playbook
     task:
-      id: 8e74798f-ebf8-4cde-82a8-c3f07a8868c4
+      id: 2a1d1161-ef36-4bac-8348-0804e9bc8597
       version: -1
-      name: ServiceNow CMDB Search
-      playbookName: ServiceNow CMDB Search
+      name: Cortex ASM - Qualys Enrichment
+      description: Given the IP address this playbook enriches information from Qualys assets.
+      playbookName: Cortex ASM - Qualys Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "39"
+      - "79"
     scriptarguments:
-      BypassAddRecord:
-        simple: "true"
-      SearchCIClass:
-        simple: cmdb_ci_network_adapter
-      SearchQueryField:
-        simple: ip_address
-      SearchQueryValue:
+      QualysIP:
         complex:
           root: inputs.RemoteIP
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1772,39 +854,213 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 2720
+          "x": 460,
+          "y": 3650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: c09fc988-629a-41ab-87c8-feb1328e55ba
+  "76":
+    id: "76"
+    taskid: e6d5c7c5-5611-4653-83c5-59fa0bbf6280
+    type: playbook
+    task:
+      id: e6d5c7c5-5611-4653-83c5-59fa0bbf6280
+      version: -1
+      name: Cortex ASM - GCP Enrichment
+      description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
+      playbookName: Cortex ASM - GCP Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 014ea56f-2ff8-43b7-8b3c-2d6c48d05e69
+    type: playbook
+    task:
+      id: 014ea56f-2ff8-43b7-8b3c-2d6c48d05e69
+      version: -1
+      name: Cortex ASM - Service Ownership
+      playbookName: Cortex ASM - Service Ownership
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 5030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 13abe148-9470-4170-8e52-9e6ed74a120c
+    type: playbook
+    task:
+      id: 13abe148-9470-4170-8e52-9e6ed74a120c
+      version: -1
+      name: Cortex ASM - Prisma Cloud Enrichment
+      description: Given the IP address this playbook enriches information from Prisma Cloud.
+      playbookName: Cortex ASM - Prisma Cloud Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      cloudProvider:
+        complex:
+          root: ASM.ExternalService
+          accessor: externally_detected_providers
+      remoteIP:
+        complex:
+          root: inputs.RemoteIP
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 9fece904-670e-42ad-8e0a-31d69b39a685
+    type: condition
+    task:
+      id: 9fece904-670e-42ad-8e0a-31d69b39a685
+      version: -1
+      name: Are there any emails in tags?
+      description: Checks if there is email in the tags.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "68"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmtags.Value
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: alert.asmtags.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '@'
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
+                    unpack_matches: {}
+                - operator: uniq
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 3aeec609-0a09-4019-8f13-ce78d3f0f1f0
     type: title
     task:
-      id: c09fc988-629a-41ab-87c8-feb1328e55ba
+      id: 3aeec609-0a09-4019-8f13-ce78d3f0f1f0
       version: -1
-      name: continue
+      name: Service Owner from Tags
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "38"
+      - "82"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1270,
-          "y": 400
+          "x": 460,
+          "y": 4300
         }
       }
     note: false
@@ -1814,24 +1070,139 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
-    taskid: 6128809c-eae7-4b12-8953-0ef2c7894e24
-    type: playbook
+  "82":
+    id: "82"
+    taskid: 58b3546e-5bf0-4312-8dac-1d9f9f0ee623
+    type: regular
     task:
-      id: 6128809c-eae7-4b12-8953-0ef2c7894e24
+      id: 58b3546e-5bf0-4312-8dac-1d9f9f0ee623
       version: -1
-      name: AWS - Enrichment
-      description: Given the IP address this playbook enriches EC2 and IAM information.
-      playbookName: AWS - Enrichment
-      type: playbook
+      name: Get current time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "83"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: a1c806a0-c11f-4ea3-8adb-d4c1a3ffc466
+    type: regular
+    task:
+      id: a1c806a0-c11f-4ea3-8adb-d4c1a3ffc466
+      version: -1
+      name: Set service owners from Tag grid field
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
     scriptarguments:
-      AwsIP:
+      gridfield:
+        simple: asmserviceowner
+      keys:
+        simple: Name,Email,Source,Timestamp
+      val1:
+        simple: n/a
+      val2:
+        complex:
+          root: alert.asmtags.Value
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.asmtags.Value
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
+              unpack_matches: {}
+          - operator: uniq
+      val3:
+        complex:
+          root: alert.asmtags
+          accessor: Source
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: Owner-In-Tags-From-
+              suffix: {}
+          - operator: uniq
+      val4:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 9d1cc00b-2198-4a99-8db3-5ec85e3b464d
+    type: playbook
+    task:
+      id: 9d1cc00b-2198-4a99-8db3-5ec85e3b464d
+      version: -1
+      name: Cortex ASM - AWS Enrichment
+      playbookName: Cortex ASM - AWS Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      RemoteIP:
         complex:
           root: inputs.RemoteIP
     separatecontext: true
@@ -1840,36 +1211,160 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 100
+      max: 0
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1140
+          "x": 460,
+          "y": 1995
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 6a1eaa17-3d05-4304-8613-a1a84229ae39
+    type: regular
+    task:
+      id: 6a1eaa17-3d05-4304-8613-a1a84229ae39
+      version: -1
+      name: Sleep for 1 hour
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      execution-timeout:
+        simple: "3660"
+      seconds:
+        simple: "3600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: da1ae0f9-43b2-4814-8a96-53b30be702b7
+    type: condition
+    task:
+      id: da1ae0f9-43b2-4814-8a96-53b30be702b7
+      version: -1
+      name: Was there a result?
+      description: Determines if there was a result from the previous command to continue cloud enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 7d26fca6-9f79-4ebb-861b-b72153e4e3c5
+    type: regular
+    task:
+      id: 7d26fca6-9f79-4ebb-861b-b72153e4e3c5
+      version: -1
+      name: Get external service information
+      description: Get service details according to the service ID.
+      script: Cortex Attack Surface Management|||asm-get-external-service
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '[\"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "11_3_#default#": 0.23,
-      "54_38_#default#": 0.16,
-      "55_38_#default#": 0.2,
-      "6_3_#default#": 0.28,
-      "7_3_#default#": 0.35
+      "11_1_#default#": 0.2,
+      "11_66_yes": 0.59,
+      "1_3_yes": 0.24,
+      "6_67_yes": 0.62,
+      "7_1_#default#": 0.35,
+      "7_69_Azure": 0.81
     },
     "paper": {
       "dimensions": {
-        "height": 4395,
-        "width": 3510,
-        "x": -1270,
-        "y": -120
+        "height": 5455,
+        "width": 1390,
+        "x": 110,
+        "y": -180
       }
     }
   }
@@ -1882,7 +1377,10 @@ inputs:
   required: false
   description: IP address of service
   playbookInputQuery:
-outputs: []
-fromversion: 6.5.0
+outputs:
+- contextPath: ASM.ExternalService.externally_detected_providers
+  description: Providers of the external service.
+  type: unknown
 tests:
 - No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,0 +1,15 @@
+{
+"comments":
+    [{
+    "eventId": "bc64f242-ce29-4f35-bc94-230991116564",
+    "message":	"first comment",
+    "time":	"2022-12-21T12:55:55.000Z",
+    "username":	"foo.sample"
+},
+{
+    "eventId": "bc64f242-ce29-4f35-bc94-230991116564",
+    "message":	"second comment",
+    "time":	"2022-12-21T12:55:55.000Z",
+    "username":	"bar.sample"
+}
+]}

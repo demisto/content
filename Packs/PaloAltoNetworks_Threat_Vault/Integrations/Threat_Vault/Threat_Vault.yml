@@ -29,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. No available replacement.
+description: Deprecated. Use Threat Vault v2 instead.
 display: Palo Alto Networks Threat Vault (Deprecated)
 name: Palo Alto Networks Threat Vault
 script:

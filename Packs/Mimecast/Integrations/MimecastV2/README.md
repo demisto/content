@@ -31,6 +31,8 @@ Please read detailed instructions in order to understand how to set the integrat
    | Incident type | False |
    | Fetch incidents | False |
 
+> **Note:** The fields `User Email Address (Use for auto token refresh)` and `Password` are not mandatory fields. You will only need them if you have expiry set on the auth of the user account you use to create the API keys. They will be used to auto refresh the API key once it expires.
+
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands

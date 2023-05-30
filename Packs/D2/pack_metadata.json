@@ -1,7 +1,7 @@
 {
     "name": "D2 (Deprecated)",
     "description": "Deprecated. No available replacement.",
-    "hidden": false,
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",

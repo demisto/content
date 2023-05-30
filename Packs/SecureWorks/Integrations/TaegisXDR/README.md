@@ -20,6 +20,37 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
+### taegis-archive-investigation
+
+#### Base Command
+
+`!taegis-archive-investigation`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation id to archive | True |
+
+#### Command Example
+
+```
+!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "ArchivedInvestigation": {
+            "id": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
+        }
+    }
+}
+```
+
+
 ### taegis-create-comment
 
 #### Base Command
@@ -153,11 +184,81 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-assets
+
+#### Base Command
+
+`!taegis-fetch-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| page | | `0` | False |
+| page_size | | `10` | False |
+| endpoint_type | | | False |
+| host_id | ID of the asset to fetch | `e43b545a-580a-4047-b489-4338c1cc4ba1` | False |
+| hostname | | | False |
+| investigation_id | | | False |
+| ip_address | | | False |
+| mac_address | | | False |
+| os_family | | | False |
+| os_version | | | False |
+| sensor_version | | | False |
+| username | | | False |
+
+#### Command Examples
+
+```
+!taegis-fetch-assets
+!taegis-fetch-assets page=1 page_size=5
+!taegis-fetch-assets hostname=MyHostname01
+!taegis-fetch-assets host_id=e43b545a-580a-4047-b489-4338c1cc4ba1
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Assets": [
+            {
+              "id": "",
+              "ingestTime": "",
+              "createdAt": "",
+              "updatedAt": "",
+              "deletedAt": "",
+              "biosSerial": "",
+              "firstDiskSerial": "",
+              "systemVolumeSerial": "",
+              "sensorVersion": "",
+              "endpointPlatform": "",
+              "hostnames": [{"id": ", "hostname": ""],
+              "architecture": "",
+              "osFamily": "",
+              "osVersion": "",
+              "osDistributor": "",
+              "osRelease": "",
+              "systemType": "",
+              "osCodename": "",
+              "kernelRelease": "",
+              "kernelVersion": "",
+              "tags": [ "key": "", "tag": ""],
+              "endpointType": "",
+              "hostId": "",
+              "sensorId": "",
+            }
+        ]
+    }
+}
+```
+
+
 ### taegis-fetch-comment
 
 #### Base Command
 
-`!taegis-create-comment`
+`!taegis-fetch-comment`
 
 #### Inputs
 
@@ -251,6 +352,49 @@ After you successfully execute a command, a DBot message appears in the War Room
                 "parent_type": "investigation",
             }
         ]
+    }
+}
+```
+
+
+### taegis-fetch-endpoint
+
+#### Base Command
+`!taegis-fetch-endpoint`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Endpoint ID to fetch | True |
+
+#### Command Example
+
+```
+!taegis-fetch-endpoint id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "assetEndpointInfo": {
+            "hostId": "",
+            "hostName": "",
+            "actualIsolationStatus": "",
+            "allowedDomain": "",
+            "desiredIsolationStatus": "",
+            "firstConnectTime": "",
+            "moduleHealth": {
+                "enabled": ""
+                "lastRunningTime": "",
+                "moduleDisplayName": "",
+            }
+            "lastConnectAddress": "",
+            "lastConnectTime": "",
+            "sensorVersion": ""
+        }
     }
 }
 ```
@@ -419,6 +563,121 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-users
+
+#### Base Command
+`!taegis-fetch-users`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The id of the user, in `auth0` format | False |
+| email | The email of the user | False |
+| status | The users to find based on status | False |
+| page |  | False |
+| page_size | | False |
+
+#### Command Example
+
+```
+!taegis-fetch-users id="auth0|123456"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Users": [
+            {
+                "email": "myuser@email.com",
+                "family_name": "Smith",
+                "given_name": "John",
+                "status": "Registered",
+                "user_id": "auth0|123456"
+            }
+        ]
+    }
+}
+```
+
+
+### taegis-isolate-asset
+
+#### Base Command
+
+`!taegis-isolate-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| id | ID of the asset to isolate | `e43b545a-580a-4047-b489-4338c1cc4ba1` | True |
+| reason | The reason for the isolation | `See ticket 12345` | True |
+
+#### Command Examples
+
+```
+!taegis-isolate-asset id="e43b545a-580a-4047-b489-4338c1cc4ba1" reason="See ticket 12345"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "AssetIsolation": {
+            "id": "e43b545a-580a-4047-b489-4338c1cc4ba1"
+        }
+    }
+}
+```
+
+
+### taegis-update-alert-status
+
+#### Base Command
+
+`!taegis-update-alert-status`
+
+#### Input
+
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| ids | A comma-separated list of alerts by IDs | `alert://priv:crowdstrike:11772:1666269058114:59284e28-4ec8-542b-a4a1-452c3688bc1a` | True |
+| status | The status to update the alert(s) with | `FALSE_POSITIVE` | True |
+| reason | A comment/reason for the alert status update | `See ticket 13245` | False |
+
+##### Permitted Status Values
+
+* FALSE_POSITIVE
+* NOT_ACTIONABLE
+* OPEN
+* TRUE_POSITIVE_BENIGN
+* TRUE_POSITIVE_MALICIOUS
+
+
+#### Command Examples
+
+```
+!taegis-update-alert-status ids="alert://priv:crowdstrike:11772:1677742145475:07e2d9cc-0a04-55ec-890a-97f39d63698e" status=NOT_ACTIONABLE reason="Test Reason"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "AlertStatusUpdate": {
+            "reason": "feedback updates successfully applied",
+            "resolution_status": "SUCCESS"
+        }
+    }
+}
+```
+
+
 ### taegis-update-comment
 
 #### Base Command
@@ -466,16 +725,21 @@ After you successfully execute a command, a DBot message appears in the War Room
 | service_desk_id | An ID or ticket # to relate to an Investigation | False |
 | service_desk_type | The type of id related to an investigation (e.g. Jira) | False |
 | status | The current status of the Investigation | False |
+| assignee_id | The id of a user to assign, in `auth0|12345` format | False |
 
 Note: At least 1 of the above inputs (in addition to id) must be defined
 
 ##### Permitted Status Values
 
 * Active
+* Awaiting Action
 * Closed: Authorized Activity
+* Closed: Confirmed Security Incident
 * Closed: False Positive Alert
+* Closed: Inconclusive
 * Closed: Informational
 * Closed: Not Vulnerable
+* Closed: Threat Mitigated
 * Open
 * Suspended
 
@@ -492,6 +756,37 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
     "TaegisXDR": {
         "InvestigationUpdate": {
             "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d"
+        }
+    }
+}
+```
+
+
+### taegis-unarchive-investigation
+
+#### Base Command
+
+`!taegis-unarchive-investigation`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation id to unarchive | True |
+
+#### Command Example
+
+```
+!taegis-unarchive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "UnarchivedInvestigation": {
+            "id": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
         }
     }
 }

@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: DelineaSS
   version: -1
@@ -20,6 +20,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fetches Credentials
+  name: isFetchCredentials
+  required: false
+  type: 8
+- display: Secret IDs (Provide multiple Id's by using ',' example- 1,2,3)
+  name: secrets
+  required: false
+  type: 12
 description: Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 display: DelineaSS
 name: DelineaSS
@@ -83,6 +91,12 @@ script:
       name: newpassword
       required: true
       secret: true
+    - default: false
+      description: Notes to update the password
+      isArray: false
+      name: autoComment
+      required: false
+      secret: false
     deprecated: false
     description: Update password for a secret by ID
     execution: false
@@ -213,6 +227,12 @@ script:
       isArray: false
       name: secret_id
       required: true
+      secret: false
+    - default: false
+      description: Notes to get a secret
+      isArray: false
+      name: autoComment
+      required: false
       secret: false
     deprecated: false
     description: Get secret object by ID secret
@@ -688,6 +708,12 @@ script:
       name: id
       required: true
       secret: false
+    - default: false
+      description: Notes to Delete the secret
+      isArray: false
+      name: autoComment
+      required: false
+      secret: false
     deprecated: false
     description: Delete secret
     execution: false
@@ -1078,6 +1104,12 @@ script:
       name: newpassword
       required: true
       secret: false
+    - default: false
+      description: Notes to change the password
+      isArray: false
+      name: autoComment
+      required: false
+      secret: false
     deprecated: false
     description: Remote Password Changing
     execution: false
@@ -1086,7 +1118,7 @@ script:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

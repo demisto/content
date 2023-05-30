@@ -1,4 +1,7 @@
 category: Endpoint
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CrowdstrikeFalcon
   version: -1
@@ -8,98 +11,155 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
+- display: Client ID
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret
+  section: Connect
 - display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 0
+  hidden: true
+  section: Connect
 - display: Secret
   name: secret
-  required: true
+  required: false
   type: 4
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: true
+  section: Connect
+- defaultvalue: 'A+ - 3rd party enrichment'
+  display: Source Reliability
+  name: Reliability
+  required: false
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command.
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  section: Collect
+  advanced: true
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '15'
-  display: Max incidents per fetch
+  defaultvalue: '3 days'
+  section: Collect
+- display: Max incidents per fetch
   name: incidents_per_fetch
   required: false
   type: 0
+  defaultvalue: '15'
+  section: Collect
+  advanced: true
 - display: Detections fetch query
   name: fetch_query
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Incidents fetch query
   name: incidents_fetch_query
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
-  defaultvalue: None
-  display: Mirroring Direction
+  section: Connect
+- display: Mirroring Direction
   name: mirror_direction
+  required: false
+  type: 15
+  additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
+  defaultvalue: None
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
-  type: 15
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
-- additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
-  defaultvalue: 'false'
+  section: Collect
+  advanced: true
+- defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   name: close_in_cs_falcon
   required: false
   type: 8
+  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
+  section: Collect
+  advanced: true
 - additionalinfo: Choose what to fetch - incidents, detections, or both.
-  defaultvalue: Detections
-  display: Fetch types
+  defaultvalue: 'Detections'
+  display: 'Fetch types'
   name: fetch_incidents_or_detections
+  required: false
+  type: 16
   options:
   - Detections
   - Incidents
-  required: false
-  type: 16
+  section: Collect
+  advanced: true
 - defaultvalue: '1'
-  display: Incidents Fetch Interval
+  display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
+  advanced: true
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   required: false
   type: 0
+  section: Collect
+  advanced: true
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
   commands:
   - arguments:
+    - name: extended_data
+      predefined:
+      - Yes
+      - No
+      description: Whether or not to get additional data about the device.
+      auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
     - description: A comma-separated list of device IDs to limit the results.
@@ -630,6 +690,10 @@ script:
     - defaultValue: '30'
       description: Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes).
       name: timeout
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -1175,6 +1239,8 @@ script:
       - expiration_timestamp.desc
     - description: The offset to begin the list from. For example, start from the 10th record and return the list.
       name: offset
+    - description: A pagination token used with the limit parameter to manage pagination of results. Matching the 'after' parameter in the API. Use instead of offset.
+      name: next_page_token
     description: Returns a list of your uploaded IOCs that match the search criteria.
     name: cs-falcon-search-custom-iocs
     outputs:
@@ -1214,6 +1280,8 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.NextPageToken
+      description: A pagination token used with the limit parameter to manage pagination of results
   - arguments:
     - auto: PREDEFINED
       description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided.'
@@ -1997,7 +2065,7 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
-    description: Returns information about an endpoint.
+    description: Returns information about an endpoint, does not support regex.
     name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname
@@ -2078,6 +2146,7 @@ script:
       defaultValue: '50'
       description: Maximum number of results on a page.
       name: limit
+      type: string
     description: List the available host groups.
     name: cs-falcon-list-host-groups
     outputs:
@@ -2281,6 +2350,10 @@ script:
       isArray: true
       name: multiple_indicators_json
       required: true
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
@@ -2334,6 +2407,10 @@ script:
       isArray: true
       name: process_ids
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2362,6 +2439,10 @@ script:
       - Linux
       - Mac
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2375,6 +2456,10 @@ script:
     - description: The host ID you want to get the processes list from.
       name: host_id
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2385,6 +2470,10 @@ script:
     - description: The host ID you want to get the network status and protocol statistics list from.
       name: host_id
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2400,6 +2489,10 @@ script:
       isArray: true
       name: registry_keys
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2407,6 +2500,10 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2427,6 +2524,10 @@ script:
     - description: This is an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: SHA256
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2507,13 +2608,1006 @@ script:
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.8.37753
+  - arguments:
+    - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'
+      name: filter
+      required: false
+    - description: Unique agent identifier (AID) of a sensor.
+      name: aid
+      isArray: true
+      required: false
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve_id
+      isArray: true
+      required: false
+    - description: "Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE."
+      name: cve_severity
+      isArray: true
+      required: false
+    - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs.
+      name: tags
+      isArray: true
+      required: false
+    - description: "Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired."
+      name: status
+      isArray: true
+      required: false
+    - description: "Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux."
+      name: platform_name
+      required: false
+    - description: Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs.
+      name: host_group
+      isArray: true
+      required: false
+    - description: Type of host a sensor is running on.
+      name: host_type
+      isArray: true
+      required: false
+    - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10
+      name: last_seen_within
+      required: false
+    - auto: PREDEFINED
+      description: Indicates if the vulnerability is suppressed by a suppression rule.
+      name: is_suppressed
+      isArray: true
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Display remediation information type of data to be returned for each vulnerability entity.
+      defaultValue: 'True'
+      name: display_remediation_info
+      required: false
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: Whether to return logic information type of data for each vulnerability entity.
+      defaultValue: 'True'
+      name: display_evaluation_logic_info
+      required: false
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: Whether to return host information type of data for each vulnerability entity.
+      name: display_host_info
+      defaultValue: 'False'
+      required: false
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Maximum number of items to return (1-5000).
+      defaultValue: '50'
+      type: String
+      name: limit
+      required: false
+    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
+    name: cs-falcon-spotlight-search-vulnerability
+    outputs:
+    - contextPath: CrowdStrike.Vulnerability.id
+      description: Unique system-assigned ID of the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cid
+      description: Unique system-generated customer identifier (CID) of the account.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.aid
+      description: Unique agent identifier (AID) of the sensor where the vulnerability was found.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.created_timestamp
+      description: UTC date and time of when the vulnerability was created in Spotlight.
+      type: Date
+    - contextPath: CrowdStrike.Vulnerability.updated_timestamp
+      description: UTC date and time of the last update made on the vulnerability.
+      type: Date
+    - contextPath: CrowdStrike.Vulnerability.status
+      description: "Vulnerability's current status. Possible values are: open, closed, reopen, or expired."
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.apps.product_name_version
+      description: Name and version of the product associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.apps.sub_status
+      description: "Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen."
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.apps.remediation.ids
+      description: Remediation ID of each product associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.hostname
+      description: Name of the machine.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.instance_id
+      description: Cloud instance ID of the host.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.service_provider_account_id
+      description: Cloud service provider account ID for the host.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.service_provider
+      description: Cloud service provider for the host.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.os_build
+      description: Operating system build.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.product_type_desc
+      description: Type of host a sensor is running on.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.local_ip
+      description: Device's local IP address.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.machine_domain
+      description: Active Directory domain name.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.os_version
+      description: Operating system version.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.ou
+      description: Active directory organizational unit name.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.site_name
+      description: Active directory site name.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.system_manufacturer
+      description: Name of the system manufacturer.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.groups.id
+      description: Array of host group IDs that the host is assigned to.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.groups.name
+      description: Array of host group names that the host is assigned to.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.tags
+      description: Name of a tag assigned to a host.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.host_info.platform
+      description: Operating system platform. This filter supports negation.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.remediation.entities.id
+      description: Unique ID of the remediation.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.remediation.entities.reference
+      description: Relevant reference for the remediation that can be used to get additional details for the remediation.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.remediation.entities.title
+      description: Short description of the remediation.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.remediation.entities.action
+      description: Expanded description of the remediation.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.remediation.entities.link
+      description: Link to the remediation page for the vendor. In certain cases, this field is null.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.id
+      description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.base_score
+      description: Base score of the CVE (float value between 1 and 10).
+      type: Number
+    - contextPath: CrowdStrike.Vulnerability.cve.severity
+      description: CVSS severity rating of the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.exploit_status
+      description: Numeric value of the most severe known exploit.
+      type: Number
+    - contextPath: CrowdStrike.Vulnerability.cve.exprt_rating
+      description: ExPRT rating assigned by CrowdStrike's predictive AI rating system.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.description
+      description: Brief description of the CVE.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.published_date
+      description: UTC timestamp with the date and time of when the vendor published the CVE.
+      type: Date
+    - contextPath: CrowdStrike.Vulnerability.cve.vendor_advisory
+      description: Link to the vendor page where the CVE was disclosed.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.exploitability_score
+      description: Exploitability score of the CVE (float values from 1-4).
+      type: Number
+    - contextPath: CrowdStrike.Vulnerability.cve.impact_score
+      description: Impact score of the CVE (float values from 1-6).
+      type: Number
+    - contextPath: CrowdStrike.Vulnerability.cve.vector
+      description: Textual representation of the metric values used to score the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.remediation_level
+      description: CVSS remediation level of the vulnerability (U = Unavailable, or O = Official fix).
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev
+      description: Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities (KEV) catalog.
+      type: Boolean
+    - contextPath: CrowdStrike.Vulnerability.cve.cisa_info.due_date
+      description: Date before which CISA mandates subject organizations to patch the vulnerability.
+      type: Date
+    - contextPath: CrowdStrike.Vulnerability.cve.spotlight_published_date
+      description: UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability.
+      type: Date
+    - contextPath: CrowdStrike.Vulnerability.cve.actors
+      description: Adversaries associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.cve.name
+      description: The vulnerability name.
+      type: String
+  - arguments:
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve_id
+      isArray: true
+      required: true
+    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
+    name: cve
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - description: Maximum number of items to return (1-5000).
+      defaultValue: '50'
+      name: limit
+      required: false
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve_ids
+      isArray: true
+      required: true
+    description: Retrieve vulnerability details for a specific ID and host. Supported with the CrowdStrike Spotlight license.
+    name: cs-falcon-spotlight-list-host-by-vulnerability
+    outputs:
+    - contextPath: CrowdStrike.VulnerabilityHost.id
+      description: Unique system-assigned ID of the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.cid
+      description: Unique system-generated customer identifier (CID) of the account.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.aid
+      description: Unique agent identifier (AID) of the sensor where the vulnerability was found.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.created_timestamp
+      description: UTC date and time of when the vulnerability was created in Spotlight.
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.updated_timestamp
+      description: UTC date and time of the last update made on the vulnerability.
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.status
+      description: "Vulnerability's current status. Possible values are: open, closed, reopen, or expired."
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.apps.product_name_version
+      description: Name and version of the product associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.apps.sub_status
+      description: "Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen."
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.apps.remediation.ids
+      description: Remediation ID of each product associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.apps.evaluation_logic.id
+      description: Unique system-assigned ID of the vulnerability evaluation logic.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.suppression_info.is_suppressed
+      description: Indicates if the vulnerability is suppressed by a suppression rule.
+      type: Boolean
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.hostname
+      description: Name of the machine.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.local_ip
+      description: Device's local IP address.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.machine_domain
+      description: Active Directory domain name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.os_version
+      description: Operating system version.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.ou
+      description: Active directory organizational unit name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.site_name
+      description: Active directory site name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.system_manufacturer
+      description: Name of the system manufacturer.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.platform
+      description: Operating system platform. This filter supports negation.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.instance_id
+      description: Cloud instance ID of the host.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.service_provider_account_id
+      description: Cloud service provider account ID for the host.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.service_provider
+      description: Cloud service provider for the host.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.os_build
+      description: Operating system build.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.host_info.product_type_desc
+      description: Type of host a sensor is running on.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.cve.id
+      description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
+      type: String
+  - arguments:
+    - description: Value to match for exclusion.
+      name: value
+      required: true
+    - description: "A comma-separated list from where to exclude the exclusion. Possible values are: blocking, extraction."
+      name: excluded_from
+      required: true
+      isArray: true
+    - description: Comment describing why the exclusions were created.
+      name: comment
+      required: false
+    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
+      name: groups
+      required: false
+      isArray: true
+    description: Create an ML exclusion.
+    name: cs-falcon-create-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion.id
+      description: The ML exclusion ID.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value
+      description: The ML exclusion value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.regexp_value
+      description: A regular expression for matching the excluded value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value_hash
+      description: An hash of the value field.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.excluded_from
+      description: What the exclusion applies to (e.g., a specific ML model).
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.id
+      description: Group's ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.MLExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: The ID of the exclusion to update.
+      name: id
+      required: true
+    - description: Value to match for the exclusion (the exclusion pattern).
+      name: value
+      required: false
+    - description: Comment describing why the exclusions were created.
+      name: comment
+      required: false
+    - description: A comma-separated list of group ID(s) impacted by the exclusion.
+      name: groups
+      required: false
+      isArray: true
+    description: Updates an ML exclusion. At least one argument is required in addition to the ID argument.
+    name: cs-falcon-update-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion.id
+      description: The ML exclusion ID.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value
+      description: The ML exclusion value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.regexp_value
+      description: A regular expression for matching the excluded value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value_hash
+      description: An hash of the value field.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.excluded_from
+      description: What the exclusion applies to (e.g., a specific ML model).
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.MLExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+      - description: A comma-separated list of exclusion IDs to delete.
+        name: ids
+        required: true
+        isArray: true
+    description: Delete the ML exclusions by ID.
+    name: cs-falcon-delete-ml-exclusion
+  - arguments:
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+      name: filter
+      required: false
+    - description: The value by which the exclusions should be filtered.
+      name: value
+      required: false
+    - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value.
+      name: ids
+      required: false
+      isArray: true
+    - description: The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied.
+      name: limit
+      required: false
+    - description: The offset to start retrieving records from. Applies only if the IDs argument is not supplied.
+      name: offset
+      required: false
+    - auto: PREDEFINED
+      description: How to sort the retrieved exclusions.
+      name: sort
+      required: false
+      predefined:
+      - applied_globally.asc
+      - applied_globally.desc
+      - created_by.asc
+      - created_by.desc
+      - created_on.asc
+      - created_on.desc
+      - last_modified.asc
+      - last_modified.desc
+      - modified_by.asc
+      - modified_by.desc
+      - value.asc
+      - value.desc
+    description: Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
+    name: cs-falcon-search-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion.id
+      description: The ML exclusion ID.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value
+      description: The ML exclusion value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.regexp_value
+      description: A regular expression for matching the excluded value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value_hash
+      description: A hash of the value field.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.excluded_from
+      description: What the exclusion applies to (e.g., a specific ML model).
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.MLExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: Name of the exclusion.
+      name: exclusion_name
+      required: true
+    - description: Name of the exclusion pattern.
+      name: pattern_name
+      required: false
+    - description: ID of the exclusion pattern.
+      name: pattern_id
+      required: true
+    - description: Command line regular expression.
+      name: cl_regex
+      required: true
+    - description: Image file name regular expression.
+      name: ifn_regex
+      required: true
+    - description: Comment describing why the exclusions were created.
+      name: comment
+      required: false
+    - description: Exclusion description.
+      name: description
+      required: false
+    - description: JSON formatted detection template.
+      name: detection_json
+      required: false
+    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
+      name: groups
+      required: true
+      isArray: true
+    description: Create an IOA exclusion.
+    name: cs-falcon-create-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion.id
+      description: A unique identifier for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.name
+      description: The name of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.description
+      description: A description of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_id
+      description: The identifier of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_name
+      description: The name of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.ifn_regex
+      description: A regular expression used for file name matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.cl_regex
+      description: A regular expression used for command line matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.detection_json
+      description: A JSON string that describes the detection logic for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.IOAExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: ID of the exclusion to update.
+      name: id
+      required: true
+    - description: Name of the exclusion.
+      name: exclusion_name
+      required: false
+    - description: ID of the exclusion pattern to update.
+      name: pattern_id
+      required: false
+    - description: Name of the exclusion pattern.
+      name: pattern_name
+      required: false
+    - description: Command line regular expression.
+      name: cl_regex
+      required: false
+    - description: Image file name regular expression.
+      name: ifn_regex
+      required: false
+    - description: Comment describing why the exclusions was created.
+      name: comment
+      required: false
+    - description: Exclusion description.
+      name: description
+      required: false
+    - description: JSON formatted detection template.
+      name: detection_json
+      required: false
+    - description: A comma-separated list of group ID(s) impacted by the exclusion.
+      name: groups
+      required: false
+      isArray: true
+    description: Updates an IOA exclusion. At least one argument is required in addition to the ID argument.
+    name: cs-falcon-update-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion.id
+      description: A unique identifier for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.name
+      description: The name of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.description
+      description: A description of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_id
+      description: The identifier of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_name
+      description: The name of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.ifn_regex
+      description: A regular expression used for file name matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.cl_regex
+      description: A regular expression used for command line matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.detection_json
+      description: A JSON string that describes the detection logic for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.IOAExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+      - description: A comma-separated list of exclusion IDs to delete.
+        name: ids
+        required: true
+        isArray: true
+    description: Delete the IOA exclusions by ID.
+    name: cs-falcon-delete-ioa-exclusion
+  - arguments:
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+      name: filter
+      required: false
+    - description: The name by which the exclusions should be filtered.
+      name: name
+      required: false
+    - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name.
+      name: ids
+      required: false
+      isArray: true
+    - description: The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied.
+      name: limit
+      required: false
+    - description: The offset of how many exclusions to skip. Default is 0. Applies only if the IDs argument is not supplied.
+      name: offset
+      required: false
+    description: Get a list of IOA exclusions by specifying their IDs or a filter.
+    name: cs-falcon-search-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion.id
+      description: A unique identifier for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.name
+      description: The name of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.description
+      description: A description of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_id
+      description: The identifier of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_name
+      description: The name of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.ifn_regex
+      description: A regular expression used for file name matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.cl_regex
+      description: A regular expression used for command line matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.detection_json
+      description: A JSON string that describes the detection logic for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.IOAExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: A comma-separated list of quarantined file IDs to retrieve.
+      name: ids
+      required: false
+      isArray: true
+    - description: A custom filter by which the retrieve quarantined file should be filtered.
+      name: filter
+      required: false
+    - description: A comma-separated list of SHA256 hash of the files to retrieve.
+      name: sha256
+      required: false
+      isArray: true
+    - description: A comma-separated list of the name of the files to retrieve.
+      name: filename
+      required: false
+      isArray: true
+    - description: Filter the retrieved files by state.
+      name: state
+      required: false
+    - description: A comma-separated list of the hostnames of the files to retrieve.
+      name: hostname
+      required: false
+      isArray: true
+    - description: A comma-separated list of the usernames of the files to retrieve.
+      name: username
+      required: false
+      isArray: true
+    - description: Maximum number of IDs to return. Max 5000. Default 50.
+      name: limit
+      required: false
+    - description: Starting index of the overall result set from which to return IDs. Default 0.
+      name: offset
+      required: false
+    description: Get quarantine file metadata by specified IDs or filter.
+    name: cs-falcon-list-quarantined-file
+    outputs:
+    - contextPath: CrowdStrike.QuarantinedFile.id
+      description: A unique identifier for the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.aid
+      description: The agent identifier of the agent that quarantined the file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.cid
+      description: The unique identifier for the customer that who the agent.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.sha256
+      description: The SHA256 hash value of the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.paths.path
+      description: The full path of the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.paths.filename
+      description: The name of the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.paths.state
+      description: The current state of the quarantined file path (e.g., "purged").
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.state
+      description: The current state of the quarantined file (e.g., "unrelease_pending").
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.detect_ids
+      description: The detection identifiers associated with the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.hostname
+      description: The hostname of the agent that quarantined the file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.username
+      description: The username associated with the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.date_updated
+      description: The date the quarantined file was last updated.
+      type: Date
+    - contextPath: CrowdStrike.QuarantinedFile.date_created
+      description: The date the quarantined file was created.
+      type: Date
+  - arguments:
+    - description: A comma-separated list of quarantined file IDs to update.
+      name: ids
+      required: false
+      isArray: true
+    - auto: PREDEFINED
+      description: Action to perform against the quarantined file.
+      name: action
+      required: true
+      predefined:
+      - delete
+      - release
+      - unrelease
+    - description: Comment to appear along with the action taken.
+      name: comment
+      required: true
+    - description: Update files based on a custom filter.
+      name: filter
+      required: false
+    - description: A comma-separated list of quarantined files SHA256 to update.
+      name: sha256
+      required: false
+      isArray: true
+    - description: A comma-separated list of quarantined file names to update.
+      name: filename
+      required: false
+      isArray: true
+    - description: Update files based on the state.
+      name: state
+      required: false
+    - description: A comma-separated list of quarantined file hostnames to update.
+      name: hostname
+      required: false
+      isArray: true
+    - description: A comma-separated list of quarantined files username to update.
+      name: username
+      required: false
+      isArray: true
+    description: Apply action to quarantined file by file IDs or filter.
+    name: cs-falcon-apply-quarantine-file-action
+  - arguments:
+    - description: A comma-separated list of incident IDs.
+      isArray: true
+      name: ids
+      required: true
+    - description: A comment added to the CrowdStrike incident.
+      name: comment
+      required: true
+    description: Updates CrowdStrike Incident with the comment.
+    name: cs-falcon-update-incident-comment
+  dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0

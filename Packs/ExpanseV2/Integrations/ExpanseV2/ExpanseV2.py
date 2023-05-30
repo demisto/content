@@ -394,7 +394,8 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
-            json_data=data
+            json_data=data,
+            retries=3
         )
 
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
@@ -2551,7 +2552,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get("apikey")
+    api_key = params.get('credentials', {}).get('password', '') or params.get("apikey", '')
     base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)

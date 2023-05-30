@@ -5,7 +5,7 @@ from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, 
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics
 
-VERSION = "v2.0.4"
+VERSION = "v2.0.5"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")

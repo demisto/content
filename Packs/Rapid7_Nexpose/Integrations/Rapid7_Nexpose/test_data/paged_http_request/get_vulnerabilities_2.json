@@ -1,0 +1,169 @@
+{
+    "resources": [
+        {
+            "added": "2018-06-08",
+            "categories": [
+                "7-Zip",
+                "Denial of Service",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2018-10172"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "L",
+                    "accessVector": "L",
+                    "authentication": "N",
+                    "availabilityImpact": "C",
+                    "confidentialityImpact": "C",
+                    "exploitScore": 3.9487,
+                    "impactScore": 10.0008,
+                    "integrityImpact": "C",
+                    "score": 7.2,
+                    "vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "L",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 2.0121,
+                    "impactScore": 6.0477,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "L",
+                    "scope": "C",
+                    "score": 8.8,
+                    "userInteraction": "N",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>7-Zip through 18.01 on Windows implements the &quot;Large memory pages&quot; option by calling the LsaAddAccountRights function to add the SeLockMemoryPrivilege privilege to the user&#39;s account, which makes it easier for attackers to bypass intended access restrictions by using this privilege in the context of a sandboxed process.</p>",
+                "text": "7-Zip through 18.01 on Windows implements the \"Large memory pages\" option by calling the LsaAddAccountRights function to add the SeLockMemoryPrivilege privilege to the user's account, which makes it easier for attackers to bypass intended access restrictions by using this privilege in the context of a sandboxed process."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2018-10172",
+            "malwareKits": 0,
+            "modified": "2018-06-11",
+            "pci": {
+                "adjustedCVSSScore": 7,
+                "adjustedSeverityScore": 5,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2018-04-16",
+            "riskScore": 625.88,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "7-Zip: CVE-2018-10172: Denial of Service and Remote Code Execution vuln via crafted RAR archive"
+        },
+        {
+            "added": "2018-05-16",
+            "categories": [
+                "7-Zip",
+                "Denial of Service",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2018-5996"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "P",
+                    "exploitScore": 8.5888,
+                    "impactScore": 6.443,
+                    "integrityImpact": "P",
+                    "score": 6.8,
+                    "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "L",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 1.8346,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 7.8,
+                    "userInteraction": "R",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Insufficient exception handling in the method NCompress::NRar3::CDecoder::Code of 7-Zip before 18.00 and p7zip can lead to multiple memory corruptions within the PPMd code, allows remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive.</p>",
+                "text": "Insufficient exception handling in the method NCompress::NRar3::CDecoder::Code of 7-Zip before 18.00 and p7zip can lead to multiple memory corruptions within the PPMd code, allows remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2018-5996",
+            "malwareKits": 0,
+            "modified": "2018-06-08",
+            "pci": {
+                "adjustedCVSSScore": 6,
+                "adjustedSeverityScore": 4,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2018-01-31",
+            "riskScore": 551.8,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "7-Zip: CVE-2018-5996: Denial of Service and Remote Code Execution vuln via crafted RAR archive"
+        },
+        {
+            "added": "2017-11-14",
+            "categories": [
+                "Adobe",
+                "Adobe Acrobat/Reader"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "L",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "P",
+                    "exploitScore": 3.3926,
+                    "impactScore": 6.443,
+                    "integrityImpact": "P",
+                    "score": 4.4,
+                    "vector": "AV:L/AC:M/Au:N/C:P/I:P/A:P"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Adobe has released security updates for Adobe Acrobat and Reader for Windows and Macintosh. These updates addresscriticalvulnerabilities that could potentially allow an attacker to take control of the affected system. </p>",
+                "text": "Adobe has released security updates for Adobe Acrobat and Reader for Windows and Macintosh. These updates addresscriticalvulnerabilities that could potentially allow an attacker to take control of the affected system."
+            },
+            "exploits": 0,
+            "id": "acrobat-apsb17-36",
+            "malwareKits": 0,
+            "modified": "2017-11-14",
+            "pci": {
+                "adjustedCVSSScore": 4,
+                "adjustedSeverityScore": 3,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2017-11-14",
+            "riskScore": 510.64,
+            "severity": "Severe",
+            "severityScore": 4,
+            "title": "Adobe Acrobat: APSB17-36: Security Updates Available for Adobe Acrobat and Reader | APSB17-36"
+        }
+    ],
+    "page": {
+        "number": 2,
+        "size": 3,
+        "totalResources": 189102,
+        "totalPages": 63034
+    }
+}

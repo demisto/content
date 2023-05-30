@@ -2,11 +2,11 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import requests
+import urllib3
 from typing import Any, Dict, List
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):

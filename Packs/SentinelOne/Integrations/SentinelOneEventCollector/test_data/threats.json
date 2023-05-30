@@ -1,0 +1,383 @@
+{
+    "data": [
+        {
+            "agentDetectionInfo": {
+                "accountId": "123456",
+                "accountName": "Palo Alto Networks",
+                "agentDetectionState": "full_mode",
+                "agentDomain": "TRUSTNET-LABS",
+                "agentIpV4": "1.1.1.1",
+                "agentIpV6": "123:123:123:123",
+                "agentLastLoggedInUpn": null,
+                "agentLastLoggedInUserMail": null,
+                "agentLastLoggedInUserName": "Win10-Regression",
+                "agentMitigationMode": "protect",
+                "agentOsName": "Windows 10 Pro",
+                "agentOsRevision": "123",
+                "agentRegisteredAt": "2022-11-22T11:35:03.992434Z",
+                "agentUuid": "123abc",
+                "agentVersion": "2.2.2.2",
+                "cloudProviders": {},
+                "externalIp": "3.3.3.3",
+                "groupId": "123456",
+                "groupName": "Default Group",
+                "siteId": "123456",
+                "siteName": "Default site"
+            },
+            "agentRealtimeInfo": {
+                "accountId": "123456",
+                "accountName": "Palo Alto Networks",
+                "activeThreats": 2,
+                "agentComputerName": "DESKTOP-8CME2KF",
+                "agentDecommissionedAt": null,
+                "agentDomain": "TRUSTNET-LABS",
+                "agentId": "123456",
+                "agentInfected": true,
+                "agentIsActive": true,
+                "agentIsDecommissioned": false,
+                "agentMachineType": "desktop",
+                "agentMitigationMode": "protect",
+                "agentNetworkStatus": "disconnected",
+                "agentOsName": "Windows 10 Pro",
+                "agentOsRevision": "123",
+                "agentOsType": "windows",
+                "agentUuid": "123abc",
+                "agentVersion": "2.2.2.2",
+                "groupId": "123456",
+                "groupName": "Default Group",
+                "networkInterfaces": [
+                    {
+                        "id": "123456",
+                        "inet": [
+                            "1.1.1.1"
+                        ],
+                        "inet6": [
+                            "123:123:123:123"
+                        ],
+                        "name": "Ethernet0",
+                        "physical": "1:1:1:1"
+                    }
+                ],
+                "operationalState": "na",
+                "rebootRequired": true,
+                "scanAbortedAt": null,
+                "scanFinishedAt": "2022-11-22T16:27:01.845833Z",
+                "scanStartedAt": "2022-11-22T11:35:22.872034Z",
+                "scanStatus": "finished",
+                "siteId": "123456",
+                "siteName": "Default site",
+                "storageName": null,
+                "storageType": null,
+                "userActionsNeeded": [
+                    "reboot_needed"
+                ]
+            },
+            "containerInfo": {
+                "id": null,
+                "image": null,
+                "isContainerQuarantine": null,
+                "labels": null,
+                "name": null
+            },
+            "id": "123456",
+            "indicators": [
+                {
+                    "category": "Evasion",
+                    "description": "Indirect command was executed",
+                    "ids": [
+                        123
+                    ],
+                    "tactics": [
+                        {
+                            "name": "Defense Evasion",
+                            "source": "MITRE",
+                            "techniques": [
+                                {
+                                    "link": "https://example.com/",
+                                    "name": "123"
+                                },
+                                {
+                                    "link": "https://example.com/",
+                                    "name": "123"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "kubernetesInfo": {
+                "cluster": null,
+                "controllerKind": null,
+                "controllerLabels": null,
+                "controllerName": null,
+                "isContainerQuarantine": null,
+                "namespace": null,
+                "namespaceLabels": null,
+                "node": null,
+                "pod": null,
+                "podLabels": null
+            },
+            "mitigationStatus": [
+                {
+                    "action": "kill",
+                    "actionsCounters": {
+                        "failed": 0,
+                        "notFound": 0,
+                        "pendingReboot": 0,
+                        "success": 2,
+                        "total": 2
+                    },
+                    "agentSupportsReport": true,
+                    "groupNotFound": false,
+                    "lastUpdate": "2022-12-20T13:54:58.398638Z",
+                    "latestReport": "",
+                    "mitigationEndedAt": "2022-12-20T13:54:57.522000Z",
+                    "mitigationStartedAt": "2022-12-20T13:54:57.522000Z",
+                    "status": "success"
+                }
+            ],
+            "threatInfo": {
+                "analystVerdict": "true_positive",
+                "analystVerdictDescription": "True positive",
+                "automaticallyResolved": false,
+                "browserType": null,
+                "certificateId": "",
+                "classification": "Infostealer",
+                "classificationSource": "Static",
+                "cloudFilesHashVerdict": null,
+                "collectionId": "123456",
+                "confidenceLevel": "malicious",
+                "createdAt": "2022-12-20T13:54:53.009117Z",
+                "detectionEngines": [
+                    {
+                        "key": "manual",
+                        "title": "Manual"
+                    }
+                ],
+                "detectionType": "dynamic",
+                "engines": [
+                    "Manual"
+                ],
+                "externalTicketExists": false,
+                "externalTicketId": null,
+                "failedActions": false,
+                "fileExtension": "",
+                "fileExtensionType": "None",
+                "filePath": "",
+                "fileSize": 0,
+                "fileVerificationType": "NotSigned",
+                "identifiedAt": "2022-12-20T13:54:52.659000Z",
+                "incidentStatus": "in_progress",
+                "incidentStatusDescription": "In progress",
+                "initiatedBy": "star_active",
+                "initiatedByDescription": "Custom Rule",
+                "initiatingUserId": null,
+                "initiatingUsername": null,
+                "isFileless": true,
+                "isValidCertificate": false,
+                "maliciousProcessArguments": "",
+                "md5": null,
+                "mitigatedPreemptively": false,
+                "mitigationStatus": "not_mitigated",
+                "mitigationStatusDescription": "Not mitigated",
+                "originatorProcess": null,
+                "pendingActions": false,
+                "processUser": "DESKTOP",
+                "publisherName": "",
+                "reachedEventsLimit": false,
+                "rebootRequired": false,
+                "sha1": "",
+                "sha256": null,
+                "storyline": "123456",
+                "threatId": "123456",
+                "threatName": "cmd.exe (interactive session)",
+                "updatedAt": "2022-12-21T10:29:58.264166Z"
+            },
+            "whiteningOptions": []
+        },
+        {
+            "agentDetectionInfo": {
+                "accountId": "123456",
+                "accountName": "Palo Alto Networks",
+                "agentDetectionState": "full_mode",
+                "agentDomain": "TRUSTNET-LABS",
+                "agentIpV4": "1.1.1.1",
+                "agentIpV6": "1:1:1:1",
+                "agentLastLoggedInUpn": null,
+                "agentLastLoggedInUserMail": null,
+                "agentLastLoggedInUserName": "Win10",
+                "agentMitigationMode": "protect",
+                "agentOsName": "Windows 10 Pro",
+                "agentOsRevision": "123",
+                "agentRegisteredAt": "2022-12-20T15:48:59.656706Z",
+                "agentUuid": "123456",
+                "agentVersion": "2.2.2.2",
+                "cloudProviders": {},
+                "externalIp": "3.3.3.3",
+                "groupId": "123456",
+                "groupName": "Default Group",
+                "siteId": "123456",
+                "siteName": "Default site"
+            },
+            "agentRealtimeInfo": {
+                "accountId": "123456",
+                "accountName": "Palo Alto Networks",
+                "activeThreats": 4,
+                "agentComputerName": "DESKTOP",
+                "agentDecommissionedAt": null,
+                "agentDomain": "TRUSTNET",
+                "agentId": "123456",
+                "agentInfected": true,
+                "agentIsActive": true,
+                "agentIsDecommissioned": false,
+                "agentMachineType": "desktop",
+                "agentMitigationMode": "protect",
+                "agentNetworkStatus": "disconnected",
+                "agentOsName": "Windows 10 Pro",
+                "agentOsRevision": "123",
+                "agentOsType": "windows",
+                "agentUuid": "123456",
+                "agentVersion": "2.2.2.2",
+                "groupId": "123456",
+                "groupName": "Default Group",
+                "networkInterfaces": [
+                    {
+                        "id": "123456",
+                        "inet": [
+                            "1.1.1.1"
+                        ],
+                        "inet6": [
+                            "1:1:1:1"
+                        ],
+                        "name": "Ethernet0",
+                        "physical": "1:1:1:1"
+                    }
+                ],
+                "operationalState": "na",
+                "rebootRequired": false,
+                "scanAbortedAt": null,
+                "scanFinishedAt": "2022-12-20T18:09:09.580786Z",
+                "scanStartedAt": "2022-12-20T15:49:21.186749Z",
+                "scanStatus": "finished",
+                "siteId": "123456",
+                "siteName": "Default site",
+                "storageName": null,
+                "storageType": null,
+                "userActionsNeeded": []
+            },
+            "containerInfo": {
+                "id": null,
+                "image": null,
+                "isContainerQuarantine": null,
+                "labels": null,
+                "name": null
+            },
+            "id": "123456",
+            "indicators": [],
+            "kubernetesInfo": {
+                "cluster": null,
+                "controllerKind": null,
+                "controllerLabels": null,
+                "controllerName": null,
+                "isContainerQuarantine": null,
+                "namespace": null,
+                "namespaceLabels": null,
+                "node": null,
+                "pod": null,
+                "podLabels": null
+            },
+            "mitigationStatus": [
+                {
+                    "action": "kill",
+                    "actionsCounters": {
+                        "failed": 0,
+                        "notFound": 0,
+                        "pendingReboot": 0,
+                        "success": 4,
+                        "total": 4
+                    },
+                    "agentSupportsReport": true,
+                    "groupNotFound": false,
+                    "lastUpdate": "2022-12-20T15:51:18.595117Z",
+                    "latestReport": "",
+                    "mitigationEndedAt": "2022-12-20T15:51:17.319000Z",
+                    "mitigationStartedAt": "2022-12-20T15:51:17.319000Z",
+                    "status": "success"
+                },
+                {
+                    "action": "quarantine",
+                    "actionsCounters": null,
+                    "agentSupportsReport": true,
+                    "groupNotFound": false,
+                    "lastUpdate": "2022-12-20T15:51:18.093600Z",
+                    "latestReport": null,
+                    "mitigationEndedAt": "2022-12-20T15:51:18.081737Z",
+                    "mitigationStartedAt": "2022-12-20T15:51:18.081736Z",
+                    "status": "success"
+                }
+            ],
+            "threatInfo": {
+                "analystVerdict": "suspicious",
+                "analystVerdictDescription": "Suspicious",
+                "automaticallyResolved": false,
+                "browserType": null,
+                "certificateId": "",
+                "classification": "Manual",
+                "classificationSource": "Engine",
+                "cloudFilesHashVerdict": null,
+                "collectionId": "123456",
+                "confidenceLevel": "malicious",
+                "createdAt": "2022-12-20T15:51:17.514437Z",
+                "detectionEngines": [
+                    {
+                        "key": "manual",
+                        "title": "Manual"
+                    }
+                ],
+                "detectionType": "dynamic",
+                "engines": [
+                    "Manual"
+                ],
+                "externalTicketExists": false,
+                "externalTicketId": null,
+                "failedActions": false,
+                "fileExtension": "",
+                "fileExtensionType": "None",
+                "filePath": "",
+                "fileSize": 0,
+                "fileVerificationType": "NotSigned",
+                "identifiedAt": "2022-12-20T15:51:17.288000Z",
+                "incidentStatus": "unresolved",
+                "incidentStatusDescription": "Unresolved",
+                "initiatedBy": "star_active",
+                "initiatedByDescription": "Custom Rule",
+                "initiatingUserId": null,
+                "initiatingUsername": null,
+                "isFileless": true,
+                "isValidCertificate": false,
+                "maliciousProcessArguments": "",
+                "md5": null,
+                "mitigatedPreemptively": false,
+                "mitigationStatus": "not_mitigated",
+                "mitigationStatusDescription": "Not mitigated",
+                "originatorProcess": "explorer.exe",
+                "pendingActions": false,
+                "processUser": "DESKTOP",
+                "publisherName": "",
+                "reachedEventsLimit": false,
+                "rebootRequired": false,
+                "sha1": "",
+                "sha256": null,
+                "storyline": "123456",
+                "threatId": "123456",
+                "threatName": "",
+                "updatedAt": "2022-12-20T15:51:17.514437Z"
+            },
+            "whiteningOptions": []
+        }
+    ],
+    "pagination": {
+        "nextCursor": "null",
+        "totalItems": 222
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "id": "id2",
+    "name": "name2",
+    "folder": "Shared",
+    "static": [
+        "test2"
+    ],
+    "description": "test"
+}
