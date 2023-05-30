@@ -278,7 +278,7 @@ def main() -> None:  # pragma: no cover
             if not last_run.get(event_type):
                 first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
                 last_run_id_key = f'{event_type}-ids'
-                last_run[event_type] = last_run.get(event_type, first_fetch)
+                last_run[event_type] = first_fetch
                 last_run[last_run_id_key] = last_run.get(last_run_id_key, [])
                 demisto.debug(f'First Fetch - Initialize last run - {last_run}')
 
