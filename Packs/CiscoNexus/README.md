@@ -15,7 +15,7 @@ To configure a remote logging server on a Cisco Nexus switch, follow these steps
 ```bash
  # logging server <server-ip-address>
 ```
-Replace <server-ip-address> with the IP address of the BrokerVM.
+Replace \<server-ip-address\> with the IP address of the BrokerVM.
 
 5. To confirm these settings, show the remote syslog server configuration:
 ```bash
