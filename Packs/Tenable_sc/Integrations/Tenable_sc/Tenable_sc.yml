@@ -311,7 +311,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Requires security manager role. Get a single report with Tenable.sc scan results.
+    description: Requires security manager role. Get a single report with Tenable.sc scan results. In case of `Importstatus = Error` (The results import wasn't finished), the vulnerabilities section will not be added to the results.
     execution: false
     name: tenable-sc-get-scan-report
     outputs:

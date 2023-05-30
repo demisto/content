@@ -1702,7 +1702,7 @@ def get_scan_report_command(client: Client, args: Dict[str, Any]):
 
     headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
                'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName', 'Status',
-               'Scan Type', 'Import Status', 'Is Scan Running', 'Completed IPs']
+               'Scan Type', 'ImportStatus', 'IsScanRunning', 'CompletedIPs']
     vuln_headers = ['ID', 'Name', 'Family', 'Severity', 'Total']
 
     mapped_results = {
