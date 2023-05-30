@@ -250,7 +250,7 @@ def test_module(client: Client):
         rep = json.dumps(response)
         repJSON = json.loads(rep)
         PaLMResp = repJSON.get('predictions', [])[0].get('candidates', [])[0].get('content', "")
-        if "Bard" in PaLMResp:
+        if PaLMResp:
             status = 'ok'
             return status
         else:
