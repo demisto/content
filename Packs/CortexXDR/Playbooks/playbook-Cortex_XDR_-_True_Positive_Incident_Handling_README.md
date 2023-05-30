@@ -7,8 +7,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Isolate Endpoint
 * Threat Hunting - Generic
+* Cortex XDR - Isolate Endpoint
 
 ### Integrations
 
@@ -17,18 +17,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* IsIntegrationAvailable
 * AddEvidence
 * ServiceNowCreateIncident
+* IsIntegrationAvailable
 
 ### Commands
 
-* setIndicators
-* xdr-file-delete-script-execute
-* xdr-blocklist-files
-* closeInvestigation
 * setIncident
 * jira-create-issue
+* xdr-blocklist-files
+* closeInvestigation
+* setIndicators
+* xdr-file-delete-script-execute
 
 ## Playbook Inputs
 
