@@ -159,7 +159,8 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             ``args['list_id']`` the list id to query.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list details and content.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+                        that contains the list details and content.
     """
     resEntries = []
     list_id = args.get("list_id")
@@ -262,7 +263,8 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             ``args['config']`` the config that should be modified to.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list details and content.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+                        that contains the list details and content.
     """
     list_id = args.get("list_id")
     config = args.get("config")
@@ -308,7 +310,8 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
             ``args['entry_pos']`` the entry position to insert at.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the inserted list entry.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+                        that contains the inserted list entry.
     """
     list_id = args.get("list_id")
     entry_pos = args.get("entry_pos")
