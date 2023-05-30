@@ -376,7 +376,7 @@ script:
     - name: resource_group_name
       description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
       type: String
-      isArray: false
+      isArray: true
       required: false
     deprecated: false
     description: Create or update a key vault in the specified subscription. If the
@@ -460,7 +460,7 @@ script:
     - name: resource_group_name
       description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
       type: String
-      isArray: false
+      isArray: true
       required: false
     deprecated: false
     description: Delete the specified key vault.
@@ -760,7 +760,7 @@ script:
     - name: resource_group_name
       description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
       type: String
-      isArray: false
+      isArray: true
       required: false
     deprecated: false
     description: Update access policies in a key vault in the specified subscription.
@@ -1280,6 +1280,7 @@ script:
     - name: subscription_id
       description: The integration default subscription_id will be used unless argument provide.
       required: false
+      isArray: true
     - name: limit
       description: Limit on the number of resource groups to return. Default value is 50.
       required: false
