@@ -1,4 +1,4 @@
-Deprecated. Use `xdr-file-exist-script-execute` command instead.Initiates a new endpoint script execution to check if the file exists and retrieve the results.
+Deprecated. Use the ***xdr-file-exist-script-execute*** command instead. Initiates a new endpoint script execution to check if the file exists and retrieve the results.
 
 
 ## Dependencies
