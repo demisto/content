@@ -1,17 +1,9 @@
-id: Cortex ASM - Detect Service
-version: 7
+id: Xpanse - NMap - Detect Service
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cortex Attack Surface Management
-    itemVersion: 1.6.14
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Xpanse - NMap - Detect Service
-description: Playbook that looks at what ASM sub-type the alert is and uses NMap to
-  do a validation scan.
+description: Playbook that looks at what ASM sub-type the alert is and uses NMap to do a validation scan.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -54,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -78,8 +72,7 @@ tasks:
       id: 5e78366d-61bc-47fd-8142-e06ce4329e84
       version: -1
       name: Is RemoteIP and RemotePort defined?
-      description: Determines if RemoteIp and RemotePort inputs are defined for error
-        checking.
+      description: Determines if RemoteIp and RemotePort inputs are defined for error checking.
       type: condition
       iscommand: false
       brand: ""
@@ -129,8 +122,7 @@ tasks:
       id: 9133fc17-e865-4ddf-8506-ef80c6f02c5e
       version: -1
       name: NMAP - Single Port Scan
-      description: Sub-playbook that conducts a single port Nmap scan and returns
-        the results to the parent playbook.
+      description: Sub-playbook that conducts a single port Nmap scan and returns the results to the parent playbook.
       playbookName: NMAP - Single Port Scan
       type: playbook
       iscommand: false
@@ -179,6 +171,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -369,7 +362,7 @@ inputs:
       accessor: xpanseip
   required: false
   description: Remote IP address in the alert.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RemotePort
   value:
     complex:
@@ -377,10 +370,13 @@ inputs:
       accessor: xpanseport
   required: false
   description: Remote port number in the alert.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ScanNumber
   value: {}
   required: true
   description: Scan number in case there are multiple IDs in the parent playbook.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
