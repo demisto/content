@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib
 import urllib3
-import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -125,7 +125,7 @@ def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     res = []
     result = client.get_lists()
-    data = ET.fromstring(result)
+    data = ElementTree.fromstring(result)
     title = data.find("title").text
     for entry in data.iter("entry"):
         if (
@@ -149,7 +149,7 @@ def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
     """
     get list command: Returns list details and content
 
@@ -168,8 +168,8 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         return "Missing mandatory arguments `list_id`."
     result = client.get_list(list_id)
 
-    data = ET.fromstring(result)
-    config = ET.tostring(data.find("content")[0], encoding="unicode")
+    data = ElementTree.fromstring(result)
+    config = ElementTree.tostring(data.find("content")[0], encoding="unicode")
     title = data.find("title").text
     res = {
         "ID": list_id,
@@ -207,7 +207,7 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
     """
     get list entry command: Returns a single entry form a list
 
@@ -230,7 +230,7 @@ def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if result == "List entry not found":
         return "List entry not found."
 
-    data = ET.fromstring(result)
+    data = ElementTree.fromstring(result)
     title = data.find("title").text
 
     for entry in data.iter("listEntry"):
@@ -252,7 +252,7 @@ def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
     """
     modify list command: Modify the list content
 
@@ -277,8 +277,8 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     except Exception as e:
         return f"Faild to insert entry: {e}"
 
-    data = ET.fromstring(result)
-    config = ET.tostring(data.find("content")[0], encoding="unicode")
+    data = ElementTree.fromstring(result)
+    config = ElementTree.tostring(data.find("content")[0], encoding="unicode")
     title = f'Modified {data.find("title").text}'
 
     res = {
@@ -299,7 +299,7 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
     """
     insert entry command: Insert an entry to the list
 
@@ -328,7 +328,7 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     except Exception as e:
         return f"Faild to insert entry: {e}"
 
-    data = ET.fromstring(result)
+    data = ElementTree.fromstring(result)
     title = f'Added {data.find("title").text}'
 
     for entry in data.iter("listEntry"):
@@ -350,7 +350,7 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
     """
     delete entry command: Delete the list entry
 
@@ -374,7 +374,7 @@ def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     except Exception as e:
         return f"Faild to insert entry: {e}"
 
-    data = ET.fromstring(result)
+    data = ElementTree.fromstring(result)
     title = f'Deleted {data.find("title").text}'
 
     for entry in data.iter("listEntry"):
