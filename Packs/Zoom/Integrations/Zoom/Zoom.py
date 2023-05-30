@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 from datetime import datetime
 
+
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
 USER_TYPE_MAPPING = {
@@ -78,7 +79,9 @@ RECURRING_MISSING_ARGUMENTS = """Missing arguments. A recurring meeting with a f
 time is missing this argument: recurrence_type."""
 MISSING_ARGUMENT = """Missing either a contact info or a channel id"""
 USER_NOT_FOUND = """ This user email can't be found """
-
+MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
+                                       don't enter start_position or end_position or format_type or at_type or rt_start_position or rt_end_position or format_attr"""
+MARKDOWN_EXTRA_FORMATS = """to many style in text. you can provide only one style type"""
 
 '''CLIENT CLASS'''
 
@@ -1138,6 +1141,133 @@ def zoom_send_file_command(client, **args) -> CommandResults:
     )
 
 
+def parse_markdown_message(markdown_message: str, at_contact: str = None):
+    formatted_message = markdown_message
+    formats = []
+    at_items = []
+    rich_text = []
+
+    # add_link_regex = r"\[(.*?)\]\((http[s]?://.*?)\)"
+
+    add_link_regex = r'\[([^[\]]*?)\]\((http[s]?://.*?)\)'
+    paragraph_regex = r"(#{1,4})\s(.*?)$"  # Regex to match Markdown headings
+    font_size_regex = "\\[(s|m|l)\\]\\((.*?)\\)"
+    font_color_regex = "\\[#([A-Fa-f0-9]{6})\\]\\((.*?)\\)"
+    bg_color_regex = r"\[#([A-Fa-f0-9]{6})bg\]\((.*?)\)"
+    mention_regex = r"(@\w+)"
+    left_indent_regex = r"(>{1,5})\s(.*?)$"
+
+    matches = re.findall(add_link_regex, formatted_message)
+    for match in matches:
+        link_text, link_url = match
+        add_link_range = {
+            "text": link_text,
+            "format_type": "AddLink",
+            "format_attr": link_url
+        }
+        formats.append(add_link_range)
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[" + link_text + "](" + link_url + ")", link_text)
+
+    matches = re.findall(mention_regex, formatted_message)[:1]
+    for match in matches:
+        if match == '@all':
+            mention_range = {
+                'text': match,
+                "at_type": 2,
+                "at_contact": at_contact,
+            }
+            formats.append(mention_range)
+        elif at_contact:
+            mention_range = {
+                'text': match,
+                "at_contact": at_contact,
+                "at_type": 1,
+            }
+            formats.append(mention_range)
+    matches = re.findall(bg_color_regex, formatted_message)
+    for match in matches:
+        bg_color, text = match
+        bg_color_range = {
+            "text": text,
+            "format_type": "BackgroundColor",
+            "format_attr": bg_color,
+        }
+        formats.append(bg_color_range)
+
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[#" + bg_color + "bg](" + text + ")", text)
+
+    matches = re.findall(font_size_regex, formatted_message)
+    for match in matches:
+        size, text = match
+        font_size_range = {
+            "text": text,
+            "format_type": "FontSize",
+            "format_attr": size
+        }
+        formats.append(font_size_range)
+
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[" + size + "](" + text + ")", text)
+
+    matches = re.findall(font_color_regex, formatted_message)
+    for match in matches:
+        color, text = match
+        font_color_range = {
+            "text": text,
+            "format_type": "FontColor",
+            "format_attr": color,
+        }
+        formats.append(font_color_range)
+
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[#" + color + "](" + text + ")", text)
+    lines = formatted_message.split("\n")
+    for i, line in enumerate(lines):
+        match = re.findall(left_indent_regex, line)
+        for matches in match:
+            indent_level, indent_text = matches
+            left_indent_range = {
+                "text": indent_text,
+                "format_type": "LeftIndent",
+                "format_attr": len(indent_level) * 20,
+            }
+            formats.append(left_indent_range)
+            # Replace Markdown syntax with plain text
+            lines[i] = indent_text
+
+        pp_matches = re.findall(paragraph_regex, line)
+        for p_matches in pp_matches:
+            heading_level, heading_text = p_matches
+            paragraph_range = {
+                "text": heading_text,
+                "format_type": "paragraph",
+                "format_attr": f"h{len(heading_level)}",
+            }
+            formats.append(paragraph_range)
+            # Replace Markdown syntax with plain text
+            lines[i] = heading_text
+    formatted_message = "\n".join(lines)
+
+    for i in range(len(formats)):
+        t = formats[i]['text']
+        start_position = formatted_message.find(t)
+        end_position = start_position + len(t) - 1
+        formats[i]["start_position"] = start_position
+        formats[i]["end_position"] = end_position
+        if formats[i].get('at_type'):
+            at_items.append(formats[i])
+        else:
+            rich_text.append(formats[i])
+
+    return formatted_message, {
+        "message": formatted_message,
+        "rich_text": rich_text,
+        "at_items": at_items
+    }
+
+
 def zoom_send_message_command(client, **args) -> CommandResults:
     """
         Send  Zoom chat message
@@ -1157,6 +1287,7 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     reply_main_message_id = args.get('reply_main_message_id', None)
     to_channel = args.get('to_channel', None)
     to_contact = args.get('to_contact', None)
+    is_markdown = args.get('is_markdown', False)
 
     if user_id and re.match(emailRegex, user_id):
         user_id = zoom_get_user_id_by_email(client, user_id)
@@ -1164,31 +1295,37 @@ def zoom_send_message_command(client, **args) -> CommandResults:
     url_suffix = f'/chat/users/{user_id}/messages'
     uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
     zoom_file_id: List = []
-    demisto.debug(f'file id args {entry_ids}')
     for id in entry_ids:
         file_info = demisto.getFilePath(id)
         res = client.zoom_upload_file(uplaod_file_url, file_info)
         zoom_file_id.append(res.get('id'))
-    demisto.debug('uplod the file without error')
 
-    json_data_all = {"at_items": [
-        {
-            "at_contact": at_contact,
-            "at_type": at_type,
-            "end_position": end_position,
-            "start_position": start_position
-        }],
-        "rich_text":
+    if is_markdown and (start_position or end_position or format_attr or format_type or rt_end_position or rt_start_position or at_type):
+        raise DemistoException(MARKDOWN_AND_EXTRA_ARGUMENTS)
+
+    if is_markdown:
+        message, json_data_all = parse_markdown_message(message, at_contact)
+        json_data_all.update({"file_ids": zoom_file_id, "reply_main_message_id": reply_main_message_id, "to_channel": to_channel,
+                              "to_contact": to_contact})
+    else:
+        json_data_all = {"at_items": [
+            {
+                "at_contact": at_contact,
+                "at_type": at_type,
+                "end_position": end_position,
+                "start_position": start_position
+            }],
+            "rich_text":
             [{"start_position": rt_start_position,
               "end_position": rt_end_position,
               "format_type": format_type,
               "format_attr": format_attr}],
-        "message": message,
-        "file_ids": zoom_file_id,
-        "reply_main_message_id": reply_main_message_id,
-        "to_channel": to_channel,
-        "to_contact": to_contact
-    }
+            "message": message,
+            "file_ids": zoom_file_id,
+            "reply_main_message_id": reply_main_message_id,
+            "to_channel": to_channel,
+            "to_contact": to_contact
+        }
     json_data = remove_None_values_from_dict(json_data_all)
 
     raw_data = client.zoom_send_message(url_suffix, json_data)

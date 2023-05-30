@@ -1423,6 +1423,47 @@ def test_zoom_send_message_command(mocker):
     assert mock_send_chat_message.call_args[0][1] == expected_request_payload
 
 
+def test_zoom_send_message_markdown_command(mocker):
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    expected_request_payload = {
+        'message': 'HI \n@John, please review the following report',
+        'to_channel': 'channel1',
+        'at_items': [
+            {'text': '@John', 'at_contact': 'user2@example.com', 'at_type': 1, 'start_position': 4, 'end_position': 8}
+        ],
+        'rich_text': [
+            {'text': 'report', 'format_type': 'AddLink', 'format_attr': 'https://example.com', 'start_position': 39, 'end_position': 44},
+            {'text': 'HI ', 'format_type': 'paragraph', 'format_attr': 'h1', 'start_position': 0, 'end_position': 2},
+            {'text': '@John, please review the following report', 'format_type': 'LeftIndent',
+                'format_attr': 40, 'start_position': 4, 'end_position': 44}
+        ],
+        'file_ids': []
+    }
+
+    expected_response = {
+        'id': 'message_id',
+        'contact': "user2@example.com",
+        'channel_name': 'channel_name'
+    }
+
+    mock_send_chat_message = mocker.patch.object(client, 'zoom_send_message')
+    mock_send_chat_message.return_value = expected_response
+    from Zoom import zoom_send_message_command
+
+    result = zoom_send_message_command(client,
+                                       user_id='user1',
+                                       at_contact='user2@example.com',
+                                       is_markdown=True,
+                                       message="# HI \n>> @John, please review the following [report](https://example.com)",
+                                       to_channel='channel1'
+                                       )
+
+    assert result.outputs == expected_response
+    assert mock_send_chat_message.call_args[0][1] == expected_request_payload
+
+
 def test_arg_to_datetime_str():
     # Test relative timestamps
     now = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')

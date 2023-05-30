@@ -642,7 +642,7 @@ script:
       required: false
       type: string
     - name: user_id
-      description: A user ID. this is for a singel user
+      description: email or user ID
       required: true
       type: string
     outputs:
@@ -664,7 +664,7 @@ script:
       Use existing command zoom-list-users to get  user id  by email (only if user has email address as part of user parameters)
     execution: true
     arguments:
-    - description: The user's unique identifier
+    - description: Email or unique identifier of the user
       name: user_id
       required: true
     - description: The member(s) to include in the channel. A maximum of 20 members can be added to the channel at once with this API.
@@ -745,7 +745,7 @@ script:
     - description: Unique Identifier of a channel.
       name: channel_id
       required: true
-    - description: User Unique Identifier
+    - description:  Email or unique identifier of the user
       name: user_id
       required: true
     description: >
@@ -763,7 +763,7 @@ script:
     - description: The channel ID.
       name: channel_id
       required: true
-    - description: User unique identifier
+    - description:  Email or unique identifier of the user
       name: user_id
       required: true
     - description: >
@@ -811,7 +811,7 @@ script:
       description: Channel ID the channel's unique identifier.
       required: true
       type: string
-    - description: User unique identifier.
+    - description:  Email or unique identifier of the user
       name: user_id
       required: true
     - name: members
@@ -841,7 +841,7 @@ script:
       required: true
       type: string
     - name: user_id
-      description: User unique identifier
+      description:  Email or unique identifier of the user
       required: true
       type: string
     - name: member_id
@@ -861,7 +861,7 @@ script:
       description: The channel ID of the channel to which to send the chat file.
       required: false
       type: string
-    - description: The user's ID.
+    - description:  Email or unique identifier of the user
       name: user_id
       required: true
     - name: to_contact
@@ -878,9 +878,11 @@ script:
       Sends chat messages on Zoom to either an individual user who is in your contact list or to a channel of which you are a member.  Use command zoom-list-users to get user id by user email (for to_contact)
       Use command zoom-list-user-channels  in order to fetch channel id by channel name (for to_channel)
       In order to send a message,user need to provide at least a message (message text) and to_contact( contact to send) or to_channel(channel to send to),but not both of them.
+      In order to send a style message user need to provide is-markdown=true and not provide any format_type or format_attr.
+      if you using mention markdown in message please provide email in at_contact argument
     arguments:
     - name: user_id
-      description: Unique identifier of the user.
+      description: Email or Unique identifier of the user.
       type: string
       required: true
     - name: at_contact
@@ -901,6 +903,24 @@ script:
       predefined:
       - Mention a contact
       - Mention "all" to notify everyone in the channel
+    - name: is_markdown
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      description: |-
+        you can provide a markdown message without any other arguments like  format type,format attr,start and end position and rt start and end_position
+        | Element   | Markdown Syntax |
+        |------------|-------------------|
+        | Paragraph | # H1 , ## H2 ,### H3|
+        | Addlink   | [link text](link url) url must contain http or https |
+        | LeftIndent| >, >>, >>> |
+        | FontColor | [#<rgb>](text)|
+        | FontSize  | [s|m|l](text)|
+        | BackgroundColor| [#<rgb>bg](text)|
+        | Mention | @<text>  if mention is not @all please provide argument at_contact= email|
+
     - name: end_position
       description: The end position of the mention.
       required: false
@@ -940,7 +960,19 @@ script:
       required: false
       type: string
     - name: message
-      description: The message to be sent.Constraints Max 1024 chars
+      description:  |- 
+        The message to be sent.Constraints Max 1024 chars
+         you can provide a markdown message without any other arguments like  format type,format attr,start and end position and rt start and end_position
+        | Element   | Markdown Syntax |
+        |------------|-------------------|
+        | Paragraph | # H1 , ## H2 ,### H3|
+        | Addlink   | [link text](link url) url must contain http or https |
+        | LeftIndent| >, >>, >>> |
+        | FontColor | [#<rgb>](text)|
+        | FontSize  | [s|m|l](text)|
+        | BackgroundColor| [#<rgb>bg](text)|
+        | Mention | @<text>  if mention is not @all please provide argument at_contact= email|
+
       required: true
       type: string
     - name: entry_ids
@@ -971,7 +1003,7 @@ script:
       In order to update  messages (or single message using messageId), customer need to provide  to_contact( contact to send) or to_channel (channel to send to),but not both of them.
     arguments:
     - name: user_id
-      description: Unique identifier of the user.
+      description: Email or Unique identifier of the user.
       required: true
       type: string
     - name: message_id
@@ -997,7 +1029,7 @@ script:
       In order to update  messages (or single message using messageId), user need to provide  to_contact( contact to send) or to_channel (channel to send to),but not both of them.
     arguments:
     - name: user_id
-      description: Unique identifier of the user.
+      description: Email or Unique identifier of the user.
       required: true
       type: string
     - name: message_id
@@ -1031,7 +1063,7 @@ script:
       Searches chat messages or shared files between a user and an individual contact or a chat channel. 
     arguments:
     - name: user_id
-      description: Unique identifier of the user.
+      description: Email or Unique identifier of the user.
       required: true
       type: string
     - name: to_contact
