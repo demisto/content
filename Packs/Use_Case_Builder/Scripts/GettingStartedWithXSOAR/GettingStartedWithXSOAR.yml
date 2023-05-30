@@ -24,3 +24,6 @@ subtype: python3
 tags:
 - Getting Started With XSOAR
 type: python
+fromversion: 6.10.0
+tests:
+  - Run all tests
