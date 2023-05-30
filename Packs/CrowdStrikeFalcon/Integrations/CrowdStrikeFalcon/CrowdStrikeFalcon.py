@@ -4695,8 +4695,14 @@ def update_identity_incident_status_command(args: dict) -> CommandResults:
     id = args.get("incident_id")
     reason = args.get("reason", "")
     status = args.get("status")
-    payload = f"{{\"query\":\"mutation {{setIncidentState(input: {{\\r\\nlifeCycleStage: {status},\\r\\nincidentId:\\\"{id}\\\"" \
-              f",\\r\\nreason:\\\"{reason}\\\"}}) {{ incident {{ lifeCycleStage }} }} }}\",\"variables\":{{}} }}"
+    # payload = f"{{\"query\":\"mutation {{setIncidentState(input: {{\\r\\nlifeCycleStage: {status},\\r\\nincidentId:\\\"{id}\\\"" \
+    #           f",\\r\\nreason:\\\"{reason}\\\"}}) {{ incident {{ lifeCycleStage }} }} }}\",\"variables\":{{}} }}"
+    os.linesep = "\r\n"
+    payload = """mutation {setIncidentState(input: {
+lifeCycleStage: IN_PROGRESS,
+incidentId:"INC-6",
+reason:"The reason goes here"}) { incident { lifeCycleStage } }}
+    """
     print(payload)
     res = update_incident_status(payload)
     print(res)
