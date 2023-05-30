@@ -223,7 +223,7 @@ inputs:
   value:
     simple: "10"
   required: false
-  description: Amount of time to poll action status before declaring a timeout and resuming the playbook (in minutes).
+  description: Amount of time to poll the action status before declaring a timeout and resuming the playbook (in minutes).
   playbookInputQuery:
 outputs: []
 fromversion: 5.5.0
