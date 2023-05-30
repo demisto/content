@@ -60,7 +60,8 @@ class Client(BaseClient):
                      method: str,
                      url_suffix: str = '',
                      params: dict = None,
-                     json_data: dict = None) -> dict:  # pragma: no cover
+                     json_data: dict = None,
+                     retries: int = 0) -> dict:  # pragma: no cover
         """
         Overriding BaseClient http request in order to use the access token.
         """
@@ -71,7 +72,8 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   params=params,
                                   json_data=json_data,
-                                  headers=headers)
+                                  headers=headers,
+                                  retries=retries)
 
     def get_activity_logging_request(self, from_date: str, to_date: str, offset: Optional[int] = 0,
                                      user_activity_entry_count: bool = False, limit: Optional[int] = 1000) -> list:
@@ -92,7 +94,7 @@ class Client(BaseClient):
                   "instancesReturned": 1,
                   "offset": offset,
                   "returnUserActivityEntryCount": user_activity_entry_count}
-        res = self.http_request(method='GET', url_suffix='/activityLogging', params=params)
+        res = self.http_request(method='GET', url_suffix='/activityLogging', params=params, retries=3)
         return res.get('data', [])
 
 
@@ -137,21 +139,22 @@ def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, 
         time_to_check: last request time from last run or first fetch.
     """
 
-    last_fetched_loggings_ids = set(last_run.get('last_fetched_loggings_ids', []))
+    last_fetched_loggings_tuples = set(last_run.get('last_fetched_loggings_tuples', []))
     demisto.debug(f'Looking for duplicated loggings with requestTime {time_to_check}')
     for logging in activity_loggings.copy():
         logging_id = logging.get('taskId')
         logging_request_time: str = logging.get('requestTime')
+        unique_tuple_to_check = (logging_id, logging_request_time)
         if datetime.strptime(logging_request_time, DATE_FORMAT) > datetime.strptime(time_to_check, DATE_FORMAT):
             demisto.debug(f'Found logging with bigger requestTime, setting {time_to_check=}')
             time_to_check = logging_request_time
-            last_fetched_loggings_ids = {logging_id}
+            last_fetched_loggings_tuples = {unique_tuple_to_check}
         else:
-            if logging_id in last_fetched_loggings_ids:
+            if unique_tuple_to_check in last_fetched_loggings_tuples:
                 activity_loggings.remove(logging)
             else:
-                last_fetched_loggings_ids.add(logging_id)
-    return activity_loggings, list(last_fetched_loggings_ids)
+                last_fetched_loggings_tuples.add(unique_tuple_to_check)
+    return activity_loggings, list(last_fetched_loggings_tuples)
 
 
 def remove_milliseconds_from_time_of_loggings(activity_loggings: list):
@@ -238,14 +241,14 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
 
     # setting last run object
     remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
-    activity_loggings, last_fetched_loggings_ids = remove_duplicated_activity_logging(
+    activity_loggings, last_fetched_loggings_tuples = remove_duplicated_activity_logging(
         activity_loggings=activity_loggings,
         last_run=last_run,
         time_to_check=from_date)
     if activity_loggings:
         last_log_time = activity_loggings[-1].get('requestTime')
         last_run = {'last_fetch_time': last_log_time,
-                    'last_fetched_loggings_ids': last_fetched_loggings_ids}
+                    'last_fetched_loggings_tuples': last_fetched_loggings_tuples}
 
     return activity_loggings, last_run
 

@@ -84,7 +84,12 @@ class TestFetchActivity:
 
     DUPLICATED_ACTIVITY_LOGGINGS = [
         (('2023-04-15T07:00:00Z', 5, 2, 0), 2, 5, {}, '2023-04-15T07:00:00Z'),
-        (('2023-04-15T07:00:00Z', 5, 1, 0), 1, 1, {'last_fetched_loggings_ids': {'1', '2', '3', '0'}},
+        (('2023-04-15T07:00:00Z', 5, 1, 0), 1, 1,
+         {'last_fetched_loggings_tuples': {
+             ('0', '2023-04-15T07:00:00Z'),
+             ('1', '2023-04-15T07:00:00Z'),
+             ('2', '2023-04-15T07:00:00Z'),
+             ('3', '2023-04-15T07:00:00Z')}},
          '2023-04-15T07:00:00Z')]
 
     @pytest.mark.parametrize("args, len_of_last_loggings, len_of_activity_loggings, last_run, time_to_check",
@@ -179,7 +184,8 @@ class TestFetchActivity:
 
         assert activity_loggings == fetched_events.get('fetched_events')
         assert new_last_run.get('last_fetch_time') == '2023-04-15T07:00:00Z'
-        assert set(new_last_run.get('last_fetched_loggings_ids')) == {'2', '3'}
+        assert set(new_last_run.get('last_fetched_loggings_tuples')) == {('2', '2023-04-15T07:00:00Z'),
+                                                                         ('3', '2023-04-15T07:00:00Z')}
 
         # assert no new results when given the last_run:
         fetched_events = util_load_json('test_data/fetch_activity_loggings.json')
@@ -198,4 +204,5 @@ class TestFetchActivity:
                                                        'to_date': '2023-04-15T08:00:00Z'}
         assert activity_loggings == []
         assert new_last_run.get('last_fetch_time') == '2023-04-15T07:00:00Z'
-        assert set(new_last_run.get('last_fetched_loggings_ids')) == {'2', '3'}
+        assert set(new_last_run.get('last_fetched_loggings_tuples')) == {('2', '2023-04-15T07:00:00Z'),
+                                                                         ('3', '2023-04-15T07:00:00Z')}

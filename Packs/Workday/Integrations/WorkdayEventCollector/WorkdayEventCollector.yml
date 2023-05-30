@@ -66,6 +66,15 @@ configuration:
   required: false
   type: 0
   section: Collect
+- additionalinfo: The fetch interval.
+  defaultvalue: 1
+  display: Events Fetch Interval
+  hidden: false
+  name: eventFetchInterval
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: Use Workday Event Collector integration to get activity loggings from Workday.
 display: Workday Event Collector
 name: Workday Event Collector
