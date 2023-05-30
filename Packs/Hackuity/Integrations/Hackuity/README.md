@@ -11,8 +11,7 @@ This integration was integrated and tested with version 1.25.0 of Hackuity
     | --- | --- |
     | Corporate server URL | True |
     | Namespace | True |
-    | Login | False |
-    | Api key | False |
+    | Api key | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
