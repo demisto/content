@@ -1895,13 +1895,16 @@ def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict
 
 def get_azure_cloud(params):
     azure_cloud_arg = params.get('azure_cloud')
-    if azure_cloud_arg is None or azure_cloud_arg == AzureCloudNames.CUSTOM:
+    if azure_cloud_arg is None or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
         # Backward compatibility before the azure cloud settings.
         server_url = params.get('server_url') or 'https://management.azure.com/'
         azure_cloud = create_custom_azure_cloud('AzureSentinel', defaults=AZURE_WORLDWIDE_CLOUD,
                                                 endpoints={'resource_manager': server_url})
     else:
-        azure_cloud = get_azure_cloud_or_default(azure_cloud_arg)
+        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg)
+        if azure_cloud_name is None:
+            raise DemistoException(f"Unknown AzureCloud name:{azure_cloud_name}")
+        azure_cloud = get_azure_cloud_or_default(azure_cloud_name)
     LOG(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
     return azure_cloud
 

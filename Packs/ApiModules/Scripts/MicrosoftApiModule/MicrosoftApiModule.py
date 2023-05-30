@@ -477,6 +477,8 @@ AZURE_CLOUD_NAME_MAPPING = {
     "DoD": "dod",
 }
 
+AZURE_CLOUD_NAME_CUSTOM = "Custom"
+
 AZURE_CLOUDS = {
     "com": AZURE_WORLDWIDE_CLOUD,
     "gcc": AZURE_US_GCC_CLOUD,

@@ -1275,12 +1275,15 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
 
 
 def get_azure_cloud(params):
-    azure_cloud_arg = params.get('azure_cloud')
-    if azure_cloud_arg == AzureCloudNames.CUSTOM:
-        raise DemistoException(f"{azure_cloud_arg} isn't supported for this integration")
+    azure_cloud_arg = params.get('azure_cloud', 'Worldwide')
+    if azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
+        raise DemistoException(f"AzureCloud name:{azure_cloud_arg} isn't supported for this integration")
     else:
         # There is no need for backward compatibility support, as the integration didn't support it to begin with.
-        azure_cloud = get_azure_cloud_or_default(azure_cloud_arg)
+        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg)
+        if azure_cloud_name is None:
+            raise DemistoException(f"Unknown AzureCloud name:{azure_cloud_name}")
+        azure_cloud = get_azure_cloud_or_default(azure_cloud_name)
     LOG(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
     return azure_cloud
 
