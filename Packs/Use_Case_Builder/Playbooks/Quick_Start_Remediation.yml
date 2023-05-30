@@ -998,3 +998,6 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: 5c451e74-8770-4d37-8af8-4bcd61579dae
+fromversion: 6.10.0
+tests:
+  - Run all tests
