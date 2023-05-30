@@ -1,4 +1,4 @@
-Deprecated. Use the ***xdr-file-delete-script-execute*** command instead. Initiates a new endpoint script execution to delete the specified file and retrieve the results.
+Deprecated. Use the `xdr-file-delete-script-execute` command instead. Initiates a new endpoint script execution to delete the specified file and retrieve the results.
 
 ## Dependencies
 
@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-run-script-delete-file
 * xdr-get-script-execution-results
+* xdr-run-script-delete-file
 
 ## Playbook Inputs
 
@@ -44,4 +44,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Cortex XDR - delete file](../doc_files/Cortex_XDR_-_Delete_file.png)
+![Cortex XDR - delete file](../doc_files/Cortex_XDR_-_delete_file.png)

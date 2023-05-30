@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-run-snippet-code-script
 * xdr-get-script-execution-results
+* xdr-run-snippet-code-script
 
 ## Playbook Inputs
 

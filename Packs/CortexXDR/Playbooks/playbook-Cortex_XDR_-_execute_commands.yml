@@ -1,28 +1,55 @@
 deprecated: true
-id: Cortex XDR - Execute commands
-version: -1
-contentitemexportablefields:
-  contentitemfields: {}
-name: Cortex XDR - Execute commands
 description: Deprecated. Use the `xdr-script-commands-execute` command instead. Initiates a new script execution of shell commands.
+id: Cortex XDR - Execute commands
+inputs:
+- description: A comma-separated list of endpoint IDs.
+  key: endpoint_ids
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of shell commands to execute.
+  key: commands
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  key: script_timeout
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Amount of time to poll action status before declaring a timeout and
+    resuming the playbook (in minutes).
+  key: polling_timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "10"
+name: Cortex XDR - Execute commands
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ac39719f-7adb-4e30-8b98-f5a5df25c325
-    type: start
-    task:
-      id: ac39719f-7adb-4e30-8b98-f5a5df25c325
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac39719f-7adb-4e30-8b98-f5a5df25c325
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ac39719f-7adb-4e30-8b98-f5a5df25c325
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -30,29 +57,14 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 370177e1-b835-49d2-8f87-d478d0b9ffbe
-    type: regular
-    task:
-      id: 370177e1-b835-49d2-8f87-d478d0b9ffbe
-      version: -1
-      name: Run script execute commands
-      description: Initiate a new endpoint script execution of shell commands.
-      script: '|||xdr-run-script-execute-commands'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
       commands:
         complex:
@@ -64,7 +76,19 @@ tasks:
         complex:
           root: inputs.script_timeout
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Initiate a new endpoint script execution of shell commands.
+      id: fded77b1-3d84-4346-81ee-dc408e4edafa
+      iscommand: true
+      name: Run script execute commands
+      script: '|||xdr-run-script-execute-commands'
+      type: regular
+      version: -1
+    taskid: fded77b1-3d84-4346-81ee-dc408e4edafa
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -72,44 +96,42 @@ tasks:
           "y": 190
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
-    type: playbook
-    task:
-      id: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
-      version: -1
-      name: Cortex XDR - Check Action Status
-      description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
-      playbookName: Cortex XDR - Check Action Status
-      type: playbook
+    ignoreworker: false
+    loop:
+      exitCondition: ""
       iscommand: false
-      brand: ""
+      max: 100
+      wait: 1
     nexttasks:
       '#none#':
       - "3"
+    note: false
+    quietmode: 0
     scriptarguments:
       action_id:
         complex:
-          root: PaloAltoNetworksXDR.ScriptRun
           accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
       timeout:
         complex:
           root: inputs.polling_timeout
     separatecontext: true
-    continueonerrortype: ""
-    loop:
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
+      id: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      name: Cortex XDR - Check Action Status
+      playbookId: Cortex XDR - Check Action Status
+      type: playbook
+      version: -1
+    taskid: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
+    timertriggers: []
+    type: playbook
     view: |-
       {
         "position": {
@@ -117,36 +139,33 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e4e1bbc6-e612-4f5d-8dc8-65fd75f15766
-    type: regular
-    task:
-      id: e4e1bbc6-e612-4f5d-8dc8-65fd75f15766
-      version: -1
-      name: Get script execution results
-      description: Retrieve the results of a script execution action.
-      script: '|||xdr-get-script-execution-results'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       action_id:
         complex:
-          root: PaloAltoNetworksXDR.ScriptRun
           accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve the results of a script execution action.
+      id: e4e1bbc6-e612-4f5d-8dc8-65fd75f15766
+      iscommand: true
+      name: Get script execution results
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      version: -1
+    taskid: e4e1bbc6-e612-4f5d-8dc8-65fd75f15766
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -154,27 +173,24 @@ tasks:
           "y": 550
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 07ef5958-2971-458a-8983-312970ae419b
-    type: title
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ""
       id: 07ef5958-2971-458a-8983-312970ae419b
-      version: -1
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
+      version: -1
       description: ''
-    separatecontext: false
-    continueonerrortype: ""
+    taskid: 07ef5958-2971-458a-8983-312970ae419b
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -182,13 +198,7 @@ tasks:
           "y": 730
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -201,31 +211,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: endpoint_ids
-  value: {}
-  required: false
-  description: A comma-separated list of endpoint IDs.
-  playbookInputQuery:
-- key: commands
-  value: {}
-  required: false
-  description: A comma-separated list of shell commands to execute.
-  playbookInputQuery:
-- key: script_timeout
-  value: {}
-  required: false
-  description: |-
-    The timeout in seconds for this execution.
-    (Default is: '600')
-  playbookInputQuery:
-- key: polling_timeout
-  value:
-    simple: "10"
-  required: false
-  description: Amount of time to poll the action status before declaring a timeout and resuming the playbook (in minutes).
-  playbookInputQuery:
-outputs: []
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
