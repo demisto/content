@@ -1729,7 +1729,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Enter the File SHA256 you would like to block. Also, this input can be used in the Threat Hunting step.
+  description: Enter the file SHA256 you would like to block. Also, this input can be used in the Threat Hunting step.
   playbookInputQuery:
 - key: HostID
   value:
