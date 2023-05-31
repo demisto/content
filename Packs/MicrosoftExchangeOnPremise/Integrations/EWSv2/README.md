@@ -876,7 +876,7 @@ Retrieves items from a specified folder in a mailbox. The items are order by the
 | EWS.Items.FileAttachments.attachmentName | unknown | Attachment name of the file attachment. | 
 | EWS.Items.ItemAttachments.attachmentName | unknown | Attachment name of the item attachment. | 
 | EWS.Items.isRead | String | The read status of the email. |
-| EWS.Items.Categories | String | Categories of the email. | 
+| EWS.Items.categories | String | Categories of the email. | 
 
 
 #### Command Example
@@ -976,7 +976,7 @@ Retrieves items by item ID.
 | EWS.Items.FileAttachments.attachmentName | unknown | Attachment name of the file attachment. | 
 | EWS.Items.ItemAttachments.attachmentName | unknown | Attachment name of the item attachment. | 
 | EWS.Items.isRead | String | The read status of the email. | 
-| EWS.Items.Categories | String | Categories of the email. | 
+| EWS.Items.categories | String | Categories of the email. | 
 | Email.CC | String | Email addresses CC'ed to the email. | 
 | Email.BCC | String | Email addresses BCC'ed to the email. | 
 | Email.To | String | The recipient of the email. | 
