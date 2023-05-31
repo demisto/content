@@ -1,10 +1,13 @@
 Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
-This integration was integrated and tested with version xx of SentinelOne V2_copy
+This integration was integrated and tested with version xx of SentinelOne V2
 
-## Configure SentinelOne v2_copy on Cortex XSOAR
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-sentinelone-v2).
+
+## Configure SentinelOne v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SentinelOne v2_copy.
+2. Search for SentinelOne v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -1733,7 +1736,7 @@ Returns network interface details for a given Agent ID. This includes MAC addres
 
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and SentinelOne v2_copy corresponding events (available from Cortex XSOAR version 6.0.0).
+You can enable incident mirroring between Cortex XSOAR incidents and SentinelOne v2 corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
@@ -1741,10 +1744,10 @@ To set up the mirroring:
     | **Option** | **Description** |
     | --- | --- |
     | None | Turns off incident mirroring. |
-    | Incoming | Any changes in SentinelOne v2_copy events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in SentinelOne v2_copy events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and SentinelOne v2_copy events will be reflected in both directions. |
+    | Incoming | Any changes in SentinelOne v2 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in SentinelOne v2 events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and SentinelOne v2 events will be reflected in both directions. |
 
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SentinelOne v2_copy.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SentinelOne v2.
