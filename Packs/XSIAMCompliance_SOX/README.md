@@ -3,7 +3,8 @@ The compliance pack provides dashboards and reports for a variety of regulations
 
 
 ## **What does this pack do?**
--Install dashboard and report templates for the following regulations: PCI DSS, HIPAA, NIST CSF, NIST 800-53, NIST 800-171, SOX
--Reference data that has been mapped to the data model
--Produce evidence for audits/regulations
+-Install dashboard and report templates for the following regulations: SOX
+-Reference data that has been mapped to the data model.
+-Produce evidence for audits/regulations.
 
+**Note:** This pack is currently offered as a free add-on. However, in the future there will be fee for this pack.
