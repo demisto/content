@@ -209,6 +209,7 @@ tasks:
       name: Services Exist?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -296,6 +297,7 @@ tasks:
       name: Service Exists?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':

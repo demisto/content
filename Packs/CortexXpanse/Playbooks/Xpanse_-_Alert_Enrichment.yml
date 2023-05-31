@@ -44,6 +44,7 @@ tasks:
       name: What is the provider?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
