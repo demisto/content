@@ -20,7 +20,6 @@ You need to do the following in Google before configuring your integration insta
     2.  Click **CREATE**.
 4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.    
 
-
     ![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
 5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
  
@@ -28,8 +27,7 @@ You need to do the following in Google before configuring your integration insta
 6.  In the **Grant this service account access to project** section,click **Continue**.
 7.  In the **Grant users access to this service account** section, click **DONE**.  
 8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
-  
-  
+    
     ![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
 9. Click the **ADD KEY** dropdown, and select **Create new key**.
 10. Select Key type **JSON** and click **CREATE**.  

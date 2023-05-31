@@ -41,8 +41,7 @@ tasks:
       id: 5a59a000-8bfc-4537-8916-1dd8b873197b
       version: -1
       name: ThreatGrid Upload URL
-      description: Submits a sample to threat grid for analysis. URL or file, not
-        both.
+      description: Submits a sample to threat grid for analysis. URL or file, not both.
       script: '|||threat-grid-sample-upload'
       type: regular
       iscommand: true
@@ -51,6 +50,10 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      interval_in_seconds:
+        simple: ${inputs.interval}
+      timeout_in_seconds:
+        simple: ${inputs.timeout}
       url:
         simple: ${inputs.URL}
     separatecontext: false
@@ -58,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 540
+          "x": 275,
+          "y": 545
         }
       }
     note: false
@@ -71,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e613cd86-2870-4227-8a23-ec5d4f41fc8d
+    taskid: 1d32d967-6615-452d-830f-aac7d45e910e
     type: condition
     task:
-      id: e613cd86-2870-4227-8a23-ec5d4f41fc8d
+      id: 1d32d967-6615-452d-830f-aac7d45e910e
       description: condition
       version: -1
       name: Is ThreatGrid enabled?
@@ -103,7 +106,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Threat Grid
+                        simple: ThreatGridv2
                 - - operator: isEqualString
                     left:
                       value:
@@ -208,7 +211,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 640,
+        "width": 605,
         "x": 50,
         "y": 50
       }
@@ -217,13 +220,31 @@ view: |-
 inputs:
 - key: URL
   value:
-    simple: URL.Data
-  required: true
+    simple: ${URL.Data}
+  required: false
   description: URL of the sites to detonate.
+  playbookInputQuery: null
+- key: timeout
+  value:
+    simple: "60"
+  required: false
+  description: Indicates the time in seconds until the polling sequence times out. 
+    Default is 60.
+  playbookInputQuery: null
+- key: interval
+  value:
+    simple: "10"
+  required: false
+  description: Indicates the time in seconds to wait between command execution when
+    'polling' argument is true. Minimum value is 10 seconds. Default is 10.
   playbookInputQuery: null
 outputs: []
 quiet: true
 fromversion: 5.0.0
-description: ''
+description: Detonate one or more URLs using the ThreatGrid integration.
 tests:
  -  Detonate URL - Generic Test
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
