@@ -91,19 +91,22 @@ Runs reputation on IPs.
 #### Human Readable Output
 
 ###IP: 66.249.68.82 found with Noise Reputation: Good
+
 ###GreyNoise Context IP Lookup
 
 |IP|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen|
 |---|---|---|---|---|---|---|---|---|---|
-| [66.249.68.82](https://www.greynoise.io/viz/ip/66.249.68.82) | benign | GoogleBot | TLS/SSL Crawler, Web Crawler | false | false | false | false | 2021-05-30 | 2021-09-16 |
+| 66.249.68.82| benign | GoogleBot | TLS/SSL Crawler, Web Crawler | false | false | false | false | 2021-05-30 | 2021-09-16 |
 
 ###IP: 66.249.68.82 found with RIOT Reputation: Good
+
 ###Belongs to Common Business Service: Google
+
 ###GreyNoise RIOT IP Lookup
 
 |IP|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|
-| [66.249.68.82](https://www.greynoise.io/viz/riot/66.249.68.82) | software | Google | 	1 - Reasonably Ignore | 	Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware. | 2021-09-16T17:53:00Z|
+| 66.249.68.82 | software | Google | 	1 - Reasonably Ignore | 	Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware. | 2021-09-16T17:53:00Z|
 
 
 ### greynoise-ip-quick-check
@@ -139,8 +142,8 @@ Check whether a given IP address is "Internet background noise", or has been obs
 ### IP Quick Check Details
 |IP|Noise|Code|Code Description|
 |---|---|---|---|
-| [45.83.66.18](https://viz.greynoise.io/ip/45.83.66.18) | true | 0x01 | IP has been observed by the GreyNoise sensor network |
-| [45.83.65.120](https://viz.greynoise.io/ip/45.83.65.120) | true | 0x01 | IP has been observed by the GreyNoise sensor network |
+| 45.83.66.18 | true | 0x01 | IP has been observed by the GreyNoise sensor network |
+| 45.83.65.120| true | 0x01 | IP has been observed by the GreyNoise sensor network |
 
 ### greynoise-query
 ***
@@ -152,20 +155,20 @@ Get the information of IP based on the providence filters.
 `greynoise-query`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| classification | Classification of the device like unknown, benign, malicious. Possible values are: unknown, benign, malicious. | Optional | 
-| spoofable | Whether the IP is spoofable or not. Possible values are: true, false. | Optional | 
-| actor | The benign actor the device has been associated with. | Optional | 
-| size | Maximum amount of results to grab. Default is 10. | Optional | 
-| advanced_query | GNQL query to filter records.<br/> Note: It merges other arguments and takes higher precedence over the same argument if supplied.<br/> Example:<br/> malicious,<br/> spoofable:false SSH Scanner,<br/> spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103. | Optional | 
-| next_token | Scroll token to paginate through results. | Optional | 
-| last_seen | The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m. | Optional | 
-| organization | The organization that owns the network that the IP address belongs to. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| classification | Classification of the device like unknown, benign, malicious. Possible values are: unknown, benign, malicious.                                                                                                                                            | Optional | 
+| spoofable | Whether the IP is spoofable or not. Possible values are: true, false.                                                                                                                                                                                     | Optional | 
+| actor | The benign actor the device has been associated with.                                                                                                                                                                                                     | Optional | 
+| size | Maximum amount of results to grab. Default is 10.                                                                                                                                                                                                         | Optional | 
+| advanced_query | GNQL query to filter records. Note: It merges other arguments and takes higher precedence over the same argument if supplied. Example: malicious, spoofable:false SSH Scanner, spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103. | Optional | 
+| next_token | Scroll token to paginate through results.                                                                                                                                                                                                                 | Optional | 
+| last_seen | The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m.                                                                                                                                                                 | Optional | 
+| organization | The organization that owns the network that the IP address belongs to.                                                                                                                                                                                    | Optional | 
 
 #### Advance Query
 GNQL (GreyNoise Query Language) is a domain-specific query language that uses Lucene deep under the hood.  
-For more information on the syntax to write GNQL of argument `advanced_query`, click [here](https://developer.greynoise.io/reference#gnql-1).
+For more information on the syntax to write GNQL of argument `advanced_query`, visit https://docs.greynoise.io/reference/.
 
 #### Context Output
 
@@ -219,14 +222,14 @@ For more information on the syntax to write GNQL of argument `advanced_query`, c
 #### Human Readable Output
 ### Total findings: 2846548
 ### IP Context
-|IP|Classification|Actor|CVE|Spoofable|VPN|First Seen|Last Seen|
-|---|---|---|---|---|---|---|---|
-| [71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131) | benign | Shodan.io | CVE-1999-0526,<br/>CVE-2013-6117,<br/>CVE-2019-0708 | false | false | 2017-09-20 | 2021-02-03 |
+| IP            |Classification|Actor| CVE                                         |Spoofable|VPN|First Seen|Last Seen|
+|---------------|---|---|---------------------------------------------|---|---|---|---|
+| 71.6.135.131  | benign | Shodan.io | CVE-1999-0526 ,CVE-2013-6117, CVE-2019-0708 | false | false | 2017-09-20 | 2021-02-03 |
 
 ### Next Page Token: 
 DnF1ZXJ5VGhlbkZldGNoBQAAAAAcV1_HFkFKSExEdUc4VEtta2
 
-*To view the detailed query result please click [here](https://viz.greynoise.io/query/?gnql=spoofable:false).*
+*To view the detailed query result please click here.*
 
 ### greynoise-stats
 ***
@@ -244,7 +247,7 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | spoofable | Whether the IP is spoofable or not. Possible values are: true, false. | Optional | 
 | actor | The benign actor the device has been associated with. | Optional | 
 | size | Maximum amount of results to grab. Default is 10. | Optional | 
-| advanced_query | GNQL query to filter records.<br/> Note: It merges other arguments and takes higher precedence over the same argument if supplied.<br/> Example:<br/> malicious,<br/> spoofable:false SSH Scanner,<br/> spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103. | Optional | 
+| advanced_query | GNQL query to filter records. Note: It merges other arguments and takes higher precedence over the same argument if supplied. Example: malicious, spoofable:false SSH Scanner, spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103. | Optional | 
 | last_seen | The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m. | Optional | 
 | organization | The organization that owns the network that the IP address belongs to. | Optional | 
 
@@ -378,7 +381,7 @@ Identify IPs from known benign services and organizations that commonly cause fa
 ### GreyNoise: IP Belongs to Common Business Service
 |IP|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|
-| [8.8.8.8](https://viz.greynoise.io/riot/8.8.8.8)  | public_dns | Google Public DNS | 	1 - Reasonably Ignore | Google's global domain name system (DNS) resolution service.|2021-04-12T05:55:35Z|
+| 8.8.8.8  | public_dns | Google Public DNS | 	1 - Reasonably Ignore | Google's global domain name system (DNS) resolution service.|2021-04-12T05:55:35Z|
 
 ``` !greynoise-riot ip="114.119.130.178" ```
 
@@ -453,7 +456,7 @@ IP: 66.249.68.82 found with Noise Reputation: Good
 
 |IP|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen|
 |---|---|---|---|---|---|---|---|---|---|
-| [66.249.68.82](https://www.greynoise.io/viz/ip/66.249.68.82) | 66.249.68.82 | GoogleBot | TLS/SSL Crawler, Web Crawler | false | false | false | false | 2021-05-30 | 2021-09-16 |
+| 66.249.68.82 | 66.249.68.82 | GoogleBot | TLS/SSL Crawler, Web Crawler | false | false | false | false | 2021-05-30 | 2021-09-16 |
 
 ``` !greynoise-context ip="114.119.130.178" ```
 
