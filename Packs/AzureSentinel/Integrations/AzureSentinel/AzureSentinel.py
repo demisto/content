@@ -1833,9 +1833,7 @@ def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, An
             tag_value = tag[tag_name]
             filter_by_tag = f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
         except Exception as e:
-            raise ValueError(
-                'Invalid tag format. Please provide a valid JSON format.'
-            ) from e
+            raise ValueError(('Invalid tag format, please use the following format: `{"key_name":"value_name"}`', e))
 
     full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter={filter_by_tag}&$top={limit}&api-version=2021-04-01'   # noqa: E501
     response = client.http_request('GET', full_url=full_url)
