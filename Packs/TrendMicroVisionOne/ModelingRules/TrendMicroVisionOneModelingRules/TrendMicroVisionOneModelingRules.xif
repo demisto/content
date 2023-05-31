@@ -93,11 +93,11 @@ filter
     xdm.target.module.md5 = json_extract_scalar(detail, "$.objectFileHashMd5"),
     xdm.target.module.filename = json_extract_scalar(detail, "$.objectName"),
     xdm.source.port = json_extract_scalar(detail, "$.spt"),
-    xdm.target.module.path = json_extract_scalar(detail, "$.srcFilePath")
+    xdm.target.module.path = json_extract_scalar(detail, "$.srcFilePath"),
     xdm.event.id = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.id")), ","),
     xdm.event.name = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.name")), ","),
     xdm.alert.description = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.description")), ","),
-    xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ",")
+    xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ","),
     xdm.alert.mitre_tactics = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")), ","),
     xdm.alert.mitre_techniques = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTechniqueIds")), ","),
     xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ","),
@@ -106,7 +106,7 @@ filter
     xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
-    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",");
+    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",")
 filter
     event type in ("audit")
 | alter
