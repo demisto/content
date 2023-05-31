@@ -37,6 +37,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: d89662d0-dedb-49ff-8cba-4855a985cc38
@@ -95,6 +98,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 4d801593-76c0-45bc-880c-46572315ab6d
@@ -132,6 +138,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 7cb53d1d-e613-47cd-847e-c1908e384d53
@@ -157,6 +166,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 5944d365-4547-4e91-8f62-fa295fa32b38
@@ -197,6 +209,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: f959299e-1445-4a65-85bf-d4f70a0c7ebf
@@ -262,12 +277,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 329341a2-3ac5-422f-8264-b9fbaae07d3f
+    taskid: cea15031-a8cf-4af4-8c43-47bebe24493d
     type: condition
     task:
-      id: 329341a2-3ac5-422f-8264-b9fbaae07d3f
+      id: cea15031-a8cf-4af4-8c43-47bebe24493d
       version: -1
       name: Is the file type supported?
       description: Check if file type is supported.
@@ -305,7 +323,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
                     ignorecase: true
                   - operator: match
                     left:
@@ -314,7 +332,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
                     ignorecase: true
                 accessor: EntryID
             iscontext: true
@@ -331,6 +349,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 16c9088e-43fa-494a-80f2-646461c74a66
@@ -366,12 +387,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f964fe7b-3805-44e8-8f2e-a4b71300ad70
+    taskid: a1f211d5-0d9e-44bb-8fd2-741ce1d5951a
     type: regular
     task:
-      id: f964fe7b-3805-44e8-8f2e-a4b71300ad70
+      id: a1f211d5-0d9e-44bb-8fd2-741ce1d5951a
       version: -1
       name: WildFire Upload File
       description: Uploads a file to WildFire for analysis.
@@ -394,7 +418,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
               ignorecase: true
             - operator: match
               left:
@@ -412,7 +436,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
               ignorecase: true
           accessor: EntryID
     separatecontext: false
@@ -428,6 +452,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: d1c6a572-54e7-4233-8228-daa0f7dcb176
@@ -477,6 +504,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -507,13 +537,12 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop polling and to resume the playbook.
-    (in minutes)
+  description: The duration after which to stop polling and to resume the playbook. (in minutes)
   playbookInputQuery:
 - key: ReportFileType
   value: {}
   required: false
-  description: The resource type to download. 
+  description: The resource type to download.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Score
@@ -598,5 +627,8 @@ outputs:
   description: The size of the submission.
   type: number
 tests:
-- No tests (auto formatted)
+- Detonate URL - WildFire v2.1 - Test
+- Wildfire Test
+- Detonate URL - WildFire-v2 - Test
+- Wildfire Test With Polling
 fromversion: 5.0.0
