@@ -149,10 +149,10 @@ validate-content-conf:
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -288,15 +288,6 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-xsoar_server_6_5:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.5"
-
 xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
@@ -314,6 +305,24 @@ xsoar_server_6_8:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     INSTANCE_ROLE: "Server 6.8"
+
+xsoar_server_6_9:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.9"
+
+xsoar_server_6_10:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.10"
 
 xsoar_server_master:
   extends:
@@ -367,11 +376,13 @@ jobs-done-check-on-push:
       optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_5
-      optional: true
     - job: xsoar_server_6_6
       optional: true
     - job: xsoar_server_6_8
+      optional: true
+    - job: xsoar_server_6_9
+      optional: true
+    - job: xsoar_server_6_10
       optional: true
     - job: xsoar_server_master
       optional: true
