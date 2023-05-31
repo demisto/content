@@ -66,7 +66,7 @@ jobs-done-check-upload-flow:
   extends:
     - .jobs-done-check
     - .bucket-upload-rule
-  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace']
+  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'xsoar-saas-prepare-testing-bucket-upload-flow', 'xsoar-' 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace']
   tags:
     - gke
 
@@ -78,6 +78,19 @@ xsoar-prepare-testing-bucket-upload-flow:
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+
+
+xsoar-saas-prepare-testing-bucket-upload-flow:
+  extends:
+    - xsoar-saas-prepare-testing-bucket
+  variables:
+    IFRA_ENV_TYPE: "Bucket-Upload"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
