@@ -3494,7 +3494,9 @@ def prettify_rule(rule: dict):
     if DEVICE_GROUP:
         context_rule['DeviceGroup'] = DEVICE_GROUP
     if '@loc' in rule:
-        context_rule['Location'] = rule['@loc']
+        context_rule['Location'] = \
+            pretty_rule['Location'] = \
+            rule['@loc']
 
     context_rule['SecurityProfileGroup'] = \
         pretty_rule['Profile Group'] = \
