@@ -880,9 +880,12 @@ def test_prettify_rule():
     with open("test_data/prettify_rule.json") as f:
         expected_prettify_rule = json.load(f)
 
-    prettify_rule = prettify_rule(rule)
-
-    assert prettify_rule == expected_prettify_rule
+    pretty_rule, context_rule = prettify_rule(rule)
+    expected_pretty_rule = expected_prettify_rule['pretty']
+    expected_context_rule = expected_prettify_rule['context']
+    
+    assert pretty_rule == expected_pretty_rule
+    assert context_rule == expected_context_rule
 
 
 class TestPcap:
@@ -3370,7 +3373,7 @@ def test_panorama_apply_dns_command2(mocker):
     apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
 
     request_params = request_mock.call_args.kwargs['params']  # The body part of the request
-    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']" # noqa
+    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
 
 
 class TestHygieneFunctions:
@@ -6700,4 +6703,4 @@ def test_panorama_list_rules():
 
     assert rules['application']['member'][0] == 'dns'
     assert mock_request.last_request.qs['xpath'][0] == \
-           "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
+        "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"

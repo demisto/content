@@ -197,19 +197,21 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
 
 RULE_FILTERS = ('nat-type', 'action')
 APPILICATION_FILTERS = ('risk', 'category', 'subcategory', 'technology')
-CHARACTERISTICS_LIST=('virus-ident', 
-'file-type-ident', 
-'evasive-behavior', 
-'consume-big-bandwidth', 
-'used-by-malware', 
-'able-to-transfer-file', 
-'has-known-vulnerability', 
-'tunnel-other-application', 
-'prone-to-misuse', 
-'pervasive-use', 
-'data-ident', 
-'file-forward',
-'is-saas')
+CHARACTERISTICS_LIST = ('virus-ident',
+                        'file-type-ident',
+                        'evasive-behavior',
+                        'consume-big-bandwidth',
+                        'used-by-malware',
+                        'able-to-transfer-file',
+                        'has-known-vulnerability',
+                        'tunnel-other-application',
+                        'prone-to-misuse',
+                        'pervasive-use',
+                        'data-ident',
+                        'file-forward',
+                        'is-saas')
+
+
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
@@ -428,11 +430,11 @@ def do_pagination(
     page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
     limit: int = DEFAULT_LIMIT_PAGE_SIZE
 ):
-    if isinstance(entries,list) and page is not None:
+    if isinstance(entries, list) and page is not None:
         if page <= 0:
             raise DemistoException(f'page {page} must be a positive number')
         entries = entries[(page - 1) * page_size:page_size * page]  # do pagination
-    elif isinstance(entries,list):
+    elif isinstance(entries, list):
         entries = entries[:limit]
 
     return entries
@@ -743,6 +745,7 @@ def filter_rules_by_status(disabled: str, rules: list) -> list:
 
 ''' FUNCTIONS'''
 
+
 def panorama_test(fetch_params):
     """
     test module
@@ -959,11 +962,11 @@ def panorama_commit_command(args: dict):
         }
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
-                    outputs_prefix='Panorama.Commit',
-                    outputs_key_field='JobID',
-                    outputs=commit_output,
-                    readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
-                ),
+                outputs_prefix='Panorama.Commit',
+                outputs_key_field='JobID',
+                outputs=commit_output,
+                readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
+            ),
             continue_to_poll=commit_status.get('job', {}).get('status') != 'FIN',  # continue polling if job isn't done
         )
     else:  # either no polling is required or this is the first run
@@ -1221,12 +1224,12 @@ def panorama_push_to_device_group_command(args: dict):
             continue_to_poll = False
 
         args_for_next_run = {
-                'push_job_id': job_id,
-                'polling': argToBoolean(args.get('polling', False)),
-                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'description': description,
-                'device-group': DEVICE_GROUP
-            }
+            'push_job_id': job_id,
+            'polling': argToBoolean(args.get('polling', False)),
+            'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+            'description': description,
+            'device-group': DEVICE_GROUP
+        }
 
         return PollResult(
             response=push_output,
@@ -1558,7 +1561,8 @@ def panorama_create_address_command(args: dict):
     description = args.get('description')
 
     if tags := set(argToList(args.get('tag', []))):
-        result = http_request(URL, 'GET', params={'type': 'config', 'action': 'get', 'key': API_KEY, 'xpath': f'{XPATH_OBJECTS}tag'})
+        result = http_request(URL, 'GET', params={'type': 'config', 'action': 'get',
+                              'key': API_KEY, 'xpath': f'{XPATH_OBJECTS}tag'})
         entries = result.get('response', {}).get('result', {}).get('tag', {}).get('entry', [])
         if isinstance(entries, dict):  # In case there is only one tag.
             entries = [entries]
@@ -1622,11 +1626,11 @@ def pan_os_edit_address(name, element_value, element_to_change, is_listable):
     params = {
         'xpath': f'{XPATH_OBJECTS}address/entry[@name="{name}"]/{element_to_change}',
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-                behavior='replace',
-                object_name=element_to_change,
-                element_value=element_value,
-                is_listable=is_listable,
-            ),
+            behavior='replace',
+            object_name=element_to_change,
+            element_value=element_value,
+            is_listable=is_listable,
+        ),
         ),
         'action': 'edit',
         'type': 'config',
@@ -3446,74 +3450,79 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 
 ''' Security Rules Managing '''
 
-def xml_get(elem: dict | Any, key: Any, subkeys = ('member', '#text', '@name')):
+
+def xml_get(elem: dict | Any, key: Any, subkeys=('member', '#text', '@name')):
     if type(elem) is not dict:
         return elem
-    
+
     value = elem.get(key)
-    
+
     if type(value) is dict:
         return next(
-                (xml_get(value, sub)
-                for sub in subkeys
-                if sub in value),
-                None
-            ) or next(
-                (xml_get(value, k)
-                for k in value.keys()
-                if not str(k).startswith('@')),
-                None
-            )
+            (xml_get(value, sub)
+             for sub in subkeys
+             if sub in value),
+            None
+        ) or next(
+            (xml_get(value, k)
+             for k in value.keys()
+             if not str(k).startswith('@')),
+            None
+        )
     if type(value) is list:
         return [
             xml_get({0: item}, 0)
             for item in value
         ]
-        
+
     return value
-        
+
 
 def prettify_rule(rule: dict):
-    
+
     rule_get = partial(xml_get, rule)
-    
-    tick_box = {
+
+    tick_box: Dict[Any, str] = {
         'yes': '✅',
         'no': '⬜',
         None: '⬜',
     }
 
-    context_rule = {}
-    pretty_rule = {}
-    
+    context_rule: Dict[str, Any] = {}
+    pretty_rule: Dict[str, Any] = {}
+
     if DEVICE_GROUP:
         context_rule['DeviceGroup'] = DEVICE_GROUP
     if '@loc' in rule:
         context_rule['Location'] = rule['@loc']
-        
-    
+
     context_rule['SecurityProfileGroup'] = \
-    pretty_rule['Profile Group'] = \
-        rule_get('profile-setting', subkeys = ('group', 'member', '#text'))
+        pretty_rule['Profile Group'] = \
+        rule_get('profile-setting', subkeys=('group', 'member', '#text'))
 
     profiles = {
         k: xml_get(pfs, k)
         for k in pfs.keys()
         if not str(k).startswith('@')
     } \
-    if type(pfs := dict_safe_get(rule, ('profile-setting', 'profiles'))) is dict \
-    else None
+        if type(pfs := dict_safe_get(rule, ('profile-setting', 'profiles'))) is dict \
+        else None
 
     pretty_rule['Profile'] = \
-    context_rule['SecurityProfile'] = \
+        context_rule['SecurityProfile'] = \
         profiles
-
-    context_rule['Target'] = rule.get('target')
-    pretty_rule['Target'] = (
-        f'negate: {dict_safe_get(rule, ("target", "negate"))}\n'
-        f'devices: {dict_safe_get(rule, ("target", "devices"))}'
-    ).replace('[', '').replace(']', '').replace("'", '')
         
+    target = dict_safe_get(rule, ('target',), {}, dict)
+    target |= {
+        'devices': xml_get(target, 'devices'),
+        'negate': xml_get(target, 'negate'),
+    }
+    context_rule['Target'] = target
+    pretty_rule['Target'] = (
+        f'negate: {target["negate"]}\n'
+        f'devices: {target["devices"]}'
+    ).replace('[', '').replace(']', '').replace("'", '')
+
     context_rule['Name'] = pretty_rule['Name'] = rule_get('@name')
     context_rule['QoSMarking'] = dict_safe_get(rule, ('qos', 'marking'))
     context_rule['Type'] = pretty_rule['Type'] = rule_get('rule-type')
@@ -3542,15 +3551,15 @@ def prettify_rule(rule: dict):
 
     context_rule['Option'] = option = rule.get('option')
     pretty_rule['Options'] = [
-        str(tick_box.get(rule_get('log-start'))) + ' Log at Session Start',
+        tick_box.get(rule_get('log-start'), '') + ' Log at Session Start',
         'Log Forwarding: ' + str(rule_get('log-setting')),
         'Schedule: ' + str(rule_get('schedule')),
-        'QoS Marking: ' + str(next(filter(lambda k: not k.startswith('@'), qos.keys()), None)
-                          if type(qos := context_rule['QoSMarking']) is dict else qos),
-        str(tick_box.get(xml_get(option, 'disable-server-response-inspection'))) + \
-            ' Disable Server Response Inspection'
+        'QoS Marking: ' + str(next(filter(lambda k: not k.startswith('@'), qos.keys()), None) # type: ignore[assignment] # pylint: disable=assignment
+                              if type(qos := context_rule['QoSMarking']) is dict else qos),
+        tick_box.get(xml_get(option, 'disable-server-response-inspection'), '') \
+        + ' Disable Server Response Inspection'
     ]
-    
+
     return pretty_rule, context_rule
 
 
@@ -3601,7 +3610,7 @@ def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, quer
         params["xpath"] = f'{params["xpath"]}[{query.replace(" eq ", " = ")}]'
     elif xpath_filter := build_xpath_filter(name_match=name, filters=filters):
         params["xpath"] = f'{params["xpath"]}[{xpath_filter}]'
-    
+
     result = http_request(
         URL,
         'GET',
@@ -3636,21 +3645,20 @@ def panorama_list_rules_command(args: dict):
         rules = filter_rules_by_status(disabled, rules)
 
     pretty_rules, context_rules = prettify_rules(rules, target)
-    
-    
+
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': rules,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
-                                         ['Name'] + ['Location']*is_panorama + ['Tags','Type',
-                                          'Source Zone', 'Source Address', 'Source User',
-                                          'Source Device', 'Destination Zone',
-                                          'Destination Address', 'Destination Device',
-                                          'Application', 'Service', 'Url Category',
-                                          'Action', 'Profile', 'Profile Group', 'Options'] + \
-                                          ['Target']*is_panorama,
+                                         ['Name'] + ['Location'] * is_panorama + ['Tags', 'Type',
+                                                                                  'Source Zone', 'Source Address', 'Source User',
+                                                                                  'Source Device', 'Destination Zone',
+                                                                                  'Destination Address', 'Destination Device',
+                                                                                  'Application', 'Service', 'Url Category',
+                                                                                  'Action', 'Profile', 'Profile Group', 'Options'] + \
+                                         ['Target'] * is_panorama,
                                          removeNull=True),
         'EntryContext': {
             "Panorama.SecurityRule(val.Name == obj.Name)": context_rules
@@ -4244,9 +4252,9 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
         applications_arr = [applications_arr]
     for i in range(len(applications_arr)):
         application = applications_arr[i]
-        application_characteristics_list=[]
-        for characteristics_name,value in application.items():
-            if characteristics_name in CHARACTERISTICS_LIST and value=='yes':
+        application_characteristics_list = []
+        for characteristics_name, value in application.items():
+            if characteristics_name in CHARACTERISTICS_LIST and value == 'yes':
                 application_characteristics_list.append(str(characteristics_name))
         pretty_application_arr.append({
             'Category': application.get('category'),
@@ -4262,7 +4270,7 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
 
 
 @logger
-def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[List[dict], dict]:
+def panorama_list_applications(args: Dict[str, str], predefined: bool) -> Union[List[dict], dict]:
     major_version = get_pan_os_major_version()
     params = {
         'type': 'config',
@@ -4277,20 +4285,20 @@ def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[L
         characteristics=argToList(args.get('characteristics')),
     )
     name_match = args.get('name_match')
-    demisto.debug('name_match',name_match)
+    demisto.debug('name_match', name_match)
     name_contain = args.get('name_contain')
     if name_match and name_contain:
         raise Exception('Please specify only one of name_match/name_contain')
-    xpath_filter = build_xpath_filter(name_match,name_contain,filters)
+    xpath_filter = build_xpath_filter(name_match, name_contain, filters)
     demisto.debug("xpath_filter", xpath_filter)
     if predefined:  # if predefined = true, no need for device group.
         if major_version < 9:
             raise Exception('Listing predefined applications is only available for PAN-OS 9.X and above versions.')
         else:
-                if xpath_filter:
-                    params['xpath'] = f'/config/predefined/application/entry[{xpath_filter}]'
-                else:
-                    params['xpath'] = '/config/predefined/application'
+            if xpath_filter:
+                params['xpath'] = f'/config/predefined/application/entry[{xpath_filter}]'
+            else:
+                params['xpath'] = '/config/predefined/application'
     else:
         # if device-group was provided it will be set in initialize_instance function.
         if xpath_filter:
@@ -4316,7 +4324,7 @@ def panorama_list_applications(args:Dict[str, str], predefined: bool) -> Union[L
     return applications
 
 
-def panorama_list_applications_command(args:Dict[str, str]):
+def panorama_list_applications_command(args: Dict[str, str]):
     """
     List all applications
     """
@@ -4324,7 +4332,7 @@ def panorama_list_applications_command(args:Dict[str, str]):
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size')) or DEFAULT_LIMIT_PAGE_SIZE
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT_PAGE_SIZE
-    applications_arr = panorama_list_applications(args,predefined)
+    applications_arr = panorama_list_applications(args, predefined)
     entries = do_pagination(applications_arr, page=page, page_size=page_size, limit=limit)
     applications_arr_output = prettify_applications_arr(entries)
     headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description', 'Characteristics']
@@ -5320,7 +5328,7 @@ def panorama_query_logs_command(args: dict):
 
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
-                    or time_generated or action or port_dst or rule or url or filedigest):
+                      or time_generated or action or port_dst or rule or url or filedigest):
             raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
         result: PanosResponse = PanosResponse(
@@ -5422,6 +5430,7 @@ def panorama_query_logs_command(args: dict):
         )
 
     return poll_result
+
 
 def panorama_check_logs_status_command(job_id: str):
     """
@@ -6417,12 +6426,13 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
     versions = to_context.get('sw-updates', {}).get('versions').get('entry', [])
     if len(versions) > 5:
         versions = versions[:5]
-    human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'], removeNull=True)
+    human_readable = tableToMarkdown('5 latest pan-os software releases', versions,
+                                     ['version', 'filename', 'size', 'released-on', 'downloaded', 'current', 'latest', 'uploaded'], removeNull=True)
     return CommandResults(readable_output=human_readable,
-                                  outputs=to_context,
-                                  raw_response=result,
-                                  outputs_prefix='Panorama.LatestVersions'
-                                  )
+                          outputs=to_context,
+                          raw_response=result,
+                          outputs_prefix='Panorama.LatestVersions'
+                          )
 
 
 @logger
@@ -7226,7 +7236,7 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     edl = args.get('dns_signature_source')
     action = args.get('action')
     packet_capture = args.get('packet_capture', 'disable')
-        
+
     # for Panorama instance
     params = {
         'action': 'set',
@@ -7243,8 +7253,8 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     }
     if VSYS:  # if it's a firewall instance, modify the xpath param
         params['xpath'] = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']" \
-         f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']"
-            
+            f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']"
+
     result = http_request(
         URL,
         'POST',
@@ -8806,10 +8816,10 @@ class Topology:
         """
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         if device := all_devices.get(filter_string):
-           return device
+            return device
 
-        raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
-                               f"use a more specific filter string.")
+        raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; "
+                               + f"use a more specific filter string.")
 
     def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
         """
@@ -9656,7 +9666,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
     return object_dict
 
 
-def dataclass_from_element(device: Union[Panorama, Firewall],class_type: Callable, element):
+def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callable, element):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
     element: Optional[Element]
@@ -9706,7 +9716,6 @@ def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Tem
         return "shared"
 
     return container.name
-
 
 
 @dataclass
@@ -10768,7 +10777,6 @@ class UniversalCommand:
         device_filter_str: Optional[str] = None,
         target: Optional[str] = None
     ) -> InstallSoftwareCommandResult:
-
         """
         Start the installation process for the given software version.
         :param version The software version to install
@@ -10840,7 +10848,6 @@ class UniversalCommand:
         id: Optional[int] = None,
         target: Optional[str] = None
     ) -> List[ShowJobsAllResultData]:
-
         """
         Returns all jobs running on the system.
         :param topology: `Topology` instance.
@@ -11140,8 +11147,8 @@ def get_route_summaries(
 
 
 def get_routes(topology: Topology,
-    device_filter_string: Optional[str] = None, target: Optional[str] = None
-) -> ShowRoutingRouteCommandResult:
+               device_filter_string: Optional[str] = None, target: Optional[str] = None
+               ) -> ShowRoutingRouteCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -11326,7 +11333,7 @@ def reboot(topology: Topology, target: str) -> RestartSystemCommandResult:
     return UniversalCommand.reboot(topology, hostid=target)
 
 
-def system_status(topology: Topology,  target: str) -> CheckSystemStatus:
+def system_status(topology: Topology, target: str) -> CheckSystemStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
 
@@ -11981,7 +11988,8 @@ def pan_os_list_nat_rules_command(args):
         filters['nat-type'] = nat_type
     query = args.get('query')
 
-    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted, filters=filters, query=query)
+    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post,
+                                        show_uncommited=show_uncommitted, filters=filters, query=query)
     result = raw_response.get('response', {}).get('result', {})
 
     # the 'entry' key could be a single dict as well.
@@ -12180,14 +12188,14 @@ def pan_os_edit_nat_rule(
     params = {
         'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-                behavior=behavior,
-                object_name=object_name,
-                element_value=element_value,
-                is_listable=is_listable,
-                xpath=xpath,
-                should_contain_entries=True,
-                is_commit_required=False
-            )
+            behavior=behavior,
+            object_name=object_name,
+            element_value=element_value,
+            is_listable=is_listable,
+            xpath=xpath,
+            should_contain_entries=True,
+            is_commit_required=False
+        )
         ),
         'action': 'edit',
         'type': 'config',
@@ -12261,7 +12269,8 @@ def pan_os_edit_nat_rule_command(args):
         'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
+        element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_nat_rule(
         rule_name=rule_name,
@@ -12561,20 +12570,20 @@ def pan_os_edit_redistribution_profile(
 ):
 
     xpath = build_redistribution_profile_xpath(
-            virtual_router_name, redistribution_profile_name, element=element_to_change
-        )
+        virtual_router_name, redistribution_profile_name, element=element_to_change
+    )
 
     params = {
         'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-                behavior=behavior,
-                object_name=object_name,
-                element_value=element_value,
-                is_listable=is_listable,
-                xpath=xpath,
-                should_contain_entries=False,
-                is_commit_required=False
-            )
+            behavior=behavior,
+            object_name=object_name,
+            element_value=element_value,
+            is_listable=is_listable,
+            xpath=xpath,
+            should_contain_entries=False,
+            is_commit_required=False
+        )
         ),
         'action': 'edit',
         'type': 'config',
@@ -12608,7 +12617,8 @@ def pan_os_edit_redistribution_profile_command(args):
         'filter_bgp_extended_community': ('filter/bgp/community', 'extended-community', True)
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
+        element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_redistribution_profile(
         virtual_router_name=virtual_router_name,
@@ -12740,7 +12750,8 @@ def pan_os_list_pbf_rules_command(args):
     )
     query = args.get('query')
 
-    raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post, show_uncommitted=show_uncommitted, filters=filters, query=query)
+    raw_response = pan_os_list_pbf_rules(name=name, pre_post=pre_post,
+                                         show_uncommitted=show_uncommitted, filters=filters, query=query)
     result = raw_response.get('response', {}).get('result', {})
 
     # the 'entry' key could be a single dict as well.
@@ -12864,20 +12875,20 @@ def pan_os_edit_pbf_rule(
     rule_name, element_value, pre_post, element_to_change, object_name, is_listable, behavior
 ):
     xpath = build_pbf_xpath(
-            name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
-        )
+        name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
+    )
 
     params = {
         'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-                behavior=behavior,
-                object_name=object_name,
-                element_value=element_value,
-                is_listable=is_listable,
-                xpath=xpath,
-                is_entry=True if object_name == 'nexthop-address-list' else False,
-                is_empty_tag=True if object_name == 'action' else False
-            ),
+            behavior=behavior,
+            object_name=object_name,
+            element_value=element_value,
+            is_listable=is_listable,
+            xpath=xpath,
+            is_entry=True if object_name == 'nexthop-address-list' else False,
+            is_empty_tag=True if object_name == 'action' else False
+        ),
             contains_xml_chars=True
         ),
         'action': 'edit',
@@ -12931,7 +12942,8 @@ def pan_os_edit_pbf_rule_command(args):
     if element_to_change == 'action_forward_discard':
         element_value = 'discard'
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
+        element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_pbf_rule(
         rule_name=rule_name,
@@ -13134,6 +13146,7 @@ def pan_os_delete_application_group_command(args):
         readable_output=f'application-group {application_group_name} was deleted successfully.'
     )
 
+
 """ Fetch Incidents """
 
 
@@ -13164,7 +13177,7 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
         Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
     """
     params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
-    
+
     # if the job has not finished, wait for 1 second and try again (until success or max retries)
     for try_num in range(1, GET_LOG_JOB_ID_MAX_RETRIES + 1):
         response = http_request(URL, 'GET', params=params)
@@ -13175,14 +13188,16 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
             return response
         else:
             demisto.debug(f'Attempt number: {try_num}. Job not completed, Retrying in 1 second...')
-            time.sleep(1) # due to short job life, saving the unfinished job id's to the context to query in the next fetch cycle is not a valid solution.
-    demisto.debug(f'Maximum attempt number: {try_num} has reached. Job ID {job_id} might be not completed which could result in missing incidents.')
+            # due to short job life, saving the unfinished job id's to the context to query in the next fetch cycle is not a valid solution.
+            time.sleep(1)
+    demisto.debug(
+        f'Maximum attempt number: {try_num} has reached. Job ID {job_id} might be not completed which could result in missing incidents.')
     return {}
 
 
 def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[Any, Any]]:
     """get query entries according to a specific query.
-    
+
     Args:
         log_type (str): query log type
         query (str): query for the fetch
@@ -13196,19 +13211,19 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
     job_id = get_query_by_job_id_request(log_type, query, max_fetch)
     demisto.debug(f'{job_id=}')
 
-    # second http request: send request with job id, valid response will contain a dictionary of entries. 
+    # second http request: send request with job id, valid response will contain a dictionary of entries.
     query_entries = get_query_entries_by_id_request(job_id)
 
     # extract all entries from response
     if result := query_entries.get('response', {}).get('result', {}).get('log', {}).get('logs', {}).get('entry'):
-        if isinstance(result,list):
+        if isinstance(result, list):
             entries.extend(result)
-        elif isinstance(result,dict):
+        elif isinstance(result, dict):
             entries.append(result)
         else:
             raise DemistoException(f'Could not parse fetch results: {result}')
 
-    entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
+    entries_log_info = {entry.get('seqno', ''): entry.get('time_generated') for entry in entries}
     demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
     demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
     return entries
@@ -13267,15 +13282,16 @@ def filter_fetched_entries(entries_dict: Dict[str, List[Dict[str, Any]]], id_dic
         for log in entries_dict[log_type]:
             device_name = log.get("device_name", '')
             current_log_id = arg_to_number(log.get("seqno"))
-            latest_id_per_device = id_dict.get(log_type,{}).get(device_name, 0) # get the latest id for that device, if that device is not in the dict, set the id to 0
+            # get the latest id for that device, if that device is not in the dict, set the id to 0
+            latest_id_per_device = id_dict.get(log_type, {}).get(device_name, 0)
             demisto.debug(f'{latest_id_per_device=} for {log_type=} and {device_name=}')
             if not current_log_id or not device_name:
                 demisto.debug(f'Could not parse seqno or device name from log: {log}, skipping.')
                 continue
             if current_log_id > arg_to_number(latest_id_per_device):     # type: ignore
-                    new_entries_dict.setdefault(log_type, []).append(log)         
+                new_entries_dict.setdefault(log_type, []).append(log)
         demisto.debug(f'Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type,[]))} entries.')
-    
+
     return new_entries_dict
 
 
@@ -13301,7 +13317,7 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, i
         max_fetch_dict (Dict[str, int]): a dictionary of log type and its updated max fetch value
     """
     for log_type in last_fetch_dict:
-        previous_fetch_timestamp=demisto.getLastRun().get("last_fetch_dict", {}).get(log_type)
+        previous_fetch_timestamp = demisto.getLastRun().get("last_fetch_dict", {}).get(log_type)
         # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
         # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
         demisto.debug(
@@ -13312,10 +13328,10 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, i
             max_fetch_dict[log_type] = configured_max_fetch
     demisto.debug(f"{max_fetch_dict=}")
     return max_fetch_dict
-    
+
 
 def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
-                            max_fetch_dict: Dict, fetch_start_datetime_dict: Dict[str, datetime]) -> Dict[str, List[Dict[str,Any]]]:
+                            max_fetch_dict: Dict, fetch_start_datetime_dict: Dict[str, datetime]) -> Dict[str, List[Dict[str, Any]]]:
     """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
 
     Args:
@@ -13337,9 +13353,9 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
     return entries
 
 
-def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[Dict[str, str]| None ,datetime | None, List[Dict[str, Any]]]:
+def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[Dict[str, str] | None, datetime | None, List[Dict[str, Any]]]:
     """parses raw incident entries of a specific log type query into basic context incidents.
-    
+
     Args:
         incident_entries (list[dict[str,Any]]): list of dictionaries representing raw incident entries
 
@@ -13357,7 +13373,8 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[Dict
     # calculate largest unique id for each log type query
     new_largest_id = find_largest_id_per_device(incident_entries)
     # convert incident entries to incident context and filter any empty incidents if exists
-    parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
+    parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(
+        incident_entry) for incident_entry in incident_entries]
     filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
 
     return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
@@ -13465,21 +13482,23 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
         if incident_entries:
             updated_last_id, updated_last_fetch, incidents = parse_incident_entries(incident_entries)
             demisto.debug(f'{log_type} log type: {len(incidents)} parsed incidents returned from parse_incident_entries function.')
-            demisto.debug(f"{log_type} log type: parsed incidents unique ID list: {[incident.get('name','') for incident in incidents]}")
+            demisto.debug(
+                f"{log_type} log type: parsed incidents unique ID list: {[incident.get('name','') for incident in incidents]}")
             parsed_incident_entries_dict[log_type] = incidents
             if updated_last_fetch:
                 last_fetch_dict[log_type] = str(updated_last_fetch)
             if updated_last_id:
                 # upsert last_id_dict with the latest ID for each device for each log type, without removing devices that were not fetched in this fetch cycle.
-                last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(log_type) else last_id_dict.update({log_type: updated_last_id})
-                
+                last_id_dict[log_type].update(updated_last_id) if last_id_dict.get(
+                    log_type) else last_id_dict.update({log_type: updated_last_id})
+
             demisto.debug(f'{log_type} log type: incidents parsing has completed with total of {len(incidents)} incidents. Updated last run is: {last_fetch_dict.get(log_type)}. Updated last ID is: {last_id_dict.get(log_type)}')
             demisto.debug(f'incidents ID list: {[incident.get("name") for incident in incidents]}')
     return parsed_incident_entries_dict
 
 
 def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dict[str, str]],
-                    max_fetch_dict: Dict) -> Tuple[Dict[str, str], Dict[str,str], List[Dict[str, list]]]:
+                    max_fetch_dict: Dict) -> Tuple[Dict[str, str], Dict[str, str], List[Dict[str, list]]]:
     """run one cycle of fetch incidents.
 
     Args:
@@ -13499,13 +13518,12 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
     demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
 
-
     incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch_dict, fetch_start_datetime_dict)
     demisto.debug('raw incident entries fetching has completed.')
-    
+
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict =last_id_dict)
-    
+    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict)
+
     parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
 
     # flatten incident_entries_dict to a single list of dictionaries representing context entries
@@ -13524,15 +13542,17 @@ def test_fetch_incidents_parameters(fetch_params):
             if not log_type_query:
                 raise DemistoException(f"{log_type} Log Type Query parameter is empty. Please enter a valid query.")
             if 'time_generated' in log_type_query:
-                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'time_generated' filter. Please remove it from the query.")
+                raise DemistoException(
+                    f"{log_type} Log Type Query parameter cannot contain 'time_generated' filter. Please remove it from the query.")
             if 'seqno' in log_type_query:
-                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
+                raise DemistoException(
+                    f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
 
     else:
         raise DemistoException("fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         params = demisto.params()
@@ -13555,14 +13575,17 @@ def main(): # pragma: no cover
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
             configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
-            max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(queries_dict=queries_dict ,configured_max_fetch=configured_max_fetch)
+            max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(
+                queries_dict=queries_dict, configured_max_fetch=configured_max_fetch)
 
-            last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch_dict)
+            last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
+                last_run, first_fetch, queries_dict, max_fetch_dict)
             next_max_fetch_dict = update_max_fetch_dict(configured_max_fetch=configured_max_fetch,
                                                         max_fetch_dict=max_fetch_dict,
-                                                        last_fetch_dict = last_fetch_dict)
-                                                   
-            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict, 'max_fetch_dict': next_max_fetch_dict})
+                                                        last_fetch_dict=last_fetch_dict)
+
+            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict,
+                               'max_fetch_dict': next_max_fetch_dict})
             demisto.incidents(incident_entries_list)
 
         elif command == 'panorama' or command == 'pan-os':
