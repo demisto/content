@@ -83,11 +83,12 @@ def test_domain_delete_command_with_name(mocker):
     """
     from CiscoUmbrellaEnforcement import domain_delete_command
     import demistomock as demisto
-    client = Client(base_url='https://test.com', api_key='123', verify=False, proxy=False)
-    mocker.patch.object(client, 'delete_domains', return_value={'status_code': '204'})
+    from unittest.mock import Mock
+    client_mock = Mock(Client)
+    client_mock.delete_domains.return_value = Mock(status_code=204)
     mocker.patch.object(demisto, 'dt', return_value={'name': 'example.com', 'IsDeleted': True})
     args = {'name': 'example.com'}
-    result = domain_delete_command(client, args)
+    result = domain_delete_command(client_mock, args)
     assert result.readable_output == 'example.com domain was removed from blacklist'
     assert result.outputs_prefix == 'UmbrellaEnforcement.Domains'
     assert result.outputs_key_field == 'id'
