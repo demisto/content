@@ -6,7 +6,7 @@ alter
 	xdm.event.id = to_string(incident_id),
 	xdm.event.outcome_reason = classification,
 	xdm.email.sender = sender_email,
-	xdm.email.recipients = name,
+	xdm.email.recipients = arraycreate(name),
 	xdm.observer.action = themis_verdict,
 	xdm.alert.subcategory = themis_verdict,
 	xdm.intermediate.host.hostname = mail_server -> host,
