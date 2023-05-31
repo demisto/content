@@ -10,7 +10,7 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: false
+  required: true
   type: 9
 - display: Tenant name
   name: tenant_name
