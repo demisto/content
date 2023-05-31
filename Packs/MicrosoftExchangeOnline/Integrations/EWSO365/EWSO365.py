@@ -2,6 +2,7 @@ import random
 import string
 import subprocess
 from typing import Dict
+from xml.sax import SAXParseException
 
 import dateparser
 import chardet
@@ -2127,6 +2128,13 @@ def parse_incident_from_item(item):     # pragma: no cover
                 except TypeError as e:
                     if str(e) != "must be string or buffer, not None":
                         raise
+                    continue
+                except SAXParseException as e:
+                    # TODO: When a fix is released, we will need to bump the library version.
+                    #  https://github.com/ecederstrand/exchangelib/issues/1200
+                    demisto.debug(f'An XML error occurred while loading an attachments content.'
+                                  f'\nMessage ID is {item.id}'
+                                  f'\nError: {e.getMessage()}')
                     continue
             else:
                 # other item attachment
