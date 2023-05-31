@@ -21,6 +21,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test_Playbook_-_Cortex_XDR_-_Endpoint_Investigation"
         },
@@ -3162,7 +3166,7 @@
         },
         {
             "integrations": "QRadar v3",
-            "instance_names": "QRadar_v3_test",
+            "instance_names": "QRadar_v3",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 12000,
             "fromversion": "6.0.0"
