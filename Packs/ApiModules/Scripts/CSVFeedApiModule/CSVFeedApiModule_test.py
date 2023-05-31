@@ -485,7 +485,7 @@ def test_build_iterator_modified_headers(mocker):
     - Running build_iterator method.
 
     Then
-    - Ensure that prepreq.headers are not overwritten in case of basic authentication
+    - Ensure that prepreq.headers are not overwritten when using basic authentication.
     """
     mocker.patch.object(demisto, 'debug')
     mock_session = mocker.patch.object(requests.Session, 'send')
