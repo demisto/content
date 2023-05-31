@@ -2,36 +2,25 @@
 filter
     event_type in ("workbench")
 | alter
-    xdm.source.cloud.project = id
-    xdm.event.outcome_reason = investigationStatus
-    xdm.network.http.url = workbenchLink
-    xdm.source.application.name = alertProvider
-    xdm.event.original_event_type = model
-    xdm.alert.severity = score
-    xdm.event.log_level = severity
-    xdm.alert.description = description
+    xdm.source.cloud.project = id,
+    xdm.event.outcome_reason = investigationStatus,
+    xdm.network.http.url = workbenchLink,
+    xdm.source.application.name = alertProvider,
+    xdm.event.original_event_type = model,
+    xdm.alert.severity = score,
+    xdm.event.log_level = severity,
+    xdm.alert.description = description,
 
-    xdm.alert.original_alert_id = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.id")), ",")
-    xdm.alert.name = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.name")), ",")
-    Entities = json_extract_array(impactScope, "$.entities")
+    xdm.alert.original_alert_id = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.id")), ","),
+    xdm.alert.name = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.name")), ","),
+    Entities = json_extract_array(impactScope, "$.entities"),
     | alter
-    xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ",")
+    xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
 
 
     xdm.source.user.identity_type = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityType")), ",")  # TODO - ned to add if statement
     xdm.source.user.username = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue")), ",") # TODO - there is a problem here, sometimes it returns dict, and sometimes string
     xdm.alert.subcategory = arraystring(arraymap(Entities, ), ",")
-
-filter
-    event type in ("audit")
-| alter
-    xdm.source.user.username = loggedUser,
-    xdm.source.user.groups = loggedRole,
-    xdm.source.zone = accessType,
-    xdm.event.type = category,
-    xdm.event.operation_sub_type = activity,
-    xdm.event.outcome_reason = result,
-    xdm.event.description = details  # TODO - looks like details structure is changing for each audit log, need to check, at moment put it as a json string
 filter
     event type in ("search_detections")
 | alter
@@ -80,7 +69,7 @@ filter
     xdm.alert.name = threatName,
     xdm.alert.original_alert_id = uuid,
     xdm.source.ipv6 = arraymap(mDevice, if("@element" contains ":", "@element", null)),
-    xdm.source.ipv4 = coalesce(arraymap(mDevice, if("@element" not contains ":", "@element", null)), arraymap(src, if("@element" contains ":", "@element", null)))
+    xdm.source.ipv4 = coalesce(arraymap(mDevice, if("@element" not contains ":", "@element", null)), arraymap(src, if("@element" contains ":", "@element", null)));
 filter
     event type in ("observed_attach_techniques")
 | alter
@@ -117,4 +106,14 @@ filter
     xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
-    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",")
+    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",");
+filter
+    event type in ("audit")
+| alter
+    xdm.source.user.username = loggedUser,
+    xdm.source.user.groups = loggedRole,
+    xdm.source.zone = accessType,
+    xdm.event.type = category,
+    xdm.event.operation_sub_type = activity,
+    xdm.event.outcome_reason = result,
+    xdm.event.description = details;
