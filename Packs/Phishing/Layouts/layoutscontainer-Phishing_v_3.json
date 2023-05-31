@@ -731,7 +731,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "keywordsfound",
+                                "fieldId": "emailkeywordsfound",
                                 "height": 22,
                                 "id": "2a056410-fedc-11ed-80a2-5b21992c1654",
                                 "index": 0,
