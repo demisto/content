@@ -1,5 +1,5 @@
 [MODEL: dataset="watchguard_xtm_raw"]
-alter proto = to_upper(proto)
+alter proto = uppercase(proto)
 | alter xdm.event.id = leefEventID,
     xdm.observer.version = leefProductVersion,
     xdm.source.port = srcPort,
@@ -9,15 +9,15 @@ alter proto = to_upper(proto)
     xdm.target.ipv4 = dst,
     xdm.event.operation_sub_type = msg,
     xdm.source.ipv4 = src,
-    xdm.source.process.executable.file_type = cats, // ? need to check it
+    xdm.target.resource.type = cats,
     xdm.event.outcome = if(disp = "Allow", XDM_CONST_success,disp = "Deny", XDM_CONST_faild,to_string(disp)),
     xdm.target.url = dstname,
     xdm.network.application_protocol = app,
     xdm.network.rule = policy,
-    xdm.source.location.country = geo_dst,
-    xdm.event.duration = multiply(to_integer(duration),1000),
+    xdm.event.duration = multiply(to_integer(duration),1000), // the xdm.event.duration is in milliseconds
     xdm.source.user.username = src_user,
-    xdm.source.user.upn = src_user,
     xdm.source.sent_bytes = rcvd_bytes,
     xdm.target.sent_bytes = sent_bytes,
-    xdm.observer.name = sys_name
+    xdm.observer.name = sys_name,
+    xdm.target.zone = in_if,
+    xdm.source.zone = out_if;
