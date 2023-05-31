@@ -30,6 +30,7 @@ tasks:
       - "13"
       - "12"
       - "11"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -61,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
+          "x": 750,
           "y": 680
         }
       }
@@ -101,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 250
+          "x": 750,
+          "y": 260
         }
       }
     note: false
@@ -160,8 +161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 250
+          "x": -70,
+          "y": 260
         }
       }
     note: false
@@ -198,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 250
+          "x": 1170,
+          "y": 260
         }
       }
     note: false
@@ -236,8 +237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 250
+          "x": 1570,
+          "y": 260
         }
       }
     note: false
@@ -254,7 +255,7 @@ tasks:
     task:
       id: e16965eb-49c2-4d54-87ca-6861f04b7170
       version: -1
-      name: Cisco Email Security
+      name: Cisco Email Security (Deprecated)
       description: Performs actions on list entries. Supports add, edit, and append.
       script: '|||cisco-email-security-list-entry-add'
       type: regular
@@ -277,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 480
+          "x": -70,
+          "y": 490
         }
       }
     note: false
@@ -314,8 +315,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 480
+          "x": 1170,
+          "y": 490
         }
       }
     note: false
@@ -357,8 +358,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 480
+          "x": 1570,
+          "y": 490
         }
       }
     note: false
@@ -387,8 +388,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 120
+          "x": 1570,
+          "y": 130
         }
       }
     note: false
@@ -417,8 +418,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 120
+          "x": 1170,
+          "y": 130
         }
       }
     note: false
@@ -447,8 +448,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 120
+          "x": -70,
+          "y": 130
         }
       }
     note: false
@@ -474,11 +475,12 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 120
+          "x": 750,
+          "y": 130
         }
       }
     note: false
@@ -488,18 +490,156 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ebbab30d-ccb0-4d3b-8eba-9c953cb7bdb3
+    type: title
+    task:
+      id: ebbab30d-ccb0-4d3b-8eba-9c953cb7bdb3
+      version: -1
+      name: Cisco Security Management Appliance
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 614bc2e7-b289-44d7-8350-5bc69ace90fa
+    type: condition
+    task:
+      id: 614bc2e7-b289-44d7-8350-5bc69ace90fa
+      version: -1
+      name: Is Cisco Security Management Appliance Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CiscoSMA
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3b643c94-60a0-4902-8490-e575b2f9ea9b
+    type: regular
+    task:
+      id: 3b643c94-60a0-4902-8490-e575b2f9ea9b
+      version: -1
+      name: Cisco SMA - Append to Blocklist
+      description: Append spam quarantine blocklist/safelist entry.
+      script: '|||cisco-sma-list-entry-append'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entry_type:
+        simple: blocklist
+      sender_addresses:
+        complex:
+          root: inputs.EmailToBlock
+      view_by:
+        simple: sender
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "4_2_#default#": 0.24,
-      "5_2_#default#": 0.22,
-      "6_2_#default#": 0.13
+      "16_17_yes": 0.62,
+      "16_2_#default#": 0.32,
+      "4_2_#default#": 0.21,
+      "4_8_yes": 0.62,
+      "5_2_#default#": 0.27,
+      "5_9_yes": 0.62,
+      "6_10_yes": 0.62,
+      "6_2_#default#": 0.18
     },
     "paper": {
       "dimensions": {
         "height": 775,
-        "width": 1620,
-        "x": 110,
+        "width": 2020,
+        "x": -70,
         "y": -30
       }
     }
