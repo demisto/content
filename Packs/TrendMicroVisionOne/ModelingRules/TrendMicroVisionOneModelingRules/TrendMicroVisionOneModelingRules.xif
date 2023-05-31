@@ -105,18 +105,16 @@ filter
     xdm.target.module.filename = json_extract_scalar(detail, "$.objectName"),
     xdm.source.port = json_extract_scalar(detail, "$.spt"),
     xdm.target.module.path = json_extract_scalar(detail, "$.srcFilePath")
-
     xdm.event.id = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.id")), ","),
     xdm.event.name = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.name")), ","),
     xdm.alert.description = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.description")), ","),
     xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ",")
     xdm.alert.mitre_tactics = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")), ","),
     xdm.alert.mitre_techniques = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTechniqueIds")), ","),
-
     xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ","),
-    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), src),
-    xdm.source.host.mac_addresses = arraystring(endpointMacAddress, ","),
+    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), json_extract_scalar(detail, "$.src")),
+    xdm.source.host.mac_addresses = arraystring(json_extract_array(detail, "$.endpointMacAddress"), ","),
     xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
-    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
+    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",")
