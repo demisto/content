@@ -12,11 +12,11 @@ class MockClient:
     [
         (
             {
-                'Policy': '{"Version":"0000-00-00","Id":"dummy","Statement":[{"Sid":"dummy","Effect":"Allow","Principal":{"dummy":"dummy:dummy:dummy::000000:dummy"},"Action":"lambda:InvokeFunction","Resource":"dummy:dummy:dummy:country:0000000:function:dummy-function:0"}]}',
+                'Policy': '{"Version":"0000-00-00","Id":"dummy","Statement":[{"Sid":"dummy","Effect":"Allow","Principal":{"dummy":"dummy:dummy"},"Action":"lambda:InvokeFunction","Resource":"dummy:dummy:dummy:country:0000000:function:dummy-function:0"}]}',
                 'RevisionId': '00000-00000-00000-00000-00000',
             },
             {
-                'Policy': {"Version": "0000-00-00", "Id": "dummy", "Statement": [{"Sid": "dummy", "Effect": "Allow", "Principal": {"dummy": "dummy:dummy:dummy::000000:dummy"}, "Action": "lambda:InvokeFunction", "Resource": "dummy:dummy:dummy:country:0000000:function:dummy-function:0"}]},
+                'Policy': {"Version": "0000-00-00", "Id": "dummy", "Statement": [{"Sid": "dummy", "Effect": "Allow", "Principal": {"dummy": "dummy:dummy"}, "Action": "lambda:InvokeFunction", "Resource": "dummy:dummy:dummy:country:0000000:function:dummy-function:0"}]},
                 'RevisionId': '00000-00000-00000-00000-00000',
             }
         )
