@@ -4,10 +4,10 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 
+import io
+import paramiko
 import sys
 from datetime import datetime
-
-import paramiko
 from netmiko import Netmiko
 
 
@@ -18,11 +18,6 @@ from netmiko import Netmiko
 def include_keys(dictionary, keys):
     key_set = set(keys) & set(dictionary.keys())
     return {key: dictionary[key] for key in key_set}
-
-
-def return_file(keys):
-    return_file.readlines = lambda: keys.split("\n")  # type: ignore
-    return return_file
 
 
 class Client:  # pragma: no cover
@@ -39,7 +34,7 @@ class Client:  # pragma: no cover
         if self.keys:
             try:
                 self.net_connect = Netmiko(device_type=self.platform, host=self.hostname, port=self.port,
-                                           pkey=self.keys, use_keys=True, username=self.username, passphrase=self.password)
+                                           pkey=self.keys, username=self.username)
             except Exception as err:
                 return_error(err)
         else:
@@ -183,11 +178,11 @@ def main():  # pragma: no cover
     if ssh_key:
         if password:
             try:
-                keys = paramiko.RSAKey.from_private_key(return_file(ssh_key), password=password)
+                keys = paramiko.RSAKey.from_private_key(io.StringIO(ssh_key), password=password)
             except Exception as err:
                 return_error(f"There was an error - {err} - Did you provide the correct password?")
         else:
-            keys = paramiko.RSAKey.from_private_key(return_file(ssh_key))
+            keys = paramiko.RSAKey.from_private_key(io.StringIO(ssh_key))
 
     client = Client(platform, hostname, username, password, port, keys)
 
