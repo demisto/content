@@ -1517,7 +1517,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.54965
+  dockerimage: demisto/boto3py3:1.0.0.61872
   feed: false
   isfetch: true
   longRunning: false
