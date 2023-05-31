@@ -150,7 +150,7 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   hidden:
-    - marketplacev2
+  - marketplacev2
   section: Collect
 - additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
@@ -159,7 +159,7 @@ configuration:
   required: false
   type: 8
   hidden:
-    - marketplacev2
+  - marketplacev2
   section: Collect
   advanced: true
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel.
@@ -169,7 +169,7 @@ configuration:
   required: false
   type: 8
   hidden:
-    - marketplacev2
+  - marketplacev2
   section: Collect
   advanced: true
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
@@ -2570,10 +2570,10 @@ script:
       name: severity
       required: false
       predefined:
-        - informational
-        - low
-        - medium
-        - high
+      - informational
+      - low
+      - medium
+      - high
     - default: false
       description: |
         The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
@@ -2590,8 +2590,8 @@ script:
       name: suppression_enabled
       required: false
       predefined:
-        - yes
-        - no
+      - yes
+      - no
     - auto: PREDEFINED
       default: false
       description: |
@@ -2601,10 +2601,10 @@ script:
       name: trigger_operator
       required: false
       predefined:
-        - equal
-        - greater_than
-        - less_than
-        - not_equal
+      - equal
+      - greater_than
+      - less_than
+      - not_equal
     - default: false
       description: |
         The threshold that triggers this alert rule.
@@ -2848,10 +2848,10 @@ script:
       name: severity
       required: false
       predefined:
-        - informational
-        - low
-        - medium
-        - high
+      - informational
+      - low
+      - medium
+      - high
     - default: false
       description: |
         The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
@@ -2868,8 +2868,8 @@ script:
       name: suppression_enabled
       required: false
       predefined:
-        - yes
-        - no
+      - yes
+      - no
     - auto: PREDEFINED
       default: false
       description: |
@@ -2879,10 +2879,10 @@ script:
       name: trigger_operator
       required: false
       predefined:
-        - equal
-        - greater_than
-        - less_than
-        - not_equal
+      - equal
+      - greater_than
+      - less_than
+      - not_equal
     - default: false
       description: |
         The threshold that triggers this alert rule.
@@ -3006,7 +3006,7 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.58768
+  dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: true
   longRunning: false
