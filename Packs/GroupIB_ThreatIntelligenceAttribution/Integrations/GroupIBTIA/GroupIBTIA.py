@@ -131,13 +131,13 @@ MAPPING: dict = {
     #             }
     #         ]
     # },
-    "osi/git_leak": {
+    "osi/git_repository": {
         "date":
             "dateDetected",
         "name":
             "name",
         "prefix":
-            "Git Leak",
+            "Git Repository",
     },
     "osi/public_leak": {
         "date":
