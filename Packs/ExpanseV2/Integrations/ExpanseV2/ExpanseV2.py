@@ -709,7 +709,7 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None,
+def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int | None = None,
               required: bool = False) -> Optional[int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert

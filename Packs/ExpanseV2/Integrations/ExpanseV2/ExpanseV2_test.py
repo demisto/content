@@ -2052,6 +2052,7 @@ def test_format_domain_data_empty_domainStatuses():
     results = format_domain_data([mock_domain_data])
     assert results
 
+
 @pytest.mark.parametrize(
     "args, expected_url, expected_data",
     [
@@ -2073,7 +2074,7 @@ def test_format_domain_data_empty_domainStatuses():
         ),
         (
             {
-                "asset_type": "other-asset", # one of : Certificate, Domain, CloudResource, Network, Device, ResponsiveIP
+                "asset_type": "other-asset",  # one of : Certificate, Domain, CloudResource, Network, Device, ResponsiveIP
                 "operation_type": "UNASSIGN",
                 "asset_id": "c871feab-7d38-4cc5-9d36-5dad76f6b389",
                 "tag_ids": ["tag3", "tag4"]
@@ -2127,7 +2128,7 @@ def test_manage_asset_tags(requests_mock, args, expected_url, expected_data):
         ),
         (
             {
-                "asset_type": "other-asset", # one of : Certificate, Domain, CloudResource, Network, Device, ResponsiveIP
+                "asset_type": "other-asset",  # one of : Certificate, Domain, CloudResource, Network, Device, ResponsiveIP
                 "operation_type": "UNASSIGN",
                 "asset_id": "f491b7ef-a7b9-4644-af90-36dc0a6b2000",
                 "poc_ids": ["f491b7ef-a7b9-4644-af90-36dc0a6b2000"]
