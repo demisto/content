@@ -25,7 +25,7 @@ configuration:
   hiddenusername: true
   type: 9
 - display: ID
-  name: credentials_auth_key
+  name: credentials_reg_id
   required: false
   type: 9
   displaypassword: Key
