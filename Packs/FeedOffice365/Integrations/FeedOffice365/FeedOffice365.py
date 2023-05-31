@@ -130,6 +130,8 @@ class Client:
                     raise Exception(f'The service returned a 400 status code, this could possibly be due to the Germany'
                                     f' endpoint being unavailable. Please exclude Germany from All using the parameter'
                                     f' Allow Germany.')
+                else:
+                    raise Exception(f'HTTP error in the API call to {INTEGRATION_NAME}.\n\n{err}')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
