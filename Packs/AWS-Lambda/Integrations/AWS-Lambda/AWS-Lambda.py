@@ -120,6 +120,67 @@ def list_functions(args, aws_client):
     return_outputs(human_readable, ec)
 
 
+def get_policy(aws_client, args: dict) -> CommandResults:
+    def parse_policy(data: dict[str, Any]) -> dict[str, str | None]:
+
+        statement: dict = policy.get('Statement', {})[0]
+        return {
+            "Version": policy.get('Version'),
+            "Id": policy.get('Id'),
+            "Sid": statement.get('Sid'),
+            "Effect": statement.get('Effect'),
+            "Action": statement.get('Action'),
+            "Resource": statement.get('Resource'),
+            "RevisionId": data.get('RevisionId')
+        }
+
+    client = aws_client.aws_session(
+        service='lambda',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {'FunctionName': args['functionName']}
+    if args.get('qualifier'):
+        kwargs.update({'qualifier': args.get('qualifier')})
+
+    response = client.get_policy(**kwargs)
+    policy = json.loads(response["Policy"])
+    response["Policy"] = policy
+
+    parsed_policy = parse_policy(response)
+    table_for_markdown = tableToMarkdown(name="Policy", t=parsed_policy)
+
+    return CommandResults(
+        outputs=response,
+        readable_output=table_for_markdown,
+        outputs_prefix="AWS.Lambda.Policy",
+        outputs_key_field='Sid'
+    )
+
+
+def list_versions_by_function(aws_client: Any, args: dict) -> CommandResults:
+    client = aws_client.aws_session(
+        service='lambda',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {'FunctionName': args['functionName']}
+    if args.get('qualifier'):
+        kwargs.update({'qualifier': args.get('qualifier')})
+
+    response = client.list_versions_by_function(**kwargs)
+
+    return CommandResults(
+        outputs=response,
+    )
+
+
 def list_aliases(args, aws_client):
     client = aws_client.aws_session(
         service='lambda',
@@ -267,6 +328,8 @@ def test_function(aws_client):
 def main():
 
     params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
@@ -284,8 +347,6 @@ def main():
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                            retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
-    command = demisto.command()
-    args = demisto.args()
 
     try:
         if command == 'test-module':
@@ -302,14 +363,17 @@ def main():
             remove_permission(args, aws_client)
         elif command == 'aws-lambda-get-account-settings':
             get_account_settings(args, aws_client)
+        elif command == 'aws-lambda-get-policy':
+            return_results(get_policy(aws_client, args))
+        elif command == 'aws-lambda-get-policy':
+            return_results(list_versions_by_function(aws_client, args))
 
     except Exception as e:
-        return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
-            error=type(e), message=str(e)))
+        return_error(f'Error has occurred in the AWS Lambda Integration: {type(e)}\n {str(e)}')
 
 
 from AWSApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

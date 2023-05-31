@@ -630,6 +630,65 @@ script:
     - contextPath: AWS.Lambda.AccountUsage. FunctionCount
       description: The number of Lambda functions.
       type: number
+  - arguments:
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    description: Returns the resource-based IAM policy for a function, version, or alias.
+    name: aws-lambda-get-policy
+    outputs:
+    - contextPath: AWS.Lambda.Policy.Version
+    - contextPath: AWS.Lambda.Policy.Id
+    - contextPath: AWS.Lambda.Policy.Statement.Sid
+    - contextPath: AWS.Lambda.Policy.Statement.Effect
+    - contextPath: AWS.Lambda.Policy.Statement.Principal
+    - contextPath: AWS.Lambda.Policy.Statement.Action
+    - contextPath: AWS.Lambda.Policy.Statement.Resource
+    - contextPath: AWS.Lambda.VersionId
+      description: A unique identifier for the current revision of the policy.
   dockerimage: demisto/boto3py3:1.0.0.52713
   isfetch: false
   runonce: false
