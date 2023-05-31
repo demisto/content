@@ -1798,15 +1798,24 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
 
 def list_subscriptions_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
 
-    full_url= 'https://management.azure.com/subscriptions?api-version=2020-01-01'
+    full_url = 'https://management.azure.com/subscriptions?api-version=2020-01-01'
 
     response = client.http_request('GET', full_url=full_url)
-
     data_from_response = response.get('value', [])
-    
-    
-    #tableToMarkdown('Azure Sentinel Subscriptions', data_from_response, removeNull=True)
 
+    readable_output = tableToMarkdown(
+        'Azure Sentinel Subscriptions',
+        data_from_response,
+        ['subscriptionId', 'tenantId', 'displayName', 'state'], removeNull=True,
+        headerTransform=string_to_table_header)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.Subscription',
+        outputs=data_from_response,
+        outputs_key_field='subscriptionId',
+        raw_response=response
+    )
 
 
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
@@ -1959,7 +1968,7 @@ def main():
             'azure-sentinel-create-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-subscriptions-list': list_subscriptions_command,
-            #'azure-sentinel-resource-group-list': list_resource_groups_command,
+            # 'azure-sentinel-resource-group-list': list_resource_groups_command,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,
