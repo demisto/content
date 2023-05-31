@@ -425,8 +425,6 @@ tasks:
     timertriggers:
     - fieldname: remediationsla
       action: start
-    - fieldname: detectionsla
-      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -457,9 +455,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -2739,6 +2735,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "72"
