@@ -1,12 +1,22 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from AWSApiModule import AWSClient
 """IMPORTS"""
 from datetime import date
 import urllib3.util
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+def config_aws_session(args: dict, aws_client: AWSClient):
+    return aws_client.aws_session(
+        service='lambda',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
 
 
 def parse_tag_field(tags_str):
@@ -57,19 +67,13 @@ def create_entry(title, data, ec):
 
 
 def get_function(args, aws_client):
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-    obj = vars(client._client_config)
+
+    obj = vars(aws_client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
     if args.get('qualifier') is not None:
         kwargs.update({'Qualifier': args.get('qualifier')})
 
-    response = client.get_function(**kwargs)
+    response = aws_client.get_function(**kwargs)
     func = response['Configuration']
     data = ({
         'FunctionName': func['FunctionName'],
@@ -88,18 +92,12 @@ def get_function(args, aws_client):
 
 
 def list_functions(args, aws_client):
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-    obj = vars(client._client_config)
+
+    obj = vars(aws_client._client_config)
     data = []
     output = []
 
-    paginator = client.get_paginator('list_functions')
+    paginator = aws_client.get_paginator('list_functions')
     for response in paginator.paginate():
         for function in response['Functions']:
             data.append({
@@ -120,75 +118,7 @@ def list_functions(args, aws_client):
     return_outputs(human_readable, ec)
 
 
-def get_policy(aws_client, args: dict) -> CommandResults:
-    def parse_policy(data: dict[str, Any]) -> dict[str, str | None]:
-
-        statement: dict = policy.get('Statement', {})[0]
-        return {
-            "Version": policy.get('Version'),
-            "Id": policy.get('Id'),
-            "Sid": statement.get('Sid'),
-            "Effect": statement.get('Effect'),
-            "Action": statement.get('Action'),
-            "Resource": statement.get('Resource'),
-            "RevisionId": data.get('RevisionId')
-        }
-
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-
-    kwargs = {'FunctionName': args['functionName']}
-    if args.get('qualifier'):
-        kwargs.update({'qualifier': args.get('qualifier')})
-
-    response = client.get_policy(**kwargs)
-    policy = json.loads(response["Policy"])
-    response["Policy"] = policy
-
-    parsed_policy = parse_policy(response)
-    table_for_markdown = tableToMarkdown(name="Policy", t=parsed_policy)
-
-    return CommandResults(
-        outputs=response,
-        readable_output=table_for_markdown,
-        outputs_prefix="AWS.Lambda.Policy",
-        outputs_key_field='Sid'
-    )
-
-
-def list_versions_by_function(aws_client: Any, args: dict) -> CommandResults:
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-
-    kwargs = {'FunctionName': args['functionName']}
-    if args.get('qualifier'):
-        kwargs.update({'qualifier': args.get('qualifier')})
-
-    response = client.list_versions_by_function(**kwargs)
-
-    return CommandResults(
-        outputs=response,
-    )
-
-
 def list_aliases(args, aws_client):
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
 
     data = []
     output = []
@@ -196,7 +126,7 @@ def list_aliases(args, aws_client):
     if args.get('functionVersion') is not None:
         kwargs.update({'FunctionVersion': args.get('functionVersion')})
 
-    paginator = client.get_paginator('list_aliases')
+    paginator = aws_client.get_paginator('list_aliases')
     for response in paginator.paginate(**kwargs):
         for alias in response['Aliases']:
             data.append({
@@ -215,14 +145,8 @@ def list_aliases(args, aws_client):
 
 
 def invoke(args, aws_client):
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-    obj = vars(client._client_config)
+
+    obj = vars(aws_client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
     if args.get('invocationType') is not None:
         kwargs.update({'InvocationType': args.get('invocationType')})
@@ -237,7 +161,7 @@ def invoke(args, aws_client):
         kwargs.update({'Payload': payload})
     if args.get('qualifier') is not None:
         kwargs.update({'Qualifier': args.get('qualifier')})
-    response = client.invoke(**kwargs)
+    response = aws_client.invoke(**kwargs)
     data = ({
         'FunctionName': args.get('functionName'),
         'Region': obj['_user_provided_options']['region_name'],
@@ -257,13 +181,7 @@ def invoke(args, aws_client):
 
 
 def remove_permission(args, aws_client):
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+
     kwargs = {
         'FunctionName': args.get('functionName'),
         'StatementId': args.get('StatementId')
@@ -273,21 +191,15 @@ def remove_permission(args, aws_client):
     if args.get('RevisionId') is not None:
         kwargs.update({'RevisionId': args.get('RevisionId')})
 
-    response = client.remove_permission(**kwargs)
+    response = aws_client.remove_permission(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('Permissions have been removed')
 
 
 def get_account_settings(args, aws_client):
-    client = aws_client.aws_session(
-        service='lambda',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-    obj = vars(client._client_config)
-    response = client.get_account_settings()
+
+    obj = vars(aws_client._client_config)
+    response = aws_client.get_account_settings()
     account_limit = response['AccountLimit']
     account_usage = response['AccountUsage']
     data = {
@@ -315,12 +227,60 @@ def get_account_settings(args, aws_client):
     return_outputs(human_readable, ec)
 
 
+def get_policy_command(args: dict, aws_client) -> CommandResults:
+    def parse_policy(data: dict[str, Any]) -> dict[str, str | None]:
+
+        statement: dict = policy.get('Statement', {})[0]
+        return {
+            "Version": policy.get('Version'),
+            "Id": policy.get('Id'),
+            "Sid": statement.get('Sid'),
+            "Effect": statement.get('Effect'),
+            "Action": statement.get('Action'),
+            "Resource": statement.get('Resource'),
+            "RevisionId": data.get('RevisionId')
+        }
+
+    kwargs = {'FunctionName': args['functionName']}
+    if args.get('qualifier'):
+        kwargs.update({'qualifier': args.get('qualifier')})
+
+    response = aws_client.get_policy(**kwargs)
+    policy = json.loads(response["Policy"])
+    response["Policy"] = policy
+
+    parsed_policy = parse_policy(response)
+    table_for_markdown = tableToMarkdown(name="Policy", t=parsed_policy)
+
+    return CommandResults(
+        outputs=response,
+        readable_output=table_for_markdown,
+        outputs_prefix="AWS.Lambda.Policy",
+        outputs_key_field='Sid'
+    )
+
+
+def list_versions_by_function(args: dict, aws_client) -> CommandResults:
+
+    kwargs = {'FunctionName': args['functionName']}
+    if marker := args.get('Marker'):
+        kwargs.update({'Marker': marker})
+
+    if maxItems := args.get('MaxItems'):
+        kwargs.update({'MaxItems': maxItems})
+
+    response = aws_client.list_versions_by_function(**kwargs)
+
+    return CommandResults(
+        outputs=response,
+    )
+
+
 """TEST FUNCTION"""
 
 
 def test_function(aws_client):
-    client = aws_client.aws_session(service='lambda')
-    response = client.list_functions()
+    response = aws_client.list_functions()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
 
@@ -347,7 +307,7 @@ def main():
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                            retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
-
+    aws_client = config_aws_session(args, aws_client)
     try:
         if command == 'test-module':
             test_function(aws_client)
@@ -364,9 +324,9 @@ def main():
         elif command == 'aws-lambda-get-account-settings':
             get_account_settings(args, aws_client)
         elif command == 'aws-lambda-get-policy':
-            return_results(get_policy(aws_client, args))
-        elif command == 'aws-lambda-get-policy':
-            return_results(list_versions_by_function(aws_client, args))
+            return_results(get_policy_command(args, aws_client))
+        elif command == 'aws-lambda-list-versions-by-function':
+            return_results(list_versions_by_function(args, aws_client))
 
     except Exception as e:
         return_error(f'Error has occurred in the AWS Lambda Integration: {type(e)}\n {str(e)}')
