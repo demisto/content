@@ -582,6 +582,12 @@ class TestZendeskClient:
             zendesk_client.zendesk_organization_list()
             mock_zendesk_organization_general.assert_called_once()
 
+        def test_zendesk_group_users_list_general(self, zendesk_client, mocker):
+            mock_zendesk_organization_general = mocker.patch.object(zendesk_client, '_paged_request')
+            mocker.patch.object(zendesk_client, '_ZendeskClient__command_results_zendesk_group_users')
+            zendesk_client.list_group_users(group_id=100)
+            mock_zendesk_organization_general.assert_called_once()
+
     class TestTicketList:
         def test_with_ticket_id(self, zendesk_client, requests_mock):
             ticket_mock = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))

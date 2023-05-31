@@ -17,6 +17,7 @@ ORGANIZATIONS_HEADERS = ['id', 'name', 'domain_names', 'tags', 'external_id', 'c
 TICKETS_HEADERS = ['id', 'subject', 'description', 'priority', 'status', 'assignee_id', 'created_at', 'updated_at', 'external_id']
 COMMENTS_HEADERS = ['id', 'body', 'created_at', 'public', 'attachments']
 ATTACHMENTS_HEADERS = ['id', 'file_name', 'content_url', 'size', 'content_type']
+GROUP_HEADERS = ['id', 'name', 'email', 'role', 'created_at']
 ARTICLES_HEADERS = ['body']
 ROLES = ['end-user', 'admin', 'agent']
 ROLE_TYPES = {
@@ -514,13 +515,16 @@ class ZendeskClient(BaseClient):
         return self.__command_results_zendesk_organizations(organizations)
 
     # ---- group related functions ---- #
+    @staticmethod
+    def __command_results_zendesk_group_users(users: List[Dict]):  # pragma: no cover
+        readable_outputs = tableToMarkdown(name='Zendesk Group Users:', t=users, headers=GROUP_HEADERS,
+                                           headerTransform=camelize_string)
+        return CommandResults(outputs_prefix="Zendesk.UserGroup",
+                              outputs=users, readable_output=readable_outputs)
 
-    def group_user_list_request(self, group_id: str):
-        url_suffix = f'groups/{group_id}/users'
-        return self._http_request('GET', url_suffix)
-
-    def list_group_users_command(self, group_id: str, limit: int = 50, page_number: Optional[int] = None,
-                                 page_size: int = 50):
+    def list_group_users(self, group_id: int, **kwargs):
+        users = list(self._paged_request(url_suffix=f'groups/{group_id}/users', data_field_name='users', **kwargs))
+        return self.__command_results_zendesk_group_users(users)
 
     # ---- ticket related functions ---- #
 
@@ -1119,6 +1123,7 @@ def main():  # pragma: no cover
             'zendesk-user-create': client.zendesk_user_create,
             'zendesk-user-update': client.zendesk_user_update,
             'zendesk-user-delete': client.zendesk_user_delete,
+            'zendesk-group-user-list': client.list_group_users,
 
             # organization commands
             'zendesk-organization-list': client.zendesk_organization_list,
