@@ -482,11 +482,11 @@ def get_observed_attack_techniques_logs(
     """
     def parse_observed_attack_techniques_logs():
         for log in observed_attack_techniques_logs:
-            if filters := log.get('filters'):
+            if filters := log.get('filters') or []:
                 for _filter in filters:
-                    if mitre_tactic_ids := _filter.get('mitreTacticIds'):
+                    if mitre_tactic_ids := _filter.get('mitreTacticIds') or []:
                         _filter['mitreTacticIds'] = ','.join(mitre_tactic_ids)
-                    if mitre_technique_ids := _filter.get('mitreTechniqueIds'):
+                    if mitre_technique_ids := _filter.get('mitreTechniqueIds') or []:
                         _filter['mitreTechniqueIds'] = ','.join(mitre_technique_ids)
 
     start_time, end_time = get_datetime_range(
@@ -498,6 +498,8 @@ def get_observed_attack_techniques_logs(
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
         detected_start_datetime=start_time, detected_end_datetime=end_time, limit=limit
     )
+    parse_observed_attack_techniques_logs()
+
     latest_observed_attack_technique_log_time = get_latest_log_created_time(
         logs=observed_attack_techniques_logs,
         log_type=LogTypes.OBSERVED_ATTACK_TECHNIQUES,
