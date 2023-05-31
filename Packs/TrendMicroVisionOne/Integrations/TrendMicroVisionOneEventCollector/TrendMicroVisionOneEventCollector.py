@@ -153,7 +153,10 @@ class Client(BaseClient):
         for event in events:
             event['event_type'] = event_type
             if event_time := event.get(created_time_field):
-                event['_time'] = event_time
+                if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS:
+                    event['_time'] = timestamp_to_datestring(timestamp=event_time, date_format=DATE_FORMAT, is_utc=True)
+                else:
+                    event['_time'] = event_time
 
         return events
 
@@ -382,8 +385,8 @@ def get_datetime_range(
 
 def get_latest_log_created_time(
     logs: List[Dict],
-    created_time_field: str,
     log_type: str,
+    created_time_field: str = '_time',
     date_format: str = DATE_FORMAT,
     increase_latest_log: bool = False
 ) -> str:
@@ -448,7 +451,6 @@ def get_workbench_logs(
     workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
     latest_workbench_log_time = get_latest_log_created_time(
         logs=workbench_logs,
-        created_time_field=CreatedTimeFields.WORKBENCH,
         log_type=LogTypes.WORKBENCH,
         date_format=date_format,
         increase_latest_log=True
@@ -489,7 +491,6 @@ def get_observed_attack_techniques_logs(
     )
     latest_observed_attack_technique_log_time = get_latest_log_created_time(
         logs=observed_attack_techniques_logs,
-        created_time_field=CreatedTimeFields.OBSERVED_ATTACK_TECHNIQUES,
         log_type=LogTypes.OBSERVED_ATTACK_TECHNIQUES,
         date_format=date_format,
         increase_latest_log=True
@@ -525,13 +526,9 @@ def get_search_detection_logs(
         date_format=date_format
     )
     search_detection_logs = client.get_search_detection_logs(start_datetime=start_time, top=limit, limit=limit)
-    for log in search_detection_logs:
-        if event_time := log.get('eventTime'):
-            log['eventTime'] = timestamp_to_datestring(timestamp=event_time, date_format=date_format, is_utc=True)
 
     latest_search_detection_log_time = get_latest_log_created_time(
         logs=search_detection_logs,
-        created_time_field=CreatedTimeFields.SEARCH_DETECTIONS,
         log_type=LogTypes.SEARCH_DETECTIONS,
         date_format=date_format,
         increase_latest_log=True
@@ -572,7 +569,6 @@ def get_audit_logs(
 
     latest_audit_log_time = get_latest_log_created_time(
         logs=audit_logs,
-        created_time_field=CreatedTimeFields.AUDIT,
         log_type=LogTypes.AUDIT,
         date_format=date_format,
     )

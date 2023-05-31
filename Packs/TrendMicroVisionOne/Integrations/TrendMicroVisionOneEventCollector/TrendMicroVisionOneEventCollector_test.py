@@ -349,8 +349,8 @@ def test_get_datetime_range(
     last_run_time: str | None,
     first_fetch: str,
     log_type_time_field_name: str,
-    expected_start_and_end_date_times:
-    Tuple[str, str], start_time: str
+    start_time: str,
+    expected_start_and_end_date_times: Tuple[str, str],
 ):
     """
     Given:
