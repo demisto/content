@@ -1,5 +1,5 @@
 Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
-This integration was integrated and tested with version xx of SentinelOne V2
+This integration was integrated and tested with versions 2.0 and 2.1 of SentinelOne V2
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-sentinelone-v2).

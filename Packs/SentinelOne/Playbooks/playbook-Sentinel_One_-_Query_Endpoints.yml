@@ -1,8 +1,7 @@
 id: Sentinel One - Query Endpoints
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Sentinel One - Query Endpoints
-description: Runs Query on Endpoints for SHA1 values.
+description: Runs Query on Endpoints for SHA1 values
 starttaskid: "0"
 tasks:
   "0":
@@ -11,8 +10,9 @@ tasks:
     type: start
     task:
       id: f1b9f6bb-0592-481e-8f2a-26e6bc79ed30
+      description: Create SentinelOne Query
       version: -1
-      name: ""
+      name: Create SentinelOne Query
       iscommand: false
       brand: ""
     nexttasks:
@@ -40,6 +40,7 @@ tasks:
     type: condition
     task:
       id: b6254884-d1df-483d-81b3-369578da5c1a
+      description: Check If Indicator Exist
       version: -1
       name: Check If Indicator Exist
       type: condition
@@ -82,8 +83,7 @@ tasks:
       id: 20b59069-7aeb-4c98-88d1-c2ea99a584d9
       version: -1
       name: Create SentinelOne Query
-      description: Runs a Deep Visibility query and returns the queryId. You can use
-        the queryId for all other commands, such as the sentinelone-get-events command.
+      description: Runs a Deep Visibility query and returns the queryId. You can use the queryId for all other commands, such as the sentinelone-get-events command.
       script: '|||sentinelone-create-query'
       type: regular
       iscommand: true
@@ -144,6 +144,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: Done
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -166,6 +167,7 @@ tasks:
     type: condition
     task:
       id: f6229f00-2a3c-493c-8503-d145622d0f18
+      description: Check If QueryID Exist
       version: -1
       name: Check If QueryID Exist
       type: condition
@@ -309,18 +311,21 @@ inputs:
   value: {}
   required: false
   description: Comma seperated strings of SHA1 hashes.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: false
   description: Frequency that the polling command will run (minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: false
-  description: Amount of time to poll before declaring a timeout and resuming the
-    playbook (in minutes).
-  playbookInputQuery: null
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+  playbookInputQuery:
 outputs: []
+tests:
+- SentinelOne V2.1 - Test
+- SentinelOne V2.0 - Test
+fromversion: 6.8.0
