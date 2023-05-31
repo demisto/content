@@ -25,10 +25,10 @@ configuration:
   hiddenusername: true
   type: 9
 - display: ID
-  name: credentials_id
+  name: credentials_auth_key
   required: false
   type: 9
-  displaypassword: auth_key
+  displaypassword: Key
   section: Connect
 - display: Fetch incidents
   name: isFetch
