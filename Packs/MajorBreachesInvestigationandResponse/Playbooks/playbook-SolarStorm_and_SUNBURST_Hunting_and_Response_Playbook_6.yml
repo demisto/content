@@ -287,7 +287,7 @@ tasks:
       id: 915d6f50-e12b-4526-8582-8fcb4f78d60e
       version: -1
       name: Investigate further
-      description: "Further investigate the incident (endpoints, entry point, etc.').\nIf Expanse found SolarWinds C2 connection, investigate the internal server too."
+      description: "Further investigate the incident (endpoints, entry point, etc.').\nIf Xpanse found SolarWinds C2 connection, investigate the internal server too."
       type: regular
       iscommand: false
       brand: ""
