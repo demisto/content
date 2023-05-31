@@ -451,9 +451,9 @@ outputs:
   description: The sensor info.
   type: unknown
 - contextPath: CarbonBlackEDR.Sensor.id
-  description: The sensor id of this sensor.
+  description: The ID of this sensor.
 - contextPath: CarbonBlackEDR.Sensor.is_isolating
-  description: Boolean representing sensor-reported isolation status.
+  description: Boolean representing the sensor-reported isolation status.
 - contextPath: CarbonBlackEDR.Sensor.status
   description: The sensor status.
 tests:

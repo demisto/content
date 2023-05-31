@@ -44,7 +44,7 @@ tasks:
       id: 4d526596-75df-40b0-82c4-a26ccd094e3e
       version: -1
       name: Isolate endpoint
-      description: Isolate the endpoint from the network
+      description: Isolate the endpoint from the network.
       script: '|||cb-edr-quarantine-device'
       type: regular
       iscommand: true
@@ -149,7 +149,7 @@ tasks:
       version: -1
       name: 'Is the endpoint ready for isolation? '
       description: |
-        Checks if the endpoint ready for isolation.
+        Checks if the endpoint is ready for isolation.
       type: condition
       iscommand: false
       brand: ""
@@ -195,7 +195,7 @@ tasks:
       id: ae9cdbc4-5f28-4f30-8f5d-7921ec1a99d7
       version: -1
       name: Is the Hostname or Sensor id defined?
-      description: Checks if the Hostname or Sensor id defined.
+      description: Checks if the hostname or sensor ID is defined.
       type: condition
       iscommand: false
       brand: ""
@@ -249,7 +249,7 @@ tasks:
       id: 1b2d65b4-ea00-4f7c-833b-680399f28d5b
       version: -1
       name: Get host information from Carbon Black Enterprise Response
-      description: List the CarbonBlack sensors
+      description: List the Carbon Black sensors.
       script: '|||cb-edr-sensors-list'
       type: regular
       iscommand: true
@@ -368,23 +368,23 @@ outputs:
   description: The sensor info.
   type: unknown
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of system volume of endpoint on which sensor in installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed.
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
-  description: The path of emet telemtry associated with the sensor.
+  description: The path of the EMET telemetry associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.os_environment_display_string
   description: Human-readable string of the installed OS.
 - contextPath: CarbonBlackEDR.Sensor.emet_version
-  description: The emet version associated with the sensor.
+  description: The EMET version associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.emet_dump_flags
-  description: The flags of emet dump associated with the sensor.
+  description: The flags of the EMET dump associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.clock_delta
   description: The clock delta associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.supports_cblr
-  description: Whether the sensor supports cblr.
+  description: Whether the sensor supports Carbon Black Live Response (CbLR).
 - contextPath: CarbonBlackEDR.Sensor.sensor_uptime
   description: The uptime of the process.
 - contextPath: CarbonBlackEDR.Sensor.last_update
-  description: When the sensor last updated.
+  description: When the sensor was last updated.
 - contextPath: CarbonBlackEDR.Sensor.physical_memory_size
   description: The size in bytes of physical memory.
 - contextPath: CarbonBlackEDR.Sensor.build_id
@@ -396,31 +396,31 @@ outputs:
 - contextPath: CarbonBlackEDR.Sensor.event_log_flush_time
   description: |-
     If event_log_flush_time is set, the server will instruct the sensor to immediately
-    send all data before this date, ignoring all other throttling mechansims.
+    send all data before this date, ignoring all other throttling mechanisms.
     To force a host current, set this value to a value far in the future.
-    When the sensor has finished sending it’s queued data, this value will be null.
+    When the sensor has finished sending its queued data, this value will be null.
 - contextPath: CarbonBlackEDR.Sensor.computer_dns_name
   description: The DNS name of the endpoint on which the sensor is installed.
 - contextPath: CarbonBlackEDR.Sensor.emet_report_setting
-  description: The report setting of EMET associated with sensor.
+  description: The report setting of the EMET associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.id
-  description: The sensor id of this sensor.
+  description: The ID of this sensor.
 - contextPath: CarbonBlackEDR.Sensor.emet_process_count
   description: The number of EMET processes associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.emet_is_gpo
-  description: Whther the EMET is gpo.
+  description: Whether the EMET is a GPO.
 - contextPath: CarbonBlackEDR.Sensor.power_state
   description: The sensor power state.
 - contextPath: CarbonBlackEDR.Sensor.network_isolation_enabled
-  description: Boolean representing network isolation request status.
+  description: Boolean representing the network isolation request status.
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_free_size
-  description: The bytes free on the system volume.
+  description: The amount of free bytes on the system volume.
 - contextPath: CarbonBlackEDR.Sensor.status
   description: The sensor status.
 - contextPath: CarbonBlackEDR.Sensor.num_eventlog_bytes
-  description: Number bytes of eventlog.
+  description: The number of event log bytes.
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_message
-  description: Human-readable string indicating sensor’s self-reported status.
+  description: Human-readable string indicating the sensor’s self-reported status.
 - contextPath: CarbonBlackEDR.Sensor.build_version_string
   description: Human-readable string of the sensor version.
 - contextPath: CarbonBlackEDR.Sensor.computer_sid
@@ -436,27 +436,27 @@ outputs:
 - contextPath: CarbonBlackEDR.Sensor.computer_name
   description: NetBIOS name of this computer.
 - contextPath: CarbonBlackEDR.Sensor.license_expiration
-  description: When the licene of the sensor expires.
+  description: When the license of the sensor expires.
 - contextPath: CarbonBlackEDR.Sensor.supports_isolation
-  description: Whther sensor supports isolation.
+  description: Whether the sensor supports isolation.
 - contextPath: CarbonBlackEDR.Sensor.parity_host_id
   description: The ID of the parity host associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.supports_2nd_gen_modloads
   description: Whether the sensor support modload of 2nd generation.
 - contextPath: CarbonBlackEDR.Sensor.network_adapters
-  description: A pipe-delimited list list of IP,MAC pairs for each network interface.
+  description: A pipe-delimited list of IP,MAC pairs for each network interface.
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
   description: self-reported health score, from 0 to 100. Higher numbers are better.
 - contextPath: CarbonBlackEDR.Sensor.registration_time
-  description: Time this sensor originally registered in server-local time and zone.
+  description: Time this sensor was originally registered in server-local time and zone.
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
-  description: Whether a restart of the sensot is queued.
+  description: Whether a restart of the sensor is queued.
 - contextPath: CarbonBlackEDR.Sensor.notes
   description: The notes associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.num_storefiles_bytes
   description: Number of storefiles bytes associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.os_environment_id
-  description: The ID of the os enviroment of the sensor.
+  description: The ID of the OS environment of the sensor.
 - contextPath: CarbonBlackEDR.Sensor.shard_id
   description: The ID of the shard associated with the sensor.
 - contextPath: CarbonBlackEDR.Sensor.boot_id
@@ -466,9 +466,9 @@ outputs:
 - contextPath: CarbonBlackEDR.Sensor.os_type
   description: The operating system type of the computer.
 - contextPath: CarbonBlackEDR.Sensor.group_id
-  description: The sensor group id this sensor is assigned to.
+  description: The sensor group ID this sensor is assigned to.
 - contextPath: CarbonBlackEDR.Sensor.uninstall
-  description: when set, indicates sensor will be directed to uninstall on next checkin.
+  description: When set, indicates that the sensor will be directed to uninstall on the next check-in.
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
