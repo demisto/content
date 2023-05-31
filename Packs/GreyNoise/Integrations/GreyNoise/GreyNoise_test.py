@@ -225,7 +225,6 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
             _ = GreyNoise.ip_reputation_command(client, args, reliability)
-            print("this is err: " + str(err))
         assert str(err.value) == expected_output
 
 
@@ -253,7 +252,6 @@ def test_similar_command(mocker, args, test_scenario, api_response, status_code,
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
             _ = GreyNoise.similarity_command(client, args)
-            print("this is err: " + str(err))
         assert str(err.value) == expected_output
 
 
@@ -281,5 +279,4 @@ def test_timeline_command(mocker, args, test_scenario, api_response, status_code
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
             _ = GreyNoise.timeline_command(client, args)
-            print("this is err: " + str(err))
         assert str(err.value) == expected_output
