@@ -1,0 +1,3 @@
+[INGEST:vendor="test", product="test_product"]
+alter 
+    _time = time;
