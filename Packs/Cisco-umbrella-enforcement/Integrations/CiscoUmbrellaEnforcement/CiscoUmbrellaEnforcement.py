@@ -80,7 +80,7 @@ def domains_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def domain_event_add_command(client: Client, args: dict) -> CommandResults:
+def domain_event_add_command(client: Client, args: dict) -> str:
     """
     :param client: Cisco Umbrella Client for the api request.
     :param args: args from the user for the command.
@@ -122,7 +122,7 @@ def domain_event_add_command(client: Client, args: dict) -> CommandResults:
         action_result = f"New event was added successfully, The Event id is {id}."
     else:
         action_result = "New event's addition failed."
-    return CommandResults(readable_output=action_result)
+    return action_result
 
 
 def domain_delete_command(client: Client, args: dict) -> CommandResults:

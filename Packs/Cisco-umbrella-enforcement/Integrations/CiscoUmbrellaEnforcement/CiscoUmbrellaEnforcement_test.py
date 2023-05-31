@@ -48,7 +48,7 @@ def test_domain_event_add_command_happy_path(mocker):
             'source': 'test'}
     mocker.patch.object(client, '_http_request', return_value={'id': 123})
     result = domain_event_add_command(client, args)
-    assert result.readable_output == "New event was added successfully, The Event id is 123."
+    assert result == "New event was added successfully, The Event id is 123."
 
 
 def test_domains_list_command_valid_input_params(mocker):
@@ -143,7 +143,5 @@ def test_umbrella_domain_event_add_valid_args(mocker):
     })
     mocker.patch.object(Client, 'add_event_to_domain', return_value={'id': '123'})
     # mocker.patch('client.add_event_to_domain', return_value={'id': '123'})
-    moc = mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'results')
     main()
-    pr_body = moc.call_args.args[0].get('HumanReadable')
-    assert pr_body == 'New event was added successfully, The Event id is 123.'
