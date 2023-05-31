@@ -1,46 +1,25 @@
 {
-  "Cache": null,
-  "packName": "",
-  "dataType": "incidents",
-  "itemVersion": "",
-  "params": {
-    "groupBy": [
-      "xpanseprotocol"
-    ],
-    "valuesFormat": "abbreviated"
-  },
-  "query": "type:\"Xpanse Alert\"",
-  "modified": "2023-05-26T17:24:45.104159477Z",
-  "shouldCommit": false,
-  "fromServerVersion": "",
-  "propagationLabels": [
-    "all"
-  ],
-  "name": "Xpanse Incidents by Protocol",
-  "definitionId": "",
-  "vcShouldKeepItemLegacyProdMachine": false,
-  "dateRange": {
-    "period": {
-      "byFrom": "days",
-      "fromValue": 30
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "xpanseprotocol"
+        ],
+        "valuesFormat": "abbreviated"
     },
-    "fromDateLicense": "0001-01-01T00:00:00Z"
-  },
-  "commitMessage": "",
-  "isPredefined": false,
-  "vcShouldIgnore": false,
-  "packID": "",
-  "version": 1,
-  "toServerVersion": "",
-  "id": "de2b128e-6d0d-497e-87ea-484725f4701a",
-  "cacheVersn": 0,
-  "category": "",
-  "prevName": "Xpanse Alerts by protocol",
-  "widgetType": "pie",
-  "customCalculation": {
-    "operation": "count",
-    "fieldName": "",
-    "expression": ""
-  },
-  "shouldPublish": false
+    "query": "type:\"Xpanse Alert\"",
+    "modified": "2023-05-26T17:24:45.104159477Z",
+    "name": "Xpanse Incidents by Protocol",
+    "dateRange": {
+        "period": {
+            "byFrom": "days",
+            "fromValue": 30
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "de2b128e-6d0d-497e-87ea-484725f4701a",
+    "widgetType": "pie",
+    "fromVersion": "6.8.0",
+    "description": ""
 }

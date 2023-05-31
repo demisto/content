@@ -1,63 +1,43 @@
 {
-  "Cache": null,
-  "packName": "",
-  "dataType": "incidents",
-  "itemVersion": "",
-  "params": {
-    "colors": {
-      "isEnabled": true,
-      "items": {
-        "#1DB846": {
-          "value": 0
+    "dataType": "incidents",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#1DB846": {
+                    "value": 0
+                },
+                "#D13C3C": {
+                    "value": 50
+                },
+                "#EF9700": {
+                    "value": 20
+                }
+            },
+            "type": "above"
         },
-        "#D13C3C": {
-          "value": 50
+        "valuesFormat": "abbreviated"
+    },
+    "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and assigneduser:\"\" -status:closed",
+    "modified": "2023-03-21T19:57:06.732382603Z",
+    "name": "Unassigned Active Xpanse Incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
         },
-        "#EF9700": {
-          "value": 20
-        }
-      },
-      "type": "above"
+        "fromDateLicense": "0001-01-01T00:00:00Z"
     },
-    "valuesFormat": "abbreviated"
-  },
-  "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and assigneduser:\"\" -status:closed",
-  "modified": "2023-03-21T19:57:06.732382603Z",
-  "shouldCommit": false,
-  "fromServerVersion": "",
-  "propagationLabels": [
-    "all"
-  ],
-  "name": "Unassigned Active Xpanse Incidents",
-  "definitionId": "",
-  "vcShouldKeepItemLegacyProdMachine": false,
-  "dateRange": {
-    "fromDate": "0001-01-01T00:00:00Z",
-    "toDate": "0001-01-01T00:00:00Z",
-    "period": {
-      "by": "",
-      "byTo": "",
-      "byFrom": "days",
-      "toValue": null,
-      "fromValue": 7,
-      "field": ""
-    },
-    "fromDateLicense": "0001-01-01T00:00:00Z"
-  },
-  "commitMessage": "",
-  "isPredefined": false,
-  "vcShouldIgnore": false,
-  "packID": "",
-  "version": -1,
-  "toServerVersion": "",
-  "id": "4a095b3f-a4e4-4bb2-83e4-433aeff01eb6",
-  "cacheVersn": 0,
-  "category": "",
-  "prevName": "Unassigned Xpanse Incidents",
-  "widgetType": "trend",
-  "customCalculation": {
-    "operation": "count",
-    "fieldName": "",
-    "expression": ""
-  }
+    "isPredefined": true,
+    "version": -1,
+    "id": "4a095b3f-a4e4-4bb2-83e4-433aeff01eb6",
+    "widgetType": "trend",
+    "fromVersion": "6.8.0",
+    "description": ""
 }
