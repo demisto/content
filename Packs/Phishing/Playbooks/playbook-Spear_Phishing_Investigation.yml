@@ -379,7 +379,7 @@ tasks:
     scriptarguments:
       keywordsfound:
         complex:
-          root: KeyWordsFound
+          root: emailkeywordsfound
     separatecontext: false
     continueonerrortype: ""
     view: |-
