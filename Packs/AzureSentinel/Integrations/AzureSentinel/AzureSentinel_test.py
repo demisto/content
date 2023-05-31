@@ -1490,7 +1490,11 @@ def test_fetch_incidents_additional_info(mocker, incidents):
         assert incident['entities'] == [{'id': f'entities-{i + 1}'}]
 
 
-def test_get_modified_remote_data_command(mocker):
+@pytest.mark.parametrize("last_update, expected_last_update", [
+    ('2023-01-06T08:17:09.001016488+02:00', '2023-01-06T06:17:09.001016Z'),
+    ('2023-01-06T08:17:09.001016488Z', '2023-01-06T08:17:09.001016Z')
+])
+def test_get_modified_remote_data_command(mocker, last_update, expected_last_update):
     """
     Given
         - client
@@ -1505,9 +1509,9 @@ def test_get_modified_remote_data_command(mocker):
     mock_response = {'value': [{'name': 'incident-1'}, {'name': 'incident-2'}]}
     mocker.patch.object(client, 'http_request', return_value=mock_response)
 
-    last_update = '2023-01-06T08:17:09Z'
     result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
-    assert last_update in client.http_request.call_args[1]['params']['$filter']
+    excepted_filter = f'properties/lastModifiedTimeUtc ge {expected_last_update}'
+    assert client.http_request.call_args[1]['params']['$filter'] == excepted_filter
     assert result.modified_incident_ids == [incident['name'] for incident in mock_response['value']]
 
 

@@ -386,4 +386,4 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
-toversion: 6.1.9
+toversion: 6.0.0

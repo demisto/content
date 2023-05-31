@@ -66,9 +66,9 @@ server {
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
         proxy_read_timeout $timeout;
-        proxy_connect_timeout 1800;
-        proxy_send_timeout 1800;
-        send_timeout 1800;
+        proxy_connect_timeout 3600;
+        proxy_send_timeout 3600;
+        send_timeout 3600;
     }
 }
 
@@ -91,7 +91,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    timeout: str = params.get('timeout') or '1800'
+    timeout: str = params.get('timeout') or '3600'
     ssl = ''
     sslcerts = ''
     serverport = port + 1
