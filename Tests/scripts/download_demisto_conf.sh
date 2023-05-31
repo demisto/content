@@ -24,10 +24,10 @@ echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
 # Download content-test-conf from GitLab repository
 echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
-git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
+git clone --depth=1 https://gitlab-ci-token:"${CI_JOB_TOKEN}"@code.pan.run/xsoar/content-test-conf.git --branch "$UNDERSCORE_BRANCH"
 if [ "$?" != "0" ]; then
     echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
-    git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
+    git clone --depth=1 https://gitlab-ci-token:"${CI_JOB_TOKEN}"@code.pan.run/xsoar/content-test-conf.git
 fi
 cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
