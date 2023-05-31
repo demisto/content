@@ -15,7 +15,15 @@ To configure a remote logging server on a Cisco Nexus switch, follow these steps
 ```bash
  # logging server <server-ip-address>
 ```
-Replace \<server-ip-address\> with the IP address of the BrokerVM.
+*Note:
+The logs will receive the correct timezone only when the UTC timezone is set; otherwise, the logs will display the "insert time" as the timestamp.*
+
+To send logs to a remote server with UTC timezone, use the following command:
+```bash
+ # logging server <server-ip-address> timezone <timezone>
+
+```
+Replace \<server-ip-address\> with the IP address of the BrokerVM and \<timezone\> with UTC.
 
 5. To confirm these settings, show the remote syslog server configuration:
 ```bash
