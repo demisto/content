@@ -61,7 +61,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: IBM X-Force Exchange lets you receive threat intelligence about applications,
+description: IBM  X-Force Exchange lets you receive threat intelligence about applications,
   IP addresses, URls and hashes
 display: IBM X-Force Exchange v2
 name: XFE_v2
