@@ -2084,11 +2084,11 @@ Assign Point of Contacts to an Xpanse asset.
 `expanse-assign-pocs-to-asset`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_type | Type of Xpanse asset to assign the poc to. Possible values are: IpRange, Certificate, Domain. | Required | 
-| asset_id | ID of the asset to assign the poc to. | Required | 
-| pocs | IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| **Argument Name** | **Description**                                                                                                                               | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| asset_type | Type of Xpanse asset to assign the poc to. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP.                 | Required | 
+| asset_id | ID of the asset to assign the poc to.                                                                                                         | Required | 
+| pocs | IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged.       | Optional | 
 | poc_emails | Email Addresses of the pocs to assign to the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
 
 
@@ -2115,12 +2115,12 @@ Unassign Point of Contacts from an Xpanse Asset.
 `expanse-unassign-pocs-from-asset`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_type | Type of Xpanse asset to unassign the pocs from. Possible values are: IpRange, Certificate, Domain. | Required | 
-| asset_id | ID of the asset to unassign the pocs from. | Required | 
+| **Argument Name** | **Description**                                                                                                                             | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| asset_type | Type of Xpanse asset to unassign the pocs from. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP.          | Required | 
+| asset_id | ID of the asset to unassign the pocs from.                                                                                                  | Required | 
 | pocs | IDs of the pocs to unassign from the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
-| poc_emails | Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+| poc_emails | Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged.     | Optional | 
 
 
 #### Context Output
@@ -2503,7 +2503,7 @@ Assign tags to an Xpanse asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Xpanse asset to assign the tag to. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to assign the tag to. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP. | Required | 
 | asset_id | ID of the asset to assign the tags to. | Required | 
 | tags | IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged. | Optional | 
 | tag_names | Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged. | Optional | 
@@ -2539,7 +2539,7 @@ Unassign tags from an Xpanse Asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Xpanse asset to unassign the tags from. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to unassign the tags from. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP. | Required | 
 | asset_id | ID of the asset to unassign the tags from. | Required | 
 | tags | IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged. | Optional | 
 | tag_names | Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged. | Optional | 
