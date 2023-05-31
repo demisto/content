@@ -40,14 +40,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: 'Use this parameter for debugging purposes only. Simluates a fetch process of specific incidents as
-    events, provided in a comma-separated list of their corresponding IDs. If specified, the `First fetch` parameter
-    is not taken into account.'
-  display: Fetch samples by ID
-  name: fetch_ids
-  required: false
-  type: 0
-  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

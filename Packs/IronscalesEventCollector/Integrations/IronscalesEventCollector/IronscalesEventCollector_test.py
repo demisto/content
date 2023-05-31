@@ -20,42 +20,6 @@ def client(mocker):
     return mocked_client
 
 
-def test_fetch_events_by_specific_ids(client):
-    """
-    Given: A mock Ironscales client.
-    When:
-    - Running fetch-events command twice.
-    - `max_fetch` param is 2.
-    - `fetch_ids` is [2, 3, 4].
-    - `first_fetch` param is "1 day ago".
-    Then:
-    - Ensure incidents 2 and 3 are returned from the first fetch.
-    - Ensure incident 4 is return from the second fetch.
-    """
-    first_fetch: datetime = dateparser.parse("1 days ago"),  # type: ignore
-    max_fetch = 2
-    fetch_ids = [2, 3, 4]
-    res, last_id = fetch_events_command(
-        client,
-        first_fetch=first_fetch,
-        max_fetch=max_fetch,
-        fetch_ids=fetch_ids,
-    )
-    assert len(res) == 2
-    assert res[0]["incident_id"] == 2
-    assert res[1]["incident_id"] == 3
-
-    res, last_id = fetch_events_command(
-        client,
-        first_fetch=first_fetch,
-        max_fetch=max_fetch,
-        last_id=last_id,
-        fetch_ids=fetch_ids,
-    )
-    assert len(res) == 1
-    assert res[0]["incident_id"] == 4
-
-
 def test_fetch_events_by_fetch_time(client):
     """
     Given: A mock Ironscales client.

@@ -183,7 +183,6 @@ def fetch_events_command(
     first_fetch: datetime,
     max_fetch: int,
     last_id: Optional[int] = None,
-    fetch_ids: Optional[List[int]] = None,
 ) -> Tuple[List[Dict[str, Any]], int]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
@@ -193,7 +192,6 @@ def fetch_events_command(
         first_fetch (datetime): First fetch time.
         max_fetch (int): Maximum number of events to fetch.
         last_id (Optional[int]): The ID of the most recent incident ingested in previous runs. Defaults to None.
-        fetch_ids (Optional[List[int]]): Specific IDs of incidents to fetch. Defaults to None.
 
     Returns:
         Tuple[List[Dict[str, Any]], int]:
@@ -201,7 +199,7 @@ def fetch_events_command(
             - ID of the most recent incident ingested in the current run.
     """
     events: List[Dict[str, Any]] = []
-    incident_ids: List[int] = fetch_ids or get_open_incident_ids(
+    incident_ids: List[int] = get_open_incident_ids(
         client=client,
         first_fetch=first_fetch,
     )
@@ -237,7 +235,6 @@ def main():
         first_fetch = dateparser.parse(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
         assert isinstance(first_fetch, datetime), f"Invalid first_fetch value: {params.get('first_fetch')}"
         max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-        fetch_ids = argToList(params.get("fetch_ids"), transform=int)
 
         client = Client(
             company_id=params.get("company_id"),
@@ -262,7 +259,6 @@ def main():
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
                 last_id=demisto.getLastRun().get("last_id"),
-                fetch_ids=fetch_ids,
             )
             demisto.setLastRun({"last_id": last_id})
             send_events_to_xsiam(events, VENDOR, PRODUCT)

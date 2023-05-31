@@ -8,7 +8,7 @@ Use this integration to fetch email security incidents from Ironscales as XSIAM 
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://appapi.ironscales.com) | True |
+    | Server URL (e.g. <https://appapi.ironscales.com>) | True |
     | API Key | True |
     | Company ID | True |
     | Scopes (e.g. "company.all") | True |
