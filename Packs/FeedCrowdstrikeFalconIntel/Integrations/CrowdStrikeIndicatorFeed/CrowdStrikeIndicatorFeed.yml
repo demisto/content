@@ -49,7 +49,7 @@ configuration:
   required: true
   type: 0
   additionalinfo: The time range to consider for the initial data fetch.
-    Warning, This feed fetches about tens of thousands of indicators every day, Please consider this when setting this parameter to an earlier time to prevent system overload.
+    Warning: This feed fetches tens of thousands of indicators per day. Please consider this when configuring this parameter to further in the past, as it may overload the system with indicators.
   defaultvalue: '1 week'
 - display: Max. indicators per fetch
   defaultvalue: 5000
