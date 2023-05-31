@@ -40,23 +40,6 @@ inputs:
     simple: |-
       During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.
       To get more information, go to this incident in XSOAR: ${incident.id}.
-- key: UserVerification
-  value:
-    simple: "False"
-  required: false
-  description: "Possible values: True/False. \nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
-  playbookInputQuery:
-- key: AutoBlockIndicators
-  value:
-    simple: "True"
-  required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Should the given indicators be automatically blocked, or should the user be given the option to choose?
-
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
-  playbookInputQuery:
 name: Post Intrusion Ransomware Investigation
 outputs: []
 starttaskid: "0"
@@ -927,6 +910,144 @@ tasks:
         "position": {
           "x": 430,
           "y": 1490
+        }
+      }
+  "78":
+    id: "78"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ip
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      MD5:
+        complex:
+          accessor: MD5
+          root: File
+      SHA256:
+        complex:
+          accessor: SHA256
+          root: File
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: url
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: username
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, and the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+
+      id: 7e5a473a-4251-4eed-87fc-06df65de0eb8
+      iscommand: false
+      name: Block Indicators - Generic v2
+      playbookId: Block Indicators - Generic v2
+      type: playbook
+      version: -1
+    taskid: 7e5a473a-4251-4eed-87fc-06df65de0eb8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 3030
         }
       }
   "82":
@@ -4084,7 +4205,7 @@ tasks:
       '#default#':
       - "97"
       "True":
-      - "109"
+      - "78"
     note: false
     quietmode: 0
     separatecontext: false
@@ -4252,148 +4373,11 @@ tasks:
           "y": 2130
         }
       }
-  "109":
-    id: "109"
-    taskid: 565d7793-811c-421f-826b-1eaff095e501
-    type: playbook
-    task:
-      id: 565d7793-811c-421f-826b-1eaff095e501
-      version: -1
-      name: Block Indicators - Generic v3
-      description: |+
-        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic v2
-        - Block Account - Generic v2
-        - Block IP - Generic v3
-        - Block File - Generic v2
-        - Block Email - Generic v2
-        - Block Domain - Generic v2
-
-      playbookName: Block Indicators - Generic v3
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "62"
-    scriptarguments:
-      AutoBlockIndicators:
-        complex:
-          root: inputs.AutoBlockIndicators
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: XSOAR Remediation - Malicious URLs
-      IP:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-      URL:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      UserVerification:
-        complex:
-          root: inputs.UserVerification
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 3030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "103_109_True": 0.44,
+      "103_78_True": 0.41,
       "103_97_#default#": 0.38,
       "104_15_Binary": 0.59,
       "104_42_Note": 0.51,
