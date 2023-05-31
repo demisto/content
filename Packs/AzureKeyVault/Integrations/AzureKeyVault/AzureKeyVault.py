@@ -620,27 +620,31 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
         args.get('ignore_missing_vnet_service_endpoint', True))
     ip_rules = argToList(args.get('ip_rules'))
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_name = argToList(args.get('resource_group_name', params.get('resource_group_name')))
+    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name')))
 
-    response = client.create_or_update_key_vault_request(subscription_id, resource_group_name, vault_name, object_id, location, sku_name, keys_permissions,
-                                                         secrets_permissions, certificates_permissions,
-                                                         storage_accounts_permissions, enabled_for_deployment,
-                                                         enabled_for_disk_encryption, enabled_for_template_deployment,
-                                                         default_action, bypass, vnet_subnet_id,
-                                                         ignore_missing_vnet_service_endpoint, ip_rules)
+    all_responses = []
+    for single_resource_group in resource_group_list:
+        response = client.create_or_update_key_vault_request(subscription_id, single_resource_group, vault_name, object_id, location, sku_name, keys_permissions,
+                                                             secrets_permissions, certificates_permissions,
+                                                             storage_accounts_permissions, enabled_for_deployment,
+                                                             enabled_for_disk_encryption, enabled_for_template_deployment,
+                                                             default_action, bypass, vnet_subnet_id,
+                                                             ignore_missing_vnet_service_endpoint, ip_rules)
 
-    if response.get('error'):
-        raise Exception(response)
+        if response.get('error'):
+            raise Exception(response)
+        all_responses.append(response)
+
     readable_output = tableToMarkdown(f'{vault_name} Information',
-                                      response,
+                                      all_responses,
                                       ['id', 'name', 'type', 'location'], removeNull=True,
                                       headerTransform=string_to_table_header)
 
     command_results = CommandResults(
         outputs_prefix='AzureKeyVault.KeyVault',
         outputs_key_field='id',
-        outputs=response,
-        raw_response=response,
+        outputs=all_responses,
+        raw_response=all_responses,
         readable_output=readable_output,
         ignore_auto_extract=True
     )
@@ -661,23 +665,22 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
 
     vault_name = args['vault_name']
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_name = argToList(args.get('resource_group_name', params.get('resource_group_name')))
-    response = client.delete_key_vault_request(subscription_id=subscription_id,
-                                               resource_group_name=resource_group_name,
-                                               vault_name=vault_name)
-    if response.get('error'):
-        raise Exception(response)
+    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name')))
+
     message = ""
-    if response.get('status_code') == 200:
-        message = f'Deleted Key Vault {vault_name} successfully.'
-    elif response.get('status_code') == 204:
-        message = f'Key Vault {vault_name} does not exists.'
+    for single_resource_group in resource_group_list:
+        response = client.delete_key_vault_request(subscription_id=subscription_id,
+                                                   resource_group_name=single_resource_group,
+                                                   vault_name=vault_name)
+        if response.get('error'):
+            raise Exception(response)
 
-    command_results = CommandResults(
-        readable_output=message
-    )
+        if response.get('status_code') == 200:
+            message += f'Deleted Key Vault {vault_name} successfully.'
+        elif response.get('status_code') == 204:
+            message += f'Key Vault {vault_name} does not exists.'
 
-    return command_results
+    return CommandResults(readable_output=message)
 
 
 def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
@@ -771,23 +774,26 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     storage_accounts = argToList(args.get('storage', []))
 
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_name = argToList(args.get('resource_group_name', params.get('resource_group_name')))
+    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name')))
 
-    response = client.update_access_policy_request(subscription_id, resource_group_name,
-                                                   vault_name, operation_kind, object_id, keys, secrets, certificates, storage_accounts)
-    if response.get('error'):
-        raise Exception(response)
+    all_responses = []
+    for single_resource_group in resource_group_list:
+        response = client.update_access_policy_request(subscription_id, resource_group_name,
+                                                       vault_name, operation_kind, object_id, keys, secrets, certificates, storage_accounts)
+        if response.get('error'):
+            raise Exception(response)
+        all_responses.append(response)
 
     readable_output = tableToMarkdown(f'{vault_name} Updated Access Policy',
-                                      response,
+                                      all_responses,
                                       ['id', 'name', 'type', 'location'], removeNull=True,
                                       headerTransform=string_to_table_header)
 
     command_results = CommandResults(
         outputs_prefix='AzureKeyVault.VaultAccessPolicy',
         outputs_key_field='id',
-        outputs=response,
-        raw_response=response,
+        outputs=all_responses,
+        raw_response=all_responses,
         readable_output=readable_output,
         ignore_auto_extract=True
     )
@@ -1234,11 +1240,17 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    subscription_id = argToList(args.get('subscription_id', params.get('subscription_id')))
-    response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
-    outputs = copy.deepcopy(response)
+    subscription_id_list = argToList(args.get('subscription_id', params.get('subscription_id')))
+
+    all_responses = []
+    for subscription_id in subscription_id_list:
+        response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
+        if "error" in response:
+            raise Exception(response)
+        all_responses.extend(response)
+
     readable_output = tableToMarkdown('Resource Groups List',
-                                      outputs,
+                                      all_responses,
                                       ['name', 'location', 'tags',
                                        'properties.provisioningState'
                                        ],
@@ -1246,8 +1258,8 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     return CommandResults(
         outputs_prefix='AzureKeyVault.ResourceGroup',
         outputs_key_field='id',
-        outputs=outputs,
-        raw_response=response,
+        outputs=all_responses,
+        raw_response=all_responses,
         readable_output=readable_output,
     )
 
