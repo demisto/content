@@ -2250,7 +2250,7 @@ script:
       name: query_id
       required: true
     description: Returns status of a Deep Visibility Query
-    name: sentinelone-get-status
+    name: sentinelone-get-dv-query-status
     outputs:
     - contextPath: SentinelOne.Query.Status.progressStatus
       description: Progress Query Status
@@ -2264,7 +2264,26 @@ script:
       description: Warnings during Query
     - contextPath: SentinelOne.Query.Status.QueryId
       description: QueryID From Request
-  dockerimage: demisto/python3:3.10.11.60728
+  - arguments:
+      - description: AgentId of the System
+        name: agent_id
+        required: true
+    description: Returns network interface details for a given Agent ID. This includes MAC address details and interface description.
+    name: sentinelone-get-agent-mac
+    outputs:
+    - contextPath: SentinelOne.MAC
+      description: Agent network interface details.
+    - contextPath: SentinelOne.MAC.agent_id
+      description: AgentID
+    - contextPath: SentinelOne.MAC.hostname
+      description: Hostname
+    - contextPath: SentinelOne.MAC.int_name
+      description: Interface Name
+    - contextPath: SentinelOne.MAC.ip
+      description: IP Address
+    - contextPath: SentinelOne.MAC.mac
+      description: MAC Address
+  dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   ismappable: true
   isremotesyncin: true

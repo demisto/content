@@ -2491,6 +2491,40 @@ def get_agent_command(client: Client, args: dict) -> CommandResults:
         raw_response=agents)
 
 
+def get_agent_mac_command(client: Client, args: dict) -> CommandResults:
+    """
+        Get single agent mac details via ID
+    """
+    # Set req list
+    mac_list = []
+
+    # Get arguments
+    agent_ids = argToList(args.get('agent_id'))
+
+    # Make request and get raw response
+    agents = client.get_agent_request(agent_ids)
+
+    if agents:
+        for agent in agents:
+            hostname = agent.get('computerName')
+            for interface in agent.get('networkInterfaces'):
+                int_dict = {}
+                int_dict['hostname'] = hostname
+                int_dict['int_name'] = interface.get('name')
+                int_dict['agent_id'] = agent.get('id')
+                int_dict['ip'] = interface.get('inet')
+                int_dict['mac'] = interface.get('physical')
+
+                mac_list.append(int_dict)
+
+    return CommandResults(
+        outputs_prefix='SentinelOne.MAC',
+        outputs=mac_list,
+        readable_output=tableToMarkdown('SentinelOne MAC Address Results', mac_list),
+        raw_response=agents
+    )
+
+
 def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults, str]:
     """
     Sends a "connect to network" command to all agents matching the input filter.
@@ -2650,7 +2684,7 @@ def create_query(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_status(client: Client, args: dict) -> CommandResults:
+def get_dv_query_status(client: Client, args: dict) -> CommandResults:
     query_id = args.get('query_id')
     status = client.create_status_request(query_id)
 
@@ -3397,6 +3431,7 @@ def main():
             'sentinelone-reactivate-site': reactivate_site_command,
             'sentinelone-list-agents': list_agents_command,
             'sentinelone-get-agent': get_agent_command,
+            'sentinelone-get-agent-mac': get_agent_mac_command,
             'sentinelone-get-groups': get_groups_command,
             'sentinelone-move-agent': move_agent_to_group_command,
             'sentinelone-delete-group': delete_group,
@@ -3405,7 +3440,7 @@ def main():
             'sentinelone-broadcast-message': broadcast_message,
             'sentinelone-get-events': get_events,
             'sentinelone-create-query': create_query,
-            'sentinelone-get-status': get_status,
+            'sentinelone-get-dv-query-status': get_dv_query_status,
             'sentinelone-get-processes': get_processes,
             'sentinelone-shutdown-agent': shutdown_agents,
             'sentinelone-uninstall-agent': uninstall_agent,
