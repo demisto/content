@@ -1,0 +1,34 @@
+{
+    "reply": [
+      {
+        "group_name": "Group1",
+        "description": null,
+        "pretty_name": "dummy0",
+        "insert_time": 1111111111111,
+        "update_time": 2222222222222,
+        "user_email": [
+          "dummy1@gmail.com",
+          "dummy2@gmail.com",
+          "dummy3@gmail.com",
+          "dummy4@gmail.com",
+          "dummy5@gmail.com"
+        ],
+        "source": "Custom"
+      },
+      {
+        "group_name": "Group2",
+        "description": null,
+        "pretty_name": "dummy1",
+        "insert_time": 1111111111111,
+        "update_time": 2222222222222,
+        "user_email": [
+            "dummy1@gmail.com",
+            "dummy2@gmail.com",
+            "dummy3@gmail.com",
+            "dummy4@gmail.com",
+            "dummy5@gmail.com"
+        ],
+        "source": "Custom"
+      }
+    ]
+  }

@@ -5820,7 +5820,7 @@ script:
       in Reveal(x).
     execution: false
     name: extrahop-search-packets
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false
