@@ -52,10 +52,6 @@
           "type": "string",
           "is_array": false
         },
-        "geo_dst": {
-          "type": "string",
-          "is_array": false
-        },
         "duration": {
           "type": "string",
           "is_array": false
