@@ -134,7 +134,7 @@ xpanse-prepare-testing-bucket-upload-flow:
   script:
     - EXIT_CODE=0
     - section_start "Download configuration"
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - ./Tests/scripts/fetch_required_build_repos.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
     - section_end "Download configuration"
@@ -205,7 +205,7 @@ install-packs-in-server-master:
   script:
     - EXIT_CODE=0
     - section_start "Download configuration"
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - ./Tests/scripts/fetch_required_build_repos.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
     - section_end "Download configuration"

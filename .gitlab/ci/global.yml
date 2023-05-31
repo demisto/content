@@ -52,12 +52,12 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
-.download-demisto-conf:
-  - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_demisto_conf.sh | tee --append $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
+.fetch-required-build-repos:
+  - section_start "Fetch build-required repositories" --collapsed
+  - ./Tests/scripts/fetch_required_build_repos.sh | tee --append $ARTIFACTS_FOLDER/logs/fetch_required_build_repos.log
   - SECRET_CONF_PATH=$(cat secret_conf_path)
   - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
-  - section_end "Download content-test-conf"
+  - section_end "Fetch build-required repositories"
 
 .open-ssh-tunnel:
   - section_start "Open SSH Tunnel" --collapsed

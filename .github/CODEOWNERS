@@ -74,7 +74,7 @@
 /Tests/configure_and_test_integration_instances.py @daryakoval
 /Tests/scripts/print_cloud_machine_details.sh @daryakoval
 /Tests/scripts/run_tests.sh @daryakoval
-/Tests/scripts/download_demisto_conf.sh @daryakoval
+/Tests/scripts/fetch_required_build_repos.sh @daryakoval
 Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
 

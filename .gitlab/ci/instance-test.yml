@@ -14,7 +14,7 @@ test_instances:
     - xsoar-prepare-testing-bucket
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
+    - !reference [.fetch-required-build-repos]
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" || EXIT_CODE=$?
     - ./Tests/scripts/instance_test.sh || EXIT_CODE=$?

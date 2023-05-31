@@ -131,7 +131,7 @@ validate-content-conf:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - !reference [.download-demisto-conf]
+    - !reference [.fetch-required-build-repos]
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create or update content graph" --collapsed
@@ -245,7 +245,7 @@ xpanse-prepare-testing-bucket:
       optional: true
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
+    - !reference [.fetch-required-build-repos]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
     - |
@@ -418,7 +418,7 @@ slack-notify-nightly-build:
   stage: run-instances
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
+    - !reference [.fetch-required-build-repos]
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
