@@ -301,7 +301,7 @@ def main():
     username = f"{user}@{tenant_name}"
     password: str = params.get('credentials', {}).get('password')
     token = params.get('cred_tenant_name', {}).get('password') or params.get('token')
-    if not (token and tenant_name) or not (user and not password):
+    if not (token and tenant_name) or not (user and password):
         raise DemistoException('Token and Tenant name OR Username and Password must be provided.')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
