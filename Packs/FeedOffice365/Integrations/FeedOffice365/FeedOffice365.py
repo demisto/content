@@ -127,9 +127,9 @@ class Client:
                     raise Exception(f'The service located at {feed_url} is unavailable while fetching '
                                     f'indicators {(str(err))} ')
                 elif err.response.status_code == 400 and region == GERMANY:
-                    raise Exception(f'The service returned a 400 status code, this could possibly be due to the Germany'
-                                    f' endpoint being unavailable. Please exclude Germany from All using the parameter'
-                                    f' Allow Germany.')
+                    raise Exception('The service returned a 400 status code, this could possibly be due to the Germany'
+                                    ' endpoint being unavailable. Please exclude Germany from All using the parameter'
+                                    ' Allow Germany.')
                 else:
                     raise Exception(f'HTTP error in the API call to {INTEGRATION_NAME}.\n\n{err}')
             except ValueError as err:
