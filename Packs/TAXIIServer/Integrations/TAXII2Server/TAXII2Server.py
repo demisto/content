@@ -396,7 +396,7 @@ def get_limited_extensions(limited_iocs, extensions):
 
 
 def remove_spaces_from_header(header: str | list) -> str | list:
-    """_summary_
+    """ Remove spaces from a header or list of headers.
 
     Args:
         header (str | list): A single header or a list of headers to remove spaces from.
