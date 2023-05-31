@@ -4,9 +4,10 @@ alter
     ipv6_address = arrayindex(regextract(json_extract_scalar(mail_server, "$.ip"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
 | alter
 	xdm.event.id = to_string(incident_id),
-	xdm.event.operation_sub_type = classification,
+	xdm.event.outcome_reason = classification,
 	xdm.email.sender = sender_email,
-	xdm.email.recipients = arraycreate(reply_to),
+	xdm.email.recipients = name,
+	xdm.observer.action = themis_verdict,
 	xdm.alert.subcategory = themis_verdict,
 	xdm.intermediate.host.hostname = mail_server -> host,
 	xdm.intermediate.ipv4 = ipv4_address,

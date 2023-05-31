@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: IRONSCALES Event Collector
+  id: Ironscales Event Collector
   version: -1
 configuration:
 - defaultvalue: https://appapi.ironscales.com
@@ -60,9 +60,9 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use this integration to fetch email security incidents from IRONSCALES as XSIAM events.
-display: IRONSCALES Event Collector
-name: IRONSCALES Event Collector
+description: Use this integration to fetch email security incidents from Ironscales as XSIAM events.
+display: Ironscales Event Collector
+name: Ironscales Event Collector
 script:
   commands:
   - arguments:
@@ -82,7 +82,7 @@ script:
         - 'true'
         - 'false'
       required: true
-    description: Gets events from IronScale.
+    description: Gets events from Ironscales.
     name: ironscales-get-events
   dockerimage: demisto/python3:3.10.11.61265
   isfetchevents: true

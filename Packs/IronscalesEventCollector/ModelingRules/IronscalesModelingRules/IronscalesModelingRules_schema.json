@@ -16,10 +16,6 @@
             "type": "string",
             "is_array": false
         },
-        "reply_to": {
-            "type": "string",
-            "is_array": false
-        },
         "themis_verdict": {
             "type": "string",
             "is_array": false
