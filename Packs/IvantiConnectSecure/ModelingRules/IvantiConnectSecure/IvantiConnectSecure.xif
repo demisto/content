@@ -1,0 +1,37 @@
+[MODEL: dataset="ivanti_connect_secure_raw"]
+alter 
+    syslog_header = split(arrayindex(regextract(_raw_log, "(^\S+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s"), 0)),
+    syslog_msg = arrayindex(regextract(_raw_log, "^\S+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?\s+(\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s.+)"), 0)
+| alter 
+    //syslog_timestamp = arrayindex(syslog_header, 1),
+    syslog_hostname = arrayindex(syslog_header, 2),
+    syslog_app_name = rtrim(arrayindex(syslog_header, 3), ":"),
+    //syslog_proccess_id = arrayindex(syslog_header, 4),
+    //syslog_msg_id = arrayindex(syslog_header, 5),
+    //syslog_structed_data = arrayindex(syslog_header, 6),
+    msg_node = arrayindex(regextract(syslog_msg, "^\S+\s+\S+\s+\-\s+(\S+)"), 0),
+    msg_ip = arrayindex(regextract(syslog_msg, "\[([a-fA-F\d\.\:]+)\]"), 0),
+    msg_user = arrayindex(regextract(syslog_msg, "\]\s+([^\(]+)"), 0),
+    msg_realm = arrayindex(regextract(syslog_msg, "\(([^\)]+)"), 0),
+    msg_roles = split(arrayindex(regextract(syslog_msg, "\)\[([^\]]+)"), 0), ","),
+    msg_payload = arrayindex(regextract(syslog_msg, "\]\s+\-\s+(.+)"), 0)
+| alter
+    user_name =  arrayindex(split(msg_user, "\\"), 0),
+    user_domain = arrayindex(split(msg_user, "\\"), 1),
+    src_ipv4 = if(msg_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", msg_ip, null),
+    src_ipv6 = if(msg_ip ~= "\w{1,3}\:", msg_ip, null)
+| alter 
+    xdm.observer.name = syslog_hostname, 
+    xdm.observer.product = syslog_app_name,
+    xdm.intermediate.application.name = syslog_app_name,
+    xdm.intermediate.host.device_id = msg_node,
+    xdm.source.ipv4 = src_ipv4, 
+    xdm.source.host.ipv4_addresses = arraycreate(src_ipv4),
+    xdm.source.ipv6 = src_ipv6, 
+    xdm.source.host.ipv6_addresses = arraycreate(src_ipv6),
+    xdm.source.user.username = msg_user, 
+    xdm.source.user.upn = user_name, 
+    xdm.source.user.domain = user_domain, 
+    xdm.source.user.groups = msg_roles,
+    xdm.target.user.domain = msg_realm,
+    xdm.event.description = msg_payload ;
