@@ -2080,7 +2080,7 @@ def import_ioc_with_approval(client: Client, import_type, import_value, confiden
     data = assign_params(
         classification=classification,
         confidence=int(confidence),
-        source_confidence_weight=int(source_confidence_weight) if source_confidence_weight else None,
+        source_confidence_weight=arg_to_number(source_confidence_weight) if source_confidence_weight else None,
         ip_mapping=ip_mapping,
         domain_mapping=domain_mapping,
         url_mapping=url_mapping,
