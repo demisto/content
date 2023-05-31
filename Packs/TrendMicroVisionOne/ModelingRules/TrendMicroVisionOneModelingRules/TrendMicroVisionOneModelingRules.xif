@@ -40,7 +40,7 @@ filter
     xdm.network.application_protocol = app,
     xdm.alert.original_threat_name = behaviorCat,
     xdm.event.original_event_type = blocking,
-    xdm.alert.severity = cat,
+    xdm.alert.severity = act,
     xdm.source.agent.version = arraystring(component, ","),
     xdm.observer.unique_identifier = deviceGUID,
     xdm.source.process.name = coalesce(deviceProcessName, processName),
@@ -84,39 +84,39 @@ filter
 filter
     event type in ("observed_attach_techniques")
 | alter
-    xdm.event.original_event_type = source
-    xdm.session_context_id = uuid
-    xdm.event.id = arraystring(arraymap(filters, json_extract_scalar("@element", "$.id")), ",")
-    xdm.event.name = arraystring(arraymap(filters, json_extract_scalar("@element", "$.name")), ",")
-    xdm.alert.description = arraystring(arraymap(filters, json_extract_scalar("@element", "$.description")), ",")
-    xdm.alert.mitre_tactics = arraystring(arraymap(filters, json_extract_scalar("@element", arraystring(mitreTacticIds, ","))), ",")
-    xdm.alert.mitre_techniques = arraystring(arraymap(filters, json_extract_scalar("@element", arraystring(mitreTechniqueIds, ","))), ",")
-    xdm.alert.severity = arraystring(arraymap(filters, json_extract_scalar("@element", "$.riskLevel")), ",")
-    xdm.source.host.hostname = coalesce(json_extract_scalar(endpoint, "$.endpointName"), json_extract_scalar(detail, "$.endpointHostName") ,entityName)
-    xdm.source.agent.identifier = json_extract_scalar(endpoint, "$.agentGuid")
-    xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ",")
-    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), src)
-    xdm.source.host.mac_addresses = arraystring(endpointMacAddress, ",")
-    xdm.source.host.os = json_extract_scalar(detail, "$.osName")
-    xdm.source.process.name = json_extract_scalar(detail, "$.processName")
-    xdm.source.process.pid = json_extract_scalar(detail, "$.processPid")
-    xdm.network.session_id = json_extract_scalar(detail, "$.sessionId")
-    xdm.source.user.username = coalesce(json_extract_scalar(detail, "$.processUser"), json_extract_scalar(detail, "$.objectUser"))
-    xdm.source.user.domain = coalesce(json_extract_scalar(detail, "$.processUserDomain"), json_extract_scalar(detail, "$.objectUserDomain"))
-    xdm.source.process.command_line = json_extract_scalar(detail, "$.processCmd")
-    xdm.source.process.executable.path = json_extract_scalar(detail, "$.processFilePath")
-    xdm.source.process.executable.sha256 = json_extract_scalar(detail, "$.processFileHashSha256")
-    xdm.source.process.executable.md5 = json_extract_scalar(detail, "$.processFileHashMd5")
-    xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ",")
-    xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",")
-    xdm.source.process.executable.size = json_extract_scalar(detail, "$.processFileSize")
-    xdm.source.process.executable.file_type = json_extract_scalar(detail, "$.processTrueType")
-    xdm.target.file.path = json_extract_scalar(detail, "$.objectFilePath")
-    xdm.target.module.sha256 = json_extract_scalar(detail, "$.objectFileHashSha256")
-    xdm.target.module.md5 = json_extract_scalar(detail, "$.objectFileHashMd5")
-    xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ",")
-    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",")
-    xdm.target.module.size = json_extract_scalar(detail, "$.objectFileSize")
-    xdm.target.module.filename = json_extract_scalar(detail, "$.objectName")
-    xdm.source.port = json_extract_scalar(detail, "$.spt")
+    xdm.event.original_event_type = source,
+    xdm.session_context_id = uuid,
+    xdm.source.agent.identifier = json_extract_scalar(endpoint, "$.agentGuid"),
+    xdm.source.host.os = json_extract_scalar(detail, "$.osName"),
+    xdm.source.process.name = json_extract_scalar(detail, "$.processName"),
+    xdm.source.process.pid = json_extract_scalar(detail, "$.processPid"),
+    xdm.network.session_id = json_extract_scalar(detail, "$.sessionId"),
+    xdm.source.user.username = coalesce(json_extract_scalar(detail, "$.processUser"), json_extract_scalar(detail, "$.objectUser")),
+    xdm.source.user.domain = coalesce(json_extract_scalar(detail, "$.processUserDomain"), json_extract_scalar(detail, "$.objectUserDomain")),
+    xdm.source.process.command_line = json_extract_scalar(detail, "$.processCmd"),
+    xdm.source.process.executable.path = json_extract_scalar(detail, "$.processFilePath"),
+    xdm.source.process.executable.sha256 = json_extract_scalar(detail, "$.processFileHashSha256"),
+    xdm.source.process.executable.md5 = json_extract_scalar(detail, "$.processFileHashMd5"),
+    xdm.source.process.executable.size = json_extract_scalar(detail, "$.processFileSize"),
+    xdm.source.process.executable.file_type = json_extract_scalar(detail, "$.processTrueType"),
+    xdm.target.file.path = json_extract_scalar(detail, "$.objectFilePath"),
+    xdm.target.module.sha256 = json_extract_scalar(detail, "$.objectFileHashSha256"),
+    xdm.target.module.md5 = json_extract_scalar(detail, "$.objectFileHashMd5"),
+    xdm.target.module.filename = json_extract_scalar(detail, "$.objectName"),
+    xdm.source.port = json_extract_scalar(detail, "$.spt"),
     xdm.target.module.path = json_extract_scalar(detail, "$.srcFilePath")
+
+    xdm.event.id = arraystring(arraymap(filters, json_extract_scalar("@element", "$.id")), ","),
+    xdm.event.name = arraystring(arraymap(filters, json_extract_scalar("@element", "$.name")), ","),
+    xdm.alert.description = arraystring(arraymap(filters, json_extract_scalar("@element", "$.description")), ","),
+    xdm.alert.mitre_tactics = arraystring(arraymap(filters, json_extract_scalar("@element", arraystring(mitreTacticIds, ","))), ","),
+    xdm.alert.mitre_techniques = arraystring(arraymap(filters, json_extract_scalar("@element", arraystring(mitreTechniqueIds, ","))), ","),
+    xdm.alert.severity = arraystring(arraymap(filters, json_extract_scalar("@element", "$.riskLevel")), ","),
+    xdm.source.host.hostname = coalesce(json_extract_scalar(endpoint, "$.endpointName"), json_extract_scalar(detail, "$.endpointHostName") ,entityName),
+    xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ","),
+    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), src),
+    xdm.source.host.mac_addresses = arraystring(endpointMacAddress, ","),
+    xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
+    xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
+    xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
+    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
