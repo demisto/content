@@ -3518,7 +3518,7 @@ def prettify_rule(rule: dict):
     if option := rule.get('option'):
         context_rule['Option'] = option
         pretty_rule['Option'] = 'disable-server-response-inspection: ' +\
-                                option.get('disable-server-response-inspection', '')\
+                                str(xml_get(option, 'disable-server-response-inspection'))\
                                 if type(option) is dict \
                                 else None
     else:
