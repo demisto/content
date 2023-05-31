@@ -1,5 +1,6 @@
+deprecated: true
 description: |
-  Initiates a new endpoint script execution to check if the file exists and retrieve the results.
+  Deprecated. Use `xdr-file-exist-script-execute` command instead. Initiates a new endpoint script execution to check if the file exists and retrieve the results.
 id: Cortex XDR - check file existence
 inputs:
 - description: 'A comma-separated list of endpoint IDs. '
