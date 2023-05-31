@@ -5,8 +5,14 @@ commonfields:
 configuration:
 - display: User's Service Account JSON
   name: service_account
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: User's Service Account JSON
+  name: credentials_service_account
+  required: false
+  hiddenusername: true
+  type: 9 
 - display: Project in Google Cloud KMS
   name: project
   required: true
@@ -1537,7 +1543,7 @@ script:
     - contextPath: GoogleKMS.PublicKey.Algorithm
       description: The algorithm used in the CryptoKey
       type: String
-  dockerimage: demisto/google-kms:1.0.0.42736
+  dockerimage: demisto/google-kms:1.0.0.62005
   isfetch: false
   longRunning: false
   longRunningPort: false
