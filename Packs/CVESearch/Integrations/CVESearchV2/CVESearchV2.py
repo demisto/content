@@ -243,8 +243,8 @@ def generate_indicator(data: dict) -> Common.CVE:
         published=data.get('Published'),
         modified=data.get('Modified'),
         description=data.get('summary'),
-        vulnerable_products=[Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])],
-        vulnerable_configurations=[Common.CPE(cpe["id"]) for cpe in data.get("vulnerable_configuration", [])],
+        vulnerable_products=[Common.CPE(cpe) for cpe in
+                             (set(data.get("vulnerable_product", [])) | set(data.get("vulnerable_configuration", [])))],
         publications=[Common.Publications(title=data.get('id'),
                                           link=reference,
                                           source="Circl.lu") for reference in data.get("references", [])],
