@@ -3,28 +3,41 @@ This playbook blocks malicious usernames using all integrations that you have en
 Supported integrations for this playbook:
 * Active Directory
 * PAN-OS - This requires PAN-OS 9.1 or higher.
+* SailPoint
+* PingOne
+* AWS IAM
+* Clarizen IAM
+* Envoy IAM
+* ExceedLMS IAM
+* Okta
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * Active Directory Query v2
 
 ### Scripts
+
 * SetAndHandleEmpty
 * IsIntegrationAvailable
 
 ### Commands
-* panorama-register-user-tag
-* pingone-deactivate-user
-* identityiq-disable-account
-* ad-disable-account
+
 * iam-disable-user
+* identityiq-disable-account
+* pingone-deactivate-user
+* pan-os-register-user-tag
+* ad-disable-account
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -35,6 +48,7 @@ This playbook does not use any sub-playbooks.
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -42,5 +56,7 @@ This playbook does not use any sub-playbooks.
 | Blocklist.Final | Blocked accounts | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Block Account - Generic v2](../doc_files/Block_Account_-_Generic_v2.png)
