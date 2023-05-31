@@ -1146,9 +1146,7 @@ def fetch_incidents(client: Client,
 def main():
     os.environ['PAN_CREDENTIALS_DBFILE'] = os.path.join(gettempdir(), 'pancloud_credentials.json')
     params = demisto.params()
-    registration_id_and_url = (params.get('credentials_reg_id', {}).get('identifier') or params.get('reg_id')).split('@')
-    if not registration_id_and_url:
-        raise DemistoException('ID must be provided.')
+    registration_id_and_url = params.get('credentials_reg_id', {}).get('password').split('@') or params.get('reg_id').split('@')
     if len(registration_id_and_url) != 2:
         token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
     else:
@@ -1156,11 +1154,9 @@ def main():
     registration_id = registration_id_and_url[0]
     # If there's a stored token in integration context, it's newer than current
     refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
-    if not refresh_token:
-        raise DemistoException('Token must be provided.')
-    enc_key = params.get('credentials_reg_id', {}).get('password') or params.get('auth_key')
-    if not enc_key:
-        raise DemistoException('Key must be provided.')
+    enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
+    if not enc_key or not refresh_token or not registration_id_and_url:
+        raise DemistoException('Key, Token and ID must be provided.')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
