@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from Packs.CVESearch.Integrations.CirclCVESearch.CirclCVESearch import cve_command, valid_cve_id_format, Client, generate_indicator, parse_cpe
+from Packs.CIRCL.Integrations.CirclCVESearch.CirclCVESearch import cve_command, valid_cve_id_format, Client, generate_indicator, parse_cpe
 from CommonServerPython import DemistoException, argToList, EntityRelationship
 import pytest
 

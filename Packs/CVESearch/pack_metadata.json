@@ -21,5 +21,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

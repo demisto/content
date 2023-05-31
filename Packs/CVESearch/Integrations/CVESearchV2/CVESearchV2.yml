@@ -1,4 +1,5 @@
 category: Vulnerability Management
+deprecated: true
 commonfields:
   id: CVE Search v2
   version: -1
@@ -17,7 +18,7 @@ configuration:
   required: false
   type: 8
 description: Searches for CVE information using circl.lu.
-display: CVE Search v2
+display: CVE Search v2 (Deprecated)
 name: CVE Search v2
 script:
   commands:
@@ -111,3 +112,4 @@ script:
 tests:
 - CVE Search v2 - Test
 fromversion: 5.0.0
+toversion: 6.4.9
