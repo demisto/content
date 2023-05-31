@@ -1818,6 +1818,32 @@ def list_subscriptions_command(client: AzureSentinelClient, args: Dict[str, Any]
     )
 
 
+def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+
+    subscription_id = argToList(args.get('subscription_id'))
+    tags = argToList(args.get('tags'))
+    
+    limit = arg_to_number(args.get('limit', 50))
+    full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+    params = {'$filter': tags, '$top': limit, 'api-version': '2020-06-01'}
+    response = client.http_request('GET', full_url=full_url, params=params)
+    data_from_response = response.get('value', [])
+
+    readable_output = tableToMarkdown(
+        'Azure Sentinel Resource Groups',
+        data_from_response,
+        ['id', 'name', 'location', 'managedBy', 'type'], removeNull=True,
+        headerTransform=string_to_table_header)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.ResourceGroup',
+        outputs=data_from_response,
+        outputs_key_field='name',
+        raw_response=response
+    )
+
+
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
     required_args_by_kind = {
         'fusion': ['rule_name', 'template_name', 'enabled'],
@@ -1968,7 +1994,7 @@ def main():
             'azure-sentinel-create-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-subscriptions-list': list_subscriptions_command,
-            # 'azure-sentinel-resource-group-list': list_resource_groups_command,
+            'azure-sentinel-resource-group-list': list_resource_groups_command,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,
