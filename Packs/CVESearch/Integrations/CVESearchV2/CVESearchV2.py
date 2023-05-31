@@ -235,6 +235,10 @@ def generate_indicator(data: dict) -> Common.CVE:
         for key, value in data.get(category, []).items():
             cvss_table.append({"metrics": key, "value": value})
 
+    vulnerable_products = [Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])]
+    vulnerable_configurations = [Common.CPE(cpe["id"]) for cpe in data.get("vulnerable_configuration", [])]
+    cpes = set(vulnerable_products) | set(vulnerable_configurations)
+
     cve_object = Common.CVE(
         id=cve_id,
         cvss=data.get('cvss'),
@@ -243,8 +247,7 @@ def generate_indicator(data: dict) -> Common.CVE:
         published=data.get('Published'),
         modified=data.get('Modified'),
         description=data.get('summary'),
-        vulnerable_products=[Common.CPE(cpe) for cpe in
-                             (set(data.get("vulnerable_product", [])) | set(data.get("vulnerable_configuration", [])))],
+        vulnerable_products=cpes,
         publications=[Common.Publications(title=data.get('id'),
                                           link=reference,
                                           source="Circl.lu") for reference in data.get("references", [])],
