@@ -1818,21 +1818,34 @@ def list_subscriptions_command(client: AzureSentinelClient, args: Dict[str, Any]
     )
 
 
-def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
 
-    subscription_id = argToList(args.get('subscription_id'))
-    tags = argToList(args.get('tags'))
-    
+    tag = args.get('tag')
     limit = arg_to_number(args.get('limit', 50))
-    full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
-    params = {'$filter': tags, '$top': limit, 'api-version': '2020-06-01'}
-    response = client.http_request('GET', full_url=full_url, params=params)
+    subscription_id = args.get('subscription_id', params.get('subscriptionID', ''))
+
+    # extracting the tag name and value from the tag argument received as a string
+    filter_by_tag = ''
+    if tag:
+        try:
+            tag = json.loads(tag)
+            tag_name = next(iter(tag))
+            tag_value = tag[tag_name]
+            filter_by_tag = f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
+        except Exception as e:
+            raise ValueError(
+                'Invalid tag format. Please provide a valid JSON format.'
+            ) from e
+
+    full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter={filter_by_tag}&$top={limit}&api-version=2021-04-01'   # noqa: E501
+    response = client.http_request('GET', full_url=full_url)
+
     data_from_response = response.get('value', [])
 
     readable_output = tableToMarkdown(
         'Azure Sentinel Resource Groups',
         data_from_response,
-        ['id', 'name', 'location', 'managedBy', 'type'], removeNull=True,
+        ['name', 'location', 'tags', 'properties.provisioningState'], removeNull=True,
         headerTransform=string_to_table_header)
 
     return CommandResults(
@@ -1994,7 +2007,7 @@ def main():
             'azure-sentinel-create-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-subscriptions-list': list_subscriptions_command,
-            'azure-sentinel-resource-group-list': list_resource_groups_command,
+            #'azure-sentinel-resource-group-list': list_resource_groups_command,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,
@@ -2027,6 +2040,8 @@ def main():
 
         elif demisto.command() in commands:
             return_results(commands[demisto.command()](client, args))  # type: ignore
+        elif demisto.command() == 'azure-sentinel-resource-group-list':
+            return_results(list_resource_groups_command(client, args, params))
 
     except Exception as e:
         return_error(
