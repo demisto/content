@@ -6,9 +6,6 @@ UNDERSCORE_BRANCH="${CI_COMMIT_BRANCH//\//_}"
 
 echo "Getting conf from branch $UNDERSCORE_BRANCH (with master fallback)"
 
-SECRET_CONF_PATH="./conf_secret.json"
-echo ${SECRET_CONF_PATH} > secret_conf_path
-
 XSIAM_SERVERS_PATH="./xsiam_servers.json"
 echo ${XSIAM_SERVERS_PATH} > xsiam_servers_path
 
