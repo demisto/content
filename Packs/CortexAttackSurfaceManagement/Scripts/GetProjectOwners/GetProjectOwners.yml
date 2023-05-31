@@ -2,13 +2,15 @@ args:
 - description: List of potential service owners
   isArray: true
   name: owners
-comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+- name: external_service
+  description: String indicating which cloud provider the service is
+comment: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
 commonfields:
-  id: RankServiceOwners
+  id: GetProjectOwners
   version: -1
 dockerimage: demisto/python3:3.10.11.61265
 enabled: true
-name: RankServiceOwners
+name: GetProjectOwners
 runas: DBotWeakRole
 runonce: false
 script: ''
