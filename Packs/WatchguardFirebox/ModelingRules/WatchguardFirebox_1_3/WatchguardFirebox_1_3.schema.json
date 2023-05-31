@@ -79,6 +79,10 @@
         "out_if": {
           "type": "string",
           "is_array": false
+        },
+        "leefProductVersion": {
+          "type": "string",
+          "is_array": false
         }
     }
 }
