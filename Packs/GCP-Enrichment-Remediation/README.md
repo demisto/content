@@ -21,3 +21,11 @@ This content pack includes the following playbooks:
 
 - GCP - Firewall Remediation
 ![GCP - Firewall Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Firewall_Remediation.png)
+
+### Automation Scripts
+
+#### GCPProjectHierarchy
+
+Automation to determine GCP project hierarchy by looking up parent objects until the organization level is reached.
+
+![GCPProjectHierarchy](https://raw.githubusercontent.com/demisto/content/7065e08ec9738db1ea3e2bc5d78ac643931f46d1/Packs/GCP-Enrichment-Remediation/doc_files/GCPProjecHierarchy.png)

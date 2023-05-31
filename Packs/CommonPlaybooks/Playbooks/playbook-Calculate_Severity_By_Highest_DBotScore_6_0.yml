@@ -21,11 +21,12 @@ tasks:
       '#none#':
       - "23"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 240,
-          "y": -40
+          "y": -10
         }
       }
     note: false
@@ -35,7 +36,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 9d087581-2976-4b96-887a-27a3a8edd630
@@ -49,11 +49,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1235
+          "x": 240,
+          "y": 975
         }
       }
     note: false
@@ -63,7 +64,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
     taskid: c33bfc3b-3bfd-4b09-8fef-d7c299ddbcab
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+      - "31"
     scriptarguments:
       key:
         simple: DBotScore
@@ -89,11 +89,12 @@ tasks:
           root: inputs.DBotScore
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 270
+          "y": 290
         }
       }
     note: false
@@ -103,7 +104,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 0cc4278a-6b22-4ea9-834f-3ed21c346499
@@ -112,7 +112,7 @@ tasks:
       id: 0cc4278a-6b22-4ea9-834f-3ed21c346499
       version: -1
       name: Is there a DBotScore in inputs?
-      description: Checks if there is a "DBotScore" in the playbook inputs.
+      description: Checks if there is a "DBotScore" in the playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -128,13 +128,17 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.DBotScore
+              complex:
+                root: inputs.DBotScore
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 240,
-          "y": 90
+          "y": 120
         }
       }
     note: false
@@ -144,7 +148,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "24":
     id: "24"
     taskid: d6b7eccb-3284-460d-8b20-197ea1c62f8a
@@ -161,11 +164,12 @@ tasks:
       '#none#':
       - "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -210,
-          "y": 270
+          "y": 290
         }
       }
     note: false
@@ -175,7 +179,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "25":
     id: "25"
     taskid: 7082757c-758b-4cda-803e-526f85f26a68
@@ -222,6 +225,23 @@ tasks:
                         simple: "3"
                 accessor: Score
             iscontext: true
+          right:
+            value: {}
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore.Score
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+            iscontext: true
     - label: Medium
       condition:
       - - operator: isExists
@@ -234,6 +254,21 @@ tasks:
                     left:
                       value:
                         simple: DBotScoreCache.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore.Score
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
                       iscontext: true
                     right:
                       value:
@@ -256,11 +291,27 @@ tasks:
                       value:
                         simple: "1"
             iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore.Score
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 780
+          "y": 610
         }
       }
     note: false
@@ -270,7 +321,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "27":
     id: "27"
     taskid: 86bc9089-08a5-44e2-8a0f-03dd11411f9b
@@ -294,11 +344,12 @@ tasks:
         simple: High
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 990,
-          "y": 975
+          "y": 805
         }
       }
     note: false
@@ -308,7 +359,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 288ac730-e8e3-4782-805f-e54721977877
@@ -332,11 +382,12 @@ tasks:
         simple: Medium
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 975
+          "y": 805
         }
       }
     note: false
@@ -346,7 +397,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "29":
     id: "29"
     taskid: 3132e114-0841-4c3f-800f-fab492944f7a
@@ -370,11 +420,12 @@ tasks:
         simple: Low
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 190,
-          "y": 975
+          "y": 805
         }
       }
     note: false
@@ -384,7 +435,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "30":
     id: "30"
     taskid: ca3d7b7e-95d9-48b6-87e1-c625b8f53c43
@@ -408,11 +458,12 @@ tasks:
         simple: Unknown
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -210,
-          "y": 975
+          "y": 805
         }
       }
     note: false
@@ -422,7 +473,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "31":
     id: "31"
     taskid: b894e09e-1a9a-4c62-80df-f1b53961c7c9
@@ -441,58 +491,16 @@ tasks:
       - "25"
     scriptarguments:
       value:
-        simple: ${DBotScore.Indicator}
+        complex:
+          root: DBotScore
+          accessor: Indicator
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "32":
-    id: "32"
-    taskid: 0036cf03-36a0-4182-8466-db7daabf4766
-    type: playbook
-    task:
-      id: 0036cf03-36a0-4182-8466-db7daabf4766
-      version: -1
-      name: Indicator Registration Polling - Generic
-      playbookName: Indicator Registration Polling - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      frequency:
-        simple: "1"
-      indicators:
-        simple: ${inputs.DBotScore.Indicator}
-      timeout:
-        simple: "10"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 440
+          "y": 450
         }
       }
     note: false
@@ -505,16 +513,19 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "23_22_yes": 0.31,
+      "23_24_#default#": 0.24,
       "25_27_High": 0.82,
       "25_28_Medium": 0.76,
+      "25_29_Low": 0.78,
       "25_30_#default#": 0.87
     },
     "paper": {
       "dimensions": {
-        "height": 1340,
+        "height": 1050,
         "width": 1580,
         "x": -210,
-        "y": -40
+        "y": -10
       }
     }
   }

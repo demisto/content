@@ -53,6 +53,7 @@ CortexCoreIR
 XQL
 indicatorsValues
 setIndicators
+PrintErrorEntry
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101

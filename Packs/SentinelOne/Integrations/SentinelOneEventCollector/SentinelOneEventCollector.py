@@ -274,22 +274,21 @@ def main() -> None:
             result = test_module(client, event_type)
             return_results(result)
 
-        elif command in (f'{VENDOR}-get-events', 'fetch-events'):
-            should_push_events = argToBoolean(args.get('should_push_events', False))
-            events = []  # type: list[dict[str, Any]]
-            if command == f'{VENDOR}-get-events':
-                events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
-                return_results(results)
+        elif command == f'{VENDOR}-get-events':
+            events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
+            return_results(results)
 
-            if command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun() or first_run(first_fetch_time)  # type: ignore
-                next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
-                demisto.setLastRun(next_run)
-
-            if should_push_events:
+            if argToBoolean(args.get('should_push_events', False)):
                 add_keys_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun() or first_run(first_fetch_time)  # type: ignore
+            next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
+
+            add_keys_to_events(events)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:

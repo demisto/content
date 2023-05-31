@@ -177,7 +177,7 @@ def test_main(mocker, command):
 
     params = {'auth': {'identifier': 'identifier', 'password': 'password'},
               'insecure': True,
-              'url': 'url',
+              'url': 'https://url.com',
               'first_fetch': "89 days ago",
               'indicatorMetadata': True,
               'limit': 10,

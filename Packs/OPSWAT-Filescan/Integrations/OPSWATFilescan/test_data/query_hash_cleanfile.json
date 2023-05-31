@@ -1,0 +1,58 @@
+{
+    "items": [
+        {
+            "id": "f8899911-4092-4ff7-9fc8-980b09d8d450",
+            "file": {
+                "name": "e0e1a581-1c69-414f-8c50-22fa3afc34ae_1010%40e0e1a581-1c69-414f-8c50-22fa3afc34ae",
+                "mime_type": "application/pdf",
+                "short_type": "pdf",
+                "sha256": "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85",
+                "link": null
+            },
+            "scan_init": {
+                "id": "6418f89fda1bbe29caf93b90"
+            },
+            "state": "success",
+            "verdict": "informational",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "pdf",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/21/2023, 00:21:53",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85",
+                        "filetype": "pdf",
+                        "mime_type": "application/pdf",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "sha256": [
+                            {
+                                "value": "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/21/2023, 00:23:51"
+        }
+    ],
+    "count": 1,
+    "count_search_params": 1,
+    "method": "and"
+}

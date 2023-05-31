@@ -103,7 +103,8 @@ validate-content-conf:
         # replace slashes ('/') in the branch name, if exist, with underscores ('_')
         UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
         RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
-        if [ "$RESP" != "[]" ]; then
+        EXIST=$(echo $RESP | jq --arg branch $UNDERSCORE_CI_BRANCH -c '.[] | select(.name==$branch)')
+        if [ -n "$EXIST" ]; then
             echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
             echo "Merge it in order to merge the current branch into content repo."
             job-done
@@ -137,7 +138,7 @@ validate-content-conf:
 
     - echo "Updating the content graph"
     - mkdir $ARTIFACTS_FOLDER/content_graph
-    - demisto-sdk create-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
+    - demisto-sdk update-content-graph -g --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
     - echo "Successfully updated content graph"
 
     - section_end "Create or update content graph"
@@ -148,10 +149,10 @@ validate-content-conf:
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -210,21 +211,21 @@ xsoar-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
-xpanse-prepare-testing-bucket:
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
-    MARKETPLACE_VERSION: "xpanse"
-    PRODUCTNAME: "Cortex XPANSE"
-    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
-  extends:
-    - .generic-prepare-testing-bucket
-
 mpv2-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCTNAME: "Cortex XSIAM"
+  extends:
+    - .generic-prepare-testing-bucket
+
+xpanse-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCTNAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -287,15 +288,6 @@ mpv2-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-xsoar_server_6_5:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.5"
-
 xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
@@ -313,6 +305,24 @@ xsoar_server_6_8:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     INSTANCE_ROLE: "Server 6.8"
+
+xsoar_server_6_9:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.9"
+
+xsoar_server_6_10:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.10"
 
 xsoar_server_master:
   extends:
@@ -366,11 +376,13 @@ jobs-done-check-on-push:
       optional: true
     - job: xsiam_server_ga
       optional: true
-    - job: xsoar_server_6_5
-      optional: true
     - job: xsoar_server_6_6
       optional: true
     - job: xsoar_server_6_8
+      optional: true
+    - job: xsoar_server_6_9
+      optional: true
+    - job: xsoar_server_6_10
       optional: true
     - job: xsoar_server_master
       optional: true
@@ -420,7 +432,7 @@ slack-notify-nightly-build:
     - section_start "Lock Machine" --collapsed
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh
     - source CloudEnvVariables
@@ -473,7 +485,7 @@ slack-notify-nightly-build:
       if ! [ -z "$CLOUD_CHOSEN_MACHINE_ID" ]
       then
         echo "Job finished, removing lock file"
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
         gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       fi

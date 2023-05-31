@@ -8,6 +8,8 @@ Use the Azure Active Directory Identity And Access integration to manage roles a
     | **Parameter** | **Required** |
     | --- | --- |
     | Application ID | False |
+    | Private Key | False |
+    | Certificate Thumbprint | False |
     | Use Azure Managed Identities | False |
     | Azure Managed Identities Client ID | False |
     | Azure AD endpoint | False |

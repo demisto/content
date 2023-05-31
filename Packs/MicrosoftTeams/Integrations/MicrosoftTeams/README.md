@@ -304,6 +304,7 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
     | Minimum incident severity to send notifications to Teams by |  | False |
     | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
     | Allow external users to create incidents via direct message |  | False |
+    | The header of an external form hyperlink. |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
@@ -381,6 +382,7 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 | team              | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional     | 
 | adaptive_card     | The Microsoft Teams adaptive card to send.                                                                                                                              | Optional     | 
 | to                | The team member to which to send the message.                                                                                                                           | Optional     | 
+| external_form_url_header                | The header of an external form hyperlink.message.                                                                                                                           | Optional     | 
 
 
 ##### Context Output
@@ -1114,6 +1116,8 @@ You can chat with the bot in direct messages in order to retrieve data (list inc
 You can send the message `help` in order to see the supported commands:
 
 ![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/dm.png)
+
+Note: To enrich an incident created via the Demisto BOT (`new incident` command) with extra information received with the request, as in regular `fetch-incidents` process users may create custom mappers and map the desired values.  
 
 ## Troubleshooting
 

@@ -3021,6 +3021,77 @@ Get system status, to retrieve all possible connection's client ids, hostnames, 
 >| taniumlinux | 11111 | 1.1.1.1 | 1.1.1.1 | 17472 |
 >| hostname1 | 222222 | 1.2.3.4 | 1.2.3.4 | 17472 |
 
+### tanium-tr-get-response-actions
+
+***
+Returns the Response Actions matching the specified filters
+
+#### Base Command
+
+`tanium-tr-get-response-actions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| offset | Offset to start getting response actions (default is '0'). | Optional | 
+| limit | Max number of response actions to return (default is '50'). | Optional | 
+| sort_order | Specify whether to sort by column in ascending or descending order (default is 'desc'). Possible values are: asc, desc. Default is desc. | Optional | 
+| partial_computer_name | Filter on a partial computer name. | Optional | 
+| status | Filter on status. | Optional | 
+| type | Filter on type. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tanium.ResponseActions.id | String |  | 
+| Tanium.ResponseActions.type | String |  | 
+| Tanium.ResponseActions.status | String |  | 
+| Tanium.ResponseActions.computerName | String |  | 
+| Tanium.ResponseActions.userId | String |  | 
+| Tanium.ResponseActions.userName | String |  | 
+| Tanium.ResponseActions.results.taskIds | String |  | 
+| Tanium.ResponseActions.results.actionIds | String |  | 
+| Tanium.ResponseActions.results.snapshotName | String |  | 
+| Tanium.ResponseActions.results.uuid | String |  | 
+| Tanium.ResponseActions.expirationTime | Date |  | 
+| Tanium.ResponseActions.createdAt | Date |  | 
+| Tanium.ResponseActions.updatedAt | Date |  | 
+| Tanium.ResponseActions.eid | String |  | 
+
+### tanium-tr-response-action-gather-snapshot
+
+***
+Creates a "gatherSnapshot" Response Action for the specified host
+
+#### Base Command
+
+`tanium-tr-response-action-gather-snapshot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| computer_name | Target computer name. | Required | 
+| expiration_time | Time unit to specify how long a snapshot should persist (i.e. "7 days", "1 month". Default is "7 days"). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tanium.ResponseActions.type | String |  | 
+| Tanium.ResponseActions.computerName | String |  | 
+| Tanium.ResponseActions.options | String |  | 
+| Tanium.ResponseActions.status | String |  | 
+| Tanium.ResponseActions.userId | String |  | 
+| Tanium.ResponseActions.userName | String |  | 
+| Tanium.ResponseActions.results | String |  | 
+| Tanium.ResponseActions.expirationTime | Date |  | 
+| Tanium.ResponseActions.createdAt | Date |  | 
+| Tanium.ResponseActions.updatedAt | Date |  | 
+| Tanium.ResponseActions.id | String |  | 
+| Tanium.ResponseActions.eid | String |  | 
 
 ## Breaking changes from the previous version of this integration - Tanium Threat Response v2
 The following sections list the changes in this version.

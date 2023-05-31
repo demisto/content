@@ -1,0 +1,253 @@
+id: Recorded Future Identity - Create Incident (sub)
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Recorded Future Identity - Create Incident (sub)
+description: This playbook was developed as a sub-playbook to generate incidents for
+  each exposed identity found in the Recorded Future Identity - Lookup Identities
+  (parent) playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5c0a2f97-2285-431f-884a-52343775cca8
+    type: start
+    task:
+      id: 5c0a2f97-2285-431f-884a-52343775cca8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 360ec47a-35f2-497a-806b-4a21a7f87f11
+    type: regular
+    task:
+      id: 360ec47a-35f2-497a-806b-4a21a7f87f11
+      version: -1
+      name: Create Identity Incident
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      accountname:
+        simple: ${inputs.ExposedIdentity}
+      name:
+        simple: 'Recorded Future Exposed Identity Found: ${inputs.ExposedIdentity} in domain ${inputs.Domain}'
+      severity:
+        simple: "2"
+      type:
+        simple: Recorded Future Identity
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8d5981be-68b3-44d9-8572-d5d6b0142d43
+    type: regular
+    task:
+      id: 8d5981be-68b3-44d9-8572-d5d6b0142d43
+      version: -1
+      name: Search Incidents
+      description: "Searches Cortex XSOAR Incidents and returnrs the most relevant fields. Default search range is the last 30 days, if you want to change this, use the fromDate argument. \n\nReturns the id, name, type, severity, status, owner, and created/closed times to context.  You can add additional fields using the add_field_to_context argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient."
+      scriptName: SearchIncidentsSummary
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fromdate:
+        simple: 3 days ago
+      name:
+        simple: 'Recorded Future Exposed Identity Found: ${inputs.ExposedIdentity} in domain ${inputs.Domain}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: aadae0cf-c941-431a-8a60-98cc6939dcf4
+    type: condition
+    task:
+      id: aadae0cf-c941-431a-8a60-98cc6939dcf4
+      version: -1
+      description: ''
+      name: Does an Incident Already Exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c57d5144-6050-4359-8185-eeca71748981
+    type: title
+    task:
+      id: c57d5144-6050-4359-8185-eeca71748981
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 67b14b17-ffe6-4b5b-87ea-4490236a42a1
+    type: regular
+    task:
+      id: 67b14b17-ffe6-4b5b-87ea-4490236a42a1
+      version: -1
+      name: Delete foundIncidents Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: foundIncidents
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 700,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ExposedIdentity
+  value: {}
+  required: true
+  description: The exposed identity found. \nEx. username or email from 'recordedfuture-identity-search' command
+  playbookInputQuery:
+- key: Domain
+  value: {}
+  required: false
+  description: The domain found with the exposed identity.
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: Recorded Future Identity - Create Incident (sub)
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

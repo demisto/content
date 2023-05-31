@@ -116,6 +116,24 @@ script:
     description: Remove all the files from the repository
     name: wfr-cleanup
   - arguments:
+    - description: The entry ID of the file
+      name: entry_id
+      required: true
+    - description: The name of the file
+      name: file_name
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Set to true to extract files to archive files, otherwise false.
+      name: extract_archive
+      predefined:
+      - "true"
+      - "false"
+    - defaultValue: /
+      description: The directory path where to upload
+      name: upload_directory
+    description: Upload files to the repository
+    name: wfr-upload-file
+  - arguments:
     - description: The entry ID list of files
       isArray: true
       name: entry_ids
@@ -181,7 +199,7 @@ script:
   - arguments: []
     description: Reset the repository data
     name: wfr-reset
-  dockerimage: demisto/bottle:1.0.0.51001
+  dockerimage: demisto/bottle:1.0.0.61444
   longRunning: true
   longRunningPort: true
   resetContext: true

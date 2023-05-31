@@ -1,8 +1,9 @@
 {
-    "name": "Mandiant Advantage Feed",
-    "description": "Cortex XSOAR integrates with Mandiant Advantage Threat Intelligence \n  to bring the power of Mandiant’s front line intelligence into the XSOAR platform, \n  helping users quickly identify and remediate the most serious threats to their networks.",
+    "name": "Mandiant Advantage Feed (Deprecated)",
+    "description": "Deprecated. Use Mandiant Advantage Threat Intelligence instead.",
+    "hidden": true,
     "support": "xsoar",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
