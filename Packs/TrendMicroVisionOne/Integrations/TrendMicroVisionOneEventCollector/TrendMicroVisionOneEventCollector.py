@@ -480,6 +480,15 @@ def get_observed_attack_techniques_logs(
     Returns:
         Tuple[List[Dict], str]: observed attack techniques logs & latest time of the technique log that was created.
     """
+    def parse_observed_attack_techniques_logs():
+        for log in observed_attack_techniques_logs:
+            if filters := log.get('filters'):
+                for _filter in filters:
+                    if mitre_tactic_ids := _filter.get('mitreTacticIds'):
+                        _filter['mitreTacticIds'] = ','.join(mitre_tactic_ids)
+                    if mitre_technique_ids := _filter.get('mitreTechniqueIds'):
+                        _filter['mitreTechniqueIds'] = ','.join(mitre_technique_ids)
+
     start_time, end_time = get_datetime_range(
         last_run_time=observed_attack_technique_log_last_run_time,
         first_fetch=first_fetch,

@@ -106,13 +106,13 @@ filter
     xdm.source.port = json_extract_scalar(detail, "$.spt"),
     xdm.target.module.path = json_extract_scalar(detail, "$.srcFilePath")
 
-    xdm.event.id = arraystring(arraymap(filters, json_extract_scalar("@element", "$.id")), ","),
-    xdm.event.name = arraystring(arraymap(filters, json_extract_scalar("@element", "$.name")), ","),
-    xdm.alert.description = arraystring(arraymap(filters, json_extract_scalar("@element", "$.description")), ","),
-    xdm.alert.mitre_tactics = arraystring(arraymap(filters, json_extract_scalar("@element", arraystring(mitreTacticIds, ","))), ","),
-    xdm.alert.mitre_techniques = arraystring(arraymap(filters, json_extract_scalar("@element", arraystring(mitreTechniqueIds, ","))), ","),
-    xdm.alert.severity = arraystring(arraymap(filters, json_extract_scalar("@element", "$.riskLevel")), ","),
-    xdm.source.host.hostname = coalesce(json_extract_scalar(endpoint, "$.endpointName"), json_extract_scalar(detail, "$.endpointHostName") ,entityName),
+    xdm.event.id = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.id")), ","),
+    xdm.event.name = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.name")), ","),
+    xdm.alert.description = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.description")), ","),
+    xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ",")
+    xdm.alert.mitre_tactics = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")), ","),
+    xdm.alert.mitre_techniques = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTechniqueIds")), ","),
+
     xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ","),
     xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), src),
     xdm.source.host.mac_addresses = arraystring(endpointMacAddress, ","),
