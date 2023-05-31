@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 685,
-          "y": -430
+          "y": -750
         }
       }
     note: false
@@ -56,13 +56,11 @@ tasks:
       {
         "position": {
           "x": 685,
-          "y": -295
+          "y": -615
         }
       }
     note: false
     timertriggers:
-    - fieldname: containmentsla
-      action: start
     - fieldname: triagesla
       action: start
     ignoreworker: false
@@ -132,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 685,
-          "y": -150
+          "y": -470
         }
       }
     note: false
@@ -167,9 +165,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: triagesla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -426,7 +422,11 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    - fieldname: detectionsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -457,7 +457,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -553,7 +555,7 @@ tasks:
       {
         "position": {
           "x": 1275,
-          "y": -150
+          "y": -470
         }
       }
     note: false
@@ -917,7 +919,7 @@ tasks:
       '#default#':
       - "72"
       "yes":
-      - "74"
+      - "153"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -937,7 +939,7 @@ tasks:
       {
         "position": {
           "x": 685,
-          "y": 350
+          "y": 160
         }
       }
     note: false
@@ -954,7 +956,7 @@ tasks:
     task:
       id: b465a999-a205-4292-818b-be2e6a5504e7
       version: -1
-      name: Initial Containment
+      name: Containment Execution
       type: title
       iscommand: false
       brand: ""
@@ -968,11 +970,13 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 520
+          "y": 510
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1444,7 +1448,7 @@ tasks:
       }
     note: false
     timertriggers:
-    - fieldname: containmentsla
+    - fieldname: remediationsla
       action: stop
     ignoreworker: false
     skipunavailable: false
@@ -1466,7 +1470,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "73"
+      - "154"
     scriptarguments:
       accountgroups:
         complex:
@@ -1495,7 +1499,7 @@ tasks:
       {
         "position": {
           "x": 685,
-          "y": 10
+          "y": -310
         }
       }
     note: false
@@ -2167,7 +2171,7 @@ tasks:
     task:
       id: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
       version: -1
-      name: Ip Block Executed?
+      name: IP block executed?
       type: condition
       iscommand: false
       brand: ""
@@ -2214,7 +2218,7 @@ tasks:
     task:
       id: 6663c63c-2385-4491-8c16-c824eff03d1d
       version: -1
-      name: User Containment Executed?
+      name: User containment executed?
       type: condition
       iscommand: false
       brand: ""
@@ -2347,7 +2351,7 @@ tasks:
     task:
       id: eab0c096-8fcf-4b32-8f4c-a481621a23df
       version: -1
-      name: Ip Block Executed?
+      name: IP block executed?
       type: condition
       iscommand: false
       brand: ""
@@ -2394,7 +2398,7 @@ tasks:
     task:
       id: 445ebaa4-d11c-4b27-8e85-f4fbee601ecf
       version: -1
-      name: User Containment Executed?
+      name: User containment executed?
       type: condition
       iscommand: false
       brand: ""
@@ -2588,7 +2592,7 @@ tasks:
       {
         "position": {
           "x": 1275,
-          "y": 10
+          "y": -310
         }
       }
     note: false
@@ -2613,7 +2617,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "73"
+      - "154"
     scriptarguments:
       ipreputation:
         complex:
@@ -2651,7 +2655,7 @@ tasks:
       {
         "position": {
           "x": 1065,
-          "y": 180
+          "y": -140
         }
       }
     note: false
@@ -2676,7 +2680,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "73"
+      - "154"
     scriptarguments:
       ipreputation:
         complex:
@@ -2714,7 +2718,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 180
+          "y": -140
         }
       }
     note: false
@@ -2724,6 +2728,85 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "153":
+    id: "153"
+    taskid: 4567bca9-5d88-4092-8ed0-a56ca2170cdc
+    type: condition
+    task:
+      id: 4567bca9-5d88-4092-8ed0-a56ca2170cdc
+      version: -1
+      name: Early containment enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EarlyContainment
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: 8a1e0eb1-0d3c-42e3-8cc6-85dee74f8987
+    type: title
+    task:
+      id: 8a1e0eb1-0d3c-42e3-8cc6-85dee74f8987
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: triagesla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2733,6 +2816,7 @@ view: |-
       "143_82_#default#": 0.83,
       "146_86_#default#": 0.52,
       "147_86_#default#": 0.71,
+      "153_72_#default#": 0.29,
       "20_21_yes": 0.4,
       "20_22_#default#": 0.34,
       "35_21_#default#": 0.1,
@@ -2740,15 +2824,14 @@ view: |-
       "53_6_#default#": 0.11,
       "56_11_#default#": 0.42,
       "56_21_yes": 0.21,
-      "73_72_#default#": 0.38,
-      "73_74_yes": 0.85
+      "73_72_#default#": 0.14
     },
     "paper": {
       "dimensions": {
-        "height": 6465,
+        "height": 6785,
         "width": 2420,
         "x": -550,
-        "y": -430
+        "y": -750
       }
     }
   }
@@ -2832,6 +2915,12 @@ inputs:
   value: {}
   required: false
   description: The SOC email address to use for the user engagement section.
+  playbookInputQuery:
+- key: EarlyContainment
+  value:
+    simple: "true"
+  required: false
+  description: Set this value to "true" to allow early containment when the IP is known malicious
   playbookInputQuery:
 outputs: []
 tests:
