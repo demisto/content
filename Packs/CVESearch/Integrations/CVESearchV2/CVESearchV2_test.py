@@ -1,8 +1,7 @@
 import json
 import os
-from pathlib import Path
-from CVESearchV2 import cve_command, valid_cve_id_format, Client, generate_indicator, parse_cpe
-from CommonServerPython import DemistoException, argToList, EntityRelationship
+from CVESearchV2 import cve_command, valid_cve_id_format, Client
+from CommonServerPython import DemistoException, argToList
 import pytest
 
 BASE_URL = 'https://cve.circl.lu/api/'
@@ -11,23 +10,22 @@ BASE_URL = 'https://cve.circl.lu/api/'
 def test_wrong_path():
     bad_url = 'https://cve.bad_url'
     client = Client(base_url=bad_url)
-
-    with pytest.raises(DemistoException) as excinfo:
+    try:
         cve_command(client, {"cve_id": 'cve-2000-1234'})
-
-    expected_exception_message = 'Verify that the server URL parameter is correct'
-    assert expected_exception_message in str(excinfo.value), 'Bad error response when bad URL is given'
+        assert False, 'Bad url- Exception should by raised'
+    except DemistoException as err:
+        expected_exception_message = 'Verify that the server URL parameter is correct'
+        assert expected_exception_message in str(err), 'Bad error response when bad url is given'
 
 
 def test_bad_cve_id():
     bad_cve_id = 'CVE-bad-cve'
     client = Client(base_url=BASE_URL)
-
-    with pytest.raises(DemistoException) as excinfo:
+    try:
         cve_command(client, {'cve_id': bad_cve_id})
-
-    expected_exception_message = f'"{bad_cve_id}" is not a valid cve ID'
-    assert str(excinfo.value) == expected_exception_message
+        assert False, 'Bad url- Exception should by raised'
+    except DemistoException as e:
+        assert str(e) == f'"{bad_cve_id}" is not a valid cve ID'
 
 
 def test_cve_id_validation():
@@ -48,70 +46,6 @@ test_data = [
 ]
 
 
-def test_indicator_creation():
-    """
-    Given:
-        A valid response from the server
-
-    When:
-        indicator_creation is being called.
-
-    Then:
-        return a Common.CVE indicator type.
-    """
-
-    with open(os.path.join(Path.cwd(), 'test_data', 'response.json')) as js:
-        response = json.load(js)
-
-    with open(os.path.join(Path.cwd(), 'test_data', 'indicator.json')) as js:
-        correct_indicator = json.load(js)
-
-    indicator = generate_indicator(response).to_context()
-    assert set(indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"]) == set(
-        correct_indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"])
-
-
-@pytest.mark.parametrize("cpe, expected_output, expected_relationships", [
-    (["cpe:2.3:a:vendor:product"],
-     ["Vendor", "Product", "Application"],
-     [EntityRelationship(name="targets",
-                         entity_a='CVE-2022-1111',
-                         entity_a_type="cve",
-                         entity_b='Vendor',
-                         entity_b_type="identity").to_context(),
-      EntityRelationship(name="targets",
-                         entity_a='CVE-2022-1111',
-                         entity_a_type="cve",
-                         entity_b='Product',
-                         entity_b_type="software").to_context()]),
-    (["cpe:2.3:h:a\:_vendor"],
-     ["A: vendor", "Hardware"],
-     [EntityRelationship(name="targets",
-                         entity_a='CVE-2022-1111',
-                         entity_a_type="cve",
-                         entity_b='A: vendor',
-                         entity_b_type="identity").to_context()]),
-    (["cpe:2.3:o:::"],
-     ["Operating-System"],
-     []),
-])
-def test_parse_cpe(cpe, expected_output, expected_relationships):
-    """
-    Given:
-        A CPE represented as a list of strings
-
-    When:
-        when parse_cpe is called
-
-    Then:
-        return a tuple of a list of tags (no empty strings) and a list of EntityRelationship objects.
-    """
-
-    tags, relationships = parse_cpe(cpe, 'CVE-2022-1111')
-    assert set(tags) == set(expected_output)
-    assert [relationship.to_context() for relationship in relationships] == expected_relationships
-
-
 @pytest.mark.parametrize("cve_id_arg,response_data,expected", test_data)
 def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     """
@@ -126,7 +60,7 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     """
     cves = argToList(cve_id_arg.get('cve_id'))
     for test_file, cve in zip(response_data, cves):
-        test_path_data = os.path.join(Path.cwd(), 'test_data', test_file)
+        test_path_data = os.path.join(os.getcwd(), 'test_data', test_file)
         with open(test_path_data) as js:
             response = json.load(js)
         url_for_mock = os.path.join('https://cve.circl.lu/api/cve', cve)

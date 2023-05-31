@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "CVESearch",
+        "CVE Search"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

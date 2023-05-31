@@ -1,5 +1,6 @@
 import urllib3
 from typing import Dict, Any, List, Union
+import re
 
 from CommonServerPython import *
 
@@ -30,15 +31,16 @@ class Client(BaseClient):
 
 
 def cve_to_context(cve) -> Dict[str, str]:
-    """Returning a cve structure with the following fields:
+    """
+    Returning a cve structure with the following fields:
     * ID: The cve ID.
     * CVSS: The cve score scale/
     * Published: The date the cve was published.
     * Modified: The date the cve was modified.
     * Description: the cve's description
 
-        Args:
-            cve: The cve response from CVE-Search web site
+    Args:
+        cve: The cve response from CVE-Search web site
     Returns:
         The cve structure.
     """
@@ -55,6 +57,7 @@ def cve_to_context(cve) -> Dict[str, str]:
 def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
@@ -67,7 +70,9 @@ def test_module(client: Client):
 
 
 def cve_latest_command(client: Client, limit) -> List[CommandResults]:
-    """Returns the 30 latest updated CVEs.
+    """
+    Returns the 30 latest updated CVEs.
+
     Args:
          limit int: The amount of CVEs to display
     Returns:
@@ -77,7 +82,7 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     for cve_details in res:
         data = cve_to_context(cve_details)
-        indicator = generate_indicator(data)
+        indicator = generate_indicator(cve_details)
         readable_output = tableToMarkdown('Latest CVEs', data)
         command_results.append(
             CommandResults(
@@ -100,7 +105,9 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
 
 
 def cve_command(client: Client, args: dict) -> Union[List[CommandResults], CommandResults]:
-    """Search for cve with the given ID and returns the cve data if found.
+    """
+    Search for cve with the given ID and returns the cve data if found.
+
     Args:
            client: Integration client
            args :The demisto args containing the cve_id
@@ -120,41 +127,143 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
             cr = CommandResults(readable_output=f'### No results found for cve {_id}')
         else:
             data = cve_to_context(response)
-            indicator = generate_indicator(data)
+            indicator = generate_indicator(response)
             cr = CommandResults(
-                outputs_prefix='CVE',
-                outputs_key_field='ID',
+                outputs_prefix='CVEsearch.CVE',
+                outputs_key_field='CVE',
                 outputs=data,
                 raw_response=response,
                 indicator=indicator,
+                relationships=indicator.relationships
             )
         command_results.append(cr)
 
     return command_results
 
 
+def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
+    """
+    Parses a CPE to return the correct tags and relationships needed for the CVE.
+
+    Args:
+        cpe: A list representing a single CPE, see "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf"
+
+    Returns:
+        A tuple consisting of a list of tags and a list of EntityRelationships.
+
+    """
+
+    cpe_parts = {
+        "a": "Application",
+        "o": "Operating-System",
+        "h": "Hardware"
+    }
+
+    vendors = set()
+    products = set()
+    parts = set()
+
+    for cpe in cpes:
+        cpe_split = re.split('(?<!\\\):', cpe)
+
+        try:
+            vendor = cpe_split[3].capitalize().replace("\\", "").replace("_", " ")
+            if vendor:
+                vendors.add(vendor)
+
+        except IndexError:
+            pass
+
+        try:
+            product = cpe_split[4].capitalize().replace("\\", "").replace("_", " ")
+            if product:
+                products.add(product)
+
+        except IndexError:
+            pass
+
+        try:
+            parts.add(cpe_parts[cpe_split[2]])
+
+        except IndexError:
+            pass
+
+    relationships = [EntityRelationship(name="targets",
+                                        entity_a=cve_id,
+                                        entity_a_type="cve",
+                                        entity_b=vendor,
+                                        entity_b_type="identity") for vendor in vendors]
+
+    relationships.extend([EntityRelationship(name="targets",
+                                             entity_a=cve_id,
+                                             entity_a_type="cve",
+                                             entity_b=product,
+                                             entity_b_type="software") for product in products])
+
+    return list(vendors | products | parts), relationships
+
+
 def generate_indicator(data: dict) -> Common.CVE:
     """
     Generating a single cve indicator with dbot score from cve data.
+
     Args:
         data: The cve data
 
     Returns:
         A CVE indicator with dbotScore
     """
+
+    cve_id = data.get('id', '')
+    cpe = data.get("vulnerable_product", '')
+
+    if cpe:
+        tags, relationships = parse_cpe(cpe, cve_id)
+
+    else:
+        relationships = []
+        tags = []
+
+    cwe = data.get('cwe', '')
+
+    if cwe and cwe != 'NVD-CWE-noinfo':
+        tags.append(cwe)
+
+    cvss_table = []
+
+    for category in ("impact", "access"):
+        for key, value in data.get(category, []).items():
+            cvss_table.append({"metrics": key, "value": value})
+
+    vulnerable_products = [Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])]
+    vulnerable_configurations = [Common.CPE(cpe["id"]) for cpe in data.get("vulnerable_configuration", [])]
+    cpes = set(vulnerable_products) | set(vulnerable_configurations)
+
     cve_object = Common.CVE(
-        id=data.get('ID'),
-        cvss=data.get('CVSS'),
+        id=cve_id,
+        cvss=data.get('cvss'),
+        cvss_vector=data.get('cvss-vector'),
+        cvss_table=cvss_table,
         published=data.get('Published'),
         modified=data.get('Modified'),
-        description=data.get('Description')
+        description=data.get('summary'),
+        vulnerable_products=cpes,
+        publications=[Common.Publications(title=data.get('id'),
+                                          link=reference,
+                                          source="Circl.lu") for reference in data.get("references", [])],
+        tags=tags
     )
+
+    if relationships:
+        cve_object.relationships = relationships
     return cve_object
 
 
 def valid_cve_id_format(cve_id: str) -> bool:
-    """Validates that the given cve_id is a valid cve ID.
-     For more details see: https://cve.mitre.org/cve/identifiers/syntaxchange.html
+    """
+    Validates that the given cve_id is a valid cve ID.
+    For more details see: https://cve.mitre.org/cve/identifiers/syntaxchange.html
+
     Args:
         cve_id: ID to validate
     Returns:
