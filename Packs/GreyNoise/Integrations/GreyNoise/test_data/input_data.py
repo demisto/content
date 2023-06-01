@@ -514,54 +514,54 @@ similar_command_response_data = [
 ]
 
 valid_timeline_response = {
-        "activity": [
-            {
-                "asn": "AS49870",
-                "category": "hosting",
-                "city": "Amsterdam",
-                "classification": "unknown",
-                "country": "Netherlands",
-                "country_code": "NL",
-                "destinations": [
+    "activity": [
+        {
+            "asn": "AS49870",
+            "category": "hosting",
+            "city": "Amsterdam",
+            "classification": "unknown",
+            "country": "Netherlands",
+            "country_code": "NL",
+            "destinations": [
                     {
                         "country": "Albania",
                         "country_code": "AL"
                     }
-                ],
-                "organization": "Alsycon B.V.",
-                "protocols": [
-                    {
-                        "app_protocol": "TELNET",
-                        "port": 23,
-                        "transport_protocol": "TCP"
-                    }
-                ],
-                "rdns": "tittle.life",
-                "region": "North Holland",
-                "spoofable": "true",
-                "tags": [
+            ],
+            "organization": "Alsycon B.V.",
+            "protocols": [
+                {
+                    "app_protocol": "TELNET",
+                    "port": 23,
+                    "transport_protocol": "TCP"
+                }
+            ],
+            "rdns": "tittle.life",
+            "region": "North Holland",
+            "spoofable": "true",
+            "tags": [
                     {
                         "category": "tool",
                         "description": "IP addresses with this tag have been observed using the ZMap Internet scanner.",
                         "intention": "unknown",
                         "name": "ZMap Client"
                     }
-                ],
-                "timestamp": "2023-05-29T00:00:00Z",
-                "tor": "false",
-                "vpn": "false",
-                "vpn_service": ""
-            }
-        ],
-        "ip": "45.95.147.229",
-        "metadata": {
-            "end_time": "2023-05-30T18:43:30.604457229Z",
-            "ip": "45.95.147.229",
-            "limit": 50,
-            "next_cursor": "",
-            "start_time": "2023-05-29T00:00:00Z"
+            ],
+            "timestamp": "2023-05-29T00:00:00Z",
+            "tor": "false",
+            "vpn": "false",
+            "vpn_service": ""
         }
+    ],
+    "ip": "45.95.147.229",
+    "metadata": {
+        "end_time": "2023-05-30T18:43:30.604457229Z",
+        "ip": "45.95.147.229",
+        "limit": 50,
+        "next_cursor": "",
+        "start_time": "2023-05-29T00:00:00Z"
     }
+}
 
 valid_timeline_response_expected = copy.deepcopy(valid_timeline_response)
 

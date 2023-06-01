@@ -15,10 +15,14 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
     | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Runs reputation on IPs.
 
@@ -26,6 +30,7 @@ Runs reputation on IPs.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -86,23 +91,24 @@ Runs reputation on IPs.
 
 
 #### Command Example
+
 ``` !ip "66.249.68.82" ```
 
 #### Human Readable Output
 
-###IP: 66.249.68.82 found with Noise Reputation: Good
+### IP: 66.249.68.82 found with Noise Reputation: Good
 
-###GreyNoise Context IP Lookup
+### GreyNoise Context IP Lookup
 
 |IP|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen|
 |---|---|---|---|---|---|---|---|---|---|
 | 66.249.68.82| benign | GoogleBot | TLS/SSL Crawler, Web Crawler | false | false | false | false | 2021-05-30 | 2021-09-16 |
 
-###IP: 66.249.68.82 found with RIOT Reputation: Good
+### IP: 66.249.68.82 found with RIOT Reputation: Good
 
-###Belongs to Common Business Service: Google
+### Belongs to Common Business Service: Google
 
-###GreyNoise RIOT IP Lookup
+### GreyNoise RIOT IP Lookup
 
 |IP|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|
@@ -110,6 +116,7 @@ Runs reputation on IPs.
 
 
 ### greynoise-ip-quick-check
+
 ***
 Check whether a given IP address is "Internet background noise", or has been observed scanning or attacking devices across the Internet. Note: It checks against the last 60 days of Internet scanner data.
 
@@ -117,6 +124,7 @@ Check whether a given IP address is "Internet background noise", or has been obs
 #### Base Command
 
 `greynoise-ip-quick-check`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -136,16 +144,20 @@ Check whether a given IP address is "Internet background noise", or has been obs
 
 
 #### Command Example
+
 ``` !greynoise-ip-quick-check ip="45.83.65.120,45.83.66.18" ```
 
 #### Human Readable Output
+
 ### IP Quick Check Details
+
 |IP|Noise|Code|Code Description|
 |---|---|---|---|
 | 45.83.66.18 | true | 0x01 | IP has been observed by the GreyNoise sensor network |
 | 45.83.65.120| true | 0x01 | IP has been observed by the GreyNoise sensor network |
 
 ### greynoise-query
+
 ***
 Get the information of IP based on the providence filters.
 
@@ -153,6 +165,7 @@ Get the information of IP based on the providence filters.
 #### Base Command
 
 `greynoise-query`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                           | **Required** |
@@ -167,8 +180,9 @@ Get the information of IP based on the providence filters.
 | organization | The organization that owns the network that the IP address belongs to.                                                                                                                                                                                    | Optional | 
 
 #### Advance Query
+
 GNQL (GreyNoise Query Language) is a domain-specific query language that uses Lucene deep under the hood.  
-For more information on the syntax to write GNQL of argument `advanced_query`, visit https://docs.greynoise.io/reference/.
+For more information on the syntax to write GNQL of argument `advanced_query`, visit <https://docs.greynoise.io/reference/>.
 
 #### Context Output
 
@@ -217,21 +231,27 @@ For more information on the syntax to write GNQL of argument `advanced_query`, v
 | GreyNoise.IP.bot                                | boolean  | Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks. |
 
 #### Command Example
+
 ``` !greynoise-query spoofable=true size=1 advanced_query="spoofable:false" ```
 
 #### Human Readable Output
+
 ### Total findings: 2846548
+
 ### IP Context
+
 | IP            |Classification|Actor| CVE                                         |Spoofable|VPN|First Seen|Last Seen|
 |---------------|---|---|---------------------------------------------|---|---|---|---|
 | 71.6.135.131  | benign | Shodan.io | CVE-1999-0526 ,CVE-2013-6117, CVE-2019-0708 | false | false | 2017-09-20 | 2021-02-03 |
 
 ### Next Page Token: 
+
 DnF1ZXJ5VGhlbkZldGNoBQAAAAAcV1_HFkFKSExEdUc4VEtta2
 
 *To view the detailed query result please click here.*
 
 ### greynoise-stats
+
 ***
 Get aggregate statistics for the top organizations, actors, tags, ASNs, countries, classifications, and operating systems of all the results of a given GNQL query.
 
@@ -239,6 +259,7 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 #### Base Command
 
 `greynoise-stats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -281,64 +302,78 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 
 
 #### Command Example
+
 ``` !greynoise-stats spoofable=true size=2 advanced_query="spoofable:false ```
 
 #### Human Readable Output
+
 ### Stats
+
 ### Query: spoofable:false Count: 2846548
+
 ### Classifications
+
 |Classification|Count|
 |---|---|
 | unknown | 1838719 |
 | malicious | 998758 |
 
 ### Spoofable
+
 |Spoofable|Count|
 |---|---|
 | False | 2846548 |
 
 ### Organizations
+
 |Organization|Count|
 |---|---|
 | CHINA UNICOM China169 Backbone | 252542 |
 | CHINANET-BACKBONE | 244599 |
 
 ### Actors
+
 |Actor|Count|
 |---|---|
 | GoogleBot | 2202 |
 
 ### Source Countries
+
 |Country|Count|
 |---|---|
 | China | 562209 |
 | Iran | 376353 |
 
 ### Destination Countries
+
 |Country|Count|
 |---|---|
 | China | 562209 |
 | Iran | 376353 |
 
 ### Tags
+
 |Tag|Count|
 |---|---|
 | SMB Scanner | 592090 |
 | Web Scanner | 578058 |
 
 ### Operating Systems
+
 |Operating System|Count|
 |---|---|
 | Linux 2.2-3.x | 1202422 |
 | Windows 7/8 | 727215 |
 
 ### Categories
+
 |Category|Count|
 |---|---|
 | isp | 2263259 |
 | mobile | 348306 |
 
 ### ASNs
+
 |ASN|Count|
 |---|---|
 | AS4837 | 252542 |
@@ -347,12 +382,14 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 
 
 ### greynoise-riot
+
 ***
 Identify IPs from known benign services and organizations that commonly cause false positives in network security and threat intelligence products. The collection of IPs in RIOT is continually curated and verified to provide accurate results. These IPs are extremely unlikely to pose a threat to your network.
 
 #### Base Command
 
 `greynoise-riot`
+
 #### Input
 
 | **Argument Name** | **Description**                                                   | **Required** |
@@ -375,10 +412,13 @@ Identify IPs from known benign services and organizations that commonly cause fa
 | GreyNoise.RIOT.trust_level  | string   | The trust_level of the IP if riot is "True".           | 
 
 #### Command Example
+
 ``` !greynoise-riot ip="8.8.8.8" ```
 
 #### Human Readable Output
+
 ### GreyNoise: IP Belongs to Common Business Service
+
 |IP|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|
 | 8.8.8.8  | public_dns | Google Public DNS | 	1 - Reasonably Ignore | Google's global domain name system (DNS) resolution service.|2021-04-12T05:55:35Z|
@@ -386,19 +426,23 @@ Identify IPs from known benign services and organizations that commonly cause fa
 ``` !greynoise-riot ip="114.119.130.178" ```
 
 #### Human Readable Output
+
 ### GreyNoise: IP Not Found in RIOT
+
 |IP|RIOT|
 |---|---|
 | 114.119.130.178| false |
 
 
 ### greynoise-context
+
 ***
 Identify IPs that are mass-scanning the internet and identify what they are scanning for. 
 
 #### Base Command
 
 `greynoise-context`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -448,10 +492,13 @@ Identify IPs that are mass-scanning the internet and identify what they are scan
 | GreyNoise.IP.raw_data.hassh.port                | number   | TCP port connection where the HASSH hash was identified.                              | 
 
 #### Command Example
+
 ``` !greynoise-context ip="66.249.68.82" ```
 
 #### Human Readable Output
+
 ### Benign IP
+
 IP: 66.249.68.82 found with Noise Reputation: Good
 
 |IP|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen|
@@ -461,7 +508,9 @@ IP: 66.249.68.82 found with Noise Reputation: Good
 ``` !greynoise-context ip="114.119.130.178" ```
 
 #### Human Readable Output
+
 ### Unidentified IP
+
 IP: 103.21.244.0 No Mass-Internet Scanning Noise Found
 
 |IP|Seen|
@@ -470,12 +519,14 @@ IP: 103.21.244.0 No Mass-Internet Scanning Noise Found
 
 
 ### greynoise-similarity 
+
 ***
 Identify IPs with a similar internet scanning profile. 
 
 #### Base Command
 
 `greynoise-similarity `
+
 #### Input
 
 | **Argument Name** | **Description**                        | **Required** |
@@ -503,9 +554,11 @@ Identify IPs with a similar internet scanning profile.
 | GreyNoise.Similar.similar_ips    | array | Details of similar IPs |
 
 #### Command Example
+
 ``` !greynoise-similarity   ip="1.2.3.4" minimum_score="90" maximum_results="50"```
 
 #### Human Readable Output
+
 IP: 59.88.225.2 - Similar Internet Scanners found in GreyNoise
 Total Similar IPs with Score above 90%: 100
 Displaying 50 results below.  To see all results, visit the GreyNoise Visualizer.
@@ -518,15 +571,18 @@ GreyNoise Similar IPs
 ``` !greynoise-similarity  ip="114.119.130.178" ```
 
 #### Human Readable Output
+
 GreyNoise Similarity Lookup returned No Results.
 
 ### greynoise-similarity 
+
 ***
 Identify IPs with a similar internet scanning profile. 
 
 #### Base Command
 
 `greynoise-similarity `
+
 #### Input
 
 | **Argument Name** | **Description**                                                                    | **Required** |
@@ -549,9 +605,11 @@ Identify IPs with a similar internet scanning profile.
 | GreyNoise.Timeline.activity             | array    | Daily activity summaries                  |
 
 #### Command Example
+
 ``` !greynoise-timeline ip="1.1.2.2" days="30" maximum_results="30"```
 
 #### Human Readable Output
+
 IP: 45.164.214.212 - GreyNoise IP Timeline
 Internet Scanner Timeline Details - Daily Activity Summary
 
@@ -562,4 +620,5 @@ Internet Scanner Timeline Details - Daily Activity Summary
 ``` !greynoise-timeline ip="1.1.2.2" days="30" maximum_results="30" ```
 
 #### Human Readable Output
+
 GreyNoise IP Timeline Returned No Results.
