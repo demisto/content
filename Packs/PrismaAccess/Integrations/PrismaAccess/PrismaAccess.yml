@@ -21,6 +21,7 @@ configuration:
   name: key
   type: 4
   required: false
+  hidden: true
 - name: credentials_key
   type: 9
   required: false
