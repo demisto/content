@@ -3,7 +3,7 @@
 import os
 import json
 from datetime import datetime
-from typing import Optional
+from typing import Any, Generator, Iterable, Optional, Tuple, Union
 
 from git import Repo
 
@@ -11,6 +11,7 @@ CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full 
 
 # override print so we have a timestamp with each print
 org_print = print
+CallArgs = Iterable[Union[Tuple[Any], Tuple[Any, dict]]]
 
 
 def load_json(file_path: str) -> dict:
@@ -36,6 +37,26 @@ def load_json(file_path: str) -> dict:
 
 def timestamped_print(*args, **kwargs):
     org_print(datetime.now().strftime('%H:%M:%S.%f'), *args, **kwargs)
+
+
+def iter_flatten_call_args(
+    call_args: CallArgs,
+) -> Generator:
+    for arg in call_args:
+        if isinstance(arg, tuple):
+            if isinstance(arg[0], tuple):  # nested tuple
+                yield arg[0][0]
+            else:
+                yield arg[0]
+
+        elif isinstance(arg, str):
+            yield arg
+        else:
+            raise ValueError("Unexpected call arg type")
+
+
+def flatten_call_args(call_args: CallArgs) -> Tuple[Any, ...]:
+    return tuple(iter_flatten_call_args(call_args))
 
 
 class EnvVariableError(Exception):

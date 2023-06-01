@@ -42,7 +42,8 @@
 			"Elasticsearch",
 			"Free Feed",
 			"Plug & Fetch",
-			"Generic Feed"
+			"Generic Feed",
+			"Allow List"
 		],
 		"xsoar": [],
 		"marketplacev2": ["Data Source"],

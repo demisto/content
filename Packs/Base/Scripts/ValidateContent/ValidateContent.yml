@@ -56,6 +56,6 @@ timeout: 600ns
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.5.0
-dockerimage: demisto/xsoar-tools-hf:1.0.0.31061
+dockerimage: demisto/xsoar-tools:1.0.0.58259
 tests:
 - ValidateContent - Test
