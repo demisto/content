@@ -129,7 +129,7 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
             data = cve_to_context(response)
             indicator = generate_indicator(response)
             cr = CommandResults(
-                outputs_prefix='CVEsearch.CVE',
+                outputs_prefix='CVESearch.CVE',
                 outputs_key_field='CVE',
                 outputs=data,
                 raw_response=response,

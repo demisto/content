@@ -1,9 +1,9 @@
-Searches for CVE information using circl.lu.
+Searches for CVE information using [circl.lu](https://www.circl.lu/services/cve-search/).
 
-## Configure CIRCL CVE Search v2 on Cortex XSOAR
+## Configure CIRCL CVE Search on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CVE Search v2.
+1. Navigate to **Settings** > **Integrations** > **Data Enrichment & Threat Intelligence**.
+2. Search for CIRCL.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -95,9 +95,11 @@ Returns CVE information by CVE ID.
 
 
 ##### Command Example
-```!cve cve_id=CVE-2014-1234```
+
+`!cve cve_id=CVE-2014-1234`
 
 ##### Context Example
+
 ```
 {
     "CVE": [
@@ -111,6 +113,7 @@ Returns CVE information by CVE ID.
     ]
 }
 ```
+
 ##### Human Readable Output
 
 |  |  |
