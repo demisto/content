@@ -1975,7 +1975,7 @@ script:
     description: Deletes the entries from the lookup table.
     execution: false
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.10.11.56857
+  dockerimage: demisto/python3:3.10.11.59070
   feed: false
   isfetch: true
   longRunning: false
