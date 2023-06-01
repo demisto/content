@@ -409,7 +409,7 @@ tasks:
       owners:
         simple: ${alert.asmserviceownerunrankedraw}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
