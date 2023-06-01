@@ -11,8 +11,8 @@ filter
     xdm.event.log_level = severity,
     xdm.alert.description = description,
 
-    xdm.alert.original_alert_id = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.id")), ","),
-    xdm.alert.name = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.name")), ","),
+    xdm.alert.original_alert_id = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.id")), ","),
+    xdm.alert.name = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.name")), ","),
     Entities = json_extract_array(impactScope, "$.entities"),
     | alter
     xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
