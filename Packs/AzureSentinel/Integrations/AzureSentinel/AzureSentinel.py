@@ -1796,7 +1796,7 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
     return CommandResults(readable_output=f'Alert rule {rule_id} was deleted successfully.')
 
 
-def list_subscriptions_command(client: AzureSentinelClient, args: Dict[str, Any]) -> CommandResults:
+def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:
 
     full_url = 'https://management.azure.com/subscriptions?api-version=2020-01-01'
 
@@ -1818,11 +1818,11 @@ def list_subscriptions_command(client: AzureSentinelClient, args: Dict[str, Any]
     )
 
 
-def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any], subscription_id: str) -> CommandResults:
 
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', 50))
-    subscription_id = argToList(args.get('subscription_id', params.get('subscriptionID', '')))
+    subscription_id_list = argToList(subscription_id)
 
     # extracting the tag name and value from the tag argument that is received from the user as a string
     filter_by_tag = ''
@@ -1836,8 +1836,8 @@ def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, An
             raise ValueError(('Invalid tag format, please use the following format: `{"key_name":"value_name"}`', e))
 
     data_from_response = []
-    for sub_id in subscription_id:
-        full_url = f'https://management.azure.com/subscriptions/{sub_id}/resourcegroups?$filter={filter_by_tag}&$top={limit}&api-version=2021-04-01'   # noqa: E501
+    for subscription_id in subscription_id_list:
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter={filter_by_tag}&$top={limit}&api-version=2021-04-01'   # noqa: E501
         response = client.http_request('GET', full_url=full_url)
         data_from_response.extend(iter(response.get('value', [])))
 
@@ -1941,8 +1941,9 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
+    command = demisto.command()
 
-    LOG(f'Command being called is {demisto.command()}')
+    LOG(f'Command being called is {command}')
     try:
         client_secret = params.get('credentials', {}).get('password')
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
@@ -2005,17 +2006,18 @@ def main():
             'azure-sentinel-delete-alert-rule': delete_alert_rule_command,
             'azure-sentinel-create-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
-            'azure-sentinel-subscriptions-list': list_subscriptions_command,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command
         }
 
-        if demisto.command() == 'test-module':
-            return_results(test_module(client))
+        command_without_args = {
+            'azure-sentinel-subscriptions-list': list_subscriptions_command,
+            'test-module': test_module
+        }
 
-        elif demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
             first_fetch_time = params.get('fetch_time', '3 days').strip()
 
@@ -2032,19 +2034,21 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'azure-sentinel-resource-group-list':
-            return_results(list_resource_groups_command(client, args, params))
+        elif command == 'azure-sentinel-resource-group-list':
+            return_results(list_resource_groups_command(client, args, subscription_id))
 
         # mirroring command
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
-        elif demisto.command() in commands:
-            return_results(commands[demisto.command()](client, args))  # type: ignore
+        elif command in commands:
+            return_results(commands[command](client, args))  # type: ignore
+        elif command in command_without_args:
+            return_results(command_without_args[command](client))  # type: ignore
 
     except Exception as e:
         return_error(
-            f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+            f'Failed to execute {command} command. Error: {str(e)}'
         )
 
 
