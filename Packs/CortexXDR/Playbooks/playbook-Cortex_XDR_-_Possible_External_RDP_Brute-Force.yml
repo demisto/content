@@ -1425,7 +1425,7 @@ tasks:
     task:
       id: a65d9512-2d2d-4991-85fe-8928ce4226c6
       version: -1
-      name: Containment Complete
+      name: Remediation Complete
       type: title
       iscommand: false
       brand: ""
@@ -1792,7 +1792,7 @@ tasks:
     task:
       id: 19599f59-4689-4ff6-860e-bd44bb4d6c0f
       version: -1
-      name: Containment
+      name: Block Indicators
       type: title
       iscommand: false
       brand: ""
@@ -2262,18 +2262,16 @@ tasks:
       id: 4ea24c92-5399-460c-82c0-f5be741952bf
       version: -1
       name: Set User Containment Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "82"
     scriptarguments:
-      key:
-        simple: RDP_Brute_Force_Investigation.User_Containment
-      value:
+      ipblockedstatus:
         simple: Executed
     separatecontext: false
     continueonerrortype: ""
@@ -2287,12 +2285,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: User Block Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: User_Containment
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -2305,18 +2297,16 @@ tasks:
       id: 9a7c664f-4906-4afe-836e-ebe01c20037d
       version: -1
       name: Set IP Block Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "82"
     scriptarguments:
-      key:
-        simple: RDP_Brute_Force_Investigation.IP_Containment
-      value:
+      userblockstatus:
         simple: Executed
     separatecontext: false
     continueonerrortype: ""
@@ -2330,12 +2320,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: IP Blocked Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: IP_Containment
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -2442,18 +2426,16 @@ tasks:
       id: 747c7a22-a0e0-4b2a-823f-b2e83512742a
       version: -1
       name: Set IP Block Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "86"
     scriptarguments:
-      key:
-        simple: RDP_Brute_Force_Investigation.IP_Containment
-      value:
+      ipblockedstatus:
         simple: Executed
     separatecontext: false
     continueonerrortype: ""
@@ -2467,12 +2449,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: IP Blocked Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: IP_Containment
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -2485,18 +2461,16 @@ tasks:
       id: 3eea2565-9ef3-4c66-8721-6969c5855b63
       version: -1
       name: Set User Containment Executed
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "86"
     scriptarguments:
-      key:
-        simple: RDP_Brute_Force_Investigation.User_Containment
-      value:
+      userblockstatus:
         simple: Executed
     separatecontext: false
     continueonerrortype: ""
@@ -2510,12 +2484,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: User Block Status
-      output:
-        complex:
-          root: RDP_Brute_Force_Investigation
-          accessor: User_Containment
     skipunavailable: false
     quietmode: 0
     isoversize: false
