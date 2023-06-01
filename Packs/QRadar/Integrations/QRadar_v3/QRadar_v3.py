@@ -2564,8 +2564,11 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
     if query_expression or saved_search_id:
         try:
             response = client.search_create(query_expression, saved_search_id)
-        except Exception:
-            raise DemistoException(f'Could not create search for offense_id: {offense_id}')
+        except Exception as e:
+            if query_expression:
+                raise DemistoException(f'Could not create search for query: {query_expression}.') from e
+            if saved_search_id:
+                raise DemistoException(f'Could not create search for saved_search_id: {saved_search_id}.') from e
     else:
         response = create_events_search(client,
                                         fetch_mode,
@@ -2575,7 +2578,7 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
                                         start_time,
                                         return_raw_response=True)
         if response == QueryStatus.ERROR.value:
-            raise DemistoException(f'Could not create events search for offense_id: {offense_id}')
+            raise DemistoException(f'Could not create events search for offense_id: {offense_id}.')
 
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     return CommandResults(
