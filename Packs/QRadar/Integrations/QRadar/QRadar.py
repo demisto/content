@@ -511,7 +511,7 @@ def fetch_incidents():
     user_query = demisto.params().get('query')
     full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
-    demisto.debug(f"QRadar -  Start fetching")
+    demisto.debug("QRadar -  Start fetching")
     demisto.debug(f"QRadar - Last run: {json.dumps(last_run)}")
     demisto.debug(f"QRadar - Query sent to server: {user_query}")
 

@@ -1510,6 +1510,7 @@ def fetch_incidents(client: Client, max_incidents: int,
         'last_issue_id': latest_issue_id if latest_issue_id else last_issue_id}
 
     demisto.debug(f"ExpanseV2 - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"ExpanseV2 - Number of incidents skipped: {skip_incidents}")
     demisto.debug(f"ExpanseV2 - Next run after incidents fetching: : {json.dumps(next_run)}")
 
     return next_run, incidents
