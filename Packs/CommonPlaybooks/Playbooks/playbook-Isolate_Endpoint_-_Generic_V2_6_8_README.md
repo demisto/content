@@ -62,7 +62,7 @@ This playbook does not use any scripts.
 | Core.Isolation.endpoint_id | The ID of the isolated endpoint. | string |
 | CarbonBlackEDR.Sensor | The sensor info. | unknown |
 | CarbonBlackEDR.Sensor.id | The sensor id of this sensor. | unknown |
-| CarbonBlackEDR.Sensor.is_isolating | Boolean representing sensor-reported isolation status. | unknown |
+| CarbonBlackEDR.Sensor.is_isolating | Boolean representing the sensor-reported isolation status. | unknown |
 | CarbonBlackEDR.Sensor.status | The sensor status. | unknown |
 
 ## Playbook Image
