@@ -12,7 +12,8 @@ Open your MacOS device and follow these step:
 3. Type **i** in order to enter editing mode.
 4. Type the following as a new line in the syslog config file- \*.\* \@"\<IP address\>"\:"\<Port\>".
 
-5. Write **:wq** to save and exit the file.
+5. Type **:wq** to save and exit the file.
+
 6. Restart the syslogd daemon by writing the command **sudo launchctl stop com.apple.syslogd** and than **sudo launchctl start com.apple.syslogd**.
 
 ## Collect Events from Vendor
