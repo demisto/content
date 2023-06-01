@@ -345,6 +345,7 @@ tasks:
         complex:
           root: inputs.incident_id
     separatecontext: false
+    reputationCalc: 2
     skipunavailable: false
     task:
       brand: ""
