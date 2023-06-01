@@ -426,8 +426,8 @@ def get_workbench_logs(
     client: Client,
     workbench_log_last_run_time: str | None,
     first_fetch: str,
+    limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-    limit: int = DEFAULT_MAX_LIMIT
 ) -> Tuple[List[Dict], str]:
     """
     Get the workbench logs.
@@ -436,8 +436,8 @@ def get_workbench_logs(
         client (Client): the client object.
         workbench_log_last_run_time (str): The time of the workbench log from the last run.
         first_fetch (str): the first fetch time.
-        date_format (str): the date format.
         limit (int): the maximum number of workbench logs to return.
+        date_format (str): the date format.
 
     Returns:
         Tuple[List[Dict], str]: workbench logs & latest time of the workbench log that was created.
@@ -464,8 +464,8 @@ def get_observed_attack_techniques_logs(
     client: Client,
     observed_attack_technique_log_last_run_time: str | None,
     first_fetch: str,
-    date_format: str = DATE_FORMAT,
-    limit: int = DEFAULT_MAX_LIMIT
+    limit: int = DEFAULT_MAX_LIMIT,
+    date_format: str = DATE_FORMAT
 ) -> Tuple[List[Dict], str]:
     """
     Get the observed attack techniques logs.
@@ -475,8 +475,8 @@ def get_observed_attack_techniques_logs(
         observed_attack_technique_log_last_run_time (str): The time of the observed attack technique log
                                                            from the last run.
         first_fetch (str): the first fetch time
-        date_format (str): the date format.
         limit (int): the maximum number of observed attack techniques logs to return.
+        date_format (str): the date format.
 
     Returns:
         Tuple[List[Dict], str]: observed attack techniques logs & latest time of the technique log that was created.
@@ -516,8 +516,8 @@ def get_search_detection_logs(
     client: Client,
     search_detection_log_last_run_time: str | None,
     first_fetch: str,
+    limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-    limit: int = DEFAULT_MAX_LIMIT
 ) -> Tuple[List[Dict], str]:
     """
     Get the search detection logs.
@@ -526,8 +526,8 @@ def get_search_detection_logs(
         client (Client): the client object
         search_detection_log_last_run_time (dict): The time of the search detection log from the last run.
         first_fetch (str): the first fetch time
-        date_format (str): the date format.
         limit (int): the maximum number of search detection logs to return.
+        date_format (str): the date format.
 
     Returns:
         Tuple[List[Dict], str]: search detection logs & latest time of the search detection log that was created.
@@ -555,8 +555,8 @@ def get_audit_logs(
     client: Client,
     audit_log_last_run_time: str | None,
     first_fetch: str,
+    limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-    limit: int = DEFAULT_MAX_LIMIT
 ) -> Tuple[List[Dict], str]:
     """
     Get the audit logs.
@@ -565,8 +565,8 @@ def get_audit_logs(
         client (Client): the client object
         audit_log_last_run_time (dict): The time of the audit log from the last run.
         first_fetch (str): the first fetch time
-        date_format (str): the date format.
         limit (int): the maximum number of search detection logs to return.
+        date_format (str): the date format.
 
     Returns:
         Tuple[List[Dict], str]: audit logs & latest time of the audit log that was created.
@@ -594,11 +594,11 @@ def get_audit_logs(
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(
+def fetch_events_by_log_type(
     client: Client,
     first_fetch: str,
     get_logs_func: callable,
-    log_last_run_time: str,
+    log_last_run_time_field: str,
     last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT
 ):
@@ -609,16 +609,48 @@ def fetch_events(
         client (Client): the client object
         first_fetch (str): the first fetch time
         get_logs_func (callable): a function that extracts logs and its latest log time
-        log_last_run_time (str): the log last run time
+        log_last_run_time_field (str): the log last run time field
         last_run (dict): the last run object
         limit (int): the maximum number of logs to fetch from each type
 
     """
-    logs, latest_log_time = get_logs_func(client, log_last_run_time, first_fetch, limit)
+    logs, latest_log_time = get_logs_func(client, last_run.get(log_last_run_time_field), first_fetch, limit)
 
     send_events_to_xsiam(events=logs, vendor=VENDOR, product=PRODUCT)
-    last_run.update({log_last_run_time: latest_log_time})
+    last_run.update({log_last_run_time_field: latest_log_time})
+    demisto.info(f'updating last run to: {last_run} for {log_last_run_time_field}={latest_log_time}')
     demisto.setLastRun(last_run)
+
+
+def fetch_all_events(
+    client: Client,
+    first_fetch: str,
+    limit: int = DEFAULT_MAX_LIMIT
+):
+    last_run = demisto.getLastRun()
+    demisto.info(f'{last_run=}')
+    for logs_func, log_last_run_time in [
+        (
+            get_workbench_logs, LastRunLogsTimeFields.WORKBENCH
+        ),
+        (
+            get_observed_attack_techniques_logs, LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+        ),
+        (
+            get_search_detection_logs, LastRunLogsTimeFields.SEARCH_DETECTIONS,
+        ),
+        (
+            get_audit_logs, LastRunLogsTimeFields.AUDIT
+        )
+    ]:
+        fetch_events_by_log_type(
+            client=client,
+            first_fetch=first_fetch,
+            get_logs_func=logs_func,
+            log_last_run_time_field=log_last_run_time,
+            last_run=last_run,
+            limit=limit
+        )
 
 
 def test_module(client: Client, first_fetch: str) -> str:
@@ -632,7 +664,7 @@ def test_module(client: Client, first_fetch: str) -> str:
     Returns:
         str: 'ok' in case of success, exception in case of an error.
     """
-    get_events_command(client=client, args={'limit': 1, 'log_type': 'all', 'from_time': first_fetch})
+    fetch_all_events(client=client, first_fetch=first_fetch, limit=1)
     return 'ok'
 
 
@@ -766,28 +798,7 @@ def main() -> None:
             last_run = demisto.getLastRun()
             demisto.info(f'{last_run=}')
             try:
-                for logs_func, log_last_run_time in [
-                    (
-                        get_workbench_logs, last_run.get(LastRunLogsTimeFields.WORKBENCH)
-                    ),
-                    (
-                        get_observed_attack_techniques_logs, last_run.get(LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES),
-                    ),
-                    (
-                        get_search_detection_logs, last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS),
-                    ),
-                    (
-                        get_audit_logs, last_run.get(LastRunLogsTimeFields.AUDIT)
-                    )
-                ]:
-                    fetch_events(
-                        client=client,
-                        first_fetch=first_fetch,
-                        get_logs_func=logs_func,
-                        log_last_run_time=log_last_run_time,
-                        last_run=last_run,
-                        limit=limit
-                    )
+                fetch_all_events(client=client, first_fetch=first_fetch, limit=limit)
             except Exception:
                 demisto.info(f'updating last run during exception to: {last_run}')
                 demisto.setLastRun(last_run)
