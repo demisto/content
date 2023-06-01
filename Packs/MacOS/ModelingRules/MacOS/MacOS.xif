@@ -12,6 +12,7 @@ alter
     get_pkinstallpackageidentifier = arraystring(regextract(_raw_log, "PKInstallPackageIdentifier[\s|=]([^,]+)"), ""),
     get_nslocalizeddescription =  arraystring(regextract(_raw_log, "NSLocalizedDescription[\s|=]([^,}]+)"), "")
 | alter
+    xdm.source.host.os_family=XDM_CONST.OS_FAMILY_MACOS,
     xdm.source.host.hostname = get_hostname,
     xdm.source.process.name = get_process,
     xdm.source.process.parent_id = get_pid,
