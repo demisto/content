@@ -44,11 +44,15 @@
 /Packs/QRadar/Integrations/QRadar_v3/* @ilaner
 /Packs/Slack/Integrations/* @amshamah419 @rshunim 
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
+/Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419 
+/Packs/MicrosoftExchangeOnline/Integrations @amshamah419 @thefrieddan1
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
+/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan
+/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan
 
 # Common Packs
 /Packs/CommonTypes/ @michalgold @idovandijk
