@@ -7,7 +7,9 @@ from sdk.blueliv_api import BluelivAPI
 
 ''' GLOBALS/PARAMS '''
 
-TOKEN = demisto.params().get('token')
+TOKEN = demisto.params().get('credentials_token', {}).get('password') or demisto.params().get('token')
+if not TOKEN:
+    raise DemistoException('API Token must be provided.')
 URL = demisto.params()['url']
 SERVER = URL[:-1] if URL.endswith('/') else URL
 
