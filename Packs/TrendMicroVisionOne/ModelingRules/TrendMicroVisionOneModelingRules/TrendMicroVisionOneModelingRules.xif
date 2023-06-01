@@ -1,0 +1,121 @@
+[MODEL: dataset="trend_micro_vision_raw"]
+filter
+    event_type in ("workbench")
+| alter
+    xdm.source.cloud.project = id,
+    xdm.event.outcome_reason = investigationStatus,
+    xdm.network.http.url = workbenchLink,
+    xdm.source.application.name = alertProvider,
+    xdm.event.original_event_type = model,
+    xdm.alert.severity = score,
+    xdm.event.log_level = severity,
+    xdm.alert.description = description,
+
+    xdm.alert.original_alert_id = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.id")), ","),
+    xdm.alert.name = arraystring(arraymap(matchedRules, json_extract_scalar("@element", "$.name")), ","),
+    Entities = json_extract_array(impactScope, "$.entities"),
+    | alter
+    xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
+
+
+    xdm.source.user.identity_type = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityType")), ",")  # TODO - ned to add if statement
+    xdm.source.user.username = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue")), ",") # TODO - there is a problem here, sometimes it returns dict, and sometimes string
+    xdm.alert.subcategory = arraystring(arraymap(Entities, ), ",")
+filter
+    event type in ("search_detections")
+| alter
+    dataset = trend_micro_vision_one_raw
+| alter
+xdm.event.outcome_reason = arraystring(json_extract_array(act, "$."), ","),
+    //xdm.observer.action = actResult,
+    //xdm.network.application_protocol = app,
+    xdm.alert.original_threat_name = behaviorCat,
+    //xdm.event.original_event_type = blocking,
+    //xdm.alert.severity = cat,
+    //xdm.source.agent.version = arraystring(json_extract_array(component,  "$."), ","),
+    xdm.observer.unique_identifier = deviceGUID,
+    //xdm.source.process.name = coalesce(deviceProcessName, processName),
+    //xdm.source.host.mac_addresses = coalesce(deviceMacAddress, endpointMacAddress, interestedMacAddress),
+    //xdm.target.host.hostname = dhost,
+    //xdm.source.user.domain = domainName,
+    xdm.target.port = dpt,
+    xdm.target.ipv4 = arraystring(json_extract_array(dst, "$."), ","),
+    xdm.source.host.device_id = endpointGUID,
+    //xdm.source.host.hostname = coalesce(endpointHostName, hostName),
+    //xdm.source.host.ipv4_addresses = arraystring(json_extract_array(endpointIp, "$."), ","),
+    xdm.event.id = eventId,
+    xdm.event.type = eventName,
+    xdm.event.operation_sub_type = eventSubName,
+    //xdm.source.process.executable.filename = arraystring(json_extract_array(fileName, "$."), ","),
+    //xdm.source.process.executable.path = filePath,
+    //xdm.target.file.size = fileSize,
+    //xdm.network.http.referrer = httpReferer,
+    //xdm.alert.subcategory = malType,
+    //xdm.alert.mitre_tactics = arraystring(json_extract_array(mitreMapping, "$."), ","),
+    xdm.observer.type = mpname,
+    xdm.observer.version = mpver,
+    //xdm.source.process.command_line = coalesce(arraystring(json_extract_array(objectCmd, "$."), ","), processCmd),
+    xdm.source.process.executable.md5 = coalesce(objectFileHashMd5, objectFileHashSha256),
+    xdm.source.process.executable.sha256 = coalesce(objectFileHashSha256, objectFileHashMd5),
+    //xdm.target.module.filename = coalesce(objectFileName, objectName),
+    xdm.target.module.path = objectFilePath,
+    xdm.target.module.signer = arraystring(json_extract_array(objectSigner, "$."), ","),
+    xdm.observer.content_version = pname,
+    xdm.intermediate.process.executable.path = processFilePath,
+    xdm.source.process.pid = processPid,
+    //xdm.source.process.executable.signer = processSigner,
+    //xdm.observer.product = pver,
+    //xdm.network.http.url = request,
+    //xdm.source.user_agent = requestClientApplication,
+    xdm.source.port = spt,
+    //xdm.alert.name = threatName,
+    xdm.alert.original_alert_id = uuid
+    //xdm.source.ipv6 = arraymap(mDevice, if("@element" contains ":", "@element", null)),
+    //xdm.source.ipv4 = coalesce(arraymap(mDevice, if("@element" not contains ":", "@element", null)), arraymap(src, if("@element" contains ":", "@element", null)));
+filter
+    event type in ("observed_attach_techniques")
+| alter
+    xdm.event.original_event_type = source,
+    xdm.session_context_id = uuid,
+    xdm.source.agent.identifier = json_extract_scalar(endpoint, "$.agentGuid"),
+    xdm.source.host.os = json_extract_scalar(detail, "$.osName"),
+    xdm.source.process.name = json_extract_scalar(detail, "$.processName"),
+    xdm.source.process.pid = json_extract_scalar(detail, "$.processPid"),
+    xdm.network.session_id = json_extract_scalar(detail, "$.sessionId"),
+    xdm.source.user.username = coalesce(json_extract_scalar(detail, "$.processUser"), json_extract_scalar(detail, "$.objectUser")),
+    xdm.source.user.domain = coalesce(json_extract_scalar(detail, "$.processUserDomain"), json_extract_scalar(detail, "$.objectUserDomain")),
+    xdm.source.process.command_line = json_extract_scalar(detail, "$.processCmd"),
+    xdm.source.process.executable.path = json_extract_scalar(detail, "$.processFilePath"),
+    xdm.source.process.executable.sha256 = json_extract_scalar(detail, "$.processFileHashSha256"),
+    xdm.source.process.executable.md5 = json_extract_scalar(detail, "$.processFileHashMd5"),
+    xdm.source.process.executable.size = json_extract_scalar(detail, "$.processFileSize"),
+    xdm.source.process.executable.file_type = json_extract_scalar(detail, "$.processTrueType"),
+    xdm.target.file.path = json_extract_scalar(detail, "$.objectFilePath"),
+    xdm.target.module.sha256 = json_extract_scalar(detail, "$.objectFileHashSha256"),
+    xdm.target.module.md5 = json_extract_scalar(detail, "$.objectFileHashMd5"),
+    xdm.target.module.filename = json_extract_scalar(detail, "$.objectName"),
+    xdm.source.port = json_extract_scalar(detail, "$.spt"),
+    xdm.target.module.path = json_extract_scalar(detail, "$.srcFilePath"),
+    xdm.event.id = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.id")), ","),
+    xdm.event.name = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.name")), ","),
+    xdm.alert.description = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.description")), ","),
+    xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ","),
+    xdm.alert.mitre_tactics = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")), ","),
+    xdm.alert.mitre_techniques = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTechniqueIds")), ","),
+    xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ","),
+    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), json_extract_scalar(detail, "$.src")),
+    xdm.source.host.mac_addresses = arraystring(json_extract_array(detail, "$.endpointMacAddress"), ","),
+    xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
+    xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
+    xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
+    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",")
+filter
+    event type in ("audit")
+| alter
+    xdm.source.user.username = loggedUser,
+    xdm.source.user.groups = loggedRole,
+    xdm.source.zone = accessType,
+    xdm.event.type = category,
+    xdm.event.operation_sub_type = activity,
+    xdm.event.outcome_reason = result,
+    xdm.event.description = details;
