@@ -29,10 +29,10 @@ configuration:
   hiddenusername: true
 - display: Corporation Name (should match the pattern [0-9a-z_.-]+)
   name: corpName
+  defaultvalue: ""
   type: 0
   required: true
   section: Connect
-  defaultvalue: ""
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -52,11 +52,11 @@ configuration:
   advanced: true
 - display: CSV list of sites to fetch from. If no sites are specified, events from all corporation's sites will be fetched.
   name: sites_to_fetch
+  defaultvalue: ""
   type: 12
   required: false
   section: Collect
   advanced: true
-  defaultvalue: ""
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
