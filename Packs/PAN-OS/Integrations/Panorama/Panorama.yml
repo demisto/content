@@ -5795,7 +5795,7 @@ script:
     - contextPath: Panorama.SecurityRule.Location
       description: The rule location.
       type: String
-    - contextPath: Panorama.SecurityRule.Category
+    - contextPath: Panorama.SecurityRule.CustomUrlCategory
       description: The rule category.
       type: String
     - contextPath: Panorama.SecurityRule.Application
@@ -5825,6 +5825,72 @@ script:
     - contextPath: Panorama.SecurityRules.Disabled
       description: Whether the rule is disabled.
       type: string
+    - contextPath: Panorama.SecurityRule.SecurityProfileGroup
+      description: Represents the security profile group associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.url-filtering
+      description: Represents the URL filtering security profile associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.file-blocking
+      description: Represents the file blocking security profile associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.virus
+      description: Represents the virus security profile associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.spyware
+      description: Represents the spyware security profile associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.vulnerability
+      description: Represents the vulnerability security profile associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.wildfire-analysis
+      description: Represents the WildFire analysis security profile associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Target.devices
+      description: Represents the target devices associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Target.negate
+      description: Indicates whether the target is negated in the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.QoSMarking.ip-precedence
+      description: Represents the IP precedence value used for QoS marking in the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Type
+      description: Represents the type of the rule (e.g., pre-rule, post-rule, intra-zone, inter-zone).
+      type: String
+    - contextPath: Panorama.SecurityRule.DestinationDevice
+      description: Represents the destination device associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Indicates whether the source is negated in the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SourceDevice
+      description: Represents the source device associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.LogStart
+      description: Indicates whether to log the start of the session for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.LogForwardingProfile
+      description: Represents the log forwarding profile associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SourceUser
+      description: Represents the source user associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Schedule
+      description: Represents the schedule associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Description
+      description: Represents the description or summary of the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.GroupTag
+      description: Represents the group tag associated with the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Indicates whether the destination is negated in the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.ProfileSetting
+      description: Represents the profile settings associated with the rule.
+      type: String
   - arguments:
     - description: The log type.
       name: log-type
