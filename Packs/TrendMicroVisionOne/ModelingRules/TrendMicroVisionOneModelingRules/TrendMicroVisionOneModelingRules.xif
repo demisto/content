@@ -1,4 +1,4 @@
-[MODEL: dataset="trend_micro_vision_raw"]
+[MODEL: dataset="trend_micro_vision_one_raw"]
 filter
     event_type in ("workbench")
 | alter
