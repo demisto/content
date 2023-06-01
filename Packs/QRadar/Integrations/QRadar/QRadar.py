@@ -511,6 +511,9 @@ def fetch_incidents():
     user_query = demisto.params().get('query')
     full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
+    demisto.debug(f"QRadar -  Start fetching")
+    demisto.debug(f"QRadar - Last run: {json.dumps(last_run)}")
+    demisto.debug(f"QRadar - Query sent to server: {user_query}")
 
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
     # adjust start_offense_id to user_query start offense id
@@ -563,6 +566,10 @@ def fetch_incidents():
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
+    demisto.debug(f'QRadar - Next run after incidents fetching: {offense_id}')
+    demisto.debug(f"QRadar - Number of incidents before filtering: {len(raw_offenses)}")
+    demisto.debug(f"QRadar - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"QRadar - Number of incidents skipped: {len(raw_offenses) -len(incidents) }")
     demisto.debug('QRadarMsg - LastRun was set to {}'.format(offense_id))
     demisto.setLastRun({'id': offense_id})
     return incidents

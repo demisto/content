@@ -178,6 +178,8 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
         if 'time' in last_run:
             last_run['time'] = last_run['time'].replace('Z', '')
+        demisto.debug("MicrosoftGraphMail - Start fetching")
+        demisto.debug(f"MicrosoftGraphMail - Last run: {json.dumps(last_run)}")
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(
             last_run=last_run,
@@ -245,7 +247,11 @@ class MsGraphMailClient(MsGraphMailBaseClient):
                 'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
             }
         )
+        demisto.debug(f'MicrosoftGraphMail - Next run after incidents fetching: {json.dumps(last_run)}')
 
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
         for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
             incident.pop('ID', None)
 

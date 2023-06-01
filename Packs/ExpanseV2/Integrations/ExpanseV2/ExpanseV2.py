@@ -241,7 +241,7 @@ class Client(BaseClient):
             'cloudManagementStatus': cloud_management_status if cloud_management_status else None,
             'sort': sort
         }
-
+        demisto.debug(f"ExpanseV2 - Query sent to the server: {params}")
         return self._paginate(
             method='GET', url_suffix="/v1/issues/issues", params=params
         )
@@ -585,8 +585,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName']
-                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
+                        ml_feature_list.extend({r['formattedName']
+                                                for r in re if 'formattedName' in r})  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
@@ -1380,7 +1380,7 @@ def fetch_incidents(client: Client, max_incidents: int,
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     :rtype: ``Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]``
     """
-
+    demisto.debug(f"ExpanseV2 - Last run: {json.dumps(last_run)}")
     last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         last_fetch = cast(int, first_fetch)
@@ -1423,7 +1423,7 @@ def fetch_incidents(client: Client, max_incidents: int,
         issue_type=issue_types, cloud_management_status=_cloud_management_status,
         created_after=created_after, sort='created'
     )
-
+    demisto.debug(f"ExpanseV2 - Number of incidents before filtering: {len(incidents)}")
     broken = False
     issues: List = []
     skip = cast(str, last_issue_id)
@@ -1444,7 +1444,7 @@ def fetch_incidents(client: Client, max_incidents: int,
             issues.append(i)
         if len(issues) == max_incidents:
             break
-
+    skip_incidents = 0
     for issue in issues:
         ml_feature_list: List[str] = []
 
@@ -1454,6 +1454,9 @@ def fetch_incidents(client: Client, max_incidents: int,
 
         if last_fetch:
             if incident_created_time < last_fetch:
+                skip_incidents += 1
+                demisto.debug(
+                    f"ExpanseV2 - Skipping incident with sys_id={i['id']} because its creation time is smaller than the last fetch.")
                 continue
         incident_name = issue.get('headline') if 'headline' in issue else issue.get('id')
 
@@ -1505,6 +1508,10 @@ def fetch_incidents(client: Client, max_incidents: int,
     next_run = {
         'last_fetch': latest_created_time,
         'last_issue_id': latest_issue_id if latest_issue_id else last_issue_id}
+
+    demisto.debug(f"ExpanseV2 - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"ExpanseV2 - Next run after incidents fetching: : {json.dumps(next_run)}")
+
     return next_run, incidents
 
 
@@ -2474,11 +2481,11 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def get_risky_flows_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
