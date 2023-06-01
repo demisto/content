@@ -1,4 +1,3 @@
-import pytest
 import demistomock as demisto
 
 
