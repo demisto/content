@@ -37,7 +37,7 @@
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
 /Packs/PAN-OS/Integrations/ @GuyAfik
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
-/Packs/PrismaSaasSecurity/Integrations/ @yaakovpraisler
+/Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
 # Important Integrations
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
