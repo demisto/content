@@ -100,7 +100,7 @@ Returns CVE information by CVE ID.
 
 ##### Context Example
 
-```
+```python
 {
     "CVE": [
         {
