@@ -40,20 +40,15 @@
 /Packs/PrismaSaasSecurity/Integrations/ @yaakovpraisler
 
 # Important Integrations
-/Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
-/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders @Shellyber
-/Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
-/Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
-/Packs/QRadar/Integrations/QRadar_v3/* @tkatzir
-/Packs/Slack/Integrations/Slack/* @demisto/content-leaders
-/Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
-/Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
-/Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
+/Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
+/Packs/EWS/Integrations/EWSv2/* @esharf
+/Packs/QRadar/Integrations/QRadar_v3/* @ilaner
+/Packs/Slack/Integrations/* @amshamah419
+/Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
-/Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Common Packs
