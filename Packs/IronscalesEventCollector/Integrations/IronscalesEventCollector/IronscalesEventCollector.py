@@ -204,6 +204,7 @@ def fetch_events_command(
         first_fetch=first_fetch,
     )
     last_id = last_id or -1
+    # We filter out only events with ID greater than the last_id
     for i in filter(lambda i: i > last_id, incident_ids):
         incident = client.get_incident(i)
         events.extend(incident_to_events(incident))
@@ -232,7 +233,7 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        first_fetch = dateparser.parse(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
+        first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH))
         assert isinstance(first_fetch, datetime), f"Invalid first_fetch value: {params.get('first_fetch')}"
         max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
 
@@ -260,8 +261,8 @@ def main():
                 max_fetch=max_fetch,
                 last_id=demisto.getLastRun().get("last_id"),
             )
-            demisto.setLastRun({"last_id": last_id})
             send_events_to_xsiam(events, VENDOR, PRODUCT)
+             demisto.setLastRun({"last_id": last_id})
 
     # Log exceptions
     except Exception as e:
