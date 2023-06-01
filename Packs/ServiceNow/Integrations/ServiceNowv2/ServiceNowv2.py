@@ -856,12 +856,13 @@ class Client(BaseClient):
             attachments = attachments_res['result']
             links = [(attachment.get('download_link', ''), attachment.get('file_name', ''))
                      for attachment in attachments]
-
+        demisto.info(f"get the following links: {links}")
         for link in links:
             if self.use_oauth:
                 access_token = self.snow_client.get_access_token()
                 headers.update({'Authorization': f'Bearer {access_token}'})
                 file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
+                demisto.info(f"for link {link}\n got the following file_re: {file_res}")
             else:
                 file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
                                         proxies=self._proxies)
@@ -2411,6 +2412,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         for file in file_entries:
             if '_mirrored_from_xsoar' not in file.get('File'):
                 file['Tags'] = [params.get('file_tag_from_service_now')]
+                demisto.info(f"appending the following file to entries: {file}")
                 entries.append(file)
 
     if client.use_display_value:
