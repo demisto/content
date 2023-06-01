@@ -85,7 +85,7 @@ class Client(BaseClient):
                 raise DemistoException(STATUS_CODE_MSGS[response.status_code])
             else:
                 raise DemistoException(
-                    "Status code {0} for API request".format(response.status_code)
+                    f"Status code {response.status_code} for API request"
                 )
 
         return response
@@ -168,7 +168,7 @@ def get_task_monitor_results_command(module_name: str):
                 if not total_pages:
                     demisto.debug(total_pages)
                     raise DemistoException(
-                        "Something is wrong, header {0} is empty for API request".format(PAGINATION_HEADER_NAME)
+                        f"Something is wrong, header {PAGINATION_HEADER_NAME} is empty for API request"
                     )
                 total_pages = int(total_pages)
 
@@ -181,7 +181,7 @@ def get_task_monitor_results_command(module_name: str):
 
         # compose result data
         return CommandResults(
-            outputs_prefix="Resecurity.{0}".format(MAPPING.get(module_name, {}).get("prefix", "").replace(" ", "")),
+            outputs_prefix=f"Resecurity.{MAPPING.get(module_name, {}).get('prefix', '').replace(' ', '')}",
             outputs_key_field="id",
             outputs=result[:limit],
             readable_output=get_human_readable_output(MAPPING.get(module_name, {}).get("prefix"), monitor_task_id, result),
@@ -235,7 +235,7 @@ def main() -> None:
 
         # command cases implementation
         commands = {
-            "get-task-monitor-results-data-breaches": get_task_monitor_results_command(MODULE_NAME_BREACHES)
+            "resecurity-get-task-monitor-results-data-breaches": get_task_monitor_results_command(MODULE_NAME_BREACHES)
         }
 
         if command == 'test-module':
