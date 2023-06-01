@@ -41,7 +41,6 @@
 
 # Important Integrations
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
-/Packs/EWS/Integrations/EWSv2/* @esharf
 /Packs/QRadar/Integrations/QRadar_v3/* @ilaner
 /Packs/Slack/Integrations/* @amshamah419 @rshunim 
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
@@ -58,10 +57,10 @@
 
 
 # Build related
-.circleci/config.yml @esharf
-.gitlab/ci/* @esharf
-.gitlab/* @esharf
-.gitlab-ci.yml @esharf
+.circleci/config.yml @yucohen
+.gitlab/ci/* @yucohen
+.gitlab/* @yucohen
+.gitlab-ci.yml @yucohen
 .gitlab/ci/on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/staging.yml @ilaner
