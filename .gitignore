@@ -50,22 +50,25 @@ requirements.txt
 .envrc
 Packs/**/report_pytest.json
 
-# coverage related
+# Build related
+.gitlab-internal
+
+# Coverage related
 /coverage_report
 .coverage
 
-# devcontainer folders
+# Dev-container folders
 .devcontainer/certs.crt
 .devcontainer/createCommand_unix.sh
 **/.devcontainer
 !/.devcontainer
 
-# authentication files
+# Authentication files
 *.pem
 *.crt
 *.key
 
-# neo4j
+# Neo4j
 neo4j-data
 
 # MicroSocks (Potentially harmful)
