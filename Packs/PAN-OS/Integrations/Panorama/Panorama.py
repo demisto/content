@@ -3459,11 +3459,63 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 ''' Security Rules Managing '''
 
 
-def xml_get(elem: dict | Any, key: Any, subkeys=('member', '#text', '@name')):
-    if type(elem) is not dict:
-        return elem
+def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')) -> str | list | None:
+    """
+    Takes a dictionary converted from XML and a key and recursively "digs" through all the nested dicts,
+    using the subkeys only if needed, until it finds a non-dict value.
+    If it hits a list it will return a list of recursive calls of the list's elements.
 
-    value = elem.get(key)
+    For example:
+
+    In this case since one of the subkeys are in the sub dict, it will use it:
+    >>> xml_dict = {
+    ...     'key': {
+    ...         'random': 'foo',
+    ...         'subkey1': 'value'
+    ...     }
+    ... }
+    >>> xml_get(xml_dict, 'key', subkeys=('subkey1', 'subkey2'))
+    'value'
+
+    When none of the subkeys are in the sub dict it will pick a random key that does not begin with "@":
+    >>> xml_dict = {
+    ...     'key': {
+    ...         '@xml_attr': 'foo',       
+    ...         'random': 'value'
+    ...     }
+    ... }
+    >>> xml_get(xml_dict, 'key', subkeys=('subkey1', 'subkey2'))
+    'value'
+
+    When a list is found it will return a list of recursive calls of the list's elements:
+    >>> xml_dict = {
+    ...     'key': [
+    ...         {
+    ...             'random': 'foo',
+    ...             'subkey1': 'value1'
+    ...         },
+    ...         {
+    ...             '@xml_attr': 'foo',       
+    ...             'random': 'value2'
+    ...         }
+    ...     ]
+    ... }
+    >>> xml_get(xml_dict, 'key', subkeys=('subkey1', 'subkey2'))
+    ['value1', 'value2']
+
+    Args:
+        xml_dict (dict | Any): _description_
+        key (Any): _description_
+        subkeys (tuple, optional): _description_. Defaults to ('member', '#text', '@name').
+
+    Returns:
+        _type_ (str, list, None): _description_
+    """
+
+    if type(xml_dict) is not dict:
+        return xml_dict             # type: ignore[return-value]
+
+    value = xml_dict.get(key)
 
     if type(value) is dict:
         return next(
@@ -3496,7 +3548,18 @@ def prettify_rule(rule: dict):
         None: '⬜',
     }
 
-    context_rule: Dict[str, Any] = {}
+    context_rule: Dict[str, Any] = {
+        'NegateDestination': rule_get('negate-destination'),
+        'Disabled': rule_get('disabled'),
+        'ICMPUnreachable': rule_get('icmp-unreachable'),
+        'Description': rule_get('description'),
+        'ProfileSetting': rule_get('profile-setting'),
+        'GroupTag': rule_get('group-tag'),
+        'Schedule': rule_get('schedule'),
+        'LogStart': rule_get('log-start'),
+        'LogForwardingProfile': rule_get('log-setting'),
+        'NegateSource': rule_get('negate-source'),
+    }
     pretty_rule: Dict[str, Any] = {}
 
     if DEVICE_GROUP:
@@ -3521,7 +3584,7 @@ def prettify_rule(rule: dict):
     pretty_rule['Profile'] = \
         context_rule['SecurityProfile'] = \
         profiles
-        
+
     target = dict_safe_get(rule, ('target',), {}, dict)
     target |= {
         'devices': xml_get(target, 'devices'),
@@ -3538,25 +3601,15 @@ def prettify_rule(rule: dict):
     context_rule['Type'] = pretty_rule['Type'] = rule_get('rule-type')
     context_rule['From'] = pretty_rule['Source Zone'] = rule_get('from')
     context_rule['DestinationDevice'] = pretty_rule['Destination Device'] = rule_get('destination-hip')
-    context_rule['NegateSource'] = rule_get('negate-source')
     context_rule['Action'] = pretty_rule['Action'] = rule_get('action')
     context_rule['SourceDevice'] = pretty_rule['Source Device'] = rule_get('source-hip')
     context_rule['Tags'] = pretty_rule['Tags'] = rule_get('tag')
-    context_rule['LogStart'] = rule_get('log-start')
-    context_rule['LogForwardingProfile'] = rule_get('log-setting')
     context_rule['SourceUser'] = pretty_rule['Source User'] = rule_get('source-user')
-    context_rule['Schedule'] = rule_get('schedule')
     context_rule['Application'] = pretty_rule['Application'] = rule_get('application')
     context_rule['Service'] = pretty_rule['Service'] = rule_get('service')
     context_rule['To'] = pretty_rule['Destination Zone'] = rule_get('to')
-    context_rule['Description'] = rule_get('description')
-    context_rule['GroupTag'] = rule_get('group-tag')
     context_rule['Source'] = pretty_rule['Source Address'] = rule_get('source')
-    context_rule['NegateDestination'] = rule_get('negate-destination')
-    context_rule['Disabled'] = rule_get('disabled')
-    context_rule['ProfileSetting'] = rule_get('profile-setting')
     context_rule['CustomUrlCategory'] = pretty_rule['Url Category'] = rule_get('category')
-    context_rule['ICMPUnreachable'] = rule_get('icmp-unreachable')
     context_rule['Destination'] = pretty_rule['Destination Address'] = rule_get('destination')
 
     context_rule['Option'] = option = rule.get('option')
@@ -3564,7 +3617,7 @@ def prettify_rule(rule: dict):
         tick_box.get(rule_get('log-start'), '') + ' Log at Session Start',
         'Log Forwarding: ' + str(rule_get('log-setting')),
         'Schedule: ' + str(rule_get('schedule')),
-        'QoS Marking: ' + str(next(filter(lambda k: not k.startswith('@'), qos.keys()), None) # type: ignore[assignment] # pylint: disable=assignment
+        'QoS Marking: ' + str(next(filter(lambda k: not k.startswith('@'), qos.keys()), None)  # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
                               if type(qos := context_rule['QoSMarking']) is dict else qos),
         tick_box.get(xml_get(option, 'disable-server-response-inspection'), '') \
         + ' Disable Server Response Inspection'
@@ -3663,12 +3716,12 @@ def panorama_list_rules_command(args: dict):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
                                          ['Name', 'Location', 'Tags', 'Type',
-                                            'Source Zone', 'Source Address', 'Source User',
-                                            'Source Device', 'Destination Zone',
-                                            'Destination Address', 'Destination Device',
-                                            'Application', 'Service', 'Url Category',
-                                            'Action', 'Profile', 'Profile Group', 'Options',
-                                            'Target'],
+                                          'Source Zone', 'Source Address', 'Source User',
+                                          'Source Device', 'Destination Zone',
+                                          'Destination Address', 'Destination Device',
+                                          'Application', 'Service', 'Url Category',
+                                          'Action', 'Profile', 'Profile Group', 'Options',
+                                          'Target'],
                                          removeNull=True),
         'EntryContext': {
             "Panorama.SecurityRule(val.Name == obj.Name)": context_rules
