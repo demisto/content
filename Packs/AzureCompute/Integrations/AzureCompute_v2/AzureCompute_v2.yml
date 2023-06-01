@@ -29,32 +29,32 @@ configuration:
   required: false
   type: 4
   hidden: true
-- displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
-  name: cred_auth_id
+- name: cred_auth_id
   required: false
-  hiddenusername: true
   type: 9
-- displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
-  name: cred_token
+  displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
+  hiddenusername: true
+- name: cred_token
   required: false
-  hiddenusername: true
   type: 9
-- displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
-  name: cred_enc_key
+  displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
+  hiddenusername: true
+- name: cred_enc_key
   required: false
-  hiddenusername: true
   type: 9
-- displaypassword: Certificate Thumbprint
+  displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
+  hiddenusername: true
+- name: cred_certificate_thumbprint
+  required: false
+  type: 9
+  displaypassword: Certificate Thumbprint
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  name: cred_certificate_thumbprint
-  required: false
   hiddenusername: true
-  type: 9
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
+- display: Private Key
   name: private_key
   required: false
   type: 14
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
 - display: Default Subscription ID
   name: subscription_id
   required: false
@@ -697,7 +697,7 @@ script:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
       description: The address ID.
       type: String
-  dockerimage: demisto/crypto:1.0.0.61689
+  dockerimage: demisto/crypto:1.0.0.62171
   feed: false
   isfetch: false
   longRunning: false
