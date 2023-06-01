@@ -94,6 +94,7 @@ class Client(BaseClient):
                   "instancesReturned": 1,
                   "offset": offset,
                   "returnUserActivityEntryCount": user_activity_entry_count}
+        demisto.debug(f'params sent to Workday API are {str(params)}')
         res = self.http_request(method='GET', url_suffix='/activityLogging', params=params, retries=3)
         return res.get('data', [])
 
@@ -117,14 +118,15 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     offset = 0
     while logging_to_fetch > 0:
         limit = logging_to_fetch if logging_to_fetch < 1000 else 1000
+        demisto.debug(f'Requesting loggings from Workday with {from_date=}, {to_date=}, {offset=}')
         res = client.get_activity_logging_request(from_date=from_date, to_date=to_date, offset=offset, limit=limit)
         demisto.debug(f'Fetched {len(res)} activity loggings.')
         activity_loggings.extend(res)
         offset += len(res)
         logging_to_fetch -= len(res)
-        demisto.debug(f'{logging_to_fetch} loggings left to fetch.')
         if not res:
             break
+        demisto.debug(f'{logging_to_fetch} loggings left to fetch.')
     demisto.debug(f'Found {len(activity_loggings)} activity loggings.')
     return activity_loggings
 
@@ -138,23 +140,25 @@ def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, 
         last_run: Last run object.
         time_to_check: last request time from last run or first fetch.
     """
-
-    last_fetched_loggings_tuples = set(last_run.get('last_fetched_loggings_tuples', []))
+    last_fetched_stamps = set(last_run.get('last_fetched_stamps', []))
     demisto.debug(f'Looking for duplicated loggings with requestTime {time_to_check}')
+    len_start_loggings = len(activity_loggings)
     for logging in activity_loggings.copy():
         logging_id = logging.get('taskId')
         logging_request_time: str = logging.get('requestTime')
-        unique_tuple_to_check = (logging_id, logging_request_time)
+        unique_stamp = f'{logging_id}$$${logging_request_time}'
         if datetime.strptime(logging_request_time, DATE_FORMAT) > datetime.strptime(time_to_check, DATE_FORMAT):
             demisto.debug(f'Found logging with bigger requestTime, setting {time_to_check=}')
             time_to_check = logging_request_time
-            last_fetched_loggings_tuples = {unique_tuple_to_check}
+            last_fetched_stamps = {unique_stamp}
         else:
-            if unique_tuple_to_check in last_fetched_loggings_tuples:
+            if unique_stamp in last_fetched_stamps:
+                # demisto.info(f"Found a duplication of a log with {logging_id=} and {logging_request_time=}. Removing.")
                 activity_loggings.remove(logging)
             else:
-                last_fetched_loggings_tuples.add(unique_tuple_to_check)
-    return activity_loggings, list(last_fetched_loggings_tuples)
+                last_fetched_stamps.add(unique_stamp)
+    demisto.debug(f'Found {len_start_loggings - len(activity_loggings)} duplications.')
+    return activity_loggings, list(last_fetched_stamps)
 
 
 def remove_milliseconds_from_time_of_loggings(activity_loggings: list):
@@ -241,14 +245,14 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
 
     # setting last run object
     remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
-    activity_loggings, last_fetched_loggings_tuples = remove_duplicated_activity_logging(
+    activity_loggings, last_fetched_stamps = remove_duplicated_activity_logging(
         activity_loggings=activity_loggings,
         last_run=last_run,
         time_to_check=from_date)
     if activity_loggings:
         last_log_time = activity_loggings[-1].get('requestTime')
         last_run = {'last_fetch_time': last_log_time,
-                    'last_fetched_loggings_tuples': last_fetched_loggings_tuples}
+                    'last_fetched_stamps': last_fetched_stamps}
 
     return activity_loggings, last_run
 
