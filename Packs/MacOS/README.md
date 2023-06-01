@@ -14,7 +14,10 @@ Open your MacOS device and follow these step:
 
 5. Type **:wq** to save and exit the file.
 
-6. Restart the syslogd daemon by writing the command **sudo launchctl stop com.apple.syslogd** and than **sudo launchctl start com.apple.syslogd**.
+6. Restart the syslogd daemon by typing the following commands:
+      **sudo launchctl stop com.apple.syslogd**
+      **sudo launchctl start com.apple.syslogd**.
+
 
 ## Collect Events from Vendor
 
