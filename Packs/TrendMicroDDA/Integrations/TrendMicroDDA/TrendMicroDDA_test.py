@@ -2,9 +2,16 @@ import pytest
 import demistomock as demisto
 
 
-@pytest.mark.parametrize('sample_url', ["https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DgrBFMP3HDZA"])
-def test_simple_upload_sample_url(mocker, requests_mock, sample_url):
-
+def test_simple_upload_sample_url(mocker, requests_mock):
+    """
+    Given:
+        - URL that needs to be encoded.
+    When:
+        - simple_upload_sample_url is called.
+    Then:
+        - Ensure the given url is encoded correctly and hash_url func doesn't fail.
+    """
+    sample_url = "https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DgrBFMP3HDZA"
     mocker.patch.object(demisto, 'params', return_value={'apiKey': 'my_apikey', 'protocol_version': 'TEST',
                                                          'server': 'https://www.example.com',
                                                          'ip_address': '1.1.1.1'})
