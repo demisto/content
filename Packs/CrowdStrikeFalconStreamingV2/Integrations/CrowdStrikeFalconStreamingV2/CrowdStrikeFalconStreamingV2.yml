@@ -17,7 +17,7 @@ configuration:
 - display: Client Secret
   hidden: true
   name: client_secret
-  required: true
+  required: false
   type: 4
 - displaypassword: Client Secret
   name:  credentials_client_secret
