@@ -377,9 +377,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      keywordsfound:
+      emailkeywordsfound:
         complex:
-          root: emailkeywordsfound
+          root: MatchRegex
+          accessor: results
     separatecontext: false
     continueonerrortype: ""
     view: |-
