@@ -1,5 +1,14 @@
+import demistomock as demisto
 import pytest
-from IronscalesEventCollector import *
+from IronscalesEventCollector import (
+    arg_to_datetime,
+    fetch_events_command,
+    get_events_command,
+    incident_to_events,
+    main,
+    Client,
+    DATEPARSER_SETTINGS,
+)
 
 
 @pytest.fixture
@@ -28,7 +37,7 @@ def test_fetch_events_by_fetch_time(client):
     """
     events, last_id = fetch_events_command(
         client,
-        first_fetch=dateparser.parse("2 days ago"),  # type: ignore
+        first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=1,
     )
     assert len(events) == 1
@@ -44,7 +53,7 @@ def test_fetch_events_by_last_id(client):
     """
     res, last_run = fetch_events_command(
         client,
-        first_fetch=dateparser.parse("2 days ago"),  # type: ignore
+        first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
         last_id=1
     )
@@ -138,7 +147,7 @@ def test_incident_to_events():
         (
             {"max_fetch": "1", "first_fetch": "not a date", "url": ""},
             False,
-            "Invalid first_fetch value: not a date"
+            "\"not a date\" is not a valid date"
         ),
     ]
 )
@@ -149,6 +158,7 @@ def test_test_module(mocker, params, is_valid, result_msg):
     Then: Make sure the correct message is returned.
     """
     mocker.patch.object(Client, "get_jwt_token", return_value="mock_token")
+    mocker.patch.object(Client, "get_open_incident_ids", return_value=[])
     mocker.patch.object(Client, "get_incident")
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "params", return_value=params)

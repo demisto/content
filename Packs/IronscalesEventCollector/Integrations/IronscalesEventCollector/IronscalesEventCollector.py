@@ -3,7 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import copy
-import dateparser
 import urllib3
 from typing import Dict, Tuple
 
@@ -18,6 +17,10 @@ PRODUCT = "ironscales"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
 DEFAULT_LIMIT = 10
+DATEPARSER_SETTINGS = {
+    "RETURN_AS_TIMEZONE_AWARE": True,
+    "TIMEZONE": "UTC",
+}
 
 
 """ CLIENT CLASS """
@@ -101,8 +104,8 @@ def get_incident_ids_by_time(
     current_idx = (start_idx + end_idx) // 2
 
     incident = client.get_incident(incident_ids[current_idx])
-    incident_time = dateparser.parse(incident.get("first_reported_date", ""))
-    assert incident_time, "Missing field `first_reported_date` in incident data"
+    incident_time = arg_to_datetime(incident.get("first_reported_date", ""), settings=DATEPARSER_SETTINGS)
+    assert isinstance(incident_time, datetime)
 
     if incident_time > start_time:
         if current_idx == start_idx:
@@ -137,7 +140,7 @@ def get_open_incident_ids_to_fetch(
         return []
     if isinstance(last_id, int):
         # We filter out only events with ID greater than the last_id
-        return list(filter(lambda i: i > last_id, incident_ids))  # type: ignore
+        return list(filter(lambda i: i > last_id, all_open_incident_ids))  # type: ignore
     return get_incident_ids_by_time(
         client,
         all_open_incident_ids,
@@ -168,8 +171,8 @@ def get_events_command(
     args: Dict[str, Any]
 ) -> Tuple[CommandResults, List[Dict[str, Any]]]:
     limit: int = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH)
-    assert isinstance(since_time, datetime), f"Invalid since_time value: {args.get('since_time')}"
+    since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
+    assert isinstance(since_time, datetime)
     events, _ = fetch_events_command(client, since_time, limit)
 
     result = CommandResults(
@@ -216,10 +219,7 @@ def fetch_events_command(
     return events, last_id
 
 
-def test_module_command(
-    client: Client,
-    first_fetch: datetime,
-) -> str:
+def test_module_command(client: Client, first_fetch: datetime) -> str:
     fetch_events_command(client, first_fetch, max_fetch=1)
     return "ok"
 
@@ -231,8 +231,8 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
-        assert isinstance(first_fetch, datetime), f"Invalid first_fetch value: {params.get('first_fetch')}"
+        first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
+        assert isinstance(first_fetch, datetime)
         max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
 
         client = Client(
