@@ -1,5 +1,3 @@
-import json
-import requests
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """
@@ -42,7 +40,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='/host/%s' % host
+            url_suffix=f'/host/{host}'
         )
 
     def get_domain_details(self, domain: str) -> Dict[str, Any]:
@@ -53,7 +51,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='/domain/%s/details' % domain
+            url_suffix=f'/domain/{domain}/details'
         )
 
     def get_subdomain(self, domain: str) -> Dict[str, Any]:
@@ -64,7 +62,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='/domain/%s/subdomains' % domain
+            url_suffix=f'/domain/{domain}/subdomains'
         )
 
 
@@ -90,7 +88,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
             raise e
 
 
-def get_account_status_command(client: Client, params: Dict[str, Any]) -> str:
+def get_account_status_command(client: Client, params: Dict[str, Any]) -> CommandResults:
     """
     Get the information about the user and user credit
     """
@@ -134,7 +132,7 @@ def get_host_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
     return command_results
 
 
-def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     domain = args.get('domain')
     if not domain:
@@ -154,7 +152,7 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     )
 
 
-def get_subdomain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_subdomain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     domain = args.get('domain')
     if not domain:
