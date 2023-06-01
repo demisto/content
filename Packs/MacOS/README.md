@@ -1,7 +1,7 @@
 # MacOS
 This pack includes Cortex XSIAM content. 
-MacOS Ventura is currently supported for XSIAM.
-
+MacOS Ventura is the current supported OS for XSIAM.
+<~XSIAM>
 ## Configuration on Server Side
 You need to configure MacOS to forward Syslog messages.
 
@@ -27,3 +27,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - macos
    - product as product - ventura
+</~XSIAM>
