@@ -26,5 +26,5 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the Syslog Collector, set the following values:
    - vendor as fireeye
    - product as hx_audit
-   - format ax Auto-Detect
+   - format as Auto-Detect
  
