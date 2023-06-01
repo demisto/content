@@ -56,8 +56,11 @@ Retrieve monitoring results from a specific monitor task
 | Resecurity.DataBreach.source_name | String | Data breach source name | 
 
 #### Command example
+
 ```!resecurity-get-task-monitor-results-data-breaches monitor_task_id=1 limit=2 mode=2```
+
 #### Context Example
+
 ```json
 {
     "Resecurity": {
@@ -98,15 +101,19 @@ Retrieve monitoring results from a specific monitor task
 #### Human Readable Output
 
 >### Breaches results from task with ID 1
+>
 >|date|detection_date|email|id|info|ip|password|password_hash|query|salt|source_name|username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2016-11-04 21:55:00 | 2023-03-18 13:14:04 | email@domain.test | 11192938 |  | 95.112.168.138 |  | 71356c329abee63757ecb3f60b5f90be34ab47caa85d41344cea3f9c92f38eea0313bf60650fe2149e4a2e169d492d9b59a71e97d7331d74caa8b054b448cf04 | domain.test |  | source1 | JMBStarYT |
->| 2016-11-30 21:30:00 | 2023-03-18 13:14:04 | email@domain.test | 47200407 |  | 86.178.141.167 |  | c2f5c61a8ad5dc1ef8c0478617cac76a | domain.test |  | source2 |  |
+>| 2016-11-04 21:55:00 | 2023-03-18 13:14:04 | <email@domain.test> | 11192938 |  | 95.112.168.138 |  | 71356c329abee63757ecb3f60b5f90be34ab47caa85d41344cea3f9c92f38eea0313bf60650fe2149e4a2e169d492d9b59a71e97d7331d74caa8b054b448cf04 | domain.test |  | source1 | JMBStarYT |
+>| 2016-11-30 21:30:00 | 2023-03-18 13:14:04 | <email@domain.test> | 47200407 |  | 86.178.141.167 |  | c2f5c61a8ad5dc1ef8c0478617cac76a | domain.test |  | source2 |  |
 
 
 #### Command example
+
 ```!resecurity-get-task-monitor-results-data-breaches monitor_task_id=1 page_size=2 page=10 mode=2```
+
 #### Context Example
+
 ```json
 {
     "Resecurity": {
@@ -147,8 +154,9 @@ Retrieve monitoring results from a specific monitor task
 #### Human Readable Output
 
 >### Breaches results from task with ID 1
+>
 >|date|detection_date|email|id|info|ip|password|password_hash|query|salt|source_name|username|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2016-12-07 15:53:00 | 2023-03-18 13:14:04 | test@test.test | 361424177 |  |  | aaaaaa |  | test.test |  | source3 |  |
->| 2016-12-07 15:53:00 | 2023-03-18 13:14:04 | test@test.test | 361832967 |  |  | pppppp |  | test.test |  | source3 |  |
+>| 2016-12-07 15:53:00 | 2023-03-18 13:14:04 | <test@test.test> | 361424177 |  |  | aaaaaa |  | test.test |  | source3 |  |
+>| 2016-12-07 15:53:00 | 2023-03-18 13:14:04 | <test@test.test> | 361832967 |  |  | pppppp |  | test.test |  | source3 |  |
 
