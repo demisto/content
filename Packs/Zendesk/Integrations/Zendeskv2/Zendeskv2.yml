@@ -45,6 +45,12 @@ configuration:
   additionalinfo: If true, XSOAR will mirror also the ticket closeing.
   hidden:
   - marketplacev2
+- display: Get incident attachments
+  name: get_attachments
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 - additionalinfo: Comment and files that will be marked with this tag will be pushed into Zendesk.
   defaultvalue: mirror
   display: Mirror tags
@@ -712,7 +718,7 @@ script:
   - name: zendesk-group-user-list
     description: |-
       Get group's users. 
-      Allowd for: Admins, Agents and Light Agents.
+      Allowed for: Admins, Agents and Light Agents.
     arguments:
     - name: group_id
       required: true
@@ -1011,6 +1017,10 @@ script:
       description: The user who requested this ticket.
     - name: assignee_email
       description: The email address of the agent to assign the ticket to.
+    - name: comment
+      description: A comment to add to the ticket.
+    - name: html_comment
+      description: An HTML comment to add to the ticket.
     - name: collaborators
       isArray: true
       description: Users to add as CC's when creating a ticket.
@@ -1206,6 +1216,8 @@ script:
       description: Users to add as CCs when creating a ticket.
     - name: comment
       description: A comment to add to the ticket.
+    - name: html_comment
+      description: An HTML comment to add to the ticket.
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status

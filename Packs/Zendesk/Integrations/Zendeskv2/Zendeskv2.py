@@ -613,7 +613,8 @@ class ZendeskClient(BaseClient):
     class Ticket:
 
         def __init__(self, type: Optional[str] = None, collaborators: Optional[str] = None,
-                     comment: Optional[str] = None, public: Optional[Union[str, bool]] = None,
+                     comment: Optional[str] = None, html_comment: Optional[str] = None,
+                     public: Optional[Union[str, bool]] = None,
                      email_ccs: Optional[str] = None, priority: Optional[str] = None,
                      followers: Optional[Union[List[str], str]] = None, status: Optional[str] = None,
                      **kwargs):
@@ -632,6 +633,8 @@ class ZendeskClient(BaseClient):
                 self._data['comment'] = {'body': comment}
                 if public:
                     self._data['comment']['public'] = argToBoolean(public)
+            if html_comment:
+                self._data['comment'] = {'html_body': html_comment}
             if status:
                 Validators.validate_ticket_status(status)
                 self._data['status'] = status
