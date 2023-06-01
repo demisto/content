@@ -6,14 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4acf014d-a5fc-4a0f-8e02-6f9da387ab39
+    taskid: 22f0dbca-6969-4bbb-8c8a-10a9e630abe3
     type: start
     task:
-      id: 4acf014d-a5fc-4a0f-8e02-6f9da387ab39
+      id: 22f0dbca-6969-4bbb-8c8a-10a9e630abe3
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -28,12 +29,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5e6c6540-005e-46e2-82a6-3438abc5e54e
+    taskid: 6f82bf5d-08f1-48a1-8339-97fe52549acd
     type: regular
     task:
-      id: 5e6c6540-005e-46e2-82a6-3438abc5e54e
+      id: 6f82bf5d-08f1-48a1-8339-97fe52549acd
       version: -1
       name: Create Test Doucment
       description: Creates a document
@@ -58,12 +64,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 4c495078-ea58-4fb7-8f28-4c680e7b330a
+    taskid: 89d2975a-b137-4954-8b1e-4b7f6586f6c3
     type: regular
     task:
-      id: 4c495078-ea58-4fb7-8f28-4c680e7b330a
+      id: 89d2975a-b137-4954-8b1e-4b7f6586f6c3
       version: -1
       name: 'Get Document after creation '
       description: Returns a document matching the given ID.
@@ -90,12 +101,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7b989b93-9175-4d37-8cdf-3e88443e2562
+    taskid: d139f296-1bea-42ca-8c2a-bddd44460664
     type: regular
     task:
-      id: 7b989b93-9175-4d37-8cdf-3e88443e2562
+      id: d139f296-1bea-42ca-8c2a-bddd44460664
       version: -1
       name: Update document
       description: Updates a document with a given ID
@@ -113,7 +129,6 @@ tasks:
         simple: ${GoogleDocs.DocumentId}
       required_revision_id:
         simple: ${GoogleDocs.RevisionId}
-      target_revision_id: {}
     separatecontext: false
     view: |-
       {
@@ -125,12 +140,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a0aa50db-4056-4097-85de-68e5ac338788
+    taskid: 8b41306c-2c7a-482e-8157-0adc25a15b90
     type: regular
     task:
-      id: a0aa50db-4056-4097-85de-68e5ac338788
+      id: 8b41306c-2c7a-482e-8157-0adc25a15b90
       version: -1
       name: Get document after update
       description: Returns a document matching the given ID.
@@ -152,12 +172,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 07fe34d2-b010-4913-8ad3-582d8557bbc8
+    taskid: 085e0629-5318-487c-8ec0-f353541c117c
     type: regular
     task:
-      id: 07fe34d2-b010-4913-8ad3-582d8557bbc8
+      id: 085e0629-5318-487c-8ec0-f353541c117c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -171,10 +196,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -186,6 +207,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
