@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def get_dbot_score(resCmd: list[dict[Any, Any]]) -> list[dict[Any, Any]]:
+def get_dbot_score(resCmd: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Gets the CVE and returns its reputation according to its CVSS score.
 
