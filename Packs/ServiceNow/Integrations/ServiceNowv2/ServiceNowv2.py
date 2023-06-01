@@ -2595,8 +2595,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 file_name, file_extension = os.path.splitext(full_file_name)
                 if not file_extension:
                     file_extension = ''
-                client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
-                                   ticket_type)
+                if not params.get('file_tag_from_service_now') in entry.get('tags', []):
+                    client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
+                                       ticket_type)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
