@@ -3,7 +3,8 @@ commonfields:
   id: AWS Feed
   version: -1
 configuration:
-- display: Services
+- additionalinfo: The services to fetch indicators from. Default value is all. If empty, all services will be included.
+  display: Services
   name: services
   options:
   - AMAZON
@@ -28,6 +29,8 @@ configuration:
   - ROUTE53_HEALTHCHECKS_PUBLISHING
   - ROUTE53_RESOLVER
   - WORKSPACES_GATEWAYS
+  - All
+  defaultvalue: 'All'
   required: true
   type: 16
 - additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will be included.
