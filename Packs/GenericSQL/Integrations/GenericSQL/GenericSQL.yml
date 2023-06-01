@@ -42,7 +42,7 @@ configuration:
   name: query
   required: false
   type: 0
-  additionalinfo: The Generic SQL query/procedure.
+  additionalinfo: The  Generic SQL query/procedure.
 - display: Fetch Column
   name: column_name
   required: false
@@ -236,4 +236,5 @@ script:
 fromversion: 5.0.0
 tests:
 - generic-sql
+- generic-sql-mssql-encrypted-connection
 defaultclassifier: GenericSQL Classifier
