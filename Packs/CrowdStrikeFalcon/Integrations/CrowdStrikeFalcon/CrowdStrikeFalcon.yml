@@ -3605,7 +3605,6 @@ script:
       required: true
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
-
   - arguments:
     - description: The ID of the incident to update.
       isArray: false
@@ -3632,7 +3631,6 @@ script:
     - contextPath: CrowdStrike.IDPIncident.SetIncidentState.Incident.LifeCycleStage
       description: The new incident status.
       type: String
-
   - arguments:
     - description: The ID of the incident to add the comment to.
       isArray: false
