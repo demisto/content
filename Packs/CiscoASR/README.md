@@ -11,7 +11,7 @@ Perform the following in order to configure log forwarding [Documentation](https
 3. Input the destination of where the logs should be sent by typing logging "\<Hostname OR IP Address \>"
 
 ## Syslog Time Parsing Support
-Support for syslog timestamp parsing is available with UTC timezone (System default), following to adding the year and milliseconds to the product default datetime format.
+Support for syslog timestamp parsing is available with UTC timezone (system default). You will need to add the year and milliseconds to the product default datetime format.
 * [Clock Timezone command doc](https://www.cisco.com/c/en/us/td/docs/routers/xr12000/software/xr12k_r3-9/system_management/command/reference/yr39xr12k_chapter4.html#wp748744425)
 * [Logging commands doc](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/system_monitoring/command/reference/b-sysmon-cr-asr9k/b-sysmon-cr-asr9k_chapter_0100.html#wp1414739610)
 1. Open your Cisco ASR supported device terminal and type **enable** to enter Privileged EXEC mode.
