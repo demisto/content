@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import requests
 import traceback
 from asyncio import create_task, sleep, run
 from contextlib import asynccontextmanager
@@ -11,7 +10,8 @@ from typing import Dict, AsyncGenerator, AsyncIterator
 from collections import deque
 from random import uniform
 
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 TOKEN_RETRIEVAL_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 
@@ -570,7 +570,9 @@ def main():
     params: Dict = demisto.params()
     base_url: str = params.get('base_url', '')
     client_id: str = params.get('client_id', '')
-    client_secret: str = params.get('client_secret', '')
+    client_secret: str = params.get('credentials_client_secret', {}).get('password') or params.get('client_secret', '')
+    if not client_secret:
+        raise DemistoException('Client Secret must be provided.')
     event_type = ','.join(params.get('event_type', []) or [])
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
