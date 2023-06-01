@@ -675,6 +675,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Netmiko",
+            "playbookID": "Netmiko_test"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
