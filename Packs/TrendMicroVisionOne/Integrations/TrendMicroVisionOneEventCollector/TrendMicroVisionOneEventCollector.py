@@ -600,7 +600,8 @@ def fetch_events_by_log_type(
     get_logs_func: callable,
     log_last_run_time_field: str,
     last_run: Dict,
-    limit: int = DEFAULT_MAX_LIMIT
+    limit: int = DEFAULT_MAX_LIMIT,
+    should_send_events: bool = True
 ):
     """
     Get all the logs & sends the logs into XSIAM for each type separately
@@ -612,21 +613,33 @@ def fetch_events_by_log_type(
         log_last_run_time_field (str): the log last run time field
         last_run (dict): the last run object
         limit (int): the maximum number of logs to fetch from each type
+        should_send_events (bool): whether to send the events to XSIAM
 
     """
     logs, latest_log_time = get_logs_func(client, last_run.get(log_last_run_time_field), first_fetch, limit)
 
-    send_events_to_xsiam(events=logs, vendor=VENDOR, product=PRODUCT)
-    last_run.update({log_last_run_time_field: latest_log_time})
-    demisto.info(f'updating last run to: {last_run} for {log_last_run_time_field}={latest_log_time}')
-    demisto.setLastRun(last_run)
+    if should_send_events:
+        send_events_to_xsiam(events=logs, vendor=VENDOR, product=PRODUCT)
+        last_run.update({log_last_run_time_field: latest_log_time})
+        demisto.info(f'updating last run to: {last_run} for {log_last_run_time_field}={latest_log_time}')
+        demisto.setLastRun(last_run)
 
 
 def fetch_all_events(
     client: Client,
     first_fetch: str,
-    limit: int = DEFAULT_MAX_LIMIT
+    limit: int = DEFAULT_MAX_LIMIT,
+    should_send_events: bool = True
 ):
+    """
+    Fetch all the logs types.
+
+    client (Client): the client object
+    first_fetch (str): the first fetch time
+    limit (int): the maximum number of logs to fetch from each type
+    should_send_events (bool): whether to send the events to XSIAM
+
+    """
     last_run = demisto.getLastRun()
     demisto.info(f'{last_run=}')
     for logs_func, log_last_run_time in [
@@ -649,7 +662,8 @@ def fetch_all_events(
             get_logs_func=logs_func,
             log_last_run_time_field=log_last_run_time,
             last_run=last_run,
-            limit=limit
+            limit=limit,
+            should_send_events=should_send_events
         )
 
 
@@ -664,7 +678,7 @@ def test_module(client: Client, first_fetch: str) -> str:
     Returns:
         str: 'ok' in case of success, exception in case of an error.
     """
-    fetch_all_events(client=client, first_fetch=first_fetch, limit=1)
+    fetch_all_events(client=client, first_fetch=first_fetch, limit=1, should_send_events=False)
     return 'ok'
 
 
