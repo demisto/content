@@ -4,6 +4,7 @@ It is important to know what data is manageable for the user in order to work wi
 This integration was integrated and tested with Tenable.sc v5.7.0.
 
 ## Use cases:
+
     * Create and run scans.
     * Launch and manage scan results and the found vulnerabilities.
     * Create and view assets.
@@ -18,7 +19,7 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | The server URL. | True |
+    | Server URL (e.g. <https://192.168.0.1>) | The server URL. | True |
     | Access key | follow the readme for steps to generate one. | False |
     | Secret key |  | False |
     | Username | The Username is either admin or secman \(depend on the role you wish to log into\) and your password to the tenable server. | False |
@@ -65,6 +66,7 @@ Requires security manager authentication. Get a list of Tenable.sc existing scan
 #### Human Readable Output
 
 ### Tenable.sc Scans
+
 |ID|Name|Description|Policy|Group|Owner|
 |---|---|---|---|---|---|
 | 3 | test_scan_2023 | Test scan | Network Scan | Full Access | secman |
@@ -99,6 +101,7 @@ Requires security manager authentication. Launch an existing scan from Tenable.s
 #### Human Readable Output
 
 ### Tenable.sc Scan
+
 |Name|ID|OwnerID|JobID|Status|
 |---|---|---|---|---|
 | test_scan_2023 | 169 | 38 | 118864 | Queued |
@@ -156,29 +159,43 @@ Requires security manager authentication. Get details about a given vulnerabilit
 #### Human Readable Output
 
 ## Vulnerability: FTP Server Detection (10092)
+
 ### Synopsis
+
 An FTP server is listening on a remote port.
+
 ### Description
+
 It is possible to obtain the banner of the remote FTP server by connecting to a remote port.
+
 ### Solution
 
 ### Hosts
+
 |IP|MAC|Port|Protocol|
 |---|---|---|---|
 | {IP} | {MAC} | 21 | TCP |
+
 ### Risk Information
+
 |RiskFactor|
 |---|
 | None |
+
 ### Exploit Information
+
 |ExploitAvailable|
 |---|
 | false |
+
 ### Plugin Details
+
 |CheckType|Family|Modified|Published|
 |---|---|---|---|
 | remote | Service detection | 2019-11-22T17:00:00Z | 1999-10-12T16:00:00Z |
+
 ### Vulnerability Information
+
 **No entries.**
 
 ### tenable-sc-get-scan-status
@@ -208,6 +225,7 @@ Requires security manager authentication. Get the status of a specific scan in T
 #### Human Readable Output
 
 ### Tenable.sc Scan Status
+
 |ID|Name|Status|Description|
 |---|---|---|---|
 | 169 | test_scan_2023 | Running | Test scan 2023 |
@@ -257,10 +275,13 @@ Requires security manager authentication. Get a single report with Tenable.sc sc
 #### Human Readable Output
 
 ### Tenable.sc Scan 150 Report
+
 |ID|Name|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 150 | my_Test_scan | Plugin #1 | Full Access | yuv | 115 | 2023-05-18T13:12:51Z | 2023-05-18T13:45:53Z | 33.03333333333333 | 21275 | 2023-05-18T13:45:57Z | Local | Completed | regular | 115 |
+
 ### Vulnerabilities
+
 |ID|Name|Family|Severity|Total|
 |---|---|---|---|---|
 | 11219 | Nessus SYN scanner | Port scanners | Info | 109 |
@@ -296,6 +317,7 @@ Requires security manager authentication. Get a list of Tenable.sc credentials.
 #### Human Readable Output
 
 ### Tenable.sc Credentials
+
 |ID|Name|Type|Group|LastModified|
 |---|---|---|---|---|
 | 1 | Windows server | windows |  | 2023-02-14T11:44:12Z |
@@ -333,6 +355,7 @@ Requires security manager authentication. Get a list of Tenable.sc scan policies
 #### Human Readable Output
 
 ### Tenable.sc Scan Policies
+
 |ID|Name|Description|Type|Group|Owner|LastModified|
 |---|---|---|---|---|---|---|
 | 1 | Network Scan |  | Basic Network Scan |  |  | 2023-02-09T14:58:26Z |
@@ -367,6 +390,7 @@ Requires security manager authentication. Get a list of Tenable.sc report defini
 #### Human Readable Output
 
 ### Tenable.sc Report Definitions
+
 |ID|Name|Description|Type|Group|Owner|
 |---|---|---|---|---|---|
 | 2 | Critical and Exploitable Vulnerabilities Report | Test | pdf | Full Access | test |
@@ -395,6 +419,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 ### Tenable.sc Scan Repositories
+
 |ID|Name|
 |---|---|
 | 1 | Local |
@@ -429,10 +454,13 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 ### Tenable.sc Scan Zones
+
 |ID|Name|IPList|activeScanners|
 |---|---|---|---|
 | 1 | Default Scan Zone | ip | 1 |
+
 ### Tenable.sc Scanners
+
 |ID|Name|Status|
 |---|---|---|
 | 2 | RHEL6 Scanner | 1 |
@@ -467,7 +495,7 @@ Requires security manager role. Create a scan on Tenable.sc
 | dhcp_tracking | Track hosts which have been issued new IP address, (e.g. DHCP). Possible values are: true, false. | Optional | 
 | rollover_type | Scan rollover type. Possible values are: nextDay. | Optional | 
 | dependent_id | Dependent scan ID in case of a dependent schedule, can be retrieved from list-scans command. | Optional | 
-| time_zone | The timezone for the given start_time, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The timezone for the given start_time, possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | start_time | The scan start time, should be in the format of YYYY-MM-DD:HH:MM:SS or relative timestamp (i.e now, 3 days). | Optional | 
 | repeat_rule_freq | to specify repeating events based on an interval of a repeat_rule_freq or more. Possible values are: HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY. | Optional | 
 | repeat_rule_interval | the number of repeat_rule_freq between each interval (for example: If repeat_rule_freq=DAILY and repeat_rule_interval=8 it means every eight days.). | Optional | 
@@ -489,6 +517,7 @@ Requires security manager role. Create a scan on Tenable.sc
 #### Human Readable Output
 
 ### Scan created successfully
+
 |ID|CreatorID|Name|Type|CreationTime|
 |---|---|---|---|---|
 | 70 | 39 | my_name | policy | 2023-05-24T12:33:03Z |
@@ -547,6 +576,7 @@ Requires security manager authentication. Get a list of Tenable.sc Assets.
 #### Human Readable Output
 
 ### Tenable.sc Assets
+
 |ID|Name|Tag|Owner|Type|HostCount|LastModified|
 |---|---|---|---|---|---|---|
 | 0 | All Defined Ranges |  |  | static | 0 | 2023-01-09T13:13:52Z |
@@ -584,6 +614,7 @@ Requires security manager authentication. Create an Asset in Tenable.sc with pro
 #### Human Readable Output
 
 ### Asset created successfully
+
 |ID|Name|OwnerName|
 |---|---|---|
 | 42 | example output | yuv |
@@ -619,6 +650,7 @@ Requires security manager authentication. Get details for a given asset in Tenab
 #### Human Readable Output
 
 ### Tenable.sc Asset
+
 |ID|Name|Description|Created|Modified|Owner|Group|IPs|
 |---|---|---|---|---|---|---|---|
 | 1 | asset_1_name | asset_1_description | 2023-01-09T13:14:43Z | 2023-05-21T09:12:52Z | test | Full Access | {IPs_list} |
@@ -678,6 +710,7 @@ Requires security manager authentication. List alerts from Tenable.sc.
 #### Human Readable Output
 
 ### Tenable.sc Alerts
+
 |ID|Name|Actions|State|LastTriggered|LastEvaluated|Group|Owner|
 |---|---|---|---|---|---|---|---|
 | 1 | Test Alert 1 | ticket | Triggered | 2023-02-16T07:13:08Z | 2023-05-23T13:30:01Z | Full Access | lmanager |
@@ -717,14 +750,19 @@ Requires security manager authentication. Get information about a given alert in
 #### Human Readable Output
 
 ### Tenable.sc Alert
+
 ID|Name|LastTriggered|State|Behavior|
 |---|---|---|---|---|
 | 1 | Test Alert 1 | 2023-02-16T07:13:08Z | Triggered | Execute only on first trigger |
+
 ### Condition
+
 |Trigger|Query|
 |---|---|
 | sumip \u003e= 10 | Query for alert 'Test Alert 1' at 1676531587 |
+
 ### Actions
+
 |Type|Values|
 |---|---|
 | ticket | lmanager |
@@ -773,6 +811,7 @@ Requires security manager authentication. Gets the specified device information.
 #### Human Readable Output
 
 ### Tenable.sc Device
+
 |IP| UUID | MacAddress|
 |---|---|---|
 | {IP} | {UUID} | {MacAddress} |
@@ -812,6 +851,7 @@ Results may vary based on the authentication type (admin or security manager). L
 #### Human Readable Output
 
 ### Tenable.sc Users
+
 |ID|Username|Title|Email|Created|Modified|LastLogin|Role|
 |---|---|---|---|---|---|---|---|
 | 1 | test |  |  | 2023-01-09T13:13:53Z | 2023-05-24T10:23:29Z |  | Security Manager |
@@ -841,6 +881,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 ### Tenable.sc Licensing information
+
 |License|LicensedIPS|ActiveIPS|
 |---|---|---|
 | Valid | 512 | 152 |
@@ -875,6 +916,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 ### Tenable.sc System information
+
 |RPMStatus|JavaStatus|DiskStatus|DiskThreshold|LastCheck|
 |---|---|---|---|---|
 | true | true | true | 5% | 2023-05-24T04:10:02Z |
@@ -919,6 +961,7 @@ Requires security manager authentication. Returns all scan results in Tenable.sc
 #### Human Readable Output
 
 ### Tenable.sc Scan results - 0-1
+
 Total number of elements is 77
 |ID|Name|Status|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -957,10 +1000,13 @@ Requires security manager authentication. list all groups.
 #### Human Readable Output
 
 ## Tenable.sc groups
+
 |ID|
 |---|
 | 0 |
+
 ### Group id:0
+
 |Username|Firstname|Lastname|
 |---|---|---|
 | test | test |  |
@@ -995,7 +1041,7 @@ This command can be executed with both authentication types (admin or security m
 | email_notice | If different from None, a valid email address must be given. Possible values are: both, password, id, none. Default is none. | Optional | 
 | auth_type | Tenable (TNS). Lightweight Directory Access Protocol (LDAP). Security Assertion Markup Language (SAML). LDAP server or SAML authentication need to be configured in order to select LDAP or SAML. Possible values are: Ldap, legacy, linked, saml, tns. Default is tns. | Required | 
 | password | The user's password. Must be at least 3 characters. | Required | 
-| time_zone | The user timezone, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The user timezone, possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | role_id | The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts. Possible values are: 0, 1, 2, 3, 4, 5, 6, 7. | Required | 
 | must_change_password | When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
 | managed_users_groups | Comma separated list of session user's role can manage group. Use tenable-sc-list-groups to get all available groups. Default is 0. | Optional | 
@@ -1061,6 +1107,7 @@ This command can be executed with both authentication types (admin or security m
 #### Human Readable Output
 
 ### User example_output was created successfully.
+
 |User type|User Id|User Status|User Name|User Role Name|User Group Name|
 |---|---|---|---|---|---|
 | regular | 57 | 0 | example_output | Security Analyst | Full Access |
@@ -1088,7 +1135,7 @@ update user details by given user_id.
 | state | The state the user is living in. | Optional | 
 | country | The country the user is living in. | Optional | 
 | locked | Default is False. Wether the user should be locked or not. Possible values are: true, false. Default is false. | Optional | 
-| time_zone | The user timezone, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The user timezone, possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | role_id | The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts. Possible values are: 0, 1, 2, 3, 4, 5, 6, 7. | Optional | 
 | must_change_password | When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
 | managed_users_groups | Comma separated list of session user's role can manage group. Use tenable-sc-list-groups to get all available groups. Default is 0. | Optional | 
@@ -1157,9 +1204,10 @@ update user details by given user_id.
 #### Human Readable Output
 
 ### user 23 was updated successfully.
+
 |User type|User Id|User Status|User Name|First Name|Lat Name |Email |User Role Name|User Group Name|
 |---|---|---|---|---|---|---|---|---|
-| regular | 23 | 0 | testuser30 | testuser30 | testuser30 | testuser30@mymail.com | Credential Manager | Full Access |
+| regular | 23 | 0 | testuser30 | testuser30 | testuser30 | <testuser30@mymail.com> | Credential Manager | Full Access |
 
 ### tenable-sc-delete-user
 
@@ -1214,14 +1262,18 @@ Requires security manager authentication. list plugin families / return informat
 #### Human Readable Output
 
 When plugin_id isn't given:
+
 ### Plugin families:
+
 |Plugin ID|Plugin Name|
 |---|---|
 | 0 | N/A |
 | 1 | Red Hat Local Security Checks |
 
 When plugin_id is given:
+
 ### Plugin families:
+
 |Plugin ID|Plugin Name|Is Active|
 |---|---|---|
 | 2 | HP-UX Local Security Checks | true |
@@ -1301,6 +1353,7 @@ Requires security manager authentication. This command is prerequisite for creat
 #### Human Readable Output
 
 ### Policy was created successfully:
+
 |Policy type|name|Created Time|Plugin Families|Policy  Status|Policy UUID|Policy can Manage|Creator Username|policyTemplate Name|
 |---|---|---|---|---|---|---|---|---|
 | regular | scan_name | 1684923394 | {'id': '1', 'name': 'Red Hat Local Security Checks', 'count': '9297', 'plugins': []} | 0 | {policy UUID} | true | yuv | Advanced Scan |
@@ -1444,14 +1497,18 @@ Requires security manager authentication. Lists queries.
 #### Human Readable Output
 
 If query_id isn't given:
+
 ### Queries:
+
 |Query Id|Query  Name|Query Description|Query Filters|Query Manageable|Query Usable|
 |---|---|---|---|---|---|
 | 1 | test_name | test_description | filter | True | True |
 | 2 | test_name | test_description |  | True | False |
 
 If query_id is given:
+
 ### Query {query_id}
+
 |Query Id|Query  Name|Query Description|
 |---|---|---|
 | test_id | test_name | test_description |
@@ -1509,7 +1566,7 @@ Requires security manager authentication. This command is prerequisite for creat
 | scan_name | Scan name. | Required | 
 | description | Scan description. | Optional | 
 | repository_id | Default is 1. Scan Repository ID, can be retrieved from list-repositories command. Default is 1. | Required | 
-| time_zone | The timezone for the given start_time, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
+| time_zone | The timezone for the given start_time, possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
 | start_time | The scan start time, should be in the format of YYYY-MM-DD:HH:MM:SS or relative timestamp (i.e now, 3 days). | Optional | 
 | repeat_rule_freq | to specify repeating events based on an interval of a repeat_rule_freq or more. Possible values are: HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY. | Optional | 
 | repeat_rule_interval | the number of repeat_rule_freq between each interval (for example: If repeat_rule_freq=DAILY and repeat_rule_interval=8 it means every eight days.). | Optional | 
@@ -1608,6 +1665,7 @@ Requires security manager authentication. This command is prerequisite for creat
 #### Human Readable Output
 
 ### Remediation scan created successfully
+
 |Scan ID|Scan Name|Scan Type|Dhcp Tracking status|Created Time|Modified Time|Max Scan Time|Policy id |Policy context|Schedule type|Group|Owner|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 69 | my_Test_scan | policy | false | 2023-05-24T10:12:27Z | 1684923147 | 3600 | 1000044 | scan | now | Full Access | yuv |
@@ -1656,15 +1714,20 @@ Requires security manager authentication. Polling command. Launch a scan by give
 | TenableSC.ScanResults.ImportTime | date | Scan import time | 
 
 #### Human Readable Output
+
 ### Tenable.sc Scan 130 Report
+
 |ID|Name|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 130 | test_scan_2023 | Test scan 2023 | Network Scan | Full Access | hayun_test_sec_man | 156 | 2023-05-16T12:18:10Z | 2023-05-16T17:20:00Z | 301.8333333333333 | 22649640 | 2023-05-16T17:20:02Z | Local | Completed | regular | 156 |
+
 ### Vulnerabilities
+
 |ID|Name|Family|Severity|Total|
 |---|---|---|---|---|
 | 10092 | FTP Server Detection | Service detection | Info | 6 |
 | 10107 | HTTP Server Type and Version | Web Servers | Info | 61 |
 
 ## Troubleshooting
+
 For errors within Tenable.sc, the cause is generally specified, e.g., The currently logged in used is not an administrator, Unable to retrieve Asset #2412. Asset #2412 does not exist or Invalid login credentials. However there might be connection errors, for example when the server URL provided is incorrect.

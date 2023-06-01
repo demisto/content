@@ -3,6 +3,7 @@ All data in Tenable.sc is managed using group level permissions. If you have sev
 It is important to know what data is manageable for the user in order to work with the integration.
 
 ## Use cases:
+
     * Create and run scans.
     * Launch and manage scan results and the found vulnerabilities.
     * Create and view assets.
@@ -10,17 +11,22 @@ It is important to know what data is manageable for the user in order to work wi
     * View and real-time receiving of alerts.
 
 **Added support for secret & access keys authentication method.** 
+
 - Added support for secret & access keys authentication method (API Key Authentication) which can be generated from the Tenable SC UI while logged into the desired account.
 - secret & access keys needs to be generated twice, once for sec man and once for admin.
 - First, you need to enable API Key Authentication:
-    ## [Steps to follow:](https://docs.tenable.com/security-center/Content/EnableAPIKeys.htm)
+
+## [Steps to follow:](https://docs.tenable.com/security-center/Content/EnableAPIKeys.htm)
+
       1. Log in to Tenable Security Center via the user interface.
       2. Go to System > Configuration.
       3. Click the Security tile.
       4. In the Authentication Settings section, click Allow API Keys to enable the toggle.
       5. Click Submit.
 - Second, you need to generate API Key: 
-    ## [Steps to follow:](https://docs.tenable.com/security-center/Content/GenerateAPIKey.htm)
+
+## [Steps to follow:](https://docs.tenable.com/security-center/Content/GenerateAPIKey.htm)
+
       1. Log in to Tenable Security Center via the user interface.
       2. Go to Users > Users.
       3. Right-click the row for the user for which you want to generate an API key.
