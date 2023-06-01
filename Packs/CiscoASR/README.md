@@ -8,7 +8,7 @@ Syslog message logging to the console terminal is enabled by default.
 Perform the following in order to configure log forwarding [Documentation](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/asr9k-r6-5/system-monitoring/configuration/guide/b-system-monitoring-cg-asr9000-65x/b-system-monitoring-cg-asr9000-65x_chapter_0101.html#con_1092736):
 1. Open your Cisco ASR supported device terminal and type **enable** to enter Privileged EXEC mode.
 2. Enter Global Configuration Mode by either typing **configure terminal** or **conf t**.
-3. Input the destination of where the logs should be sent by typing logging "\<Hostname OR IP Address \>"
+3. Input the destination of where the logs should be sent by typing **logging \<Hostname OR IP Address \>**.
 
 ## Syslog Time Parsing Support
 Support for syslog timestamp parsing is available with UTC timezone (system default). You will need to add the year and milliseconds to the product default datetime format.
@@ -16,10 +16,22 @@ Support for syslog timestamp parsing is available with UTC timezone (system defa
 * [Logging commands doc](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/system_monitoring/command/reference/b-sysmon-cr-asr9k/b-sysmon-cr-asr9k_chapter_0100.html#wp1414739610)
 1. Open your Cisco ASR supported device terminal and type **enable** to enter Privileged EXEC mode.
 2. Enter Global Configuration Mode by either typing **configure terminal** or **conf t**.
-3. Configure your syslog timestamp formatting by typing the command **service timestamps log datetime year msec**.
-4. Optional, to configure the timezone format to UTC, type the command **clock timezone UTC 0**.
-5. Revert back to Privileged EXEC mode by typing **end**. 
-6. Save your changes by either typing **write memory** or **copy running-config startup-config** and wait for system confirmation.
+3. Configure your syslog timestamp formatting by typing the command;
+```bash
+service timestamps log datetime year msec
+```
+5. Optional, to configure the timezone format to UTC, type the command;
+```bash
+clock timezone UTC 0
+```
+7. Revert back to Privileged EXEC mode by typing **end**. 
+8. Save your changes by either typing 
+```bash
+write memory
+OR
+copy running-config startup-config 
+```
+And wait for system confirmation.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
