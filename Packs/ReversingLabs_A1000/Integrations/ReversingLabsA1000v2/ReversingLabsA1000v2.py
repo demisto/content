@@ -577,7 +577,7 @@ def get_ip_report(a1000):
     """
     Get a report for a submitted IP address
     """
-    ip = demisto.getArg("ipAddress")
+    ip = demisto.getArg("ip_address")
 
     try:
         response = a1000.network_ip_addr_report(ip_addr=ip)
@@ -643,11 +643,11 @@ def get_files_from_ip(a1000):
     """
     Get a list of hashes and classifications for files found on the requested IP address.
     """
-    ip = demisto.getArg("ipAddress")
-    extended = argToBoolean(demisto.getArg("extendedResults"))
+    ip = demisto.getArg("ip_address")
+    extended = argToBoolean(demisto.getArg("extended_results"))
     classification = demisto.getArg("classification")
-    page_size = int(demisto.getArg("pageSize"))
-    max_results = int(demisto.getArg("maxResults"))
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = a1000.network_files_from_ip_aggregated(
@@ -698,9 +698,9 @@ def get_ip_domain_resolutions(a1000):
     """
     Get a list of IP-to-domain resolutions.
     """
-    ip = demisto.getArg("ipAddress")
-    page_size = int(demisto.getArg("pageSize"))
-    max_results = int(demisto.getArg("maxResults"))
+    ip = demisto.getArg("ip_address")
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = a1000.network_ip_to_domain_aggregated(
@@ -749,9 +749,9 @@ def get_urls_from_ip(a1000):
     """
     Get a list of URL-s hosted on an IP address.
     """
-    ip = demisto.getArg("ipAddress")
-    page_size = int(demisto.getArg("pageSize"))
-    max_results = int(demisto.getArg("maxResults"))
+    ip = demisto.getArg("ip_address")
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = a1000.network_urls_from_ip_aggregated(
