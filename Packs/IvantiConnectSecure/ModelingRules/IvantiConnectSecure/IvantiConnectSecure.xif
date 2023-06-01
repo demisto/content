@@ -1,37 +1,55 @@
 [MODEL: dataset="ivanti_connect_secure_raw"]
 alter 
-    syslog_header = split(arrayindex(regextract(_raw_log, "(^\S+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s"), 0)),
-    syslog_msg = arrayindex(regextract(_raw_log, "^\S+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?\s+(\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s.+)"), 0)
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\d+"), 0)),
+    syslog_header = split(arrayindex(regextract(_raw_log, "(^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-"), 0)),
+    syslog_structured_data = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+(.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-"), 0),
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?\s+(\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-.+)"), 0)
 | alter 
+    syslog_facility = floor(divide(syslog_priority, 8)),
     //syslog_timestamp = arrayindex(syslog_header, 1),
     syslog_hostname = arrayindex(syslog_header, 2),
     syslog_app_name = rtrim(arrayindex(syslog_header, 3), ":"),
-    //syslog_proccess_id = arrayindex(syslog_header, 4),
-    //syslog_msg_id = arrayindex(syslog_header, 5),
-    //syslog_structed_data = arrayindex(syslog_header, 6),
+    syslog_process_id = arrayindex(syslog_header, 4),
+    syslog_msg_id = arrayindex(syslog_header, 5),
+    syslog_structured_data_segments = regextract(syslog_structured_data, "\[([^\]]+)\]"),
     msg_node = arrayindex(regextract(syslog_msg, "^\S+\s+\S+\s+\-\s+(\S+)"), 0),
     msg_ip = arrayindex(regextract(syslog_msg, "\[([a-fA-F\d\.\:]+)\]"), 0),
-    msg_user = arrayindex(regextract(syslog_msg, "\]\s+([^\(]+)"), 0),
+    msg_user1 = arrayindex(regextract(syslog_msg, "\]\s+Default\s*Network\:+([^\(]+)"), 0),
+    msg_user2 = arrayindex(regextract(syslog_msg, "\]\s+([^\(]+)"), 0),
     msg_realm = arrayindex(regextract(syslog_msg, "\(([^\)]+)"), 0),
     msg_roles = split(arrayindex(regextract(syslog_msg, "\)\[([^\]]+)"), 0), ","),
     msg_payload = arrayindex(regextract(syslog_msg, "\]\s+\-\s+(.+)"), 0)
 | alter
-    user_name =  arrayindex(split(msg_user, "\\"), 0),
-    user_domain = arrayindex(split(msg_user, "\\"), 1),
+    syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8)),
+    full_user_name = coalesce(msg_user1, msg_user2),
+    event_id = if(syslog_msg_id = "-", null, syslog_msg_id),
+    event_name1 = arrayindex(regextract(msg_payload, "(.+?)\s+for"), 0),
+    event_name2 = arrayindex(regextract(msg_payload, "(.+?)\s+using"), 0),
     src_ipv4 = if(msg_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", msg_ip, null),
     src_ipv6 = if(msg_ip ~= "\w{1,3}\:", msg_ip, null)
+| alter
+    severity = to_string(syslog_severity),
+    event_name = coalesce(event_name1, event_name2),
+    user_name =  arrayindex(regextract(full_user_name, "[^\\]\\\s*(\S.+)"), 0),
+    user_domain = arrayindex(regextract(full_user_name, "([^\\]+)\\\s*\S.+"), 0)
 | alter 
     xdm.observer.name = syslog_hostname, 
-    xdm.observer.product = syslog_app_name,
-    xdm.intermediate.application.name = syslog_app_name,
     xdm.intermediate.host.device_id = msg_node,
+    xdm.intermediate.host.hostname = syslog_hostname,
+    xdm.intermediate.application.name = syslog_app_name,
+    xdm.intermediate.process.identifier = syslog_process_id,
     xdm.source.ipv4 = src_ipv4, 
     xdm.source.host.ipv4_addresses = arraycreate(src_ipv4),
     xdm.source.ipv6 = src_ipv6, 
     xdm.source.host.ipv6_addresses = arraycreate(src_ipv6),
-    xdm.source.user.username = msg_user, 
-    xdm.source.user.upn = user_name, 
+    xdm.source.user.username = full_user_name, 
+    xdm.source.user.upn = coalesce(user_name, full_user_name), 
     xdm.source.user.domain = user_domain, 
     xdm.source.user.groups = msg_roles,
     xdm.target.user.domain = msg_realm,
-    xdm.event.description = msg_payload ;
+    xdm.event.description = msg_payload,
+    xdm.event.type = event_name,
+    xdm.event.id = coalesce(event_id, event_name),
+    xdm.event.tags = syslog_structured_data_segments, 
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.alert.severity = severity;
