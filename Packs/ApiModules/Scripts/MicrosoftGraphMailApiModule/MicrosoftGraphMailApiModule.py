@@ -623,7 +623,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
     def test_connection(self):
         if self._mailbox_to_fetch:
-            self.http_request('GET', f'users/{self._mailbox_to_fetch}')
+            self.http_request('GET', f'/users/{self._mailbox_to_fetch}/messages?$top=1')
         else:
             self.get_access_token()
         return 'ok'
