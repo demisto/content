@@ -14,5 +14,3 @@ def test_simple_upload_sample_url(mocker, requests_mock, sample_url):
     requests_mock.post('https://www.example.com/web_service/sample_upload/simple_upload_sample')
     from TrendMicroDDA import simple_upload_sample_url
     assert simple_upload_sample_url(sample_url)
-
-
