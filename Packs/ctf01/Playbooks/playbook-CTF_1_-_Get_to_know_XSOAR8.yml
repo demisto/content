@@ -243,7 +243,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Try to check the integration's python. Oh and remember that the answer isn't always on the wall.
+        tooltip: "Try to check the integration's python, search for custom integration -> which starts with 'ohmy' . Oh and remember that the answer isn't always on the wall...."
         readonly: false
       title: Integration Settings
       description: "XSOAR8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you (which was also customized). \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/fcb6f8b4a01e1eefd59cd0814b7c39662d42c510/Packs/ctf01/doc_files/integration_2.gif) "
@@ -309,7 +309,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'hint: Items that are installed by the system will be displayed with "system:true"'
+        tooltip: 'hint: Items that are installed by the system will be displayed with "system:true". Another "CTF" day at the fields section...'
         readonly: false
       title: Incident fields
       description: |-
