@@ -1013,7 +1013,7 @@ def riot_command(client: Client, args: Dict, reliability: str) -> CommandResults
     ip_standard_context = Common.IP(ip=response.get("address"), dbot_score=dbot_score)
 
     return CommandResults(
-        outputs_prefix="GreyNoise.RIOT",
+        outputs_prefix="GreyNoise.Riot",
         outputs_key_field="address",
         outputs=response,
         readable_output=human_readable,

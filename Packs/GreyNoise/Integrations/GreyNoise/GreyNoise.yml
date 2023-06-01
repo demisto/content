@@ -432,6 +432,18 @@ script:
     - contextPath: GreyNoise.Stats.stats.countries.count
       description: Country count.
       type: number
+    - contextPath: GreyNoise.Stats.stats.source_countries.country
+      description: Country name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.source_countries.count
+      description: Country count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.destination_countries.country
+      description: Country name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.destination_countries.count
+      description: Country count.
+      type: number
     - contextPath: GreyNoise.Stats.stats.tags.tag
       description: Tag name.
       type: string

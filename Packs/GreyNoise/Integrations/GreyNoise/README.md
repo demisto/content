@@ -287,6 +287,8 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | GreyNoise.Stats.stats.organizations.count                | number | Organization count. | 
 | GreyNoise.Stats.stats.actors.actor                       | string | Actor name. | 
 | GreyNoise.Stats.stats.actors.count                       | number | Actor count. | 
+| GreyNoise.Stats.stats.countries.country                  | string | Country name. | 
+| GreyNoise.Stats.stats.countries.count                    | number | Country count. | 
 | GreyNoise.Stats.stats.source_countries.country           | string | Country name. | 
 | GreyNoise.Stats.stats.source_countries.count             | number | Country count. | 
 | GreyNoise.Stats.stats.destination_countries.country      | string | Country name. | 
@@ -401,15 +403,15 @@ Identify IPs from known benign services and organizations that commonly cause fa
 
 | **Path**                    | **Type** | **Description**                                        |
 |-----------------------------|----------|--------------------------------------------------------|
-| GreyNoise.RIOT.ip           | string   | The IP given to check riot information about.          | 
-| GreyNoise.RIOT.riot         | string   | The riot of the IP. "True" or "False"                  | 
-| GreyNoise.RIOT.category     | string   | The category of the IP if riot is "True".              | 
-| GreyNoise.RIOT.name         | string   | The name of the IP if the riot is "True".              | 
-| GreyNoise.RIOT.description  | string   | The description of the IP if riot is "True".           | 
-| GreyNoise.RIOT.explanation  | date     | The explanation of the IP if riot is "True".           | 
-| GreyNoise.RIOT.last_updated | string   | The last updated time of the IP if the riot is "True". | 
-| GreyNoise.RIOT.reference    | string   | The reference of the IP if riot is "True".             | 
-| GreyNoise.RIOT.trust_level  | string   | The trust_level of the IP if riot is "True".           | 
+| GreyNoise.Riot.ip           | string   | The IP given to check riot information about.          | 
+| GreyNoise.Riot.riot         | string   | The riot of the IP. "True" or "False"                  | 
+| GreyNoise.Riot.category     | string   | The category of the IP if riot is "True".              | 
+| GreyNoise.Riot.name         | string   | The name of the IP if the riot is "True".              | 
+| GreyNoise.Riot.description  | string   | The description of the IP if riot is "True".           | 
+| GreyNoise.Riot.explanation  | date     | The explanation of the IP if riot is "True".           | 
+| GreyNoise.Riot.last_updated | string   | The last updated time of the IP if the riot is "True". | 
+| GreyNoise.Riot.reference    | string   | The reference of the IP if riot is "True".             | 
+| GreyNoise.Riot.trust_level  | string   | The trust_level of the IP if riot is "True".           | 
 
 #### Command Example
 

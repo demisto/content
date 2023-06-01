@@ -8,6 +8,7 @@ Calculate and assign the incident severity based on the highest returned severit
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 - Calculate Severity Highest DBotScore For Ingress Network Traffic - GreyNoise
 - Calculate Severity Highest DBotScore For Egress Network Traffic - GreyNoise
 
@@ -16,9 +17,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
+
 - Set
 
 ### Commands
+
 - setIncident
 
 ## Playbook Inputs
