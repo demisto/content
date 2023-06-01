@@ -21,14 +21,14 @@ This integration was integrated and tested with version 1.01 of ResecurityMonito
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### get-task-monitor-results-data-breaches
+### resecurity-get-task-monitor-results-data-breaches
 
 ***
 Retrieve monitoring results from a specific monitor task
 
 #### Base Command
 
-`get-task-monitor-results-data-breaches`
+`resecurity-get-task-monitor-results-data-breaches`
 
 #### Input
 
@@ -46,7 +46,7 @@ Retrieve monitoring results from a specific monitor task
 | --- | --- | --- |
 | Resecurity.DataBreach.id | String | Data breach ID | 
 | Resecurity.DataBreach.query | String | The query for which the result was found | 
-| Resecurity.DataBreach.detection_date | int | Data breach detection date | 
+| Resecurity.DataBreach.detection_date | Number | Data breach detection date | 
 | Resecurity.DataBreach.email | String | Data breach email | 
 | Resecurity.DataBreach.username | String | Data breach username | 
 | Resecurity.DataBreach.password | String | Data breach password | 
@@ -56,7 +56,7 @@ Retrieve monitoring results from a specific monitor task
 | Resecurity.DataBreach.source_name | String | Data breach source name | 
 
 #### Command example
-```!get-task-monitor-results-data-breaches monitor_task_id=1 limit=2 mode=2```
+```!resecurity-get-task-monitor-results-data-breaches monitor_task_id=1 limit=2 mode=2```
 #### Context Example
 ```json
 {
@@ -105,7 +105,7 @@ Retrieve monitoring results from a specific monitor task
 
 
 #### Command example
-```!get-task-monitor-results-data-breaches monitor_task_id=1 page_size=2 page=10 mode=2```
+```!resecurity-get-task-monitor-results-data-breaches monitor_task_id=1 page_size=2 page=10 mode=2```
 #### Context Example
 ```json
 {
