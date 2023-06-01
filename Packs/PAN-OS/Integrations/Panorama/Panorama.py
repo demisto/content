@@ -13150,6 +13150,21 @@ def prettify_tags(tags: list) -> list:
     return result
 
 
+def extract_tags_list(raw_response: dict) -> list:
+    """Extracts the tags list result from the API's raw response.
+
+    Args:
+        raw_response (dict): The raw response.
+
+    Returns:
+        list: The list of tags from the response.
+    """
+    tags_list_result = raw_response.get("response", {}).get("result", {}).get("tag", {}).get("entry", [])
+    if not isinstance(tags_list_result, list):
+        tags_list_result = [tags_list_result]
+    return tags_list_result
+
+
 def pan_os_list_tag_command(args: dict) -> CommandResults:
     """Sends the request and returns the result of the command pan-os-list-tag.
 
@@ -13162,12 +13177,11 @@ def pan_os_list_tag_command(args: dict) -> CommandResults:
     include_shared = argToBoolean(args.get('include_shared_tags', False))
 
     raw_response = pan_os_list_tag()
-    tags_list_result = raw_response.get("response", {}).get("result", {}).get("tag", {}).get("entry", [])
+    tags_list_result = extract_tags_list(raw_response)
 
     if include_shared:
         shared_raw_response = pan_os_list_tag(include_shared)
-        shared_tags_list_result = shared_raw_response.get("response", {}).get("result", {}).get("tag", {}).get("entry", [])
-        tags_list_result.extend(shared_tags_list_result)
+        tags_list_result.extend(extract_tags_list(shared_raw_response))
 
     for tag in tags_list_result:
         parse_pan_os_un_committed_data(tag, ['@admin', '@dirtyId', '@time'])
