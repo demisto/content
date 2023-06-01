@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 You need to configure your Cisco ASR device to forward Syslog messages.
 
 Syslog message logging to the console terminal is enabled by default.
-The following should be done in order to configure log forwarding [Documentation](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/asr9k-r6-5/system-monitoring/configuration/guide/b-system-monitoring-cg-asr9000-65x/b-system-monitoring-cg-asr9000-65x_chapter_0101.html#con_1092736):
+Perform the following in order to configure log forwarding [Documentation](https://www.cisco.com/c/en/us/td/docs/routers/asr9000/software/asr9k-r6-5/system-monitoring/configuration/guide/b-system-monitoring-cg-asr9000-65x/b-system-monitoring-cg-asr9000-65x_chapter_0101.html#con_1092736):
 1. Open your Cisco ASR supported device terminal and type **enable** to enter Privileged EXEC mode.
 2. Enter Global Configuration Mode by either typing **configure terminal** or **conf t**.
 3. Input the destination of where the logs should be sent by typing logging "\<Hostname OR IP Address \>"
