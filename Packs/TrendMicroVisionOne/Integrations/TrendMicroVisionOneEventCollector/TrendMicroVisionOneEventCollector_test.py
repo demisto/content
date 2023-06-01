@@ -395,6 +395,7 @@ def test_module_main_flow(mocker):
         - test-module through main
     Then:
         - make sure that test-module returns 'ok'
+        - make sure send_events_to_xsiam function was not called
     """
     from TrendMicroVisionOneEventCollector import main
 
@@ -414,8 +415,11 @@ def test_module_main_flow(mocker):
     )
 
     return_results_mocker = mocker.patch('TrendMicroVisionOneEventCollector.return_results')
+    send_events_to_xsiam_mocker = mocker.patch('TrendMicroVisionOneEventCollector.send_events_to_xsiam')
 
     main()
+
+    assert not send_events_to_xsiam_mocker.called
     assert return_results_mocker.call_args.args[0] == 'ok'
 
 
