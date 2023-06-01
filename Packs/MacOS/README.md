@@ -7,7 +7,8 @@ You need to configure MacOS to forward Syslog messages.
 
 Open your MacOS device and follow these step:
 1. Open a Terminal on the relevant device.
-2. Open the syslog config file with a vi editor, write the command **vi /etc/syslog.conf**.
+2. Open the syslog config file with a vi editor and type the command **vi /etc/syslog.conf**.
+
 3. Type **i** in order to enter editing mode.
 4. Write the following like as a new line in the syslog config file- \*.\* \@"\<IP address\>"\:"\<Port\>".
 5. Write **:wq** to save and exit the file.
