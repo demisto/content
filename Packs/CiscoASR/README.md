@@ -1,6 +1,6 @@
 # Cisco ASR
 This pack includes Cortex XSIAM content. 
-
+<~XSIAM>
 ## Configuration on Server Side
 You need to configure your Cisco ASR device to forward Syslog messages.
 
@@ -34,3 +34,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - cisco
    - product as product - asr
+</~XSIAM>
