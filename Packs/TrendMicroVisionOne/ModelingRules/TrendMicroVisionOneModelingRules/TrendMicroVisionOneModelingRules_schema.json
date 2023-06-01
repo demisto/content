@@ -252,7 +252,7 @@
          "type":"string",
          "is_array":false
       },
-       "event_type":{
+      "event_type":{
          "type":"string",
          "is_array":false
       }
