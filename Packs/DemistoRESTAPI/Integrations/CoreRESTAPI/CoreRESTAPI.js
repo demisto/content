@@ -1,3 +1,4 @@
+
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
