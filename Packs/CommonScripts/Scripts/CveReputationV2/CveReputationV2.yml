@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: cveReputation
 type: python
+script: ''
 tags:
 - cve
 - reputation
