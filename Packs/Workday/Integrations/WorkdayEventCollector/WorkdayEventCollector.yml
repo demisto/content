@@ -66,8 +66,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: The fetch interval.
-  defaultvalue: 1
+- defaultvalue: 1
   display: Events Fetch Interval
   hidden: false
   name: eventFetchInterval
