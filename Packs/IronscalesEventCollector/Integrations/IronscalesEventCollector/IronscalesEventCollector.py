@@ -111,8 +111,8 @@ def get_incident_ids_by_time(
             client,
             incident_ids,
             start_time,
-            start_idx,
-            current_idx - 1,
+            start_idx=start_idx,
+            end_idx=current_idx - 1,
         )
     if incident_time < start_time:
         if current_idx == start_idx:
@@ -121,19 +121,23 @@ def get_incident_ids_by_time(
             client,
             incident_ids,
             start_time,
-            current_idx + 1,
-            end_idx,
+            start_idx=current_idx + 1,
+            end_idx=end_idx,
         )
     return incident_ids[current_idx:]
 
 
-def get_open_incident_ids(
+def get_open_incident_ids_to_fetch(
     client: Client,
     first_fetch: datetime,
+    last_id: Optional[int],
 ) -> List[int]:
     all_open_incident_ids: List[int] = client.get_open_incident_ids()
     if not all_open_incident_ids:
         return []
+    if isinstance(last_id, int):
+        # We filter out only events with ID greater than the last_id
+        return list(filter(lambda i: i > last_id, incident_ids))  # type: ignore
     return get_incident_ids_by_time(
         client,
         all_open_incident_ids,
@@ -153,7 +157,7 @@ def incident_to_events(incident: Dict[str, Any]) -> List[Dict[str, Any]]:
         del event["reports"]
         return event | report_data
 
-    return argToList(incident.get("reports", []), transform=report_to_event)
+    return [report_to_event(event) for event in incident.get("reports", [])]
 
 
 """ COMMAND FUNCTIONS """
@@ -163,13 +167,10 @@ def get_events_command(
     client: Client,
     args: Dict[str, Any]
 ) -> Tuple[CommandResults, List[Dict[str, Any]]]:
-    events: List[Dict[str, Any]] = []
-
-    for i in client.get_open_incident_ids():
-        incident = client.get_incident(i)
-        events.extend(incident_to_events(incident))
-        if len(events) >= args.get('limit', DEFAULT_LIMIT):
-            break
+    limit: int = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    since_time = arg_to_datetime(args.get('since_time') or DEFAULT_FIRST_FETCH)
+    assert isinstance(since_time, datetime), f"Invalid since_time value: {args.get('since_time')}"
+    events, _ = fetch_events_command(client, since_time, limit)
 
     result = CommandResults(
         readable_output=tableToMarkdown("Open Incidents", events),
@@ -199,13 +200,13 @@ def fetch_events_command(
             - ID of the most recent incident ingested in the current run.
     """
     events: List[Dict[str, Any]] = []
-    incident_ids: List[int] = get_open_incident_ids(
+    incident_ids: List[int] = get_open_incident_ids_to_fetch(
         client=client,
         first_fetch=first_fetch,
+        last_id=last_id,
     )
     last_id = last_id or -1
-    # We filter out only events with ID greater than the last_id
-    for i in filter(lambda i: i > last_id, incident_ids):
+    for i in incident_ids:
         incident = client.get_incident(i)
         events.extend(incident_to_events(incident))
         last_id = max(i, last_id)
@@ -217,12 +218,9 @@ def fetch_events_command(
 
 def test_module_command(
     client: Client,
+    first_fetch: datetime,
 ) -> str:
-    try:
-        client.get_incident(1)  # ensures that company_id is set correctly
-    except DemistoException as e:
-        if e.res.status_code != 404:  # it's ok if incident does not exist
-            raise e
+    fetch_events_command(client, first_fetch, max_fetch=1)
     return "ok"
 
 
@@ -233,7 +231,7 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH))
+        first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
         assert isinstance(first_fetch, datetime), f"Invalid first_fetch value: {params.get('first_fetch')}"
         max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
 
@@ -246,7 +244,7 @@ def main():
             scopes=argToList(params.get("scopes")),
         )
         if command == "test-module":
-            return_results(test_module_command(client))
+            return_results(test_module_command(client, first_fetch))
 
         elif command == "ironscales-get-events":
             results, events = get_events_command(client, args)
@@ -262,7 +260,7 @@ def main():
                 last_id=demisto.getLastRun().get("last_id"),
             )
             send_events_to_xsiam(events, VENDOR, PRODUCT)
-             demisto.setLastRun({"last_id": last_id})
+            demisto.setLastRun({"last_id": last_id})
 
     # Log exceptions
     except Exception as e:

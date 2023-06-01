@@ -65,6 +65,14 @@ script:
       defaultValue: 10
       required: false
       secret: false
+    - default: false
+      defaultValue: 3 days
+      description: The start time by which to filter events. Date format will be the
+        same as in the first_fetch parameter.
+      isArray: false
+      name: since_time
+      required: false
+      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
