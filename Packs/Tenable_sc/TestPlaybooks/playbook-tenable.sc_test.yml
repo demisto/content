@@ -961,7 +961,7 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "57"
+      - "60"
     scriptarguments:
       description:
         simple: desc
@@ -2119,6 +2119,41 @@ tasks:
         "position": {
           "x": 50,
           "y": 8380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: c8f26835-0ea2-4017-856a-98a0d528532d
+    type: regular
+    task:
+      id: c8f26835-0ea2-4017-856a-98a0d528532d
+      version: -1
+      name: Sleep 15 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 595
         }
       }
     note: false
