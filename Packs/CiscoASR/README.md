@@ -17,7 +17,7 @@ Support for syslog timestamp parsing is available with UTC timezone (system defa
 1. Open your Cisco ASR supported device terminal and type **enable** to enter Privileged EXEC mode.
 2. Enter Global Configuration Mode by either typing **configure terminal** or **conf t**.
 3. Configure your syslog timestamp formatting by typing the command **service timestamps log datetime year msec**.
-4. Optional, to configure the timezone format to UTC, write the command **clock timezone UTC 0**.
+4. Optional, to configure the timezone format to UTC, type the command **clock timezone UTC 0**.
 5. Revert back to Privileged EXEC mode by typing **end**. 
 6. Save your changes by either typing **write memory** or **copy running-config startup-config** and wait for system confirmation.
 
