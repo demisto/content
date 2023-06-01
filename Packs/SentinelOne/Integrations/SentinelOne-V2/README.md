@@ -1734,7 +1734,7 @@ Returns network interface details for a given Agent ID. This includes MAC addres
 | SentinelOne.MAC.ip | string | IP Address | 
 | SentinelOne.MAC.mac | string | MAC Address | 
 
-## Incident Mirroring
+### Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and SentinelOne v2 corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
