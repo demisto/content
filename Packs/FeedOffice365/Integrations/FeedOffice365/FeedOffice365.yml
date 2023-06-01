@@ -30,6 +30,12 @@ configuration:
   - Worldwide
   required: true
   type: 16
+- display: Allow Germany
+  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
+  name: allow_germany
+  required: false
+  defaultvalue: 'false'
+  type: 8
 - defaultvalue: All
   display: Services
   name: services
@@ -143,7 +149,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.11.61265
   feed: true
   isfetch: false
   longRunning: false
