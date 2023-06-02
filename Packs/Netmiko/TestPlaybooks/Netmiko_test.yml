@@ -42,11 +42,7 @@ tasks:
       version: -1
       name: Echo 'test'
       description: Execute commands over SSH using Netmiko
-<<<<<<< HEAD
-      script: Netmiko|||ssh
-=======
       script: Netmiko|||netmiko-cmds
->>>>>>> master
       type: regular
       iscommand: true
       brand: Netmiko
@@ -95,11 +91,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-<<<<<<< HEAD
-              simple: Netmiko.[0].Output
-=======
               simple: Netmiko.Commands.[0].Output
->>>>>>> master
             iscontext: true
           right:
             value:
@@ -107,11 +99,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-<<<<<<< HEAD
-              simple: Netmiko.[1].Output
-=======
               simple: Netmiko.Commands.[1].Output
->>>>>>> master
             iscontext: true
           right:
             value:
@@ -174,9 +162,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
-<<<<<<< HEAD
-fromversion: 6.8.0
-=======
 fromversion: 6.6.0
->>>>>>> master
 description: ''
