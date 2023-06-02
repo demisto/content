@@ -1,4 +1,4 @@
-// Development container for Content. Poetry hash 2b032773831d4bd21843b6af6885472a9ec80451cd99e2726df6d006f3f62d49
+// Development container for Content. Demisto-SDK 1.14.5
 {
 	"name": "XSOAR Content",
 	"build": {
