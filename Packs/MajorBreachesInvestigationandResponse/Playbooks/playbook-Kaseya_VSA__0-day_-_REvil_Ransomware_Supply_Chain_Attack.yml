@@ -1156,162 +1156,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "41":
-    id: "41"
-    taskid: 9f57f175-65c9-4b3f-8c32-224f6655ae98
-    type: playbook
-    task:
-      id: 9f57f175-65c9-4b3f-8c32-224f6655ae98
-      version: -1
-      name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-
-      playbookName: Block Indicators - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      IP:
-        complex:
-          root: ExtractedIndicators
-          accessor: IP
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: ExtractedIndicators.File
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: ExtractedIndicators
-          accessor: URL
-          transformers:
-          - operator: uniq
-      URLListName:
-        simple: Demisto Remediation - URL EDL
-    separatecontext: true
-    loop:
-      iscommand: false
-      scriptArguments:
-        AutoCommit:
-          simple: "No"
-        CustomBlockRule:
-          simple: "True"
-        CustomURLCategory:
-          simple: Demisto Remediation - Malicious URLs
-        IP:
-          complex:
-            root: ExtractedIndicators
-            accessor: IP
-            transformers:
-            - operator: uniq
-        MD5:
-          complex:
-            root: ExtractedIndicators.File
-            filters:
-            - - operator: stringHasLength
-                left:
-                  value:
-                    simple: ExtractedIndicators.File
-                  iscontext: true
-                right:
-                  value:
-                    simple: "32"
-            transformers:
-            - operator: uniq
-        SHA256:
-          complex:
-            root: ExtractedIndicators.File
-            filters:
-            - - operator: stringHasLength
-                left:
-                  value:
-                    simple: ExtractedIndicators.File
-                  iscontext: true
-                right:
-                  value:
-                    simple: "64"
-            transformers:
-            - operator: uniq
-        URL:
-          complex:
-            root: ExtractedIndicators.URL
-            filters:
-            - - operator: notContainsGeneral
-                left:
-                  value:
-                    simple: ExtractedIndicators.URL
-                  iscontext: true
-                right:
-                  value:
-                    simple: github
-                ignorecase: true
-            - - operator: notContainsGeneral
-                left:
-                  value:
-                    simple: ExtractedIndicators.URL
-                  iscontext: true
-                right:
-                  value:
-                    simple: microsoft.com
-            transformers:
-            - operator: uniq
-        URLListName:
-          simple: Demisto Remediation - URL EDL
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
     taskid: fd34b606-d8dc-4518-8479-3ce2894c48e3
@@ -1330,7 +1176,7 @@ tasks:
       - "43"
       "yes":
       - "62"
-      - "41"
+      - "90"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2832,6 +2678,245 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 1a305893-1c90-4c63-8585-87b249120de2
+    type: playbook
+    task:
+      id: 1a305893-1c90-4c63-8585-87b249120de2
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.BlockIndicatorsAutomatically
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
