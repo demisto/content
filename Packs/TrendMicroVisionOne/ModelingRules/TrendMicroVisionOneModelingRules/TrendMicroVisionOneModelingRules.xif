@@ -19,9 +19,8 @@ filter
     xdm.source.user.username = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") != "host", json_extract_scalar("@element", "$.entityValue"), null)), ",")
     xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ",")
     xdm.alert.subcategory = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.provenance")), ",")
+    xdm.source.ipv = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ",")
 
-
-    xdm.alert.subcategory = arraystring(arraymap(Entities, ), ",")
 filter
     event type in ("search_detections")
 | alter

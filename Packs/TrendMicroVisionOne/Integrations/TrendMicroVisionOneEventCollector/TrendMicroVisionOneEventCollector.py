@@ -449,6 +449,9 @@ def get_workbench_logs(
                     _entity['relatedEntities'] = ','.join(related_entities)
                 if (provenance := _entity.get('provenance') or []) and isinstance(provenance, list):
                     _entity['provenance'] = ','.join(provenance)
+                if (entity_value := _entity.get('entityValue') or {}) and isinstance(entity_value, dict):
+                    if (_ips := entity_value.get('ips') or []) and isinstance(_ips, list):
+                        _ips = ','.join(_ips)
 
     start_time, end_time = get_datetime_range(
         last_run_time=workbench_log_last_run_time,
