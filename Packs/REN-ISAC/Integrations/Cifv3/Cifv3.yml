@@ -1,0 +1,167 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cifv3
+  version: -1
+configuration:
+- defaultvalue: https://feeds.sesv4.ren-isac.net
+  display: Server URL (e.g. https://feeds.sesv4.ren-isac.net)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "2000"
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: 4 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: This will only return scores that are greater than or equal to the provided confidence level
+  defaultvalue: "8.0"
+  display: Confidence Score
+  name: confidence
+  required: false
+  type: 0
+- display: Tags
+  name: tags
+  options:
+  - phishing
+  - malware
+  - botnet
+  - scanner
+  - pdns
+  - whitelist
+  - bruteforce
+  - uce
+  - honeypot
+  - suspicious
+  - tor
+  - hijacked
+  - exploit
+  - spam
+  required: false
+  type: 16
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this verdict
+  display: Indicator Verdict
+  name: feedReputation
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from this integration
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: ipv4
+  display: Indicator Type to fetch
+  name: itype
+  options:
+  - ipv4
+  - ipv6
+  - fqdn
+  - url
+  - email
+  - md5
+  - sha1
+  - sha256
+  required: false
+  type: 15
+description: Fetches Indicators from the REN-ISAC Service using Cifv3.
+display: Cifv3
+name: Cifv3
+script:
+  commands:
+  - arguments:
+    - description: Dictionary of filter, see https://github.com/csirtgadgets/bearded-avenger-deploymentkit/wiki/REST-API#parameters
+      name: filter
+      required: true
+      type: keyValue
+    - defaultValue: "8.5"
+      description: Confidence Score
+      name: confidence
+      type: unknown
+    - description: Tags, c
+      name: tags
+      type: unknown
+    - defaultValue: "10"
+      description: Maximum number of indicators to fetch
+      name: limit
+    description: Command to query indicators from CIFv3 Source
+    name: cifv3-search-indicators
+  - arguments: []
+    description: Helper Script to test Fetching indicators in the warroom
+    name: cifv3-get-indicators
+  dockerimage: demisto/python3:3.10.4.29342
+  feed: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python

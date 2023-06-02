@@ -1,0 +1,417 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cifv3
+  version: -1
+configuration:
+- defaultvalue: https://feeds.ren-isac.net
+  display: Server URL (e.g. https://feeds.ren-isac.net)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "2000"
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: 4 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: This will only return scores that are greater than or equal to the provided confidence level
+  defaultvalue: "8.0"
+  display: Confidence Score
+  name: confidence
+  required: false
+  type: 0
+- display: Tags
+  name: tags
+  options:
+  - phishing
+  - malware
+  - botnet
+  - scanner
+  - pdns
+  - whitelist
+  - bruteforce
+  - uce
+  - honeypot
+  - suspicious
+  - tor
+  - hijacked
+  - exploit
+  - spam
+  required: false
+  type: 16
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this verdict
+  display: Indicator Verdict
+  name: feedReputation
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from this integration
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: ipv4
+  display: Indicator Type to fetch
+  name: itype
+  options:
+  - ipv4
+  - ipv6
+  - fqdn
+  - url
+  - email
+  - md5
+  - sha1
+  - sha256
+  required: false
+  type: 15
+description: Fetches Indicators from the REN-ISAC Service using Cifv3.
+display: Cifv3 (Community Contribution)
+name: Cifv3
+script:
+  commands:
+  - arguments:
+    - description: Dictionary of filter, see https://github.com/csirtgadgets/bearded-avenger-deploymentkit/wiki/REST-API#parameters
+      name: filter
+      required: true
+      type: keyValue
+    - defaultValue: "8.5"
+      description: Confidence Score
+      name: confidence
+      type: unknown
+    - description: Tags, c
+      name: tags
+      type: unknown
+    - defaultValue: "10"
+      description: Maximum number of indicators to fetch
+      name: limit
+    description: Command to query indicators from CIFv3 Source
+    name: cifv3-search-indicators
+  - arguments: []
+    description: Helper Script to test Fetching indicators in the warroom
+    name: cifv3-get-indicators
+  dockerimage: demisto/python3:3.10.4.29342
+  feed: true
+  runonce: false
+  script: >
+    register_module_line('Cifv3', 'start', __line__())
+
+
+
+
+
+    import requests
+
+    import traceback
+
+    from typing import Dict, Any
+
+    import dateparser
+
+
+    # Disable insecure warnings
+
+    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+
+    # CONSTANTS
+
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # Date Format for times in CIFv3 timestamps
+
+    USER_AGENT = 'XSOAR-6.8/REN-ISAC/CIFv3'
+
+
+    indicatorMap = {"ipv4": FeedIndicatorType.IP,
+                    "ipv6": FeedIndicatorType.IPv6,
+                    "fqdn": FeedIndicatorType.Domain,
+                    "url": FeedIndicatorType.URL,
+                    "email": FeedIndicatorType.Email,
+                    "md5": FeedIndicatorType.File,
+                    "sha1": FeedIndicatorType.File,
+                    "sha256": FeedIndicatorType.File
+                    }
+
+
+    # CLIENT CLASS: No business logic, just 3rd party API commands
+
+    class Client(BaseClient):
+        "Abstract Client Class to interact with REN-ISAC's CIFv3 framework"
+
+        def test(self):
+            "Test Function"
+            return self._http_request(
+                method='GET',
+                url_suffix='/help',
+                resp_type='text')
+
+        def search_indicators(self, filters: dict) -> json:
+            """
+            Search Function to query REN-ISAC for indicators with a custom filter string.
+            This is really not a FEED function, but more of an enrichment function.
+            """
+            r = self._http_request(
+                method='GET',
+                url_suffix='/search',
+                resp_type='json',
+                params=filters)
+            return json.loads(r["data"])
+
+        def fetch_indicators(self, filters: dict) -> list:
+            "Fetch function that is periodically called to fetch indicators"
+            r = self._http_request(
+                method='GET',
+                url_suffix='/feed',
+                resp_type='json',
+                params=filters)
+            return r["data"]
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+
+    def buildIndicatorObs(itype: str, rawList: list, start_time):
+        latest_timestamp = start_time
+        indicators = []
+
+        for item in rawList:
+            indicators.append(
+                {'type': indicatorMap.get(itype),
+                 'value': item.get('indicator'),
+                 'rawJSON': item
+                 })
+            stamp = datetime.strptime(item.get('reporttime'), DATE_FORMAT)
+            if stamp > latest_timestamp:
+                latest_timestamp = stamp
+
+        return indicators, latest_timestamp.strftime(DATE_FORMAT)
+
+
+    ''' COMMAND FUNCTIONS '''
+
+
+
+    def test_module(client: Client) -> str:
+        message: str = ''
+        try:
+            client.test()
+            message = 'ok'
+        except DemistoException as e:
+            if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+                message = 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
+        return message
+
+
+    def get_indicators(client: Client, params: dict) -> str:
+        """
+        Wrapper funtion that calls fetch indicators with the default integration settings;
+        however, limits the number of returned items and will only fetch the last 3 days of
+        indicators.
+        """
+        last_run = datetime.today() - timedelta(3)
+        reporttime = last_run.strftime(DATE_FORMAT)
+        itype = str(params.get('itype'))
+        confidence = params.get('confidence')
+        tags = argToList(params.get('tags'))
+        limit = params.get('max_fetch')
+
+        filter = {"itype": itype, "confidence": confidence,
+                  "tags": tags, "limit": limit, "reporttime": reporttime}
+
+        try:
+            result = client.fetch_indicators(filter)
+        except DemistoException as e:
+            if 'Forbidden' in str(e):
+                return 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
+        if result:
+            indicators, _ = buildIndicatorObs(itype, result, last_run)
+            result = indicators
+            return CommandResults(
+                outputs_prefix='CIFv3',
+                outputs=result
+            )
+
+
+    def fetch_indicators(client: Client, params: dict) -> str:
+        "Fetch indicators Function"
+        first = params.get('first_fetch', '4 days')
+        start_time = dateparser.parse(first, settings={'TIMEZONE': 'UTC'})
+
+        last_run = str(demisto.getLastRun())
+        if last_run and 'start_time' in last_run:
+            stime = str(demisto.getLastRun().get('start_time'))
+            start_time = datetime.strptime(stime, DATE_FORMAT)
+
+        # Build Filter for fetch
+        itype = str(params.get('itype'))
+        confidence = params.get('confidence')
+        tags = argToList(params.get('tags'))
+        limit = params.get('max_fetch')
+        reporttime = start_time.strftime(DATE_FORMAT)
+
+        filter = {"itype": itype, "confidence": confidence,
+                  "tags": tags, "limit": limit, "reporttime": reporttime}
+
+        try:
+            result = client.fetch_indicators(filter)
+        except DemistoException as e:
+            if 'Forbidden' in str(e):
+                return 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
+
+        if result:
+            indicators, latest_timestamp = buildIndicatorObs(itype, result, start_time)
+            for b in batch(indicators, batch_size=2000):
+                demisto.createIndicators(b)
+            demisto.setLastRun(
+                {'start_time': latest_timestamp}
+            )
+
+
+    def search_indicators(client: Client, args: dict) -> str:
+        filter = args.get('filter')
+        limit = args.get('limit')
+        confidence = args.get('confidence')
+        filter.update({"confidence": f"{confidence}"})
+        filter.update({"limit": f"{limit}"})
+
+        try:
+            result = client.search_indicators(filter)
+        except DemistoException as e:
+            if 'Forbidden' in str(e):
+                return 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
+        if result:
+            hits = result.get('hits')
+        return CommandResults(
+            outputs_prefix='CIFv3',
+            outputs_key_field='provider',
+            outputs=hits,
+        )
+
+
+    def main() -> None:
+        params = demisto.params()
+        ''' Parameters extracted for now '''
+        base_url = params.get('url')
+        api_key = params.get('apikey')
+        proxy = params.get('proxy', False)
+        verify_certificate = not demisto.params().get('insecure', False)
+
+        args = demisto.args()
+        demisto.debug(f'Command being called is {demisto.command()}')
+        headers = {
+            'Authorization': f'Token token={api_key}',
+            'User-Agent': USER_AGENT,
+            'Content-Type': 'application/json',
+            'Accept-Encoding': 'deflate',
+            'Accept': 'application/vnd.cif.v3+json'
+        }
+        try:
+            client = Client(
+                base_url=base_url,
+                verify=verify_certificate,
+                headers=headers,
+                proxy=proxy)
+
+            if demisto.command() == 'test-module':
+                return_results(test_module(client))
+
+            elif demisto.command() == 'cifv3-get-indicators':
+                return_results(get_indicators(client, params))
+
+            elif demisto.command() == 'fetch-indicators':
+                return_results(fetch_indicators(client, params))
+
+            elif demisto.command() == 'cifv3-search-indicators':
+                return_results(search_indicators(client, args))
+
+        # Log exceptions and return errors
+        except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('Cifv3', 'end', __line__())
+  subtype: python3
+  type: python
+image: data:image/png;base64,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
+detaileddescription: "### Community Contributed Integration\n #### Integration Author: Paul Bartruff\n No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).\n***\n## REN-ISAC\nREN-ISAC uses the CIFv3 format.\n#\n### Max number of indicators per fetch\n- Maximum number of indicators per fetch default set to 100.\n#\n### Indicator type to fetch\nOnly a singel itype can be specified per instance of this integration.\n- ipv4\n- ipv6\n- fqdn\n- url\n- email\n- md5\n- sha1\n- sha256\n#\n### CIF Tags\n- phishing\n- malware\n- botnet\n- scanner\n- pdns\n- whitelist\n- expoit\n- hijacked\n- spam\n- bruteforce\n- honeypot\n- suspicious\n- uce\n- tor\n#\n### First fetch timestamp\n- First fetch time\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cifv3)"

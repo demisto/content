@@ -1,0 +1,20 @@
+{
+    "name": "REN-ISAC",
+    "description": "Set of utilities to work with REN-ISAC",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Paul Bartruff",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}
