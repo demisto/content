@@ -8,6 +8,13 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+INDICATOR_TYPE_TO_DBOT_SCORE = {
+    'FILE': DBotScoreType.FILE,
+    'URL': DBotScoreType.URL,
+    'DOMAIN': DBotScoreType.DOMAIN,
+}
+
+INTEGRATION_NAME = "Gatewatcher.LastInfoSec"
 
 class GwAPIException(Exception):
     """A base class from which all other exceptions inherit.
@@ -226,32 +233,76 @@ class GwClient(GwRequests):
                 response.text, response.status_code, response.reason
             )
 
+def get_dbot_indicator(dbot_type, dbot_score, value):
+    if dbot_type == "FILE":
+        hash_type = get_hash_type(value)
+        if hash_type == 'md5':
+            return Common.File(dbot_score=dbot_score, md5=value)
+        if hash_type == 'sha1':
+            return Common.File(dbot_score=dbot_score, sha1=value)
+        if hash_type == 'sha256':
+            return Common.File(dbot_score=dbot_score, sha256=value)
+    if dbot_type == "DOMAIN":
+        return Common.Domain(domain=value, dbot_score=dbot_score)
+    if dbot_type == "URL":
+        return Common.URL(url=value, dbot_score=dbot_score)
 
-def is_valid_ip(ip: str) -> bool:
-    # Regular expression pattern to validate an IP address
-    pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
-    return re.match(pattern, ip) is not None
+def get_dbot_score(risk: str) -> int:
+    if risk == 'Malicious':
+        return Common.DBotScore.BAD
+    if risk == 'Suspicious':
+        return Common.DBotScore.SUSPICIOUS
+    if risk == 'High suspicious':
+        return Common.DBotScore.SUSPICIOUS
+    if risk == 'Unknown':
+        return Common.DBotScore.NONE
 
 
-def ip_command(client: GwClient, args: dict) -> CommandResults:
-    """Checks
+def generic_reputation_command(client: GwClient, args: dict, cmd_type: str, reliability: str) -> CommandResults:
+    """Checks the reputation of a file, domain or url
 
     Args:
         client: Client to interact with the LIS API.
         args: Command arguments.
 
     Return
-
+        CommandResults object with the type prefix.
     """
-    if "IP" in args:
-        value = args["IP"]
-        if isinstance(value, str) and is_valid_ip(value):
-            return lis_get_by_value(client, args)
-        else:
-            raise ValueError("Not a valid IPv4")
-    else:
-        raise ValueError("IP field not present in dictionnary")
+    arg_list = argToList(args[cmd_type])
+    results: List[CommandResults] = list()
+    output_prefix = cmd_type.upper()
+    indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[output_prefix]
 
+    for arg in arg_list:
+        response = client.get_by_value(value=arg)
+        ioc = list(filter(lambda x: x["Value"] == arg, response["IOCs"]))[0]
+        result = {
+            "Value": ioc["Value"],
+            "Risk": ioc["Risk"],
+            "Categories": ioc["Categories"],
+            "Type": ioc["Type"],
+            "TLP": ioc["TLP"],
+            "UsageMode": ioc["UsageMode"],
+            "Vulnerabilities": ioc["Vulnerabilities"]
+        }
+
+        readable_result = tableToMarkdown("Get IoC corresponding to the value", result)
+        score = get_dbot_score(ioc["Risk"])
+        dbot = Common.DBotScore(indicator=arg, integration_name=INTEGRATION_NAME, indicator_type=indicator_type,
+                                score=score, reliability=reliability, malicious_description="Match found in LastInfoSec")
+        indicator = get_dbot_indicator(output_prefix, dbot, arg)
+
+        results.append(
+            CommandResults(
+                indicator=indicator,
+                readable_output=readable_result,
+                outputs_prefix=output_prefix,
+                outputs_key_field=cmd_type,
+                outputs=result,
+                raw_response=response
+            )
+        )
+    return results
 
 def test_module(client: GwClient) -> str:  # noqa: E501
     """tests API connectivity.
@@ -360,6 +411,13 @@ def main() -> None:
     token = params.get("token")
     check_cert = params.get("check_cert", False)
     proxy = params.get("proxy", False)
+    reliability = params.get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Source Reliability parameter.")
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -368,9 +426,17 @@ def main() -> None:
             return_results(
                 test_module(client=client)
             )
-        elif command == "ip":
+        elif command == "url":
             return_results(
-                ip_command(client=client, args=args)
+                generic_reputation_command(client=client, args=args, cmd_type='url', reliability=reliability)
+            )
+        elif command == "file":
+            return_results(
+                generic_reputation_command(client=client, args=args, cmd_type='file', reliability=reliability)
+            )
+        elif command == "domain":
+            return_results(
+                generic_reputation_command(client=client, args=args, cmd_type='domain', reliability=reliability)
             )
         elif command == "gw-lis-get-by-minute":
             return_results(
