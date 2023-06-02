@@ -5,10 +5,10 @@ import io  # noqa: F401
 ''' IMPORTS '''
 
 
+import io
+import paramiko
 import sys
 from datetime import datetime
-
-import paramiko
 from netmiko import Netmiko
 
 
