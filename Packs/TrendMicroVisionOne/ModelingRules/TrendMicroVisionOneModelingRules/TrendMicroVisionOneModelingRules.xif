@@ -15,11 +15,13 @@ filter
     xdm.alert.name = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.name")), ","),
     Entities = json_extract_array(impactScope, "$.entities"),
     | alter
+    xdm.source.user.identity_type = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", XDM_CONST.IDENTITY_TYPE_MACHINE, json_extract_scalar("@element", "$.entityType") = "account", XDM_CONST.IDENTITY_TYPE_USER, json_extract_scalar("@element", "$.entityType") = "emailAdress", XDM_CONST.IDENTITY_TYPE_UNKNOWN)), ",")
+    xdm.source.user.username = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") != "host", json_extract_scalar("@element", "$.entityValue"), null)), ",")
+
+
     xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
 
 
-    xdm.source.user.identity_type = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityType")), ",")  # TODO - ned to add if statement
-    xdm.source.user.username = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue")), ",") # TODO - there is a problem here, sometimes it returns dict, and sometimes string
     xdm.alert.subcategory = arraystring(arraymap(Entities, ), ",")
 filter
     event type in ("search_detections")
