@@ -3,8 +3,8 @@ commonfields:
   id: ZeroFox
   version: -1
 configuration:
-- defaultvalue: https://api.zerofox.com/1.0
-  display: URL (e.g., https://api.zerofox.com/1.0)
+- defaultvalue: https://api.zerofox.com/
+  display: URL (e.g., https://api.zerofox.com/)
   name: url
   required: true
   type: 0
@@ -633,7 +633,42 @@ script:
     name: zerofox-get-entity-types
   - description: Shows a table of all policy type names and IDs in the War Room.
     name: zerofox-get-policy-types
-  dockerimage: demisto/python3:3.10.12.63474
+  - arguments:
+    - name: source
+      required: true
+      auto: PREDEFINED
+      description: Content to be considered a threat
+      type: keyValue
+    - name: alert_type
+      required: true
+      auto: PREDEFINED
+      description: Type of content acting as a threat, could be one of email, ip,
+        domain, url, phone, mail_exchange, page_content or account
+      type: keyValue
+    - name: violation
+      required: true
+      auto: PREDEFINED
+      description: Type of infringement the submitted threat represents, could be
+        one of phishing, malware, rogue_app, impersonation, trademark, copyright,
+        private_data, fraud or other
+      type: keyValue
+    - name: entity_id
+      required: true
+      auto: PREDEFINED
+      description: Identifier of the entity being threatened by submitted content
+      type: keyValue
+    - name: notes
+      description: Additional notes to include in submission
+      type: textArea
+    deprecated: false
+    description: Submits potential threats into the ZF alert registry for disruption.
+    execution: false
+    name: zerofox-submit-threat
+    outputs:
+    - contextPath: ZeroFox.Alert.ID
+      description: The ID of the alert created.
+      type: Number
+  dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   runonce: false
   script: '-'

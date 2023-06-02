@@ -1,13 +1,17 @@
+import json
+
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import (
+    LOG, CommandResults, argToList, handle_proxy, parse_date_range,
+    return_error, return_outputs, return_results, tableToMarkdown)
 
 ''' IMPORTS '''
 import requests
 from urllib3 import disable_warnings
-from typing import Dict, List, Any, cast, Union
 from datetime import datetime, timedelta
-import urllib3
+from typing import Any, Dict, List, Union, cast
+
 
 # Disable insecure warnings
 disable_warnings()
@@ -245,7 +249,7 @@ def get_authorization_token() -> str:
 
 
 def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[Dict, str] = '',
-                 continue_err: bool = False, api_request: bool = True) -> Dict:
+                 continue_err: bool = False, api_request: bool = True, version = "1.0") -> Dict:
     """
     :param method: HTTP request type
     :param url_suffix: The suffix of the URL
@@ -257,6 +261,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
     :param api_request: A boolean flag to help us know if the request is a regular API call or a token call.
     If api_request is False the call is to get Authorization Token, otherwise if api_request is True then it's a
     regular API call.
+    :param version : api version to use, default is 1.0
     :return: Returns the content of the response received from the API.
     """
     # A wrapper for requests lib to send our requests and handle requests and responses better
@@ -272,7 +277,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
             }
         res = requests.request(
             method,
-            BASE_URL + url_suffix,
+            BASE_URL + f"/{version}" + url_suffix,
             verify=USE_SSL,
             params=params,
             data=data,
@@ -745,6 +750,34 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
+def submit_threat_command():
+    args = demisto.args()
+    source: str = args.get("source", "")
+    alert_type :str = args.get("alert_type", "")
+    violation :str = args.get("violation", "")
+    entity_id : str = args.get("entity_id", "")
+    request_takedown : bool = args.get("request_takedown", False)
+    url_suffix: str = "/threat_submit/"
+    request_body: Dict = {
+        "source": source,
+        "alert_type": alert_type,
+        "violation": violation,
+        "entity_id": entity_id,
+    }
+    request_body = remove_none_dict(request_body)
+    response_content: Dict = http_request(
+        "POST", url_suffix, data=json.dumps(request_body), version="2.0"
+    )
+    output = f'Successful submission of threat. ID: {response_content.get("alert_id")}.'
+    return return_results(
+        CommandResults(readable_output= output,
+                        raw_response=response_content,
+                          output={"ID": response_content.get("alert_id")},
+                            outputs_prefix="ZeroFox.Alert")
+    )
+
+
+
 def test_module():
     """
     Performs basic get request to get item samples
@@ -773,6 +806,7 @@ def main():
         'zerofox-get-policy-types': get_policy_types_command,
         'fetch-incidents': fetch_incidents,
         'zerofox-modify-alert-notes': modify_alert_notes_command,
+        'zerofox-submit-threat' : submit_threat_command,
     }
     try:
         handle_proxy()
