@@ -1,4 +1,5 @@
-This playbook blocks malicious indicators through all integrations that are enabled, using the following sub-playbooks:
+Deprecated. Use the `Block Indicators - Generic V3` playbook instead.
+This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
 - Block URL - Generic
 - Block Account - Generic
@@ -10,26 +11,32 @@ This playbook blocks malicious indicators through all integrations that are enab
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Account - Generic
-* Block IP - Generic v2
-* Block Domain - Generic
-* Block Email - Generic
-* Block File - Generic v2
+
 * Block URL - Generic
+* Block Domain - Generic
+* Block File - Generic v2
+* Block IP - Generic v2
+* Block Email - Generic
+* Block Account - Generic
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -58,6 +65,7 @@ This playbook does not use any commands.
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -91,5 +99,7 @@ This playbook does not use any commands.
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Block Indicators - Generic v2](../doc_files/Block_Indicators_-_Generic_v2.png)
