@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Callable
 
 
 # Disable insecure warnings
@@ -612,7 +612,7 @@ def get_audit_logs(
 def fetch_events_by_log_type(
     client: Client,
     first_fetch: str,
-    get_logs_func: callable,
+    get_logs_func: Callable,
     log_last_run_time_field: str,
     last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
