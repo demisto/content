@@ -442,6 +442,14 @@ def get_workbench_logs(
     Returns:
         Tuple[List[Dict], str]: workbench logs & latest time of the workbench log that was created.
     """
+    def parse_workbench_logs():
+        for _log in workbench_logs:
+            for _entity in (_log.get('impactScope') or {}).get('entities') or []:
+                if (related_entities := _entity.get('relatedEntities') or []) and isinstance(related_entities, list):
+                    _entity['relatedEntities'] = ','.join(related_entities)
+                if (provenance := _entity.get('provenance') or []) and isinstance(provenance, list):
+                    _entity['provenance'] = ','.join(provenance)
+
     start_time, end_time = get_datetime_range(
         last_run_time=workbench_log_last_run_time,
         first_fetch=first_fetch,
@@ -449,6 +457,8 @@ def get_workbench_logs(
         date_format=date_format
     )
     workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
+    parse_workbench_logs()
+
     latest_workbench_log_time = get_latest_log_created_time(
         logs=workbench_logs,
         log_type=LogTypes.WORKBENCH,
@@ -485,9 +495,11 @@ def get_observed_attack_techniques_logs(
         for log in observed_attack_techniques_logs:
             if filters := log.get('filters') or []:
                 for _filter in filters:
-                    if mitre_tactic_ids := _filter.get('mitreTacticIds') or []:
+                    if (mitre_tactic_ids := _filter.get('mitreTacticIds') or []) and isinstance(mitre_tactic_ids, list):
                         _filter['mitreTacticIds'] = ','.join(mitre_tactic_ids)
-                    if mitre_technique_ids := _filter.get('mitreTechniqueIds') or []:
+                    if (
+                        mitre_technique_ids := _filter.get('mitreTechniqueIds') or []
+                    ) and isinstance(mitre_technique_ids, list):
                         _filter['mitreTechniqueIds'] = ','.join(mitre_technique_ids)
 
     start_time, end_time = get_datetime_range(
