@@ -2969,7 +2969,7 @@ def test_module() -> str:
 
 
 # Fetch Incidents
-def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: int,
+def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, custom_update: bool, id_offset: int,
                     fetch_attachments: bool, fetch_comments: bool, mirror_direction: str, max_fetch_incidents: int,
                     first_fetch_interval: str, comment_tag_from_jira: str, comment_tag_to_jira: str,
                     attachment_tag_from_jira: str, attachment_tag_to_jira: str) -> List[Dict[str, Any]]:
@@ -3013,6 +3013,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         last_fetch_id=last_fetch_id,
         last_fetch_created_time=last_fetch_created_time,
         last_fetch_updated_time=last_fetch_updated_time,
+        custom_update=custom_update,
         first_fetch_interval=convert_string_date_to_specific_format(
             string_date=first_fetch_interval),
         issue_ids_to_exclude=last_fetch_issue_ids)
@@ -3098,7 +3099,7 @@ def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[i
 
 def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: str, last_fetch_id: int,
                                  last_fetch_created_time: str, last_fetch_updated_time: str,
-                                 first_fetch_interval: str, issue_ids_to_exclude: List[int]) -> str:
+                                 first_fetch_interval: str, issue_ids_to_exclude: List[int], custom_update: bool) -> str:
     """This is in charge of returning the query to use to fetch the appropriate incidents.
     NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
     so we could keep save the latest fetch incident (according to issue_field_to_fetch_from) and fetch only new incidents,
@@ -3137,6 +3138,8 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
         if 'updated' not in fetch_query:
             return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
                     'ORDER BY updated ASC')
+        if custom_update: #allow users to create a more custom update query based off of their workflow
+            return (f'{fetch_query} \"{last_fetch_updated_time or first_fetch_interval}\"{exclude_issue_ids_query}')
         error_message = f'{error_message}\n{issue_field_in_fetch_query_error_message}'
     raise DemistoException(error_message)
 
@@ -3789,6 +3792,7 @@ def main():  # pragma: no cover
 
     # Fetch params
     issue_field_to_fetch_from = params.get('issue_field_to_fetch_from', 'id')
+    custom_update = argToBoolean(params.get('custom_update', False))
     fetch_query = params.get('fetch_query', 'status!=done')
     id_offset = params.get('id_offset', 0)
     fetch_attachments = argToBoolean(params.get('fetch_attachments', False))
@@ -3889,7 +3893,8 @@ def main():  # pragma: no cover
                 comment_tag_to_jira=comment_tag_to_jira,
                 comment_tag_from_jira=comment_tag_from_jira,
                 attachment_tag_to_jira=attachment_tag_to_jira,
-                attachment_tag_from_jira=attachment_tag_from_jira
+                attachment_tag_from_jira=attachment_tag_from_jira,
+                custom_update=custom_update
             ),
             )
 

@@ -41,6 +41,12 @@ configuration:
   - updated date
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
+- defaultvalue: 'false'
+  display: Custom Update
+  additionalinfo: This allows users to fully customize how they fetch updated issues with their current workflows. It will append the updated time at the end of the query specified earlier.
+  name: custom_update
+  required: false
+  type: 8
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.
   name: id_offset
