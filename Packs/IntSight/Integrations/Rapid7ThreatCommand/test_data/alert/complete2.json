@@ -1,0 +1,30 @@
+{
+    "_id": "59490d7ae57c281391e11cba",
+    "FoundDate": "FoundDate",
+    "Assets": [],
+    "Assignees": [],
+    "Details": {
+        "Title": "Directory listing is exposed publicly",
+        "Type": "ExploitableData",
+        "SubType": "DirectoryListingExposed",
+        "Severity": "Medium",
+        "Images": [
+            "59490d78e57c281391e11cb9"
+        ],
+        "Tags": [],
+        "Source": {
+            "Type": "Company Website",
+            "NetworkType": "ClearWeb",
+            "URL": null
+        },
+        "Description": "Directory listing is exposed publicly and may be exploited by potential hackers in order to infiltrate the company website. It is recommended to hide the directory listing, and restrict access to only authorized personnel."
+    },
+    "TakedownStatus": "NotSent",
+    "IsFlagged": false,
+    "UpdateDate": "UpdateDate",
+    "RelatedIocs": [],
+    "RelatedThreatIDs": [],
+    "Closed": {
+        "IsClosed": false
+    }
+}
