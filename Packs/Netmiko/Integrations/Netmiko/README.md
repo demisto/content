@@ -87,11 +87,11 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 ### Command Example (Multiple commands) ###
 #### As multiple commands via CLI or task ####
 
-`!netmiko-cmds cmds="whoami`
+`!netmiko-cmds cmds="whoami`<br />
 `who"`
 
 #### As multiple commands via CLI or task using an array ####
-`array context key = ["whoami", "who"]`
+`array context key = ["whoami", "who"]`<br />
 `!netmiko-cmds cmds=${array}`
 
 #### Context Example #### 
