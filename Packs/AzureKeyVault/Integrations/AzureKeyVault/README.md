@@ -26,10 +26,14 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
     | Use system proxy settings                                                   | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-key-vault-create-update
+
 ***
 Create or update a key vault in the specified subscription. If the Key Vault exists, the updated properties will overwrite the existing ones. Please use azure-key-vault-access-policy-update command if you wish to update the access policy of an existing Key Vault.
 
@@ -37,6 +41,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 #### Base Command
 
 `azure-key-vault-create-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,9 +87,11 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 | AzureKeyVault.KeyVault.properties.provisioningState | String | The current provisioning state. |
 
 #### Command Example
+
 ```!azure-key-vault-create-update object_id=YOUR_OBJECT_ID vault_name=xsoar-test-285 keys=create,decrypt```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -163,12 +170,14 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 #### Human Readable Output
 
 >### xsoar-test-285 Information
+>
 >|Id|Name|Type|Location|
 >|---|---|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-285 | xsoar-test-285 | Microsoft.KeyVault/vaults | westus |
 
 
 ### azure-key-vault-delete
+
 ***
 Delete the specified key vault.
 
@@ -176,6 +185,7 @@ Delete the specified key vault.
 #### Base Command
 
 `azure-key-vault-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,6 +198,7 @@ Delete the specified key vault.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-key-vault-delete vault_name=xsoar-test-262```
 
 #### Human Readable Output
@@ -195,6 +206,7 @@ There is no context output for this command.
 >Deleted Key Vault xsoar-test-262 successfully.
 
 ### azure-key-vault-get
+
 ***
 Get the specified key vault.
 
@@ -202,6 +214,7 @@ Get the specified key vault.
 #### Base Command
 
 `azure-key-vault-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -233,9 +246,11 @@ Get the specified key vault.
 
 
 #### Command Example
+
 ```!azure-key-vault-get vault_name=xsoar-test-vault```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -322,12 +337,14 @@ Get the specified key vault.
 #### Human Readable Output
 
 >### xsoar-test-vault Information
+>
 >|Id|Name|Type|Location|
 >|---|---|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-vault | xsoar-test-vault | Microsoft.KeyVault/vaults | eastus |
 
 
 ### azure-key-vault-list
+
 ***
 The List operation gets information about the vaults associated with the subscription. For a limit greater than 25, more than one API call will be required and the command might take longer time.
 
@@ -335,6 +352,7 @@ The List operation gets information about the vaults associated with the subscri
 #### Base Command
 
 `azure-key-vault-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -367,9 +385,11 @@ The List operation gets information about the vaults associated with the subscri
 
 
 #### Command Example
+
 ```!azure-key-vault-list limit=1```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -456,12 +476,14 @@ The List operation gets information about the vaults associated with the subscri
 #### Human Readable Output
 
 >### Key Vaults List
+>
 >|Id|Name|Type|Location|
 >|---|---|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-265 | xsoar-test-265 | Microsoft.KeyVault/vaults | eastasia |
 
 
 ### azure-key-vault-access-policy-update
+
 ***
 Update access policies in a key vault in the specified subscription. The update regards only the access policy for the specified object ID.
 
@@ -469,6 +491,7 @@ Update access policies in a key vault in the specified subscription. The update 
 #### Base Command
 
 `azure-key-vault-access-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -496,9 +519,11 @@ Update access policies in a key vault in the specified subscription. The update 
 
 
 #### Command Example
+
 ```!azure-key-vault-access-policy-update object_id=YOUR_OBJECT_ID operation_kind=add vault_name=xsoar-test-285 keys=import,list```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -565,12 +590,14 @@ Update access policies in a key vault in the specified subscription. The update 
 #### Human Readable Output
 
 >### xsoar-test-285 Updated Access Policy
+>
 >|Id|Type|
 >|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-285/accessPolicies/ | Microsoft.KeyVault/vaults/accessPolicies |
 
 
 ### azure-key-vault-key-get
+
 ***
 Get the public part of a stored key. This operation requires the keys/get permission.
 
@@ -578,6 +605,7 @@ Get the public part of a stored key. This operation requires the keys/get permis
 #### Base Command
 
 `azure-key-vault-key-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -603,9 +631,11 @@ Get the public part of a stored key. This operation requires the keys/get permis
 
 
 #### Command Example
+
 ```!azure-key-vault-key-get key_name=test-key-1 vault_name=xsoar-test-vault```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -641,12 +671,14 @@ Get the public part of a stored key. This operation requires the keys/get permis
 #### Human Readable Output
 
 >### test-key-1 Information
+>
 >|Key Id|Enabled|Json Web Key Type|Key Operations|Create Time|Update Time|
 >|---|---|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/keys/test-key-1/KEY_VERSION | true | RSA | sign,<br/>verify,<br/>wrapKey,<br/>unwrapKey,<br/>encrypt,<br/>decrypt | 2021-08-11T12:03:16 | 2021-08-11T12:03:16 |
+>| <https://xsoar-test-vault.vault.azure.net/keys/test-key-1/KEY_VERSION> | true | RSA | sign,<br/>verify,<br/>wrapKey,<br/>unwrapKey,<br/>encrypt,<br/>decrypt | 2021-08-11T12:03:16 | 2021-08-11T12:03:16 |
 
 
 ### azure-key-vault-key-list
+
 ***
 List keys in the specified vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the keys/list permission.
 
@@ -654,6 +686,7 @@ List keys in the specified vault. For a limit greater than 25, more than one API
 #### Base Command
 
 `azure-key-vault-key-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -676,9 +709,11 @@ List keys in the specified vault. For a limit greater than 25, more than one API
 
 
 #### Command Example
+
 ```!azure-key-vault-key-list vault_name=xsoar-test-vault limit=1```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -704,12 +739,14 @@ List keys in the specified vault. For a limit greater than 25, more than one API
 #### Human Readable Output
 
 >### xsoar-test-vault Keys List
+>
 >|Key Id|Enabled|Create Time|Update Time|Expiry Time|
 >|---|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/keys/test-cer-1 | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
+>| <https://xsoar-test-vault.vault.azure.net/keys/test-cer-1> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
 
 ### azure-key-vault-key-delete
+
 ***
 Delete a key of any type from storage in Azure Key vault. This operation requires the keys/delete permission.
 
@@ -717,6 +754,7 @@ Delete a key of any type from storage in Azure Key vault. This operation require
 #### Base Command
 
 `azure-key-vault-key-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -743,9 +781,11 @@ Delete a key of any type from storage in Azure Key vault. This operation require
 
 
 #### Command Example
+
 ```!azure-key-vault-key-delete key_name=test-key-10 vault_name=xsoar-test-vault```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -786,12 +826,14 @@ Delete a key of any type from storage in Azure Key vault. This operation require
 #### Human Readable Output
 
 >### Delete test-key-10
+>
 >|Key Id|Recovery Id|Deleted Date|Scheduled Purge Date|
 >|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/keys/test-key-10/KEY_VERSION | https://xsoar-test-vault.vault.azure.net/deletedkeys/test-key-10 | 2021-11-01T12:52:40 | 2022-01-30T12:52:40 |
+>| <https://xsoar-test-vault.vault.azure.net/keys/test-key-10/KEY_VERSION> | <https://xsoar-test-vault.vault.azure.net/deletedkeys/test-key-10> | 2021-11-01T12:52:40 | 2022-01-30T12:52:40 |
 
 
 ### azure-key-vault-secret-get
+
 ***
 Get a specified secret from a given key vault. The GET operation is applicable to any secret stored in Azure Key Vault. This operation requires the secrets/get permission.
 
@@ -799,6 +841,7 @@ Get a specified secret from a given key vault. The GET operation is applicable t
 #### Base Command
 
 `azure-key-vault-secret-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -821,9 +864,11 @@ Get a specified secret from a given key vault. The GET operation is applicable t
 
 
 #### Command Example
+
 ```!azure-key-vault-secret-get secret_name=test-sec-1 vault_name=xsoar-test-vault```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -850,12 +895,14 @@ Get a specified secret from a given key vault. The GET operation is applicable t
 #### Human Readable Output
 
 >### test-sec-1 Information
+>
 >|Secret Id|Enabled|Create Time|Update Time|Expiry Time|
 >|---|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/secrets/test-sec-1/SECRET_VERSION | true | 2021-08-11T12:04:12 | 2021-08-17T16:22:57 | 2023-08-11T12:04:06 |
+>| <https://xsoar-test-vault.vault.azure.net/secrets/test-sec-1/SECRET_VERSION> | true | 2021-08-11T12:04:12 | 2021-08-17T16:22:57 | 2023-08-11T12:04:06 |
 
 
 ### azure-key-vault-secret-list
+
 ***
 List secrets in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the secrets/list permission.
 
@@ -863,6 +910,7 @@ List secrets in a specified key vault. For a limit greater than 25, more than on
 #### Base Command
 
 `azure-key-vault-secret-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -887,9 +935,11 @@ List secrets in a specified key vault. For a limit greater than 25, more than on
 
 
 #### Command Example
+
 ```!azure-key-vault-secret-list vault_name=xsoar-test-vault limit=1```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -916,12 +966,14 @@ List secrets in a specified key vault. For a limit greater than 25, more than on
 #### Human Readable Output
 
 >### xsoar-test-vault Secrets List
+>
 >|Secret Id|Enabled|Create Time|Update Time|Expiry Time|
 >|---|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/secrets/test-cer-1 | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
+>| <https://xsoar-test-vault.vault.azure.net/secrets/test-cer-1> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
 
 ### azure-key-vault-secret-delete
+
 ***
 Delete a secret from a specified key vault. This operation requires the secrets/delete permission.
 
@@ -929,6 +981,7 @@ Delete a secret from a specified key vault. This operation requires the secrets/
 #### Base Command
 
 `azure-key-vault-secret-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -952,9 +1005,11 @@ Delete a secret from a specified key vault. This operation requires the secrets/
 
 
 #### Command Example
+
 ```!azure-key-vault-secret-delete secret_name=test-sec-10 vault_name=xsoar-test-vault```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -981,12 +1036,14 @@ Delete a secret from a specified key vault. This operation requires the secrets/
 #### Human Readable Output
 
 >### Delete test-sec-10
+>
 >|Secret Id|Recovery Id|Deleted Date|Scheduled Purge Date|
 >|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/secrets/test-sec-10/SECRET_VERSION | https://xsoar-test-vault.vault.azure.net/deletedsecrets/test-sec-10 | 2021-11-01T12:52:54 | 2022-01-30T12:52:54 |
+>| <https://xsoar-test-vault.vault.azure.net/secrets/test-sec-10/SECRET_VERSION> | <https://xsoar-test-vault.vault.azure.net/deletedsecrets/test-sec-10> | 2021-11-01T12:52:54 | 2022-01-30T12:52:54 |
 
 
 ### azure-key-vault-certificate-get
+
 ***
 Gets information about a specific certificate. This operation requires the certificates/get permission.
 
@@ -994,6 +1051,7 @@ Gets information about a specific certificate. This operation requires the certi
 #### Base Command
 
 `azure-key-vault-certificate-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1021,9 +1079,11 @@ Gets information about a specific certificate. This operation requires the certi
 
 
 #### Command Example
+
 ```!azure-key-vault-certificate-get certificate_name=test-cer-1 vault_name=xsoar-test-vault```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -1103,12 +1163,14 @@ Gets information about a specific certificate. This operation requires the certi
 #### Human Readable Output
 
 >### test-cer-1 Information
+>
 >|Certificate Id|Enabled|Create Time|Update Time|Expiry Time|
 >|---|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1/CERTIFICATE_VERSION | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
+>| <https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1/CERTIFICATE_VERSION> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
 
 ### azure-key-vault-certificate-list
+
 ***
 List certificates in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the certificates/list permission.
 
@@ -1116,6 +1178,7 @@ List certificates in a specified key vault. For a limit greater than 25, more th
 #### Base Command
 
 `azure-key-vault-certificate-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1137,9 +1200,11 @@ List certificates in a specified key vault. For a limit greater than 25, more th
 
 
 #### Command Example
+
 ```!azure-key-vault-certificate-list vault_name=xsoar-test-vault limit=1```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -1164,12 +1229,14 @@ List certificates in a specified key vault. For a limit greater than 25, more th
 #### Human Readable Output
 
 >### xsoar-test-vault Certificates List
+>
 >|Certificate Id|Enabled|Create Time|Update Time|Expiry Time|
 >|---|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1 | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
+>| <https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
 
 ### azure-key-vault-certificate-policy-get
+
 ***
 Get the policy of the specified certificate.This operation requires the certificates/get permission.
 
@@ -1177,6 +1244,7 @@ Get the policy of the specified certificate.This operation requires the certific
 #### Base Command
 
 `azure-key-vault-certificate-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1200,9 +1268,11 @@ Get the policy of the specified certificate.This operation requires the certific
 
 
 #### Command Example
+
 ```!azure-key-vault-certificate-policy-get certificate_name=test-cer-1 vault_name=xsoar-test-vault```
 
 #### Context Example
+
 ```json
 {
     "AzureKeyVault": {
@@ -1262,7 +1332,8 @@ Get the policy of the specified certificate.This operation requires the certific
 #### Human Readable Output
 
 >### test-cer-1 Policy Information
+>
 >|Id|Key Props|Secret Props|X509 Props|Issuer|Attributes|
 >|---|---|---|---|---|---|
->| https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1/policy | exportable: true<br/>kty: RSA<br/>key_size: 2048<br/>reuse_key: false | contentType: application/x-pkcs12 | subject: CN=test<br/>sans: {"dns_names": []}<br/>ekus: 1.3.6.1.5.5.7.3.1,<br/>1.3.6.1.5.5.7.3.2<br/>key_usage: digitalSignature,<br/>keyEncipherment<br/>validity_months: 12<br/>basic_constraints: {"ca": false} | name: Self | enabled: true<br/>created: 2021-08-11T12:05:31<br/>updated: 2021-08-11T12:05:31 |
+>| <https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1/policy> | exportable: true<br/>kty: RSA<br/>key_size: 2048<br/>reuse_key: false | contentType: application/x-pkcs12 | subject: CN=test<br/>sans: {"dns_names": []}<br/>ekus: 1.3.6.1.5.5.7.3.1,<br/>1.3.6.1.5.5.7.3.2<br/>key_usage: digitalSignature,<br/>keyEncipherment<br/>validity_months: 12<br/>basic_constraints: {"ca": false} | name: Self | enabled: true<br/>created: 2021-08-11T12:05:31<br/>updated: 2021-08-11T12:05:31 |
 

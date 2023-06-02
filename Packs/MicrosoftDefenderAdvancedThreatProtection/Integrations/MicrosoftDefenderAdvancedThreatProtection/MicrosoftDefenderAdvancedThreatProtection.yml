@@ -6,13 +6,13 @@ commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
-- display: Endpoint Type
+- defaultvalue: Worldwide
+  display: Endpoint Type
   name: endpoint_type
   required: false
   type: 15
   section: Connect
   additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
-  defaultvalue: Worldwide
   options:
   - Worldwide
   - Us Geo Proximity
@@ -28,23 +28,23 @@ configuration:
   required: false
   type: 0
   section: Connect
-- name: _tenant_id
+- display: Token
+  name: _tenant_id
   required: false
   type: 0
-  display: Token
   section: Connect
-- name: credentials
+- displaypassword: Key
+  name: credentials
   required: false
   type: 9
-  displaypassword: Key
   hiddenusername: true
 - display: Certificate Thumbprint
   name: creds_certificate
   required: false
   type: 9
+  displaypassword: Private Key
   section: Connect
   advanced: true
-  displaypassword: Private Key
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -56,51 +56,48 @@ configuration:
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  type: 14
-  section: Connect
-  advanced: true
   required: false
+  type: 14
   hidden: true
-- display: Authentication Type
-  name: auth_type
-  type: 15
   section: Connect
   advanced: true
-  additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
+- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
+  display: Authentication Type
+  name: auth_type
   defaultvalue: Client Credentials
   options:
   - Authorization Code
   - Client Credentials
   - Azure Managed Identities
+  type: 15
+  section: Connect
+  advanced: true
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions section
+- display: Authorization code
   displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions section
+  hiddenusername: true
   name: auth_code
   required: false
-  hiddenusername: true
   type: 9
   section: Connect
-  display: Authorization code
   advanced: true
-- name: managed_identities_client_id
-  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
   required: false
+  hiddenusername: true
   type: 9
   section: Connect
-  displaypassword: Azure Managed Identities Client ID
-  hiddenusername: true
-- display: Source Reliability
-  name: Reliability
-  required: false
-  type: 15
-  section: Collect
+- name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
+  display: Source Reliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -109,13 +106,16 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  required: false
+  type: 15
+  section: Collect
   advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
   section: Collect
-- display: 'Incident type'
+- display: Incident type
   name: incidentType
   required: false
   type: 13
@@ -123,32 +123,32 @@ configuration:
 - defaultvalue: New
   display: 'Status to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
   name: fetch_status
-  required: false
-  type: 16
   options:
   - New
   - InProgress
   - Resolved
+  required: false
+  type: 16
   section: Collect
   advanced: true
-- defaultvalue: 'Informational,Low,Medium,High'
+- defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
   required: false
   type: 16
-  section: Collect
   options:
   - Informational
   - Low
   - Medium
   - High
+  section: Collect
   advanced: true
-- display: Maximum number of incidents to fetch
+- defaultvalue: '50'
+  display: Maximum number of incidents to fetch
   name: max_fetch
   required: false
   type: 0
   section: Collect
-  defaultvalue: '50'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -179,14 +179,14 @@ configuration:
   required: false
   type: 0
   section: Collect
-- display: Using Microsoft GCC? (Deprecated)
+- defaultvalue: 'false'
+  display: Using Microsoft GCC? (Deprecated)
   name: is_gcc
   required: false
   type: 8
-  hidden: true
   section: Connect
   advanced: true
-  defaultvalue: 'false'
+  hidden: true
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -6710,7 +6710,7 @@ script:
     execution: false
     name: microsoft-atp-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.61689
+  dockerimage: demisto/crypto:1.0.0.62171
   feed: false
   isfetch: true
   longRunning: false

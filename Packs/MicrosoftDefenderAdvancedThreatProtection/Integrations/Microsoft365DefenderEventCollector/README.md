@@ -20,10 +20,14 @@ Microsoft 365 Defender event collector integration for Cortex XSIAM.
     | Use system proxy settings |                                                                                                                                                  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### microsoft-365-defender-get-events
+
 ***
 Returns a list of alerts
 
@@ -31,6 +35,7 @@ Returns a list of alerts
 #### Base Command
 
 `microsoft-365-defender-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,6 +49,7 @@ Returns a list of alerts
 There is no context output for this command.
 
 #### Context Example
+
 ```json
 {
     "Microsoft365Defender": {
