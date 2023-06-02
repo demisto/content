@@ -29,6 +29,20 @@ configuration:
   required: false
   section: Connect
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: Cortex XSOAR integration with FullHunt.io API
 display: FullHunt
 name: FullHunt
@@ -187,6 +201,24 @@ script:
     - contextPath: FullHunt.Domain.domain
       description: Domain
       type: string 
+    - contextPath: FullHunt.Domain.domain
+      description: Domain
+      type: string 
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: Domain.Name
+      description: The Domain.
+      type: String
     - contextPath: FullHunt.Domain.hosts
       description: List of hosts with same details as running the command "fullhunt-get-host"
       type: array 

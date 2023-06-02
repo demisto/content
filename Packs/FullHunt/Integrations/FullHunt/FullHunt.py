@@ -23,7 +23,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def get_account_status(self) -> str:
+    def get_account_status(self) -> dict:
         """
         Get the account status with email, credits, etc. with the /auth/status API endpoint.
         """
@@ -198,10 +198,6 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
 
-    # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
-    # a reliability score of the source providing the intelligence data.
-    reliability = params.get('integrationReliability', DBotScoreReliability.C)
-
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {
@@ -220,23 +216,22 @@ def main() -> None:
 
         elif command == 'fullhunt-get-account-status':
             # Get user account information and credit.
-            result = get_account_status_command(client, params)
-            return_results(result)
+            command_result = get_account_status_command(client, params)
+            return_results(command_result)
 
         elif command == 'fullhunt-get-host':
             # Get host details
-            result = get_host_command(client, args)
-            return_results(result)
+            return_results(get_host_command(client, args))
 
         elif command == 'fullhunt-get-subdomain':
             # Get subdomain from a given domain
-            result = get_subdomain_command(client, args)
-            return_results(result)
+            command_result = get_subdomain_command(client, args)
+            return_results(command_result)
 
         elif command == 'domain':
             # Get details about the specified domain
-            result = get_domain_command(client, args)
-            return_results(result)
+            command_result = get_domain_command(client, args)
+            return_results(command_result)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')

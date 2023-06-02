@@ -31,7 +31,8 @@ Get information about the user account such as company, email, credit, and usage
 
 #### Input
 
-None
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -114,23 +115,29 @@ Get details about one specified domain
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | One domain to check | Required | 
+| domain | One domain to check. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FullHunt.Domain.domain | string | Domain |  
-| FullHunt.Domain.hosts | array | List of hosts with same details as running the command "fullhunt-get-host" |  
-| FullHunt.Domain.message | string | Message |  
-| FullHunt.Domain.metadata.all_results_count | number | Number of results for this API request |  
-| FullHunt.Domain.metadata.available_results_for_user | number | Number of results available for the user performing the API request |  
-| FullHunt.Domain.metadata.domain | string | Domain |  
-| FullHunt.Domain.metadata.last_scanned | number | Epoch timestamp of the domain last scan |  
-| FullHunt.Domain.metadata.max_results_for_user | number | Maximum results for the user |  
-| FullHunt.Domain.metadata.timestamp | number | Epoch timestamp of the API request |  
-| FullHunt.Domain.metadata.user_plan | string | Fullhunt plan |  
-| FullHunt.Domain.status | number | HTTP status code |   
+| FullHunt.Domain.domain | string | Domain | 
+| FullHunt.Domain.domain | string | Domain | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
+| Domain.Name | String | The Domain. | 
+| FullHunt.Domain.hosts | array | List of hosts with same details as running the command "fullhunt-get-host" | 
+| FullHunt.Domain.message | string | Message | 
+| FullHunt.Domain.metadata.all_results_count | number | Number of results for this API request | 
+| FullHunt.Domain.metadata.available_results_for_user | number | Number of results available for the user performing the API request | 
+| FullHunt.Domain.metadata.domain | string | Domain | 
+| FullHunt.Domain.metadata.last_scanned | number | Epoch timestamp of the domain last scan | 
+| FullHunt.Domain.metadata.max_results_for_user | number | Maximum results for the user | 
+| FullHunt.Domain.metadata.timestamp | number | Epoch timestamp of the API request | 
+| FullHunt.Domain.metadata.user_plan | string | Fullhunt plan | 
+| FullHunt.Domain.status | number | HTTP status code | 
 
 ### fullhunt-get-subdomain
 
@@ -151,15 +158,14 @@ Get all subdomains from a given domain
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FullHunt.Subdomain.domain | string | Domain |  
-| FullHunt.Subdomain.hosts | array | List of subdomains |  
-| FullHunt.Subdomain.message | string | Message |  
-| FullHunt.Subdomain.metadata.all_results_count | number | Number of results for this API request |  
-| FullHunt.Subdomain.metadata.available_results_for_user | number | Number of results available for the user performing the API request |  
-| FullHunt.Subdomain.metadata.domain | string | Domain |  
-| FullHunt.Subdomain.metadata.last_scanned | number | Epoch timestamp of the domain last scan |  
-| FullHunt.Subdomain.metadata.max_results_for_user | number | Maximum results for the user |  
-| FullHunt.Subdomain.metadata.timestamp | number | Epoch timestamp of the API request |  
-| FullHunt.Subdomain.metadata.user_plan | string | Fullhunt plan |  
-| FullHunt.Subdomain.status | number | HTTP status code |   
-
+| FullHunt.Subdomain.domain | string | Domain | 
+| FullHunt.Subdomain.hosts | array | List of subdomains | 
+| FullHunt.Subdomain.message | string | Message | 
+| FullHunt.Subdomain.metadata.all_results_count | number | Number of results for this API request | 
+| FullHunt.Subdomain.metadata.available_results_for_user | number | Number of results available for the user performing the API request | 
+| FullHunt.Subdomain.metadata.domain | string | Domain | 
+| FullHunt.Subdomain.metadata.last_scanned | number | Epoch timestamp of the domain last scan | 
+| FullHunt.Subdomain.metadata.max_results_for_user | number | Maximum results for the user | 
+| FullHunt.Subdomain.metadata.timestamp | number | Epoch timestamp of the API request | 
+| FullHunt.Subdomain.metadata.user_plan | string | Fullhunt plan | 
+| FullHunt.Subdomain.status | number | HTTP status code | 
