@@ -16,7 +16,7 @@ def is_gcp_iam_account(service_account: str) -> bool:
 
     Docs: https://cloud.google.com/iam/docs/service-account-types
     """
-    return service_account.endswith("iam.gserviceaccount.com")
+    return bool(re.search("^.+@[^\.]+(\.iam\.gserviceaccount\.com)$", service_account))
 
 
 def extract_project_name(service_account: str) -> Optional[str]:
