@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
 from GetProjectOwners import is_gcp_iam_account, extract_project_name, get_project_owners, main
+from contextlib import nullcontext as does_not_raise
+
 
 TEST_IAM_POLICY = [{
     "Contents": {
@@ -41,16 +43,17 @@ def test_is_gcp_iam_account(service_account, expected_out):
     assert is_gcp_iam_account(service_account) == expected_out
 
 
-@pytest.mark.parametrize('service_account, expected_out', [
-    ('service-account-name@project-id.iam.gserviceaccount.com', 'project-id'),
-    ('project-number-compute@developer.gserviceaccount.com', None),  # Compute Engine default service account
-    ('person@example.com', None),
+@pytest.mark.parametrize('service_account, expected_out, expected_raises', [
+    ('service-account-name@project-id.iam.gserviceaccount.com', 'project-id', does_not_raise()),
+    ('project-number-compute@developer.gserviceaccount.com', None, pytest.raises(ValueError)),
+    ('person@example.com', None, pytest.raises(ValueError)),
 ])
-def test_extract_project_name(service_account, expected_out):
-    assert extract_project_name(service_account) == expected_out
+def test_extract_project_name(service_account, expected_out, expected_raises):
+    with expected_raises:
+        assert extract_project_name(service_account) == expected_out
 
 
-@pytest.mark.parametrize('results, expected_out', [
+@pytest.mark.parametrize('results, expected_out, expected_raises', [
     (
         TEST_IAM_POLICY,
         [
@@ -59,7 +62,8 @@ def test_extract_project_name(service_account, expected_out):
             "janny@paloaltonetworks.com",
             "jwilkes@paloaltonetworks.com",
             "pparikh@paloaltonetworks.com"
-        ]
+        ],
+        does_not_raise()
     ),
     (
         # no owners (not sure if this is even possible)
@@ -78,16 +82,19 @@ def test_extract_project_name(service_account, expected_out):
                 "version": 1
             }
         }],
-        []
+        [],
+        does_not_raise()
     ),
     (
         [],
-        None
+        None,
+        pytest.raises(ValueError)
     ),
 
 ])
-def test_get_project_owners(results, expected_out):
-    assert get_project_owners(results) == expected_out
+def test_get_project_owners(results, expected_out, expected_raises):
+    with expected_raises:
+        assert get_project_owners(results) == expected_out
 
 
 @pytest.mark.parametrize('owners, external_service, expected_out', [

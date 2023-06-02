@@ -5,7 +5,7 @@ from those surfaced by Cortex ASM Enrichment.
 """
 
 
-from typing import Optional, Dict, List, Any
+from typing import Dict, List, Any
 import traceback
 import re
 
@@ -19,7 +19,7 @@ def is_gcp_iam_account(service_account: str) -> bool:
     return bool(re.search("^.+@[^\.]+(\.iam\.gserviceaccount\.com)$", service_account))
 
 
-def extract_project_name(service_account: str) -> Optional[str]:
+def extract_project_name(service_account: str) -> str:
     """
     Extract project name from GCP IAM service account
     """
@@ -27,22 +27,20 @@ def extract_project_name(service_account: str) -> Optional[str]:
     if match:
         return match.group()
     else:
-        demisto.info(f"Could not extract project name from service account {service_account}")
-        return None
+        raise ValueError(f"Could not extract project name from service account {service_account}")
 
 
-def get_iam_policy(project_name: str) -> Optional[List[Dict[str, Any]]]:
+def get_iam_policy(project_name: str) -> List[Dict[str, Any]]:
     """
     Retrieve IAM policy for project
     """
     try:
         return demisto.executeCommand("gcp-iam-project-iam-policy-get", args={"project_name": f"projects/{project_name}"})
-    except Exception as e:
-        demisto.info(f"Error retrieving IAM policy for GCP project {project_name}. Error: {str(e)}")
-        return None
+    except Exception as ex:
+        raise RuntimeError(f"Error retrieving IAM policy for GCP project {project_name}") from ex
 
 
-def get_project_owners(results: List[Dict[str, Any]]) -> Optional[List[str]]:
+def get_project_owners(results: List[Dict[str, Any]]) -> List[str]:
     """
     Return list of principals with the "owner" role from results of get_iam_policy
     """
@@ -53,9 +51,8 @@ def get_project_owners(results: List[Dict[str, Any]]) -> Optional[List[str]]:
             if group["role"] == "roles/owner":
                 owners.extend(member.replace("user:", "") for member in group["members"])
         return owners
-    except Exception as e:
-        demisto.info(f"Error getting project owners from IAM policy. Error: {str(e)}")
-        return None
+    except Exception as ex:
+        raise ValueError("Error getting project owners from IAM policy") from ex
 
 
 def main():
@@ -68,33 +65,31 @@ def main():
         if "Google" in external_service:
             for owner in unranked:
                 if is_gcp_iam_account(owner["email"]):
-                    project_name = extract_project_name(owner["email"])
-                    if project_name:
-                        results = get_iam_policy(project_name)
-                        if results:
-                            owners = get_project_owners(results)
-                            if owners:
-                                found_owners = True
-                                current_owners = demisto.incident().get("CustomFields").get("asmserviceownerunrankedraw")
-                                if not isinstance(current_owners, list):
-                                    # cast to list because if there's only one element, it will be returned as a dict
-                                    current_owners = [current_owners]
-                                for email in owners:
-                                    current_owners.append({
-                                        "name": "n/a",
-                                        "email": email,
-                                        "source": "GCP project owner of service account",
-                                        "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                                    })
-                                demisto.executeCommand("setAlert", {"asmserviceownerunrankedraw": current_owners})
-                            else:
-                                demisto.info(f"No principals found with role `owner` on GCP project {project_name}")
+                    owners = get_project_owners(get_iam_policy(extract_project_name(owner["email"])))
+                    if owners:
+                        found_owners = True
+                        current_owners = demisto.incident().get("CustomFields").get("asmserviceownerunrankedraw")
+                        if not isinstance(current_owners, list):
+                            # cast to list because if there's only one element, it will be returned as a dict
+                            current_owners = [current_owners]
+                        for email in owners:
+                            current_owners.append({
+                                "name": "n/a",
+                                "email": email,
+                                "source": "GCP project owner of service account",
+                                "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                            })
+                        demisto.executeCommand("setAlert", {"asmserviceownerunrankedraw": current_owners})
         if found_owners:
             return_results(CommandResults(
                 readable_output='Project owners of service accounts written to asmserviceownerunrankedraw'
             ))
         else:
             return_results(CommandResults(readable_output='No additional project owners found'))
+
+    except (ValueError, RuntimeError) as ex:
+        demisto.info(f"Error retrieving project owners: {str(ex)}")
+        return_results(CommandResults(readable_output='No additional project owners found'))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
