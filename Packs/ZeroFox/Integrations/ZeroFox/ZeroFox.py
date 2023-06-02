@@ -4,12 +4,13 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
+from urllib3 import disable_warnings
 from typing import Dict, List, Any, cast, Union
 from datetime import datetime, timedelta
 import urllib3
 
 # Disable insecure warnings
-urllib3.disable_warnings()
+disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -480,6 +481,34 @@ def modify_alert_tags_command():
     )
 
 
+def modify_alert_notes(alert_id: int, notes: str) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :param notes: The notes for the alert.
+    :return: HTTP request content.
+    """
+    url_suffix: str = f'/alerts/{alert_id}/'
+    request_body: Dict = {'notes': notes}
+    data: str = json.dumps(request_body)
+    response_content: Dict = http_request('POST', url_suffix, data=data)
+    return response_content
+
+
+def modify_alert_notes_command():
+    args = demisto.args()
+    alert_id: int = dict_value_to_integer(args, 'alert_id')
+    alert_notes: str = args.get('notes', '')
+    response_content: Dict = modify_alert_notes(alert_id, alert_notes)
+    alert: Dict = response_content.get('alert', {})
+    contents: Dict = get_alert_contents(alert)
+    results = CommandResults(
+        readable_output=f'Successful note modification of alert with ID: {alert_id}',
+        outputs=contents,
+        outputs_prefix='ZeroFox.Alert',
+    )
+    return_results(results)
+
+
 def get_alert(alert_id: int) -> Dict:
     """
     :param alert_id: The ID of the alert.
@@ -743,6 +772,7 @@ def main():
         'zerofox-get-entity-types': get_entity_types_command,
         'zerofox-get-policy-types': get_policy_types_command,
         'fetch-incidents': fetch_incidents,
+        'zerofox-modify-alert-notes': modify_alert_notes_command,
     }
     try:
         handle_proxy()

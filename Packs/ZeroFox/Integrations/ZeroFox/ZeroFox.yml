@@ -303,6 +303,8 @@ script:
     - auto: PREDEFINED
       description: A CSV list of alert types.
       name: alert_type
+      required: false
+      secret: false
       predefined:
       - account_information
       - entity_discovery_content
@@ -514,7 +516,7 @@ script:
     - description: Indicates the type of string matching used for comparing entity names to impersonator names.
       name: strict_name_matching
     - description: |-
-        Comma-separated list of string tags for tagging the entity. 
+        Comma-separated list of string tags for tagging the entity.
         For example:
         label1,label2,label3
       name: tags
