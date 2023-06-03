@@ -5745,8 +5745,8 @@ script:
       name: pre_post
       auto: PREDEFINED
       predefined:
-      - pre-rulebase
-      - post-rulebase
+      - pre-rulebas
+      - post-rulebas
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     - description: The tag to filter the rules.
