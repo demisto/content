@@ -3,6 +3,8 @@ returns relevant reports to the War Room and file reputations to the context dat
 The detonation supports the following file types -
 APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
 
+*** Base64 encoded files are currently NOT supported ***
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -17,7 +19,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Set
+* SetAndHandleEmpty
 
 ### Commands
 
