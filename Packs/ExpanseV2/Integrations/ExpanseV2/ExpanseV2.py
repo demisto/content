@@ -1423,7 +1423,6 @@ def fetch_incidents(client: Client, max_incidents: int,
         issue_type=issue_types, cloud_management_status=_cloud_management_status,
         created_after=created_after, sort='created'
     )
-    demisto.debug(f"ExpanseV2 - Number of incidents before filtering: {len(incidents)}")
     broken = False
     issues: List = []
     skip = cast(str, last_issue_id)
@@ -1444,6 +1443,7 @@ def fetch_incidents(client: Client, max_incidents: int,
             issues.append(i)
         if len(issues) == max_incidents:
             break
+    demisto.debug(f"ExpanseV2 - Number of incidents before filtering: {len(issues)}")
     skip_incidents = 0
     for issue in issues:
         ml_feature_list: List[str] = []
@@ -1456,7 +1456,7 @@ def fetch_incidents(client: Client, max_incidents: int,
             if incident_created_time < last_fetch:
                 skip_incidents += 1
                 demisto.debug(
-                    f"ExpanseV2 - Skipping incident with sys_id={i['id']} because its creation time is smaller than the last fetch.")
+                    f"ExpanseV2 - Skipping incident with id={i['id']} because its creation time is smaller than the last fetch.")
                 continue
         incident_name = issue.get('headline') if 'headline' in issue else issue.get('id')
 
