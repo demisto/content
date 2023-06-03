@@ -41,7 +41,8 @@ jobs:
           cd Utils/github_workflow_scripts
           pipenv sync
           
-          pipenv run ./handle_external_pr.py
+          cd -
+          pipenv run Utils/github_workflow_scripts/handle_external_pr.py
           echo "Finished Handling External PR"
       - name: Send Notification
         env:
