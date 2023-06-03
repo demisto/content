@@ -150,7 +150,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
         demisto.debug("MicrosoftGraphMail - Start fetching")
         demisto.debug(f"MicrosoftGraphMail - Last run: {json.dumps(last_run)}")
-        
+
         if folder_path_changed:
             # detected folder path change, get new folder id
             folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch,
