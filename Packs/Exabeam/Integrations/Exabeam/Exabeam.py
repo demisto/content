@@ -63,9 +63,7 @@ class Client(BaseClient):
         super().__del__()
 
     def is_token_auth(self) -> bool:
-        if self._is_token_auth_with_fetch_support() or self._is_token_auth_without_fetch_support():
-            return True
-        return False
+        return self._is_token_auth_with_fetch_support() or self._is_token_auth_without_fetch_support()
 
     def _is_token_auth_with_fetch_support(self) -> bool:
         if self.username and self.username != TOKEN_INPUT_IDENTIFIER and self.api_key:
