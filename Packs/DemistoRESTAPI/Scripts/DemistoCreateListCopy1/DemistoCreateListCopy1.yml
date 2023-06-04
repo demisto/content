@@ -1,0 +1,29 @@
+args:
+- default: true
+  description: Name of list to create
+  name: listName
+  required: true
+- description: Initial data of list
+  name: listData
+comment: Create a new list
+commonfields:
+  id: DemistoCreateList_1
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dependson:
+  must:
+  - demisto-api-post
+enabled: true
+name: DemistoCreateList_1
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- DemistoAPI
+type: javascript
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
