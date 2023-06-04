@@ -464,7 +464,8 @@ def url_lookup(args):
                 indicator_type=DBotScoreType.URL,
                 integration_name=INTEGRATION_NAME,
                 malicious_description=data.get('urlClassificationsWithSecurityAlert', None),
-                score=score
+                score=score,
+                reliability=demisto.params().get('reliability')
             )
         )
 
@@ -518,7 +519,8 @@ def ip_lookup(ip):
                 indicator_type=DBotScoreType.IP,
                 integration_name=INTEGRATION_NAME,
                 malicious_description=data.get('ipClassificationsWithSecurityAlert', None),
-                score=score
+                score=score,
+                reliability=demisto.params().get('reliability')
             )
         )
         results.append(CommandResults(
@@ -823,7 +825,8 @@ def sandbox_report_command():
         'Indicator': md5,
         'Type': 'file',
         'Vendor': 'Zscaler',
-        'Score': dbot_score
+        'Score': dbot_score,
+        'reliability': demisto.params().get('reliability')
     }}
 
     human_readable_report = ec['DBotScore'].copy()
