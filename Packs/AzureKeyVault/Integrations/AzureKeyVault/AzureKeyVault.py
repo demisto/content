@@ -259,6 +259,8 @@ class KeyVaultClient:
         url = f'https://{vault_name}.vault.azure.net/keys'
         response = self.http_request(
             'GET', full_url=url, resource=VAULT_RESOURCE)
+        if response.get('error'):
+            raise Exception(response)
 
         return self.get_entities_independent_of_pages(response, limit, offset, VAULT_RESOURCE)
 
@@ -782,7 +784,7 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
 
     all_responses = []
     for single_resource_group in resource_group_list:
-        response = client.update_access_policy_request(subscription_id, resource_group_name,
+        response = client.update_access_policy_request(subscription_id, single_resource_group,
                                                        vault_name, operation_kind, object_id, keys,
                                                        secrets, certificates, storage_accounts)
         if response.get('error'):
