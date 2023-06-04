@@ -25,7 +25,8 @@ configuration:
   name: accessKey
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
 - display: Use system proxy settings
   name: useproxy
   type: 8
