@@ -6,7 +6,6 @@ from CommonServerPython import *  # noqa: F401
 
 
 import traceback
-
 import paramiko
 
 
@@ -29,7 +28,7 @@ def main():
             client = paramiko.Transport(HOST, PORT)
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
-            sftp.close()
+            sftp.close()  # type: ignore
             demisto.results("ok")
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
@@ -41,7 +40,7 @@ def main():
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
             directory = demisto.args()["directory"]
-            res = sftp.listdir(path=directory)
+            res = sftp.listdir(path=directory)  # type: ignore
             entry = {
                 "Type": entryTypes["note"],
                 "ContentsFormat": formats["text"],
@@ -53,7 +52,7 @@ def main():
                 "EntryContext": {"SFTP.ListDir": res},
             }
             demisto.results(entry)
-            sftp.close()
+            sftp.close()  # type: ignore
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
             return_error(
@@ -66,14 +65,14 @@ def main():
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
             filePath = demisto.args()["filePath"]
-            sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1 :])
-            sftp.close()
-            with open("/tmp/" + filePath[filePath.rindex("/") + 1 :], "r") as f:
+            sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1:])  # type: ignore
+            sftp.close()  # type: ignore
+            with open("/tmp/" + filePath[filePath.rindex("/") + 1:], "r") as f:
                 data = f.read()
                 if demisto.args()["returnFile"] == "True":
                     demisto.results(
                         fileResult(
-                            filename=filePath[filePath.rindex("/") + 1 :], data=data
+                            filename=filePath[filePath.rindex("/") + 1:], data=data
                         )
                     )
                 else:
@@ -97,11 +96,10 @@ def main():
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
             filePath = get_file_path(args.get("file_entry_id"))
-            sftp.put(filePath["path"], args.get("path") + "/" + filePath["name"])
-            sftp.close()
+            sftp.put(filePath["path"], args.get("path") + "/" + filePath["name"])  # type: ignore
+            sftp.close()  # type: ignore
             demisto.results("File uploaded successfully")
         except Exception as ex:
-            print(filePath)
             demisto.error(traceback.format_exc())  # print the traceback
             return_error(f"Error occurred - Error: {str(ex)}")
 
