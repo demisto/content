@@ -232,7 +232,7 @@ tasks:
     task:
       id: c68376e6-38f2-4d3f-89c3-01e1540d3a85
       version: -1
-      name: Has list of keywords?
+      name: Has list of keywords and email body?
       type: condition
       iscommand: false
       brand: ""
@@ -254,6 +254,12 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MailBody
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {

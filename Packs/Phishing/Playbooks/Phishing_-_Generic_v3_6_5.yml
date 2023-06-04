@@ -3412,6 +3412,13 @@ tasks:
         complex:
           root: incident
           accessor: emailbody
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: incident.emailbodyhtml
+                iscontext: true
     separatecontext: true
     continueonerrortype: ""
     loop:
