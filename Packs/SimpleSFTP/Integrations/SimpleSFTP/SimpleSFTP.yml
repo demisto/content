@@ -1,55 +1,62 @@
-commonfields:
-  id: Simple SFTP
-  version: -1
-name: Simple SFTP
-display: Simple SFTP
 category: Utilities
-description: Simple SFTP Integration to copy files from SFTP Server using paramiko.
+commonfields:
+  id: custom-Simple-SFTP
+  version: -1
 configuration:
 - display: Host
   name: host
-  type: 0
   required: true
+  type: 0
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - display: Username
   name: authentication
-  type: 9
   required: true
-- display: Port
-  name: port
+  type: 9
+- additionalinfo: Defaults to 22
   defaultvalue: "22"
-  type: 0
+  display: Port
+  name: port
   required: false
-  additionalinfo: Defaults to 22
+  type: 0
+description: Simple SFTP Integration to copy files from SFTP Server using paramiko.
+display: custom-Simple-SFTP
+name: custom-Simple-SFTP
 script:
-  script: ''
-  type: python
   commands:
-  - name: sftp-listdir
-    arguments:
-    - name: directory
-      defaultValue: .
+  - arguments:
+    - defaultValue: .
       description: The directory from which to list the all directories.
+      name: directory
     description: List Directories SFTP command given directory path. Defaults to current directory upon sftp login.
-  - name: sftp-copyfrom
-    arguments:
-    - name: filePath
+    name: sftp-listdir
+  - arguments:
+    - description: Please provide file path as seen by the sftp user upon login
+      name: filePath
       required: true
-      description: Please provide file path as seen by the sftp user upon login
-    - name: returnFile
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
+      name: returnFile
       predefined:
       - "True"
       - "False"
-      description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
-      defaultValue: "False"
     description: Copies contents of file specified from the sftp server and prints it to the war room
+    name: sftp-copyfrom
+  - arguments:
+    - description: Directory to upload the file to
+      name: path
+      required: true
+    - description: Warroom Entry ID for the file to upload
+      name: file_entry_id
+      required: true
+    description: Upload a file to a path on the SFTP Server
+    name: sftp-upload-file
   dockerimage: demisto/netmiko:1.0.0.34185
   runonce: false
+  script: ''
   subtype: python3
-fromversion: 6.2.0
-tests:
-- No tests (auto formatted)
+  type: python
+sourcemoduleid: Simple SFTP
