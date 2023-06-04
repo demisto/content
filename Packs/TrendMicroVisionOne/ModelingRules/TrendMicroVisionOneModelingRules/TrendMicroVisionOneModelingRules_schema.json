@@ -255,6 +255,38 @@
       "event_type":{
          "type":"string",
          "is_array":false
+      },
+      "id":{
+         "type":"string",
+         "is_array":false
+      },
+      "investigationStatus":{
+         "type":"string",
+         "is_array":false
+      },
+      "workbenchLink":{
+         "type":"string",
+         "is_array":false
+      },
+      "alertProvider":{
+         "type":"string",
+         "is_array":false
+      },
+      "model":{
+         "type":"string",
+         "is_array":false
+      },
+      "score":{
+         "type":"int",
+         "is_array":false
+      },
+      "severity":{
+         "type":"string",
+         "is_array":false
+      },
+      "description":{
+         "type":"string",
+         "is_array":false
       }
    }
 }

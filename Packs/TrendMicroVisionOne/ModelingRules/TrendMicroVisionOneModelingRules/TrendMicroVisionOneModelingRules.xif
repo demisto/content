@@ -7,26 +7,24 @@ filter
     xdm.network.http.url = workbenchLink,
     xdm.source.application.name = alertProvider,
     xdm.event.original_event_type = model,
-    xdm.alert.severity = score,
+    xdm.alert.severity = to_string(score),
     xdm.event.log_level = severity,
     xdm.alert.description = description,
 
     xdm.alert.original_alert_id = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.id")), ","),
     xdm.alert.name = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.name")), ","),
-    Entities = json_extract_array(impactScope, "$.entities"),
+    Entities = json_extract_array(impactScope, "$.entities")
     | alter
-    xdm.source.user.identity_type = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", XDM_CONST.IDENTITY_TYPE_MACHINE, json_extract_scalar("@element", "$.entityType") = "account", XDM_CONST.IDENTITY_TYPE_USER, json_extract_scalar("@element", "$.entityType") = "emailAdress", XDM_CONST.IDENTITY_TYPE_UNKNOWN)), ",")
-    xdm.source.user.username = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") != "host", json_extract_scalar("@element", "$.entityValue"), null)), ",")
-    xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ",")
-    xdm.alert.subcategory = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.provenance")), ",")
-    xdm.source.ipv = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ",")
+    xdm.source.user.identity_type = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", XDM_CONST.IDENTITY_TYPE_MACHINE, json_extract_scalar("@element", "$.entityType") = "account", XDM_CONST.IDENTITY_TYPE_USER, json_extract_scalar("@element", "$.entityType") = "emailAdress", XDM_CONST.IDENTITY_TYPE_UNKNOWN)), ","),
+    xdm.source.user.username = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") != "host", json_extract_scalar("@element", "$.entityValue"), null)), ","),
+    xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
+    xdm.alert.subcategory = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.provenance")), ","),
+    xdm.source.ipv4 = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ",");
 
 filter
-    event type in ("search_detections")
+    event_type in ("search_detections")
 | alter
-    dataset = trend_micro_vision_one_raw
-| alter
-xdm.event.outcome_reason = arraystring(json_extract_array(act, "$."), ","),
+    xdm.event.outcome_reason = arraystring(json_extract_array(act, "$."), ","),
     //xdm.observer.action = actResult,
     //xdm.network.application_protocol = app,
     xdm.alert.original_threat_name = behaviorCat,
@@ -62,25 +60,25 @@ xdm.event.outcome_reason = arraystring(json_extract_array(act, "$."), ","),
     xdm.target.module.signer = arraystring(json_extract_array(objectSigner, "$."), ","),
     xdm.observer.content_version = pname,
     xdm.intermediate.process.executable.path = processFilePath,
-    xdm.source.process.pid = processPid,
+    xdm.source.process.pid = to_number(processPid),
     //xdm.source.process.executable.signer = processSigner,
     //xdm.observer.product = pver,
     //xdm.network.http.url = request,
     //xdm.source.user_agent = requestClientApplication,
-    xdm.source.port = spt,
+    xdm.source.port = to_number(spt),
     //xdm.alert.name = threatName,
-    xdm.alert.original_alert_id = uuid
+    xdm.alert.original_alert_id = uuid;
     //xdm.source.ipv6 = arraymap(mDevice, if("@element" contains ":", "@element", null)),
     //xdm.source.ipv4 = coalesce(arraymap(mDevice, if("@element" not contains ":", "@element", null)), arraymap(src, if("@element" contains ":", "@element", null)));
 filter
-    event type in ("observed_attach_techniques")
+    event_type in ("observed_attach_techniques")
 | alter
     xdm.event.original_event_type = source,
     xdm.session_context_id = uuid,
     xdm.source.agent.identifier = json_extract_scalar(endpoint, "$.agentGuid"),
     xdm.source.host.os = json_extract_scalar(detail, "$.osName"),
     xdm.source.process.name = json_extract_scalar(detail, "$.processName"),
-    xdm.source.process.pid = json_extract_scalar(detail, "$.processPid"),
+    xdm.source.process.pid = to_number(json_extract_scalar(detail, "$.processPid")),
     xdm.network.session_id = json_extract_scalar(detail, "$.sessionId"),
     xdm.source.user.username = coalesce(json_extract_scalar(detail, "$.processUser"), json_extract_scalar(detail, "$.objectUser")),
     xdm.source.user.domain = coalesce(json_extract_scalar(detail, "$.processUserDomain"), json_extract_scalar(detail, "$.objectUserDomain")),
@@ -88,16 +86,16 @@ filter
     xdm.source.process.executable.path = json_extract_scalar(detail, "$.processFilePath"),
     xdm.source.process.executable.sha256 = json_extract_scalar(detail, "$.processFileHashSha256"),
     xdm.source.process.executable.md5 = json_extract_scalar(detail, "$.processFileHashMd5"),
-    xdm.source.process.executable.size = json_extract_scalar(detail, "$.processFileSize"),
+    xdm.source.process.executable.size = to_number(json_extract_scalar(detail, "$.processFileSize")),
     xdm.source.process.executable.file_type = json_extract_scalar(detail, "$.processTrueType"),
     xdm.target.file.path = json_extract_scalar(detail, "$.objectFilePath"),
     xdm.target.module.sha256 = json_extract_scalar(detail, "$.objectFileHashSha256"),
     xdm.target.module.md5 = json_extract_scalar(detail, "$.objectFileHashMd5"),
     xdm.target.module.filename = json_extract_scalar(detail, "$.objectName"),
-    xdm.source.port = json_extract_scalar(detail, "$.spt"),
+    xdm.source.port = to_number(json_extract_scalar(detail, "$.spt")),
     xdm.target.module.path = json_extract_scalar(detail, "$.srcFilePath"),
     xdm.event.id = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.id")), ","),
-    xdm.event.name = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.name")), ","),
+    xdm.alert.name = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.name")), ","),
     xdm.alert.description = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.description")), ","),
     xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ","),
     xdm.alert.mitre_tactics = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")), ","),
@@ -108,9 +106,9 @@ filter
     xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
-    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",")
+    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",");
 filter
-    event type in ("audit")
+    event_type in ("audit")
 | alter
     xdm.source.user.username = loggedUser,
     xdm.source.user.groups = loggedRole,
