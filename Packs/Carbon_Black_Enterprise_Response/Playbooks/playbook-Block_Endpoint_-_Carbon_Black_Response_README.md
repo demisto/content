@@ -35,7 +35,7 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.Sensors.CbSensorID | Carbon Black Response Sensors ids that has been isolated. | unknown |
+| CbResponse.Sensors.CbSensorID | Carbon Black Response sensor IDs that have been isolated. | unknown |
 | Endpoint | The isolated enpoint. | unknown |
 | CbResponse.Sensors.Status | Sensor status. | unknown |
 | CbResponse.Sensors.Isolated | Is sensor isolated. | unknown |
