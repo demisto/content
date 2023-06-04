@@ -2,6 +2,7 @@ Deploy and manage containerized applications with a fully managed Kubernetes ser
 This integration was integrated and tested with API version 2021-09-01 of AKS.
 
 # Self-Deployed Application
+
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
 * The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
@@ -29,6 +30,7 @@ Follow these steps for a self-deployed configuration:
 In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
 
 ### Authentication Using the Device Code Flow
+
 Follow these steps for a self-deployed configuration:
 
 1. Fill in the required parameters.
@@ -73,14 +75,17 @@ At end of the process you'll see a message that you've logged in successfully.
     | DoD         | Azure cloud for the USA Department of Defence (DoD)                      |
     | Custom      | Custom endpoint configuration to the Azure cloud, please see note below. |
 
-   - Note: In most cases setting Azure cloud is preferred to setting Azure AD endpoint, only use it cases where a custom proxy URL is required for accessing a national cloud.
+   * Note: In most cases setting Azure cloud is preferred to setting Azure AD endpoint, only use it cases where a custom proxy URL is required for accessing a national cloud.
 
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-ks-auth-test
+
 ***
 Tests the connectivity to Azure.
 
@@ -88,15 +93,18 @@ Tests the connectivity to Azure.
 #### Base Command
 
 `azure-ks-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >✅ Success!
 
 
 ### azure-ks-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
 
@@ -104,12 +112,15 @@ Run this command to start the authorization process and follow the instructions 
 #### Base Command
 
 `azure-ks-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >### Authorization instructions
+>
 >        1. To sign in, use a web browser to open the page:
 >            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >           and enter the code **XXXXXXXX** to authenticate.
@@ -118,6 +129,7 @@ There are no input arguments for this command.
 
 
 ### azure-ks-auth-complete
+
 ***
 Run this command to complete the authorization process. Should be used after running the ***azure-ks-auth-start*** command.
 
@@ -125,15 +137,18 @@ Run this command to complete the authorization process. Should be used after run
 #### Base Command
 
 `azure-ks-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >✅ Authorization completed successfully.
 
 
 ### azure-ks-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -141,6 +156,7 @@ Run this command if for some reason you need to rerun the authentication process
 #### Base Command
 
 `azure-ks-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -150,6 +166,7 @@ There are no input arguments for this command.
 >Authorization was reset successfully. You can now run ***!azure-ks-auth-start*** and ***!azure-ks-auth-complete***.
 
 ### azure-ks-clusters-list
+
 ***
 Gets a list of managed clusters in the specified subscription.
 
@@ -157,6 +174,7 @@ Gets a list of managed clusters in the specified subscription.
 #### Base Command
 
 `azure-ks-clusters-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -200,9 +218,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
-```!azure-ks-clusters-list```
+
+`!azure-ks-clusters-list`
 
 #### Context Example
+
 ```json
 {
     "AzureKS": {
@@ -278,12 +298,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### AKS Clusters List
+>
 >|Name|Status|Location|Tags|Kubernetes version|API server address|Network type (plugin)|
 >|---|---|---|---|---|---|---|
 >| clustername1 | Succeeded | location1 | tier: production | 1.9.6 | dnsprefix1-abcd1234.hcp.eastus.azmk8s.io | kubenet |
 
 
 ### azure-ks-cluster-addon-update
+
 ***
 Updates a managed cluster with the specified configuration.
 
@@ -291,6 +313,7 @@ Updates a managed cluster with the specified configuration.
 #### Base Command
 
 `azure-ks-cluster-addon-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -307,7 +330,8 @@ Updates a managed cluster with the specified configuration.
 There is no context output for this command.
 
 #### Command Example
-```!azure-ks-cluster-addon-update resource_name=aks-integration location=westus http_application_routing_enabled=true```
+
+`!azure-ks-cluster-addon-update resource_name=aks-integration location=westus http_application_routing_enabled=true`
 
 #### Human Readable Output
 
@@ -315,12 +339,14 @@ There is no context output for this command.
 
 
 ### azure-ks-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
 
 `azure-ks-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -330,14 +356,16 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
-```azure-ks-generate-login-url```
+
+`azure-ks-generate-login-url`
 
 #### Human Readable Output
 
 >### Authorization instructions
->1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+>
+>1. Click on the [login URL](https://login.microsoftonline.com) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+`REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE`
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
