@@ -3512,12 +3512,12 @@ def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')
         _type_ (str, list, None): _description_
     """
 
-    if type(xml_dict) is not dict:
+    if not isinstance(xml_dict, dict):
         return xml_dict             # type: ignore[return-value]
 
     value = xml_dict.get(key)
 
-    if type(value) is dict:
+    if isinstance(value, dict):
         return next(
             (xml_get(value, sub, subkeys)
              for sub in subkeys
@@ -3562,7 +3562,7 @@ def prettify_rule(rule: dict):
     }
     pretty_rule: Dict[str, Any] = {}
 
-    context_rule['DeviceGroup'] = DEVICE_GROUP or None
+    context_rule['DeviceGroup'] = DEVICE_GROUP
 
     context_rule['Location'] = \
         pretty_rule['Location'] = \
