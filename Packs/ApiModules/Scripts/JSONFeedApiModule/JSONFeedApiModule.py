@@ -120,7 +120,7 @@ class Client:
             etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
             last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')
 
-            demisto.debug(f'AWS: the last run before fetch: {last_run}')
+            demisto.debug(f'JSON: The last run before fetch: {last_run}')
             if etag:
                 self.headers['If-None-Match'] = etag
 
@@ -151,7 +151,7 @@ class Client:
         try:
             r.raise_for_status()
             if r.content:
-                demisto.debug(f'AWS: found content for {feed_name}')
+                demisto.debug(f'JSON: found content for {feed_name}')
                 data = r.json()
                 result = jmespath.search(expression=feed.get('extractor'), data=data)
 
@@ -194,7 +194,7 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
         'etag': etag
     }
     demisto.setLastRun(last_run)
-    demisto.debug(f'AWS: The new last run is: {last_run}')
+    demisto.debug(f'JSON: The new last run is: {last_run}')
     demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
                   ' createIndicators will be executed with noUpdate=False.')
     return False
