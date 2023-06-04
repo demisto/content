@@ -4767,26 +4767,31 @@ def get_ODS_scan_ids(args: dict) -> list[str] | None:
     return raw_response.get('resources')
 
 
-def cs_falcon_ODS_query_scans_command(args: dict) -> CommandResults:
+@polling_function('cs-falcon-ods-query-scan', poll_message='Scan underway...', polling_arg_name='wait_for_results')
+def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
     # call the query api if no ids given
     ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
 
     if not ids:
-        return CommandResults(readable_output='No scans match the arguments/filter.')
+        command_results = CommandResults(readable_output='No scans match the arguments/filter.')
 
-    response = ODS_get_scans_by_id_request(ids)
-    resources = response.get('resources', [])
-    human_readable = ODS_get_scan_resources_to_human_readable(resources)
+    else:
+        response = ODS_get_scans_by_id_request(ids)
+        resources = response.get('resources', [])
+        human_readable = ODS_get_scan_resources_to_human_readable(resources)
 
-    command_results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CrowdStrike.ODSScan',
-        outputs_key_field='id',
-        outputs=resources,
-        readable_output=human_readable,
-    )
+        command_results = CommandResults(
+            raw_response=response,
+            outputs_prefix='CrowdStrike.ODSScan',
+            outputs_key_field='id',
+            outputs=resources,
+            readable_output=human_readable,
+        )
 
-    return command_results
+    scan_in_progress = all(dict_safe_get(scan, 'status', return_type=str) not in ('pending', 'running')
+                           for scan in command_results.outputs)  # type: ignore[attr-defined]
+
+    return PollResult(response=command_results, continue_to_poll=scan_in_progress, partial_result=command_results)
 
 
 def ODS_query_scheduled_scans_request(**query_params) -> dict:
@@ -4848,31 +4853,26 @@ def get_ODS_scheduled_scan_ids(args: dict) -> list[str] | None:
     return raw_response.get('resources')
 
 
-@polling_function('cs-falcon-ods-query-scan', poll_message='Scan underway...', polling_arg_name='wait_for_results')
-def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> PollResult:
+def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> CommandResults:
     # call the query api if no ids given
     ids = argToList(args.get('ids')) or get_ODS_scheduled_scan_ids(args)
 
     if not ids:
-        command_results = CommandResults(readable_output='No scheduled scans match the arguments/filter.')
+        return CommandResults(readable_output='No scheduled scans match the arguments/filter.')
 
-    else:
-        response = ODS_get_scheduled_scans_by_id_request(ids)
-        resources = response.get('resources', [])
-        human_readable = ODS_get_scheduled_scan_resources_to_human_readable(resources)
+    response = ODS_get_scheduled_scans_by_id_request(ids)
+    resources = response.get('resources', [])
+    human_readable = ODS_get_scheduled_scan_resources_to_human_readable(resources)
 
-        command_results = CommandResults(
-            raw_response=response,
-            outputs_prefix='CrowdStrike.ODSScheduledScan',
-            outputs_key_field='id',
-            outputs=resources,
-            readable_output=human_readable,
-        )
+    command_results = CommandResults(
+        raw_response=response,
+        outputs_prefix='CrowdStrike.ODSScheduledScan',
+        outputs_key_field='id',
+        outputs=resources,
+        readable_output=human_readable,
+    )
 
-    scan_in_progress = all(dict_safe_get(scan, 'status', return_type=str) not in ('pending', 'running')
-                           for scan in command_results.outputs)  # type: ignore[attr-defined]
-
-    return PollResult(response=command_results, continue_to_poll=scan_in_progress, partial_result=command_results)
+    return command_results
 
 
 def ODS_query_scan_hosts_request(**query_params) -> dict:
@@ -5119,7 +5119,7 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     if not id:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
-    return cs_falcon_ODS_query_scans_command({'ids': id, 'wait_for_results': True})
+    return cs_falcon_ODS_query_scans_command({'ids': id, 'wait_for_result': 'true'})
 
 
 def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:

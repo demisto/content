@@ -3602,6 +3602,14 @@ script:
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
   - arguments:
+    - description: If to poll for results.
+      auto: PREDEFINED
+      name: wait_for_result
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
       required: false
@@ -4016,6 +4024,14 @@ script:
       description: the date and time when the detection event was last updated.
       type: Date
   - arguments:
+    - description: If to poll for results.
+      auto: PREDEFINED
+      name: wait_for_result
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
     - description: List of hosts to be scanned. "hosts" OR "host_groups" must be set.
       isArray: true
       name: hosts
@@ -4042,6 +4058,7 @@ script:
       name: cpu_priority
       required: false
       auto: PREDEFINED
+      defaultValue: Medium
       predefined:
       - Highest
       - High
