@@ -173,7 +173,8 @@ class KeyVaultClient:
             f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
         return self.http_request('GET', full_url=full_url)
 
-    def list_key_vaults_request(self, subscription_id: str = None, limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET) -> List[dict]:
+    def list_key_vaults_request(self, subscription_id: str = None,
+                                limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET) -> List[dict]:
         """
         List Key Vaults by limit and offset arguments from the specified resource group and subscription.
 
@@ -192,7 +193,8 @@ class KeyVaultClient:
             raise Exception(response)
         return self.get_entities_independent_of_pages(response, limit, offset)
 
-    def update_access_policy_request(self, subscription_id: str, resource_group_name: str, vault_name: str, operation_kind: str, object_id: str,
+    def update_access_policy_request(self, subscription_id: str, resource_group_name: str,
+                                     vault_name: str, operation_kind: str, object_id: str,
                                      keys: List[str], secrets: List[str], certificates: List[str],
                                      storage: List[str]) -> Dict[str, Any]:
         """
@@ -520,7 +522,8 @@ class KeyVaultClient:
 
         return properties
 
-    def get_entities_independent_of_pages(self, first_page: Dict[str, Any], limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET,
+    def get_entities_independent_of_pages(self, first_page: Dict[str, Any],
+                                          limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET,
                                           resource: str = MANAGEMENT_RESOURCE) -> List[dict]:
         """
         List the entities according to the offset and limit arguments,
@@ -624,7 +627,8 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
 
     all_responses = []
     for single_resource_group in resource_group_list:
-        response = client.create_or_update_key_vault_request(subscription_id, single_resource_group, vault_name, object_id, location, sku_name, keys_permissions,
+        response = client.create_or_update_key_vault_request(subscription_id, single_resource_group,
+                                                             vault_name, object_id, location, sku_name, keys_permissions,
                                                              secrets_permissions, certificates_permissions,
                                                              storage_accounts_permissions, enabled_for_deployment,
                                                              enabled_for_disk_encryption, enabled_for_template_deployment,
@@ -779,7 +783,8 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     all_responses = []
     for single_resource_group in resource_group_list:
         response = client.update_access_policy_request(subscription_id, resource_group_name,
-                                                       vault_name, operation_kind, object_id, keys, secrets, certificates, storage_accounts)
+                                                       vault_name, operation_kind, object_id, keys,
+                                                       secrets, certificates, storage_accounts)
         if response.get('error'):
             raise Exception(response)
         all_responses.append(response)
@@ -1493,7 +1498,8 @@ def main() -> None:
         elif 'SubscriptionNotFound' in str_error:
             massage = 'The given subscription ID could not be found.'
         elif 'perform action' in str_error:
-            massage = 'The client does not have Key Vault permissions to the given resource group name or the resource group name does not exist, or was not provided.'
+            massage = """The client does not have Key Vault permissions to
+            the given resource group name or the resource group name does not exist, or was not provided."""
 
         return_error(massage + "\n" + str_error)
 
