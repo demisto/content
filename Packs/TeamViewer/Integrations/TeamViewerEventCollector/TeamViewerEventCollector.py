@@ -24,6 +24,10 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
+
+
+
+
     def __init__(self, base_url, verify, proxy, headers):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 

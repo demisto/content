@@ -30,9 +30,10 @@ from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
+from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.Marketplace.marketplace_constants import Metadata
+    upload_zipped_packs, install_all_content_packs_for_nightly, get_latest_version_from_bucket
+from Tests.Marketplace.marketplace_constants import Metadata, GCPConfig
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -237,10 +238,11 @@ class Build(ABC):
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
                 tests_to_run.append(test_clean)
+
         return tests_to_run
 
-    @staticmethod
-    def fetch_pack_ids_to_install(packs_to_install_path: str):
+
+    def fetch_pack_ids_to_install(self, packs_to_install_path: str):
         """
         Fetches the test list from the filter.
 
@@ -253,6 +255,22 @@ class Build(ABC):
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
                 tests_to_run.append(test_clean)
+
+        logging.info(f"pack ids to install before filtering : {tests_to_run}")
+        # TODO change after check
+        if True or self.is_nightly:
+            # check which packs we want to install
+            # check if the pack version we want to install is in production bucket
+            # if not, write to log and add warning, do not fail the nightly build
+            storage_client = init_storage_client(self.service_account)
+            production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+            all_packs = list(production_bucket.list_blobs(prefix=GCPConfig.PRODUCTION_STORAGE_BASE_PATH))
+            logging.debug(f"all packs: {all_packs[0]}")
+            for pack in tests_to_run:
+                if pack not in all_packs:
+                    tests_to_run.remove(pack)
+        logging.info(f"pack ids to install after filtering : {tests_to_run}")
+
         return tests_to_run
 
     @abstractmethod
