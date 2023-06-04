@@ -141,7 +141,7 @@ requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # py
 apiConfigured = False
 
 # Others are not mandatory as user may choose to only use XML API commands and not SSH
-KEY = demisto.params().get('key', {})
+KEY = secret_key = demisto.params().get('credentials_key', {}).get('password') or demisto.params().get('key', {})
 PORT = demisto.params().get('port')
 
 # Does user intend to leverage SSH commands
