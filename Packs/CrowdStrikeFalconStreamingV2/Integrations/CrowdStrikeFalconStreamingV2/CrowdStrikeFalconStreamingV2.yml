@@ -21,7 +21,7 @@ configuration:
   type: 4
 - display: Client ID
   name: credentials_client
-  required: true
+  required: false
   type: 9
   displaypassword: Client Secret
   section: Connect
