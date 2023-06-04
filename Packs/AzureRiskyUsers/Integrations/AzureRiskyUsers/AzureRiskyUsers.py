@@ -42,7 +42,8 @@ class Client:
             tenant_id=tenant_id,
             enc_key=client_secret,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix="azure-risky-users",
 
         )
         self.ms_client = MicrosoftClient(**client_args)

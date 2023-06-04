@@ -42,7 +42,9 @@ class Client:
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
-            redirect_uri=redirect_uri)
+            redirect_uri=redirect_uri,
+            command_prefix="azure-devops",
+        )
         self.ms_client = MicrosoftClient(**client_args)
         self.organization = organization
         self.connection_type = auth_type

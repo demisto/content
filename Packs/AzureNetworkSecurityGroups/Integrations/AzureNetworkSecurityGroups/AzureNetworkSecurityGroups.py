@@ -54,7 +54,8 @@ class AzureNSGClient:
             auth_code=auth_code,
             redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-nsg",
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type

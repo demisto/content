@@ -56,7 +56,8 @@ class DataExplorerClient:
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
-            redirect_uri=redirect_uri
+            redirect_uri=redirect_uri,
+            command_prefix="azure-data-explorer",
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type

@@ -41,7 +41,8 @@ class Client:
             tenant_id=tenant_id,
             enc_key=enc_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix="microsoft-teams",
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type

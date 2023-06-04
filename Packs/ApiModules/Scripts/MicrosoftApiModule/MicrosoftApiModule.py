@@ -89,6 +89,7 @@ class MicrosoftClient(BaseClient):
                  private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None,
                  managed_identities_resource_uri: Optional[str] = None,
+                 command_prefix: Optional[str] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -111,8 +112,10 @@ class MicrosoftClient(BaseClient):
             managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
             retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
                                  retry the request using a scheduled command.
+            command_prefix: The prefix for all integration commands.
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
+        self.command_prefix = command_prefix
         self.endpoint = endpoint
         self.retry_on_rate_limit = retry_on_rate_limit
         if retry_on_rate_limit and (429 not in self._ok_codes):
@@ -367,10 +370,8 @@ class MicrosoftClient(BaseClient):
         except Exception as ex:
             demisto.error(f'Failed parsing error response - Exception: {ex}')
         if oproxy_response.status_code == 403 and "Hash Verification Error" in oproxy_response.text:
-            msg += '\nThe Oproxy server returned an error, ' \
-                'there may be an issue with the *Token* parameter. ' \
-                'You can run the *<integration command prefix>-auth-reset* command ' \
-                'to reset the authentication process.'
+            msg += f'\nThe Oproxy server returned an error, there may be an issue with the *Token* parameter. ' \
+                   f'You can run the *{self.command_prefix}-auth-reset* command to reset the authentication process.'
         raise Exception(msg)
 
     def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
@@ -580,7 +581,8 @@ class MicrosoftClient(BaseClient):
             if not use_system_assigned:
                 params['client_id'] = self.managed_identities_client_id
 
-            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={'Metadata': 'True'}).json()
+            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params,
+                                         headers={'Metadata': 'True'}).json()
             access_token = response_json.get('access_token')
             expires_in = int(response_json.get('expires_in', 3595))
             if access_token:
@@ -660,8 +662,7 @@ class MicrosoftClient(BaseClient):
             execution_metrics.general_error += 1
         return_results(execution_metrics.metrics)
 
-    @staticmethod
-    def error_parser(error: requests.Response) -> str:
+    def error_parser(self, error: requests.Response) -> str:
         """
 
         Args:
@@ -681,9 +682,9 @@ class MicrosoftClient(BaseClient):
                 err_str = inner_error
             if err_str:
                 if set(response.get("error_codes", [""])).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                    err_str += "\nThere may be an issue with the *Authorization code* parameter. " \
-                               "You can run the *<integration command prefix>-auth-reset* command " \
-                               "to reset the authentication process."
+                    err_str += f"\nThere may be an issue with the *Authorization code* parameter. " \
+                               f"You can run the *{self.command_prefix}-auth-reset* command " \
+                               f"to reset the authentication process."
                 return err_str
             # If no error message
             raise ValueError
@@ -832,11 +833,10 @@ def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
 
 
 def generate_login_url(client: MicrosoftClient) -> CommandResults:
-
     assert client.tenant_id \
-        and client.scope \
-        and client.client_id \
-        and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
+           and client.scope \
+           and client.client_id \
+           and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
 
     login_url = f'https://login.microsoftonline.com/{client.tenant_id}/oauth2/v2.0/authorize?' \
                 f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}' \

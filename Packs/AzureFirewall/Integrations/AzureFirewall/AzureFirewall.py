@@ -51,7 +51,8 @@ class AzureFirewallClient:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-firewall",
         )
 
     def azure_firewall_list_request(self, resource: str, next_link: str = None) -> dict:

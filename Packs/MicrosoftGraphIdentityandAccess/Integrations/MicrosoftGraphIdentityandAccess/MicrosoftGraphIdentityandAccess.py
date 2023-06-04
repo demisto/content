@@ -41,7 +41,8 @@ class Client:  # pragma: no cover
             "managed_identities_client_id": managed_identities_client_id,
             "managed_identities_resource_uri": Resources.graph,
             "certificate_thumbprint": certificate_thumbprint,
-            "private_key": private_key
+            "private_key": private_key,
+            "command_prefix": "msgraph-identity",
         }
         if not client_credentials:
             args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'

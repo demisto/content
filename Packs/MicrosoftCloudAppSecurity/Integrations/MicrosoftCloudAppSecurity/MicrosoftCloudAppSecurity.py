@@ -136,7 +136,8 @@ class Client:
                 if auth_mode == 'device code flow' else None,
                 # used for client credentials flow
                 tenant_id=tenant_id,
-                enc_key=enc_key
+                enc_key=enc_key,
+                command_prefix="microsoft-cas",
             )
             self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
