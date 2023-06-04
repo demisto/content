@@ -94,6 +94,10 @@
             "mandatory": false,
             "display_name": "3CXDesktopApp Supply Chain Attack"
         },
+        "CVE_2023_34362_-_MOVEit_SQLI": {
+            "mandatory": false,
+            "display_name": "CVE-2023-34362 - MOVEit Transfer SQL Injection"
+        },
         "ServiceNow": {
             "mandatory": false,
             "display_name": "ServiceNow"
