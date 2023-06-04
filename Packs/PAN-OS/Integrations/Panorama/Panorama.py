@@ -3480,7 +3480,7 @@ def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')
     When none of the subkeys are in the sub dict it will pick a random key that does not begin with "@":
     >>> xml_dict = {
     ...     'key': {
-    ...         '@xml_attr': 'foo',       
+    ...         '@xml_attr': 'foo',
     ...         'random': 'value'
     ...     }
     ... }
@@ -3495,7 +3495,7 @@ def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')
     ...             'subkey1': 'value1'
     ...         },
     ...         {
-    ...             '@xml_attr': 'foo',       
+    ...             '@xml_attr': 'foo',
     ...             'random': 'value2'
     ...         }
     ...     ]
@@ -3519,7 +3519,7 @@ def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')
 
     if type(value) is dict:
         return next(
-            (xml_get(value, sub)
+            (xml_get(value, sub, subkeys)
              for sub in subkeys
              if sub in value),
             None
@@ -3531,7 +3531,7 @@ def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')
         )
     if type(value) is list:
         return [
-            xml_get({0: item}, 0)
+            xml_get({0: item}, 0, subkeys)
             for item in value
         ]
 
@@ -3562,12 +3562,11 @@ def prettify_rule(rule: dict):
     }
     pretty_rule: Dict[str, Any] = {}
 
-    if DEVICE_GROUP:
-        context_rule['DeviceGroup'] = DEVICE_GROUP
-    if '@loc' in rule:
-        context_rule['Location'] = \
-            pretty_rule['Location'] = \
-            rule['@loc']
+    context_rule['DeviceGroup'] = DEVICE_GROUP or None
+
+    context_rule['Location'] = \
+        pretty_rule['Location'] = \
+        rule.get('@loc')
 
     context_rule['SecurityProfileGroup'] = \
         pretty_rule['Profile Group'] = \
@@ -3618,7 +3617,7 @@ def prettify_rule(rule: dict):
         'Log Forwarding: ' + str(rule_get('log-setting')),
         'Schedule: ' + str(rule_get('schedule')),
         'QoS Marking: ' + str(next(filter(lambda k: not k.startswith('@'), qos.keys()), None)  # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
-                              if type(qos := context_rule['QoSMarking']) is dict else qos),
+                              if type(qos := context_rule['QoSMarking']) is dict else qos),  # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
         tick_box.get(xml_get(option, 'disable-server-response-inspection'), '') \
         + ' Disable Server Response Inspection'
     ]
@@ -9037,16 +9036,16 @@ Dataclasses are split into three types;
  SummaryData: Classes that hold only summary data, and are safe to display in the incident layout
  ResultData: Classes that hold a full representation of the data, used to pass between tasks only
 
-The dataclasses are used for automatic generation of the integration YAML, as well as controlling the 
+The dataclasses are used for automatic generation of the integration YAML, as well as controlling the
 format of the result data being sent to XSOAR.
 In each dataclass, the attributes are used as below;
     _output_prefix: The prefix of the context output
     _title: The human readable title for human readable tables (using TableToMarkdown)
 
-    _summary_cls: For commands with very large resultant data, the summary dataclass stores a cutdown 
+    _summary_cls: For commands with very large resultant data, the summary dataclass stores a cutdown
         summary to avoid overloading incident layouts.
     _result_cls:
-Some dataclasses don't split the data by summary and result data, because they should never return a large 
+Some dataclasses don't split the data by summary and result data, because they should never return a large
 amount. As such, _summary_cls and _result_cls are optional.
 """
 
@@ -13511,7 +13510,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
     the dictionary returned is: {'X_log_type':'(example query for X_log_type)'}
 
     Args:
-        params (Dict[str, str]): instance configuration parameters 
+        params (Dict[str, str]): instance configuration parameters
 
     Returns:
         Dict[str, str]: queries per log type dictionary
