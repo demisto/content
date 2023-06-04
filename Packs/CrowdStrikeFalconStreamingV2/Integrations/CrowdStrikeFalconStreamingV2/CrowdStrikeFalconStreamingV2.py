@@ -569,10 +569,10 @@ def merge_integration_context() -> None:
 def main():
     params: Dict = demisto.params()
     base_url: str = params.get('base_url', '')
-    client_id: str = params.get('client_id', '')
-    client_secret: str = params.get('credentials_client_secret', {}).get('password') or params.get('client_secret', '')
-    if not client_secret:
-        raise DemistoException('Client Secret must be provided.')
+    client_id: str = params.get('credentials_client', {}).get('identifier') or params.get('client_id', '')
+    client_secret: str = params.get('credentials_client', {}).get('password') or params.get('client_secret', '')
+    if (not client_id) or (not client_secret):
+        raise DemistoException('Client ID and Client Secret must be provided.')
     event_type = ','.join(params.get('event_type', []) or [])
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
