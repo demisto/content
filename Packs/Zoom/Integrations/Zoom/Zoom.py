@@ -80,7 +80,7 @@ time is missing this argument: recurrence_type."""
 MISSING_ARGUMENT = """Missing either a contact info or a channel id"""
 USER_NOT_FOUND = """ This user email can't be found """
 MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
-                    don't enter start_position or end_position or format_type or at_type 
+                    don't enter start_position or end_position or format_type or at_type
                     or rt_start_position or rt_end_position or format_attr"""
 MARKDOWN_EXTRA_FORMATS = """to many style in text. you can provide only one style type"""
 
@@ -105,9 +105,9 @@ class Client(Zoom_Client):
         )
 
     def zoom_list_users(self, page_size: int, status: str = "active",
-                        next_page_token: str = None,
-                        role_id: str = None, url_suffix: str = None,
-                        page_number: int = None):
+                        next_page_token: str | None = None,
+                        role_id: str | None = None, url_suffix: str | None = None,
+                        page_number: int | None = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -148,7 +148,7 @@ class Client(Zoom_Client):
             })
 
     def zoom_meeting_list(self, user_id: str, next_page_token: str | None = None, page_size: int | str = 30,
-                          type: str | int | None = None, page_number: int = None):
+                          type: str | int | None = None, page_number: int | None = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"users/{user_id}/meetings",
@@ -160,7 +160,7 @@ class Client(Zoom_Client):
                 'page_number': page_number
             })
 
-    def zoom_fetch_recording(self, method: str, url_suffix: str = None, full_url: str = None,
+    def zoom_fetch_recording(self, method: str, url_suffix: str | None = None, full_url: str | None = None,
                              stream: bool = False, resp_type: str = 'json'):
         return self.error_handled_http_request(
             method=method,
@@ -171,7 +171,7 @@ class Client(Zoom_Client):
             headers={'authorization': f'Bearer {self.access_token}'},
         )
 
-    def zoom_list_channels(self, page_size: int, next_page_token: str = None, url_suffix: str = None, page_number: int = None):
+    def zoom_list_channels(self, page_size: int, next_page_token: str | None = None, url_suffix: str | None = None, page_number: int | None = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"chat/{url_suffix}",
@@ -199,8 +199,8 @@ class Client(Zoom_Client):
             return_empty_response=True
         )
 
-    def zoom_list_user_channels(self, user_id: str, page_size: int, next_page_token: str = None, url_suffix: str = None,
-                                page_number: int = None):
+    def zoom_list_user_channels(self, user_id: str, page_size: int, next_page_token: str | None = None, url_suffix: str | None = None,
+                                page_number: int | None = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"chat/{url_suffix}",
@@ -221,14 +221,14 @@ class Client(Zoom_Client):
             return_empty_response=True
         )
 
-    def zoom_invite_to_channel(self, members_json: str, url: str = None):
+    def zoom_invite_to_channel(self, members_json: str, url: str | None = None):
         return self.error_handled_http_request(
             method='POST',
             url_suffix=url,
             headers={'authorization': f'Bearer {self.access_token}'},
             json_data=members_json)
 
-    def zoom_remove_from_channel(self, url_suffix: str = None):
+    def zoom_remove_from_channel(self, url_suffix: str | None = None):
         return self.error_handled_http_request(
             method='DELETE',
             url_suffix=url_suffix,
@@ -264,7 +264,7 @@ class Client(Zoom_Client):
             headers={'authorization': f'Bearer {self.access_token}'}
         )
 
-    def zoom_delete_message(self, url_suffix: str = None):
+    def zoom_delete_message(self, url_suffix: str | None = None):
         return self.error_handled_http_request(
             method='DELETE',
             url_suffix=url_suffix,
@@ -282,12 +282,12 @@ class Client(Zoom_Client):
         )
 
     def zoom_list_user_messages(self, user_id: str, date_arg: datetime, from_arg: datetime, to_arg: datetime, page_size: int,
-                                next_page_token: str = None, url_suffix: str = None, page_number: int = None,
-                                to_contact: str = None,
-                                to_channel: str = None,
+                                next_page_token: str | None = None, url_suffix: str | None = None, page_number: int | None = None,
+                                to_contact: str | None = None,
+                                to_channel: str | None = None,
                                 include_deleted_and_edited_message: bool = False,
-                                search_type: str = None,
-                                search_key: str = None,
+                                search_type: str | None = None,
+                                search_key: str | None = None,
                                 exclude_child_message: bool = False):
 
         return self.error_handled_http_request(
@@ -1142,7 +1142,7 @@ def zoom_send_file_command(client, **args) -> CommandResults:
     )
 
 
-def parse_markdown_message(markdown_message: str, at_contact: str = None):
+def parse_markdown_message(markdown_message: str, at_contact: str | None = None):
     formatted_message = markdown_message
     formats = []
     at_items = []
@@ -1294,11 +1294,11 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         user_id = zoom_get_user_id_by_email(client, user_id)
 
     url_suffix = f'/chat/users/{user_id}/messages'
-    uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
+    upload_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
     zoom_file_id: List = []
     for id in entry_ids:
         file_info = demisto.getFilePath(id)
-        res = client.zoom_upload_file(uplaod_file_url, file_info)
+        res = client.zoom_upload_file(upload_file_url, file_info)
         zoom_file_id.append(res.get('id'))
 
     if is_markdown and (start_position or end_position
@@ -1389,14 +1389,14 @@ def zoom_update_message_command(client, **args) -> CommandResults:
     if user_id and re.match(emailRegex, user_id):
         user_id = zoom_get_user_id_by_email(client, user_id)
 
-    uplaod_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
+    upload_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
     zoom_file_id: List = []
     demisto.debug(f'file id args {entry_ids}')
     for id in entry_ids:
         file_info = demisto.getFilePath(id)
-        res = client.zoom_upload_file(uplaod_file_url, file_info)
+        res = client.zoom_upload_file(upload_file_url, file_info)
         zoom_file_id.append(res.get('id'))
-    demisto.debug('uplod the file without error')
+    demisto.debug('upload the file without error')
 
     url_suffix = f'/chat/users/{user_id}/messages/{message_id}'
     json_data = remove_None_values_from_dict(
