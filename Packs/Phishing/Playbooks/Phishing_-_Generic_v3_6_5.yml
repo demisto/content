@@ -3413,9 +3413,10 @@ tasks:
           root: incident
           accessor: emailbody
           transformers:
-          - operator: append
+          - operator: SetIfEmpty
             args:
-              item:
+              applyIfEmpty: {}
+              defaultValue:
                 value:
                   simple: incident.emailbodyhtml
                 iscontext: true
