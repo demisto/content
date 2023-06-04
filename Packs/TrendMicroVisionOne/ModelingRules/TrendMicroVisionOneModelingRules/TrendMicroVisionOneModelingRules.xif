@@ -16,10 +16,27 @@ filter
     Entities = json_extract_array(impactScope, "$.entities")
     | alter
     xdm.source.user.identity_type = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", XDM_CONST.IDENTITY_TYPE_MACHINE, json_extract_scalar("@element", "$.entityType") = "account", XDM_CONST.IDENTITY_TYPE_USER, json_extract_scalar("@element", "$.entityType") = "emailAdress", XDM_CONST.IDENTITY_TYPE_UNKNOWN)), ","),
-    xdm.source.user.username = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") != "host", json_extract_scalar("@element", "$.entityValue"), null)), ","),
+    xdm.source.user.username = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") != "account", json_extract_scalar("@element", "$.entityValue"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue.name"), null)), ",")),
+
+    xdm.source.host.device_id = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityId"), null)), ",")
+    xdm.source.user.identifier = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityId"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityId"), null)), ","))
+
+    xdm.source.host.hostname = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.name"), null)), ","))
+    xdm.source.user.upn = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","))
+
+
     xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
     xdm.alert.subcategory = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.provenance")), ","),
-    xdm.source.ipv4 = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ",");
+    xdm.source.ipv4 = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ",")
+
+    xdm.source.process.name = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "processCmd", json_extract_scalar("@element", "$.value"), null)), ",")
+    xdm.source.process.parent_id = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "parentCmd", json_extract_scalar("@element", "$.value"), null)), ",")
+    xdm.target.registry.key = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryKeyHandle", json_extract_scalar("@element", "$.value"), null)), ",")
+    xdm.target.registry.value = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryValue", json_extract_scalar("@element", "$.value"), null)), ",")
+    xdm.source.process.command_line = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ",")
+    xdm.source.process.executable.path = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ",")
+
+    xdm.source.host.hostname = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "endpointHostName", json_extract_scalar("@element", "$.value"), null)), ",");
 
 filter
     event_type in ("search_detections")
@@ -98,11 +115,11 @@ filter
     xdm.alert.name = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.name")), ","),
     xdm.alert.description = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.description")), ","),
     xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ","),
-    xdm.alert.mitre_tactics = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")), ","),
-    xdm.alert.mitre_techniques = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTechniqueIds")), ","),
+    xdm.alert.mitre_tactics = arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")),
+    xdm.alert.mitre_techniques = arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTechniqueIds")),
     xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ","),
     xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ","), json_extract_scalar(detail, "$.src")),
-    xdm.source.host.mac_addresses = arraystring(json_extract_array(detail, "$.endpointMacAddress"), ","),
+    xdm.source.host.mac_addresses = json_extract_array(detail, "$.endpointMacAddress"),
     xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
@@ -111,7 +128,7 @@ filter
     event_type in ("audit")
 | alter
     xdm.source.user.username = loggedUser,
-    xdm.source.user.groups = loggedRole,
+    xdm.source.user.groups = split(loggedRole, ","),
     xdm.source.zone = accessType,
     xdm.event.type = category,
     xdm.event.operation_sub_type = activity,
