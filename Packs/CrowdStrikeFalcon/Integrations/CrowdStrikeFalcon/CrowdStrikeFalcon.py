@@ -4788,10 +4788,13 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
             readable_output=human_readable,
         )
 
-    scan_in_progress = all(dict_safe_get(scan, 'status', return_type=str) not in ('pending', 'running')
+    scan_in_progress = any(dict_safe_get(scan, 'status', return_type=str) in ('pending', 'running')
                            for scan in command_results.outputs)  # type: ignore[attr-defined]
 
-    return PollResult(response=command_results, continue_to_poll=scan_in_progress, partial_result=command_results)
+    return PollResult(response=command_results,
+                      continue_to_poll=scan_in_progress,
+                      partial_result=command_results,
+                      args_for_next_run=args)
 
 
 def ODS_query_scheduled_scans_request(**query_params) -> dict:
