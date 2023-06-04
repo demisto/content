@@ -254,10 +254,8 @@ def get_detections_from_hosts(hosts):
                     new_detection['DETECTION'] = detection
                     fetched_events.append(new_detection)
             elif isinstance(detections_list, dict):
-                # todo:
                 new_detection = copy.deepcopy(host)
-                del new_detection['DETECTION_LIST']
-                new_detection['DETECTION'] = detection
+                new_detection['DETECTION'] = detections_list
                 fetched_events.append(new_detection)
         else:
             del host['DETECTION_LIST']
@@ -525,7 +523,7 @@ def main():  # pragma: no cover
                 fetch_function=get_activity_logs_events,
                 first_fetch_time=first_fetch_str,
             )
-            send_events_to_xsiam(activity_logs_events + host_list_detection_events, vendor=VENDOR, product=PRODUCT)
+            send_events_to_xsiam(activity_logs_events, vendor=VENDOR, product=PRODUCT)
             send_events_to_xsiam(host_list_detection_events, vendor=VENDOR, product=PRODUCT)
 
             # saves next_run for the time fetch-events is invoked
