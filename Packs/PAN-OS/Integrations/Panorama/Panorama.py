@@ -3529,7 +3529,7 @@ def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')
              if not str(k).startswith('@')),
             None
         )
-    if type(value) is list:
+    if isinstance(value, list):
         return [
             xml_get({0: item}, 0, subkeys)
             for item in value
@@ -3564,25 +3564,19 @@ def prettify_rule(rule: dict):
 
     context_rule['DeviceGroup'] = DEVICE_GROUP
 
-    context_rule['Location'] = \
-        pretty_rule['Location'] = \
-        rule.get('@loc')
+    context_rule['Location'] = pretty_rule['Location'] = rule.get('@loc')
 
-    context_rule['SecurityProfileGroup'] = \
-        pretty_rule['Profile Group'] = \
-        rule_get('profile-setting', subkeys=('group', 'member', '#text'))
+    context_rule['SecurityProfileGroup'] = pretty_rule['Profile Group'] = rule_get('profile-setting', subkeys=('group', 'member', '#text'))
 
     profiles = {
         k: xml_get(pfs, k)
         for k in pfs.keys()
         if not str(k).startswith('@')
     } \
-        if type(pfs := dict_safe_get(rule, ('profile-setting', 'profiles'))) is dict \
+        if isinstance(pfs := dict_safe_get(rule, ('profile-setting', 'profiles')), dict )\
         else None
 
-    pretty_rule['Profile'] = \
-        context_rule['SecurityProfile'] = \
-        profiles
+    pretty_rule['Profile'] = context_rule['SecurityProfile'] = profiles
 
     target = dict_safe_get(rule, ('target',), {}, dict)
     target |= {
@@ -3614,12 +3608,10 @@ def prettify_rule(rule: dict):
     context_rule['Option'] = option = rule.get('option')
     pretty_rule['Options'] = [
         tick_box.get(rule_get('log-start'), '') + ' Log at Session Start',
-        'Log Forwarding: ' + str(rule_get('log-setting')),
-        'Schedule: ' + str(rule_get('schedule')),
-        'QoS Marking: ' + str(next(filter(lambda k: not k.startswith('@'), qos.keys()), None)  # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
-                              if type(qos := context_rule['QoSMarking']) is dict else qos),  # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
-        tick_box.get(xml_get(option, 'disable-server-response-inspection'), '') \
-        + ' Disable Server Response Inspection'
+        f'Log Forwarding: {rule_get("log-setting")}',
+        f'Schedule: {rule_get("schedule")}',
+        f'QoS Marking: {next(filter(lambda k: not k.startswith("@"), qos.keys()), None) if isinstance(qos := context_rule["QoSMarking"], dict) else qos}',  # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
+        f'{tick_box.get(xml_get(option, "disable-server-response-inspection"), "")} Disable Server Response Inspection'
     ]
 
     return pretty_rule, context_rule

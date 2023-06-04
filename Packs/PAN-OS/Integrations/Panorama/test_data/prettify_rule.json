@@ -1,6 +1,7 @@
 {
     "pretty": {
         "Profile Group": "default",
+        "Location": "SA_FWs",
         "Profile": {
             "url-filtering": "default",
             "file-blocking": "basic file blocking",
