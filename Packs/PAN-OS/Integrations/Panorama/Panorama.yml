@@ -9571,7 +9571,7 @@ script:
       defaultValue: 'No'
     - description: The device group that the tags are part of.
       isArray: false
-      name: device_group
+      name: device-group
       required: false
     description: Returns a list of tags from panorama.
     name: pan-os-list-tag
@@ -9595,7 +9595,7 @@ script:
       required: true
     - description: The device group that the tag will be part of.
       isArray: false
-      name: device_group
+      name: device-group
       required: false
     - description: Whether to disable overriding the tag.
       isArray: false
@@ -9632,7 +9632,7 @@ script:
       required: false
     - description: The device group of the tag.
       isArray: false
-      name: device_group
+      name: device-group
       required: false
     - description: Whether to disable overriding the tag.
       isArray: false
