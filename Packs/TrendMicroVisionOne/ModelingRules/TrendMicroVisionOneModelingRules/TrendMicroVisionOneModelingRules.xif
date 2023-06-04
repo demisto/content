@@ -21,7 +21,7 @@ filter
     xdm.source.host.device_id = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityId"), null)), ","),
     xdm.source.user.identifier = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityId"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityId"), null)), ",")),
 
-    xdm.source.host.hostname = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.name"), null)), ",")),
+    xdm.source.host.hostname = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.name"), null)), ","), arraystring(arraymap(json_extract_array(indicators), if(json_extract_scalar("@element", "$.field") = "endpointHostName", json_extract_scalar("@element", "$.value"), null)), ",")),
     xdm.source.user.upn = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ",")),
 
 
@@ -33,9 +33,7 @@ filter
     xdm.target.registry.key = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryKeyHandle", json_extract_scalar("@element", "$.value"), null)), ","),
     xdm.target.registry.value = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryValue", json_extract_scalar("@element", "$.value"), null)), ","),
     xdm.source.process.command_line = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ","),
-    xdm.source.process.executable.path = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ","),
-
-    xdm.source.host.hostname = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "endpointHostName", json_extract_scalar("@element", "$.value"), null)), ",");
+    xdm.source.process.executable.path = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ",");
 
 filter
     event_type in ("search_detections")
