@@ -473,7 +473,7 @@ def build_query_params(query_params: dict) -> str:
 ''' API FUNCTIONS '''
 
 
-def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] = None,
+def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] | None = None,
                         hr: str = ''):
     """
         Creates an entry object
@@ -617,7 +617,7 @@ def get_passed_mins(start_time, end_time_str):
     return time_delta.seconds / 60
 
 
-def handle_response_errors(raw_res: dict, err_msg: str = None):
+def handle_response_errors(raw_res: dict, err_msg: str | None = None):
     """
     Raise exception if raw_res is empty or contains errors
     """
@@ -764,7 +764,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> D
     return response
 
 
-def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list = None) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -789,7 +789,7 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
 
 
 def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30,
-                        optional_hosts: list = None) -> Dict:
+                        optional_hosts: list | None = None) -> Dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -818,8 +818,8 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
     return response
 
 
-def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None,
-                      timeout_duration: str = None, offline: bool = False) -> Dict:
+def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list | None = None, timeout: int | None = None,
+                      timeout_duration: str | None = None, offline: bool = False) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
@@ -842,7 +842,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
     return response
 
 
-def status_get_cmd(request_id: str, timeout: int = None, timeout_duration: str = None) -> Dict:
+def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration: str | None = None) -> Dict:
     """
         Retrieves the status of the specified batch get command. Will return successful files when they are finished processing.
 
@@ -971,7 +971,7 @@ def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def list_host_files(host_id: str, session_id: str = None) -> Dict:
+def list_host_files(host_id: str, session_id: str | None = None) -> Dict:
     """
         Get a list of files for the specified RTR session on a host.
         :param host_id: Host agent ID to run RTR command on.
@@ -1064,7 +1064,7 @@ def list_scripts() -> Dict:
     return response
 
 
-def get_extracted_file(host_id: str, sha256: str, filename: str = None):
+def get_extracted_file(host_id: str, sha256: str, filename: str | None = None):
     """
         Get RTR extracted file contents for specified session and sha256.
         :param host_id: The host agent ID to initialize the RTR session on.
@@ -1784,7 +1784,7 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
-def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float = None) -> dict:
+def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float | None = None) -> dict:
     """
     Upload a list of IOC
     """
@@ -1795,7 +1795,7 @@ def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float = None) -> dic
     return http_request('POST', '/iocs/entities/indicators/v1', json=payload, timeout=timeout)
 
 
-def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
+def get_behaviors_by_incident(incident_id: str, params: dict | None = None) -> dict:
     return http_request('GET', f'/incidents/queries/behaviors/v1?filter=incident_id:"{incident_id}"', params=params)
 
 
@@ -3754,9 +3754,9 @@ def list_incident_summaries_command():
 
 
 def create_host_group_command(name: str,
-                              group_type: str = None,
-                              description: str = None,
-                              assignment_rule: str = None) -> CommandResults:
+                              group_type: str | None = None,
+                              description: str | None = None,
+                              assignment_rule: str | None = None) -> CommandResults:
     response = change_host_group(is_post=True,
                                  name=name,
                                  group_type=group_type,
@@ -3864,7 +3864,7 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
 
 
 def upload_batch_custom_ioc_command(
-        multiple_indicators_json: str = None, timeout: str = '180',
+        multiple_indicators_json: str | None = None, timeout: str = '180',
 ) -> List[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
@@ -4688,7 +4688,7 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
     )
 
 
-def build_cs_falcon_filter(custom_filter: str = None, **filter_args) -> str:
+def build_cs_falcon_filter(custom_filter: str | None = None, **filter_args) -> str:
     """Creates an FQL syntax filter from a dictionary and a custom built filter
 
     :custom_filter: custom filter from user (will take priority if conflicts with dictionary), defaults to None
@@ -4871,7 +4871,7 @@ def cs_falcon_ODS_query_scheduled_scan_command(args: dict) -> PollResult:
 
     scan_in_progress = all(dict_safe_get(scan, 'status', return_type=str) not in ('pending', 'running')
                            for scan in command_results.outputs)  # type: ignore[attr-defined]
-    
+
     return PollResult(response=command_results, continue_to_poll=scan_in_progress, partial_result=command_results)
 
 
@@ -5145,25 +5145,6 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
     )
 
     return command_results
-
-
-@polling_function('cs-falcon-ods-query-scan', poll_message='Scan underway...')
-def cs_f_command(args: Dict[str, Any], client: Client):
-    key = get_api_id(args)
-    api_response = client.call_api()
-    successful_response = api_response.status_code == 200
-
-    if successful_response:
-        success_return = show_successful_response()
-        return PollResult(success_return)
-
-    else:
-        error_response = CommandResults(raw_response=report_response,
-                                        readable_output='API returned an error',
-                                        entry_type=entryTypes['error'])
-
-        return PollResult(continue_to_poll=lambda: not should_not_keep_polling(client, key), response=error_response)
-
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
