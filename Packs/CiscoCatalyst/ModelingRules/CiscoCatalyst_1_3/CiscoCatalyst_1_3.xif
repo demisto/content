@@ -43,4 +43,4 @@ alter seq_number = arrayindex(regextract(_raw_log , "(\d+)\:\s+\**[A-Za-z]+\s+\d
     xdm.source.ipv6 = sourceipv6,
     xdm.source.process.identifier = pid,
     xdm.observer.action = change_state,
-    xdm.event.outcome = if(event_type conatins "SUCCESS", XDM_CONST , event_type contains "FAIL", null);
+    xdm.event.outcome = if(event_type contains "SUCCESS", XDM_CONST.OUTCOME_SUCCESS  , event_type contains "FAIL",XDM_CONST.OUTCOME_FAILED  ,null);
