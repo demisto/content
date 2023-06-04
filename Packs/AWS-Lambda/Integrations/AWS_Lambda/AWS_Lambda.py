@@ -318,6 +318,60 @@ def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
     )
 
 
+def get_function_configuration_command(args: dict, aws_client) -> CommandResults:
+    def parse_function_configuration(data: dict[str, Any]) -> dict[str, str | None]:
+        return {
+            "Function Name": data.get('FunctionName'),
+            "Function Arn": data.get('FunctionArn'),
+            "Description": data.get('Description'),
+            "State": data.get('State'),
+            "Runtime": data.get("Runtime"),
+            "Code Sha256": data.get('CodeSha256'),
+            "Revision Id": data.get('RevisionId'),
+        }
+
+    kwargs = {'FunctionName': args['functionName']}
+    if qualifier := args.get('qualifier'):
+        kwargs.update({'qualifier': qualifier})
+
+    response = aws_client.get_function_configuration(**kwargs)
+    parsed_function_configuration = parse_function_configuration(response)
+    table_for_markdown = tableToMarkdown(name='Function Configuration', t=parsed_function_configuration)
+
+    return CommandResults(
+        outputs=response,
+        readable_output=table_for_markdown,
+        outputs_prefix="AWS.Lambda.FunctionConfig",
+        outputs_key_field='FunctionName'
+    )
+
+
+def delete_function_url_config_command(args: dict, aws_client) -> CommandResults:
+
+    kwargs = {'FunctionName': args['functionName']}
+    if qualifier := args.get('qualifier'):
+        kwargs.update({'qualifier': qualifier})
+
+    response = aws_client.delete_function_url_config(**kwargs)
+
+    return CommandResults(
+        readable_output="Deleted Successfully"
+    )
+
+
+def delete_function_command(args: dict, aws_client) -> CommandResults:
+
+    kwargs = {'FunctionName': args['functionName']}
+    if qualifier := args.get('qualifier'):
+        kwargs.update({'qualifier': qualifier})
+
+    response = aws_client.delete_function(**kwargs)
+    if response["ResponseMetadata"]["HTTPStatusCode"] == 204:
+        return CommandResults(
+            readable_output="Deleted Successfully"
+        )
+
+
 """TEST FUNCTION"""
 
 
@@ -371,7 +425,12 @@ def main():
             return_results(list_versions_by_function_command(args, aws_client))
         elif command == 'aws-lambda-get-function-url-config':
             return_results(get_function_url_config_command(args, aws_client))
-
+        elif command == 'aws-lambda-get-function-configuration':
+            return_results(get_function_configuration_command(args, aws_client))
+        elif command == 'aws-lambda-delete-function-url-config':
+            return_results(delete_function_url_config_command(args, aws_client))
+        elif command == 'aws-lambda-delete-function':
+            return_results(delete_function_command(args, aws_client))
     except Exception as e:
         return_error(f'Error has occurred in the AWS Lambda Integration: {type(e)}\n {str(e)}')
 
