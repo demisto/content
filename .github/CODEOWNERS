@@ -37,24 +37,22 @@
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
 /Packs/PAN-OS/Integrations/ @GuyAfik
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
-/Packs/PrismaSaasSecurity/Integrations/ @yaakovpraisler
+/Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
 # Important Integrations
-/Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
-/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders @Shellyber
-/Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
-/Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
-/Packs/QRadar/Integrations/QRadar_v3/* @tkatzir
-/Packs/Slack/Integrations/Slack/* @demisto/content-leaders
-/Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
-/Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
-/Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
+/Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
+/Packs/QRadar/Integrations/QRadar_v3/* @ilaner
+/Packs/Slack/Integrations/* @amshamah419 @rshunim 
+/Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
+/Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419 
+/Packs/MicrosoftExchangeOnline/Integrations @amshamah419 @thefrieddan1
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
-/Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
+/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan
+/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan
 
 # Common Packs
 /Packs/CommonTypes/ @michalgold @idovandijk
@@ -63,10 +61,10 @@
 
 
 # Build related
-.circleci/config.yml @esharf
-.gitlab/ci/* @esharf
-.gitlab/* @esharf
-.gitlab-ci.yml @esharf
+.circleci/config.yml @yucohen
+.gitlab/ci/* @yucohen
+.gitlab/* @yucohen
+.gitlab-ci.yml @yucohen
 .gitlab/ci/on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/staging.yml @ilaner
