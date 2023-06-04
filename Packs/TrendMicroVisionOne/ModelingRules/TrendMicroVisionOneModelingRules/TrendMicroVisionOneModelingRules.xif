@@ -27,8 +27,7 @@ filter
 
     xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
     xdm.alert.subcategory = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.provenance")), ","),
-    xdm.source.ipv4 = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ",")
-
+    xdm.source.ipv4 = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ","),
     xdm.source.process.name = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "processCmd", json_extract_scalar("@element", "$.value"), null)), ","),
     xdm.source.process.parent_id = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "parentCmd", json_extract_scalar("@element", "$.value"), null)), ","),
     xdm.target.registry.key = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryKeyHandle", json_extract_scalar("@element", "$.value"), null)), ","),
