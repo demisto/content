@@ -848,6 +848,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
             "body",
             "folder_path",
             "is_read",
+            "categories"
         ]
 
         if "id" in raw_dict:
