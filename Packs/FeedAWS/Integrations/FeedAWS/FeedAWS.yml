@@ -3,8 +3,7 @@ commonfields:
   id: AWS Feed
   version: -1
 configuration:
-- additionalinfo: The services to fetch indicators from. Default value is all. If empty, all services will be included.
-  display: Services
+- display: Services
   name: services
   options:
   - AMAZON
@@ -30,9 +29,10 @@ configuration:
   - ROUTE53_RESOLVER
   - WORKSPACES_GATEWAYS
   - All
-  defaultvalue: 'All'
   required: true
   type: 16
+  additionalinfo: The services to fetch indicators from. Default value is all. If empty, all services will be included.
+  defaultvalue: 'All'
 - additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will be included.
   display: Regions
   name: regions
@@ -167,7 +167,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.59406
+  dockerimage: demisto/py3-tools:1.0.0.61931
   feed: true
   isfetch: false
   longRunning: false

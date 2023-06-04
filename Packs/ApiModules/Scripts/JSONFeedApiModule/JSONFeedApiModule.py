@@ -111,13 +111,14 @@ class Client:
         url = feed.get('url', self.url)
 
         if is_demisto_version_ge('6.5.0'):
+            prefix_feed_name = ''
             if '-_-' in feed_name:
-                prev_feed_name = feed_name.split('-_-')[0]  # Support for AWS feed
+                prefix_feed_name = feed_name.split('-_-')[0]  # Support for AWS feed
             # Set the If-None-Match and If-Modified-Since headers
             # if we have etag or last_modified values in the context, with server version higher than 6.5.0.
             last_run = demisto.getLastRun()
-            etag = last_run.get(prev_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
-            last_modified = last_run.get(prev_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')
+            etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
+            last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')
 
             demisto.debug(f'AWS: the last run before fetch: {last_run}')
             if etag:
@@ -174,7 +175,6 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
         boolean with the value for noUpdate argument.
         The value should be False if the response was modified.
     """
-    demisto.debug("in get_no_update_value")
     # HTTP status code 304 (Not Modified) set noUpdate to True.
     if response.status_code == 304:
         demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
@@ -422,7 +422,6 @@ def feed_main(params, feed_name, prefix):
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
-                demisto.debug(f'AWS: number of indicators: {len(indicators)}')
                 if not indicators:
                     demisto.createIndicators(indicators, noUpdate=no_update)
                 else:
