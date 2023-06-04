@@ -1,7 +1,7 @@
 id: Spear Phishing Investigation
 version: -1
 name: Spear Phishing Investigation
-description: The "Spear Phishing Investigation" Playbook designed to detect patterns that indicates a spear phishing attempt by the attacker.
+description: The "Spear Phishing Investigation" playbook is designed to detect patterns that indicates a spear phishing attempt by the attacker.
 starttaskid: "0"
 tasks:
   "0":
