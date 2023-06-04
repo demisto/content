@@ -3668,7 +3668,7 @@ inputs:
   description: |-
     A comma-separated or list of keywords to search in the email body.
     for example: name of the organization finance app that the attacker might impost to.
-    This input is being used in the "Spear Phishing Investigation" sub-playbook.
+    This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
 outputs: []
 tests:
