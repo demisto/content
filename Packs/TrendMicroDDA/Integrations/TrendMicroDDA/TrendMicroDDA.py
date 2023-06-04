@@ -48,7 +48,7 @@ def hash_file(filename):
 def hash_url(url):
     '''Calculate the SHA1 of a URL'''
     h = hashlib.sha1()  # nosec
-    h.update(url)
+    h.update(url.encode('utf-8'))
     return h.hexdigest()
 
 
