@@ -80,7 +80,10 @@ TAGGABLE_ASSET_TYPE_MAP = {
     'Domain': 'domains',
     'Certificate': 'certificates',
     'CloudResource': 'cloud-resources',
-    'IpRange': 'ip-range'
+    'IpRange': 'ip-range',
+    'ResponsiveIP': 'responsive-ip',
+    'Network': 'network',
+    'Device': 'device'
 }
 
 ASSET_TAG_OPERATIONS = ['ASSIGN', 'UNASSIGN']
@@ -383,34 +386,57 @@ class Client(BaseClient):
 
     def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str,
                           tag_ids: List[str]) -> Dict[str, Any]:
-        endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
+        # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
+        if asset_type == "ip-range":
+            tag_url = f'/v2/{asset_type}/tag-assignments/bulk'
+            data = {"operations": [{
+                'operationType': operation_type,
+                'tagIds': tag_ids,
+                'assetId': asset_id
+            }]}
 
-        data: Dict = {"operations": [{
-            'operationType': operation_type,
-            'tagIds': tag_ids,
-            'assetId': asset_id
+        else:
+            tag_url = '/v3/assets/assets/annotations'
+            data = {"operations": [
+                {
+                    "operationType": operation_type,
+                    "annotationType": "TAG",
+                    "annotationIds": tag_ids,
+                    "assetId": asset_id
+                }]}
 
-        }]}
         return self._http_request(
             method='POST',
-            url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
+            url_suffix=tag_url,
             json_data=data,
             retries=3
         )
 
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
-        endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
+        # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
+        if asset_type == "ip-range":
+            poc_url = f'/v2/{asset_type}/contact-assignments/bulk'
+            data = {"operations": [{
+                'operationType': operation_type,
+                'contactIds': poc_ids,
+                'assetId': asset_id
+            }]}
 
-        data: Dict = {"operations": [{
-            'operationType': operation_type,
-            'contactIds': poc_ids,
-            'assetId': asset_id
+        else:
+            poc_url = '/v3/assets/assets/annotations'
+            data = {"operations": [
+                {
+                    "operationType": operation_type,
+                    "annotationType": "CONTACT",
+                    "annotationIds": poc_ids,
+                    "assetId": asset_id
+                }]}
 
-        }]}
         return self._http_request(
             method='POST',
-            url_suffix=f'/v2/{endpoint_base}/contact-assignments/bulk',
-            json_data=data
+            url_suffix=poc_url,
+            json_data=data,
+            retries=3
         )
 
     def update_issue(self, issue_id: str, update_type: str, value: str) -> Dict[str, Any]:
@@ -585,8 +611,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName']
-                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
+                        ml_feature_list.extend({r['formattedName']
+                                                for r in re if 'formattedName' in r})  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
@@ -683,7 +709,7 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None,
+def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int | None = None,
               required: bool = False) -> Optional[int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
@@ -2474,11 +2500,11 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def get_risky_flows_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
