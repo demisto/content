@@ -16,14 +16,16 @@ configuration:
 - display: Subscription ID
   hidden: false
   name: subscription_id
-  required: true
+  required: false
   type: 0
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
   section: Connect
 - display: Resource Group Name
   hidden: false
   name: resource_group_name
-  required: true
+  required: false
   type: 0
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
