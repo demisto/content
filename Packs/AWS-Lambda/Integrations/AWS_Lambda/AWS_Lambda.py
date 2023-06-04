@@ -352,7 +352,7 @@ def delete_function_url_config_command(args: dict, aws_client) -> CommandResults
     if qualifier := args.get('qualifier'):
         kwargs.update({'qualifier': qualifier})
 
-    response = aws_client.delete_function_url_config(**kwargs)
+    aws_client.delete_function_url_config(**kwargs)
 
     return CommandResults(
         readable_output="Deleted Successfully"
