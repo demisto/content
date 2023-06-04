@@ -3,7 +3,8 @@ from Exabeam import Client, contents_append_notable_user_info, contents_user_inf
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
     get_notable_sequence_event_types, delete_context_table_records, list_incidents, convert_all_unix_keys_to_date, \
-    fetch_incidents, build_incident_response_query_params
+    fetch_incidents, build_incident_response_query_params, ERR_BASIC_AUTH, ERR_MISSING_AUTH, ERR_OAUTH, \
+    ERR_TOKEN_AUTH_WITH_FETCH, ERR_TOKEN_AUTH_WITHOUT_FETCH
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
     RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
     RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS, \
@@ -113,7 +114,7 @@ def test_contents_user_info():
 def test_commands(command, args, response, expected_result, mocker):
     import requests
     requests.packages.urllib3.disable_warnings()
-    mocker.patch.object(Client, '_login')
+    mocker.patch.object(Client, '_basic_auth_login')
     client = Client('http://exabeam.com/api/auth/login', verify=False, username='user',
                     password='1234', proxy=False, headers={})
 
@@ -179,7 +180,7 @@ def test_get_notable_session_details_command_empty_sessions(mocker):
         Verify the human-readable section have the proper message.
     """
     mocked_res = {'totalCount': 0, 'sessions': [], 'users': {}, 'executiveUserFlags': {}}
-    mocker.patch.object(Client, '_login', return_value=None)
+    mocker.patch.object(Client, '_basic_auth_login', return_value=None)
     mocker.patch.object(Client, 'get_notable_session_details_request', return_value=mocked_res)
 
     client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
@@ -322,7 +323,7 @@ def test_convert_all_unix_keys_to_date(incident, expected_results):
 )
 def test_fetch_incdents(mocker, params, incidents, expected_incidents, expected_last_run):
 
-    mocker.patch.object(Client, '_login', return_value=None)
+    mocker.patch.object(Client, '_basic_auth_login', return_value=None)
     client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
                     headers={})
     request_get_incidents = mocker.patch.object(client, 'get_incidents', return_value=incidents)
@@ -365,94 +366,110 @@ def test_fetch_incdents(mocker, params, incidents, expected_incidents, expected_
         assert id_ in last_run['found_incident_ids']
 
 
-# TODO
+@pytest.mark.parametrize(
+    'args, expected_results',
+    [
+        (
+            {
+                'username': None,
+                'password': None,
+                'api_token': None,
+                'is_fetch': False,
+                'client_id': None,
+                'client_secret': None,
+            },
+            ERR_MISSING_AUTH
+        ),
+        (
+            {
+                'username': '__token',
+                'password': None,
+                'api_token': 'test',
+                'is_fetch': False,
+                'client_id': None,
+                'client_secret': None,
+            },
+            ERR_TOKEN_AUTH_WITHOUT_FETCH[0]
+        ),
+        (
+            {
+                'username': '__token',
+                'password': None,
+                'api_token': None,
+                'is_fetch': False,
+                'client_id': None,
+                'client_secret': None,
+            },
+            ERR_TOKEN_AUTH_WITHOUT_FETCH[0]
+        ),
+        (
+            {
+                'username': '__token',
+                'password': 'test',
+                'api_token': None,
+                'is_fetch': True,
+                'client_id': None,
+                'client_secret': None,
+            },
+            ERR_TOKEN_AUTH_WITHOUT_FETCH[1]
+        ),
+        (
+            {
+                'username': None,
+                'password': None,
+                'api_token': 'test',
+                'is_fetch': True,
+                'client_id': None,
+                'client_secret': None,
+            },
+            ERR_TOKEN_AUTH_WITH_FETCH[0]
+        ),
+        (
+            {
+                'username': 'test',
+                'password': 'test',
+                'api_token': 'test',
+                'is_fetch': True,
+                'client_id': None,
+                'client_secret': None,
+            },
+            ERR_TOKEN_AUTH_WITH_FETCH[1]
+        ),
+        (
+            {
+                'username': 'test',
+                'password': None,
+                'api_token': None,
+                'is_fetch': True,
+                'client_id': None,
+                'client_secret': None,
+            },
+            ERR_BASIC_AUTH
+        ),
+        (
+            {
+                'username': None,
+                'password': None,
+                'api_token': None,
+                'is_fetch': True,
+                'client_id': 'test',
+                'client_secret': None,
+            },
+            ERR_OAUTH
+        ),
+    ]
+)
+def test_validate_authentication_params(mocker, args, expected_results):
+    with pytest.raises(ValueError) as err:
+        Client(base_url='test',
+               username=args['username'],
+               password=args['password'],
+               verify=False,
+               proxy=False,
+               headers={},
+               client_id=args['client_id'],
+               client_secret=args['client_secret'],
+               api_key=args['api_token'],
+               is_fetch=args['is_fetch'])
 
-# @pytest.mark.parametrize(
-#     'args, expected_results',
-#     [
-#         (
-#             {
-#                 'username': '__token',
-#                 'password': None,
-#                 'api_token': 'test',
-#                 'is_fetch': False,
-#             },
-#             "When specifying username='__token', the API Token must be provieded using in the password field"
-#             " please empty the other field"
-#         ),
-#         (
-#             {
-#                 'username': '__token',
-#                 'password': 'test',
-#                 'api_token': None,
-#                 'is_fetch': True,
-#             },
-#             'In order to use the “Fetch Incident” functionality,'
-#             ' the username must be provided in the “Username” parameter.\n'
-#             ' Please see documentation `Authentication Methods`'
-#         ),
-#         (
-#             {
-#                 'username': '__token',
-#                 'password': None,
-#                 'api_token': None,
-#                 'is_fetch': False,
-#             },
-#             'Please insert API Token in the password field'
-#             ' or see documentation `Authentication Methods` for another authentication methods'
-#         ),
-#         (
-#             {
-#                 'username': None,
-#                 'password': None,
-#                 'api_token': None,
-#                 'is_fetch': False,
-#             },
-#             "If an API token is not provided, it is mandatory to insert username and password."
-#         ),
-#         (
-#             {
-#                 'username': None,
-#                 'password': None,
-#                 'api_token': 'test',
-#                 'is_fetch': True,
-#             },
-#             'In order to use the “Fetch Incident” functionality,'
-#             ' the username must be provided in the “Username” parameter.\n'
-#             ' Please see documentation `Authentication Methods`'
-#         ),
-#         (
-#             {
-#                 'username': 'test',
-#                 'password': None,
-#                 'api_token': None,
-#                 'is_fetch': True,
-#             },
-#             'Please insert password or API token.'
-#         ),
-#         (
-#             {
-#                 'username': 'test',
-#                 'password': 'test',
-#                 'api_token': 'test',
-#                 'is_fetch': True,
-#             },
-#             'Please insert API token OR password and not both.'
-#         ),
-#     ]
-# )
-# def test_validate_authentication_params(mocker, args, expected_results):
-
-#     mocker.patch.object(Client, 'is_token_auth', return_value=True)
-
-#     with pytest.raises(ValueError) as err:
-#         Client(base_url='test',
-#                username=args['username'],
-#                password=args['password'],
-#                verify=False,
-#                proxy=False,
-#                headers={},
-#                api_key=args['api_token'],
-#                is_fetch=args['is_fetch'])
-
-#     assert str(err.value) == expected_results
+    assert str(err.value) == expected_results

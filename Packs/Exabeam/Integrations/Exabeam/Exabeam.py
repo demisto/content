@@ -14,6 +14,36 @@ TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
+# AUTH ERROR MESSAGES
+ERR_MISSING_AUTH = (
+    'You must provide an authentication method. For more information, '
+    'refer to the `Authentication Methods` section in the integration documentation.'
+)
+ERR_TOKEN_AUTH_WITH_FETCH = [
+    (
+        'The `API Token` parameter must be provided along with the `Username` parameter.'
+    ),
+    (
+        'When providing the `Username` and `API Token` parameters, '
+        'you must leave the `Password` parameter empty.'
+    )
+]
+ERR_TOKEN_AUTH_WITHOUT_FETCH = [
+    (
+        f'When `Username` parameter is configured to {TOKEN_INPUT_IDENTIFIER}, '
+        'you must provide the `Password` parameter and leave the `API Token` parameter empty.'
+    ),
+    'The configured authentication method does not support fetching incidents.'
+]
+ERR_BASIC_AUTH = (
+    'For the Basic Authentication method, both `Username` and `Password` parameters '
+    'should be provided.'
+)
+ERR_OAUTH = (
+    'For OAuth 2.0 with Client Credentials, both `Client ID` and `Client Secret` parameters '
+    'should be provided.'
+)
+
 
 class Client(BaseClient):
     """
@@ -52,10 +82,7 @@ class Client(BaseClient):
         elif self.is_oauth():
             self._headers['Authorization'] = f'Bearer {self._get_oauth_access_token()}'
         else:
-            raise ValueError(
-                'You must provide an authentication method. For more information, '
-                'refer to the `Authentication Methods` section in the integration documentation.'
-            )
+            raise ValueError(ERR_MISSING_AUTH)
 
     def __del__(self):
         if self.is_basic_auth():
@@ -66,26 +93,20 @@ class Client(BaseClient):
         return self._is_token_auth_with_fetch_support() or self._is_token_auth_without_fetch_support()
 
     def _is_token_auth_with_fetch_support(self) -> bool:
-        if self.username and self.username != TOKEN_INPUT_IDENTIFIER and self.api_key:
+        if self.api_key and self.username != TOKEN_INPUT_IDENTIFIER:
+            if not self.username:
+                raise ValueError(ERR_TOKEN_AUTH_WITH_FETCH[0])
             if self.password:
-                raise ValueError(
-                    'When providing the `Username` and `API Token` parameters, '
-                    'you must leave the `Password` parameter empty.'
-                )
+                raise ValueError(ERR_TOKEN_AUTH_WITH_FETCH[1])
             return True
         return False
 
     def _is_token_auth_without_fetch_support(self) -> bool:
         if self.username == TOKEN_INPUT_IDENTIFIER:
             if not self.password or self.api_key:
-                raise ValueError(
-                    f'When `Username` parameter is configured to {TOKEN_INPUT_IDENTIFIER}, '
-                    'you must provide the `Password` parameter and leave the `API Token` parameter empty.'
-                )
+                raise ValueError(ERR_TOKEN_AUTH_WITHOUT_FETCH[0])
             if self.is_fetch:
-                raise ValueError(
-                    'The configured authentication method does not support fetching incidents.'
-                )
+                raise ValueError(ERR_TOKEN_AUTH_WITHOUT_FETCH[1])
             return True
         return False
 
@@ -93,20 +114,14 @@ class Client(BaseClient):
         if not self.is_token_auth():
             if self.username or self.password:
                 if bool(self.username) != bool(self.password):
-                    raise ValueError(
-                        'For the Basic Authentication method, both `Username` and `Password` parameters '
-                        'should be provided.'
-                    )
+                    raise ValueError(ERR_BASIC_AUTH)
                 return True
         return False
 
     def is_oauth(self) -> bool:
         if self.client_id or self.client_secret:
             if bool(self.client_id) != bool(self.client_secret):
-                raise ValueError(
-                    'For OAuth 2.0 with Client Credentials, both `Client ID` and `Client Secret` parameters '
-                    'should be provided.'
-                )
+                raise ValueError(ERR_OAUTH)
         return bool(self.client_id and self.client_secret)
 
     def _basic_auth_login(self):
