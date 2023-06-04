@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AWS - Lambda_copy
+  id: AWS - Lambda
   version: -1
 configuration:
 - display: AWS Default Region
@@ -86,8 +86,8 @@ configuration:
   required: false
   type: 8
 description: Amazon Web Services Serverless Compute service (lambda)
-display: AWS - Lambda_copy
-name: AWS - Lambda_copy
+display: AWS - Lambda
+name: AWS - Lambda
 script:
   commands:
   - arguments:
@@ -921,42 +921,42 @@ script:
     description: Returns details about a Lambda function URL.
     name: aws-lambda-get-function-url-config
     output:
-      - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
-        description: The HTTP URL endpoint for the function.
-        type: String
-      - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
-        description: The Amazon Resource Name (ARN) of your function.
-        type: String
-      - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
-        description: The type of authentication that the function URL uses. Set to AWS_IAM if you want to restrict access to authenticated users only. Set to NONE if you want to bypass IAM authentication to create a public endpoint.
-        type: String
-      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
-        description: Whether to allow cookies or other credentials in requests to the function URL. The default is false.
-        type: Boolean
-      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
-        description: The HTTP headers that origins can include in requests to the function URL. For example Date, Keep-Alive, X-Custom-Header.
-        type: List
-      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
-        description: The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character ( *).
-        type: List of strings
-      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
-        description: The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character ( *).
-        type: List of strings
-      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
-        description: The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header.
-        type: List of strings
-      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
-        description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results.
-        type: Number
-      - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
-        description: When the function URL was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
-        type: String
-      - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
-        description: When the function URL configuration was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
-        type: String
-      - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
-        description: "Use one of the following options: BUFFERED – This is the default option. Lambda invokes your function using the Invoke API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB. RESPONSE_STREAM – Your function streams payload results as they become available. Lambda invokes your function using the InvokeWithResponseStream API operation. The maximum response payload size is 20 MB, however, you can request a quota increase."
-        type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
+      description: The HTTP URL endpoint for the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
+      description: The Amazon Resource Name (ARN) of your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
+      description: The type of authentication that the function URL uses. Set to AWS_IAM if you want to restrict access to authenticated users only. Set to NONE if you want to bypass IAM authentication to create a public endpoint.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
+      description: Whether to allow cookies or other credentials in requests to the function URL. The default is false.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
+      description: The HTTP headers that origins can include in requests to the function URL. For example Date, Keep-Alive, X-Custom-Header.
+      type: List
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
+      description: The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character ( *).
+      type: List of strings
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
+      description: The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character ( *).
+      type: List of strings
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
+      description: The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header.
+      type: List of strings
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
+      description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
+      description: When the function URL was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
+      description: When the function URL configuration was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
+      description: "Use one of the following options: BUFFERED – This is the default option. Lambda invokes your function using the Invoke API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB. RESPONSE_STREAM – Your function streams payload results as they become available. Lambda invokes your function using the InvokeWithResponseStream API operation. The maximum response payload size is 20 MB, however, you can request a quota increase."
+      type: String
   - arguments:
     - default: false
       description: The AWS Region, if not specified the default region will be used
@@ -1219,7 +1219,7 @@ script:
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  dockerimage: demisto/boto3py3:1.0.0.62350
   isfetch: false
   runonce: false
   subtype: python3
@@ -1227,4 +1227,4 @@ script:
   type: python
 tests:
 - AWS-Lambda-Test (Read-Only)
-fromversion: 5.0.0
+fromversion: 6.8.0
