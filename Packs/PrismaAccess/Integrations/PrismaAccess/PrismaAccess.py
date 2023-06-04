@@ -218,7 +218,6 @@ PAN_OS_ERROR_DICT = {
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
-    pass
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
