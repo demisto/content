@@ -78,6 +78,12 @@ script:
       name: last_run_id
       required: false
       secret: false
+    - default: false
+      description: The indicator's value to filter by.
+      isArray: false
+      name: value
+      required: false
+      secret: false
     deprecated: false
     description: Gets indicators from OpenCTI.
     execution: false
