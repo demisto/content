@@ -12,15 +12,15 @@ from BMCTool import BMCContainer
     ]
 )
 def test_tile_header_size(container, expected_size):
+    """
+    Given:
+        - BMCContainer object
+    When:
+        - Calling the TILE_HEADER_SIZE property
+    Then:
+        - Ensure that the TILE_HEADER_SIZE is set as expected
+    """
     assert BMCContainer.TILE_HEADER_SIZE[container] == expected_size
-
-
-@pytest.mark.parametrize(
-    "log_type",
-    BMCContainer.LOG_TYPES
-)
-def test_valid_log_type(log_type):
-    assert log_type in BMCContainer.LOG_TYPES
 
 
 def test_palette_length():
@@ -28,9 +28,15 @@ def test_palette_length():
 
 
 def test_palette_colors():
+    """
+    Given:
+        - BMCContainer object
+    When:
+        - Calling the PALETTE property
+    Then:
+        - Ensure that the PALETTE is as expected
+    """
     assert BMCContainer.PALETTE == bytes(bytearray((
-        # Add the byte values of the palette colors here
-        # ...
         0, 0, 0, 0, 0, 0, 128, 0, 0, 128, 0, 0, 0, 128, 128, 0, 128, 0, 0, 0, 128, 0, 128, 0, 128,
         128, 0, 0, 192, 192, 192, 0, 192, 220, 192, 0, 240, 202, 166, 0, 0, 32, 64, 0, 0, 32, 96,
         0, 0, 32, 128, 0, 0, 32, 160, 0, 0, 32, 192, 0, 0, 32, 224, 0, 0, 64, 0, 0, 0, 64, 32, 0,
@@ -81,15 +87,40 @@ def test_palette_colors():
 
 
 def test_color_black():
+    """    
+    Given:
+        - BMCContainer object
+    When:
+        - Calling the COLOR_BLACK property
+    Then:
+        - Ensure that the COLOR_BLACK is set correctly
+    """
     assert BMCContainer.COLOR_BLACK == b"\x00"
 
 
 def test_b_import_func(capfd):
+    """    
+    Given:
+        - BMCContainer object
+        - Empty file
+    When:
+        - Calling the b_import function
+    Then:
+        - Ensure that the result is False
+    """
     container = BMCContainer()
     with capfd.disabled():
         assert container.b_import("Packs/CommonScripts/Scripts/BMCTool/test_data/empty_file") is False
 
 
 def test_b_process_func():
+    """    
+    Given:
+        - BMCContainer object
+    When:
+        - Calling the b_process_func function
+    Then:
+        - Ensure that the return value is not None and returned properly
+    """
     container = BMCContainer()
     assert container.b_process

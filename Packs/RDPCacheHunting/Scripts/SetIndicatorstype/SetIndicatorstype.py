@@ -10,10 +10,8 @@ def parse_data(list_content):
 
     list_collections: Counter = collections.Counter(list_content)
     top_lists = list_collections.most_common(10)
-    lists_number = len(top_lists)
-    list_number = 0
 
-    while list_number < lists_number:
+    for i in range(len(top_lists)):
         for list_element in top_lists:
             random_number = random.randint(0, 16777215)
             hex_number = str(hex(random_number))  # convert to hexadecimal
@@ -29,7 +27,7 @@ def parse_data(list_content):
             }
 
             lists_data.append(list_widget_data)
-            list_number += 1
+
 
     return {
         "Type": 17,

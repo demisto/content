@@ -87,7 +87,7 @@ class BMCContainer():
                     "error": demisto.error
                     }
 
-        if not verbose or self.verb:
+        if verbose or self.verb:
             log_type[ltype]("lmsg")
 
         return True
@@ -108,8 +108,7 @@ class BMCContainer():
         self.btype = self.BMC_CONTAINER
 
         if self.bdat[:len(self.BIN_FILE_HEADER)] == self.BIN_FILE_HEADER:
-            self.b_log("debug", True, "Subsequent header version: %d." %
-                       (unpack("<L", self.bdat[len(self.BIN_FILE_HEADER):len(self.BIN_FILE_HEADER) + 4])[0]))
+            self.b_log(f"Subsequent header version: {unpack("<L", self.bdat[len(self.BIN_FILE_HEADER):len(self.BIN_FILE_HEADER) + 4])[0]}.")
             self.bdat = self.bdat[len(self.BIN_FILE_HEADER) + 4:]
             self.btype = self.BIN_CONTAINER
 
@@ -121,6 +120,11 @@ class BMCContainer():
             return False
 
     def b_process(self):
+        """Extracts tiles from bmc container 
+
+        Returns:
+            boolean: Result of tiles extraction
+        """
         if len(self.bdat) == 0:
             self.b_log("error", False, "Nothing to process.")
             return False

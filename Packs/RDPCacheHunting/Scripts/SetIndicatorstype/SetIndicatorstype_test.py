@@ -1,87 +1,5 @@
 from SetIndicatorstype import parse_data
 
-expected_results = {
-    "Type": 17,
-    "ContentsFormat": "pie",
-    "Contents": {
-        "stats": [
-                {
-                    "data": [2],
-                    "groups": None,
-                    "name": "a",
-                    "label": "a",
-                    "color": "#5057db"
-                },
-            {
-                    "data": [2],
-                    "groups": None,
-                    "name": "b",
-                    "label": "b",
-                    "color": "#6802ec"
-                },
-            {
-                    "data": [2],
-                    "groups": None,
-                    "name": "c",
-                    "label": "c",
-                    "color": "#a0b203"
-                },
-            {
-                    "data": [2],
-                    "groups": None,
-                    "name": "d",
-                    "label": "d",
-                    "color": "#15e9ac"
-                },
-            {
-                    "data": [2],
-                    "groups": None,
-                    "name": "e",
-                    "label": "e",
-                    "color": "#e0d010"
-                },
-            {
-                    "data": [1],
-                    "groups": None,
-                    "name": "f",
-                    "label": "f",
-                    "color": "#7f0679"
-                },
-            {
-                    "data": [1],
-                    "groups": None,
-                    "name": "g",
-                    "label": "g",
-                    "color": "#b3e83b"
-                },
-            {
-                    "data": [1],
-                    "groups": None,
-                    "name": "h",
-                    "label": "h",
-                    "color": "#5ee71a"
-                },
-            {
-                    "data": [1],
-                    "groups": None,
-                    "name": "i",
-                    "label": "i",
-                    "color": "#6654c5"
-                },
-            {
-                    "data": [1],
-                    "groups": None,
-                    "name": "j",
-                    "label": "j",
-                    "color": "#12b826"
-                }
-        ],
-        "params": {
-            "layout": "horizontal"
-        }
-    }
-}
-
 # Tests that the function returns the expected dictionary when given valid data.
 
 
@@ -100,7 +18,7 @@ def test_parse_data_happy_path():
 # Tests that the function returns an empty dictionary when given an empty list.
 def test_parse_data_empty_list():
     # Arrange
-    list_content = []
+    list_content: list = []
     # Act
     result = parse_data(list_content)
     # Assert
