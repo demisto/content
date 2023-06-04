@@ -1085,13 +1085,17 @@ def create_nic_command(client: MsGraphClient, args: dict):
 def main():
     params: dict = demisto.params()
     server = params.get('host', 'https://management.azure.com').rstrip('/')
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id')
-    enc_key = params.get('enc_key')
-    certificate_thumbprint = params.get('certificate_thumbprint')
+    tenant = params.get('cred_token', {}).get('password') or params.get('tenant_id')
+    auth_and_token_url = params.get('cred_auth_id', {}).get('password') or params.get('auth_id')
+    if not tenant or not auth_and_token_url:
+        return_error('Token and ID must be provided.')
+    enc_key = params.get('cred_enc_key', {}).get('password') or params.get('enc_key')
+    certificate_thumbprint = params.get('cred_certificate_thumbprint', {}).get(
+        'password') or params.get('certificate_thumbprint', None)
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
-    subscription_id = demisto.args().get('subscription_id') or demisto.params().get('subscription_id')
+    subscription_id = params.get('cred_subscription_id', {}).get(
+        'password') or demisto.args().get('subscription_id') or params.get('subscription_id')
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
     if not self_deployed and not enc_key:
