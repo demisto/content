@@ -11,7 +11,7 @@ from freezegun import freeze_time
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item)
+                     handle_transient_files, parse_incident_from_item, parse_item_as_dict)
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -610,3 +610,29 @@ def test_credentials_with_old_secret(mocker, old_credentials, new_credentials, e
                        _tenant_id='new_tenant_id')
 
     assert client.ms_client.client_secret == expected
+
+
+def test_categories_parse_item_as_dict():
+    """
+    Given -
+        a Message with categories.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the categories were parsed correctly.
+    """
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+                      categories=['Purple category', 'Orange category']
+                      )
+
+    return_value = parse_item_as_dict(message)
+    assert return_value.get("categories") == ['Purple category', 'Orange category']
