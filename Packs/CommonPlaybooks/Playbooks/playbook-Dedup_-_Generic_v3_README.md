@@ -1,34 +1,40 @@
-This playbook identifies duplicate incidents using one of the supported methods.
+Deprecated. Use the `Dedup - Generic v4` playbook instead. This playbook identifies duplicate incidents using one of the supported methods.
 Select one of the following methods to identify duplicate incidents in Cortex XSOAR.
-- **ml**: Machine learning model, which is trained mostly on phishing incidents.
-- **rules**: Rules help identify duplicate incidents when the logic is well defined, for example, the same label or custom fields.
-- **text**: Statistics algorithm that compares text, which is generally useful for phishing incidents.
+- ml: Machine learning model, which is trained mostly on phishing incidents.
+-rules: Rules help identify duplicate incidents when the logic is well defined, for example, the same label or custom fields.
+-text: Statistics algorithm that compares text, which is generally useful for phishing incidents.
 For each method, the playbook will search for the oldest similar incident. when there is a match for a similar incident the playbook will close the current incident and will link it to the older incident. 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* CloseInvestigationAsDuplicate
-* PhishingDedupPreprocessingRule
-* FindSimilarIncidentsByText
+
 * FindSimilarIncidents
+* PhishingDedupPreprocessingRule
+* CloseInvestigationAsDuplicate
+* FindSimilarIncidentsByText
 
 ### Commands
+
 * linkIncidents
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| DuplicateMethod | Select a method for identifying duplicate incidents. Can be "ml", "rules", or "text". <br/>'rules' - define specific rules, such as similar incident fields &amp;amp; labels. This method works best if you know the exact logic to find similar incidents. <br/>'text' - text similarity, based on TF-IDF - unique word frequency in the incidents \(based on similar incident fields\) <br/>'ml' - machine learning model, which was trained on similar phishing incidents. Considers similar labels, incident fields, and indicators. |  | Required |
+| DuplicateMethod | Select a method for identifying duplicate incidents. Can be "ml", "rules", or "text". <br/>'rules' - define specific rules, such as similar incident fields &amp; labels. This method works best if you know the exact logic to find similar incidents. <br/>'text' - text similarity, based on TF-IDF - unique word frequency in the incidents \(based on similar incident fields\) <br/>'ml' - machine learning model, which was trained on similar phishing incidents. Considers similar labels, incident fields, and indicators. |  | Required |
 | exsitingIncidentsLookback | Use only with ML Method.<br/>The start date by which to search for duplicated existing incidents. The date format is the same as in the incidents query page. For example, "3 days ago", "2019-01-01T00:00:00 \+0200" | 7 days ago | Optional |
 | statusScope | Use only with ML Method.<br/>Whether to compare the new incident to past closed or non-closed incidents only.   <br/>"All" - Default. Compares to all incidents.<br/>"ClosedOnly" - Compares to closed incidents.<br/>"NonClosedOnly" - Compare to open incidents. |  | Optional |
 | fromPolicy | Use only with ML Method.<br/>Whether to take into account the email from field for deduplication.<br/><br/>"TextOnly" - incidents will be considered duplicated based on test similarity only, ignoring the sender's address. <br/><br/>"Exact" - incidents will be considered duplicated if their text is similar, and their sender is the same. <br/><br/>"Domain" -  Default. Incidents will be considered duplicated if their text is similar, and their senders' address has the same domain. |  | Optional |
@@ -42,6 +48,7 @@ This playbook does not use any integrations.
 | similarIncidentFields | Fields to compare. Can be label name, incident fields, or custom fields. Comma-separated value. Relevant for 'Text' and 'Rules' methods. | name,type,details | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -50,5 +57,7 @@ This playbook does not use any integrations.
 | similarIncident | The similar incident. | unknown |
 
 ## Playbook Image
+
 ---
-![Dedup - Generic v3](https://raw.githubusercontent.com/demisto/content/b66c9f284175ad7fa2bfc0295982234110becae1/Packs/CommonPlaybooks/doc_files/Dedup_-_Generic_v3.png)
+
+![Dedup - Generic v3](../doc_files/Dedup_-_Generic_v3.png)
