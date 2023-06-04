@@ -75,7 +75,7 @@ This playbook does not use any integrations.
 | OriginalAuthenticationHeader | This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.<br/>The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header. |  | Optional |
 | UserEngagement | Specify whether to engage with the user via email for investigation updates.<br/>Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement. | True | Optional |
 | TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | False | Optional |
-| KeyWordsToSearch | A comma-separated or list of keywords to search in the email body.<br/>for example: name of the organization finance app that the attacker might impost to.<br/>This input is being used in the "Spear Phishing Investigation" sub-playbook. |  | Optional |
+| KeyWordsToSearch | A comma-separated or list of keywords to search in the email body.<br/>For example: name of the organization finance app that the attacker might impersonate.<br/>This input is being used in the "Spear Phishing Investigation" sub-playbook. |  | Optional |
 
 ## Playbook Outputs
 
