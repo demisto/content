@@ -121,7 +121,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
 
 def validate_urls(urls):
     for url in urls:
-        if url.startswith('http://') or url.startswith('https://'):
+        if url.startswith(('http://', 'https://')):
             return_error(
                 'Enter a valid URL address without an http:// or https:// prefix. URL should have at least host.'
                 'domain pattern to qualify.')
@@ -930,7 +930,7 @@ def get_users_command(args):
         cmd_url = '/users?page={}&pageSize={}'.format(pageNo, pageSize)
     response = http_request('GET', cmd_url).json()
 
-    if(len(response) < 10):
+    if len(response) < 10:
         human_readable = tableToMarkdown("Users ({})".format(len(response)), response)
     else:
         human_readable = "Retrieved {} users".format(len(response))
