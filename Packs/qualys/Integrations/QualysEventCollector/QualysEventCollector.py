@@ -180,7 +180,7 @@ def remove_events_before_last_scan(events, last_run):
                     edited_events.append(event)
         return edited_events
     except Exception as e:
-        print(e)
+        raise Exception(f'Failed to remove previous events. Error:{str(e)}')
 
 
 def remove_last_events(events, time_to_remove, time_field):
@@ -472,7 +472,7 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
-        headers: Dict = {"X-Requested-With": "Demisto"}
+        headers: Dict = {"X-Requested-With": "Cortex XSIAM"}
 
         client = Client(
             base_url=base_url,
