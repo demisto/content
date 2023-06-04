@@ -745,7 +745,7 @@ script:
     - description: Unique Identifier of a channel.
       name: channel_id
       required: true
-    - description:  Email or unique identifier of the user
+    - description: Email or unique identifier of the user
       name: user_id
       required: true
     description: >
@@ -763,7 +763,7 @@ script:
     - description: The channel ID.
       name: channel_id
       required: true
-    - description:  Email or unique identifier of the user
+    - description: Email or unique identifier of the user
       name: user_id
       required: true
     - description: >
@@ -811,7 +811,7 @@ script:
       description: Channel ID the channel's unique identifier.
       required: true
       type: string
-    - description:  Email or unique identifier of the user
+    - description: Email or unique identifier of the user
       name: user_id
       required: true
     - name: members
@@ -841,7 +841,7 @@ script:
       required: true
       type: string
     - name: user_id
-      description:  Email or unique identifier of the user
+      description: Email or unique identifier of the user
       required: true
       type: string
     - name: member_id
@@ -861,7 +861,7 @@ script:
       description: The channel ID of the channel to which to send the chat file.
       required: false
       type: string
-    - description:  Email or unique identifier of the user
+    - description: Email or unique identifier of the user
       name: user_id
       required: true
     - name: to_contact
@@ -960,7 +960,7 @@ script:
       required: false
       type: string
     - name: message
-      description:  |- 
+      description: |-
         The message to be sent.Constraints Max 1024 chars
          you can provide a markdown message without any other arguments like  format type,format attr,start and end position and rt start and end_position
         | Element   | Markdown Syntax |
@@ -1266,7 +1266,7 @@ script:
       type: string
       description: The next page token for pagination.
 
-  dockerimage: demisto/pyjwt3:1.0.0.61733
+  dockerimage: demisto/pyjwt3:1.0.0.62394
   runonce: false
   script: "-"
   subtype: python3
