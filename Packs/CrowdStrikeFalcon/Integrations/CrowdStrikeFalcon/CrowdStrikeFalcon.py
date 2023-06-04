@@ -5119,7 +5119,7 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     if not id:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
-    return cs_falcon_ODS_query_scan_command({'ids': id, 'wait_for_results': True})
+    return cs_falcon_ODS_query_scans_command({'ids': id, 'wait_for_results': True})
 
 
 def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
