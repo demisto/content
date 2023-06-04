@@ -10,7 +10,7 @@ comment: "Converts string to array. \nFor example: `http://example.com/?score:1,
 commonfields:
   id: StringToArray
   version: -1
-enabled: false
+enabled: true
 name: StringToArray
 script: '-'
 subtype: python3

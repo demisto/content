@@ -15,7 +15,7 @@ comment: 'Gets specified indexes of a list.'
 commonfields:
   id: GetRange
   version: -1
-enabled: false
+enabled: true
 name: GetRange
 script: '-'
 subtype: python3

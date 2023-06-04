@@ -7,7 +7,7 @@ comment: Extracts ZTAP fields into a format parsable to grab as indicators
 commonfields:
   id: ZTAPExtractFields
   version: -1
-enabled: false
+enabled: true
 name: ZTAPExtractFields
 script: ''
 subtype: python3

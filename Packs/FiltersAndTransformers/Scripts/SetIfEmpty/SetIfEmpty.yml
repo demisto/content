@@ -27,7 +27,7 @@ comment: Checks an object for an empty value and returns a pre-set default value
 commonfields:
   id: SetIfEmpty
   version: -1
-enabled: false
+enabled: true
 name: SetIfEmpty
 script: '-'
 subtype: python3
