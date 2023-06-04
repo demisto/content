@@ -5058,7 +5058,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
                 dateparser.parse(args['schedule_start_timestamp'])
                 or return_error('Invalid start_timestamp.')
             ).strftime("%Y-%m-%dT%H:%M"),
-             
+
         }
     } if is_scheduled else {
         'hosts': argToList(args.get('hosts')),
@@ -5081,20 +5081,11 @@ def ODS_verify_create_scan_command(args: dict) -> None:
     if not (args.get('file_paths') or args.get('scan_inclusions')):
         raise DemistoException('MUST set either file_paths OR scan_inclusions.')
 
-    # if the scan is set as scheduled the user needs to set "schedule_start_timestamp", "schedule_interval" and "host_groups".
-    if argToBoolean(args.get('is_scheduled')) and not (
-            args.get('schedule_start_timestamp')
-            and args.get('schedule_interval') is not None  # can be zero
-            and args.get('host_groups')):
-        raise DemistoException(
-            'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.')
 
-
-def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
+def cs_falcon_ods_create_scan_command(args: dict, is_scheduled: bool = False) -> CommandResults:
 
     ODS_verify_create_scan_command(args)
 
-    is_scheduled = argToBoolean(args.get('is_scheduled'))
     response = ODS_create_scan_request(args, is_scheduled)
 
     resources = response.get('resources', [])
@@ -5113,6 +5104,10 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     )
 
     return command_results
+
+
+def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
+    return cs_falcon_ods_create_scan_command(args, is_scheduled=True)
 
 
 def ODS_delete_scheduled_scans_request(ids: list[str], scan_filter: str | None = None) -> dict:
@@ -5152,7 +5147,7 @@ def cs_f_command(args: Dict[str, Any], client: Client):
                                         entry_type=entryTypes['error'])
 
         return PollResult(continue_to_poll=lambda: not should_not_keep_polling(client, key), response=error_response)
-    
+
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -5357,6 +5352,8 @@ def main():
             return_results(cs_falcon_ODS_query_malicious_files_command(args))
         elif command == 'cs-falcon-ods-create-scan':
             return_results(cs_falcon_ods_create_scan_command(args))
+        elif command == 'cs-falcon-ods-create-scheduled-scan':
+            return_results(cs_falcon_ods_create_scheduled_scan_command(args))
         elif command == 'cs-falcon-ods-delete-scheduled-scan':
             return_results(cs_falcon_ods_delete_scheduled_scan_command(args))
         else:
