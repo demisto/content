@@ -30,6 +30,12 @@ configuration:
   - Worldwide
   required: true
   type: 16
+- display: Allow Germany
+  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
+  name: allow_germany
+  required: false
+  defaultvalue: 'false'
+  type: 8
 - defaultvalue: All
   display: Services
   name: services
