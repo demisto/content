@@ -35,7 +35,7 @@ def test_get_indicators(mocker):
 
 @pytest.mark.parametrize(
     'response_mock, value, expected_length, expected_value', [
-        ([{"created_at": "2022-10-24T18:16:52.678Z", "entity_type": "IPv4-Addr",  "id": "id", "observable_value": "8.8.8.8",
+        ([{"created_at": "2022-10-24T18:16:52.678Z", "entity_type": "IPv4-Addr", "id": "id", "observable_value": "8.8.8.8",
            "spec_version": "2.1", "standard_id": "standard_id", "updated_at": "2022-10-24T18:16:52.678Z", "value": "8.8.8.8",
            "x_opencti_score": 50}], "8.8.8.8", 1, "8.8.8.8")])
 def test_get_indicators_value_argument(mocker, response_mock, value, expected_length, expected_value):
@@ -235,7 +235,7 @@ def test_organization_list_command(mocker):
     results: CommandResults = organization_list_command(client, {})
     assert "Organizations" in results.readable_output
     assert [{'id': '1', 'name': 'test organization'}] == \
-           results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)')
+        results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)')
 
 
 def test_organization_create_command(mocker):
@@ -335,4 +335,4 @@ def test_marking_list_command(mocker):
     results: CommandResults = marking_list_command(client, {})
     assert "Markings" in results.readable_output
     assert [{'id': '1', 'value': 'TLP:RED'}] \
-           == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')
+        == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')
