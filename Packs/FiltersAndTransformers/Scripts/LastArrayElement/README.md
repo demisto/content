@@ -1,4 +1,4 @@
-Returns the first element of an array.  If the value passed is not an array, it returns the original value that was passed.
+Returns the last element of an array. If the value passed is not an array, it returns the original value that was passed.
 
 ## Script Data
 
@@ -16,7 +16,7 @@ Returns the first element of an array.  If the value passed is not an array, it 
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | An array for which to return the first element. |
+| value | An array for which to return the last value. |
 
 ## Outputs
 
