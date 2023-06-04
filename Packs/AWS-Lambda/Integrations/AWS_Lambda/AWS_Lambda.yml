@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AWS - Lambda
+  id: AWS - Lambda_copy
   version: -1
 configuration:
 - display: AWS Default Region
@@ -86,8 +86,8 @@ configuration:
   required: false
   type: 8
 description: Amazon Web Services Serverless Compute service (lambda)
-display: AWS - Lambda
-name: AWS - Lambda
+display: AWS - Lambda_copy
+name: AWS - Lambda_copy
 script:
   commands:
   - arguments:
@@ -681,14 +681,173 @@ script:
     name: aws-lambda-get-policy
     outputs:
     - contextPath: AWS.Lambda.Policy.Version
+      description: ''
+      type: Date
     - contextPath: AWS.Lambda.Policy.Id
+      description: ''
+      type: String
     - contextPath: AWS.Lambda.Policy.Statement.Sid
+      description: ''
+      type: String
     - contextPath: AWS.Lambda.Policy.Statement.Effect
-    - contextPath: AWS.Lambda.Policy.Statement.Principal
+      description: ''
+      type: String
+    - contextPath: AWS.Lambda.Policy.Statement.Principal.AWS
+      description: ''
+      type: String
     - contextPath: AWS.Lambda.Policy.Statement.Action
+      description: ''
+      type: String
     - contextPath: AWS.Lambda.Policy.Statement.Resource
-    - contextPath: AWS.Lambda.VersionId
+      description: ''
+      type: String
+    - contextPath: AWS.Lambda.RevisionId
       description: A unique identifier for the current revision of the policy.
+      type: String
+  - arguments:
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    - default: false
+      description: Specify the pagination token that’s returned by a previous request to retrieve the next page of results.
+      name: Marker
+    - default: false
+      description: The maximum number of versions to return. Note that ListVersionsByFunction returns a maximum of 50 items in each response, even if you set the number higher.
+      name: MaxItems
+    description: Returns a list of versions, with the version-specific configuration of each.
+    name: aws-lambda-list-versions-by-function
+  - arguments:
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    - default: false
+      description: The alias name.
+      name: qualifier
+    description: Returns details about a Lambda function URL.
+    name: aws-lambda-get-function-url-config
+    output:
+      - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
+        description: The HTTP URL endpoint for the function.
+        type: String
+      - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
+        description: The Amazon Resource Name (ARN) of your function.
+        type: String
+      - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
+        description: The type of authentication that the function URL uses. Set to AWS_IAM if you want to restrict access to authenticated users only. Set to NONE if you want to bypass IAM authentication to create a public endpoint.
+        type: String
+      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
+        description: Whether to allow cookies or other credentials in requests to the function URL. The default is false.
+        type: Boolean
+      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
+        description: The HTTP headers that origins can include in requests to the function URL. For example Date, Keep-Alive, X-Custom-Header.
+        type: List
+      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
+        description: The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character ( *).
+        type: List of strings
+      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
+        description: The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character ( *).
+        type: List of strings
+      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
+        description: The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header.
+        type: List of strings
+      - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
+        description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results.
+        type: Number
+      - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
+        description: When the function URL was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+        type: String
+      - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
+        description: When the function URL configuration was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+        type: String
+      - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
+        description: "Use one of the following options: BUFFERED – This is the default option. Lambda invokes your function using the Invoke API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB. RESPONSE_STREAM – Your function streams payload results as they become available. Lambda invokes your function using the InvokeWithResponseStream API operation. The maximum response payload size is 20 MB, however, you can request a quota increase."
+        type: String
   dockerimage: demisto/boto3py3:1.0.0.52713
   isfetch: false
   runonce: false

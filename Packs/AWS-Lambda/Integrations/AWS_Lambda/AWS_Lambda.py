@@ -1,15 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from AWSApiModule import AWSClient
+
 """IMPORTS"""
 from datetime import date
 import urllib3.util
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-def config_aws_session(args: dict, aws_client: AWSClient):
+def config_aws_session(args: dict, aws_client):
     return aws_client.aws_session(
         service='lambda',
         region=args.get('region'),
@@ -242,8 +241,8 @@ def get_policy_command(args: dict, aws_client) -> CommandResults:
         }
 
     kwargs = {'FunctionName': args['functionName']}
-    if args.get('qualifier'):
-        kwargs.update({'qualifier': args.get('qualifier')})
+    if qualifier := args.get('qualifier'):
+        kwargs.update({'qualifier': qualifier})
 
     response = aws_client.get_policy(**kwargs)
     policy = json.loads(response["Policy"])
@@ -255,12 +254,23 @@ def get_policy_command(args: dict, aws_client) -> CommandResults:
     return CommandResults(
         outputs=response,
         readable_output=table_for_markdown,
-        outputs_prefix="AWS.Lambda.Policy",
+        outputs_prefix="AWS.Lambda",
         outputs_key_field='Sid'
     )
 
 
-def list_versions_by_function(args: dict, aws_client) -> CommandResults:
+def list_versions_by_function_command(args: dict, aws_client) -> CommandResults:
+    def parse_versions(data: dict[str, Any]) -> dict[str, str | None]:
+        versions: dict = data.get("Versions", [])[0]
+        return {
+            "Function Name": versions.get('FunctionName'),
+            "Run Time": versions.get('RunTime'),
+            "Role": versions.get('Role'),
+            "Description": versions.get('Description'),
+            "Last Modified": versions.get("LastModified"),
+            "State": versions.get('State'),
+            "Next Marker": data.get('NextMarker'),
+        }
 
     kwargs = {'FunctionName': args['functionName']}
     if marker := args.get('Marker'):
@@ -270,9 +280,41 @@ def list_versions_by_function(args: dict, aws_client) -> CommandResults:
         kwargs.update({'MaxItems': maxItems})
 
     response = aws_client.list_versions_by_function(**kwargs)
+    parsed_versions = parse_versions(response)
+    table_for_markdown = tableToMarkdown(name='Versions', t=parsed_versions)
 
     return CommandResults(
         outputs=response,
+        readable_output=table_for_markdown,
+        outputs_prefix="AWS.Lambda.Version",
+        outputs_key_field='FunctionName'
+    )
+
+
+def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
+    def parse_url_config(data: dict[str, Any]) -> dict[str, str | None]:
+        return {
+            "Function Url": data.get('FunctionUrl'),
+            "Function Arn": data.get('FunctionArn'),
+            "Auth Type": data.get('AuthType'),
+            "Creation Time": data.get('CreationTime'),
+            "Last Modified Time": data.get("LastModifiedTime"),
+            "Invoke Mode": data.get('InvokeMode'),
+        }
+
+    kwargs = {'FunctionName': args['functionName']}
+    if qualifier := args.get('qualifier'):
+        kwargs.update({'qualifier': qualifier})
+
+    response = aws_client.get_function_url_config(**kwargs)
+    parsed_url_config = parse_url_config(response)
+    table_for_markdown = tableToMarkdown(name='Function URL Config', t=parsed_url_config)
+
+    return CommandResults(
+        outputs=response,
+        readable_output=table_for_markdown,
+        outputs_prefix="AWS.Lambda.FunctionURLConfig",
+        outputs_key_field='FunctionName'
     )
 
 
@@ -326,7 +368,9 @@ def main():
         elif command == 'aws-lambda-get-policy':
             return_results(get_policy_command(args, aws_client))
         elif command == 'aws-lambda-list-versions-by-function':
-            return_results(list_versions_by_function(args, aws_client))
+            return_results(list_versions_by_function_command(args, aws_client))
+        elif command == 'aws-lambda-get-function-url-config':
+            return_results(get_function_url_config_command(args, aws_client))
 
     except Exception as e:
         return_error(f'Error has occurred in the AWS Lambda Integration: {type(e)}\n {str(e)}')
