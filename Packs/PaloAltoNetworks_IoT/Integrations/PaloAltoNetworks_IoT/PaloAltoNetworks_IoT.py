@@ -454,6 +454,7 @@ def fetch_incidents(client, last_run, is_test=False):
             stime = datetime.utcfromtimestamp(last_alerts_fetch + 0.001).isoformat() + "Z"
 
         alerts = client.list_alerts(stime, pagelength=max_fetch)
+        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- alerts before filtering: {len(alerts)}")
 
         # special handling for the case of having more than the pagelength
         if len(alerts) == max_fetch:
@@ -525,7 +526,7 @@ def fetch_incidents(client, last_run, is_test=False):
                         break
                 if len(others) != max_fetch:
                     break
-
+        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- vulnerability before filtering: {len(alerts)}")
         for vuln in vulns:
             detected_date = vuln['detected_date']
             if detected_date and isinstance(detected_date, list):
@@ -554,9 +555,8 @@ def fetch_incidents(client, last_run, is_test=False):
         'last_alerts_fetch': last_alerts_fetch,
         'last_vulns_fetch': last_vulns_fetch
     }
+    demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents (alerts and vulnerability) after filtering : {len(incidents)}")
     demisto.debug(f'PaloAltoNetworks_IoT - Next run after incidents fetching: {json.dumps(next_run)}')
-    demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents before filtering: {len(alerts)}")
-    demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents after filtering: {len(incidents)}")
 
     if is_test:
         return None, None
