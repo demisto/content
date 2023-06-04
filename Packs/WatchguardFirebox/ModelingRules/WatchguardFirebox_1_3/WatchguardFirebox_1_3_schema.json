@@ -61,11 +61,11 @@
           "is_array": false
         },
         "rcvd_bytes": {
-          "type": "int",
+          "type": "string",
           "is_array": false
         },
         "sent_bytes": {
-          "type": "int",
+          "type": "string",
           "is_array": false
         },
         "sys_name": {
