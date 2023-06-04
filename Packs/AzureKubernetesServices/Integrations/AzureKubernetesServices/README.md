@@ -45,23 +45,37 @@ At end of the process you'll see a message that you've logged in successfully.
 2. Search for Azure Kubernetes Services.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | app_id | Application ID | False |
-    | subscription_id | Subscription ID | True |
-    | resource_group_name | Resource Group Name | True |
-    | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | Tenant ID (for User Auth mode) | Tenant ID | False |
-    | Client Secret (for User Auth mode) | Encryption key given by the admin | False |
-    | Authentication Type | The request authentication type for the instance | False |
-    | Authorization code | as received from the authorization step | False |
-    | Application redirect URI | the redirect URI entered in the Azure portal | False |
-    | Azure Managed Identities Client ID | False |
+    | **Parameter**                      | **Description**                                                                                                | **Required** |
+    |------------------------------------|----------------------------------------------------------------------------------------------------------------|--------------|
+    | Azure Cloud                        | Azure Cloud the K8S cluster resides in, see table below.                                                       | False        |
+    | app_id                             | Application ID                                                                                                 | False        |
+    | subscription_id                    | Subscription ID                                                                                                | True         |
+    | resource_group_name                | Resource Group Name                                                                                            | True         |
+    | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud, Please see note below.                                     | False        |
+    | insecure                           | Trust any certificate \(not secure\)                                                                           | False        |
+    | proxy                              | Use system proxy settings                                                                                      | False        |
+    | Tenant ID (for User Auth mode)     | Tenant ID                                                                                                      | False        |
+    | Client Secret (for User Auth mode) | Encryption key given by the admin                                                                              | False        |
+    | Authentication Type                | The request authentication type for the instance                                                               | False        |
+    | Authorization code                 | as received from the authorization step                                                                        | False        |
+    | Application redirect URI           | the redirect URI entered in the Azure portal                                                                   | False        |
+    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False        |
 
+4. Azure cloud options
 
-4. Click **Test** to validate the URLs, token, and connection.
+    | Azure Cloud | Description                                                              |
+    |-------------|--------------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud                                      |
+    | Germany     | Azure cloud for the German Government                                    |
+    | China       | Azure cloud for the Chinese Government                                   |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
+    | DoD         | Azure cloud for the USA Department of Defence (DoD)                      |
+    | Custom      | Custom endpoint configuration to the Azure cloud, please see note below. |
+
+   - Note: In most cases setting Azure cloud is preferred to setting Azure AD endpoint, only use it cases where a custom proxy URL is required for accessing a national cloud.
+
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

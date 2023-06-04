@@ -6,16 +6,6 @@ commonfields:
   id: Microsoft 365 Defender Event Collector
   version: -1
 configuration:
-- additionalinfo: |-
-    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
-  defaultvalue: https://api.securitycenter.microsoft.com
-  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
-  hidden: false
-  name: url
-  required: true
-  type: 0
-  section: Connect
-  advanced: true
 - additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   display: Endpoint Type
   name: endpoint_type
@@ -25,11 +15,11 @@ configuration:
   defaultvalue: Worldwide
   options:
   - Worldwide
-  - Us Geo Proximity
-  - Eu Geo Proximity
+  - EU Geo Proximity
   - UK Geo Proximity
-  - Us GCC
-  - Us GCC-High
+  - US Geo Proximity
+  - US GCC
+  - US GCC-High
   - DoD
   - Custom
   advanced: true
@@ -93,6 +83,16 @@ configuration:
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: |-
+    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+  defaultvalue: https://api.securitycenter.microsoft.com
+  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
+  hidden: false
+  name: url
+  required: true
+  type: 0
   section: Connect
   advanced: true
 description: Microsoft 365 Defender Event Collector integration.

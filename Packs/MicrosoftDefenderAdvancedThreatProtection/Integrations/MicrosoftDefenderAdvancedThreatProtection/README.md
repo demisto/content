@@ -53,35 +53,47 @@ Please add the following permissions to the app registration. Choose application
 2. Search for Microsoft Defender for Endpoint.
 3. Click **Add instance** to create and configure a new integration instance.
     
-    | **Parameter** | **Description** | **Example** |
-    | ---------             | -----------           | -------            |
-    | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
-    | Fetches Incidents | Whether to fetch the incidents. | N/A |
-    | Incident Type | The type of incident to select. | Phishing |
-    | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
-    | ID | The ID used to gain access to the integration. Your Client/Application ID. | N/A |
-    | Token | A piece of data that servers use to verify for authenticity. This is your Tenant ID. | eea810f5-a6f6 |
-    | Key | Your client secret. | |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
-    | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
-    | Application redirect URI (for authorization code mode) |  | False |
-    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | UUID |
-    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
-    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
-    | Maximum number of incidents to fetch | The maximum number of incidents to retrieve per fetch. | 50 |
-    | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
-    | Fetch alert evidence | When selected, fetches alerts in Microsoft Defender. | N/A |
-    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
-    | Use a self-deployed Azure Appliction | For authorization code flow, mark this as true. |  N/A |
-    | First Fetch Timestamp | The first timestamp to be fetched in the format \<number\> \<time unit\>. | 12 hours, 7 days |
-    | Using Microsoft GCC | Whether a GCC edpoint is used. |  False |
+    | **Parameter**                                           | **Description**                                                                                                               | **Example**                              |
+    |---------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|------------------------------------------|
+    | Name                                                    | A meaningful name for the integration instance.                                                                               | XXXXX Instance Alpha                     |
+    | Endpoint Type                                           | The endpoint for accessing Microsoft Defender for Endpoint, see table below.                                                  | XXXXX Instance Alpha                     |
+    | Fetches Incidents                                       | Whether to fetch the incidents.                                                                                               | N/A                                      |
+    | Incident Type                                           | The type of incident to select.                                                                                               | Phishing                                 |
+    | ID                                                      | The ID used to gain access to the integration. Your Client/Application ID.                                                    | N/A                                      |
+    | Token                                                   | A piece of data that servers use to verify for authenticity. This is your Tenant ID.                                          | eea810f5-a6f6                            |
+    | Key                                                     | Your client secret.                                                                                                           |                                          |
+    | Certificate Thumbprint                                  | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.                              | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
+    | Private Key                                             | Used for certificate authentication. The private key of the registered certificate.                                           | eea810f5-a6f6                            |
+    | Authentication Type                                     | Type of authentication - either Authorization Code \(recommended\) or Client Credentials.                                     |                                          |
+    | Application redirect URI (for authorization code mode)  |                                                                                                                               | False                                    |
+    | Authorization code                                      | for user-auth mode - received from the authorization step. see Detailed Instructions section                                  | False                                    |
+    | Azure Managed Identities Client ID                      | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                | UUID                                     |
+    | Status to filter out alerts for fetching as incidents   | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved.          | New,In Progress,Resolved                 |
+    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High                              |
+    | Maximum number of incidents to fetch                    | The maximum number of incidents to retrieve per fetch.                                                                        | 50                                       |
+    | Trust any Certificate (Not Secure)                      | When selected, certificates are not checked.                                                                                  | N/A                                      |
+    | Fetch alert evidence                                    | When selected, fetches alerts in Microsoft Defender.                                                                          | N/A                                      |
+    | Use system proxy settings                               | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.            | https://proxyserver.com                  |
+    | Use a self-deployed Azure Application                   | For authorization code flow, mark this as true.                                                                               | N/A                                      |
+    | First Fetch Timestamp                                   | The first timestamp to be fetched in the format \<number\> \<time unit\>.                                                     | 12 hours, 7 days                         |
+    | Host URL                                                | The URL to the Microsoft Defender for Endpoint server, including the scheme, see note below.                                  | `https://api.securitycenter.windows.com` |
 
+4. Endpoint Type options
 
+    | Endpoint Type    | Description                                                                                  |
+    |------------------|----------------------------------------------------------------------------------------------|
+    | Worldwide        | The publicly accessible Microsoft Defender for Endpoint                                      |
+    | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
+    | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
+    | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point  for the US customers.               |
+    | US GCC           | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)                 |
+    | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High)       |
+    | DoD              | Microsoft Defender for Endpoint for the USA Department of Defence (DoD)                      |
+    | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
+   
+   - Note: In most cases setting Endpoint type is preferred to setting Host URL, only use it cases where a custom proxy URL is required for accessing a national cloud or for cases of self-deployment.
 
-
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
 - id

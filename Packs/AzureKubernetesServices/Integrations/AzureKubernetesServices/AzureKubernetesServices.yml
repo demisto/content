@@ -3,6 +3,21 @@ commonfields:
   id: Azure Kubernetes Services
   version: -1
 configuration:
+- display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  defaultvalue: Worldwide
+  options:
+  - Worldwide
+  - Germany
+  - China
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Custom
+  section: Connect
+  advanced: true
 - defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
   display: Application ID
   hidden: false
@@ -19,21 +34,6 @@ configuration:
   - Device Code
   - Azure Managed Identities
   type: 15
-- display: Azure Cloud
-  name: azure_cloud
-  required: false
-  type: 15
-  defaultvalue: Worldwide
-  options:
-  - Worldwide
-  - Germany
-  - China
-  - US GCC
-  - US GCC-High
-  - DoD
-  - Custom
-  section: Connect
-  advanced: true
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
@@ -92,6 +92,7 @@ configuration:
   type: 15
   advanced: true
   additionalinfo: Azure AD endpoint associated with a national cloud.
+  section: Connect
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services
 name: Azure Kubernetes Services

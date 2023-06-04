@@ -15,11 +15,11 @@ configuration:
   additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   options:
   - Worldwide
-  - Us Geo Proximity
-  - Eu Geo Proximity
+  - EU Geo Proximity
   - UK Geo Proximity
-  - Us GCC
-  - Us GCC-High
+  - US Geo Proximity
+  - US GCC
+  - US GCC-High
   - DoD
   - Custom
   advanced: true
