@@ -1,11 +1,16 @@
 The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics and SOAR.
 
 ### Authentication Methods
-There are 2 authentication methods:
- - **API Token** - API token should be entered in the “API Token” parameter. In order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
- - **Basic Authentication** - Providing Username and password in the corrsponding parameters in the configuration. This method also allows fetching incidents.
- - ***Deprecated***:
- API Key entered in the “password” parameter and `__token` in the username parameter. This method won’t allow fetching incidents.
+There are 3 possible authentication methods:
+- **OAuth 2.0 (Client Credentials)** - using the *Client ID* and *Client Secret* parameters.
+- **Basic Authentication** - using the *Username* and *Password* parameters.
+- **API Key (Deprecated)** - can be provided in two different ways:
+  1. By providing the *Username* and the *API Token* parameters.
+  2. By setting the *Username* parameter value to `__token`, and providing the API Key in the *Password* parameter. **Note**:  it is impossible to fetch incidents using this method, thus it is not recommended.
+
+
+### Generate Client Credentials
+TODO
 
 ### Generate a Cluster Authentication Token
 

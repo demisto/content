@@ -20,28 +20,98 @@ class Client(BaseClient):
     Client to use in the Exabeam integration. Overrides BaseClient
     """
 
-    def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers, api_key: str = '', is_fetch: bool = None):
-        self.validate_authentication_params(username=username, password=password, api_key=api_key, is_fetch=is_fetch)
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        verify: bool,
+        proxy: bool,
+        headers,
+        client_id: str = '',
+        client_secret: str = '',
+        api_key: str = '',
+        is_fetch: bool = None,
+    ) -> None:
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
+        self.is_fetch = is_fetch
         self.username = username
         self.password = password
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.api_key = api_key
         self.session = requests.Session()
         self.session.headers = headers
+
         if not proxy:
             self.session.trust_env = False
         if self.is_token_auth():
             self.session.headers['ExaAuthToken'] = self.password or self.api_key
+        elif self.is_basic_auth():
+            self._basic_auth_login()
+        elif self.is_oauth():
+            self._headers['Authorization'] = f'Bearer {self._get_oauth_access_token()}'
         else:
-            self._login()
+            raise ValueError(
+                'You must provide an authentication method. For more information, '
+                'refer to the `Authentication Methods` section in the integration documentation.'
+            )
 
     def __del__(self):
-        if not self.is_token_auth():
-            self._logout()
+        if self.is_basic_auth():
+            self._basic_auth_logout()
         super().__del__()
 
-    def _login(self):
+    def is_token_auth(self) -> bool:
+        if self._is_token_auth_with_fetch_support() or self._is_token_auth_without_fetch_support():
+            return True
+        return False
+
+    def _is_token_auth_with_fetch_support(self) -> bool:
+        if self.username and self.username != TOKEN_INPUT_IDENTIFIER and self.api_key:
+            if self.password:
+                raise ValueError(
+                    'When providing the `Username` and `API Token` parameters, '
+                    'you must leave the `Password` parameter empty.'
+                )
+            return True
+        return False
+
+    def _is_token_auth_without_fetch_support(self) -> bool:
+        if self.username == TOKEN_INPUT_IDENTIFIER:
+            if not self.password or self.api_key:
+                raise ValueError(
+                    f'When `Username` parameter is configured to {TOKEN_INPUT_IDENTIFIER}, '
+                    'you must provide the `Password` parameter and leave the `API Token` parameter empty.'
+                )
+            if self.is_fetch:
+                raise ValueError(
+                    'The configured authentication method does not support fetching incidents.'
+                )
+            return True
+        return False
+
+    def is_basic_auth(self) -> bool:
+        if not self.is_token_auth():
+            if self.username or self.password:
+                if bool(self.username) != bool(self.password):
+                    raise ValueError(
+                        'For the Basic Authentication method, both `Username` and `Password` parameters '
+                        'should be provided.'
+                    )
+                return True
+        return False
+
+    def is_oauth(self) -> bool:
+        if self.client_id or self.client_secret:
+            if bool(self.client_id) != bool(self.client_secret):
+                raise ValueError(
+                    'For OAuth 2.0 with Client Credentials, both `Client ID` and `Client Secret` parameters '
+                    'should be provided.'
+                )
+        return bool(self.client_id and self.client_secret)
+
+    def _basic_auth_login(self):
         """
         Login using the credentials and store the cookie
         """
@@ -50,7 +120,7 @@ class Client(BaseClient):
             'password': self.password
         })
 
-    def _logout(self):
+    def _basic_auth_logout(self):
         """
         Logout from the session
         """
@@ -59,43 +129,32 @@ class Client(BaseClient):
         except Exception as err:
             demisto.debug(f'An error occurred during the logout.\n{str(err)}')
 
-    def validate_authentication_params(self, username: str = None,
-                                       password: str = None,
-                                       api_key: str = None,
-                                       is_fetch: bool = None):
-        if username == TOKEN_INPUT_IDENTIFIER:
-            if is_fetch:
-                raise ValueError('In order to use the “Fetch Incident” functionality,'
-                                 ' the username must be provided in the “Username” parameter.\n'
-                                 ' Please see documentation `Authentication Methods`')
-            if api_key:
-                raise ValueError(f'When specifying {username=}, the API Token must be provieded using in the password field'
-                                 ' please empty the other field')
-            if not password:
-                raise ValueError('Please insert API Token in the password field'
-                                 ' or see documentation `Authentication Methods` for another authentication methods')
-        elif not username:
-            if not api_key:
-                raise ValueError('If an API token is not provided, it is mandatory to insert username and password.')
-            if is_fetch:
-                raise ValueError('In order to use the “Fetch Incident” functionality,'
-                                 ' the username must be provided in the “Username” parameter.\n'
-                                 ' Please see documentation `Authentication Methods`')
-        else:
-            if not password and not api_key:
-                raise ValueError('Please insert password or API token.')
-            if password and api_key:
-                raise ValueError('Please insert API token OR password and not both.')
+    def _get_oauth_access_token(self) -> str:
+        if integration_context := get_integration_context():
+            token_expiration_time = integration_context.get('token_expiration_time')
+            if token_expiration_time and token_expiration_time < datetime.now():
+                return integration_context.get('access_token')
 
-    def is_token_auth(self) -> bool:
-
-        if not self.username:
-            return True
-        if self.username == TOKEN_INPUT_IDENTIFIER:
-            return True
-        if self.api_key:
-            return True
-        return False
+        response = self._http_request(
+            'POST',
+            full_url=f'{self._base_url}/api/auth/v1/token',
+            headers={
+                'accept': 'application/json',
+                'content-type': 'application/json',
+            },
+            json_data={
+                'grant_type': 'client_credentials',
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+            },
+        )
+        token = response.get('access_token')
+        expires_in = response.get('expires_in')
+        set_integration_context({
+            'access_token': token,
+            'token_expiration_time': datetime.now() + timedelta(seconds=expires_in - 1),
+        })
+        return token
 
     def test_module_request(self):
         """
@@ -2169,6 +2228,8 @@ def main():
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     api_key = params.get('api_token', {}).get('password')
+    client_id = params.get('client_credentials', {}).get('identifier')
+    client_secret = params.get('client_credentials', {}).get('password')
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -2217,8 +2278,18 @@ def main():
     }
 
     try:
-        client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                        password=password, proxy=proxy, headers=headers, api_key=api_key, is_fetch=is_fetch)
+        client = Client(
+            base_url.rstrip('/'),
+            verify=verify_certificate,
+            username=username,
+            password=password,
+            proxy=proxy,
+            headers=headers,
+            api_key=api_key,
+            client_id=client_id,
+            client_secret=client_secret,
+            is_fetch=is_fetch,
+        )
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
