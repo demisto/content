@@ -417,7 +417,7 @@ inputs:
 - key: DomainSquattingResults
   value: {}
   required: false
-  description: Results of the domain squatting investigation
+  description: Results of the domain squatting investigation.
   playbookInputQuery:
 - key: KeywordsToSearch
   value: {}
