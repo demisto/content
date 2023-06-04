@@ -3635,6 +3635,7 @@ script:
       required: false
     description: Retrieve ODS scan details.
     name: cs-falcon-ods-query-scan
+    polling: true
     outputs:
     - contextPath: CrowdStrike.ODSScan.id
       description: a unique identifier for the scan event.
@@ -4093,6 +4094,7 @@ script:
       - monthly
     description: Create an ODS scheduled scan or an ODS scan.
     name: cs-falcon-ods-create-scan
+    polling: true
     outputs:
     - contextPath: CrowdStrike.ODSScan.id
       description: a unique identifier for the scan event.
