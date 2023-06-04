@@ -14,14 +14,12 @@ configuration:
   type: 0
   section: Connect
 - display: Gamma API Key
-  hidden: false
   name: api_key
   required: true
   type: 4
   section: Connect
 - additionalinfo: Enter the violation ID to begin fetching from. If empty, the API will default to your first violation
   display: Starting Violation
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -29,7 +27,6 @@ configuration:
 - additionalinfo: Enter a number of results for each fetch to return. The number must be between 1 and 100.
   defaultvalue: '10'
   display: Results per fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0

@@ -15,7 +15,6 @@ comment: Check if number of availble addresses in IPv4 or IPv6 CIDR is greater t
 commonfields:
   id: GreaterCidrNumAddresses
   version: -1
-enabled: false
 name: GreaterCidrNumAddresses
 script: '-'
 subtype: python3

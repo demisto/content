@@ -151,7 +151,6 @@ comment: This automation outputs the indicator relationships to context accordin
 commonfields:
   id: SearchIndicatorRelationships
   version: -1
-enabled: false
 name: SearchIndicatorRelationships
 outputs:
 - contextPath: Relationships.EntityA
