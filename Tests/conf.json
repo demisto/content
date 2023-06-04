@@ -675,6 +675,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Netmiko",
+            "playbookID": "Netmiko_test"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
@@ -5659,7 +5663,7 @@
         "ArcSight Logger": "No instance - Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
-        "Prisma Access": "No instance - Instance will be provided soon by Lior and Prasen - Issue 27112",
+        "Prisma Access": "No instance - Issue CRTX-84209",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
