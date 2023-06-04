@@ -920,7 +920,7 @@ script:
       name: qualifier
     description: Returns details about a Lambda function URL.
     name: aws-lambda-get-function-url-config
-    output:
+    outputs:
     - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
       description: The HTTP URL endpoint for the function.
       type: String
