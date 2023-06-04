@@ -1106,6 +1106,14 @@ def test_zoom_create_channel_command(mocker):
 
 
 def test_zoom_delete_channel_command(mocker):
+    """
+    Given -
+        client
+    When -
+        deleting a Zoom channel
+    Then -
+        Validate that the zoom_delete_channel function is called with the correct arguments
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
@@ -1122,6 +1130,14 @@ def test_zoom_delete_channel_command(mocker):
 
 
 def test_zoom_update_channel_command(mocker):
+    """
+    Given -
+        client
+    When -
+        updating a Zoom channel
+    Then -
+        Validate that the zoom_update_channel function is called with the correct arguments
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
@@ -1159,6 +1175,14 @@ def test_zoom_update_channel_command(mocker):
 
 
 def test_zoom_invite_to_channel_command(mocker):
+    """
+    Given -
+        client
+    When -
+        Invite user to a Zoom channel
+    Then -
+        Validate that the zoom_invite_to_channel function is called with the correct arguments
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
@@ -1190,6 +1214,14 @@ def test_zoom_invite_to_channel_command(mocker):
 
 
 def test_zoom_remove_from_channel_command(mocker):
+    """
+    Given -
+        client
+    When -
+        Remove user from a Zoom channel
+    Then -
+        Validate that the zoom_remove_from_channel function is called with the correct arguments
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
@@ -1212,6 +1244,16 @@ def test_zoom_remove_from_channel_command(mocker):
 
 
 def test_zoom_send_file_command(mocker):
+    """
+    Given -
+        client
+    When -
+        Zoom send file to channel
+    Then -
+        Validate that the zoom_send_file function is called with the correct arguments
+        Validate the command results including outputs and readable output
+
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
@@ -1317,7 +1359,7 @@ def test_zoom_list_account_public_channels_command__limit(mocker):
         Given -
            client
         When -
-            asking for a limit of results
+            zoom list public account with limit of results
         Then -
             Validate that a func that runs a pagination has been called
     """
@@ -1374,6 +1416,15 @@ def test_zoom_send_message_command_with_file(mocker):
 
 
 def test_zoom_send_message_command(mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel
+    Then -
+        Validate that the zoom_send_message function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
@@ -1424,6 +1475,15 @@ def test_zoom_send_message_command(mocker):
 
 
 def test_zoom_send_message_markdown_command(mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel with markdown
+    Then -
+        Validate that the zoom_send_message function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
@@ -1466,6 +1526,14 @@ def test_zoom_send_message_markdown_command(mocker):
 
 
 def test_arg_to_datetime_str():
+    """
+    Given -
+        client
+    When -
+        parse date string to datetime
+    Then -
+        Validate the results
+    """
     # Test relative timestamps
     now = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
     two_weeks_ago = (datetime.datetime.now() - datetime.timedelta(weeks=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -1500,6 +1568,15 @@ def test_arg_to_datetime_str():
 
 
 def test_zoom_list_messages_command(mocker):
+    """
+    Given -
+        client
+    When -
+        get all messages in date
+    Then -
+        Validate that the zoom_list_messages_command function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount", client_id="mockclient", client_secret="mocksecret")
     page_size = 50
     channel_id = "channel_id"
@@ -1561,6 +1638,15 @@ def test_zoom_list_messages_command(mocker):
 
 
 def test_zoom_update_message_command(mocker):
+    """
+    Given -
+        client
+    When -
+        update a message that was send
+    Then -
+        Validate that the zoom_update_message function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "generate_oauth_token")
@@ -1600,6 +1686,15 @@ def test_zoom_update_message_command(mocker):
 
 
 def test_zoom_delete_message_command(mocker):
+    """
+    Given -
+        client
+    When -
+       delete zoom message
+    Then -
+        Validate that the zoom_delete_message function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "generate_oauth_token")
@@ -1627,6 +1722,15 @@ def test_zoom_delete_message_command(mocker):
 
 
 def test_zoom_get_user_id_by_email(mocker):
+    """
+    Given -
+        client
+    When -
+        get userID by his email
+    Then -
+        Validate that the zoom_get_user_id_by_email function is called with the correct arguments
+        Validate the command results
+    """
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     email = "user@example.com"
