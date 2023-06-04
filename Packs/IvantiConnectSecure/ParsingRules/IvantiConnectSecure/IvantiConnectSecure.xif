@@ -1,6 +1,6 @@
-[INGEST:vendor="Ivanti", product="ConnectSecure", target_dataset="ivanti_connect_secure_raw", no_hit=keep]
+[INGEST:vendor="ivanti", product="connect_secure", target_dataset="ivanti_connect_secure_raw", no_hit=keep]
 // extract the ts (timestamp) string representation from the raw log 
-alter tmp_raw_ts = arrayindex(regextract(_raw_log, "<\d+>(.+?)\s+\S+\s+\w+\:\s"), 0)
+alter tmp_raw_ts = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+(\S+)"), 0)
 
 // assert the timestamp contains a valid RFC 3339 timezone ( either Z or [+|-]HH:MM )
 | filter tmp_raw_ts ~= "\d+[Zz]{1}$|\d+[\+\-]{1}\d{2}:\d{2}"
