@@ -3,18 +3,18 @@ commonfields:
   id: Netmiko
   version: -1
 configuration:
-  - name: port
-    display: Port
-    required: true
-    defaultvalue: null
-    type: 0
-    additionalinfo: ""
   - name: hostname
     display: Hostname
     required: true
     defaultvalue: null
     type: 0
     additionalinfo: null
+  - name: port
+    display: Port
+    required: true
+    defaultvalue: null
+    type: 0
+    additionalinfo: ""
   - name: platform
     display: Platform
     required: true
@@ -203,8 +203,6 @@ script:
       required: true
       isArray: true
       defaultValue: ""
-      predefined:
-        - ""
     - auto: PREDEFINED
       defaultValue: "false"
       description: Whether requires "enable" to be run before commands are executed. Default
