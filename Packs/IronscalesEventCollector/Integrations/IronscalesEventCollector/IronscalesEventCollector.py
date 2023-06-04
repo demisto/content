@@ -58,7 +58,7 @@ class Client(BaseClient):  # pragma: no cover
         except DemistoException as e:
             if "No company found for API key" in str(e):
                 raise DemistoException(
-                    "Authorization Error: make sure the API is set correctly"
+                    "Authorization Error: make sure the API Key is set correctly"
                 )
             raise e
 
