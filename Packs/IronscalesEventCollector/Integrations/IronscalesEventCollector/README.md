@@ -1,17 +1,17 @@
 Use this integration to fetch email security incidents from Ironscales as XSIAM events.
 
-## Configure Ironscales Event Collector on Cortex XSOAR
+## Configure Ironscales Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**. 
 2. Search for Ironscales Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. <https://appapi.ironscales.com>) | True |
+    | Server URL (e.g., <https://appapi.ironscales.com>) | True |
     | API Key | True |
     | Company ID | True |
-    | Scopes (e.g. "company.all") | True |
+    | Scopes (e.g., "company.all") | True |
     | Maximum number of events per fetch | False |
     | First fetch | False |
     | Trust any certificate (not secure) | False |
@@ -21,7 +21,7 @@ Use this integration to fetch email security incidents from Ironscales as XSIAM 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ironscales-get-events
