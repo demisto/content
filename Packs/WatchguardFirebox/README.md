@@ -9,7 +9,7 @@ This pack includes Cortex XSIAM content
 2. Click the **Syslog Server** tab.
 3. Click the **Send log messages to the syslog server at this IP address** checkbox.
 4. In the **IP Address** text box, type the IP address for the syslog.
-5. In the Port text box, the default syslog server port (514) appears. To change the server port, type or select a different port for your server.
+5. In the **Port** text box, the default syslog server port (514) appears. To change the server port, type or select a different port for your server.
 6. From the **Log Format** drop-down list, select **IBM LEEF**.
 
 ![Server Screenshot](./doc_imgs/syslogleef.png)
