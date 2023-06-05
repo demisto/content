@@ -393,7 +393,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "vulnerableproduct",
+                                "fieldId": "vulnerableproducts",
                                 "height": 22,
                                 "id": "05d801a0-ff8c-11ed-9881-51d8dd00e8e3",
                                 "index": 0,
