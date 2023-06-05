@@ -65,22 +65,22 @@ class ASClient:
         )
 
     @logger
-    def storage_blob_service_properties_get_request(self, account_name: str) -> Dict:
+    def storage_blob_service_properties_get_request(self, account_name: str,
+                                                    resource_group_name: str,
+                                                    subscription_id: str) -> Dict:
         """
             Send the get blob service properties request to the API.
         Args:
             account_name: The storage account name.
+            resource_group_name: The resource group name.
+            subscription_id: The subscription id.
 
         Returns:
             The json response from the API call.
         """
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{account_name}/blobServices/default',
-            params={
-                'api-version': API_VERSION,
-            }
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}'  # noqa: E501
         )
 
     @logger
@@ -449,19 +449,23 @@ def storage_account_create_update(client: ASClient, params: Dict, args: Dict) ->
 # Blob Service Commands
 
 
-def storage_blob_service_properties_get(client: ASClient, args: Dict) -> CommandResults:
+def storage_blob_service_properties_get(client: ASClient, params:Dict, args: Dict) -> CommandResults:
     """
         Gets the blob service properties for the storage account.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-
+    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
+    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
     account_name = args.get('account_name')
-    response = client.storage_blob_service_properties_get_request(account_name)
+    response = client.storage_blob_service_properties_get_request(account_name=account_name,
+                                                                  resource_group_name=resource_group_name,
+                                                                  subscription_id=subscription_id)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
         subscription_id = subscription_id.group(1)  # type: ignore
@@ -777,7 +781,7 @@ def main() -> None:
         elif command == 'azure-storage-account-create-update':
             return_results(storage_account_create_update(client, params, args))
         elif command == 'azure-storage-blob-service-properties-get':
-            return_results(storage_blob_service_properties_get(client, args))
+            return_results(storage_blob_service_properties_get(client, params, args))
         elif command == 'azure-storage-blob-service-properties-set':
             return_results(storage_blob_service_properties_set(client, args))
         elif command == 'azure-storage-blob-containers-create':

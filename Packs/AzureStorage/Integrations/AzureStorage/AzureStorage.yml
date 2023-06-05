@@ -660,6 +660,18 @@ script:
       type: String
   - arguments:
     - default: false
+      description: "The name of the resource group, optional. Note: This field will override instance param 'Resource Group Name'."
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    - default: false
+      description: "The ID of the subscription, optional. Note: This field will override instance param 'Subscription ID'."
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the storage account.
       isArray: false
       name: account_name
