@@ -165,6 +165,9 @@ def main():
             output_file = tmpdir + '/output.pdf'
             dist_dir = tmpdir + '/dist'
 
+
+
+
             shutil.copytree(WORKING_DIR / 'dist', dist_dir)
 
             with open(input_file, 'wb') as f:
