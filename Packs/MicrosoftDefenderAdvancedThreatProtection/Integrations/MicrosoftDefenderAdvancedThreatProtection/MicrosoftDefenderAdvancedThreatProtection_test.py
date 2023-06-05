@@ -1256,7 +1256,8 @@ def test_fetch_fails(mocker):
     mocker.patch.object(demisto, 'debug')
 
     def raise_mock(params=None, overwrite_rate_limit_retry=True):
-        raise DemistoException("""Verify that the server URL parameter is correct and that you have access to the server from your host.
+        raise DemistoException("""Verify that the server URL parameter is correct and that you have 
+access to the server from your host.
 Error Type: <requests.exceptions.ConnectionError>
 Error Number: [None]
 Message: None

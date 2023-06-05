@@ -1025,12 +1025,12 @@ def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP
         observable: File or network observable from API.
 
     Links:
-        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file  # noqa: E501
-        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network  # noqa: E501
+        File observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---file
+        Network observable: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta#indicator-observables---network
 
     Returns:
         File, IP, URL or Domain object. If observable is not supported, will return None.
-    """
+    """  # noqa: E501
     file_keys = {
         'fileHashType', 'fileHashValue', 'fileName', 'filePath', 'fileSize', 'fileType'
     }
@@ -3906,14 +3906,14 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
-            Should contain a a network observable:
-            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network  # noqa: E501
+            Should contain a network observable:
+            - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network
     Returns:
         human readable, outputs, raw response
 
     Raises:
         AssertionError: If no file arguments.
-    """
+    """  # noqa: E501
     network_object = assign_params(
         domainName=args.get('domain_name'),
         networkCidrBlock=args.get('network_cidr_block'),
