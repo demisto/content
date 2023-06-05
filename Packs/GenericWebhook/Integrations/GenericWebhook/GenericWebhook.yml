@@ -46,7 +46,6 @@ configuration:
   section: Connect
 - additionalinfo: Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
   display: Store sample events for mapping
-  hidden: false
   name: store_samples
   required: false
   type: 8

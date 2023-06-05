@@ -9,7 +9,6 @@ comment: An automation script to return address in binary format
 commonfields:
   id: IPCalcReturnAddressBinary
   version: -1
-enabled: false
 name: IPCalcReturnAddressBinary
 outputs:
 - contextPath: IPCalc.IP.Binary.binary
