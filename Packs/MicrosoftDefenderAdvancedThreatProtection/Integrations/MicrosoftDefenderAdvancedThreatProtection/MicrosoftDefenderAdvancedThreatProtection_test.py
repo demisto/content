@@ -1256,12 +1256,11 @@ def test_fetch_fails(mocker):
     mocker.patch.object(demisto, 'debug')
 
     def raise_mock(params=None, overwrite_rate_limit_retry=True):
-        raise DemistoException("""Verify that the server URL parameter is correct and that you have 
-access to the server from your host.
+        raise DemistoException("""Verify that the server URL parameter is correct and that you have access to the server from your host.
 Error Type: <requests.exceptions.ConnectionError>
 Error Number: [None]
 Message: None
-""")
+""")  # noqa: E501
 
     mocker.patch.object(client_mocker, 'list_alerts_by_params', side_effect=raise_mock)
     with pytest.raises(Exception) as e:
