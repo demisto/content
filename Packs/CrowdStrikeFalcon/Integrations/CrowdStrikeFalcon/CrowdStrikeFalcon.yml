@@ -4058,7 +4058,7 @@ script:
       name: cpu_priority
       required: false
       auto: PREDEFINED
-      defaultValue: Medium
+      defaultValue: Low
       predefined:
       - Highest
       - High
