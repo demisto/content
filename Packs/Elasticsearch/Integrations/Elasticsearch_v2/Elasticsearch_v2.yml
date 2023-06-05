@@ -64,7 +64,6 @@ configuration:
   required: false
   type: 12
   additionalinfo: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
-  hidden: false
   section: Collect
   advanced: true
 - display: Time field type

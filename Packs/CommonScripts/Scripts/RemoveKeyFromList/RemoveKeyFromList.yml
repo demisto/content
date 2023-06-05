@@ -16,7 +16,6 @@ outputs: []
 commonfields:
   id: RemoveKeyFromList
   version: -1
-enabled: false
 name: RemoveKeyFromList
 script: '-'
 system: false

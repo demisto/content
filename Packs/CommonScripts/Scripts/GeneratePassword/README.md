@@ -13,7 +13,7 @@ The debug parameter will print certain properties of the command into the War Ro
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | javascript |
+| Script Type | python |
 | Tags | Utility |
 
 
