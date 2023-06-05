@@ -24,6 +24,12 @@ configuration:
   - DoD
   - Custom
   advanced: true
+- display: Tenant ID
+  name: tenant_id
+  required: true
+  type: 0
+  section: Connect
+  advanced: false
 - additionalinfo: The Client (Application) ID to use to connect.
   display: Client (Application) ID
   name: client_id
@@ -36,12 +42,6 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
-- display: Tenant ID
-  name: tenant_id
-  required: true
-  type: 0
-  section: Connect
-  advanced: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -72,6 +72,16 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+- additionalinfo: |-
+    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+  defaultvalue: https://api.securitycenter.microsoft.com
+  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
+  hidden: false
+  name: url
+  required: true
+  type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: 'true'
   display: Verify SSL Certificate
   hidden: false
@@ -84,16 +94,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-  section: Connect
-  advanced: true
-- additionalinfo: |-
-    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
-  defaultvalue: https://api.securitycenter.microsoft.com
-  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
-  hidden: false
-  name: url
-  required: true
-  type: 0
   section: Connect
   advanced: true
 description: Microsoft 365 Defender Event Collector integration.
