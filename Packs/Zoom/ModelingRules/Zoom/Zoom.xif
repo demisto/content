@@ -1,0 +1,19 @@
+[MODEL: dataset=zoom_zoom_raw]
+filter
+    event_type = "operation_log"
+| alter
+    xdm.event.type = event_type,
+	xdm.source.user.upn = operator,
+	xdm.event.original_event_type = category_type,
+	xdm.event.description = operation_detail,
+	xdm.event.outcome_reason = action;
+
+filter
+    event_type = "activity_log"
+| alter
+    xdm.event.type = event_type,
+	xdm.source.user.upn = email,
+	xdm.event.operation = type,
+	xdm.source.ipv4 = ip_address,
+	xdm.source.interface = client_type,
+	xdm.observer.version = version;

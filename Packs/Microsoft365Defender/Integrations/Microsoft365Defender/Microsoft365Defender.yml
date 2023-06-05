@@ -6,13 +6,6 @@ commonfields:
   id: Microsoft 365 Defender
   version: -1
 configuration:
-- additionalinfo: The API key to use to connect.
-  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
-  display: Application ID
-  name: _app_id
-  required: false
-  type: 0
-  section: Connect
 - additionalinfo: |-
     The United States: api-us.security.microsoft.com
     Europe: api-eu.security.microsoft.com
@@ -23,6 +16,24 @@ configuration:
   required: true
   type: 0
   section: Connect
+- name: creds_client_id
+  type: 9
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  section: Connect
+- name: creds_tenant_id
+  type: 9
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  section: Connect
+- additionalinfo: The API key to use to connect.
+  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
+  display: Application ID
+  name: _app_id
+  required: false
+  type: 0
+  section: Connect
+  hidden: true
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
@@ -34,12 +45,14 @@ configuration:
   required: false
   type: 0
   section: Connect
+  hidden: true
 - display: Client Secret (for Client Credentials mode)
   hiddenusername: true
   name: credentials
   required: false
   type: 9
   section: Connect
+  displaypassword: Client Secret
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
@@ -62,10 +75,8 @@ configuration:
   type: 14
   section: Connect
   advanced: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+  hidden: true
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -368,7 +379,7 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
-  dockerimage: demisto/crypto:1.0.0.47103
+  dockerimage: demisto/crypto:1.0.0.54987
   isfetch: true
   runonce: false
   script: ''

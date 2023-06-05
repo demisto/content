@@ -6,26 +6,20 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of similar label keys. Comma separated value.
-    Also supports allowing X different words between labels, within the following
-    way: label_name:X, where X is the number of words. X can also be ''*'' for contains.
-    For example: the value "Email/subject:*" will consider  email subject similar,
-    if one is substring of the other.'
+  description: 'A comma-separated list of similar label keys. Comma separated value. Also supports allowing X different words between labels, within the following way: label_name:X, where X is the number of words. X can also be ''*'' for contains. For example: the value "Email/subject:*" will consider  email subject similar, if one is substring of the other.'
   isArray: false
   name: similarLabelsKeys
   required: false
   secret: false
   deprecated: true
 - default: false
-  description: A comma-separated list of similar context keys. Also supports allowing
-    X different words between values (see the labels description).
+  description: A comma-separated list of similar context keys. Also supports allowing X different words between values (see the labels description).
   isArray: false
   name: similarContextKeys
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of Similar custom fields keys. Also supports
-    allowing X different words between values (see the labels description).
+  description: A comma-separated list of Similar custom fields keys. Also supports allowing X different words between values (see the labels description).
   isArray: false
   name: similarCustomFields
   required: false
@@ -34,8 +28,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'yes'
-  description: Whether to ignore closed incidents as duplicate candidates. Can be
-    "yes" (ignore) or "no" (don't ignore). The default value is "yes".
+  description: Whether to ignore closed incidents as duplicate candidates. Can be "yes" (ignore) or "no" (don't ignore). The default value is "yes".
   isArray: false
   name: ignoreClosedIncidents
   predefined:
@@ -77,8 +70,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of similar incident fields keys. Also supports
-    allowing X different words between values (see the labels description).
+  description: A comma-separated list of similar incident fields keys. Also supports allowing X different words between values (see the labels description).
   isArray: false
   name: similarIncidentFields
   required: false
@@ -92,8 +84,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: AND
-  description: The condition to apply between incident fields. Can be "OR" or "AND".
-    This will apply only for fields with "exact match".
+  description: The condition to apply between incident fields. Can be "OR" or "AND". This will apply only for fields with "exact match".
   isArray: false
   name: incidentFieldsAppliedCondition
   predefined:
@@ -104,10 +95,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'yes'
-  description: 'Whether to skip the incident if it does not have specific key. Can
-    be "yes" (skip) or "no" (don''t skip). The default value is "yes". WARNING: if
-    no fields exist in the incident, random incidents might be returned as results
-    due to the empty condition.'
+  description: 'Whether to skip the incident if it does not have specific key. Can be "yes" (skip) or "no" (don''t skip). The default value is "yes". WARNING: if no fields exist in the incident, random incidents might be returned as results due to the empty condition.'
   isArray: false
   name: skipMissingValues
   predefined:
@@ -122,7 +110,7 @@ comment: |-
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
   id: FindSimilarIncidents
   version: -1
@@ -150,7 +138,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.10.48392
 runonce: false
 tests:
 - Dedup - Generic v3

@@ -1,5 +1,6 @@
 from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
+import defusedxml.ElementTree as defused_ET
 
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?' \
                                'api-version=2018-02-01&resource=https://storage.azure.com/'
@@ -97,7 +98,7 @@ class MicrosoftStorageClient(BaseClient):
             if resp_type == 'content':
                 return response.content
             if resp_type == 'xml':
-                ET.parse(response.text)
+                defused_ET.parse(response.text)
             return response
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)

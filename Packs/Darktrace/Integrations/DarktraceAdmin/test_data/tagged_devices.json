@@ -1,0 +1,252 @@
+{
+  "entities": [
+    {
+      "teid": 4138,
+      "tehid": 4138,
+      "tid": 9,
+      "thid": 0,
+      "entityType": "Device",
+      "entityValue": "2540",
+      "valid": true
+    },
+    {
+      "teid": 4339,
+      "tehid": 4339,
+      "tid": 9,
+      "thid": 0,
+      "entityType": "Device",
+      "entityValue": "48545",
+      "valid": true
+    },
+    {
+      "teid": 4340,
+      "tehid": 4340,
+      "tid": 9,
+      "thid": 0,
+      "entityType": "Device",
+      "entityValue": "999999999",
+      "valid": true
+    },
+    {
+      "teid": 4169,
+      "tehid": 4169,
+      "tid": 9,
+      "thid": 0,
+      "entityType": "Device",
+      "entityValue": "2520",
+      "valid": true
+    },
+    {
+      "teid": 4137,
+      "tehid": 4137,
+      "tid": 9,
+      "thid": 0,
+      "entityType": "Device",
+      "entityValue": "2528",
+      "valid": true
+    },
+    {
+      "teid": 2881,
+      "tehid": 2881,
+      "tid": 9,
+      "thid": 0,
+      "entityType": "Device",
+      "entityValue": "1",
+      "valid": true
+    },
+    {
+      "teid": 2856,
+      "tehid": 2856,
+      "tid": 9,
+      "thid": 0,
+      "entityType": "Device",
+      "entityValue": "24500",
+      "valid": true
+    }
+  ],
+  "devices": [
+    {
+      "did": 2520,
+      "sid": -9,
+      "saasmodule": "Office365",
+      "hostname": "SaaS::Office365: Azure MFA StrongAuthenticationService",
+      "firstSeen": 1668789600000,
+      "lastSeen": 1674233401000,
+      "typename": "saasprovider",
+      "typelabel": "SaaS Provider",
+      "tags": [
+        {
+          "tid": 9,
+          "expiry": 0,
+          "thid": 9,
+          "name": "Admin",
+          "restricted": false,
+          "data": {
+            "auto": false,
+            "color": 200,
+            "description": "",
+            "visibility": ""
+          },
+          "isReferenced": true
+        }
+      ]
+    },
+    {
+      "did": 2540,
+      "sid": -11,
+      "hostname": "EC2AMAZ-44COMHV",
+      "aghuuid": "668034bc-f67c-4eb6-80e8-6729eb73c14f",
+      "firstSeen": 1669401273000,
+      "lastSeen": 1674554878000,
+      "os": "Windows Server 2019 Datacenter 1809",
+      "devicelabel": "S1-Lap-Csens",
+      "typename": "laptop",
+      "typelabel": "Laptop",
+      "credentials": [
+        {
+          "credential": "ec2amaz-44comhv\\administrator",
+          "lastSeen": 1674131245000
+        }
+      ],
+      "tags": [
+        {
+          "tid": 9,
+          "expiry": 0,
+          "thid": 9,
+          "name": "Admin",
+          "restricted": false,
+          "data": {
+            "auto": false,
+            "color": 200,
+            "description": "",
+            "visibility": ""
+          },
+          "isReferenced": true
+        },
+        {
+          "tid": 139,
+          "expiry": 0,
+          "thid": 139,
+          "name": "Critical Attack Path",
+          "restricted": false,
+          "data": {
+            "auto": false,
+            "color": 61,
+            "description": "A PREVENT/End-to-End tag applied to devices and users on the top 10 most critical attack paths.",
+            "visibility": ""
+          },
+          "isReferenced": true
+        },
+        {
+          "tid": 100,
+          "expiry": 0,
+          "thid": 100,
+          "name": "cSensor",
+          "restricted": true,
+          "data": {
+            "auto": false,
+            "color": 200,
+            "description": ""
+          },
+          "isReferenced": true
+        },
+        {
+          "tid": 125,
+          "expiry": 0,
+          "thid": 125,
+          "name": "CVE Info",
+          "restricted": false,
+          "data": {
+            "color": 60,
+            "description": "The known vulnerability mapped to this device with the highest severity is Info"
+          },
+          "isReferenced": false
+        },
+        {
+          "tid": 62,
+          "expiry": 0,
+          "thid": 62,
+          "name": "External DNS",
+          "restricted": false,
+          "data": {
+            "auto": false,
+            "color": 200,
+            "description": ""
+          },
+          "isReferenced": true
+        },
+        {
+          "tid": 21,
+          "expiry": 0,
+          "thid": 21,
+          "name": "Microsoft Windows",
+          "restricted": false,
+          "data": {
+            "auto": false,
+            "color": 168,
+            "description": "",
+            "visibility": "Public"
+          },
+          "isReferenced": true
+        },
+        {
+          "tid": 145,
+          "expiry": 0,
+          "thid": 145,
+          "name": "SentinelOne",
+          "restricted": false,
+          "data": {
+            "color": 286,
+            "description": "This device is present in SentinelOne"
+          },
+          "isReferenced": false
+        }
+      ],
+      "customFields": {
+        "SentinelOneFields": {
+          "OSArchitecture": "64 bit",
+          "OSBuild": "17763",
+          "OSPlatform": "Windows Server 2019 Datacenter"
+        },
+        "SentinelOneIdentifier": {
+          "device_id": "1499259997930261361",
+          "device_name": "EC2AMAZ-44COMHV",
+          "dt_account_id": "auth-1"
+        },
+        "Vuln-SentinelOne": {
+          "CVE Count": "0",
+          "FieldOrder": "['CVE Count', 'Hostname', 'MAC Address']",
+          "Hostname": "EC2AMAZ-44COMHV",
+          "Last Updated": "1674507235803.297",
+          "MAC Address": "['00:ff:38:e0:0c:0b', '06:84:56:b8:66:32']"
+        }
+      },
+      "interfaces": [
+        {
+          "mac": "00:ff:38:e0:0c:0b",
+          "vendor": "",
+          "ips": [
+            {
+              "ip": "100.64.0.2",
+              "sid": -11,
+              "hostname": "EC2AMAZ-44COMHV",
+              "time": 1674546007
+            }
+          ]
+        },
+        {
+          "mac": "06:84:56:b8:66:32",
+          "vendor": "",
+          "ips": [
+            {
+              "ip": "192.168.0.88",
+              "sid": -11,
+              "hostname": "EC2AMAZ-44COMHV",
+              "time": 1674546007
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

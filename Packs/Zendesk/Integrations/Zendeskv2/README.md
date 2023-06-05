@@ -16,7 +16,11 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Zendesk to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Zendesk\), or both \*\*Incoming And Outgoing\*\*. | False |
     | Close mirrored incidents | If true, XSOAR will mirror also the ticket closeing. | False |
     | Mirror tags | Comment and files that will be marked with this tag will be pushed into Zendesk. | False |
+    | Ticket Field to Fetch by | Duplications might accrue when choosing 'updated-at' | True |
     | Ticket types to fetch |  | False |
+    | Fetch tickets status filter |  | False |
+    | Fetch tickets priority filter |  | False |
+    | Fetch tickets query filter |  | False |
     | Maximum number of incidents per fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Incidents Fetch Interval |  | False |

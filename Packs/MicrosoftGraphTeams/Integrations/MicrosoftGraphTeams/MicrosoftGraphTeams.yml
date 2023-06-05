@@ -1,4 +1,4 @@
-category: Messaging
+category: Messaging and Conferencing
 commonfields:
   id: MicrosoftGraphTeams
   version: -1
@@ -296,7 +296,7 @@ script:
   - arguments: []
     description: Tests connectivity to Microsoft Graph Teams.
     name: msgraph-teams-test
-  dockerimage: demisto/crypto:1.0.0.40696
+  dockerimage: demisto/crypto:1.0.0.49599
   runonce: false
   script: ''
   subtype: python3

@@ -1,0 +1,488 @@
+id: Darktrace Basic AI Analyst Event Handler
+version: -1
+name: Darktrace Basic AI Analyst Event Handler
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0e8221a8-2dad-463f-8769-4ac562ada73f
+    type: start
+    task:
+      id: 0e8221a8-2dad-463f-8769-4ac562ada73f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: dcb4c75e-9080-4321-8c54-da7806ec57c8
+    type: regular
+    task:
+      id: dcb4c75e-9080-4321-8c54-da7806ec57c8
+      version: -1
+      name: Pull AI Analyst Event Details
+      description: Fetch the details of an AI Analyst event
+      script: DarktraceAIA|||darktrace-get-ai-analyst-incident-event
+      type: regular
+      iscommand: true
+      brand: DarktraceAIA
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      eventId:
+        simple: ${incident.labels.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e96ea3b8-2b72-4c6c-8d88-4a2df3cd4d6d
+    type: regular
+    task:
+      id: e96ea3b8-2b72-4c6c-8d88-4a2df3cd4d6d
+      version: -1
+      name: 'Close Incdent '
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ba9c65e6-907e-4a09-8821-860b352713dd
+    type: regular
+    task:
+      id: ba9c65e6-907e-4a09-8821-860b352713dd
+      version: -1
+      name: Get  Entire AI Analyst Investigation Group
+      description: Pulls all linked events for a given event. Over time, events can become merged with one another. This happens when two sets of disparate activity are suddenly linked by shared factors.
+      script: DarktraceAIA|||darktrace-get-ai-analyst-incident-group-from-eventId
+      type: regular
+      iscommand: true
+      brand: DarktraceAIA
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      eventId:
+        simple: ${incident.labels.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: dae96048-5f56-43f9-8112-19ca3ab9f074
+    type: condition
+    task:
+      id: dae96048-5f56-43f9-8112-19ca3ab9f074
+      version: -1
+      name: Is Incident Category Significant?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${incident.labels.category}
+            iscontext: true
+          right:
+            value:
+              simple: suspicious
+        - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.labels.category}
+            iscontext: true
+          right:
+            value:
+              simple: critical
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fa86f906-c450-49b7-8510-e0a7fc4c7985
+    type: regular
+    task:
+      id: fa86f906-c450-49b7-8510-e0a7fc4c7985
+      version: -1
+      name: Get First Model Breach
+      description: Fetch details about a specific Model Breach
+      script: DarktraceMBs|||darktrace-get-model-breach
+      type: regular
+      iscommand: true
+      brand: DarktraceMBs
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      pbid:
+        complex:
+          root: Darktrace.AIAnalyst.modelBreaches.0
+          accessor: pbid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2bbae4ad-3c89-4ff0-8d9d-ddbbc47267ee
+    type: condition
+    task:
+      id: 2bbae4ad-3c89-4ff0-8d9d-ddbbc47267ee
+      version: -1
+      name: Acknowledge Event in Darktrace?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "No":
+      - "3"
+      "Yes":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 06ef8006-16df-4844-8c77-a790f6454d64
+    type: regular
+    task:
+      id: 06ef8006-16df-4844-8c77-a790f6454d64
+      version: -1
+      name: Acknowledge Incident Event
+      description: Acknowledge an AI Analyst Incident Event
+      script: '|||darktrace-acknowledge-ai-analyst-incident-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      eventId:
+        simple: ${incident.labels.eventId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bb3c914d-e574-47b8-8039-1f8110346950
+    type: condition
+    task:
+      id: bb3c914d-e574-47b8-8039-1f8110346950
+      version: -1
+      name: Would you like to apply a tag?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: dae52f98-c70c-4067-821c-1cb7c9dae2c9
+    type: collection
+    task:
+      id: dae52f98-c70c-4067-821c-1cb7c9dae2c9
+      version: -1
+      name: 'Tag  details '
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify a tag name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Tags can be used to lower future activity thresholds for certain devices
+        tooltip: The tag needs to previously exist on your Darktrace
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify a Device Id where for the tag to be applied
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: tags
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 33cae312-9060-4dde-8dc7-5db12fd57b06
+    type: regular
+    task:
+      id: 33cae312-9060-4dde-8dc7-5db12fd57b06
+      version: -1
+      name: Apply a tag
+      description: Post a tag to a device
+      script: DarktraceAdmin|||darktrace-post-tag-to-device
+      type: regular
+      iscommand: true
+      brand: DarktraceAdmin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      deviceId:
+        simple: ${tags.Answers.1}
+      tagName:
+        simple: ${tags.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_yes": 0.4,
+      "5_9_#default#": 0.32,
+      "7_3_No": 0.51,
+      "7_8_Yes": 0.35,
+      "9_7_No": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1825,
+        "width": 1170,
+        "x": 90,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: Runs a common AI Analyst workflow for fetched AI Analyst events.
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

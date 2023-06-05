@@ -46,8 +46,32 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Incident type | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | Additional info to fetch | False |
+    | Mirroring Direction | False |
+    | Close Mirrored XSOAR Incident | False |
+    | Close Mirrored Microsoft Sentinel Ticket | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Incident Mirroring
+You can enable incident mirroring between Cortex XSOAR incidents and Microsoft Sentinel incidents (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+1. Navigate to **Settings > Integrations > Servers & Services**.
+2. Search for **Microsoft Sentinel** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the **Mirroring Direction** integration parameter, select in which direction the incidents should be mirrored:
+   * Incoming - Any changes in *Microsoft Sentinel* incidents will be reflected in Cortex XSOAR incidents.
+   * Outgoing - Any changes in Cortex XSOAR incidents will be reflected in *Microsoft Sentinel*.
+   * Incoming And Outgoing - Changes in Cortex XSOAR incidents and *Microsoft Sentinel* incidents will be reflected in both directions.
+   * None - Turns off incident mirroring.
+5. Optional: Check the **Close Mirrored XSOAR Incident** integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in *Microsoft Sentinel*.
+6. Optional: Check the **Close Mirrored Microsoft Sentinel Ticket** integration parameter to close the *Microsoft Sentinel* incident when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and *Microsoft Sentinel*.
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -64,6 +88,8 @@ Gets a single incident from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -164,6 +190,8 @@ Gets a list of incidents from Azure Sentinel.
 | limit | The maximum number of incidents to return. The maximum value is 200. Default is 50. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -394,6 +422,8 @@ Gets a list of watchlists from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_alias | Alias of specific watchlist to get. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -511,6 +541,8 @@ Delete a watchlists from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_alias | Alias of the watchlist to be deleted. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -546,6 +578,8 @@ Create or update a watchlist in Azure Sentinel.
 | file_entry_id | A file entry with raw content that represents the watchlist items to create. | Required | 
 | items_search_key | The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address. | Required | 
 | content_type | The content type of the raw content. For now, only text/csv is valid. Default is Text/Csv. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -622,6 +656,8 @@ Updates a single incident in Azure Sentinel.
 | assignee_email         | The email address of the incident assignee. It is recommended to update *user_principal_name* instead of this field. Note that the updated API field is `owner.email`.                                                                         | Optional | 
 | user_principal_name    | The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.                                                                                                                                           | Optional | 
 | labels                 | Incident labels. Note that all labels will be set as labelType='User'.                                                                                                                                                                         | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -719,6 +755,8 @@ Deletes a single incident in Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -759,6 +797,8 @@ Gets the comments of an incident from Azure Sentinel.
 | incident_id | The incident ID. | Required | 
 | limit | The maximum number of incident comments to return. The maximum value is 50. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -845,6 +885,8 @@ Adds a comment to an incident in Azure Sentinel.
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
 | message | The comment message. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -900,6 +942,8 @@ Deletes a comment from incident in Azure Sentinel.
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
 | comment_id | The comment ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -931,6 +975,8 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 | entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -981,6 +1027,8 @@ Gets a list of an incident's entities from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1059,6 +1107,8 @@ Gets a list of an incident's alerts from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1137,6 +1187,8 @@ Get a single watchlist item or list of watchlist items.
 | --- | --- | --- |
 | watchlist_alias | The alias of the watchlist. | Required | 
 | watchlist_item_id | The ID of the single watchlist item. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1214,6 +1266,8 @@ Delete a watchlist item.
 | --- | --- | --- |
 | watchlist_alias | The watchlist alias. | Required | 
 | watchlist_item_id | The watchlist item ID to be deleted. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1242,6 +1296,8 @@ Create or update a watchlist item.
 | watchlist_alias | The watchlist alias. | Required | 
 | watchlist_item_id | The watchlist item ID (GUID) to update. | Optional | 
 | item_key_value | The JSON for the itemsKeyValue of the item (the key value is different from watchlist to watchlist). | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1304,6 +1360,8 @@ Returns a list of threat indicators.
 | indicator_name | The name of the indicator. | Optional | 
 | limit | The maximum number of indicators to return. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1373,6 +1431,8 @@ Returns a list of threat indicators with specific entities.
 | indicator_types | The indicator types of the threat indicator. Possible values are: ipv4, ipv6, file, url, domain. | Optional | 
 | threat_types | A comma-separated list of threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Optional | 
 | keywords | A comma-separated list of keywords. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1444,6 +1504,8 @@ Creates a new threat indicator.
 | valid_until | The date until which the indicator is valid. | Optional | 
 | created_by | The creator of the new indicator. | Optional | 
 | revoked | If true, the indicator is revoked. Possible values are: true, false. Default is false. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1515,6 +1577,8 @@ Updates an existing threat indicator.
 | valid_from | The date from which the indicator is valid. | Optional | 
 | valid_until | The date until which the indicator is valid. | Optional | 
 | created_by | The creator of the indicator. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1574,6 +1638,8 @@ Deletes an existing threat indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_names | A comma-separated list of indicators to delete. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1602,6 +1668,8 @@ Appends new tags to an existing indicator.
 | --- | --- | --- |
 | indicator_name | The name of the indicator. | Required | 
 | tags | A comma-separated list of tags to append. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1658,6 +1726,8 @@ Replaces the tags of a given indicator.
 | --- | --- | --- |
 | indicator_name | The name of the indicator. | Required | 
 | tags | A comma-separated list of tags to replace. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1700,3 +1770,488 @@ Replaces the tags of a given indicator.
 
 Tags were replaced to 1286115b-3b65-5537-e831-969045792910 Threat Indicator.
 
+### azure-sentinel-list-alert-rule
+***
+Gets a list of all alert rules.
+
+
+#### Base Command
+
+`azure-sentinel-list-alert-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The rule ID. If not given, will return all rules. | Optional | 
+| limit | The maximum number of rules to return. Default is 50. | Optional | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.AlertRule.name | String | The name of the resource. | 
+| AzureSentinel.AlertRule.type | String | The type of the resource. | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
+| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource. | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to create this rule. | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers the alert rule. | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold that triggers this alert rule. | 
+| AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since the last time this alert rule was triggered. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time this alert rule was modified. | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings.aggregationKind | String | The event grouping aggregation kinds. | 
+| AzureSentinel.AlertRule.properties.entityMappings.entityType | String | The V3 type of the mapped entity. | 
+| AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.identifier | String | The V3 identifier of the entity. | 
+| AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.columnName | String | The column name to be mapped to the identifier. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDisplayNameFormat | String | The format containing the columns' name\(s\) used to override the alert name. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDescriptionFormat | String | The format containing columns' name\(s\) used to override the alert description. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertTacticsColumnName | Unknown | The column name to take the alert tactics from. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride.alertSeverityColumnName | Unknown | The column name to take the alert severity from. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.createIncident | Boolean | Create incidents from alerts triggered by this analytics rule. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.enabled | Boolean | Whether grouping is enabled. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.reopenClosedIncident | Boolean | Re-open closed matching incidents. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.lookbackDuration | String | Limit the group to alerts created within the lookback duration \(in ISO 8601 duration format\). | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.matchingMethod | String | Grouping matching method. When method is Selected at least one of groupByEntities, groupByAlertDetails, groupByCustomDetails must be provided and not empty. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByEntities | String | A list of entity types to group by \(when matchingMethod is Selected\). Only entities defined in the current alert rule may be used. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByAlertDetails | String | A list of alert details to group by \(when matchingMethod is Selected\). | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByCustomDetails | String | A list of custom details keys to group by \(when matchingMethod is Selected\). Only keys defined in the current alert rule may be used. | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated | 
+
+#### Command example
+```!azure-sentinel-list-alert-rule limit=1```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRule": {
+            "etag": "\"0000-0100-0000\"",
+            "id": "/subscriptions/{subscription_id}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/providers/Microsoft.SecurityInsights/alertRules/test-rule-id",
+            "kind": "Scheduled",
+            "name": "test-rule-id",
+            "properties": {
+                "alertRuleTemplateName": null,
+                "description": null,
+                "displayName": "testing displayname",
+                "enabled": true,
+                "entityMappings": [
+                    {
+                        "entityType": "Account",
+                        "fieldMappings": [
+                            {
+                                "columnName": "Account",
+                                "identifier": "FullName"
+                            }
+                        ]
+                    },
+                    {
+                        "entityType": "Host",
+                        "fieldMappings": [
+                            {
+                                "columnName": "Computer",
+                                "identifier": "FullName"
+                            }
+                        ]
+                    }
+                ],
+                "eventGroupingSettings": {
+                    "aggregationKind": "AlertPerResult"
+                },
+                "incidentConfiguration": {
+                    "createIncident": true,
+                    "groupingConfiguration": {
+                        "enabled": false,
+                        "groupByAlertDetails": null,
+                        "groupByCustomDetails": null,
+                        "groupByEntities": [],
+                        "lookbackDuration": "PT5H",
+                        "matchingMethod": "AllEntities",
+                        "reopenClosedIncident": false
+                    }
+                },
+                "lastModifiedUtc": "2020-03-28T16:07:49.1905911Z",
+                "query": "Heartbeat",
+                "queryFrequency": "PT1M",
+                "queryPeriod": "P2DT1H30M",
+                "severity": "Low",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "tactics": [
+                    "Persistence"
+                ],
+                "techniques": [
+                    "T11"
+                ],
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0
+            },
+            "type": "Microsoft.SecurityInsights/alertRules"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Alert Rules
+>|ID|Kind|Severity|Display Name|Description|Enabled|
+>|---|---|---|---|---|---|
+>| test-rule-id | Scheduled | Low | testing displayname |  | true |
+
+### azure-sentinel-list-alert-rule-template
+***
+Gets a list of all alert rule templates.
+
+
+#### Base Command
+
+`azure-sentinel-list-alert-rule-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template_id | The alert rule template ID. If not given, will return all alert rule templates. | Optional | 
+| limit | The maximum number of templates to return. Default is 50. | Optional | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRuleTemplate.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.AlertRuleTemplate.name | String | The name of the resource. | 
+| AzureSentinel.AlertRuleTemplate.type | String | The type of the resource. | 
+| AzureSentinel.AlertRuleTemplate.kind | String | The alert rule kind. | 
+| AzureSentinel.AlertRuleTemplate.properties.severity | String | The severity for alerts created by this alert rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.query | String | The query that creates alerts for this rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
+| AzureSentinel.AlertRuleTemplate.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
+| AzureSentinel.AlertRuleTemplate.properties.triggerOperator | String | The operation against the threshold that triggers alert rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.triggerThreshold | Number | The threshold that triggers this alert rule. | 
+| AzureSentinel.AlertRuleTemplate.properties.displayName | String | The display name for the alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.description | String | The description of the alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.tactics | String | The tactics of the alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.lastUpdatedDateUTC | Date | The time this alert rule template was last updated. | 
+| AzureSentinel.AlertRuleTemplate.properties.createdDateUTC | Date | The time this alert rule template was added. | 
+| AzureSentinel.AlertRuleTemplate.properties.status | String | The alert rule template status. | 
+| AzureSentinel.AlertRuleTemplate.properties.version | String | The version of this template in the format &lt;a.b.c&gt;, where all are numbers. For example &lt;1.0.2&gt;. | 
+| AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.connectorId | String | The connector ID that provides the following data types | 
+| AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.dataTypes | String | The data types used by the alert rule template. | 
+| AzureSentinel.AlertRuleTemplate.properties.alertRulesCreatedByTemplateCount | Number | The number of alert rules that were created by this template. | 
+| AzureSentinel.AlertRuleTemplate.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
+
+#### Command example
+```!azure-sentinel-list-alert-rule-template limit=1```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRuleTemplate": {
+            "id": "/subscriptions/{subscription_id}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/providers/Microsoft.SecurityInsights/AlertRuleTemplates/test-rule-template-id",
+            "kind": "Scheduled",
+            "name": "test-rule-template-id",
+            "properties": {
+                "severity": "Low",
+                "query": "let timeframe = 1d;\nAWSCloudTrail\n| where TimeGenerated >= ago(timeframe)\n| where EventName == \"CreateNetworkAclEntry\"\n    or EventName == \"CreateRoute\"\n| project TimeGenerated, EventName, EventTypeName, UserIdentityAccountId, UserIdentityPrincipalid, UserAgent, UserIdentityUserName, SessionMfaAuthenticated, SourceIpAddress, AWSRegion, EventSource, AdditionalEventData, ResponseElements\n| extend AccountCustomEntity = UserIdentityUserName, IPCustomEntity = SourceIpAddress",
+                "queryFrequency": "P1D",
+                "queryPeriod": "P1D",
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "displayName": "Changes to Amazon VPC settings",
+                "description": "This alert monitors changes to Amazon VPC (Virtual Private Cloud) settings such as new ACL entries and routes in route tables.\nMore information: https://medium.com/@GorillaStack/the-most-important-aws-cloudtrail-security-events-to-track-a5b9873f8255 \nand https://aws.amazon.com/vpc/",
+                "tactics": [
+                "PrivilegeEscalation",
+                "LateralMovement"
+                ],
+                "lastUpdatedDateUTC": "2021-02-27T10:00:00Z",
+                "createdDateUTC": "2019-02-27T00:00:00Z",
+                "status": "Available",
+                "version": "1.0.1",
+                "requiredDataConnectors": [
+                {
+                    "connectorId": "AWS",
+                    "dataTypes": [
+                    "AWSCloudTrail"
+                    ]
+                }
+                ],
+                "alertRulesCreatedByTemplateCount": 0
+            },
+            "type": "Microsoft.SecurityInsights/AlertRuleTemplates"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Alert Rule Template
+>|ID|Kind|Severity|Display Name|Description|Status|Created Date UTC|Last Updated Date UTC|Alert Rules Created By Template Count|
+>|---|---|---|---|---|---|---|---|---|
+>| test-rule-template-id | Scheduled | Low | Changes to Amazon VPC settings | This alert monitors changes to Amazon VPC (Virtual Private Cloud) settings such as new ACL entries and routes in route tables.<br/>More information: https://medium.com/@GorillaStack/the-most-important-aws-cloudtrail-security-events-to-track-a5b9873f8255 <br/>and https://aws.amazon.com/vpc/ | Available | 2019-02-27T00:00:00Z | 2021-02-27T10:00:00Z | 0 |
+
+### azure-sentinel-delete-alert-rule
+
+***
+Deletes the specified alert rule.
+
+#### Base Command
+
+`azure-sentinel-delete-alert-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The alert rule ID to delete. | Required | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRule.ID | String | The alert rule ID. | 
+| AzureSentinel.AlertRule.Deleted | Boolean | Whether the alert rule was deleted. | 
+
+#### Command example
+```!azure-sentinel-delete-alert-rule rule_id=1234-abcd-5678-efgh```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRule": {
+            "Deleted": true,
+            "ID": "1234-abcd-5678-efgh"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Alert rule 1234-abcd-5678-efgh was deleted successfully.
+### azure-sentinel-create-alert-rule
+
+***
+Creates a new alert rule.
+
+#### Base Command
+
+`azure-sentinel-create-alert-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_name | The alert rule name to create. | Required | 
+| kind | The alert rule kind to create. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Optional | 
+| template_name | The name of the alert rule template used to create this rule.<br/>Required for Fusion, optional for Scheduled rules | Optional | 
+| enabled | Determines whether this alert rule is enabled or disabled. Possible values are: yes, no. | Optional | 
+| etag | ETag of the Azure resource. | Optional | 
+| displayName | The display name for alerts created by this alert rule.<br/>Required for MicrosoftSecurityIncidentCreation and scheduled rules | Optional | 
+| product_filter | The alerts' productName on which the cases will be generated.<br/>Required for MicrosoftSecurityIncidentCreation rules.<br/>Possible values are: azure_active_directory_identity_protection, azure_advanced_threat_protection, azure_security_center, azure_security_center_for_iot, microsoft_cloud_app_security. | Optional | 
+| description | The description of the alert rule.<br/>Relevant for MicrosoftSecurityIncidentCreation and scheduled rules. | Optional | 
+| name_exclude_filter | Alerts' displayNames on which the cases will not be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| name_include_filter | Alerts' displayNames on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| severity_filter | Alerts' severities on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| query | The query that creates alerts for this rule.<br/>Required for scheduled rules. | Optional | 
+| query_frequency | The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.<br/>Required for scheduled rules. | Optional | 
+| query_period | The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.<br/>Required for scheduled rules. | Optional | 
+| severity | The severity for alerts created by this alert rule.<br/>Required for scheduled rules.<br/>Possible values are: informational, low, medium, high. | Optional | 
+| suppression_duration | The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.<br/>Required for scheduled rules. | Optional | 
+| suppression_enabled | Determines whether the suppression for this alert rule is enabled or disabled.<br/>Required for scheduled rules.<br/>Possible values are: yes, no. | Optional | 
+| trigger_operator | The operation against the threshold that triggers the alert rule.<br/>Required for scheduled rules.<br/>Possible values are: equal, greater_than, less_than, not_equal. | Optional | 
+| trigger_threshold | The threshold that triggers this alert rule.<br/>Required for scheduled rules. | Optional | 
+| tactics | The tactics of the alert rule.<br/>Relevant for scheduled rules. | Optional | 
+| techniques | The techniques of the alert rule.<br/>Relevant for scheduled rules. | Optional | 
+| rule_json | Option to insert a configured rule JSON instead of using the arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.AlertRule.name | String | The name of the resource. | 
+| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource. | 
+| AzureSentinel.AlertRule.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to create this rule. | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time that this alert was modified. | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers the alert rule. | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold that triggers this alert rule. | 
+| AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since the last time this alert rule was triggered. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings. | 
+| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert. | 
+| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule. | 
+
+#### Command example
+```!azure-sentinel-create-alert-rule enabled=true kind=microsoft_security_incident_creation rule_name=test_name displayName="Testing Display Name" product_filter=microsoft_cloud_app_security```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRule": {
+            "etag": "\"09009060-0000-5e60000\"",
+            "id": "/subscriptions/{subscription_id}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/providers/Microsoft.SecurityInsights/alertRules/test_name",
+            "kind": "MicrosoftSecurityIncidentCreation",
+            "name": "test_name",
+            "properties": {
+                "alertRuleTemplateName": null,
+                "description": null,
+                "displayName": "Testing Display Name",
+                "displayNamesExcludeFilter": null,
+                "displayNamesFilter": null,
+                "enabled": true,
+                "lastModifiedUtc": "2023-02-20T10:05:26.5066026Z",
+                "productFilter": "Microsoft Cloud App Security",
+                "severitiesFilter": null
+            },
+            "type": "Microsoft.SecurityInsights/alertRules"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Alert Rule successfully created/updated
+>|ID|Name|Kind|Display Name|Enabled|Etag|
+>|---|---|---|---|---|---|---|---|
+>| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing Display Name | true | "09009060-0000-5e60000" |
+
+### azure-sentinel-update-alert-rule
+
+***
+Updates an alert rule.
+
+#### Base Command
+
+`azure-sentinel-update-alert-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_name | The alert rule name to update. | Required | 
+| kind | The alert rule kind to update. Possible values are: fusion, microsoft_security_incident_creation, scheduled. | Optional | 
+| template_name | The name of the alert rule template used to update this rule.<br/>Required for Fusion, optional for Scheduled rules. | Optional | 
+| enabled | Determines whether this alert rule is enabled or disabled. Possible values are: yes, no. | Optional | 
+| etag | ETag of the Azure resource. | Optional | 
+| displayName | The display name for alerts created by this alert rule.<br/>Required for MicrosoftSecurityIncidentCreation and scheduled rules. | Optional | 
+| product_filter | The alerts' productName on which the cases will be generated.<br/>Required for MicrosoftSecurityIncidentCreation rules.<br/>Possible values are: azure_active_directory_identity_protection, azure_advanced_threat_protection, azure_security_center, azure_security_center_for_iot, microsoft_cloud_app_security. | Optional | 
+| description | The description of the alert rule.<br/>Relevant for MicrosoftSecurityIncidentCreation and scheduled rules. | Optional | 
+| name_exclude_filter | Alerts' displayNames on which the cases will not be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| name_include_filter | Alerts' displayNames on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| severity_filter | Alerts' severities on which the cases will be generated.<br/>Relevant for MicrosoftSecurityIncidentCreation rules. | Optional | 
+| query | The query that creates alerts for this rule.<br/>Required for scheduled rules. | Optional | 
+| query_frequency | The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.<br/>Required for scheduled rules. | Optional | 
+| query_period | The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.<br/>Required for scheduled rules. | Optional | 
+| severity | The severity for alerts created by this alert rule.<br/>Required for scheduled rules.<br/>Possible values are: informational, low, medium, high. | Optional | 
+| suppression_duration | The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.<br/>Required for scheduled rules. | Optional | 
+| suppression_enabled | Determines whether the suppression for this alert rule is enabled or disabled.<br/>Required for scheduled rules.<br/>Possible values are: yes, no. | Optional | 
+| trigger_operator | The operation against the threshold that triggers the alert rule.<br/>Required for scheduled rules.<br/>Possible values are: equal, greater_than, less_than, not_equal. | Optional | 
+| trigger_threshold | The threshold that triggers this alert rule.<br/>Required for scheduled rules. | Optional | 
+| tactics | The tactics of the alert rule.<br/>Relevant for scheduled rules. | Optional | 
+| techniques | The techniques of the alert rule.<br/>Relevant for scheduled rules. | Optional | 
+| rule_json | Option to insert a configured rule JSON instead of using the arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional | 
+| resource_group_name | The resource group name. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource. | 
+| AzureSentinel.AlertRule.name | String | The name of the resource. | 
+| AzureSentinel.AlertRule.etag | String | ETag of the Azure resource. | 
+| AzureSentinel.AlertRule.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.AlertRule.kind | String | The alert rule kind. | 
+| AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.description | String | The description of the alert rule. | 
+| AzureSentinel.AlertRule.properties.alertRuleTemplateName | Unknown | The name of the alert rule template used to update this rule. | 
+| AzureSentinel.AlertRule.properties.tactics | String | The tactics of the alert rule. | 
+| AzureSentinel.AlertRule.properties.severity | String | The severity for alerts created by this alert rule. | 
+| AzureSentinel.AlertRule.properties.enabled | Boolean | Determines whether this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.lastModifiedUtc | Date | The last time this alert was modified. | 
+| AzureSentinel.AlertRule.properties.productFilter | String | The alerts' productName on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.severitiesFilter | Unknown | The alerts' severities on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.displayNamesFilter | Unknown | The alerts' displayNames on which the cases will be generated. | 
+| AzureSentinel.AlertRule.properties.query | String | The query that creates alerts for this rule. | 
+| AzureSentinel.AlertRule.properties.queryFrequency | String | The frequency \(in ISO 8601 duration format\) for this alert rule to run. | 
+| AzureSentinel.AlertRule.properties.queryPeriod | String | The period \(in ISO 8601 duration format\) that this alert rule looks at. | 
+| AzureSentinel.AlertRule.properties.triggerOperator | String | The operation against the threshold that triggers alert rule. | 
+| AzureSentinel.AlertRule.properties.triggerThreshold | Number | The threshold triggers this alert rule. | 
+| AzureSentinel.AlertRule.properties.suppressionDuration | String | The suppression \(in ISO 8601 duration format\) to wait since the last time this alert rule been triggered. | 
+| AzureSentinel.AlertRule.properties.suppressionEnabled | Boolean | Determines whether the suppression for this alert rule is enabled or disabled. | 
+| AzureSentinel.AlertRule.properties.eventGroupingSettings | Unknown | The event grouping settings. | 
+| AzureSentinel.AlertRule.properties.customDetails | Unknown | Dictionary of string key-value pairs of columns to be attached to the alert | 
+| AzureSentinel.AlertRule.properties.entityMappings | Unknown | Array of the entity mappings of the alert rule. | 
+| AzureSentinel.AlertRule.properties.alertDetailsOverride | String | The alert details override settings. | 
+| AzureSentinel.AlertRule.properties.incidentConfiguration | Unknown | The settings of the incidents that created from alerts triggered by this analytics rule. | 
+
+#### Command example
+```!azure-sentinel-update-alert-rule enabled=true kind=microsoft_security_incident_creation rule_name=test_name displayName="Testing updating Display Name" product_filter=microsoft_cloud_app_security```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "AlertRule": {
+            "etag": "\"097809060-0000-6hd400\"",
+            "id": "/subscriptions/{subscription_id}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/providers/Microsoft.SecurityInsights/alertRules/test_name",
+            "kind": "MicrosoftSecurityIncidentCreation",
+            "name": "test_name",
+            "properties": {
+                "alertRuleTemplateName": null,
+                "description": null,
+                "displayName": "Testing updating Display Name",
+                "displayNamesExcludeFilter": null,
+                "displayNamesFilter": null,
+                "enabled": true,
+                "lastModifiedUtc": "2023-02-20T11:59:42.2920381Z",
+                "productFilter": "Microsoft Cloud App Security",
+                "severitiesFilter": null
+            },
+            "type": "Microsoft.SecurityInsights/alertRules"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Alert Rule successfully created/updated
+>|ID|Name|Kind|Display Name|Enabled|Etag|
+>|---|---|---|---|---|---|---|---|
+>| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing updating Display Name | true | "097809060-0000-6hd400" |

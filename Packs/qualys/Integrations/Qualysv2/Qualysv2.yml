@@ -1,4 +1,4 @@
-category: Utilities
+category: Vulnerability Management
 commonfields:
   id: QualysV2
   version: -1
@@ -8,6 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: "When using asset-tag commands, the official documentation recommends that the SERVER URL parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`. For more details see the integration documentation."
 - display: Username
   name: credentials
   required: true
@@ -546,6 +547,17 @@ script:
       name: cloud_tag_fields
     - description: Specify a positive numeric value to limit the amount of results in the requested list
       name: limit
+      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: Basic
+      description: '(Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None. AGs is equal to Asset Groups'
+      name: details
+      predefined:
+      - Basic
+      - Basic/AGs
+      - All
+      - All/AGs
+      - None
     description: View a list of scanned hosts in the user account.
     name: qualys-host-list
     outputs:
@@ -2141,11 +2153,9 @@ script:
       predefined:
       - id
       - name
-    - auto: PREDEFINED
-      description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
+    - description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_include
-    - auto: PREDEFINED
-      description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing a tag names or IDs. Multiple entries are comma separated.
+    - description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing a tag names or IDs. Multiple entries are comma separated.
       name: tag_set_exclude
     - auto: PREDEFINED
       description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
@@ -2295,11 +2305,9 @@ script:
       predefined:
       - id
       - name
-    - auto: PREDEFINED
-      description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
+    - description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_include
-    - auto: PREDEFINED
-      description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
+    - description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_exclude
     - auto: PREDEFINED
       description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
@@ -2662,7 +2670,7 @@ script:
     description: Delete an existing asset tag.
     name: qualys-asset-tag-delete
 
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.11.61265
   runonce: false
   script: ''
   subtype: python3

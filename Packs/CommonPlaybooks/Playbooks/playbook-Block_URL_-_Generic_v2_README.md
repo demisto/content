@@ -9,29 +9,35 @@ Supported integrations for this playbook:
 * Netcraft
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * PAN-OS - Block URL - Custom URL Category
 * Sophos Firewall - Block URL
 * Checkpoint - Block URL
 
 ### Integrations
+
 * Netcraft
 * Forcepoint
 * Zscaler
 
 ### Scripts
-* IsIntegrationAvailable
+
 * SetAndHandleEmpty
+* IsIntegrationAvailable
 
 ### Commands
+
 * fp-add-address-to-category
-* zscaler-blacklist-url
-* setIndicator
 * netcraft-report-attack
+* appendIndicatorField
+* zscaler-blacklist-url
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -45,11 +51,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
 | EDLServerIP | EDL Server IP Address |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
+| Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Block URL - Generic v2](../doc_files/Block_URL_-_Generic_v2.png)

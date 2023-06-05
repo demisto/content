@@ -1,29 +1,35 @@
 The QRadar Generic playbook is executed for the QRadar Generic incident type. It performs all the common parts of the investigation, including notifying the SOC, enriching data for indicators and users, calculating severity, assigning incidents, and notifying the SIEM admin about false positives.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Entity Enrichment - Generic v2
+
 * Calculate Severity - Standard
 * QRadar - Get Offense Logs
+* Entity Enrichment - Generic v3
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * GenerateInvestigationSummaryReport
 * AssignAnalystToIncident
 
 ### Commands
+
 * send-mail
-* setIncident
 * extractIndicators
-* excludeIndicators
-* closeInvestigation
 * setIndicator
+* excludeIndicators
+* setIncident
+* closeInvestigation
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -46,9 +52,12 @@ This playbook does not use any integrations.
 | ExcludeIndicatorsInXSOAR | If this value is not false, add indicators to the XSOAR exclude list. The excluded indicators won't be created in XSOAR anymore. | false | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![QRadar Generic](../doc_files/QRadar_Generic.png)

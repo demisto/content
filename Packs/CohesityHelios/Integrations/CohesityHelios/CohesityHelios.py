@@ -8,11 +8,11 @@ from datetime import datetime, timedelta
 from dateparser import parse
 from typing import Dict, Any
 import json
-import requests
+import urllib3
 import traceback
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''

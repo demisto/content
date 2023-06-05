@@ -1,0 +1,13 @@
+{
+    "IPSet": {
+        "Name": "name",
+        "Id": "id",
+        "ARN": "arn",
+        "Description": "description",
+        "IPAddressVersion": "IPV4",
+        "Addresses": [
+            "1.1.2.2/32"
+        ]
+    },
+    "LockToken": "lockToken"
+}

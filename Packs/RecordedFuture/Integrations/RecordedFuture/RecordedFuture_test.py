@@ -368,7 +368,7 @@ class TestRFClient:
 
         client = create_client()
 
-        mocker.patch.object(demisto, 'params', return_value={'writeback': True})
+        mocker.patch.object(demisto, 'params', return_value={'collective_insights': 'On'})
 
         demisto.callingContext = {
             'context': {
@@ -411,7 +411,7 @@ class TestRFClient:
             demisto,
             'params',
             return_value={
-                'writeback': True,
+                'collective_insights': "On",
             }
         )
 
@@ -477,7 +477,7 @@ class TestRFClient:
             demisto,
             'params',
             return_value={
-                'writeback': False,
+                'collective_insights': "Off",
             }
         )
 

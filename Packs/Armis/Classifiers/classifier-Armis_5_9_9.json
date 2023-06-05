@@ -41,6 +41,10 @@
                     "complex": null,
                     "simple": "type"
                 },
+                "Armis Device Identifier": {
+                    "complex": null,
+                    "simple": "deviceIds.[0]"
+                },
                 "Armis Device IDs": {
                     "complex": null,
                     "simple": "deviceIds.[0]"
@@ -288,6 +292,10 @@
                 "Alert Name": {
                     "complex": null,
                     "simple": "title"
+                },
+                "Armis Device Identifier": {
+                    "complex": null,
+                    "simple": "deviceIds.[0]"
                 },
                 "Armis Device IDs": {
                     "complex": null,

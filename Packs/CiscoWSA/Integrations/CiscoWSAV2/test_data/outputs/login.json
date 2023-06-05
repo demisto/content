@@ -1,0 +1,9 @@
+{
+    "data": {
+        "userName": "admin",
+        "is2FactorRedirectRequired": "false",
+        "role": "Administrator",
+        "email": [],
+        "jwtToken": "token"
+    }
+}

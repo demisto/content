@@ -634,12 +634,19 @@ def get_incident_extra_data_command(client, args):
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
-    account_context_output = assign_params(**{
-        'Username': incident.get('users', '')
-    })
-    endpoint_context_output = assign_params(**{
-        'Hostname': incident.get('hosts', '')
-    })
+    account_context_output = assign_params(
+        Username=incident.get('users', '')
+    )
+    endpoint_context_output = []
+
+    for alert in incident.get('alerts') or []:
+        alert_context = {}
+        if hostname := alert.get('host_name'):
+            alert_context['Hostname'] = hostname
+        if endpoint_id := alert.get('endpoint_id'):
+            alert_context['ID'] = endpoint_id
+        if alert_context:
+            endpoint_context_output.append(alert_context)
 
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
     if account_context_output:
@@ -1067,6 +1074,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
     status = args.get('status')
 
+    status = argToList(status)
     last_seen_gte = arg_to_timestamp(
         arg=args.get('last_seen_gte'),
         arg_name='last_seen_gte'
@@ -1587,6 +1595,24 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-get-tenant-info':
             return_results(get_tenant_info_command(client))
+
+        elif command == 'xdr-list-users':
+            return_results(list_users_command(client, args))
+
+        elif command == 'xdr-list-risky-users':
+            return_results(list_risky_users_or_host_command(client, "user", args))
+
+        elif command == 'xdr-list-risky-hosts':
+            return_results(list_risky_users_or_host_command(client, "host", args))
+
+        elif command == 'xdr-list-user-groups':
+            return_results(list_user_groups_command(client, args))
+
+        elif command == 'xdr-list-roles':
+            return_results(list_roles_command(client, args))
+
+        elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
+            return_results(change_user_role_command(client, args))
 
     except Exception as err:
         return_error(str(err))

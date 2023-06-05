@@ -17,23 +17,26 @@ This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpos
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### nexpose-get-asset
+
 ***
 Returns the specified asset.
-
 
 #### Base Command
 
 `nexpose-get-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Asset ID. | Required | 
-
 
 #### Context Output
 
@@ -75,22 +78,29 @@ Returns the specified asset.
 | Endpoint.OS | string | Endpoint operating system. | 
 | CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
+### nexpose-get-asset-tags
+
+***
+Returns the specified tags for an asset.
+
+#### Base Command
+
 `nexpose-get-asset-tags`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Asset ID. | Required |
+| asset_id | Asset ID. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexpose.AssetTag.Type | string | Type of asset tag. |
-| Nexpose.AssetTag.CreatedTime | string | Timestamp of when the tag was create. |
-| Nexpose.AssetTag.Name | string | The value of the tag. |
-| Nexpose.AssetTag.RiskModifier | string | The risk modifier value associated with criticality tag type. |
+| Nexpose.AssetTag.Type | string | Type of asset tag. | 
+| Nexpose.AssetTag.Name | string | The value of the tag. | 
+| Nexpose.AssetTag.CreatedTime | string | Timestamp of when the tag was created. | 
+| Nexpose.AssetTag.RiskModifier | string | The risk modifier value associated with criticality tag type. | 
 
 #### Command example
 
@@ -143,13 +153,14 @@ Returns the specified asset.
 > | custom | AWS |  | 2023-00-00T00:00:00.000Z |
 
 ### nexpose-get-assets
+
 ***
 Returns all assets for which you have access.
-
 
 #### Base Command
 
 `nexpose-get-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,7 +169,6 @@ Returns all assets for which you have access.
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-
 
 #### Context Output
 
@@ -264,12 +274,14 @@ Returns all assets for which you have access.
 
 
 ### nexpose-search-assets
+
 ***
 Search and return all assets matching specific filters. Returns only assets the user has access to.
 
 #### Base Command
 
 `nexpose-search-assets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -286,7 +298,6 @@ Search and return all assets matching specific filters. Returns only assets the 
 | siteIdIn | Site IDs to filter for. Can be a comma-separated list. | Optional | 
 | siteNameIn | Site names to filter for. Can be a comma-separated list. | Optional | 
 | match | Operator to determine how to match filters. "all" requires that all filters match for an asset to be included. "any" requires only one filter to match for an asset to be included. Possible values are: all, any. Default is all. | Optional | 
-
 
 #### Context Output
 
@@ -393,19 +404,19 @@ Search and return all assets matching specific filters. Returns only assets the 
 
 
 ### nexpose-get-scan
+
 ***
 Get a specific scan.
-
 
 #### Base Command
 
 `nexpose-get-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of a specific scan to retrieve. Can be a comma-separated list. | Required | 
-
 
 #### Context Output
 
@@ -463,20 +474,20 @@ Get a specific scan.
 
 
 ### nexpose-get-asset-vulnerability
+
 ***
 Returns details and possible remediations for an asset's vulnerability.
-
 
 #### Base Command
 
 `nexpose-get-asset-vulnerability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of an asset to search for the vulnerability. | Required | 
 | vulnerabilityId | ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536. | Required | 
-
 
 #### Context Output
 
@@ -606,13 +617,14 @@ Returns details and possible remediations for an asset's vulnerability.
 
 
 ### nexpose-create-shared-credential
+
 ***
 Create a new shared credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential
-
 
 #### Base Command
 
 `nexpose-create-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -645,7 +657,6 @@ Create a new shared credential. For detailed explanation of all parameters of th
 | use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
 | username | Username for the credential. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -653,13 +664,14 @@ Create a new shared credential. For detailed explanation of all parameters of th
 | Nexpose.SharedCredential.id | number | ID of the generated credential. | 
 
 ### nexpose-create-site
+
 ***
 Creates a new site with the specified configuration.
-
 
 #### Base Command
 
 `nexpose-create-site`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -670,7 +682,6 @@ Creates a new site with the specified configuration.
 | scanTemplateId | ID of a scan template to use. If not specified, the default scan template will be used. Use `nexpose-get-report-templates` to get a list of all available templates. | Optional | 
 | importance | Site importance. Defaults to "normal" if not specified. Possible values are: very_low, low, normal, high, very_high. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -678,13 +689,14 @@ Creates a new site with the specified configuration.
 | Nexpose.Site.Id | number | ID of the created site. | 
 
 ### nexpose-create-vulnerability-exception
+
 ***
 Create a new vulnerability exception.
-
 
 #### Base Command
 
 `nexpose-create-vulnerability-exception`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -697,7 +709,6 @@ Create a new vulnerability exception.
 | reason | Reason why the vulnerability exception was submitted. Possible values are: False Positive, Compensating Control, Acceptable Use, Acceptable Risk, Other. | Required | 
 | scope_id | ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -705,19 +716,19 @@ Create a new vulnerability exception.
 | Nexpose.VulnerabilityException.id | number | ID of the generated vulnerability exception. | 
 
 ### nexpose-delete-asset
+
 ***
 Delete an asset.
-
 
 #### Base Command
 
 `nexpose-delete-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the asset to delete. | Required | 
-
 
 #### Context Output
 
@@ -729,13 +740,14 @@ There is no context output for this command.
 >Asset 1 has been deleted.
 
 ### nexpose-delete-scan-schedule
+
 ***
 Delete a scheduled scan.
-
 
 #### Base Command
 
 `nexpose-delete-scan-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -744,42 +756,42 @@ Delete a scheduled scan.
 | site_name | Name of the site to delete (can be used instead of `site_id`). | Optional | 
 | schedule_id | ID of the scheduled scan to delete. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### nexpose-delete-shared-credential
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Delete a shared credential.
 
-
 #### Base Command
 
 `nexpose-delete-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the shared credential to delete. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### nexpose-delete-site-scan-credential
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Delete a site scan credential.
 
-
 #### Base Command
 
 `nexpose-delete-site-scan-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -788,18 +800,18 @@ Delete a site scan credential.
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
 | credential_id | ID of the site scan credential to delete. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### nexpose-delete-site
+
 ***
 Deletes a site.
-
 
 #### Base Command
 
 `nexpose-delete-site`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -807,18 +819,18 @@ Deletes a site.
 | id | ID of a site to delete. | Optional | 
 | site_name | Name of the site to delete (can be used instead of `site_id`). | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### nexpose-delete-vulnerability-exception
+
 ***
 Delete a vulnerability exception.
-
 
 #### Base Command
 
 `nexpose-delete-vulnerability-exception`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -833,13 +845,14 @@ Delete a vulnerability exception.
 >Vulnerability exception with ID 1 has been deleted.
 
 ### nexpose-get-sites
+
 ***
 Retrieves accessible sites.
-
 
 #### Base Command
 
 `nexpose-get-sites`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -848,7 +861,6 @@ Retrieves accessible sites.
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
-
 
 #### Context Output
 
@@ -912,13 +924,14 @@ Retrieves accessible sites.
 
 
 ### nexpose-get-report-templates
+
 ***
 Returns all available report templates.
-
 
 #### Base Command
 
 `nexpose-get-report-templates`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1001,13 +1014,14 @@ There are no input arguments for this command.
 
 
 ### nexpose-create-asset
+
 ***
 Create a new asset.
-
 
 #### Base Command
 
 `nexpose-create-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1018,7 +1032,6 @@ Create a new asset.
 | ip | Primary IPv4 or IPv6 address of the asset. | Required | 
 | host_name | Hostname of the asset. | Optional | 
 | host_name_source | The source used to detect the host name. "User" indicates the host name source is user-supplied. Possible values are: User, DNS, NetBIOS, DCE, EPSEC, LDAP, Other. | Optional | 
-
 
 #### Context Output
 
@@ -1044,13 +1057,14 @@ Create a new asset.
 >New asset has been created with ID 1.
 
 ### nexpose-create-assets-report
+
 ***
 Generates a new report on given assets according to a template and arguments.
-
 
 #### Base Command
 
 `nexpose-create-assets-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1060,7 +1074,6 @@ Generates a new report on given assets according to a template and arguments.
 | name | Report name. | Optional | 
 | format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text. | Optional | 
 | download_immediately | Whether to download the report immediately after the report is generated. Defaults to "true". If the report takes longer than 10 seconds to generate, set to "false". Possible values are: true, false. Default is true. | Optional | 
-
 
 #### Context Output
 
@@ -1078,13 +1091,14 @@ Generates a new report on given assets according to a template and arguments.
 | Nexpose.Report.Format | string | The report format. | 
 
 ### nexpose-create-sites-report
+
 ***
 Generates a new report on given sites according to a template and arguments.
-
 
 #### Base Command
 
 `nexpose-create-sites-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1095,7 +1109,6 @@ Generates a new report on given sites according to a template and arguments.
 | name | Report name. | Optional | 
 | format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text. | Optional | 
 | download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". Possible values are: true, false. Default is true. | Optional | 
-
 
 #### Context Output
 
@@ -1113,16 +1126,17 @@ Generates a new report on given sites according to a template and arguments.
 | Nexpose.Report.Format | string | The report format. | 
 
 ### nexpose-create-site-scan-credential
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Create a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
 
-
 #### Base Command
 
 `nexpose-create-site-scan-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1155,7 +1169,6 @@ Create a new site scan credential. For detailed explanation of all parameters of
 | use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
 | username | Username for the credential. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1163,13 +1176,14 @@ Create a new site scan credential. For detailed explanation of all parameters of
 | Nexpose.SiteScanCredential.id | number | ID of the generated credential. | 
 
 ### nexpose-create-scan-report
+
 ***
 Generates a new report for a specified scan.
-
 
 #### Base Command
 
 `nexpose-create-scan-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1179,7 +1193,6 @@ Generates a new report for a specified scan.
 | name | Report name. | Optional | 
 | format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text. | Optional | 
 | download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". Possible values are: true, false. Default is true. | Optional | 
-
 
 #### Context Output
 
@@ -1221,16 +1234,17 @@ Generates a new report for a specified scan.
 
 
 ### nexpose-create-scan-schedule
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Create a new site scan schedule.
 
-
 #### Base Command
 
 `nexpose-create-scan-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1253,7 +1267,6 @@ Create a new site scan schedule.
 | scan_name | A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching. | Optional | 
 | scan_template | ID of the scan template to use. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -1261,13 +1274,14 @@ Create a new site scan schedule.
 | Nexpose.ScanSchedule.id | int | ID of the newly created scan schedule. | 
 
 ### nexpose-list-assigned-shared-credential
+
 ***
 Retrieve information about shared credentials for a specific site.
-
 
 #### Base Command
 
 `nexpose-list-assigned-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1275,7 +1289,6 @@ Retrieve information about shared credentials for a specific site.
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
 | limit | The number of records to limit the response to. Default is 10. | Optional | 
-
 
 #### Context Output
 
@@ -1327,13 +1340,14 @@ Retrieve information about shared credentials for a specific site.
 
 
 ### nexpose-list-vulnerability
+
 ***
 Retrieve information about all or a specific vulnerability.
-
 
 #### Base Command
 
 `nexpose-list-vulnerability`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1343,7 +1357,6 @@ Retrieve information about all or a specific vulnerability.
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | The number of records to limit the response to. Default is 10. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
-
 
 #### Context Output
 
@@ -1575,16 +1588,17 @@ Retrieve information about all or a specific vulnerability.
 
 
 ### nexpose-list-scan-schedule
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Retrieve information about scan schedules for a specific site or a specific scan schedule.
 
-
 #### Base Command
 
 `nexpose-list-scan-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1593,7 +1607,6 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
 | schedule_id | ID of the scheduled scan (optional, will return a single specific scan if used). | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-
 
 #### Context Output
 
@@ -1618,20 +1631,20 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | Nexpose.ScanSchedule.repeat.start | unknown | The scheduled start date and time. Repeating schedules will determine the next schedule to begin based on this date and time. | 
 
 ### nexpose-list-shared-credential
+
 ***
 Retrieve information about all or a specific shared credential.
-
 
 #### Base Command
 
 `nexpose-list-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of a specific shared credential to retrieve. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-
 
 #### Context Output
 
@@ -1729,16 +1742,17 @@ Retrieve information about all or a specific shared credential.
 
 
 ### nexpose-list-site-scan-credential
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Retrieve information about all or a specific sca credential.
 
-
 #### Base Command
 
 `nexpose-list-site-scan-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1747,7 +1761,6 @@ Retrieve information about all or a specific sca credential.
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
 | credential_id | ID of a specific scan credential to retrieve. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-
 
 #### Context Output
 
@@ -1781,13 +1794,14 @@ Retrieve information about all or a specific sca credential.
 | Nexpose.SiteScanCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`hostRestriction\` is used. | 
 
 ### nexpose-list-vulnerability-exceptions
+
 ***
 Retrieve information about scan schedules for a specific site or a specific scan schedule.
-
 
 #### Base Command
 
 `nexpose-list-vulnerability-exceptions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1797,7 +1811,6 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". Default is submit.date,ASC. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-
 
 #### Context Output
 
@@ -1894,53 +1907,21 @@ Retrieve information about scan schedules for a specific site or a specific scan
 
 
 ### nexpose-start-site-scan
+
 ***
 Starts a scan for the specified site.
-
 
 #### Base Command
 
 `nexpose-start-site-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | site | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site`). | Optional | 
-| hosts | Hosts that should be included as a part of the scan. Can be an IP addresses or a hostname. Can be a comma-separated list. | Optional | 
-| name | Scan name. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Nexpose.Scan.Id | number | The identifier of the scan. | 
-| Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | date | The name of the user who started the scan. | 
-| Nexpose.Scan.Assets | number | The number of assets found in the scan. | 
-| Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
-| Nexpose.Scan.Completed | date | The end time of the scan in ISO8601 format. | 
-| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating. | 
-| Nexpose.Scan.Vulnerabilities.Critical | number | The number of critical vulnerabilities. | 
-| Nexpose.Scan.Vulnerabilities.Moderate | number | The number of moderate vulnerabilities. | 
-| Nexpose.Scan.Vulnerabilities.Severe | number | The number of severe vulnerabilities. | 
-| Nexpose.Scan.Vulnerabilities.Total | number | The total number of vulnerabilities. | 
-
-### nexpose-start-assets-scan
-***
-Starts a scan for specified asset IP addresses and host names.
-
-
-#### Base Command
-
-`nexpose-start-assets-scan`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| IPs | IP addresses of assets to scan. Can be a comma-separated list. | Optional | 
-| hostNames | Hostnames of assets to scan. Can be a comma-separated list. | Optional | 
+| hosts | Specific host(s) on the site to run the scan on. Can be an IP address or a hostname. Can be a comma-separated list. | Optional | 
 | name | Scan name. | Optional | 
 
 
@@ -1961,13 +1942,14 @@ Starts a scan for specified asset IP addresses and host names.
 | Nexpose.Scan.Vulnerabilities.Total | number | The total number of vulnerabilities. | 
 
 ### nexpose-stop-scan
+
 ***
 Stop a running scan.
-
 
 #### Base Command
 
 `nexpose-stop-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1976,13 +1958,14 @@ Stop a running scan.
 
 
 ### nexpose-pause-scan
+
 ***
 Pause a running scan.
-
 
 #### Base Command
 
 `nexpose-pause-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1991,13 +1974,14 @@ Pause a running scan.
 
 
 ### nexpose-resume-scan
+
 ***
 Resume a paused scan.
-
 
 #### Base Command
 
 `nexpose-resume-scan`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2006,13 +1990,14 @@ Resume a paused scan.
 
 
 ### nexpose-get-scans
+
 ***
 Return a list of scans. Returns only active scans by default (active=true).
-
 
 #### Base Command
 
 `nexpose-get-scans`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2022,7 +2007,6 @@ Return a list of scans. Returns only active scans by default (active=true).
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
-
 
 #### Context Output
 
@@ -2092,16 +2076,17 @@ Return a list of scans. Returns only active scans by default (active=true).
 
 
 ### nexpose-disable-shared-credential
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Disable an assigned shared credential.
 
-
 #### Base Command
 
 `nexpose-disable-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2112,13 +2097,14 @@ Disable an assigned shared credential.
 
 
 ### nexpose-download-report
+
 ***
 Returns the generated report.
-
 
 #### Base Command
 
 `nexpose-download-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2127,7 +2113,6 @@ Returns the generated report.
 | instance_id | ID of the report instance. Supports a "latest" value. | Required | 
 | name | Report name. | Optional | 
 | format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text, nexpose-simple-xml. Default is pdf. | Optional | 
-
 
 #### Context Output
 
@@ -2157,16 +2142,17 @@ Returns the generated report.
 ```
 
 ### nexpose-enable-shared-credential
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Enable an assigned shared credential.
 
-
 #### Base Command
 
 `nexpose-enable-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2177,20 +2163,20 @@ Enable an assigned shared credential.
 
 
 ### nexpose-get-report-status
+
 ***
 Returns the status of a report generation process.
-
 
 #### Base Command
 
 `nexpose-get-report-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_id | ID of the report. | Required | 
 | instance_id | ID of the report instance. Supports a "latest" value. | Required | 
-
 
 #### Context Output
 
@@ -2224,16 +2210,17 @@ Returns the status of a report generation process.
 
 
 ### nexpose-update-scan-schedule
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Update an existing site scan schedule.
 
-
 #### Base Command
 
 `nexpose-update-scan-schedule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2257,21 +2244,21 @@ Update an existing site scan schedule.
 | scan_name | A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching. | Optional | 
 | scan_template | ID of the scan template to use. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### nexpose-update-site-scan-credential
+
 ***
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
 Update an existing site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials.
 
-
 #### Base Command
 
 `nexpose-update-site-scan-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2305,18 +2292,18 @@ Update an existing site scan credential. For detailed explanation of all paramet
 | use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
 | username | Username for the credential. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
 ### nexpose-update-vulnerability-exception-expiration
+
 ***
 Update an existing vulnerability exception.
-
 
 #### Base Command
 
 `nexpose-update-vulnerability-exception-expiration`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2332,13 +2319,14 @@ Update an existing vulnerability exception.
 >Successfully updated expiration date of vulnerability exception 1.
 
 ### nexpose-update-vulnerability-exception-status
+
 ***
 Update an existing vulnerability exception.
-
 
 #### Base Command
 
 `nexpose-update-vulnerability-exception-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2354,13 +2342,14 @@ Update an existing vulnerability exception.
 >Successfully updated status of vulnerability exception 1.
 
 ### nexpose-update-shared-credential
+
 ***
 Update an existing shared credential.
-
 
 #### Base Command
 
 `nexpose-update-shared-credential`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2393,7 +2382,6 @@ Update an existing shared credential.
 | ssh_private_key_password | Password for the private key. | Optional | 
 | use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
 | username | Username for the credential. | Optional | 
-
 
 #### Context Output
 

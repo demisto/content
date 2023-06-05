@@ -10,13 +10,11 @@ configuration:
   type: 0
 - defaultvalue: '443'
   display: Port Number
-  hidden: false
   name: port
   required: true
   type: 0
 - defaultvalue: Common
   display: The administrative partition
-  hidden: false
   name: partition
   required: false
   type: 0
@@ -619,7 +617,7 @@ script:
     - contextPath: F5.LTM.Nodes.name
       description: The node name
       type: String
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: false
   longRunning: false

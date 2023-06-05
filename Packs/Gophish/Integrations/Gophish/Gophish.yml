@@ -3,9 +3,8 @@ commonfields:
   version: -1
 name: Gophish
 display: Gophish
-category: Deception
-description: Gophish is a powerful, open-source phishing framework that makes it easy
-  to test your organization's exposure to phishing. For Free
+category: Deception & Breach Simulation
+description: Gophish is a powerful, open-source phishing framework that makes it easy to test your organization's exposure to phishing. For Free
 configuration:
 - display: Server URL (e.g. https://fqdnofyourserver:3333)
   name: url
@@ -85,8 +84,7 @@ script:
     - contextPath: Gophish.ModifiedUser
       description: Modified user details
       type: String
-    description: Modifies a user account. This can be used to change the role, reset
-      the password, or change the username.
+    description: Modifies a user account. This can be used to change the role, reset the password, or change the username.
   - name: gophish-delete-user
     arguments:
     - name: id
@@ -96,16 +94,14 @@ script:
     - contextPath: Gophish.DeletedUser
       description: Info about the deleted user
       type: string
-    description: Deletes a user, as well as every object (landing page, template,
-      etc.) and campaign they've created.
+    description: Deletes a user, as well as every object (landing page, template, etc.) and campaign they've created.
   - name: gophish-get-all-sending-profiles
     arguments: []
     outputs:
     - contextPath: Gophish.AllSendingProfiles
       description: Sending profiles information
       type: String
-    description: Gets a list of the sending profiles created by the authenticated
-      user.
+    description: Gets a list of the sending profiles created by the authenticated user.
   - name: gophish-get-sending-profile
     arguments:
     - name: id
@@ -115,8 +111,7 @@ script:
     - contextPath: Gophish.SendingProfile
       description: info about the sending profile
       type: String
-    description: Returns a sending profile given an ID, returning a 404 error if no
-      sending profile with the provided ID is found.
+    description: Returns a sending profile given an ID, returning a 404 error if no sending profile with the provided ID is found.
   - name: gophish-create-sending-profile
     arguments:
     - name: name
@@ -142,8 +137,7 @@ script:
       - "False"
       description: Ignore untrusted certificates
     - name: headers
-      description: Custom headers for the sending profile in format key1:value1,key2:value2
-        etc
+      description: Custom headers for the sending profile in format key1:value1,key2:value2 etc
       isArray: true
     outputs:
     - contextPath: Gophish.CreatedSendingProfile
@@ -157,8 +151,7 @@ script:
       description: ID of the profile to be deleted
     outputs:
     - contextPath: Gophish.DeletedSendingProfile
-      description: This method returns a status message indicating the sending profile
-        was deleted successfully.
+      description: This method returns a status message indicating the sending profile was deleted successfully.
       type: String
     description: Deletes a sending profile by ID.
   - name: gophish-get-all-landing-pages
@@ -182,21 +175,17 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Capturing credentials is a powerful feature of Gophish. By setting
-        certain flags, you have the ability to capture all user input, or just non-password
-        input.
+      description: Capturing credentials is a powerful feature of Gophish. By setting certain flags, you have the ability to capture all user input, or just non-password input.
     - name: capture_passwords
       required: true
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: If you want to capture passwords as well, set the capture_passwords
-        attribute.
+      description: If you want to capture passwords as well, set the capture_passwords attribute.
     - name: redirect_url
       required: true
-      description: Gophish also provides the ability to redirect users to a URL after
-        they submit credentials. This is controlled by setting the redirect_url attribute.
+      description: Gophish also provides the ability to redirect users to a URL after they submit credentials. This is controlled by setting the redirect_url attribute.
     outputs:
     - contextPath: Gophish.CreatedLandingPage
       description: info about the created page
@@ -223,14 +212,11 @@ script:
       predefined:
       - "True"
       - "False"
-      description: 'Whether or not to create a <base> tag in the resulting HTML to
-        resolve static references (recommended: false)'
+      description: 'Whether or not to create a <base> tag in the resulting HTML to resolve static references (recommended: false)'
       defaultValue: "False"
     outputs:
     - contextPath: Gophish.ImportedSite
-      description: This API endpoint doesn't actually create a new landing page. Instead,
-        you can use the HTML returned from this endpoint as an input to the Create
-        Landing Page method.
+      description: This API endpoint doesn't actually create a new landing page. Instead, you can use the HTML returned from this endpoint as an input to the Create Landing Page method.
       type: String
     description: Fetches a URL to be later imported as a landing page
   - name: gophish-get-all-templates
@@ -249,8 +235,7 @@ script:
     - contextPath: Gophish.Template
       description: Returns a template with the provided ID
       type: String
-    description: 'Returns a template with the provided ID.Returns a 404: Not Found
-      error if the specified template doesn''t exist.'
+    description: 'Returns a template with the provided ID.Returns a 404: Not Found error if the specified template doesn''t exist.'
   - name: gophish-delete-template
     arguments:
     - name: id
@@ -273,15 +258,12 @@ script:
       defaultValue: "False"
     - name: content
       required: true
-      description: The original email content in RFC 2045 format, including the original
-        headers.
+      description: The original email content in RFC 2045 format, including the original headers.
     outputs:
     - contextPath: Gophish.ImportedTemplate
       description: Info about the imported template
       type: string
-    description: This method doesn't fully import the email as a template. Instead,
-      it parses the email, returning a response that can be used with the "Create
-      Template" endpoint.
+    description: This method doesn't fully import the email as a template. Instead, it parses the email, returning a response that can be used with the "Create Template" endpoint.
   - name: gophish-create-template
     arguments:
     - name: name
@@ -293,8 +275,7 @@ script:
     - name: text
       description: 'Text formatted content: Please reset your password here: {{.URL}}'
     - name: html
-      description: 'HTML formatted content: <html><head></head><body>Please reset
-        your password <a href\"{{.URL}}\">here</a></body></html>"'
+      description: 'HTML formatted content: <html><head></head><body>Please reset your password <a href\"{{.URL}}\">here</a></body></html>"'
     - name: attachmentContent
       description: attachment is expected to be base64 encoded.
       isArray: true
@@ -429,9 +410,7 @@ script:
     - contextPath: Gophish.GroupSummary
       description: Summary data for the group
       type: String
-    description: It may be the case that you just want the number of members in a
-      group, not necessarily the full member details. This API endpoint returns a
-      summary for a group.
+    description: It may be the case that you just want the number of members in a group, not necessarily the full member details. This API endpoint returns a summary for a group.
   - name: gophish-create-group
     arguments:
     - name: name
@@ -439,8 +418,7 @@ script:
       description: name of the group
     - name: targets
       required: true
-      description: 'List of targets format: email,firstname,lastname,position:email,firstname,lastname,position
-        etc'
+      description: 'List of targets format: email,firstname,lastname,position:email,firstname,lastname,position etc'
     outputs:
     - contextPath: Gophish.CreatedGroup
       description: details about the created group
@@ -466,7 +444,7 @@ script:
       description: info about the landing page
       type: string
     description: Gets a landing page info
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   subtype: python3
 tests:

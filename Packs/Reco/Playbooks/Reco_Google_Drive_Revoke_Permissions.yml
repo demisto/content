@@ -1,0 +1,677 @@
+id: Reco-Google-Drive-Revoke-Permissions
+version: -1
+name: Reco-Google-Drive-Revoke-Permissions
+description: This workflow enables you to easily list the permissions of files stored in Google Drive, giving you visibility into who has access to your organization's data. If a file's permission is publicly exposed, the workflow restricts access to the file to prevent unauthorized use. Similarly, if a file's permission is set to accessible by all org users and shared with internal users, access to the file is restricted to authorized users only. Using the Google Drive API and built-in conditional logic, this workflow helps you secure sensitive data and streamline your organization's data management.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f18b296c-af9b-4c51-844f-8aa31f78c8ce
+    type: start
+    task:
+      id: f18b296c-af9b-4c51-844f-8aa31f78c8ce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e90060a3-2a8f-40c6-81a4-336d9dff24c3
+    type: regular
+    task:
+      id: e90060a3-2a8f-40c6-81a4-336d9dff24c3
+      version: -1
+      name: Google Drive Delete Permission
+      description: Delete a permission.
+      script: GoogleDrive|||google-drive-file-permission-delete
+      type: regular
+      iscommand: true
+      brand: GoogleDrive
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      extend-context:
+        simple: google_drive_result
+      file_id:
+        complex:
+          root: JsonObject.entityId
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.entityId
+                iscontext: true
+      permission_id:
+        simple: anyoneWithLink
+      supports_all_drives:
+        simple: "true"
+      user_id:
+        complex:
+          root: JsonObject.owner
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.owner
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9a10f8ba-2004-471a-8754-c985ed25b621
+    type: regular
+    task:
+      id: 9a10f8ba-2004-471a-8754-c985ed25b621
+      version: -1
+      name: Reco - Asset Resolved - all org users
+      description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
+      script: Reco|||reco-resolve-visibility-event
+      type: regular
+      iscommand: true
+      brand: Reco
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: JsonObject.entityId
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.entityId
+                iscontext: true
+      label_name:
+        simple: Accessible to All Org Users
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 1295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e691ce6b-aa6d-46f4-8c23-780b00cd1471
+    type: regular
+    task:
+      id: e691ce6b-aa6d-46f4-8c23-780b00cd1471
+      version: -1
+      name: Update timeline
+      description: Add a comment to an incident in Reco
+      script: '|||reco-update-incident-timeline'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      comment:
+        complex:
+          root: JsonObject.name
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.name
+                iscontext: true
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'File Resolved by Demisto  '
+              suffix: {}
+      incident_id:
+        simple: ${incident.dbotMirrorId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bb3f1d61-05ff-460a-8db0-2e3c7448d785
+    type: playbook
+    task:
+      id: bb3f1d61-05ff-460a-8db0-2e3c7448d785
+      version: -1
+      name: Reco Build String Message
+      playbookName: Reco Build String Message
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    scriptarguments:
+      link:
+        simple: ${JsonObject.link}
+      name:
+        simple: ${JsonObject.name}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 60ea0fe5-0e3c-47f5-8a86-6932d80f7034
+    type: regular
+    task:
+      id: 60ea0fe5-0e3c-47f5-8a86-6932d80f7034
+      version: -1
+      name: Parse Assets
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: JsonObject
+      value:
+        simple: ${incident.labels.assets}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: cd9e9908-9e77-437c-8ba8-35d640ae9bc5
+    type: regular
+    task:
+      id: cd9e9908-9e77-437c-8ba8-35d640ae9bc5
+      version: -1
+      name: List Permissions
+      description: Lists a file's or shared drive's permissions.
+      script: GoogleDrive|||google-drive-file-permissions-list
+      type: regular
+      iscommand: true
+      brand: GoogleDrive
+    nexttasks:
+      '#error#':
+      - "14"
+      '#none#':
+      - "15"
+    scriptarguments:
+      file_id:
+        complex:
+          root: JsonObject.entityId
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.entityId
+                iscontext: true
+      supports_all_drives:
+        simple: "true"
+      user_id:
+        complex:
+          root: JsonObject.owner
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.owner
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 96d51497-e263-4124-8b68-6059373b8d8e
+    type: regular
+    task:
+      id: 96d51497-e263-4124-8b68-6059373b8d8e
+      version: -1
+      name: Update timeline
+      description: Add a comment to an incident in Reco
+      script: '|||reco-update-incident-timeline'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      comment:
+        complex:
+          root: JsonObject.name
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.name
+                iscontext: true
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'File Not Found by Demisto  '
+              suffix: {}
+      incident_id:
+        simple: ${incident.dbotMirrorId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 21b4e92c-6c8a-46e3-85a1-782276c7d5df
+    type: regular
+    task:
+      id: 21b4e92c-6c8a-46e3-85a1-782276c7d5df
+      version: -1
+      name: Reco - Asset Resolved
+      description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
+      script: Reco|||reco-resolve-visibility-event
+      type: regular
+      iscommand: true
+      brand: Reco
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: JsonObject.entityId
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.entityId
+                iscontext: true
+      label_name:
+        simple: Accessible by General Public
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b44b0884-9757-4699-8e5b-7ce378f82287
+    type: condition
+    task:
+      id: b44b0884-9757-4699-8e5b-7ce378f82287
+      version: -1
+      name: Permission Condition
+      type: condition
+      iscommand: false
+      description: 'Check permissions for the file'
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      Condition for org permission:
+      - "18"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleDrive.FilePermission.FilePermission
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: anyoneWithLink
+    - label: Condition for org permission
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: GoogleDrive.FilePermission.FilePermission
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 817f0e7e-9687-471d-8816-0e8e8ebc7608
+    type: regular
+    task:
+      id: 817f0e7e-9687-471d-8816-0e8e8ebc7608
+      version: -1
+      name: Google Drive Delete Permission
+      description: Delete a permission.
+      script: GoogleDrive|||google-drive-file-permission-delete
+      type: regular
+      iscommand: true
+      brand: GoogleDrive
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: google_drive_result
+      file_id:
+        complex:
+          root: JsonObject.entityId
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.entityId
+                iscontext: true
+      permission_id:
+        simple: domain
+      supports_all_drives:
+        simple: "true"
+      user_id:
+        complex:
+          root: JsonObject.owner
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.owner
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4a9bf094-ec04-4e60-8e1c-ce990c6942e8
+    type: condition
+    task:
+      id: 4a9bf094-ec04-4e60-8e1c-ce990c6942e8
+      version: -1
+      name: Permission for Specific email address
+      type: condition
+      iscommand: false
+      description: 'Check permissions for the file for specific email address'
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleDrive.FilePermission.FilePermission.emailAddress
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: GoogleDrive.FilePermission.FilePermission.emailAddress
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ff39a2ff-3333-4d90-8895-f063575370bb
+    type: regular
+    task:
+      id: ff39a2ff-3333-4d90-8895-f063575370bb
+      version: -1
+      name: Reco - Asset Resolved
+      description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
+      script: Reco|||reco-resolve-visibility-event
+      type: regular
+      iscommand: true
+      brand: Reco
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: JsonObject.entityId
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: JsonObject.entityId
+                iscontext: true
+      label_name:
+        simple: Accessible by General Public
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 97ede596-dde0-4e68-83f4-6584af4033b6
+    type: title
+    task:
+      id: 97ede596-dde0-4e68-83f4-6584af4033b6
+      version: -1
+      name: Done
+      tags:
+      - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_2_yes": 0.74,
+      "18_17_yes": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1895,
+        "width": 1920,
+        "x": -1060,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,23 +1,29 @@
 This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Entity Enrichment - Generic v2
+
+* Entity Enrichment - Generic v3
 * Calculate Severity - Generic v2
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * AssignAnalystToIncident
 
 ### Commands
+
 * closeInvestigation
 * extractIndicators
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -26,9 +32,12 @@ This playbook does not use any integrations.
 | OnCall | Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later. | False | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![default](https://raw.githubusercontent.com/demisto/content/fb32f760304f6430237fee965ce834c3c1adcbda/Packs/DefaultPlaybook/doc_files/Default.png)
+
+![Default](../doc_files/Default.png)

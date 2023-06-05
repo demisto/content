@@ -478,7 +478,7 @@ def test_endpoint_command(mocker):
             'IPAddress': '3.3.3.3',
             'OSVersion': 'Windows Server 2012 R2 Server Standard, 64-bit',
             'Vendor': 'Carbon Black Response',
-            'Status': 'Online',
+            'Status': 'Offline',  # unresolved is an offline status
             'IsIsolated': 'No',
             'Memory': '1073332224',
             'MACAddress': '06d3d4a5ba28'

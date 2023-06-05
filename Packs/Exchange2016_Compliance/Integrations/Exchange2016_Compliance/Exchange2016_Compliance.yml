@@ -4,7 +4,7 @@ commonfields:
 deprecated: true
 name: Exchange 2016 Compliance Search
 display: Exchange 2016 Compliance Search (Deprecated)
-category: Messaging
+category: Messaging and Conferencing
 description: Deprecated. Use EWS V2 instead.
 configuration:
 - display: DOMAIN\USERNAME (e.g., DEMISTO.INT\admin)

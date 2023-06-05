@@ -3,8 +3,9 @@ from CommonServerUserPython import *
 
 import requests
 import traceback
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 

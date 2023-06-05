@@ -17,7 +17,15 @@ This content pack includes the following playbooks:
 ![Cloud Response - GCP](https://raw.githubusercontent.com/demisto/content/6790c6160863055ad2d0f906e0ffa18963bd7b20/Packs/GCP-Enrichment-Remediation/doc_files/Cloud_Response_-_GCP.png)
 
 - GCP - Enrichment  
-![GCP - Enrichment](https://github.com/capanw/chait-content/blob/gcp-updates/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Enrichment.png)
+![GCP - Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Enrichment.png)
 
 - GCP - Firewall Remediation
-![GCP - Firewall Remediation](https://github.com/capanw/chait-content/blob/gcp-updates/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Firewall_Remediation.png)
+![GCP - Firewall Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Firewall_Remediation.png)
+
+### Automation Scripts
+
+#### GCPProjectHierarchy
+
+Automation to determine GCP project hierarchy by looking up parent objects until the organization level is reached.
+
+![GCPProjectHierarchy](https://raw.githubusercontent.com/demisto/content/7065e08ec9738db1ea3e2bc5d78ac643931f46d1/Packs/GCP-Enrichment-Remediation/doc_files/GCPProjecHierarchy.png)

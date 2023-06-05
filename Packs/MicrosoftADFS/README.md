@@ -1,7 +1,11 @@
 # Microsoft AD FS
 ​
 This pack includes XSIAM content.
+
 ​
+Note: The logs will be stored in the dataset named *microsoft_windows_raw*.
+
+To view logs only from the Windows AD FS, apply the following filter to the datamodel query: *| filter xdm.observer.type="AD FS Auditing"*
 ## Configuration on Server Side
 ​
 #### Validate that AD FS server role is enabled
@@ -34,7 +38,7 @@ You will need to configure the vendor and product for this specific collector.
 Use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
 
 ​
-You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *msft_adfs_raw*.
+You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *microsoft_windows_raw*.
 
 ​
 When configuring the instance, use a yml file that configures the vendor and product, as shown in the configuration below for the Microsoft AD FS product.

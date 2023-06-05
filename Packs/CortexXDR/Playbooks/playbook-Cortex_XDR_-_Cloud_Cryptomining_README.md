@@ -13,29 +13,35 @@ The playbook supports AWS, Azure, and GCP and executes the following:
 - Notifies the SOC if a malicious verdict was found
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
+* Cortex XDR - XCloud Cryptojacking - Set Verdict
 * Cortex XDR - Cloud Enrichment
-* Cortex XDR - Cryptojacking - Set Verdict
 * Cloud Response - Generic
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
-* LoadJSON
+
 * IncreaseIncidentSeverity
+* LoadJSON
 
 ### Commands
-* closeInvestigation
-* setIncident
-* xdr-update-incident
+
 * xdr-get-incident-extra-data
+* setIncident
+* closeInvestigation
 * xdr-get-cloud-original-alerts
+* xdr-update-incident
 * send-mail
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -61,9 +67,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Cortex XDR - Cloud Cryptojacking](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)
+
+![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)

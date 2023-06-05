@@ -281,8 +281,10 @@ def aggregate_release_notes_for_marketplace(pack_versions_dict: dict):
 
     """
     pack_release_notes, _ = merge_version_blocks(pack_versions_dict)
-    pack_release_notes = f'{pack_release_notes}\n' if not pack_release_notes.endswith('\n') else pack_release_notes
-    pack_release_notes = f'\n{pack_release_notes}' if not pack_release_notes.startswith('\n') else pack_release_notes
+    pack_release_notes = f'{pack_release_notes}\n' if not pack_release_notes.endswith(  # type: ignore[union-attr]
+        '\n') else pack_release_notes
+    pack_release_notes = f'\n{pack_release_notes}' if not pack_release_notes.startswith(  # type: ignore[union-attr]
+        '\n') else pack_release_notes
     return pack_release_notes
 
 
@@ -351,7 +353,7 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> T
 
     pack_release_notes = construct_entities_block(entities_data).strip() if return_str else entities_data
 
-    return pack_release_notes, latest_version
+    return pack_release_notes, latest_version  # type: ignore[return-value]
 
 
 def generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict, packs_metadata_dict, version,
@@ -425,8 +427,8 @@ def get_release_notes_draft(github_token, asset_id):
         return ''
 
     # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
+    import urllib3
+    urllib3.disable_warnings()
     try:
         res = requests.get('https://api.github.com/repos/demisto/content/releases',
                            verify=False,  # guardrails-disable-line

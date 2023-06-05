@@ -1,11 +1,13 @@
 import urllib.parse
+import warnings
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -105,7 +107,8 @@ def email_command(client, args, email_suspicious_score_threshold, email_maliciou
     emails = argToList(args.get("email"), ",")
     results = []
     for email in emails:
-        result = client.get_email_reputation(email)
+        email_encoded = urllib.parse.quote(email, safe="")
+        result = client.get_email_reputation(email_encoded)
         result['address'] = email
 
         human_readable = tableToMarkdown(f"IPQualityScore Results for {email}", result, result.keys())
@@ -151,9 +154,9 @@ def url_command(client, args, url_suspicious_score_threshold, url_malicious_scor
 
         human_readable = tableToMarkdown(f"IPQualityScore Results for {url}", result, result.keys())
 
-        if result.get('fraud_score', 0) >= url_malicious_score_threshold:
+        if result.get('risk_score', 0) >= url_malicious_score_threshold:
             score = 3
-        elif result.get('fraud_score', 0) >= url_suspicious_score_threshold:
+        elif result.get('risk_score', 0) >= url_suspicious_score_threshold:
             score = 2
         else:
             score = 0

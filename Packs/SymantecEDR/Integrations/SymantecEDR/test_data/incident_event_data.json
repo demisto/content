@@ -1,0 +1,97 @@
+{
+    "result": [
+        {
+            "type_id": 8001,
+            "severity_id": 1,
+            "device_time": "2022-12-01T21:43:44.218Z",
+            "log_time": "2022-12-01T09:54:47.909Z",
+            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "device_name": "WIN-TFB8L7BI77H",
+            "device_ip": "127.0.0.1",
+            "device_os_name": "Windows Server 2019 ",
+            "user_name": "Administrator",
+            "user_domain": "WIN-TFB8L7BI77H",
+            "user_sid": "S-1-5-21-3669279935-616031708-4259075843-500",
+            "incident": "9d6f2100-7158-11ed-da26-000000000001",
+            "device_domain": "WORKGROUP",
+            "operation": 1,
+            "event_actor": {
+                "pid": 12936,
+                "uid": "787E05D5-71B8-F1ED-8217-98261F32744E",
+                "cmd_line": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" ",
+                "start_time": "2022-12-01T21:43:29.835Z",
+                "signature_level_id": 40,
+                "integrity_id": 5,
+                "user": {
+                    "name": "Administrator",
+                    "sid": "S-1-5-21-3669279935-616031708-4259075843-500"
+                },
+                "file": {
+                    "name": "chrome.exe",
+                    "md5": "a66494a69f3e565df33e527d710635bc",
+                    "modified": "2022-11-23T22:47:01.271Z",
+                    "path": "c:\\program files\\google\\chrome\\application\\chrome.exe",
+                    "normalized_path": "CSIDL_PROGRAM_FILES\\google\\chrome\\application\\chrome.exe",
+                    "signature_company_name": "Google LLC",
+                    "signature_value_ids": [
+                        3
+                    ],
+                    "sha2": "fd7b8f1a5f5b08c9d2ace30d8982df968c19ddaf8cf766497a05457c5f6e4a96",
+                    "original_name": "chrome.exe"
+                }
+            },
+            "process": {
+                "pid": 14468,
+                "uid": "787E05ED-71B8-F1ED-8217-98261F32744E",
+                "cmd_line": "C:\\Windows\\system32\\cmd.exe /d /c \"C:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\14.3.8268.5000.105\\Data\\Definitions\\WebExtDefs\\20221129.017\\webextbridge.exe\" chrome-extension://pamolibmfebkknkdmfabpjebifbffbec/ --parent-window=0 < \\\\.\\pipe\\chrome.nativeMessaging.in.90abb4245fc8fa0a > \\\\.\\pipe\\chrome.nativeMessaging.out.90abb4245fc8fa0a",
+                "signature_level_id": 60,
+                "integrity_id": 5,
+                "user": {
+                    "name": "Administrator",
+                    "sid": "S-1-5-21-3669279935-616031708-4259075843-500"
+                },
+                "file": {
+                    "normalized_path": "CSIDL_SYSTEM\\cmd.exe",
+                    "name": "cmd.exe",
+                    "md5": "975b45b669930b0cc773eaf2b414206f",
+                    "modified": "2019-09-07T00:29:00.561Z",
+                    "path": "c:\\windows\\system32\\cmd.exe",
+                    "signature_company_name": "Microsoft Windows",
+                    "signature_value_ids": [
+                        3,
+                        5
+                    ],
+                    "sha2": "3656f37a1c6951ec4496fabb8ee957d3a6e3c276d5a3785476b482c9c0d32ea2",
+                    "original_name": "Cmd.Exe"
+                }
+            },
+            "enriched_data": {
+                "rule_name": "eGenericProcessLaunch",
+                "suspicion_score": 0,
+                "category_name": "Process Launch",
+                "category_id": 2,
+                "rule_description": "Generic process launch event"
+            },
+            "event_uuid": "3a7beba0-71c1-11ed-fd2d-000000010f00",
+            "attacks": [
+                {
+                    "technique_uid": "T1059",
+                    "technique_name": "Command and Scripting Interpreter",
+                    "tactic_ids": [
+                        2
+                    ],
+                    "tactic_uids": [
+                        "TA0002"
+                    ]
+                }
+            ],
+            "event_source": 3,
+            "ref_uid": "09FB7038-0A5E-4048-A3D5-E88885323F2E",
+            "correlation_uid": "787E05EE-71B8-11ED-8217-78E3B5B300F9",
+            "uuid": "30de6860-715e-11ed-e069-000000000015",
+            "log_name": "epmp_incident-2022-12-01"
+        }
+    ],
+    "next": "MSwyMDIyLTEyLTI1VDIzOjIwOjU3LjQ5NFo=",
+    "total": 33
+}

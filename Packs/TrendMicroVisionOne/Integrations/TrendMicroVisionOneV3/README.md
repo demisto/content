@@ -412,7 +412,7 @@ Retrieves information about a specific endpoint
 | VisionOne.Endpoint_Info.macAddr               | string   | MAC address                                                       |
 | VisionOne.Endpoint_Info.ip                    | string   | IP address                                                        |
 | VisionOne.Endpoint_Info.osName                | string   | Operating System name                                             |
-| VisionOne.Endpoint_Info.osVersion             | string   | Operating System nersion                                          |
+| VisionOne.Endpoint_Info.osVersion             | string   | Operating System version                                          |
 | VisionOne.Endpoint_Info.osDescription         | string   | Description of the Operating System                               |
 | VisionOne.Endpoint_Info.productCode           | string   | Product code of the Trend Micro product running on the endpoint   |
 | VisionOne.Endpoint_Info.agentGuid             | string   | AgentGuid of the endpoint                                         |

@@ -6,9 +6,16 @@
       "example_entities": {
         "domains": [
           {
-            "example": "example.com",
+            "example": "stage.example.com",
             "sort_value": 99,
-            "target": "example.com:8009"
+            "target": "stage.example.com:8009"
+          }
+        ],
+        "ips": [
+          {
+            "example": "1.2.3.4",
+            "sort_value": 99,
+            "target": "1.2.3.4:8009"
           }
         ]
       },
@@ -17,7 +24,7 @@
       "rule_metadata": {
         "entity_counts": {
           "domains": 1,
-          "ips": 0
+          "ips": 1
         },
         "references": [
           "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2020-1938",

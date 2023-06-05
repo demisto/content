@@ -1,0 +1,56 @@
+{
+  "totalCount": 1,
+  "devices": [
+    {
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "vendor": "",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "firstSeen": 1591729370000,
+      "lastSeen": 1599848550000,
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server",
+      "tags": [
+        {
+          "tid": 54,
+          "expiry": 0,
+          "thid": 54,
+          "name": "Internet Facing System",
+          "restricted": false,
+          "data": {
+            "auto": false,
+            "color": 110,
+            "description": "",
+            "visibility": "Public"
+          },
+          "isReferenced": true
+        },
+        {
+          "tid": 90,
+          "expiry": 0,
+          "thid": 90,
+          "name": "Test",
+          "restricted": false,
+          "data": {
+            "auto": false,
+            "color": 181,
+            "description": "",
+            "visibility": "Public"
+          },
+          "isReferenced": false
+        }
+      ]
+    }
+  ]
+}

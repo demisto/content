@@ -18,10 +18,8 @@ configuration:
   name: password
   required: true
   type: 4
-- additionalinfo: The ssh key is used to login to an AWS mac machine - for testing
-    purposes.
+- additionalinfo: The ssh key is used to login to an AWS mac machine - for testing purposes.
   display: SSH Key
-  hidden: false
   name: ssh_key
   required: false
   type: 14
@@ -181,8 +179,7 @@ script:
       name: cask_apps
     - description: Hombrew taps packages to install
       name: homebrew_taps
-    description: Install and configure homebrew, Install additional homebrew/-cask
-      packages.
+    description: Install and configure homebrew, Install additional homebrew/-cask packages.
     name: tidy-homebrew
     outputs:
     - contextPath: Tidy.Install.Status
@@ -221,8 +218,7 @@ script:
       name: access_token
       required: true
       secret: true
-    description: Generate private/public key, Configure ssh client, and deploy keys
-      to your GitHub account.
+    description: Generate private/public key, Configure ssh client, and deploy keys to your GitHub account.
     name: tidy-github-ssh-key
     outputs:
     - contextPath: Tidy.Install.Status
@@ -421,8 +417,7 @@ script:
       - "yes"
       - "no"
       required: true
-    description: Insert/update/remove a block of multi-line text surrounded by customizable
-      marker lines.
+    description: Insert/update/remove a block of multi-line text surrounded by customizable marker lines.
     name: tidy-block-in-file
     outputs:
     - contextPath: Tidy.Install.Status

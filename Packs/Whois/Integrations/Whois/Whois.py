@@ -10,6 +10,10 @@ import errno
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
 
+RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
+RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
+RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
+
 # flake8: noqa
 
 """
@@ -7183,7 +7187,12 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
     # (3 tries led to errno.ECONNRESET)
     else:
         raise WhoisException('(104) Connection Reset By Peer')
-
+    if not response:
+        msg = f"Got an empty response for the requested domain {request_domain} from the server {target_server}. Please check your firewall or proxy settings."
+        if SHOULD_ERROR:
+            raise Exception(msg)
+        else:
+            return_warning(msg)
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
         # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
@@ -7209,7 +7218,8 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
                              re.IGNORECASE)
             if match is not None:
                 referral_server = match.group(2)
-                if referral_server != server and "://" not in referral_server: # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                if referral_server != server and "://" not in referral_server:
                     # Referral to another WHOIS server...
                     try:
                         return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
@@ -7315,8 +7325,10 @@ states_ca = {}  # type: dict
 class WhoisException(Exception):
     pass
 
+
 class WhoisWarnningException(Exception):
     pass
+
 
 def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
@@ -7687,7 +7699,7 @@ class InvalidDateHandler:
 
     def __init__(self, year, month, day):
         self.year = year
-        self.month = month 
+        self.month = month
         self.day = day
 
     def strftime(self, *args):
@@ -8445,7 +8457,10 @@ def domain_command(reliability):
         })
 
 
-def get_whois_ip(ip):
+def get_whois_ip(ip,
+                 retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
+                 rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
+                 rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT):
     from urllib.request import build_opener, ProxyHandler
     from ipwhois import IPWhois
     proxy_opener = None
@@ -8457,13 +8472,32 @@ def get_whois_ip(ip):
     else:
         ip_obj = IPWhois(ip)
 
-    return ip_obj.lookup_rdap(depth=1)
+    try:
+        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+    except urllib.error.HTTPError as e:
+        if rate_limit_errors_suppressed:
+            demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
+            return
+        demisto.error(f'HTTPError when trying to lookup rdap info. Error: {e}')
+        raise e
+
+
+def get_param_or_arg(param_key: str, arg_key: str):
+    return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
 def ip_command(ips, reliability):
+    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
+                                      'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+    rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
+                                       'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
+    rate_limit_errors_suppressed: bool = bool(get_param_or_arg(
+        'rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
+
     results = []
     for ip in argToList(ips):
-        response = get_whois_ip(ip)
+        response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
+                                rate_limit_errors_suppressed=rate_limit_errors_suppressed)
 
         dbot_score = Common.DBotScore(
             indicator=ip,
@@ -8513,7 +8547,7 @@ def whois_command(reliability):
         context_res.update(dbot_score)
         context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
 
-        if verbose: 
+        if verbose:
             demisto.info('Verbose response')
             whois_result['query'] = query
             json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
@@ -8586,7 +8620,13 @@ def main():
 
     try:
         if command == 'ip':
-            return_results(ip_command(demisto.args().get('ip'), reliability))
+            demisto_args = demisto.args()
+            ip = demisto_args.get('ip')
+            ret_value = ip_command(ip, reliability)
+            if ret_value:
+                return_results(ret_value)
+            else:
+                return_error(f'Failed to lookup ip {ip}')
         else:
             org_socket = socket.socket
             setup_proxy()

@@ -1,18 +1,31 @@
-The **Cortex Attack Surface Management** pack is supported by Cortex Xpanse Expander and the ASM module for Cortex XSIAM.
+The **Cortex Attack Surface Management** pack is supported by Cortex Xpanse Expander and the (Attack Surface Management) ASM module for Cortex XSIAM.
 
-Cortex Xpanse Expander and the ASM module for Cortex XSIAM are both best in class External Attack Surface Management solutions that strive to proactively reduce the frequency and severity of security incidents caused by internet-exposed risks. These solutions deliver comprehensive attack surface visibility by combining thorough, ML enhanced asset attribution with continuous attack surface assessment. Discovered risks are prioritized using contextual information and exploitability data, and findings are actioned on through curated automated playbooks to investigate, remediate, and summarize every new alert.
+[Cortex Xpanse](https://www.paloaltonetworks.com/cortex/cortex-xpanse) Expander and the Attack Surface Management (ASM) module for [Cortex XSIAM](https://www.paloaltonetworks.com/cortex/cortex-xsiam) are both best in class External Attack Surface Management solutions that strive to proactively reduce the frequency and severity of security incidents caused by internet-exposed risks. These solutions deliver comprehensive attack surface visibility by combining thorough, ML-enhanced asset attribution with continuous attack surface assessment. Any discovered risks are prioritized using contextual information and exploitability data, and findings are actioned through curated, automated playbooks to investigate, remediate, and summarize every new alert.
 
 ## What does this pack do?
 
-This pack contains all of the integrations, automations, and playbooks necessary to fully automate the investigation, remediation, verification, and reporting on ASM risks within Cortex Xpanse Expander and XSIAM.
+This pack contains all of the integrations, automations, and playbooks necessary to fully automate the investigation, remediation, verification, and reporting on ASM risks within Cortex Xpanse Expander and Cortex XSIAM. Currently our pack:
 
 - Enriches services, assets, and alerts based on out-of-the-box integrations with sources like CMDBs, Cloud Service Providers, VM solutions, and more.
 - Uses ML assisted analysis to identify critical context useful for analyst decision making.
 - Keeps human analysts in the loop to direct the desired remediation action depending on the type of risk and discovered context.
 - Includes automated notification and ticket creation workflows for delegating remediation tasks to the appropriate service owners.
 - Includes full automated remediation options for automatically removing risky services from the public internet.
+- Sends out a notification to identified service owners via email about the remediation action taken.
 - Supports validation re-scanning to ensure that remediation efforts have been applied successfully.
 - Includes PDF reporting capabilities for preserving and communicating the investigation summary.
+
+## How to use it?
+
+The Active Response playbook contains a set of sub-playbooks, which support many different remediation paths that can be taken depending on the types of configured integrations, the type of alert, and input provided by the analyst.
+
+For setting up the Active Response module for Xpanse, [a guide on how to configure the Active Response module can we found here.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Set-Up-Active-Response)
+
+Aditionally, [a list of integrations used for the Active Response playbook can be found here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix?section=UUID-0a5dcbc2-d5ab-fa4e-5efc-599daac8b39b_table-idm4546555537995233526554598204). These are needed for different enrichment and remediation possibilities.
+
+### Demo Video
+
+[![Active Response in Cortex Xpanse](https://i.ytimg.com/vi/aIP1CCn9ST8/hq720.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
 
 ### Automated Remediation Requirements
 
@@ -26,6 +39,10 @@ Automated remediation is only possible when the right conditions are met.  These
   - RDP Server
   - Telnet Server
   - Unencrypted FTP Server
+  - Mysql Server
+  - Mongo Server
+  - Postgres Server
+  - Elasticsearch Server
   - Unclaimed S3 Bucket*
 - Asset is a cloud compute instance:
   - AWS EC2 Instance
@@ -35,33 +52,48 @@ Automated remediation is only possible when the right conditions are met.  These
   - AWS IAM
   - Azure IAM
   - GCP IAM
+  - Prisma Cloud
   - Rapid7 InsightVM (Nexpose)
   - Splunk
   - ServiceNow CMDB
   - Tenable.io Assets
+  - Qualys
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
 
 \* The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be enabled.
 
-### Playbooks
+## What is included in this pack?
 
-- [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
-- [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
-- [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
-- [Cortex ASM - Decision](#cortex-asm---decision)
-- [Cortex ASM - Detect Service](#cortex-asm---detect-service)
-- [Cortex ASM - Enrichment](#cortex-asm---enrichment)
-- [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
-- [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
-- [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
-- [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
-- [Cortex ASM - Remediation](#cortex-asm---remediation)
-- [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-- [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
-- [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
-- [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This playbook contains a set of sub-playbooks and automation scripts, which support many different remediation paths that can be taken depending on the types of configured integrations, the type of alert, and input provided by the analyst. After the final stage, the alert is resolved.
+
+- Playbooks
+  - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
+  - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+  - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
+  - [Cortex ASM - Decision](#cortex-asm---decision)
+  - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
+  - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
+  - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Cortex ASM - Prisma Cloud Enrichment](#cortex-asm---prisma-cloud-enrichment)
+  - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
+  - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
+  - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+  - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
+  - [Cortex ASM - Remediation](#cortex-asm---remediation)
+  - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
+  - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
+  - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
+  - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+- Automation Scripts
+  - [GenerateASMReport](#generateasmreport)
+  - [RankServiceOwners](#rankserviceowners)
+  - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
+  - [SnmpDetection](#snmpdetection)
+
+### Playbooks 
 
 #### Cortex ASM - ASM Alert
 
@@ -105,11 +137,23 @@ Playbook that given the IP address enriches GCP information relevant to ASM aler
 
 ![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
 
+#### Cortex ASM - Prisma Cloud Enrichment
+
+Playbook that given the IP address enriches Prisma Cloud information relevant to ASM alerts.
+
+![Cortex ASM - Prisma Cloud Enrichment](https://raw.githubusercontent.com/demisto/content/fb81c4212b33f1020dce1abc4f0198d4a0256936/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Prisma_Cloud_Enrichment.png)
+
+#### Cortex ASM - Qualys Enrichment
+
+Playbook that given the IP address enriches Qualys information relevant to ASM alerts.
+
+![Cortex ASM - Qualys Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Qualys_Enrichment.png)
+
 #### Cortex ASM - Rapid7 Enrichment
 
 Playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
 
-![Cortex ASM - Rapid7 Enrichment](https://raw.githubusercontent.com/demisto/content/8f2a866b666627cb0c6c7ea860e7f1337b4766b7/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Rapid7_Enrichment.png)
+![Cortex ASM - Rapid7 Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Rapid7_Enrichment.png)
 
 #### Cortex ASM - Remediation Guidance
 
@@ -129,6 +173,12 @@ Playbook that is used as a container folder for all remediation of ASM alerts.
 
 ![Cortex ASM - Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation.png)
 
+#### Cortex ASM - Service Ownership
+
+Playbook that identifies and recommends the most likely owners of a given service.
+
+![Cortex ASM - Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Service_Ownership.png)
+
 #### Cortex ASM - ServiceNow CMDB Enrichment
 
 Playbook that given the IP address enriches ServiceNow CMDB information relevant to ASM alerts.
@@ -145,7 +195,7 @@ Playbook that given the IP address checks if SNMP is enabled or not and returns 
 
 Playbook that given the IP address enriches Splunk information relevant to ASM alerts.
 
-![Cortex ASM - Splunk Enrichment](https://raw.githubusercontent.com/demisto/content/8f2a866b666627cb0c6c7ea860e7f1337b4766b7/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Splunk_Enrichment.png)
+![Cortex ASM - Splunk Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Splunk_Enrichment.png)
 
 #### Cortex ASM - Tenable.io Enrichment
 
@@ -168,6 +218,10 @@ This automation helps generate an ASM alert summary report with important inform
 This automation identifies whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
 
 ![InferWhetherServiceIsDev](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/InferWhetherServiceIsDev.png)
+
+#### RankServiceOwners
+
+This automation recommends the most likely service owners from those surfaced by Cortex ASM Enrichment and updates content.
 
 #### RemediationPathRuleEvaluation
 

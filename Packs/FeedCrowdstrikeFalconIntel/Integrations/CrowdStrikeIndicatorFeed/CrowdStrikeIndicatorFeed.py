@@ -261,8 +261,11 @@ class Client(CrowdStrikeClient):
         indicator: dict = {}
 
         for resource in raw_response['resources']:
+            if not (type_ := auto_detect_indicator_type_from_cs(resource['indicator'], resource['type'])):
+                demisto.debug(f"Indicator {resource['indicator']} of type {resource['type']} is not supported in XSOAR, skipping")
+                continue
             indicator = {
-                'type': CROWDSTRIKE_TO_XSOAR_TYPES.get(resource.get('type'), resource.get('type')),
+                'type': type_,
                 'value': resource.get('indicator'),
                 'rawJSON': resource,
                 'fields': {'actor': resource.get('actors'),
@@ -351,10 +354,13 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
         if field == 'relations' and not CROWDSTRIKE_TO_XSOAR_TYPES.get(relation.get('type')):
             demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
             continue
-        related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
-            CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
-        relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'], indicator['type']) \
-            if field != 'relations' else EntityRelationship.Relationships.RELATED_TO
+        if field == 'relations':
+            related_indicator_type = auto_detect_indicator_type_from_cs(relation['indicator'], relation['type'])
+            relation_name = EntityRelationship.Relationships.RELATED_TO
+        else:
+            related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field]
+            relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'],
+                                                                                               indicator['type'])
 
         indicator_relation = EntityRelationship(
             name=relation_name,
@@ -368,6 +374,18 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
         relationships.append(indicator_relation)
 
     return relationships
+
+
+def auto_detect_indicator_type_from_cs(value: str, crowdstrike_resource_type: str) -> str | None:
+    '''
+    The function determines the type of indicator according to two cases::
+    1. In case the type is ip_address then the type is detected by auto_detect_indicator_type function (CSP).
+    2. In any other case, the type is converted by the table CROWDSTRIKE_TO_XSOAR_TYPES to a type of XSOAR.
+    '''
+    if crowdstrike_resource_type == 'ip_address':
+        return auto_detect_indicator_type(value)
+
+    return CROWDSTRIKE_TO_XSOAR_TYPES.get(crowdstrike_resource_type)
 
 
 def fetch_indicators_command(client: Client):

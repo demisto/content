@@ -5,7 +5,8 @@
 		"SysAid Incident",
 		"SysAid Problem",
 		"SysAid Request",
-        "Qradar Generic"
+        "Qradar Generic",
+        "Microsoft Sentinel Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

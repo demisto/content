@@ -1141,6 +1141,8 @@ script:
       description: Comma separated list of visit IDs to load
     - name: list_live_visits
       description: 'Whether or not to list visits that did not end and that may still be updated. One of: true | false. Default: true'
+    - name: security
+      description: 'Filter the sessions that were handled according to the security-related specifications. Multiple values are supported, e.g.: "api.threats.action.block_ip, api.threats.sql_injection"'
     description: Use this operation to get a log of recent visits to a website. The visits are fetched in reverse chronological order, starting with the most recent visit. Not all visits are recorded - only visits with abnormal activity are recorded e.g. violation of security rules, visits from black-listed IPs/Countries, etc. A visit may still be updated even after it was retrieved. To avoid retrieving such visits and to retrieve only visits that will no longer be updated use the list_live_visits parameter
   - name: incap-upload-public-key
     arguments:
