@@ -33,7 +33,8 @@ def test_update_incident_command(mocker):
     Then:
      - Ensure the parsing before the request works well and json data is in IBM format.
     """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
+    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True,
+                                                         'max_fetch': 50})
     args = {
         "incident-id": "1234",
         "other-fields": '{"description": {"textarea": {"format": "html", "content": "The new description"}},'
@@ -92,7 +93,8 @@ def test_update_incident_command_with_invalid_json(mocker):
     Then:
      - Ensure the parsing before the request fails and returns a JSONDecodeError.
     """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
+    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True,
+                                                         'max_fetch': 50})
     args = {
         "incident-id": "1234",
         "other-fields": 'Invalid json'
@@ -115,7 +117,8 @@ def test_add_note(mocker):
     Then:
      - Ensure the function runs as expected.
     """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
+    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True,
+                                                         'max_fetch': 50})
     mock_result = mocker.patch.object(MockClient, 'post')
     expected_result = ('/incidents/1234/comments', {'text': {'format': 'text', 'content': 'This is a new note'}})
     from IBMResilientSystems import add_note_command
@@ -137,7 +140,8 @@ def test_add_incident_artifact(mocker):
     Then:
      - Ensure the function runs as expected.
     """
-    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
+    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True,
+                                                         'max_fetch': 50})
     mock_result = mocker.patch.object(MockClient, 'post')
     expected_result = ('/incidents/1234/artifacts', {'type': 'IP Address', 'value': '1.1.1.1',
                                                      'description': {'format': 'text',
