@@ -1,0 +1,24 @@
+{
+    "kind": "object#NetworkObjGroup",
+    "selfLink": "selfLink",
+    "name": "TEST_GROUP",
+    "members": [
+        {
+            "kind": "objectRef#NetworkObj",
+            "refLink": "members[0]_refLink",
+            "objectId": "Test_Lior"
+        },
+        {
+            "kind": "objectRef#NetworkObj",
+            "refLink": "members[1]_refLink",
+            "objectId": "Test_Lior1"
+        },
+        {
+            "kind": "objectRef#NetworkObj",
+            "refLink": "members[2]_refLink",
+            "objectId": "Test_Lior2"
+        }
+    ],
+    "description": "This is a test",
+    "objectId": "TEST_GROUP"
+}
