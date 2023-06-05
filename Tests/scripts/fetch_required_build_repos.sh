@@ -34,7 +34,7 @@ function clone_repository() {
         echo "Cloning '$branch_name' branch from '$remote_url'"
         git clone --depth=1 "$remote_url" --branch "$branch_name"
     else
-        echo "'$branch_name' branch not found on '$remote_url', cloning 'master' instead"
+        echo "Branch '$branch_name' not found on '$remote_url', cloning 'master' instead"
         git clone --depth=1 "$remote_url"
     fi
 }
