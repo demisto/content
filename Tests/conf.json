@@ -1199,11 +1199,6 @@
             "timeout": 3600
         },
         {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable-sc-scan-test",
-            "timeout": 600
-        },
-        {
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
             "timeout": 3600,
