@@ -26,7 +26,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context
+    response_to_context, is_integration_command_execution
 
 try:
     from StringIO import StringIO
@@ -8997,3 +8997,24 @@ def test_response_to_context(response, expected_results, user_predefiend_keys):
                 the second key according to predefined_keys, and the third regularly.
     """
     assert response_to_context(response, user_predefiend_keys) == expected_results
+
+
+class TestIsIntegrationCommandExecution:
+    def test_with_script_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+        assert is_integration_command_execution() == False
+
+    def test_with_integration_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
+        assert is_integration_command_execution() == True
+    data_test_problematic_cases = [
+        None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
+        {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
+        {'context': {'ExecutedCommands': [{}]}}
+    ]
+
+    @pytest.mark.parametrize('calling_context_mock', data_test_problematic_cases)
+    def test_problematic_cases(self, mocker, calling_context_mock):
+        mocker.patch.object(demisto, 'callingContext', calling_context_mock)
+        assert is_integration_command_execution() == True
+        
