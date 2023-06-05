@@ -127,7 +127,7 @@ class Pack(object):
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
-        self._single_integration = True  # assuming the pack contains one integration
+        self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
@@ -504,21 +504,17 @@ class Pack(object):
         # this's the first integration in the pack, and the pack is in xsiam
         if self._single_integration and 'marketplacev2' in self.marketplaces:
 
-            # the integration is not deprecated
-            if not yaml_content.get('deprecated', False):
-
-                # the integration contains isfetch or isfetchevents
-                if yaml_content.get('script', {}).get('isfetchevents', False) or \
-                        yaml_content.get('script', {}).get('isfetch', False) is True:
-                    logging.info(f"{yaml_content.get('name')} is a Data Source potential")
-                    is_data_source = True
+            # the integration contains isfetch or isfetchevents (no matter if its deprecated or not)
+            if yaml_content.get('script', {}).get('isfetchevents', False) or \
+                    yaml_content.get('script', {}).get('isfetch', False) is True:
+                logging.info(f"{yaml_content.get('name')} makes the pack a Data Source potential")
+                is_data_source = True
         # already has the pack as data source
         elif not self._single_integration and is_data_source:
 
-            # got a second integration in the pack that's not deprecated
-            if not yaml_content.get('deprecated', False):
-                logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
-                is_data_source = False
+            # found a second integration in the pack
+            logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
+            is_data_source = False
 
         return is_data_source
 
@@ -541,9 +537,8 @@ class Pack(object):
 
             self._is_data_source = self.is_data_source_pack(yaml_content)
 
-            # already found integration in the pack that's not deprecated
-            if not yaml_content.get('deprecated', False):
-                self._single_integration = False
+            # already found the first integration in the pack,
+            self._single_integration = False
 
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
@@ -812,7 +807,7 @@ class Pack(object):
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number,
                                 new_version=True, initial_release=False, pull_request_numbers=None,
-                                marketplace='xsoar', id_set=None):
+                                marketplace='xsoar', id_set=None, is_override=False):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -822,6 +817,7 @@ class Pack(object):
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
             id_set (dict): The content id set dict.
+            is_override (bool): Whether the flow overrides the packs on cloud storage.
         Returns:
             dict: release notes entry of changelog
             bool: Whether the pack is not updated
@@ -831,6 +827,7 @@ class Pack(object):
         entry_result = {}
 
         if new_version:
+            logging.debug(f"Creating changelog entry for a new version for pack {self.name} and version {version_display_name}")
             pull_request_numbers = self.get_pr_numbers_for_version(version_display_name)
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
@@ -838,12 +835,16 @@ class Pack(object):
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         elif initial_release:
+            logging.debug(
+                f"Creating changelog entry for an initial version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
                             Changelog.RELEASED: self._create_date,
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
-        elif self.is_modified:
+        elif self.is_modified and not is_override:
+            logging.debug(
+                f"Creating changelog entry for an existing version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
@@ -1574,7 +1575,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
-                              marketplace='xsoar', id_set=None):
+                              marketplace='xsoar', id_set=None, is_override=False):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1583,6 +1584,7 @@ class Pack(object):
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
             marketplace (str): The marketplace to which the upload is made.
+            is_override (bool): Whether the flow overrides the packs on cloud storage.
 
         Returns:
             bool: whether the operation succeeded.
@@ -1637,6 +1639,7 @@ class Pack(object):
                                                                    {}).get(Changelog.PULL_REQUEST_NUMBERS, []),
                                 marketplace=marketplace,
                                 id_set=id_set,
+                                is_override=is_override
                             )
 
                         else:
@@ -2096,7 +2099,10 @@ class Pack(object):
                             continue
 
                     # check if content item has to version
-                    to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    try:
+                        to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    except Exception:
+                        logging.exception(f"Failed on {pack_file_path=}. {content_item=}")
 
                     if to_version and Version(to_version) < Version(Metadata.SERVER_DEFAULT_MIN_VERSION):
                         os.remove(pack_file_path)
@@ -2432,11 +2438,12 @@ class Pack(object):
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
+                    content_item_type_and_id = f"{current_directory}_{metadata_output['id']}"
                     if self.is_replace_item_in_folder_collected_list(
                             content_item, content_items_id_to_version_map,
-                            metadata_output['id']):
+                            content_item_type_and_id):
                         latest_fromversion, latest_toversion = self.get_latest_versions(
-                            content_items_id_to_version_map, metadata_output['id'])
+                            content_items_id_to_version_map, content_item_type_and_id)
                         metadata_output['fromversion'] = latest_fromversion
                         metadata_output['toversion'] = latest_toversion
                         folder_collected_items = [metadata_output
@@ -2444,9 +2451,9 @@ class Pack(object):
                                                   else d
                                                   for d in folder_collected_items]
                     elif not content_items_id_to_version_map.get(
-                            metadata_output['id'], {}).get('added_to_metadata_list', ''):
+                            content_item_type_and_id, {}).get('added_to_metadata_list', ''):
                         folder_collected_items.append(metadata_output)
-                        content_items_id_to_version_map.get(metadata_output['id'], {})['added_to_metadata_list'] = True
+                        content_items_id_to_version_map.get(content_item_type_and_id, {})['added_to_metadata_list'] = True
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
@@ -2501,7 +2508,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar'])
+            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
@@ -3544,32 +3551,43 @@ class Pack(object):
             logging.exception(f"Failed uploading {self.name} pack preview image.")
         return None
 
-    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
+    def upload_preview_images(self, storage_bucket, storage_base_path):
         """ Uploads pack preview images to gcs.
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
             storage_base_path (str): The target destination of the upload in the target bucket.
-            diff_files_list (list): The list of all modified/added files found in the diff
         Returns:
             bool: whether the operation succeeded.
         """
         pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
 
-        try:
-            for file in diff_files_list:
-                if self.is_valid_preview_image(file.a_path):
-                    logging.info(f"adding preview image {file.a_path} to pack preview images")
-                    image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
-                    image_name = os.path.basename(file.a_path)
-                    image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
-                    pack_image_blob = storage_bucket.blob(image_storage_path)
-                    with open(file.a_path, "rb") as image_file:
-                        pack_image_blob.upload_from_file(image_file)
-                    self._uploaded_preview_images.append(file.a_path)
-            return True
-        except Exception as e:
-            logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
-            return False
+        for _dir in [PackFolders.XSIAM_REPORTS.value, PackFolders.XSIAM_DASHBOARDS.value]:
+            local_preview_image_dir = os.path.join(PACKS_FOLDER, self.name, _dir)
+            if not os.path.isdir(local_preview_image_dir):
+                logging.debug(f"Could not find content items with preview images for pack {self.name}")
+                continue
+
+            preview_image_relative_paths = glob.glob(os.path.join(local_preview_image_dir, '*.png'))
+            if not preview_image_relative_paths:
+                logging.debug(f"Could not find preview images in pack {local_preview_image_dir}")
+                continue
+
+            logging.info(f"Found preview image: {preview_image_relative_paths}")
+            preview_image_relative_path: str = preview_image_relative_paths[0]
+            image_name = os.path.basename(preview_image_relative_path)
+            image_storage_path = os.path.join(pack_storage_root_path, _dir, image_name)
+            pack_image_blob = storage_bucket.blob(image_storage_path)
+
+            try:
+                with open(preview_image_relative_path, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+            except Exception as e:
+                logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
+                return False
+
+            self._uploaded_preview_images.append(preview_image_relative_path)
+
+        return True
 
     def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's preview image from the build bucket to the production bucket
@@ -3628,7 +3646,7 @@ class Pack(object):
 
         return task_status
 
-    def is_valid_preview_image(self, file_path: str) -> bool:
+    def does_preview_image_exist(self, file_path: str) -> bool:
         """ Indicates whether a file_path is a valid preview image or not:
             - The file exists (is not removed in the latest upload)
             - Belong to the current pack
