@@ -1727,7 +1727,7 @@ tasks:
       name: Create aSTIX file
       description: |
         Create a file (using the given data input or entry ID) and upload it to the current investigation in the War Room.
-      scriptName: FileCreateAndUpload
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
