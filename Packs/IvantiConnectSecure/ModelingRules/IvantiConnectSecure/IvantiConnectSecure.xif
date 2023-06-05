@@ -6,9 +6,9 @@
 /* date, time, node, src IP, user, realm, event ID, msg.   */
 /***********************************************************/
 [MODEL: dataset="ivanti_connect_secure_raw"]
-alter 
+alter
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\d+"), 0)),
-    syslog_header = split(arrayindex(regextract(_raw_log, "(^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-"), 0)),
+    syslog_header = regextract(arrayindex(regextract(_raw_log, "(^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-"), 0) , "(\S+)"),
     syslog_structured_data = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+(.+?)\s+\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-"), 0),
     syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\:\s+\S+\s+\S+\s+.+?\s+(\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}\s*\-.+)"), 0)
 | alter 
@@ -24,13 +24,14 @@ alter
     msg_user1 = arrayindex(regextract(syslog_msg, "\]\s+Default\s*Network\:+([^\(]+)"), 0),
     msg_user2 = arrayindex(regextract(syslog_msg, "\]\s+([^\(]+)"), 0),
     msg_realm = arrayindex(regextract(syslog_msg, "\(([^\)]+)"), 0),
-    msg_roles = split(arrayindex(regextract(syslog_msg, "\)\[([^\]]+)"), 0), ","),
+    msg_roles_str = arrayindex(regextract(syslog_msg, "\)\[([^\]]+)"), 0),
     msg_event_id = arrayindex(regextract(syslog_msg, "\].+?\]\s+([\w\-]+)\s+.+$"), 0),
     msg_payload = arrayindex(regextract(syslog_msg, "\].+?\]\s+[\w\-]+\s+(.+$)"), 0)
 | alter
     syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8)),
     full_user_name = coalesce(msg_user1, msg_user2),
     event_id = if(msg_event_id != null and msg_event_id != "-", msg_event_id, syslog_msg_id != null and syslog_msg_id != "-", syslog_msg_id, null),
+    msg_roles = regextract(msg_roles_str, "([^,]+)"),
     event_name1 = arrayindex(regextract(msg_payload, "^(.+?)\s+\\\\"), 0),
     event_name2 = arrayindex(regextract(msg_payload, "^([^\']+)\s+for\s+"), 0),
     event_name3 = arrayindex(regextract(msg_payload, "^([^\']+)\s+using"), 0),
@@ -44,8 +45,10 @@ alter
     client_os = arrayindex(regextract(msg_payload, "from \S+ with [\w\-]+\/[\d\.]+\d\s+\(([^\)]+)\)"), 0), 
     session_id = arrayindex(regextract(msg_payload, "session:(\w+)"), 0), 
     reason = arrayindex(regextract(msg_payload, "Reason:\s*([\w\s\-]+)"), 0), 
+    reason2 = arrayindex(regextract(msg_payload, "due to\s+(S+)"), 0), 
     target_share_server = arrayindex(regextract(msg_payload, "\s*\\\\([a-fA-F\d\.\:]+)\\\S+\$"), 0),
-    target_share_domain= arrayindex(regextract(msg_payload, "in wrkgrp\/domain\s*(\S+)"), 0)
+    target_share_domain= arrayindex(regextract(msg_payload, "in wrkgrp\/domain\s*(\S+)"), 0),
+    error_code = arrayindex(regextract(msg_payload, "with error (\w+)"), 0)
 | alter
     severity = to_string(syslog_severity),
     event_name = coalesce(event_name_custom1, event_name1, event_name2, event_name3, event_name4, event_name5, event_name6),
@@ -84,12 +87,11 @@ alter
     xdm.event.description = msg_payload,
     xdm.event.type = null, // System, User Access, Admin Access, Sensors & Client Logs; 
     xdm.event.id = event_id,
-    xdm.event.tags = arrayconcat(if(msg_payload ~= "[lL]ogin|authentication", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null), syslog_structured_data_segments), 
-    xdm.event.outcome = if(msg_payload ~= "succeeded|successful", XDM_CONST.OUTCOME_SUCCESS,  msg_payload ~= "failed|rejected", XDM_CONST.OUTCOME_FAILED, null),
-    xdm.event.outcome_reason  = reason,
+    xdm.event.tags = arrayconcat(if(msg_payload ~= "[Ll]ogin|[Aa]uthentication", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null), syslog_structured_data_segments), 
+    xdm.event.outcome = if(msg_payload ~= "succeeded|successful", XDM_CONST.OUTCOME_SUCCESS,  msg_payload ~= "[Ff]ailed|[Rr]ejected", XDM_CONST.OUTCOME_FAILED, null),
+    xdm.event.outcome_reason  = coalesce(reason, reason2, error_code), 
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
     xdm.alert.severity = severity, 
     xdm.network.session_id = session_id,
-    xdm.session_context_id = session_id, 
-    xdm.alert.description = _raw_log;
+    xdm.session_context_id = session_id;
 /* END of Ivanti (Pulse) Connect Secure (Remote Access VPN) */ 
