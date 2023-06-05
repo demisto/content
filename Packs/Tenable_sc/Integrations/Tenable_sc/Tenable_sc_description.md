@@ -24,7 +24,7 @@ It is important to know what data is manageable for the user in order to work wi
       4. In the Authentication Settings section, click **Allow API Keys** to enable the toggle.
       5. Click **Submit**.
 
-- Second, you need to generate API Key: 
+- Second, you need to generate the API Key: 
 
 ## [Steps to follow:](https://docs.tenable.com/security-center/Content/GenerateAPIKey.htm)
 
