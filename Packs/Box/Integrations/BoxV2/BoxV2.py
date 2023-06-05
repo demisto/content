@@ -167,7 +167,7 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, auth_params, as_user=None):
         try:
             self.credentials_dict = json.loads(auth_params.get('cred_json', {}).get(
-                'password', '{}') or auth_params.get('credentials_json', '{}'))
+                'password') or auth_params.get('credentials_json', '{}'))
         except ValueError as e:
             raise DemistoException(
                 "Failed to parse the credentials JSON. Please  make sure  credentials JSON is provided"
