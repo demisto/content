@@ -1344,7 +1344,7 @@ class Taxii2FeedClient:
             fields.update(assign_params(**custom_fields))
             if score:
                 indicator['score'] = score
-                
+
         # union of tags and labels
         if "tags" in fields:
             field_tag = fields.get("tags")
