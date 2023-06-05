@@ -35,7 +35,7 @@ alter
         xdm.source.interface = arrayindex(regextract(_raw_log, "Interface\s([A-Za-z\-\d]+)"),0),
         xdm.event.description = arrayindex(regextract(_raw_log, "[\-\_\w]+[\-\_\w]*\-\d+\-[\w\-\_]+\:\s(.+)$"),0),
         xdm.source.ipv4 = coalesce(sourceIP1ipv4,sourceIP2ipv4),
-        xdm.source.ipv4 = coalesce(sourceIP1ipv6,sourceIP2ipv6),
+        xdm.source.ipv6 = coalesce(sourceIP1ipv6,sourceIP2ipv6),
         xdm.source.host.mac_addresses = regextract(_raw_log, "Host\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+)\s"),
         xdm.source.process.name = arrayindex(regextract(_raw_log, "\s(\w+\[\d+\])"),0),
         xdm.network.tls.cipher = arrayindex(regextract(_raw_log, "cipher\s\'([A-Za-z0-9\-]+)\'"),0),
