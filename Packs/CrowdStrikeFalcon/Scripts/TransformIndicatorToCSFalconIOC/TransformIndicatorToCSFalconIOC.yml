@@ -66,7 +66,6 @@ comment: Transform a XSOAR indicator into a Crowd Strike Falcon IOC. The output 
 commonfields:
   id: TransformIndicatorToCSFalconIOC
   version: -1
-enabled: false
 name: TransformIndicatorToCSFalconIOC
 outputs:
 - contextPath: TransformIndicatorToCSFalconIOC
