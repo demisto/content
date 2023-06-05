@@ -9,7 +9,7 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
 
 ### Configure Events to Log and Syslog forwarding 
 1. Log in to your Ivanti Connect Secure admin web console. 
-2. Select **System** &rarr; **Log/Monitoring**.
+2. Select **System** > **Log/Monitoring**.
 3. Click the **Settings** tab to display the configuration page.
 4. For each local event log category that you are interested in logging (_System_ events, _User Access_ events, _Admin Access_ events & _Sensors_ events), perform the following steps: 
      - Go to the **Select Events to Log** section, and select the requested event types you wish to log. See [Select Events to Log](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#log_events_set) for a description of the various types for each event category. 
