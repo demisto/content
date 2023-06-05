@@ -17,16 +17,13 @@ comment: This script accepts multiple values for both arguments and will iterate
 commonfields:
   id: IsInternalDomainName
   version: -1
-enabled: false
 name: IsInternalDomainName
 outputs:
 - contextPath: IsInternalDomain.DomainToTest
-  description: The subdomain that was checked to see if it is part of the specified
-    domains.
+  description: The subdomain that was checked to see if it is part of the specified domains.
   type: String
 - contextPath: IsInternalDomain.IsInternal
-  description: True, if the subdomain is part of one of the specified domains. Otherwise,
-    false.
+  description: True, if the subdomain is part of one of the specified domains. Otherwise, false.
   type: Boolean
 - contextPath: IsInternalDomain.DomainToCompare
   description: The names of the main domains that were used to compare the subdomains to.

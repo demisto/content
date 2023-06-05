@@ -63,12 +63,10 @@ script:
       default: true
       description: Hash of the file to query. Supports MD5, SHA1 and SHA256 hashes.
     - name: limit
-      description: The maximum number of results per page. The maximum is 1000. Default
-        is 20.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
-      description: 'A comma-separated list of headers to display in human-readable
-        format. For example: header1,header2,header3'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3'
     - name: since
       description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
@@ -102,16 +100,14 @@ script:
       default: true
       description: IP address to check.
     - name: headers
-      description: 'A comma-separated list of headers to display in human-readable
-        format. For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
     outputs:
     - contextPath: IP.Address
       description: Bad IP address found.
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs addresse, the vendor that made the decision.
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the
-        decision.
+      description: For malicious IP addresses, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
@@ -129,12 +125,10 @@ script:
       required: true
       description: URL to be checked
     - name: limit
-      description: The maximum number of results per page. The maximum is 1000. Default
-        is 20.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
-      description: 'Headers to display in Human readable format, comma separated format,
-        for example: header1,header2,header3'
+      description: 'Headers to display in Human readable format, comma separated format, for example: header1,header2,header3'
     - name: since
       description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
@@ -164,12 +158,10 @@ script:
       default: true
       description: Domain name to check reputation
     - name: limit
-      description: The maximum number of results per page. The maximum is 1000. Default
-        is 20.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
-      description: 'Headers to display in Human readable format, comma separated format,
-        for example: header1,header2,header3'
+      description: 'Headers to display in Human readable format, comma separated format, for example: header1,header2,header3'
     - name: since
       description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
@@ -194,30 +186,21 @@ script:
     arguments:
     - name: text
       default: true
-      description: Free-form text field with a value to search for. This can be a
-        file hash or a string found in other fields of the objects.
+      description: Free-form text field with a value to search for. This can be a file hash or a string found in other fields of the objects.
     - name: type
-      description: 'The type of descriptor to search for. For more information see:
-        https://developers.facebook.com/docs/threat-exchange/reference/apis/indicator-type/v2.9'
+      description: 'The type of descriptor to search for. For more information see: https://developers.facebook.com/docs/threat-exchange/reference/apis/indicator-type/v2.9'
     - name: limit
-      description: The maximum number of results per page. The maximum is 1000. Default
-        is 20.
+      description: The maximum number of results per page. The maximum is 1000. Default is 20.
       defaultValue: "20"
     - name: headers
-      description: 'Headers to display in Human readable format, comma separated format,
-        for example: header1,header2,header3'
+      description: 'Headers to display in Human readable format, comma separated format, for example: header1,header2,header3'
     - name: since
       description: 'The start timestamp for collecting malware, format: 1391813489'
     - name: until
       description: 'The end timestamp for collecting malware, format: 1391813489'
-    description: ' Searches for subjective opinions on indicators of compromise stored
-      in ThreatExchange'
+    description: ' Searches for subjective opinions on indicators of compromise stored in ThreatExchange'
   - name: threatexchange-members
     arguments: []
-    description: Returns a list of current members of the ThreatExchange, alphabetized
-      by application name. Each application may also include an optional contact email
-      address. You can set this address, if desired, under the settings panel for
-      your application
-hidden: false
+    description: Returns a list of current members of the ThreatExchange, alphabetized by application name. Each application may also include an optional contact email address. You can set this address, if desired, under the settings panel for your application
 tests:
 - ThreatExchange-test
