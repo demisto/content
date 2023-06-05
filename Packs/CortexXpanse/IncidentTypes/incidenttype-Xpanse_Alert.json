@@ -15,7 +15,7 @@
     "id": "Xpanse Alert",
     "layout": "Xpanse Alert Layout",
     "locked": false,
-    "playbookId": "Xpanse - Handle Alert",
+    "playbookId": "Xpanse - Alert Handler",
     "name": "Xpanse Alert",
     "onChangeRepAlg": 0,
     "readonly": false,
