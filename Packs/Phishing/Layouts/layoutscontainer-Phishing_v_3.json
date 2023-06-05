@@ -268,6 +268,7 @@
                         "y": 0
                     },
                     {
+                        "description": "",
                         "h": 1,
                         "hideName": true,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
@@ -282,8 +283,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 5,
-                        "description": ""
+                        "y": 5
                     },
                     {
                         "h": 2,
@@ -417,7 +417,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 14
+                        "y": 10
                     },
                     {
                         "columns": [
@@ -495,7 +495,7 @@
                         "type": "indicators",
                         "w": 1,
                         "x": 2,
-                        "y": 12
+                        "y": 14
                     },
                     {
                         "description": "",
@@ -559,7 +559,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 12
                     }
                 ],
                 "type": "custom"
@@ -932,7 +932,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,

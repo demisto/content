@@ -310,9 +310,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
