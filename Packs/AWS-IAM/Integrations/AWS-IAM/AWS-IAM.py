@@ -1210,6 +1210,49 @@ def get_user_login_profile(args, aws_client):
             raise error
 
 
+def put_role_policy_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'policyDocument': args.get('policyDocument'),
+        'policyName': args.get('policyName'),
+        'roleName': args.get('roleName')
+    }
+
+    try:
+        response = client.PutRolePolicy(**kwargs)
+        print(response)
+        user_profile = response['LoginProfile']
+        create_date = datetime_to_string(user_profile.get('CreateDate')) or user_profile.get('CreateDate')
+        data = {
+            'UserName': user_profile.get('UserName'),
+            'LoginProfile': {
+                'CreateDate': create_date,
+                'PasswordResetRequired': user_profile.get('PasswordResetRequired')
+            }
+        }
+
+        ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
+
+        human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
+                                         t=data.get('LoginProfile'),
+                                         headers=['CreateDate', 'PasswordResetRequired'],
+                                         removeNull=True,
+                                         headerTransform=pascalToSpace)
+
+        response['LoginProfile'].update({'CreateDate': create_date})
+        return_outputs(human_readable, ec, response)
+    except botocore.exceptions.ClientError as error:
+        if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
+            return_outputs(tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name), t={}))
+        else:
+            raise error
+
+
 def test_function(aws_client):
     client = aws_client.aws_session(service=SERVICE)
     response = client.list_users()
@@ -1343,6 +1386,22 @@ def main():     # pragma: no cover
             list_attached_group_policies(args, aws_client)
         elif command == 'aws-iam-get-user-login-profile':
             get_user_login_profile(args, aws_client)
+        elif command == 'aws-iam-put-role-policy':
+            put_role_policy_command(args, aws_client)
+        # elif command == 'aws-iam-put-user-policy':
+        #     put_user_policy_command(args, aws_client)
+        # elif command == 'aws-iam-put-group-policy':
+        #     put_group_policy_command(args, aws_client)
+        # elif command == 'aws-iam-tag-role':
+        #     tag_role_command(args, aws_client)
+        # elif command == 'aws-iam-tag-user':
+        #     tag_user_command(args, aws_client)
+        # elif command == 'aws-iam-untag-user':
+        #     untag_user_command(args, aws_client)
+        # elif command == 'aws-iam-untag-role':
+        #     untag_role_command(args, aws_client)
+        # elif command == 'aws-iam-get-access-key-last-used':
+        #     get_access_key_last_used_command(args, aws_client)
 
     except Exception as e:
         LOG(str(e))
