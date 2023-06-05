@@ -1,4 +1,4 @@
-The "Spear Phishing Investigation" Playbook designed to detect patterns that indicates a spear phishing attempt by the attacker.
+The "Spear Phishing Investigation" playbook is designed to detect patterns that indicates a spear phishing attempt by the attacker.
 
 ## Dependencies
 
