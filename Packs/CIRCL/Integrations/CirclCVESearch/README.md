@@ -71,7 +71,7 @@ Returns CVE information by CVE ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | A comma separated list of CVE IDs to search | Required |
+| cve_id | A comma-separated list of CVE IDs to search | Required |
 
 #### Context Output
 
