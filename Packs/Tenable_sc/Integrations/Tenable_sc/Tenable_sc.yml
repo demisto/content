@@ -3069,7 +3069,7 @@ script:
       defaultValue: 10800
     deprecated: false
     polling: true
-    description: Requires security manager role. Polling command. Launch a scan by given scan ID, follow its status return a report when the scan is over.
+    description:  Requires security manager role. Polling command. Launch a scan by given scan ID. Follow its status and return a report when the scan is over.
     execution: false
     name: tenable-sc-launch-scan-report
     outputs:
