@@ -3674,7 +3674,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A comma-separated or list of keywords to search in the email body.
+    A comma-separated list of keywords to search in the email body.
     For example: name of the organization finance app that the attacker might impersonate.
     This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
