@@ -797,6 +797,8 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 Get group's users. 
 Allowed for: Admins, Agents and Light Agents.
 
+*Note*: In case that the group_id does not exists. the command will return all users.
+
 #### Base Command
 
 `zendesk-group-user-list`

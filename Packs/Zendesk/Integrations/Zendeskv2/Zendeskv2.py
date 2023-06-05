@@ -526,6 +526,25 @@ class ZendeskClient(BaseClient):
         users = list(self._paged_request(url_suffix=f'groups/{group_id}/users', data_field_name='users', **kwargs))
         return self.__command_results_zendesk_group_users(users)
 
+    @staticmethod
+    def __command_results_zendesk_groups(groups):  # pragma: no cover
+        readable_outputs = tableToMarkdown(name='Zendesk groups:', t=groups, headers=ORGANIZATIONS_HEADERS,
+                                           headerTransform=camelize_string)
+        return CommandResults(outputs_prefix="Zendesk.Group",
+                              outputs=groups, readable_output=readable_outputs)
+
+    def _get_groups_by_user_id(self, user_id: str) -> Dict[str, Any]:
+        return self._http_request('GET', f'users/{user_id}/groups')
+
+    def list_groups(self, user_id: Optional[str]):
+        if user_id:
+            groups = [self._get_groups_by_user_id(user_id)]
+        else:
+            groups = list(
+                self._paged_request(url_suffix='groups', data_field_name='groups', **kwargs))
+
+        return self.__command_results_zendesk_groups(groups)
+
     # ---- ticket related functions ---- #
 
     @staticmethod
@@ -849,7 +868,7 @@ class ZendeskClient(BaseClient):
         raise exception from None
 
     @staticmethod
-    def _ticket_to_incident(ticket: Dict):
+    def _ticket_to_incident(ticket: Dict, attachments):
         ticket |= {
             'severity': PRIORITY_MAP.get(ticket['priority']),
             'mirror_instance': INTEGRATION_INSTANCE,
@@ -862,6 +881,7 @@ class ZendeskClient(BaseClient):
             'rawJSON': json.dumps(ticket),
             'name': ticket['subject'],
             'occurred': ticket['created_at'],
+            'attachments': attachments
         }
 
     @staticmethod
@@ -921,6 +941,13 @@ class ZendeskClient(BaseClient):
 
         return next_run
 
+    def get_ticket_file_attachments(self, ticket_id: str):
+        comments_list = self._get_comments(ticket_id=ticket_id)
+        for comment in comments_list:
+            print(comment)
+            attachment = comment.get('attachment', {})
+        return
+
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
         last_run = json.loads(lastRun or 'null') or demisto.getLastRun() or {}
         fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number = self._fetch_args(params, last_run)
@@ -939,7 +966,8 @@ class ZendeskClient(BaseClient):
         search_results_ids = list(map(lambda x: x['id'], search_results))
         filtered_search_results_ids = list(filter(lambda x: x not in fetched_tickets, search_results_ids))
         tickets = map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids)
-        incidents = list(map(self._ticket_to_incident, tickets))
+        attachments = self.get_ticket_file_attachments()
+        incidents = list(map(self._ticket_to_incident, tickets, attachments))
 
         demisto.incidents(incidents)
         fetched_tickets.extend(filtered_search_results_ids)
