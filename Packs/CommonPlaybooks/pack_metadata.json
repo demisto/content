@@ -274,10 +274,6 @@
             "mandatory": false,
             "display_name": "McAfee Threat Intelligence Exchange"
         },
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
-        },
         "FiltersAndTransformers": {
             "mandatory": true,
             "display_name": "Filters And Transformers"

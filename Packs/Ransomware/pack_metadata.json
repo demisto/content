@@ -42,10 +42,6 @@
             "mandatory": true,
             "display_name": "Common Types"
         },
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
-        },
         "MicrosoftGraphMail": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
