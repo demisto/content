@@ -14,10 +14,16 @@ configuration:
   type: 0
   section: Connect
 - display: Gamma API Key
+  hidden: true
   name: api_key
-  required: true
+  required: false
   type: 4
   section: Connect
+- displaypassword: Gamma API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Enter the violation ID to begin fetching from. If empty, the API will default to your first violation
   display: Starting Violation
   name: first_fetch
