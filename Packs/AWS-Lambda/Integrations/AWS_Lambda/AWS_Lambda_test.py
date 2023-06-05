@@ -1,3 +1,4 @@
+from typing import Any
 import pytest
 from AWS_Lambda import (
     get_policy_command,
@@ -32,6 +33,8 @@ class MockClient:
             {
                 "Policy": '{"Version":"0000-00-00","Id":"dummy","Statement":[{"Sid":"dummy","Effect":"Allow","Principal":{"dummy":"dummy:dummy"},"Action":"lambda:InvokeFunction","Resource":"dummy:country:00:function:dummy-function:0"}]}',
                 "RevisionId": "00000-00000-00000-00000-00000",
+                "ResponseMetadata": {"string": "string"},
+
             },
             {
                 "Policy": {
@@ -61,72 +64,91 @@ def test_get_policy_command(mocker, test_data: dict, excepted_data: dict):
 
 
 @pytest.mark.parametrize(
-    "test_data",
+    "test_data, excepted_data",
     [
         (
             {
-                "NextMarker": "string",
+                "ResponseMetadata": {"string": "string"},
                 "Versions": [
                     {
                         "FunctionName": "string",
                         "FunctionArn": "string",
                         "Runtime": "nodejs",
                         "Role": "string",
-                        "Handler": "string",
-                        "CodeSize": 123,
-                        "Description": "string",
-                        "Timeout": 123,
-                        "MemorySize": 123,
-                        "LastModified": "string",
-                        "CodeSha256": "string",
-                        "Version": "string",
-                        "VpcConfig": {
-                            "SubnetIds": [
-                                "string",
-                            ],
-                            "SecurityGroupIds": [
-                                "string",
-                            ],
-                            "VpcId": "string",
-                        },
-                        "DeadLetterConfig": {"TargetArn": "string"},
-                        "Environment": {
-                            "Variables": {"string": "string"},
-                            "Error": {"ErrorCode": "string", "Message": "string"},
-                        },
-                        "KMSKeyArn": "string",
-                        "TracingConfig": {"Mode": "Active"},
-                        "MasterArn": "string",
-                        "RevisionId": "string",
-                        "Layers": [
-                            {
-                                "Arn": "string",
-                                "CodeSize": 123,
-                                "SigningProfileVersionArn": "string",
-                                "SigningJobArn": "string",
-                            },
-                        ],
-                        "State": "Pending",
+                    },
+                ],
+            },
+            {
+                "Versions": [
+                    {
+                        "FunctionName": "string",
+                        "FunctionArn": "string",
+                        "Runtime": "nodejs",
+                        "Role": "string",
+                    },
+                ],
+            }
+        ),
+        (
+            {
+                "NextMarker": "test",
+                "ResponseMetadata": {"string": "string"},
+                "Versions": [
+                    {
+                        "FunctionName": "string",
+                        "FunctionArn": "string",
+                        "Runtime": "nodejs",
+                        "Role": "string",
+                    },
+                ],
+            },
+            {
+                "NextMarker": "test",
+                "Versions": [
+                    {
+                        "FunctionName": "string",
+                        "FunctionArn": "string",
+                        "Runtime": "nodejs",
+                        "Role": "string",
                     },
                 ],
             }
         )
     ],
 )
-def test_list_versions_by_function_command(mocker, test_data: dict):
+def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
     client = MockClient()
     mocker.patch.object(client, "list_versions_by_function", return_value=test_data)
 
     res = list_versions_by_function_command(
         args={"functionName": "test"}, aws_client=client
     )
-    assert res.outputs == test_data
+    if len(res) == 1:
+        assert res[0].outputs == excepted_data
+    elif len(res) == 2:
+        assert res[0].readable_output == "To get the next version run the command with the Marker argument with the value: test"
+        assert res[1].outputs == excepted_data
 
 
 @pytest.mark.parametrize(
-    "test_data",
+    "test_data, excepted_data",
     [
         (
+            {
+                "ResponseMetadata": {"string": "string"},
+                "FunctionUrl": "string",
+                "FunctionArn": "string",
+                "AuthType": "AWS_IAM",
+                "Cors": {
+                    "AllowCredentials": True,
+                    "AllowHeaders": [
+                        "string",
+                    ],
+                },
+                "CreationTime": "string",
+                "LastModifiedTime": "string",
+                "InvokeMode": "BUFFERED",
+            },
             {
                 "FunctionUrl": "string",
                 "FunctionArn": "string",
@@ -136,16 +158,6 @@ def test_list_versions_by_function_command(mocker, test_data: dict):
                     "AllowHeaders": [
                         "string",
                     ],
-                    "AllowMethods": [
-                        "string",
-                    ],
-                    "AllowOrigins": [
-                        "string",
-                    ],
-                    "ExposeHeaders": [
-                        "string",
-                    ],
-                    "MaxAge": 123,
                 },
                 "CreationTime": "string",
                 "LastModifiedTime": "string",
@@ -154,18 +166,18 @@ def test_list_versions_by_function_command(mocker, test_data: dict):
         )
     ],
 )
-def test_get_function_url_config_command(mocker, test_data: dict):
+def test_get_function_url_config_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
     client = MockClient()
     mocker.patch.object(client, "get_function_url_config", return_value=test_data)
 
     res = get_function_url_config_command(
         args={"functionName": "test"}, aws_client=client
     )
-    assert res.outputs == test_data
+    assert res.outputs == excepted_data
 
 
 @pytest.mark.parametrize(
-    "test_data",
+    "test_data, excepted_data",
     [
         (
             {
@@ -183,13 +195,6 @@ def test_get_function_url_config_command(mocker, test_data: dict):
                 "Handler": "index.handler",
                 "KMSKeyArn": "arn:aws:kms:us-west-2:test:key/test123",
                 "LastModified": "2020-04-10T19:06:32.563+0000",
-                "LastUpdateStatus": "Successful",
-                "MemorySize": 256,
-                "RevisionId": "test123",
-                "Role": "arn:aws:iam::test123:role/lambda-role",
-                "Runtime": "nodejs12.x",
-                "State": "Active",
-                "Timeout": 15,
                 "TracingConfig": {
                     "Mode": "Active",
                 },
@@ -197,18 +202,38 @@ def test_get_function_url_config_command(mocker, test_data: dict):
                 "ResponseMetadata": {
                     "...": "...",
                 },
+            },
+            {
+                "CodeSha256": "test",
+                "CodeSize": 5797206,
+                "Description": "Process image objects from Amazon S3.",
+                "Environment": {
+                    "Variables": {
+                        "BUCKET": "my-bucket-test",
+                        "PREFIX": "inbound",
+                    },
+                },
+                "FunctionArn": "arn:aws:lambda:us-west-2:test:function:my-function",
+                "FunctionName": "my-function",
+                "Handler": "index.handler",
+                "KMSKeyArn": "arn:aws:kms:us-west-2:test:key/test123",
+                "LastModified": "2020-04-10T19:06:32.563+0000",
+                "TracingConfig": {
+                    "Mode": "Active",
+                },
+                "Version": "$LATEST",
             }
         )
     ],
 )
-def test_get_function_configuration_command(mocker, test_data: dict):
+def test_get_function_configuration_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
     client = MockClient()
     mocker.patch.object(client, "get_function_configuration", return_value=test_data)
 
     res = get_function_configuration_command(
         args={"functionName": "test"}, aws_client=client
     )
-    assert res.outputs == test_data
+    assert res.outputs == excepted_data
 
 
 def test_delete_function_command_happy_path_with_qualifier(mocker):
@@ -229,4 +254,4 @@ def test_delete_function_command_happy_path_with_qualifier(mocker):
 
     result = delete_function_command(args, client)
 
-    assert result.readable_output == 'Deleted Successfully'
+    assert result.readable_output == 'Deleted test-function Successfully'

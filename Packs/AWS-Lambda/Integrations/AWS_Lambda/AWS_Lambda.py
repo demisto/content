@@ -228,6 +228,17 @@ def get_account_settings(args, aws_client):
 
 
 def get_policy_command(args: dict, aws_client) -> CommandResults:
+    """
+    Retrieves the policy for a Lambda function from AWS and parses it into a dictionary.
+
+    Args:
+        args (dict): A dictionary containing the function name and optional qualifier.
+        aws_client: The AWS client(boto3 client) used to retrieve the policy.
+
+    Returns:
+        CommandResults: An object containing the parsed policy as outputs, a readable output in Markdown format,
+                        and relevant metadata.
+    """
     def parse_policy(data: dict[str, Any]) -> dict[str, str | None]:
 
         statement: dict = policy.get('Statement', {})[0]
@@ -248,7 +259,7 @@ def get_policy_command(args: dict, aws_client) -> CommandResults:
     response = aws_client.get_policy(**kwargs)
     policy = json.loads(response["Policy"])
     response["Policy"] = policy
-    response.pop("ResponseMetadata")
+    response.pop("ResponseMetadata", None)
     parsed_policy = parse_policy(response)
     table_for_markdown = tableToMarkdown(name="Policy", t=parsed_policy)
 
@@ -280,19 +291,21 @@ def list_versions_by_function_command(args: dict, aws_client) -> list[CommandRes
         kwargs.update({'MaxItems': maxItems})
 
     response: dict = aws_client.list_versions_by_function(**kwargs)
-    response.pop("ResponseMetadata")
+    response.pop("ResponseMetadata", None)
 
     parsed_versions = [parse_versions(version) for version in response.get('Versions', [])]
     table_for_markdown = tableToMarkdown(name='Versions', t=parsed_versions, headers=headers)
 
     result: list[CommandResults] = []
     if next_marker := response.get('NextMarker'):
-        result.append(CommandResults(readable_output=f"To get the next version run the command with the Marker argument with the value: {next_marker}"))
+        result.append(CommandResults(
+            readable_output=f"To get the next version run the command with the Marker argument with the value: {next_marker}")
+        )
 
     result.append(CommandResults(
         outputs=response,
         readable_output=table_for_markdown,
-        outputs_prefix="AWS.Lambda.Version",
+        outputs_prefix="AWS.Lambda",
         outputs_key_field='FunctionName'
     ))
     return result
@@ -314,6 +327,7 @@ def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
         kwargs.update({'qualifier': qualifier})
 
     response = aws_client.get_function_url_config(**kwargs)
+    response.pop("ResponseMetadata", None)
     parsed_url_config = parse_url_config(response)
     table_for_markdown = tableToMarkdown(name='Function URL Config', t=parsed_url_config)
 
@@ -321,7 +335,7 @@ def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
         outputs=response,
         readable_output=table_for_markdown,
         outputs_prefix="AWS.Lambda.FunctionURLConfig",
-        outputs_key_field='FunctionName'
+        outputs_key_field='FunctionArn'
     )
 
 
@@ -342,6 +356,7 @@ def get_function_configuration_command(args: dict, aws_client) -> CommandResults
         kwargs.update({'qualifier': qualifier})
 
     response = aws_client.get_function_configuration(**kwargs)
+    response.pop("ResponseMetadata", None)
     parsed_function_configuration = parse_function_configuration(response)
     table_for_markdown = tableToMarkdown(name='Function Configuration', t=parsed_function_configuration)
 
@@ -359,10 +374,10 @@ def delete_function_url_config_command(args: dict, aws_client) -> CommandResults
     if qualifier := args.get('qualifier'):
         kwargs.update({'qualifier': qualifier})
 
-    aws_client.delete_function_url_config(**kwargs)
+    aws_client.delete_function_url_config(**kwargs)  # raises on error
 
     return CommandResults(
-        readable_output="Deleted Successfully"
+        readable_output=f"Deleted {args['functionName']} Successfully"
     )
 
 
@@ -372,11 +387,11 @@ def delete_function_command(args: dict, aws_client) -> CommandResults:
     if qualifier := args.get('qualifier'):
         kwargs.update({'qualifier': qualifier})
 
-    response = aws_client.delete_function(**kwargs)
-    if response["ResponseMetadata"]["HTTPStatusCode"] == 204:
-        return CommandResults(
-            readable_output="Deleted Successfully"
-        )
+    aws_client.delete_function(**kwargs)  # raises on error
+
+    return CommandResults(
+        readable_output=f"Deleted {args['functionName']} Successfully"
+    )
 
 
 """TEST FUNCTION"""
@@ -412,32 +427,33 @@ def main():
                            retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
     aws_client = config_aws_session(args, aws_client)
     try:
-        if command == 'test-module':
-            test_function(aws_client)
-        elif command == 'aws-lambda-get-function':
-            get_function(args, aws_client)
-        elif command == 'aws-lambda-list-functions':
-            list_functions(args, aws_client)
-        elif command == 'aws-lambda-list-aliases':
-            list_aliases(args, aws_client)
-        elif command == 'aws-lambda-invoke':
-            invoke(args, aws_client)
-        elif command == 'aws-lambda-remove-permission':
-            remove_permission(args, aws_client)
-        elif command == 'aws-lambda-get-account-settings':
-            get_account_settings(args, aws_client)
-        elif command == 'aws-lambda-get-policy':
-            return_results(get_policy_command(args, aws_client))
-        elif command == 'aws-lambda-list-versions-by-function':
-            return_results(list_versions_by_function_command(args, aws_client))
-        elif command == 'aws-lambda-get-function-url-config':
-            return_results(get_function_url_config_command(args, aws_client))
-        elif command == 'aws-lambda-get-function-configuration':
-            return_results(get_function_configuration_command(args, aws_client))
-        elif command == 'aws-lambda-delete-function-url-config':
-            return_results(delete_function_url_config_command(args, aws_client))
-        elif command == 'aws-lambda-delete-function':
-            return_results(delete_function_command(args, aws_client))
+        match command:
+            case 'test-module':
+                test_function(aws_client)
+            case 'aws-lambda-get-function':
+                get_function(args, aws_client)
+            case 'aws-lambda-list-functions':
+                list_functions(args, aws_client)
+            case 'aws-lambda-list-aliases':
+                list_aliases(args, aws_client)
+            case 'aws-lambda-invoke':
+                invoke(args, aws_client)
+            case 'aws-lambda-remove-permission':
+                remove_permission(args, aws_client)
+            case 'aws-lambda-get-account-settings':
+                get_account_settings(args, aws_client)
+            case 'aws-lambda-get-policy':
+                return_results(get_policy_command(args, aws_client))
+            case 'aws-lambda-list-versions-by-function':
+                return_results(list_versions_by_function_command(args, aws_client))
+            case 'aws-lambda-get-function-url-config':
+                return_results(get_function_url_config_command(args, aws_client))
+            case 'aws-lambda-get-function-configuration':
+                return_results(get_function_configuration_command(args, aws_client))
+            case 'aws-lambda-delete-function-url-config':
+                return_results(delete_function_url_config_command(args, aws_client))
+            case 'aws-lambda-delete-function':
+                return_results(delete_function_command(args, aws_client))
     except Exception as e:
 
         return_error(f'Error has occurred in the AWS Lambda Integration: {type(e)}\n {str(e)}')
