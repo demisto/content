@@ -386,7 +386,7 @@ def tc_get_owners_command(client: Client, args: dict) -> Any:  # pragma: no cove
 
 
 def tc_get_indicators_command(client: Client, args: dict):
-    owners = args.get('owner')
+    owners = args.get('owner', '')
     limit = args.get('limit', '500')
     page = args.get('page', '0')
     fields_to_return = argToList(args.get('fields_to_return') or [])
@@ -628,11 +628,12 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
 
 def set_fields(fields: list) -> str:  # pragma: no cover
     fields_str = ''
-    if 'include_all_metadata' in fields:
-        return '&fields=tags&fields=associatedIndicators&fields=associatedGroups&fields=securityLabels' \
-               '&fields=attributes&fields=associatedVictimAssets'
-    for field in fields:
-        fields_str += f'&fields={field}'
+    if fields:
+        if 'include_all_metadata' in fields:
+            return '&fields=tags&fields=associatedIndicators&fields=associatedGroups&fields=securityLabels' \
+                   '&fields=attributes&fields=associatedVictimAssets'
+        for field in fields:
+            fields_str += f'&fields={field}'
     return fields_str
 
 
@@ -804,7 +805,7 @@ def tc_get_indicator_types(client: Client, args: dict) -> None:  # pragma: no co
 
 
 def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pragma: no cover
-    owners = args.get('owner')
+    owners = args.get('owner', '')
     limit = args.get('limit', '500')
     page = args.get('page', '0')
     tag = args.get('tag')
