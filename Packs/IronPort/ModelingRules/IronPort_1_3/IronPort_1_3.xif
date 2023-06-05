@@ -4,11 +4,13 @@ config timeframe = 1y | dataset = cisco_esa_raw_raw
     message = arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[\w\_]+\:\s[A-Za-z]+\:(.*)"),0),
     mid = arrayindex(regextract(_raw_log ,"\sMID\s(\d+)"),0),
     icid = arrayindex(regextract(_raw_log , "\sICID\s(\d+)"),0),
-    rid = arrayindex(regextract(_raw_log ,"RID\s\[([^\]]+)\]"),0),
-    ipv4_address = arrayindex(regextract(_raw_log ,"address\s(\d+\.\d+\.\d+\.\d+)\s"),0),
-    dns_host = arrayindex(regextract(_raw_log ,"dns\shost\s([\w\.0-9\-\_\@]+)\s"),0),
-    response = arrayindex(regextract(_raw_log ,"Response\s\'([^\']+)\'"),0),
-    internal_id = arrayindex(regextract(_raw_log ,"InternalId\=(\d+)"),0),
+    //rid = arrayindex(regextract(_raw_log ,"RID\s\[([^\]]+)\]"),0), //router id - not have field
+    src_ip = arrayindex(regextract(_raw_log ,"address\s(\d+\.\d+\.\d+\.\d+)\s"),0),
+    dns_host1 = arrayindex(regextract(_raw_log ,"dns\shost\s([\w\.0-9\-\_\@]+)\s"),0),
+    dns_host2 = arrayindex(regextract(_raw_log ,"DNS\shost\:\s([^\,]+)\,"),0),
+    dns_host3 = arrayindex(regextract(_raw_log ,"to\sIP\s\d+\.\d+\.\d+\.\d+\slooking\sup\s(\S+)"),0),
+    //response = arrayindex(regextract(_raw_log ,"Response\s\'([^\']+)\'"),0),
+    //internal_id = arrayindex(regextract(_raw_log ,"InternalId\=(\d+)"),0),
     send_bytes = arrayindex(regextract(_raw_log ,"(\d+)\sbytes\sin"),0),
     duration = arrayindex(regextract(_raw_log ,"\d+\sbytes\sin\s(\d+\.*\d*)"),0), // need check more values and add calculation
     src_user = arrayindex(regextract(_raw_log ,"from\'\,\s\'([A-Za-z\s]+)\s\<"),0),// need check more values
@@ -23,6 +25,7 @@ config timeframe = 1y | dataset = cisco_esa_raw_raw
     target_interface2 = arrayindex(regextract(_raw_log ,"interface\sData\s\d+\s\((\d+\.\d+\.\d+\.\d+)\)"),0),
     dst_ip1 = arrayindex(regextract(_raw_log ,"address\s(\d+\.\d+\.\d+\.\d+)\s"),0),
     dst_ip2 = arrayindex(regextract(_raw_log , "recipient\slogging\s\((\d+\.\d+\.\d+\.\d+)\)"),0),
+    dst_ip3 = arrayindex(regextract(_raw_log , "to\sIP\s(\d+\.\d+\.\d+\.\d+)\s"),0),
     dst_port = arrayindex(regextract(_raw_log ,"port\s(\d+)"),0),
     threat_category = arrayindex(regextract(_raw_log ,"Threat Category\:\s([^\,]+)\,"),0),
     suspected_domain = arrayindex(regextract(_raw_log ,"Suspected\sDomain\(s\)\s\:\s(\S+)"),0),
@@ -34,4 +37,11 @@ config timeframe = 1y | dataset = cisco_esa_raw_raw
     protocol = arrayindex(regextract(_raw_log ,"protocol\s(\S+)\s"),0), // need to check the values
     cipher = arrayindex(regextract(_raw_log ,"cipher\s([A-Za-z0-9\-]+)"),0),// xdm.network.tls.cipher
     country = arrayindex(regextract(_raw_log ,"country\s(\w+)\s*$"),0),
-    subject = arrayindex(regextract(_raw_log ,"Subject\s\"([^\"]+)\""),0)//xdm.email.subject
+    subject = arrayindex(regextract(_raw_log ,"Subject\s\"([^\"]+)\""),0),//xdm.email.subject
+    dns_response_code = arrayindex(regextract(_raw_log ,"rcode\=([\w]+)"),0)
+| alter xdm.email.message_id = mid, // Message ID
+    xdm.network.session_id = icid, // Injection Connection ID
+    xdm.source.ipv4 = src_ip ,
+    xdm.target.host.hostname = coalesce(dns_host1,dns_host2,dns_host3),
+    xdm.source.sent_bytes = to_integer(send_bytes),
+    xdm.event.duration = multiply(to_float(duration),1000)
