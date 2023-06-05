@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AWS - Lambda
+  id: AWS - Lambda_copy
   version: -1
 configuration:
 - display: AWS Default Region
@@ -86,8 +86,8 @@ configuration:
   required: false
   type: 8
 description: Amazon Web Services Serverless Compute service (lambda)
-display: AWS - Lambda
-name: AWS - Lambda
+display: AWS - Lambda_copy
+name: AWS - Lambda_copy
 script:
   commands:
   - arguments:

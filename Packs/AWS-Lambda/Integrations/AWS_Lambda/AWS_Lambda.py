@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from AWSApiModule import *
 
 """IMPORTS"""
 from datetime import date
@@ -8,7 +9,7 @@ import urllib3.util
 urllib3.disable_warnings()
 
 
-def config_aws_session(args: dict, aws_client):
+def config_aws_session(args: dict[str, str], aws_client: AWSClient):
     return aws_client.aws_session(
         service='lambda',
         region=args.get('region'),
@@ -247,7 +248,7 @@ def get_policy_command(args: dict, aws_client) -> CommandResults:
     response = aws_client.get_policy(**kwargs)
     policy = json.loads(response["Policy"])
     response["Policy"] = policy
-
+    response.pop("ResponseMetadata")
     parsed_policy = parse_policy(response)
     table_for_markdown = tableToMarkdown(name="Policy", t=parsed_policy)
 
@@ -259,18 +260,17 @@ def get_policy_command(args: dict, aws_client) -> CommandResults:
     )
 
 
-def list_versions_by_function_command(args: dict, aws_client) -> CommandResults:
-    def parse_versions(data: dict[str, Any]) -> dict[str, str | None]:
-        versions: dict = data.get("Versions", [])[0]
+def list_versions_by_function_command(args: dict, aws_client) -> list[CommandResults]:
+    def parse_versions(version: dict[str, Any]) -> dict[str, str | None]:
         return {
-            "Function Name": versions.get('FunctionName'),
-            "Run Time": versions.get('RunTime'),
-            "Role": versions.get('Role'),
-            "Description": versions.get('Description'),
-            "Last Modified": versions.get("LastModified"),
-            "State": versions.get('State'),
-            "Next Marker": data.get('NextMarker'),
+            "Function Name": version.get('FunctionName'),
+            "Runtime": version.get('Runtime'),
+            "Role": version.get('Role'),
+            "Description": version.get('Description'),
+            "Last Modified": version.get("LastModified"),
+            "State": version.get('State'),
         }
+    headers = ["Function Name", "Role", "Runtime", "Last Modified", "State", "Description"]
 
     kwargs = {'FunctionName': args['functionName']}
     if marker := args.get('Marker'):
@@ -279,16 +279,23 @@ def list_versions_by_function_command(args: dict, aws_client) -> CommandResults:
     if maxItems := args.get('MaxItems'):
         kwargs.update({'MaxItems': maxItems})
 
-    response = aws_client.list_versions_by_function(**kwargs)
-    parsed_versions = parse_versions(response)
-    table_for_markdown = tableToMarkdown(name='Versions', t=parsed_versions)
+    response: dict = aws_client.list_versions_by_function(**kwargs)
+    response.pop("ResponseMetadata")
 
-    return CommandResults(
+    parsed_versions = [parse_versions(version) for version in response.get('Versions', [])]
+    table_for_markdown = tableToMarkdown(name='Versions', t=parsed_versions, headers=headers)
+
+    result: list[CommandResults] = []
+    if next_marker := response.get('NextMarker'):
+        result.append(CommandResults(readable_output=f"To get the next version run the command with the Marker argument with the value: {next_marker}"))
+
+    result.append(CommandResults(
         outputs=response,
         readable_output=table_for_markdown,
         outputs_prefix="AWS.Lambda.Version",
         outputs_key_field='FunctionName'
-    )
+    ))
+    return result
 
 
 def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
@@ -432,10 +439,9 @@ def main():
         elif command == 'aws-lambda-delete-function':
             return_results(delete_function_command(args, aws_client))
     except Exception as e:
+
         return_error(f'Error has occurred in the AWS Lambda Integration: {type(e)}\n {str(e)}')
 
-
-from AWSApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ in ('__main__', '__builtin__', 'builtins'):
