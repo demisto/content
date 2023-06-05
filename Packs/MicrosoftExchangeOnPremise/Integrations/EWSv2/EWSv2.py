@@ -703,11 +703,11 @@ class MarkAsJunk(EWSAccountService):
 
     def get_payload(self, item_id, move_item):      # pragma: no cover
         junk = create_element('m:%s' % self.SERVICE_NAME,
-                              IsJunk="true",
-                              MoveItem="true" if move_item else "false")
+                              {"IsJunk": "true",
+                               "MoveItem": ("true" if move_item else "false")})
 
         items_list = create_element('m:ItemIds')
-        item_element = create_element("t:ItemId", Id=item_id)
+        item_element = create_element("t:ItemId", {"Id": item_id})
         items_list.append(item_element)
         junk.append(items_list)
 
@@ -1030,6 +1030,9 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
 def keys_to_camel_case(value):
     def str_to_camel_case(snake_str):
+        # Add condtion as Email object arrived in list and raised error
+        if not isinstance(snake_str, str):
+            return snake_str
         components = snake_str.split('_')
         return components[0] + "".join(x.title() for x in components[1:])
 
@@ -1058,6 +1061,19 @@ def email_ec(item):
     }
 
 
+def parse_object_as_dict_with_serialized_items(object):
+    raw_dict = {}
+    if object is not None:
+        for field in object.FIELDS:
+            try:
+                v = getattr(object, field.name, None)
+                json.dumps(v)
+                raw_dict[field.name] = v
+            except (TypeError, OverflowError):
+                continue
+    return raw_dict
+
+
 def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):      # pragma: no cover
     def parse_object_as_dict(object):
         raw_dict = {}
@@ -1082,15 +1098,15 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
             raw_dict['effective_rights'] = parse_object_as_dict(raw_dict['effective_rights'])
         return raw_dict
 
-    raw_dict = {}
-    for field, value in list(item.__dict__.items()): #ofri - this results in an empty object, any way to reimpliment?
-        if type(value) in [str, int, float, bool, Body, HTMLBody, None]:
-            try:
-                if isinstance(value, str):
-                    value.encode('utf-8')  # type: ignore
-                raw_dict[field] = value
-            except Exception:
-                pass
+    raw_dict = parse_object_as_dict_with_serialized_items(item)
+    # for field, value in list(item.__dict__.items()): #ofri - this results in an empty object, any way to reimpliment?
+    #     if type(value) in [str, int, float, bool, Body, HTMLBody, None]:
+    #         try:
+    #             if isinstance(value, str):
+    #                 value.encode('utf-8')  # type: ignore
+    #             raw_dict[field] = value
+    #         except Exception:
+    #             pass
 
     if getattr(item, 'attachments', None):
         raw_dict['attachments'] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
@@ -1118,7 +1134,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
             TOIS_PATH) else item.folder.absolute
         raw_dict['folder_path'] = folder_path
 
-    raw_dict['id'] = getattr(item, 'id', None)
+    raw_dict['item_id'] = getattr(item, 'id', None)
 
     if compact_fields:
         new_dict = {}
@@ -1130,7 +1146,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         # if exchangelib.__version__ == "1.12.0":
         #     if 'id' in raw_dict:
         #         new_dict['item_id'] = raw_dict['id']
-        fields_list.append('id')
+        fields_list.append('item_id')
 
         for field in fields_list:
             if field in raw_dict:
@@ -1149,7 +1165,6 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
             item_attachments = [x for x in attachments if x[ATTACHMENT_TYPE] == ITEM_ATTACHMENT_TYPE]
             if len(item_attachments) > 0:
                 new_dict['ItemAttachments'] = item_attachments
-
         raw_dict = new_dict
 
     if camel_case:
@@ -1592,7 +1607,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
         raise Exception("Item not found")
     item.move(target_folder)
     move_result = {
-        NEW_ITEM_ID: item.item_id,
+        NEW_ITEM_ID: item.id,
         ITEM_ID: item_id,
         MESSAGE_ID: item.message_id,
         ACTION: 'moved'
@@ -1612,7 +1627,7 @@ def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no c
     delete_type = delete_type.lower()
 
     for item in items:
-        item_id = item.item_id
+        item_id = item.id
         if delete_type == 'trash':
             item.move_to_trash()
         elif delete_type == 'soft':
@@ -1736,12 +1751,12 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
         message_ids = message_ids.split(",")
     items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
         message_id__in=message_ids).all()  # pylint: disable=E1101
-    if len(items_to_recover) != len(message_ids):
+    if items_to_recover.count() != len(message_ids):
         raise Exception("Some message ids are missing in recoverable items directory")
     for item in items_to_recover:
         item.move(target_folder)
         recovered_messages.append({
-            ITEM_ID: item.item_id,
+            ITEM_ID: item.id,
             MESSAGE_ID: item.message_id,
             ACTION: 'recovered'
         })
@@ -1763,10 +1778,21 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
             result[attr] = getattr(phone_number, attr, None)
         return result
 
+    def is_jsonable(x):
+        try:
+            json.dumps(x)
+            return True
+        except (TypeError, OverflowError):
+            return False
+
     def parse_contact(contact):
-        contact_dict = dict((k, v if not isinstance(v, EWSDateTime) else v.ewsformat())
-                            for k, v in list(contact.__dict__.items())
-                            if isinstance(v, str) or isinstance(v, EWSDateTime))
+        contact_dict = parse_object_as_dict_with_serialized_items(contact)
+        for k in contact_dict.keys():
+            v = contact_dict[k]
+            if isinstance(v, EWSDateTime):
+                contact_dict[k] = v.ewsformat()
+
+        contact_dict['id'] = contact.id
         if isinstance(contact, Contact) and contact.physical_addresses:
             contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
         if isinstance(contact, Contact) and contact.phone_numbers:
@@ -1774,8 +1800,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
         if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
             contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
         contact_dict = keys_to_camel_case(contact_dict)
-        contact_dict = dict((k, v) for k, v in list(contact_dict.items()) if v)
-        del contact_dict['mimeContent']
+        contact_dict = dict((k, v) for k, v in list(contact_dict.items()) if v and is_jsonable(v))
         contact_dict['originMailbox'] = target_mailbox
         return contact_dict
 
@@ -1784,7 +1809,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
 
     for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
         contacts.append(parse_contact(contact))
-    return get_entry_for_object('Email contacts for %s' % target_mailbox or ACCOUNT_EMAIL,
+    return get_entry_for_object(f'Email contacts for {target_mailbox or ACCOUNT_EMAIL}',
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                 contacts)
 
@@ -1914,7 +1939,7 @@ def folder_to_context_entry(f):
     f_entry = {
         'name': f.name,
         'totalCount': f.total_count,
-        'id': f.folder_id,
+        'id': f.id,
         'childrenFolderCount': f.child_folder_count,
         'changeKey': f.changekey
     }
@@ -2124,7 +2149,7 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):      # p
         item.save()
 
         marked_items.append({
-            ITEM_ID: item.item_id,
+            ITEM_ID: item.id,
             MESSAGE_ID: item.message_id,
             ACTION: 'marked-as-{}'.format(operation)
         })
@@ -2139,7 +2164,11 @@ def get_item_as_eml(item_id, target_mailbox=None):     # pragma: no cover
     item = get_item_from_mailbox(account, item_id)
 
     if item.mime_content:
-        email_content = email.message_from_string(item.mime_content)
+        # came across an item with bytes attachemnt which failed in the source code, added this to keep functionality
+        if isinstance(item.mime_content, bytes):
+            email_content = email.message_from_bytes(item.mime_content)
+        else:
+            email_content = email.message_from_string(item.mime_content)
         if item.headers:
             attached_email_headers = []
             for h, v in list(email_content.items()):
