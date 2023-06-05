@@ -3074,7 +3074,7 @@ script:
     name: tenable-sc-launch-scan-report
     outputs:
     - contextPath: TenableSC.ScanResults.ID
-      description: Scan results ID
+      description: Scan results ID.
       type: number
     - contextPath: TenableSC.ScanResults.Name
       description: Scan name.
