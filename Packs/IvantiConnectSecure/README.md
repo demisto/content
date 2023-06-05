@@ -16,7 +16,7 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
      - Go to the  **Syslog Server** section, and define a server configuration for the Cortex XSIAM Broker VM with the following settings (see [Configuring Syslog](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023612) for full documentation): 
          | Parameter          | Value    
          | :---               | :---                    
-         | `Server name/IP`   | Enter the [XSIAM Broker VM](#broker-vm) server's IP address or FQDN.    
+         | `Server name/IP`   | Enter the [Cortex XSIAM Broker VM](#broker-vm) server's IP address or FQDN.    
          | `Type`             | Select **UDP**.   
          | `Filter`           | Select **Standard** (the default).   
    
