@@ -14,9 +14,9 @@ filter
     entityIdsDeviceId = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityId"), null)), ","),
     entityIdsAccountIdentifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityId"), null)), ","),
     entityIdsEmailIdentifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityId"), null)), ","),
-    // entityValueGuidsHostname = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","),
-    // entityValueNamesHostName = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.name"), null)), ","),
-    // indicatorsValuesHostname = arraystring(arraymap(json_extract_array(indicators), if(json_extract_scalar("@element", "$.field") = "endpointHostName", json_extract_scalar("@element", "$.value"), null)), ","),
+    entityValueGuidsHostname = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","),
+    entityValueNamesHostName = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.name"), null)), ","),
+    indicatorsValuesHostname = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "endpointHostName", json_extract_scalar("@element", "$.value"), null)), ","),
     entityValueGuidsUpn = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","),
     entityValueNamesUpn = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.name"), null)), ","),
     relatedEntities = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
@@ -47,7 +47,7 @@ filter
     xdm.source.host.device_id = entityIdsDeviceId,
     xdm.source.user.identifier = coalesce(entityIdsAccountIdentifier, entityIdsEmailIdentifier),
 
-    // xdm.source.host.hostname = coalesce(entityValueGuidsHostname, entityValueNamesHostName, indicatorsValuesHostname),
+    xdm.source.host.hostname = coalesce(entityValueGuidsHostname, entityValueNamesHostName, indicatorsValuesHostname),
     xdm.source.user.upn = coalesce(entityValueGuidsUpn, entityValueNamesUpn),
 
 
