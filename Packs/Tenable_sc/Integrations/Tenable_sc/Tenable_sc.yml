@@ -2285,7 +2285,7 @@ script:
       description: Relevant only when query_id is not given. Manageable Query owner group name.
       type: String
     - contextPath: TenableSC.Query.Manageable.Status
-      description: Relevant only when query_id is not given. Manageable Query status
+      description: Relevant only when query_id is not given. Manageable Query status.
       type: String
     - contextPath: TenableSC.Query.Manageable.Tags
       description: Relevant only when query_id is not given. Manageable Query tags
