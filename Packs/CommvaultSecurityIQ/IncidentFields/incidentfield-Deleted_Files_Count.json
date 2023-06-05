@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "deletedfilescount",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_deletedfilescount",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Deleted Files Count",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

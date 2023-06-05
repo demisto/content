@@ -1,0 +1,149 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Suspicious File Activity Mapper",
+    "mapping": {
+        "Suspicious File Activity": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Affected Files Count": {
+                    "simple": "affected_files_count"
+                },
+                "Appliance Name": {
+                    "simple": "app_name"
+                },
+                "Backup Type": {
+                    "simple": "backuplevel"
+                },
+                "Backupset": {
+                    "simple": "backupset"
+                },
+                "Created Files Count": {
+                    "simple": "created_files_count"
+                },
+                "Deleted Files Count": {
+                    "simple": "deleted_files_count"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "End Time": {
+                    "simple": "job_end_time"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "Event Time": {
+                    "simple": "event_time"
+                },
+                "External Link": {
+                    "simple": "external_link"
+                },
+                "Facility": {
+                    "complex": {
+                        "filters": [],
+                        "root": "facility",
+                        "transformers": []
+                    }
+                },
+                "Files List": {
+                    "simple": "files_list"
+                },
+                "Host Name": {
+                    "simple": "host_name"
+                },
+                "Job Id": {
+                    "simple": "job_id"
+                },
+                "Media Agent": {
+                    "simple": "destinationclient"
+                },
+                "Modified Files Count": {
+                    "simple": "modified_files_count"
+                },
+                "Originating Client": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_client",
+                        "transformers": []
+                    }
+                },
+                "Originating Program": {
+                    "complex": {
+                        "filters": [],
+                        "root": "originating_program",
+                        "transformers": []
+                    }
+                },
+                "Process ID": {
+                    "simple": "process_id"
+                },
+                "Renamed Files Count": {
+                    "simple": "renamed_files_count"
+                },
+                "Scanned Folder List": {
+                    "simple": "scanned_folder_list"
+                },
+                "Source Create time": {
+                    "simple": "timestamp"
+                },
+                "Start Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "job_start_time",
+                        "transformers": []
+                    }
+                },
+                "Subclient": {
+                    "simple": "subclient"
+                },
+                "Subtype": {
+                    "simple": "anomaly_sub_type"
+                },
+                "Version": {
+                    "simple": "version"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "msg",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "Unclassified": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "link",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Suspicious File Activity Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}
