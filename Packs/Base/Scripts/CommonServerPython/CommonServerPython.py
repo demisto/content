@@ -4074,10 +4074,10 @@ class Common(object):
                 cve_context['Publications'] = self.create_context_table(self.publications)
 
             if self.vulnerable_products:
-                cve_context['vulnerableproducts'] = self.create_context_table(self.vulnerable_products)
+                cve_context['VulnerableProducts'] = self.create_context_table(self.vulnerable_products)
 
             if self.vulnerable_configurations:
-                cve_context['vulnerableconfigurations'] = self.create_context_table(self.vulnerable_configurations)
+                cve_context['VulnerableConfigurations'] = self.create_context_table(self.vulnerable_configurations)
 
             return ret_value
 
