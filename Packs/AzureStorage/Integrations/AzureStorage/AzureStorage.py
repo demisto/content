@@ -47,11 +47,13 @@ class ASClient:
         self.connection_type = connection_type
 
     @logger
-    def storage_account_list_request(self, account_name: str) -> Dict:
+    def storage_account_list_request(self, account_name: str, resource_group_name: str, subscription_id: str) -> Dict:
         """
             Send the get storage account/s request to the API.
         Args:
             account_name: The storage account name, optional.
+            resource_group_name: The resource group name.
+            subscription_id: The subscription id.
 
         Returns:
             The json response from the API call.
@@ -59,11 +61,7 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{account_name}',
-            params={
-                'api-version': API_VERSION,
-            }
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}?api-version={API_VERSION}'  # noqa: E501
         )
 
     @logger
@@ -344,18 +342,23 @@ class ASClient:
 # Storage Account Commands
 
 
-def storage_account_list(client: ASClient, args: Dict) -> CommandResults:
+def storage_account_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
         Gets a storage account if an account name is specified, and a list of storage accounts if not.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
+    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
+    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
     account_name = args.get('account_name', '')
-    response = client.storage_account_list_request(account_name)
+    response = client.storage_account_list_request(account_name=account_name,
+                                                   resource_group_name=resource_group_name,
+                                                   subscription_id=subscription_id)
     accounts = response.get('value', [response])
 
     readable_output = []
@@ -765,7 +768,7 @@ def main() -> None:
         elif command == 'azure-storage-auth-reset':
             return_results(reset_auth())
         elif command == 'azure-storage-account-list':
-            return_results(storage_account_list(client, args))
+            return_results(storage_account_list(client, params, args))
         elif command == 'azure-storage-account-create-update':
             return_results(storage_account_create_update(client, args))
         elif command == 'azure-storage-blob-service-properties-get':
