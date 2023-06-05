@@ -14,7 +14,7 @@ This pack includes Cortex XSIAM content
 
 ![Server Screenshot](./doc_imgs/syslogleef.png)
 
-8. In the Syslog Settings section, for each type of log message, select a syslog facility from the drop-down list.
+8. In the **Syslog Settings** section, for each type of log message, select a syslog facility from the drop-down list.
    If you select the IBM LEEF log format, you must select the syslog header checkbox before you can select the syslog facility for the log message types.
    For high-priority syslog messages, such as alarms, select **Local0**.
    To assign priorities for other types of log messages (lower numbers have greater priority), select **Local1–Local7**.
