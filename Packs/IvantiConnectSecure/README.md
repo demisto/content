@@ -13,7 +13,7 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
 3. Click the **Settings** tab to display the configuration page.
 4. For each local event log category that you are interested in logging (_System_ events, _User Access_ events, _Admin Access_ events & _Sensors_ events), perform the following steps: 
      - Go to the **Select Events to Log** section, and select the requested event types you wish to log. See [Select Events to Log](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#log_events_set) for a description of the various types for each event category. 
-     - Go to the  **Syslog Server** section, and define a server configuration for the XSIAM Broker VM with the following settings (see [Configuring Syslog](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023612) for full documentation): 
+     - Go to the  **Syslog Server** section, and define a server configuration for the Cortex XSIAM Broker VM with the following settings (see [Configuring Syslog](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023612) for full documentation): 
          | Parameter          | Value    
          | :---               | :---                    
          | `Server name/IP`   | Enter the [XSIAM Broker VM](#broker-vm) server's IP address or FQDN.    
