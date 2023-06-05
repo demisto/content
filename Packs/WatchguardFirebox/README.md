@@ -6,7 +6,7 @@ This pack includes Cortex XSIAM content
 
 1. Select **System** > **Logging**.
    The Logging page appears.
-2. Select the Syslog Server tab.
+2. Click the **Syslog Server** tab.
 3. Select the Send log messages to the syslog server at this IP address check box.
 4. In the IP Address text box, type the IP address for the syslog.
 5. In the Port text box, the default syslog server port (514) appears. To change the server port, type or select a different port for your server.
