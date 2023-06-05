@@ -13,7 +13,7 @@ It is important to know what data is manageable for the user in order to work wi
 **Added support for secret & access keys authentication method.** 
 
 - Added support for secret & access keys authentication method (API Key Authentication) which can be generated from the Tenable SC UI while logged into the desired account.
-- secret & access keys needs to be generated twice, once for sec man and once for admin.
+- Secret & access keys needs to be generated twice, once for secman and once for admin.
 - First, you need to enable API Key Authentication:
 
 ## [Steps to follow:](https://docs.tenable.com/security-center/Content/EnableAPIKeys.htm)
