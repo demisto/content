@@ -1,0 +1,51 @@
+
+# Ivanti Connect Secure
+<~XSIAM>
+This pack includes Cortex XSIAM content.
+
+
+## Configuration on Server Side
+This section describes the basic mandatory steps you should perform on Ivanti Connect Secure admin console in order to configure the requested system events for logging and forwarding them via Syslog to XSIAM.
+
+### Configure Events to Log and Syslog forwarding 
+1. Log in to your Ivanti Connect Secure admin web console. 
+2. Select **System** &rarr; **Log/Monitoring**.
+3. Click the **Settings** tab to display the configuration page.
+4. For each local event log category that you are interested in logging (System events, User Access events, Admin Access events & Sensors events), perform the following steps: 
+   1. Under the **Select Events to Log** section, select the requested check-boxes [x] for each event type you wish to log. See [Select Events to Log](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#log_events_set) for a description of each event category. 
+   2. Under the  **Syslog Server** section, define a Syslog server configuration for the XSIAM Broker VM as described in the table bellow: 
+      | Parameter          | Value    
+      | :---               | :---                    
+      | `Server name/IP`   | Enter the [XSIAM Broker VM](#broker-vm) server's IP address or FQDN.    
+      | `Type`             | Select **UDP**.   
+   
+   See [Configuring Syslog](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023612) for full documentation.
+5. Click **Save Changes** for saving the configuration.  
+
+Remarks: 
+If you are interested in alternative/advanced settings, such as configuring fault tolerance support, logging client-side events, and forwarding syslog over TCP via a secure communication channel with TLS, refer to the documentation in the following links:
+- [Configuring an External Syslog Server](https://help.ivanti.com/ps/help/en_US/PPS/9.1R14/ag/configuring_an_external_syslog_server.htm).
+- [Configuring Advanced Settings](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023706). 
+- [Enabling Client-Side Logging](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1022619).
+
+## Collect Events from Vendor
+In order to use the collector, use the [Broker VM](#broker-vm) option.
+
+### Broker VM
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+
+You can configure the specific vendor and product for this instance.
+
+1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**. 
+2. Go to the apps tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and then click **Configure**.
+3. Click **Add New**.
+4. When configuring the Syslog Collector, set the following values:
+   | Parameter     | Value    
+   | :---          | :---                    
+   | `Protocol`    | The protocol that was defined in the [Syslog forwarding configuration on the Ivanti admin console](#configure-events-to-log-and-syslog-forwarding).
+   | `Port`        | The Syslog service port that was defined in the [Syslog forwarding configuration on the Ivanti admin console](#configure-events-to-log-and-syslog-forwarding) - **514** is the default.   
+   | `Vendor`      | Enter **_Ivanti_**. 
+   | `Product`     | Enter **_Connect Secure_**. 
+
+</~XSIAM>
+ 
