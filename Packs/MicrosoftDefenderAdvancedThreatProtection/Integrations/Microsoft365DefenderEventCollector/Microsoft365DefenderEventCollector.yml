@@ -30,18 +30,18 @@ configuration:
   type: 0
   section: Connect
   advanced: false
-- additionalinfo: The Client (Application) ID to use to connect.
-  display: Client (Application) ID
-  name: client_id
+- name: client_id
   required: true
   type: 0
   section: Connect
-- displaypassword: Client Secret
-  name: credentials
+  additionalinfo: The Client (Application) ID to use to connect.
+  display: Client (Application) ID
+- name: credentials
   required: true
   type: 9
-  hiddenusername: true
   section: Connect
+  displaypassword: Client Secret
+  hiddenusername: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -72,9 +72,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: |-
-    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
-  defaultvalue: https://api.securitycenter.microsoft.com
+- defaultvalue: 'https://api.securitycenter.microsoft.com'
   display: Host URL (e.g., https://api.securitycenter.microsoft.com)
   hidden: false
   name: url
@@ -82,14 +80,16 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- defaultvalue: 'true'
-  display: Verify SSL Certificate
-  hidden: false
+  additionalinfo: |-
+    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+- display: Verify SSL Certificate
   name: verify
   required: false
   type: 8
   section: Connect
   advanced: true
+  defaultvalue: 'true'
+  hidden: false
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -135,7 +135,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.62484
+  dockerimage: demisto/pydantic-jwt3:1.0.0.62490
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
