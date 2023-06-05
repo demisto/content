@@ -41,7 +41,7 @@ config timeframe = 1y | dataset = cisco_esa_raw_raw
     dns_response_code = arrayindex(regextract(_raw_log ,"rcode\=([\w]+)"),0)
 | alter xdm.email.message_id = mid, // Message ID
     xdm.network.session_id = icid, // Injection Connection ID
-    xdm.source.ipv4 = src_ip ,
+    xdm.source.ipv4 = src_ip,
     xdm.target.host.hostname = coalesce(dns_host1,dns_host2,dns_host3),
     xdm.source.sent_bytes = to_integer(send_bytes),
     xdm.event.duration = multiply(to_float(duration),1000)
