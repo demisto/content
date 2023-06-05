@@ -84,15 +84,18 @@ class ASClient:
         )
 
     @logger
-    def storage_account_create_update_request(self, args: Dict) -> Dict:
+    def storage_account_create_update_request(self, subscription_id: str, resource_group_name: str, args: Dict) -> Dict:
         """
             Send the user arguments for the create/update account in the request body to the API.
         Args:
+            subscription_id: The subscription id.
+            resource_group_name: The resource group name.
             args: The user arguments.
 
         Returns:
             The json response from the API call.
         """
+        account_name = args.get('account_name', '')
         json_data_args = {
             'sku': {
                 'name': args['sku']
@@ -179,11 +182,8 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='PUT',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'/{args["account_name"]}',
-            params={
-                'api-version': API_VERSION,
-            },
+
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}?api-version={API_VERSION}',  # noqa: E501
             json_data=json_data_args,
             resp_type='response'
         )
@@ -394,18 +394,23 @@ def storage_account_list(client: ASClient, params: Dict, args: Dict) -> CommandR
     )
 
 
-def storage_account_create_update(client: ASClient, args: Dict) -> Union[CommandResults, str]:
+def storage_account_create_update(client: ASClient, params: Dict, args: Dict) -> Union[CommandResults, str]:
     """
         Creates or updates a given storage account.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
+    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
+    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
 
-    response = client.storage_account_create_update_request(args)
+    response = client.storage_account_create_update_request(subscription_id=subscription_id,
+                                                            resource_group_name=resource_group_name,
+                                                            args=args)
 
     if not response.text:
         return f"The request was accepted - the account {args.get('account_name')} will be created shortly"
@@ -770,7 +775,7 @@ def main() -> None:
         elif command == 'azure-storage-account-list':
             return_results(storage_account_list(client, params, args))
         elif command == 'azure-storage-account-create-update':
-            return_results(storage_account_create_update(client, args))
+            return_results(storage_account_create_update(client, params, args))
         elif command == 'azure-storage-blob-service-properties-get':
             return_results(storage_blob_service_properties_get(client, args))
         elif command == 'azure-storage-blob-service-properties-set':
