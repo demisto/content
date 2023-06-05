@@ -1142,3 +1142,31 @@ def test_move_folder_command(requests_mock, mocker):
     assert response.outputs == mock_response
 
     assert len(response.outputs) > 0
+
+
+def test_main(mocker):
+    """
+    Given:
+    - Valid arguments for each command.
+    When:
+    - Running the main function.
+    Then:
+    - Ensure that each command runs successfully without raising any exceptions.
+    """
+    import BoxV2
+    client = ClientTestBox(mocker).client
+    demisto_args = {
+        'max_fetch': 50,
+        'fields': 'name',
+        'filter_term': 'test_user',
+        'limit': '100',
+        'offset': '0'
+    }
+    demisto_command = 'test-module'
+    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    mocker.patch.object(demisto, 'command', return_value=demisto_command)
+    client = ClientTestBox(mocker).client
+    mocker.patch.object(BoxV2, 'Client', return_value=client)
+    mock_response = util_load_json('test_data/get_folder.json')
+    mocker.patch.object(Client, 'list_users', return_value=mock_response)
+    BoxV2.main()
