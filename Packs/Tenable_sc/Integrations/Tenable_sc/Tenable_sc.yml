@@ -3056,7 +3056,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Deprecated. Scan results id.
+      description: Deprecated. Scan results ID.
       isArray: false
       name: scan_results_id
       required: false
