@@ -253,3 +253,13 @@ Ping
 GetDockerImageLatestTag
 GetDuplicatesMlv2
 DockerHardeningCheck
+
+[file:IPNetwork.yml]
+ignore=RM109
+
+[file:IsInternalDomainName.yml]
+ignore=RM109
+
+[file:IsUrlPartOfDomain.yml]
+ignore=RM109
+

@@ -46,7 +46,6 @@ args:
 commonfields:
   id: DeleteContent
   version: -1
-enabled: false
 name: DeleteContent
 comment: Delete content to keep XSOAR tidy.
 outputs:

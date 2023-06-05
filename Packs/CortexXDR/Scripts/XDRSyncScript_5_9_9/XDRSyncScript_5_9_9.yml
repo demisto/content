@@ -190,7 +190,6 @@ comment: Syncs a single incident between Demisto and XDR. This script always use
 commonfields:
   id: XDRSyncScript
   version: -1
-enabled: false
 name: XDRSyncScript
 outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.incident_id
