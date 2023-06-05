@@ -21,10 +21,9 @@
       }      
     ],
     "ContentsFormat": "json",
-    "ReadableContentsFormat": "markdown",
     "HumanReadable": "### IPv4 Destination groups (2)\n|ID|Name|Type|Description|Addresses|\n|---|---|---|---|---|\n| 1997898 | Test99 | DSTN_IP | Localhost v2 | 127.0.0.2 |\n| 2001335 | Test01 | DSTN_IP | Localhost v1 | 127.0.0.1 |\n",
     "EntryContext": {
-      "Zscaler.IPDestinationGroup(val.ID && val.ID === obj.ID)": [
+      "Zscaler.IPDestinationGroup(val.ID && val.ID == obj.ID)": [
         {
           "ID": 1997898, 
           "Name": "Test99", 
@@ -44,5 +43,9 @@
           "Countries": []
         }      
       ]
-    }
+    },
+    "IgnoreAutoExtract": false,
+    "IndicatorTimeline": [],
+    "Note": false,
+    "Relationships": []
 }

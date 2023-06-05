@@ -48,10 +48,9 @@
       }      
     ],
     "ContentsFormat": "json",
-    "ReadableContentsFormat": "markdown",
     "HumanReadable": "### IPv4 Destination groups (5)\n|ID|Name|Type|Description|Addresses|Countries|\n|---|---|---|---|---|---|\n| 1964949 | Russia-Region | DSTN_OTHER | Russia based destination group |  | COUNTRY_RU |\n| 1971364 | Algeria-Region | DSTN_OTHER |  |  | COUNTRY_AL |\n| 1971539 | India_Destination | DSTN_OTHER |  |  | COUNTRY_IN |\n| 1997898 | Test99 | DSTN_IP | Localhost v2 | 127.0.0.2 |  |\n| 2001335 | Test01 | DSTN_IP | Localhost v1 | 127.0.0.1 |  |\n",
     "EntryContext": {
-      "Zscaler.IPDestinationGroup(val.ID && val.ID === obj.ID)": [
+      "Zscaler.IPDestinationGroup(val.ID && val.ID == obj.ID)": [
         {
           "ID": 1964949, 
           "Name": "Russia-Region", 
@@ -98,5 +97,9 @@
           "Countries": []
         }      
       ]
-    }
+    },
+    "IgnoreAutoExtract": false,
+    "IndicatorTimeline": [],
+    "Note": false,
+    "Relationships": []
 }

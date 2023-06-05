@@ -6,7 +6,7 @@ commonfields:
   id: Zscaler
   version: -1
 configuration:
-- display: Cloud Name (i.e. https://zsapi.zscalertwo.net)
+- display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
   name: cloud
   required: true
   type: 0
@@ -17,7 +17,6 @@ configuration:
   type: 9
   section: Connect
 - name: creds_key
-  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
@@ -78,7 +77,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, and manually log in, log out, and activate changes in a Zscaler session.
+description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create manage and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
 display: Zscaler Internet Access
 name: Zscaler
 script:
@@ -221,19 +220,19 @@ script:
     name: zscaler-whitelist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4.
+      description: A comma-separated list of IP addresses to remove from the block list. For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
-    description: Removes the specified IP addresses from the allow list.
+    description: Removes the specified IP addresses from the block list.
     name: zscaler-undo-blacklist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to add to the allow list. For example, 8.8.8.8,1.2.3.4.
+      description: A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
-    description: Adds the specified IP addresses to the allow list.
+    description: Adds the specified IP addresses to the block list.
     execution: true
     name: zscaler-blacklist-ip
   - arguments:
@@ -496,7 +495,7 @@ script:
     arguments:
     - name: name
       required: true
-      description: Destination IP group name
+      description: Destination IP group name.
       type: textArea
     - name: type
       required: true
@@ -506,7 +505,7 @@ script:
       - DSTN_FQDN
       - DSTN_DOMAIN
       - DSTN_OTHER
-      description: Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs)
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
       type: textArea
     - name: addresses
       description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
@@ -880,7 +879,7 @@ script:
       - VEHICLES
       - VIOLENCE
       - WEAPONS_AND_BOMBS
-      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrive list of possible values you can execute zscaler-get-categories command.
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values, you can execute the zscaler-get-categories command.
       isArray: true
       type: textArea
     - name: countries
@@ -1135,21 +1134,21 @@ script:
       - COUNTRY_JE
       - COUNTRY_BL
       - COUNTRY_MF
-      description: Destination IP address counties. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post
+      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post
       isArray: true
       type: textArea
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
-      description: Unique identifier for the destination IP group
+      description: Unique identifier for the destination IP group.
       type: number
     - contextPath: Zscaler.IPDestinationGroup.Name
-      description: Destination IP group name
+      description: Destination IP group name.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Type
-      description: Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs)
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Description
-      description: Destination IP group description
+      description: Destination IP group description.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Addresses
       description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
@@ -1158,12 +1157,12 @@ script:
       description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Countries
-      description: Destination IP address counties. You can identify destinations based on the location of a server.
+      description: Destination IP address countries. You can identify destinations based on the location of a server.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.IsNonEditable
-      description: This field is applicable only to predefined IP address groups, which cannot be modified.
+      description: If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified.
       type: boolean
-    description: Adds a new IP Destination group.
+    description: Adds a new IP destination group.
   - name: zscaler-edit-ip-destination-group
     arguments:
     - name: ip_group_id
@@ -1171,14 +1170,14 @@ script:
       description: The unique identifier for the IP destination group.
       type: textArea
     - name: name
-      description: Destination IP group name
+      description: Destination IP group name.
       type: textArea
     - name: addresses
       description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
       isArray: true
       type: textArea
     - name: description
-      description: Additional information about the destination IP group
+      description: Additional information about the destination IP group.
       type: textArea
     - name: ip_categories
       auto: PREDEFINED
@@ -1545,7 +1544,7 @@ script:
       - VEHICLES
       - VIOLENCE
       - WEAPONS_AND_BOMBS
-      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrive list of possible values you can execute zscaler-get-categories command.
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values you can execute the zscaler-get-categories command.
       isArray: true
       type: textArea
     - name: countries
@@ -1800,7 +1799,7 @@ script:
       - COUNTRY_JE
       - COUNTRY_BL
       - COUNTRY_MF
-      description: Destination IP address counties. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
+      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
       isArray: true
       type: textArea
     - name: is_non_editable
@@ -1813,16 +1812,16 @@ script:
       type: textArea
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
-      description: Unique identifier for the destination IP group
+      description: Unique identifier for the destination IP group.
       type: number
     - contextPath: Zscaler.IPDestinationGroup.Name
-      description: Destination IP group name
+      description: Destination IP group name.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Type
-      description: Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs)
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Description
-      description: Destination IP group description
+      description: Destination IP group description.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Addresses
       description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
@@ -1831,13 +1830,13 @@ script:
       description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Countries
-      description: Destination IP address counties. You can identify destinations based on the location of a server.
+      description: Destination IP address countries. You can identify destinations based on the location of a server.
       type: string
     description: Updates the IP destination group information for the specified group ID.
   - name: zscaler-list-ip-destination-groups
     arguments:
     - name: ip_group_id
-      description: a list of unique identifier for the IP destination groups.
+      description: A comma-separated list of unique identifiers for the IP destination groups.
       isArray: true
       type: textArea
     - name: exclude_type
@@ -1847,7 +1846,7 @@ script:
       - DSTN_FQDN
       - DSTN_DOMAIN
       - DSTN_OTHER
-      description: The IP group type to be excluded from results.
+      description: The IP group type to be excluded from the results.
       type: textArea
     - name: category_type
       auto: PREDEFINED
@@ -1857,17 +1856,17 @@ script:
       - DSTN_FQDN
       - DSTN_DOMAIN
       - DSTN_OTHER
-      description: The IP group type to be filtered from results.
+      description: The IP group type to be filtered from results. This argument is only supported when the 'lite' argument is set to True.
     - name: include_ipv6
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: Retrieve IPv6 destination groups
+      description: Retrieve IPv6 destination groups.
       defaultValue: "False"
       type: textArea
     - name: limit
-      description: Limit to results to be showcased, defaulted with the value 50 if nothing given as input
+      description: Limit of the results to be retrieved.
       defaultValue: "50"
       type: textArea
     - name: all_results
@@ -1875,7 +1874,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Boolean value for user to choose, if wanted to get all results at once or not
+      description: Whether to retrieve all results at once.
       defaultValue: "False"
       type: textArea
     - name: lite
@@ -1883,18 +1882,18 @@ script:
       predefined:
       - "True"
       - "False"
-      description: Boolean value for user to choose, To retrieve only limited information of IP Destination groups. Includes ID, Name and Type of the IP Destination groups.
+      description: Whether to retrieve only limited information of IP destination groups. Includes ID, name and type of the IP destination groups.
       defaultValue: "False"
       type: textArea
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
-      description: Unique identifier for the destination IP group
+      description: Unique identifier for the destination IP group.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Name
-      description: Destination IP group name
+      description: Destination IP group name.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Type
-      description: Destination IP group type (i.e., the group can contain destination IP addresses or FQDNs)
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Addresses
       description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
@@ -1906,13 +1905,13 @@ script:
       description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Countries
-      description: Destination IP address counties. You can identify destinations based on the location of a server.
+      description: Destination IP address countries. You can identify destinations based on the location of a server.
       type: string
-    description: Gets a list of all IP destination groups or the IP destination group information for the specified group ID
+    description: Gets a list of all IP destination groups or the IP destination group information for the specified group ID.
   - name: zscaler-delete-ip-destination-groups
     arguments:
     - name: ip_group_ids
-      description: A list of unique identifier for the IP destination groups.
+      description: A comma-separated list of unique identifiers for the IP destination groups.
       type: textArea
       isArray: true
     description: Deletes the IP destination groups for the specified group ID.

@@ -33,13 +33,15 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
         res = command_func(args)
     else:
         res = command_func(**args)
-
     if result_validator:
         assert result_validator(res)
     else:
         with open(expected_result_path, 'r') as ex_f:
             expected_result = json.load(ex_f)
-            assert expected_result == res
+            if isinstance(res, CommonServerPython.CommandResults):
+                assert expected_result == res.to_context()
+            else:
+                assert expected_result == res
 
 
 @pytest.fixture(autouse=True)
@@ -647,6 +649,7 @@ def test_create_ip_destination_group(mocker):
 def test_edit_ip_destination_group(mocker):
     """zscaler-edit-ip-destination-group"""
     import Zscaler
+
     run_command_test(command_func=Zscaler.edit_ip_destination_group,
                      args={
                          'ip_group_id': 2000359,
@@ -665,6 +668,7 @@ def test_edit_ip_destination_group(mocker):
 def test_delete_ip_destination_groups(mocker):
     """zscaler-delete-ip-destination-group"""
     import Zscaler
+
     run_command_test(command_func=Zscaler.delete_ip_destination_groups,
                      args={'ip_group_id': '1964949'},
                      response_path='test_data/responses/delete_ip_destination_group.json',
