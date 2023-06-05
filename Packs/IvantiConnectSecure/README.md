@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 
 
 ## Configuration on Server Side
-This section describes the mandatory steps you should perform on Ivanti Connect Secure admin console in order to configure logging for the various system events and forwarding them via Syslog to XSIAM.
+This section describes the mandatory steps you should perform on Ivanti Connect Secure admin console in order to configure logging for the various system events and forwarding them via Syslog to Cortex XSIAM.
 
 ### Configure Events to Log and Syslog forwarding 
 1. Log in to your Ivanti Connect Secure admin web console. 
