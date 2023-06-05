@@ -1,5 +1,5 @@
 Use the Tenable.sc integration to get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
-All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
+All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc.) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
 It is important to know what data is manageable for the user in order to work with the integration.
 
 ## Use cases:
