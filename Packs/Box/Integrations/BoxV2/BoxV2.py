@@ -1982,7 +1982,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     return next_run, incidents
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
