@@ -8,5 +8,3 @@ The compliance pack provides dashboards and reports for a variety of regulations
 -Install dashboard and report templates for the following regulations: NIST CSF
 -Reference data that has been mapped to the data model.
 -Produce evidence for audits/regulations.
-
-**Note:** This pack is currently offered as a free add-on. However, in the future there will be fee for this pack.
