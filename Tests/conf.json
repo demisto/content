@@ -21,6 +21,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test_Playbook_-_Cortex_XDR_-_Endpoint_Investigation"
         },
@@ -669,6 +673,10 @@
             "integrations": "nmap",
             "playbookID": "Nmap - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Netmiko",
+            "playbookID": "Netmiko_test"
         },
         {
             "integrations": "AutoFocus V2",
@@ -5425,6 +5433,13 @@
         {
           "integrations":  "Cylance Protect v2",
           "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+        },
+        {
+            "integrations": [
+                "LOLBAS Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "FeedLOLBas_test"
         }
     ],
     "skipped_tests": {
@@ -5648,7 +5663,7 @@
         "ArcSight Logger": "No instance - Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
-        "Prisma Access": "No instance - Instance will be provided soon by Lior and Prasen - Issue 27112",
+        "Prisma Access": "No instance - Issue CRTX-84209",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",

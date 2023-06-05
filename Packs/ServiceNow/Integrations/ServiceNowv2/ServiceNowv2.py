@@ -1,3 +1,5 @@
+import re
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
@@ -229,7 +231,7 @@ def get_item_human_readable(data: dict) -> dict:
     return item
 
 
-def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
+def create_ticket_context(data: dict, additional_fields: list | None = None) -> Any:
     """Create ticket context.
 
     Args:
@@ -294,7 +296,7 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     return createContext(context, removeNull=True)
 
 
-def get_ticket_context(data: Any, additional_fields: list = None) -> Any:
+def get_ticket_context(data: Any, additional_fields: list | None = None) -> Any:
     """Manager of ticket context creation.
 
     Args:
@@ -313,7 +315,7 @@ def get_ticket_context(data: Any, additional_fields: list = None) -> Any:
     return tickets
 
 
-def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list = None) -> list:
+def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list | None = None) -> list:
     """Get ticket human readable.
 
     Args:
@@ -511,20 +513,16 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
 
 def split_notes(raw_notes, note_type, time_info):
     notes: List = []
-    notes_split = raw_notes.split('\n\n')
-    retrieved_last_note = False
-    for note in notes_split:
-        if not note:
-            continue
-        if 'Mirrored from Cortex XSOAR' in note:
-            if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
-                notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
-            continue
-        note_info, note_value = note.split('\n', 1)
-        created_on, created_by = note_info.split(' - ')
+    # The notes should be in this form:
+    # '16/05/2023 15:49:56 - John Doe (Additional comments)\nsecond note first line\n\nsecond line\n\nthird
+    # line\n\n2023-05-10 15:41:38 - פלוני אלמוני (Additional comments)\nfirst note first line\n\nsecond line\n\n
+    delimiter = '([0-9]{1,4}(?:\/|-)[0-9]{1,2}(?:\/|-)[0-9]{1,4}.*\((?:Additional comments|Work notes)\))'
+    notes_split = list(filter(None, re.split(delimiter, raw_notes)))
+    for note_info, note_value in zip(notes_split[::2], notes_split[1::2]):
+        created_on, _, created_by = note_info.partition(" - ")
         created_by = created_by.split(' (')[0]
         if not created_on or not created_by:
-            raise Exception(f'Failed to extract the required information from the following note: {note}')
+            raise Exception(f'Failed to extract the required information from the following note: {note_info} - {note_value}')
 
         # convert note creation time to UTC
         try:
@@ -535,17 +533,15 @@ def split_notes(raw_notes, note_type, time_info):
 
         if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
-            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note}.')
-            retrieved_last_note = False
+            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note_info} - {note_value}.')
             continue
         note_dict = {
             "sys_created_on": created_on_UTC.strftime(DATE_FORMAT),
-            "value": note_value,
+            "value": note_value.strip(),
             "sys_created_by": created_by,
             "element": note_type
         }
         notes.append(note_dict)
-        retrieved_last_note = True
     return notes
 
 
@@ -581,7 +577,7 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = None, version: str = None, look_back: int = 0,
+                 incident_name: str, oauth_params: dict | None = None, version: str | None = None, look_back: int = 0,
                  use_display_value: bool = False, display_date_format: str = ''):
         """
 
@@ -659,8 +655,8 @@ class Client(BaseClient):
         """
         return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
 
-    def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False,
+    def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
+                     headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
                      no_record_found_res: dict = {'result': []}):
         """Generic request to ServiceNow.
 
@@ -875,7 +871,7 @@ class Client(BaseClient):
 
         return entries
 
-    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str = None,
+    def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str | None = None,
             no_record_found_res: dict = {'result': []}) -> dict:
         """Get a ticket by sending a GET request.
 
@@ -2599,8 +2595,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 file_name, file_extension = os.path.splitext(full_file_name)
                 if not file_extension:
                     file_extension = ''
-                client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
-                                   ticket_type)
+                if params.get('file_tag_from_service_now') not in entry.get('tags', []):
+                    client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
+                                       ticket_type)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
