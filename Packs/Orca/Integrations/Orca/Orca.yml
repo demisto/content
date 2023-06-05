@@ -54,7 +54,6 @@ configuration:
   section: Connect
   advanced: true
 - display: Also Fetch informational alerts
-  hidden: false
   name: fetch_informational
   required: false
   type: 8
@@ -62,7 +61,6 @@ configuration:
   advanced: true
 - additionalinfo: If this checked, all existing alerts will be fetched
   display: Pull Existing Alerts
-  hidden: false
   name: pull_existing_alerts
   required: false
   type: 8

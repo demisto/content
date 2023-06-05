@@ -36,12 +36,10 @@ configuration:
   required: false
   type: 0
 - display: API key ID
-  hidden: false
   name: api_key_id
   required: false
   type: 4
 - display: API key secret
-  hidden: false
   name: api_key_secret
   required: false
   type: 4

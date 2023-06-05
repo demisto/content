@@ -17,12 +17,10 @@ configuration:
   required: false
   type: 8
 - display: Client ID
-  hidden: false
   name: client_id
   required: true
   type: 0
 - display: Client Secret
-  hidden: false
   name: client_secret
   required: true
   type: 0

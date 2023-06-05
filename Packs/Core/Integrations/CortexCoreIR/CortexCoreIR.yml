@@ -3197,7 +3197,6 @@ script:
     deprecated: false
     description: Get the prevalence of a file, identified by sha256.
     execution: false
-    hidden: false
     name: core-get-hash-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Hash.value
@@ -3222,7 +3221,6 @@ script:
     deprecated: false
     description: Get the prevalence of an ip, identified by ip_address.
     execution: false
-    hidden: false
     name: core-get-IP-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Ip.value
@@ -3247,7 +3245,6 @@ script:
     deprecated: false
     description: Get the prevalence of a domain, identified by domain_name.
     execution: false
-    hidden: false
     name: core-get-domain-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Domain.value
@@ -3272,7 +3269,6 @@ script:
     deprecated: false
     description: Get the prevalence of a process, identified by process_name.
     execution: false
-    hidden: false
     name: core-get-process-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Process.value
@@ -3303,7 +3299,6 @@ script:
     deprecated: false
     description: Get the prevalence of a registry_path, identified by key_name, value_name.
     execution: false
-    hidden: false
     name: core-get-registry-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Registry.value
@@ -3328,7 +3323,6 @@ script:
     deprecated: false
     description: Get the prevalence of a process_command_line, identified by process_command_line.
     execution: false
-    hidden: false
     name: core-get-cmd-analytics-prevalence
     outputs:
     - contextPath: Core.AnalyticsPrevalence.Cmd.value
@@ -3779,7 +3773,7 @@ script:
       description: Email address of users associated with the role.
       type: array
   - arguments:
-    - description: A comma-separated list of one or more user emails of users you want to add to a role. 
+    - description: A comma-separated list of one or more user emails of users you want to add to a role.
       name: user_emails
       required: true
       isArray: true
