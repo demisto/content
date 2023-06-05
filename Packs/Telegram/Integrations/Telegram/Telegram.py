@@ -131,7 +131,7 @@ def get_user_id(username):
 
 def main():
     if not TOKEN:
-        raise DemistoException('API Key must be provided.')
+        raise DemistoException('API Token must be provided.')
     LOG(f'command is {demisto.command()}')
 
     try:
