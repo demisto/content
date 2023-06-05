@@ -2258,7 +2258,7 @@ script:
       description: Relevant only when query_id is not given. Manageable Query modification time.
       type: Date
     - contextPath: TenableSC.Query.Manageable.Name
-      description: Relevant only when query_id is not given. Manageable Query name
+      description: Relevant only when query_id is not given. Manageable Query name.
       type: String
     - contextPath: TenableSC.Query.Manageable.Owner.Firstname
       description: Relevant only when query_id is not given. Manageable Query owner first name.

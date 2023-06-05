@@ -8,12 +8,12 @@ It is important to know what data is manageable for the user in order to work wi
     * Launch and manage scan results and the found vulnerabilities.
     * Create and view assets.
     * View policies, repositories, credentials, users and more system information.
-    * View and real-time receiving of alerts.
+    * View alerts received in real-time.
 
 **Added support for secret & access keys authentication method.** 
 
 - Added support for secret & access keys authentication method (API Key Authentication) which can be generated from the Tenable SC UI while logged into the desired account.
-- secret & access keys needs to be generated twice, once for sec man and once for admin.
+- Secret & access keys needs to be generated twice, once for secman and once for admin.
 - First, you need to enable API Key Authentication:
 
 ## [Steps to follow:](https://docs.tenable.com/security-center/Content/EnableAPIKeys.htm)
