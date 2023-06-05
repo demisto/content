@@ -105,9 +105,9 @@ class Client(Zoom_Client):
         )
 
     def zoom_list_users(self, page_size: int, status: str = "active",
-                        next_page_token: str | None = None,
-                        role_id: str | None = None, url_suffix: str | None = None,
-                        page_number: int | None = None):
+                        next_page_token: str = None,
+                        role_id: str = None, url_suffix: str = None,
+                        page_number: int = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -148,7 +148,7 @@ class Client(Zoom_Client):
             })
 
     def zoom_meeting_list(self, user_id: str, next_page_token: str | None = None, page_size: int | str = 30,
-                          type: str | int | None = None, page_number: int | None = None):
+                          type: str | int | None = None, page_number: int = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"users/{user_id}/meetings",
@@ -160,7 +160,7 @@ class Client(Zoom_Client):
                 'page_number': page_number
             })
 
-    def zoom_fetch_recording(self, method: str, url_suffix: str | None = None, full_url: str | None = None,
+    def zoom_fetch_recording(self, method: str, url_suffix: str = '', full_url: str = '',
                              stream: bool = False, resp_type: str = 'json'):
         return self.error_handled_http_request(
             method=method,
@@ -171,7 +171,8 @@ class Client(Zoom_Client):
             headers={'authorization': f'Bearer {self.access_token}'},
         )
 
-    def zoom_list_channels(self, page_size: int, next_page_token: str | None = None, url_suffix: str | None = None, page_number: int | None = None):
+    def zoom_list_channels(self, page_size: int, next_page_token: str = None, url_suffix: str = '',
+                           page_number: int = 1):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"chat/{url_suffix}",
@@ -199,8 +200,8 @@ class Client(Zoom_Client):
             return_empty_response=True
         )
 
-    def zoom_list_user_channels(self, user_id: str, page_size: int, next_page_token: str | None = None, url_suffix: str | None = None,
-                                page_number: int | None = None):
+    def zoom_list_user_channels(self, user_id: str, page_size: int, next_page_token: str = None, url_suffix: str = '',
+                                page_number: int = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"chat/{url_suffix}",
@@ -221,14 +222,14 @@ class Client(Zoom_Client):
             return_empty_response=True
         )
 
-    def zoom_invite_to_channel(self, members_json: str, url: str | None = None):
+    def zoom_invite_to_channel(self, members_json: str, url: str = None):
         return self.error_handled_http_request(
             method='POST',
             url_suffix=url,
             headers={'authorization': f'Bearer {self.access_token}'},
             json_data=members_json)
 
-    def zoom_remove_from_channel(self, url_suffix: str | None = None):
+    def zoom_remove_from_channel(self, url_suffix: str = None):
         return self.error_handled_http_request(
             method='DELETE',
             url_suffix=url_suffix,
@@ -264,7 +265,7 @@ class Client(Zoom_Client):
             headers={'authorization': f'Bearer {self.access_token}'}
         )
 
-    def zoom_delete_message(self, url_suffix: str | None = None):
+    def zoom_delete_message(self, url_suffix: str = None):
         return self.error_handled_http_request(
             method='DELETE',
             url_suffix=url_suffix,
@@ -282,12 +283,12 @@ class Client(Zoom_Client):
         )
 
     def zoom_list_user_messages(self, user_id: str, date_arg: datetime, from_arg: datetime, to_arg: datetime, page_size: int,
-                                next_page_token: str | None = None, url_suffix: str | None = None, page_number: int | None = None,
-                                to_contact: str | None = None,
-                                to_channel: str | None = None,
+                                next_page_token: str = None, url_suffix: str = None, page_number: int = None,
+                                to_contact: str = None,
+                                to_channel: str = None,
                                 include_deleted_and_edited_message: bool = False,
-                                search_type: str | None = None,
-                                search_key: str | None = None,
+                                search_type: str = None,
+                                search_key: str = None,
                                 exclude_child_message: bool = False):
 
         return self.error_handled_http_request(
@@ -428,9 +429,7 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
 def remove_extra_info_list_users(limit, raw_data):
     """_summary_
     Due to the fact that page_size must be const,
-    Extra information may be provided to me, such as:
-    In the case of limit = 301, manual_list_users_pagination will return 600 users (MAX_RECORDS * 2),
-    The last 299 must be removed.
+    Extra information may be provided
 
     Args:
         limit (int): the number of records the user asked for
@@ -449,10 +448,7 @@ def remove_extra_info_list_users(limit, raw_data):
 def remove_extra_info_list(name, limit, raw_data):
     """_summary_
     Due to the fact that page_size must be const,
-    Extra information may be provided to me, such as:
-    In the case of limit = 301, manual_list_users_pagination will return 600 users (MAX_RECORDS * 2),
-    The last 299 must be removed.
-
+    Extra information may be provided
     Args:
         limit (int): the number of records the user asked for
         raw_data (dict):the entire response from the pagination function
@@ -1142,7 +1138,7 @@ def zoom_send_file_command(client, **args) -> CommandResults:
     )
 
 
-def parse_markdown_message(markdown_message: str, at_contact: str | None = None):
+def parse_markdown_message(markdown_message: str, at_contact: str = None):
     formatted_message = markdown_message
     formats = []
     at_items = []
