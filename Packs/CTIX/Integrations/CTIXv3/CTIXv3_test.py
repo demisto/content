@@ -1181,4 +1181,4 @@ def test_cve_command(requests_mock):
     assert response[0].outputs_prefix == "CTIX.VulnerabilityLookup"
 
     assert isinstance(response[0].outputs, dict)
-    assert len(response[0].outputs) == 9
+    assert len(response[0].outputs) == 10

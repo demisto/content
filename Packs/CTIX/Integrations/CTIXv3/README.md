@@ -2857,6 +2857,7 @@ Lookup vulnerability info
 | CTIX.VulnerabilityLookup.created | string | LastPublished |
 | CTIX.VulnerabilityLookup.name | string | Name |
 | CTIX.VulnerabilityLookup.uuid | string | UUID |
+| CTIX.VulnerabilityLookup.extra_data | string | Extra data |
 
 #### Command example
 
@@ -2866,9 +2867,9 @@ Lookup vulnerability info
 
 >### HTTP Response Data
 
-|cpes|cvss2|cvss3|dbot_reputation|description|last_modified|last_published|name|uuid|
+|cpes|cvss2|cvss3|dbot_reputation|description|extra_data|last_modified|last_published|name|uuid|
 |---|---|---|---|---|---|---|---|---|
-| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host. <br><br>A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow.<br><br>Further details are not available at the time of this writing. ACTI will update this report as more details become available. | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |
+| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host. <br><br>A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow.<br><br>Further details are not available at the time of this writing. ACTI will update this report as more details become available. | {} | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |
 
 ### cve
 
@@ -2898,6 +2899,7 @@ Lookup vulnerability info
 | CTIX.VulnerabilityLookup.created | string | LastPublished |
 | CTIX.VulnerabilityLookup.name | string | Name |
 | CTIX.VulnerabilityLookup.uuid | string | UUID |
+| CTIX.VulnerabilityLookup.extra_data | string | Extra data |
 | DBotScore.Indicator | string | The indicator that was tested. |
 | DBotScore.Type | string | The indicator type. |
 | DBotScore.Vendor | string | The vendor used to calculate the score. |
@@ -2911,6 +2913,6 @@ Lookup vulnerability info
 
 >### HTTP Response Data
 
-|cpes|cvss2|cvss3|dbot_reputation|description|last_modified|last_published|name|uuid|
+|cpes|cvss2|cvss3|dbot_reputation|description|extra_data|last_modified|last_published|name|uuid|
 |---|---|---|---|---|---|---|---|---|
-| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host. <br><br>A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow.<br><br>Further details are not available at the time of this writing. ACTI will update this report as more details become available. | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |
+| cpe:2.3:a:vyper_project:vyper:*:*:*:*:*:*:*:* | None | None | 3 | Remote exploitation of a design error vulnerability in Vyper_project Vyper could could allow an attacker to cause a Denial of Service (DoS) condition on the targeted host. <br><br>A design error vulnerability has been identified in Vyper. Specifically, this issue occurs due to storage allocator overflow.<br><br>Further details are not available at the time of this writing. ACTI will update this report as more details become available. | {} | 2023-05-08 05:48:58 | 2023-05-08 05:48:58 | CVE-2023-30837 | 32316b0b-58a4-4f14-8d06-3e1678841eca |

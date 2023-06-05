@@ -1971,11 +1971,13 @@ def make_request(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 def cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     page = 1
     page_size = 15
-    params = {"page": 1, "page_size": 15}
+    params = {"page": page, "page_size": page_size}
     cve = args["cve"]
     if isinstance(cve, str):
-        cve = [cve]
-    reliability = args.get("reliability")
+        cve = cve.split(',')
+    extra_fields = args.get("extra_fields", [])
+    if isinstance(extra_fields, str):
+        extra_fields = extra_fields.split(',')
     response = client.get_lookup_threat_data("vulnerability", [], cve, params)
     threat_data_list = response.get("data", {}).get("results", [])
     results = [data for data in threat_data_list]
@@ -1986,15 +1988,16 @@ def cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
     final_results = []
     for result in results:
-        final_results.append(_lookup_cve_result(client, result, page, page_size, reliability))
+        final_results.append(_lookup_cve_result(client, result, page, page_size, extra_fields))
     return final_results
 
 
-def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, page_size: int, reliability: str = None):
+def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, page_size: int, extra_fields: List[str]):
     cve_uuid = str(cve_detail.get("id"))
     created = str(datetime.fromtimestamp(cve_detail.get("created", 0)))
     modified = str(datetime.fromtimestamp(cve_detail.get("modified", 0)))
     name = cve_detail.get("name")
+    extra_field_values = {k: cve_detail.get(k, None) for k in extra_fields}
     cve_sources = [
         source.get("id") for source in cve_detail.get("sources", []) if source.get("id")
     ]
@@ -2049,6 +2052,7 @@ def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, pa
         "last_published": created,
         "name": name,
         "uuid": cve_uuid,
+        "extra_data": json.dumps(extra_field_values),
     }
     return CommandResults(
         readable_output=tableToMarkdown("Get CVE Information", data, removeNull=True),
