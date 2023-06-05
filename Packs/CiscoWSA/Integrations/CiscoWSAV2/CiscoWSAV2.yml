@@ -17,7 +17,6 @@ configuration:
   type: 9
   additionalinfo: ""
   displaypassword: Password
-  hiddenusername: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
@@ -716,7 +715,7 @@ script:
       - HTTPS
       - SOCKS
     - name: proxy_ports
-      description: |- 
+      description: |-
         Comma-separated list of proxy ports.
         Membership is defined by proxy port for forward connections,
         where certain clients have been configured to use a specific connecting port.
@@ -730,14 +729,14 @@ script:
       required: false
       isArray: true
     - name: predefined_url_categories
-      description: |- 
+      description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
     - name: custom_url_categories
-      description: |- 
+      description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
@@ -782,7 +781,7 @@ script:
       - HTTPS
       - SOCKS
     - name: proxy_ports
-      description: |- 
+      description: |-
         Comma-separated list of proxy ports.
         Membership is defined by the proxy port for forward connections,
         where certain clients have been configured to use a specific connecting port.
@@ -796,14 +795,14 @@ script:
       required: false
       isArray: true
     - name: predefined_url_categories
-      description: |- 
+      description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
     - name: custom_url_categories
-      description: |- 
+      description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)

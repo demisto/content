@@ -5,7 +5,6 @@ commonfields:
 configuration:
 - defaultvalue: Incident
   display: Object To Fetch
-  hidden: false
   name: object_to_fetch
   options:
   - Incident
@@ -17,10 +16,8 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The tenant ID is the number following TENANTID= in your management
-    URL
+- additionalinfo: The tenant ID is the number following TENANTID= in your management URL
   display: Tenant ID
-  hidden: false
   name: tenant_id
   required: false
   type: 0
@@ -29,32 +26,25 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: 'Fetch filter , example:  Status = ''Ready''" for Incident queries,
-    see "REST API collection query protocol" in SMAX documentation to know how to
-    use the filter'
+- additionalinfo: 'Fetch filter , example:  Status = ''Ready''" for Incident queries, see "REST API collection query protocol" in SMAX documentation to know how to use the filter'
   display: Fetch Filter
-  hidden: false
   name: fetch_query_filter
   required: false
   type: 0
-- additionalinfo: 'Fields to return, for example: "Priority,Category" for an entity
-    of type "Incident'
+- additionalinfo: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident'
   display: Fields To Fetch
-  hidden: false
   name: fetch_fields
   required: false
   type: 0
 - additionalinfo: The maximum number of incidents to fetch per fetch command
   defaultvalue: '100'
   display: Fetch Limit
-  hidden: false
   name: fetch_limit
   required: false
   type: 0
 - additionalinfo: Fetch start in days
   defaultvalue: '1'
   display: Fetch Start
-  hidden: false
   name: fetch_start
   required: false
   type: 0
@@ -95,8 +85,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Fields to return, for example: "Priority,Category" for an entity
-        of type "Incident"'
+      description: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident"'
       isArray: false
       name: entity_fields
       required: false
@@ -120,23 +109,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Query filter , example:  Status = ''Ready''" for Incident queries,
-        see "REST API collection query protocol" in SMAX documentation to know how
-        to use the filter'
+      description: 'Query filter , example:  Status = ''Ready''" for Incident queries, see "REST API collection query protocol" in SMAX documentation to know how to use the filter'
       isArray: false
       name: query_filter
       required: false
       secret: false
     - default: false
-      description: 'Fields to return, for example: "Priority,Category" for an entity
-        of type "Incident"'
+      description: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident"'
       isArray: false
       name: entity_fields
       required: false
       secret: false
     - default: false
-      description: 'The order query parameter specifies the order in which the returned
-        resources are placed, example: "Id desc"'
+      description: 'The order query parameter specifies the order in which the returned resources are placed, example: "Id desc"'
       isArray: false
       name: order_by
       required: false
@@ -148,8 +133,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify how many resources should be skipped by specifying the
-        starting index of the returned result.
+      description: Specify how many resources should be skipped by specifying the starting index of the returned result.
       isArray: false
       name: skip
       required: false
@@ -176,8 +160,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A list of new entity objects to creates, please review the Bulk
-        API documentation for more information
+      description: A list of new entity objects to creates, please review the Bulk API documentation for more information
       isArray: false
       name: entities
       required: true
@@ -198,8 +181,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A list of updated entity objects, please review the Bulk API documentation
-        for more information
+      description: A list of updated entity objects, please review the Bulk API documentation for more information
       isArray: false
       name: entities
       required: true

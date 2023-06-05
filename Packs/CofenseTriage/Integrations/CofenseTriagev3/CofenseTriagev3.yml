@@ -8,8 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Client ID and Client Secret associated with the Server URL to connect
-    to Cofense Triage.
+- additionalinfo: Client ID and Client Secret associated with the Server URL to connect to Cofense Triage.
   display: Client ID
   displaypassword: Client Secret
   name: credentials
@@ -18,21 +17,16 @@ configuration:
 - additionalinfo: The maximum limit is 200.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: 'Date or relative timestamp to start fetching incidents from. (Formats
-    accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd,
-    yyyy-mm-ddTHH:MM:SSZ, etc)'
+- additionalinfo: 'Date or relative timestamp to start fetching incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Fetches the report based on the location within Cofense Triage.
-    If not specified, it fetches all the reports.
+- additionalinfo: Fetches the report based on the location within Cofense Triage. If not specified, it fetches all the reports.
   display: Report Location
   name: mailbox_location
   options:
@@ -41,8 +35,7 @@ configuration:
   - Processed
   required: false
   type: 16
-- additionalinfo: Fetches reports based on the priority of the rules that match the
-    reports. If not specified, it fetches all the reports.
+- additionalinfo: Fetches reports based on the priority of the rules that match the reports. If not specified, it fetches all the reports.
   display: Match Priority
   name: match_priority
   options:
@@ -61,9 +54,7 @@ configuration:
   name: category_id
   required: false
   type: 0
-- additionalinfo: "Fetches reports based on the tags associated with the reports.\
-    \ If not specified, it fetches all the reports.\nSupports comma separated values.\
-    \ \nNote: Tags are associated with reports which are in Reconnaissance."
+- additionalinfo: "Fetches reports based on the tags associated with the reports. If not specified, it fetches all the reports.\nSupports comma separated values. \nNote: Tags are associated with reports which are in Reconnaissance."
   display: Tags
   name: tags
   required: false
@@ -73,16 +64,14 @@ configuration:
     Supports comma separated values.
     Note: Categorization tags are associated with the reports which are processed.
   display: Categorization Tags
-  hidden: false
   name: categorization_tags
   required: false
   type: 0
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cofense
-    Triage to XSOAR).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cofense Triage to XSOAR).'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -94,17 +83,14 @@ configuration:
     Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}
     For example: {"updated_at_gt":"2020-10-26T10:48:16.834Z","categorization_tags_any":"test, snow"}
   display: Advanced Filters
-  hidden: false
   name: filter_by
   required: false
   type: 12
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
@@ -116,9 +102,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: The integration uses the Cofense Triage v2 API that allows users to ingest
-  phishing reports as incident alerts and execute commands such as threat indicators,
-  reporters, categorize reports, and more.
+description: The integration uses the Cofense Triage v2 API that allows users to ingest phishing reports as incident alerts and execute commands such as threat indicators, reporters, categorize reports, and more.
 display: Cofense Triage v3
 name: Cofense Triage v3
 script:
@@ -134,8 +118,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of threat indicators to retrieve per page.
-        Note: Possible values are between 1 and 200.'
+      description: 'Specify the number of threat indicators to retrieve per page. Note: Possible values are between 1 and 200.'
       isArray: false
       name: page_size
       required: false
@@ -148,9 +131,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the threat indicators. Note: The
-        default sort order for an attribute is ascending. Prefix the attributes with
-        a hyphen to sort in descending order. For example: threat_level, -created_at'
+      description: 'Specify the attributes to sort the threat indicators. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: threat_level, -created_at'
       isArray: true
       name: sort_by
       required: false
@@ -165,30 +146,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: threat_level, threat_type, threat_value'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: threat_level, threat_type, threat_value'
       isArray: true
       name: fields_to_retrieve
       required: false
       secret: false
     - default: false
-      description: 'Specify the level of the threat to retrieve the threat indicators.
-        Some possible values are: Malicious, Suspicious, Benign.'
+      description: 'Specify the level of the threat to retrieve the threat indicators. Some possible values are: Malicious, Suspicious, Benign.'
       isArray: true
       name: threat_level
       required: false
       secret: false
     - default: false
-      description: 'Specify the type of the threat to retrieve the threat indicators.
-        Some possible values are: Sender, Subject, Domain, URL, MD5, SHA256, Hostname,
-        or Header.'
+      description: 'Specify the type of the threat to retrieve the threat indicators. Some possible values are: Sender, Subject, Domain, URL, MD5, SHA256, Hostname, or Header.'
       isArray: true
       name: threat_type
       required: false
       secret: false
     - default: false
-      description: Specify the value corresponding to the type of threat indicated
-        in threat_type to retrieve the threat indicators.
+      description: Specify the value corresponding to the type of threat indicated in threat_type to retrieve the threat indicators.
       isArray: true
       name: threat_value
       required: false
@@ -200,25 +176,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks,
-        2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks,
-        2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the threat indicators. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves the list of threat indicators based on the provided parameters.\
-      \ \nThreat indicators identify the threat level of an email's subject, sender,\
-      \ domains, URLs, and MD5 and SHA256 attachment hash signatures."
+    description: "Retrieves the list of threat indicators based on the provided parameters. \nThreat indicators identify the threat level of an email's subject, sender, domains, URLs, and MD5 and SHA256 attachment hash signatures."
     execution: false
     name: cofense-threat-indicator-list
     outputs:
@@ -238,8 +208,7 @@ script:
       description: The type of the threat.
       type: String
     - contextPath: Cofense.ThreatIndicator.attributes.threat_value
-      description: Value corresponding to the type of threat indicated in the type
-        of the threat.
+      description: Value corresponding to the type of threat indicated in the type of the threat.
       type: String
     - contextPath: Cofense.ThreatIndicator.attributes.threat_source
       description: Value corresponding to the source of the threat.
@@ -248,15 +217,13 @@ script:
       description: Date and time, in ISO 8601 format, when the resource was created.
       type: Date
     - contextPath: Cofense.ThreatIndicator.attributes.updated_at
-      description: Date and time, in ISO 8601 format, when the resource  was last
-        updated.
+      description: Date and time, in ISO 8601 format, when the resource  was last updated.
       type: Date
     - contextPath: Cofense.ThreatIndicator.relationships.owner.links.self
       description: Link to retrieve the owner of the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.owner.links.related
-      description: Link to retrieve the detailed information of the owner of the threat
-        indicator.
+      description: Link to retrieve the detailed information of the owner of the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.owner.data.type
       description: Type of the owner associated with the threat indicator.
@@ -268,29 +235,24 @@ script:
       description: Link to retrieve the reports containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports containing
-        the threat indicator.
+      description: Link to retrieve the detailed information of the reports containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.comments.links.self
       description: Link to retrieve the comments containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.comments.links.related
-      description: Link to retrieve the detailed information of the comments containing
-        the threat indicator.
+      description: Link to retrieve the detailed information of the comments containing the threat indicator.
       type: String
   - arguments:
     - default: false
-      description: "Specify the ID of the report to retrieve a specific report.  \n\
-        Note: If 'id' argument is provided, then apart from 'fields_to_retrieve',\
-        \ all arguments will be neglected."
+      description: "Specify the ID of the report to retrieve a specific report.  \nNote: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected."
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of reports to retrieve per page. Note: Possible
-        values are between 1 and 200. '
+      description: 'Specify the number of reports to retrieve per page. Note: Possible values are between 1 and 200. '
       isArray: false
       name: page_size
       required: false
@@ -303,9 +265,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the reports. Note: The default
-        sort order for an attribute is ascending. Prefix the attributes with a hyphen
-        to sort in descending order. For example: -received_at, match_priority'
+      description: 'Specify the attributes to sort the reports. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -received_at, match_priority'
       isArray: true
       name: sort_by
       required: false
@@ -320,37 +280,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: location, from_address'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: location, from_address'
       isArray: false
       name: fields_to_retrieve
       required: false
       secret: false
     - default: false
-      description: 'Specify the priority to retrieve the reports based on the priority
-        of the rules that match the reports. Possible values are: 0, 1, 2, 3, 4, 5.'
+      description: 'Specify the priority to retrieve the reports based on the priority of the rules that match the reports. Possible values are: 0, 1, 2, 3, 4, 5.'
       isArray: true
       name: match_priority
       required: false
       secret: false
     - default: false
-      description: Specify the tags to retrieve the reports based on the tags associated
-        with the reports.
+      description: Specify the tags to retrieve the reports based on the tags associated with the reports.
       isArray: true
       name: tags
       required: false
       secret: false
     - default: false
-      description: Specify the categorization tags to retrieve the reports based on
-        the tags assigned when the reported email was processed.
+      description: Specify the categorization tags to retrieve the reports based on the tags assigned when the reported email was processed.
       isArray: true
       name: categorization_tags
       required: false
       secret: false
     - default: false
-      description: 'Specify the location to retrieve the reports based on the location
-        of the reported email within Cofense Triage. Some possible values are: inbox,
-        reconnaissance, processed.'
+      description: 'Specify the location to retrieve the reports based on the location of the reported email within Cofense Triage. Some possible values are: inbox, reconnaissance, processed.'
       isArray: true
       name: report_location
       required: false
@@ -364,33 +318,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the reports. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
       secret: false
     - default: false
-      description: "Specify the ID of the cluster to retrieve the reports present\
-        \ in the specific cluster. Note: When both category_id and cluster_id are\
-        \ provided, higher priority will be given to category_id. \nNote: To retrieve\
-        \ cluster_id, execute cofense-cluster-list command."
+      description: "Specify the ID of the cluster to retrieve the reports present in the specific cluster. Note: When both category_id and cluster_id are provided, higher priority will be given to category_id. \nNote: To retrieve cluster_id, execute cofense-cluster-list command."
       isArray: false
       name: cluster_id
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a report or a list of reports based on the filter values
-      provided in the command arguments.
+    description: Retrieves a report or a list of reports based on the filter values provided in the command arguments.
     execution: false
     name: cofense-report-list
     outputs:
@@ -417,12 +363,10 @@ script:
       description: Subject of the reported email.
       type: String
     - contextPath: Cofense.Report.attributes.received_at
-      description: Date and time, in ISO 8601 format, when the reporter received the
-        email.
+      description: Date and time, in ISO 8601 format, when the reporter received the email.
       type: Date
     - contextPath: Cofense.Report.attributes.reported_at
-      description: Date and time, in ISO 8601 format, when the reporter reported the
-        email.
+      description: Date and time, in ISO 8601 format, when the reporter reported the email.
       type: Date
     - contextPath: Cofense.Report.attributes.raw_headers
       description: Headers of the reported email.
@@ -449,9 +393,7 @@ script:
       description: Tags assigned when the reported email was processed.
       type: Unknown
     - contextPath: Cofense.Report.attributes.processed_at
-      description: Date and time, in ISO 8601 format, when the reported email was
-        processed. If the reported email is still in Inbox or Recon, the response
-        contains a null value.
+      description: Date and time, in ISO 8601 format, when the reported email was processed. If the reported email is still in Inbox or Recon, the response contains a null value.
       type: Date
     - contextPath: Cofense.Report.attributes.created_at
       description: Date and time, in ISO 8601 format, when the resource was created.
@@ -463,8 +405,7 @@ script:
       description: Link to retrieve the operator assigned to the report.
       type: String
     - contextPath: Cofense.Report.relationships.assignee.links.related
-      description: Link to retrieve the detailed information of the operator assigned
-        to the report.
+      description: Link to retrieve the detailed information of the operator assigned to the report.
       type: String
     - contextPath: Cofense.Report.relationships.assignee.data.type
       description: Type of the assignee associated with the report.
@@ -476,8 +417,7 @@ script:
       description: Link to retrieve the category assigned to the report.
       type: String
     - contextPath: Cofense.Report.relationships.category.links.related
-      description: Link to retrieve the detailed information of the category assigned
-        to the report.
+      description: Link to retrieve the detailed information of the category assigned to the report.
       type: String
     - contextPath: Cofense.Report.relationships.category.data.type
       description: Type of the category associated with the report.
@@ -489,8 +429,7 @@ script:
       description: Link to retrieve the cluster of the report.
       type: String
     - contextPath: Cofense.Report.relationships.cluster.links.related
-      description: Link to retrieve the detailed information of the cluster of the
-        report.
+      description: Link to retrieve the detailed information of the cluster of the report.
       type: String
     - contextPath: Cofense.Report.relationships.cluster.data.type
       description: Type of the cluster context associated with the report.
@@ -502,8 +441,7 @@ script:
       description: Link to retrieve the reporter of the report.
       type: String
     - contextPath: Cofense.Report.relationships.reporter.links.related
-      description: Link to retrieve the detailed information of the reporter of the
-        report.
+      description: Link to retrieve the detailed information of the reporter of the report.
       type: String
     - contextPath: Cofense.Report.relationships.reporter.data.type
       description: Type of the reporter associated with the report.
@@ -512,68 +450,58 @@ script:
       description: Unique identifier of the reporter associated with the report.
       type: String
     - contextPath: Cofense.Report.relationships.attachment_payloads.links.self
-      description: Link to retrieve the payloads of attachments associated with the
-        report.
+      description: Link to retrieve the payloads of attachments associated with the report.
       type: String
     - contextPath: Cofense.Report.relationships.attachment_payloads.links.related
-      description: Link to retrieve the detailed information of the payloads of attachments
-        associated with the report.
+      description: Link to retrieve the detailed information of the payloads of attachments associated with the report.
       type: String
     - contextPath: Cofense.Report.relationships.attachments.links.self
       description: Link to retrieve the attachments to the reported email.
       type: String
     - contextPath: Cofense.Report.relationships.attachments.links.related
-      description: Link to retrieve the detailed information of the attachments to
-        the reported email.
+      description: Link to retrieve the detailed information of the attachments to the reported email.
       type: String
     - contextPath: Cofense.Report.relationships.domains.links.self
       description: Link to retrieve the domain of the report.
       type: String
     - contextPath: Cofense.Report.relationships.domains.links.related
-      description: Link to retrieve the detailed information of the domain of the
-        report.
+      description: Link to retrieve the detailed information of the domain of the report.
       type: String
     - contextPath: Cofense.Report.relationships.headers.links.self
       description: Link to retrieve the headers of the report.
       type: String
     - contextPath: Cofense.Report.relationships.headers.links.related
-      description: Link to retrieve the detailed information of the headers of the
-        report.
+      description: Link to retrieve the detailed information of the headers of the report.
       type: String
     - contextPath: Cofense.Report.relationships.hostnames.links.self
       description: Link to retrieve the hostnames of URLs associated with the report.
       type: String
     - contextPath: Cofense.Report.relationships.hostnames.links.related
-      description: Link to retrieve the detailed information of the hostnames of URLs
-        associated with the report.
+      description: Link to retrieve the detailed information of the hostnames of URLs associated with the report.
       type: String
     - contextPath: Cofense.Report.relationships.urls.links.self
       description: Link to retrieve the URLs associated with the report.
       type: String
     - contextPath: Cofense.Report.relationships.urls.links.related
-      description: Link to retrieve the detailed information of the URLs associated
-        with the report.
+      description: Link to retrieve the detailed information of the URLs associated with the report.
       type: String
     - contextPath: Cofense.Report.relationships.rules.links.self
       description: Link to retrieve the rules matching the report.
       type: String
     - contextPath: Cofense.Report.relationships.rules.links.related
-      description: Link to retrieve the detailed information of the rules matching
-        the report.
+      description: Link to retrieve the detailed information of the rules matching the report.
       type: String
     - contextPath: Cofense.Report.relationships.threat_indicators.links.self
       description: Link to retrieve the threat indicators identified the report.
       type: String
     - contextPath: Cofense.Report.relationships.threat_indicators.links.related
-      description: Link to retrieve the detailed information of the threat indicators
-        identified the report.
+      description: Link to retrieve the detailed information of the threat indicators identified the report.
       type: String
     - contextPath: Cofense.Report.relationships.comments.links.self
       description: Link to retrieve the comments of the report.
       type: String
     - contextPath: Cofense.Report.relationships.comments.links.related
-      description: Link to retrieve the detailed information of the comments of the
-        report.
+      description: Link to retrieve the detailed information of the comments of the report.
       type: String
     - contextPath: Cofense.Report.meta.risk_score_summary.integrations
       description: Number of integrations associated with the report.
@@ -597,8 +525,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Downloads the raw email for the report that matches the specified
-      report ID.
+    description: Downloads the raw email for the report that matches the specified report ID.
     execution: false
     name: cofense-report-download
     outputs:
@@ -673,8 +600,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of categories to retrieve per page. Note: Possible
-        values are between 1 and 200. '
+      description: 'Specify the number of categories to retrieve per page. Note: Possible values are between 1 and 200. '
       isArray: false
       name: page_size
       required: false
@@ -687,9 +613,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the categories. Note: The default
-        sort order for an attribute is ascending. Prefix the attributes with a hyphen
-        to sort in descending order. For example: score, -name'
+      description: 'Specify the attributes to sort the categories. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: score, -name'
       isArray: true
       name: sort_by
       required: false
@@ -704,8 +628,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: name, score'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: name, score'
       isArray: true
       name: fields_to_retrieve
       required: false
@@ -718,8 +641,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specify that the categories to be retrieved should be malicious
-        or not. Possible values are: true, false.'
+      description: 'Specify that the categories to be retrieved should be malicious or not. Possible values are: true, false.'
       isArray: false
       name: is_malicious
       predefined:
@@ -734,17 +656,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the categories. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
@@ -769,19 +687,16 @@ script:
       description: Display name of the category.
       type: String
     - contextPath: Cofense.Category.attributes.score
-      description: Value to add to a reporter's reputation score when a report is
-        processed with the category.
+      description: Value to add to a reporter's reputation score when a report is processed with the category.
       type: Number
     - contextPath: Cofense.Category.attributes.malicious
-      description: Whether the category is used to classify malicious reports (true)
-        or not (false). The default is true.
+      description: Whether the category is used to classify malicious reports (true) or not (false). The default is true.
       type: Boolean
     - contextPath: Cofense.Category.attributes.color
       description: Color, represented as a hexadecimal value, to assign to the category.
       type: String
     - contextPath: Cofense.Category.attributes.archived
-      description: Whether the category is archived (true) or not (false). The default
-        is false.
+      description: Whether the category is archived (true) or not (false). The default is false.
       type: Boolean
     - contextPath: Cofense.Category.attributes.created_at
       description: Date and time, in ISO 8601 format, when the resource was created.
@@ -790,19 +705,16 @@ script:
       description: Date and time, in ISO 8601 format, when the resource was last updated.
       type: Date
     - contextPath: Cofense.Category.relationships.one_clicks.links.self
-      description: Link to retrieve the one-click categorizations that process reports
-        with the category.
+      description: Link to retrieve the one-click categorizations that process reports with the category.
       type: String
     - contextPath: Cofense.Category.relationships.one_clicks.links.related
-      description: Link to retrieve the detailed information of the one-click categorizations
-        that process reports with the category.
+      description: Link to retrieve the detailed information of the one-click categorizations that process reports with the category.
       type: String
     - contextPath: Cofense.Category.relationships.reports.links.self
       description: Link to retrieve the reports processed with the category.
       type: String
     - contextPath: Cofense.Category.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports processed
-        with the category.
+      description: Link to retrieve the detailed information of the reports processed with the category.
       type: String
   - arguments:
     - default: false
@@ -815,8 +727,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of rules to retrieve per page. Note: Possible
-        values are between 1 and 200.'
+      description: 'Specify the number of rules to retrieve per page. Note: Possible values are between 1 and 200.'
       isArray: false
       name: page_size
       required: false
@@ -829,9 +740,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the rules. Note: The default sort
-        order for an attribute is ascending. Prefix the attributes with a hyphen to
-        sort in descending order. For example: -name, priority'
+      description: 'Specify the attributes to sort the rules. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -name, priority'
       isArray: true
       name: sort_by
       required: false
@@ -846,8 +755,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: name, description'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: name, description'
       isArray: true
       name: fields_to_retrieve
       required: false
@@ -859,8 +767,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the priority of the rule to retrieve the rule. Some possible
-        values are: 1, 2, 3, 4, 5.'
+      description: 'Specify the priority of the rule to retrieve the rule. Some possible values are: 1, 2, 3, 4, 5.'
       isArray: true
       name: priority
       required: false
@@ -872,16 +779,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the scope of the rule to retrieve the rule. Some possible
-        values are: email, attachment, header, reporter email.'
+      description: 'Specify the scope of the rule to retrieve the rule. Some possible values are: email, attachment, header, reporter email.'
       isArray: true
       name: scope
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specify if the rule is active or not. Possible values are: true,
-        false.'
+      description: 'Specify if the rule is active or not. Possible values are: true, false.'
       isArray: false
       name: active
       predefined:
@@ -896,25 +801,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the rule context of the rule to retrieve the rule. Some
-        possible values are: internal safe, unwanted, threat hunting, phishing tactic,
-        cleanup, unknown. '
+      description: 'Specify the rule context of the rule to retrieve the rule. Some possible values are: internal safe, unwanted, threat hunting, phishing tactic, cleanup, unknown. '
       isArray: true
       name: rule_context
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2
-        years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2
-        years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the rules. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
@@ -942,44 +841,37 @@ script:
       description: Expanded name or description of the rule.
       type: String
     - contextPath: Cofense.Rule.attributes.priority
-      description: Priority of the rule. Priorities in Cofense Triage go from 1 to
-        5. Priority 5 is the highest, or most critical.
+      description: Priority of the rule. Priorities in Cofense Triage go from 1 to 5. Priority 5 is the highest, or most critical.
       type: Number
     - contextPath: Cofense.Rule.attributes.tags
       description: Tags assigned to the rule.
       type: Unknown
     - contextPath: Cofense.Rule.attributes.scope
-      description: Scope to determine which part of a report to apply the rule to
-        (Email, Attachment, Header, or Reporter Email).
+      description: Scope to determine which part of a report to apply the rule to (Email, Attachment, Header, or Reporter Email).
       type: String
     - contextPath: Cofense.Rule.attributes.author_name
       description: Name of the author of the rule.
       type: String
     - contextPath: Cofense.Rule.attributes.rule_context
-      description: Description that best represents what the user wants the rule to
-        do (Internal Safe, Unwanted, Threat Hunting, Phishing Tactic, or Cleanup).
+      description: Description that best represents what the user wants the rule to do (Internal Safe, Unwanted, Threat Hunting, Phishing Tactic, or Cleanup).
       type: String
     - contextPath: Cofense.Rule.attributes.active
       description: Whether the rule is active (true) or not active (false).
       type: Boolean
     - contextPath: Cofense.Rule.attributes.content
-      description: YARA-compliant meta, strings, and conditions that define the contents
-        of the rule.
+      description: YARA-compliant meta, strings, and conditions that define the contents of the rule.
       type: String
     - contextPath: Cofense.Rule.attributes.time_to_live
-      description: Time period that best represents the useful lifespan of the rule
-        (Forever, 1 Week, 1 Month, 1 Year).
+      description: Time period that best represents the useful lifespan of the rule (Forever, 1 Week, 1 Month, 1 Year).
       type: String
     - contextPath: Cofense.Rule.attributes.share_with_cofense
-      description: Whether to share the rule content with the Cofense Triage Community
-        Exchange (true) or not (false).
+      description: Whether to share the rule content with the Cofense Triage Community Exchange (true) or not (false).
       type: Boolean
     - contextPath: Cofense.Rule.attributes.reports_count
       description: Number of reports the rule matched.
       type: Number
     - contextPath: Cofense.Rule.attributes.imported_at
-      description: Date and time, in ISO 8601 format, when the rule was imported.
-        If the rule was not imported, the response contains a null value.
+      description: Date and time, in ISO 8601 format, when the rule was imported. If the rule was not imported, the response contains a null value.
       type: Date
     - contextPath: Cofense.Rule.attributes.created_at
       description: Date and time, in ISO 8601 format, when the resource was created.
@@ -991,8 +883,7 @@ script:
       description: Link to retrieve the cluster from which the rule was created.
       type: String
     - contextPath: Cofense.Rule.relationships.cluster_context.links.related
-      description: Link to retrieve the detailed information of the cluster from which
-        the rule was created.
+      description: Link to retrieve the detailed information of the cluster from which the rule was created.
       type: String
     - contextPath: Cofense.Rule.relationships.cluster_context.data.type
       description: Type of the cluster context associated with the rule.
@@ -1004,8 +895,7 @@ script:
       description: Link to retrieve the report from which the rule was created.
       type: String
     - contextPath: Cofense.Rule.relationships.report_context.links.related
-      description: Link to retrieve the detailed information of the report from which
-        the rule was created.
+      description: Link to retrieve the detailed information of the report from which the rule was created.
       type: String
     - contextPath: Cofense.Rule.relationships.report_context.data.type
       description: Type of the report context associated with the rule.
@@ -1017,8 +907,7 @@ script:
       description: Link to retrieve the owner who created the rule.
       type: String
     - contextPath: Cofense.Rule.relationships.owner.links.related
-      description: Link to retrieve the detailed information of the owner who created
-        the rule.
+      description: Link to retrieve the detailed information of the owner who created the rule.
       type: String
     - contextPath: Cofense.Rule.relationships.owner.data.type
       description: Type of the owner associated with the rule.
@@ -1030,15 +919,13 @@ script:
       description: Link to retrieve the clusters that match the rule.
       type: String
     - contextPath: Cofense.Rule.relationships.clusters.links.related
-      description: Link to retrieve the detailed information of the clusters that
-        match the rule.
+      description: Link to retrieve the detailed information of the clusters that match the rule.
       type: String
     - contextPath: Cofense.Rule.relationships.reports.links.self
       description: Link to retrieve the reports that match the rule.
       type: String
     - contextPath: Cofense.Rule.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports that match
-        the rule.
+      description: Link to retrieve the detailed information of the reports that match the rule.
       type: String
   - arguments:
     - default: false
@@ -1051,8 +938,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of URLs to retrieve per page. Note: Possible
-        values are between 1 and 200.'
+      description: 'Specify the number of URLs to retrieve per page. Note: Possible values are between 1 and 200.'
       isArray: false
       name: page_size
       required: false
@@ -1065,9 +951,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the URLs. Note: The default sort
-        order for an attribute is ascending. Prefix the attributes with a hyphen to
-        sort in descending order. For example: -created_at, -updated_at'
+      description: 'Specify the attributes to sort the URLs. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -created_at, -updated_at'
       isArray: true
       name: sort_by
       required: false
@@ -1082,8 +966,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: url, risk_score'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: url, risk_score'
       isArray: false
       name: fields_to_retrieve
       required: false
@@ -1095,25 +978,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years,
-        yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years,
-        yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the URLs. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves URLs based on the filter values provided in the command\
-      \ arguments. \nURLs are the threats (or non-threat)  that are detected in the\
-      \ reported emails."
+    description: "Retrieves URLs based on the filter values provided in the command arguments. \nURLs are the threats (or non-threat)  that are detected in the reported emails."
     execution: false
     name: cofense-url-list
     outputs:
@@ -1136,22 +1013,19 @@ script:
       description: Date and time, in ISO 8601 format, when the resource was created.
       type: Date
     - contextPath: Cofense.Url.attributes.updated_at
-      description: Date and time, in ISO 8601 format, when the resource details were
-        last updated.
+      description: Date and time, in ISO 8601 format, when the resource details were last updated.
       type: Date
     - contextPath: Cofense.Url.relationships.domain.links.self
       description: Link to retrieve the domain of the URL.
       type: String
     - contextPath: Cofense.Url.relationships.domain.links.related
-      description: Link to retrieve the detailed information of the domain of the
-        URL.
+      description: Link to retrieve the detailed information of the domain of the URL.
       type: String
     - contextPath: Cofense.Url.relationships.hostname.links.self
       description: Link to retrieve the hostname of the URL.
       type: String
     - contextPath: Cofense.Url.relationships.hostname.links.related
-      description: Link to retrieve the detailed information of the hostname of the
-        URL.
+      description: Link to retrieve the detailed information of the hostname of the URL.
       type: String
     - contextPath: Cofense.Url.relationships.hostname.data.type
       description: Type of the hostname associated with the URL.
@@ -1163,28 +1037,24 @@ script:
       description: Link to retrieve the clusters containing the reports with the URL.
       type: String
     - contextPath: Cofense.Url.relationships.clusters.links.related
-      description: Link to retrieve the detailed information of the clusters containing
-        the reports with the URL.
+      description: Link to retrieve the detailed information of the clusters containing the reports with the URL.
       type: String
     - contextPath: Cofense.Url.relationships.integration_submissions.links.self
       description: Link to retrieve the integration submissions containing the URL.
       type: String
     - contextPath: Cofense.Url.relationships.integration_submissions.links.related
-      description: Link to retrieve the detailed information of the integration submissions
-        containing the URL.
+      description: Link to retrieve the detailed information of the integration submissions containing the URL.
       type: String
     - contextPath: Cofense.Url.relationships.reports.links.self
       description: Link to retrieve the reports containing the URL.
       type: String
     - contextPath: Cofense.Url.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports containing
-        the URL.
+      description: Link to retrieve the detailed information of the reports containing the URL.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Specify the level of the threat indicator that is to be created.
-        Some possible values are: Malicious, Suspicious, Benign.'
+      description: 'Specify the level of the threat indicator that is to be created. Some possible values are: Malicious, Suspicious, Benign.'
       isArray: false
       name: threat_level
       predefined:
@@ -1195,9 +1065,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specify the type of the threat indicator that is to be created.
-        Some possible values are: Sender, Subject, Domain, URL, MD5, SHA256, Hostname,
-        or Header.'
+      description: 'Specify the type of the threat indicator that is to be created. Some possible values are: Sender, Subject, Domain, URL, MD5, SHA256, Hostname, or Header.'
       isArray: false
       name: threat_type
       predefined:
@@ -1221,16 +1089,13 @@ script:
       secret: false
     - default: false
       defaultValue: XSOAR-UI
-      description: "Specify the value corresponding to the source of the threat indicator\
-        \ that is to be created. \nNote: This attribute supports only one threat_type/threat_value\
-        \ pair per source."
+      description: "Specify the value corresponding to the source of the threat indicator that is to be created. \nNote: This attribute supports only one threat_type/threat_value pair per source."
       isArray: false
       name: threat_source
       required: false
       secret: false
     deprecated: false
-    description: Creates a threat indicator based on the values provided in the command
-      arguments.
+    description: Creates a threat indicator based on the values provided in the command arguments.
     execution: false
     name: cofense-threat-indicator-create
     outputs:
@@ -1250,8 +1115,7 @@ script:
       description: The type of the threat.
       type: String
     - contextPath: Cofense.ThreatIndicator.attributes.threat_value
-      description: Value corresponding to the type of threat indicated in the type
-        of the threat.
+      description: Value corresponding to the type of threat indicated in the type of the threat.
       type: String
     - contextPath: Cofense.ThreatIndicator.attributes.threat_source
       description: Value corresponding to the source of the threat.
@@ -1266,8 +1130,7 @@ script:
       description: Link to retrieve the owner of the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.owner.links.related
-      description: Link to retrieve the detailed information of the owner of the threat
-        indicator.
+      description: Link to retrieve the detailed information of the owner of the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.owner.data.type
       description: Type of the owner associated with the threat indicator.
@@ -1279,15 +1142,13 @@ script:
       description: Link to retrieve the reports containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports containing
-        the threat indicator.
+      description: Link to retrieve the detailed information of the reports containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.comments.links.self
       description: Link to retrieve the comments containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.comments.links.related
-      description: Link to retrieve the detailed information of the comments containing
-        the threat indicator.
+      description: Link to retrieve the detailed information of the comments containing the threat indicator.
       type: String
   - arguments:
     - default: false
@@ -1300,8 +1161,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of reporters to retrieve per page. Note: Possible
-        values are between 1 and 200.'
+      description: 'Specify the number of reporters to retrieve per page. Note: Possible values are between 1 and 200.'
       isArray: false
       name: page_size
       required: false
@@ -1314,9 +1174,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the reporters. Note: The default
-        sort order for an attribute is ascending. Prefix the attributes with a hyphen
-        to sort in descending order. For example: reports_count, -email'
+      description: 'Specify the attributes to sort the reporters. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: reports_count, -email'
       isArray: true
       name: sort_by
       required: false
@@ -1331,8 +1189,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: email, reports_count'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: email, reports_count'
       isArray: true
       name: fields_to_retrieve
       required: false
@@ -1345,8 +1202,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specify that the reporter to be retrieved is VIP or non-VIP. Possible
-        values are: true, false.'
+      description: 'Specify that the reporter to be retrieved is VIP or non-VIP. Possible values are: true, false.'
       isArray: false
       name: vip
       predefined:
@@ -1361,25 +1217,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the reporters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves the reporters that match the provided parameters. \nReporters\
-      \ are employees of an organization who send, or report, suspicious emails to\
-      \ Cofense Triage."
+    description: "Retrieves the reporters that match the provided parameters. \nReporters are employees of an organization who send, or report, suspicious emails to Cofense Triage."
     execution: false
     name: cofense-reporter-list
     outputs:
@@ -1399,15 +1249,13 @@ script:
       description: Number of emails reported by the reporter.
       type: Number
     - contextPath: Cofense.Reporter.attributes.last_reported_at
-      description: Date and time, in ISO 8601 format, when the reporter last reported
-        an email.
+      description: Date and time, in ISO 8601 format, when the reporter last reported an email.
       type: Date
     - contextPath: Cofense.Reporter.attributes.reputation_score
       description: Reputation score of the reporter.
       type: Number
     - contextPath: Cofense.Reporter.attributes.vip
-      description: Whether the reporter is a VIP (true) or not (false). The default
-        is true.
+      description: Whether the reporter is a VIP (true) or not (false). The default is true.
       type: Boolean
     - contextPath: Cofense.Reporter.attributes.created_at
       description: Date and time, in ISO 8601 format, when the resource was created.
@@ -1416,19 +1264,16 @@ script:
       description: Date and time, in ISO 8601 format, when the resource was last updated.
       type: Date
     - contextPath: Cofense.Reporter.relationships.clusters.links.self
-      description: Link to retrieve the clusters containing reports the individual
-        reported.
+      description: Link to retrieve the clusters containing reports the individual reported.
       type: String
     - contextPath: Cofense.Reporter.relationships.clusters.links.related
-      description: Link to retrieve the detailed information of the clusters containing
-        reports the individual reported.
+      description: Link to retrieve the detailed information of the clusters containing reports the individual reported.
       type: String
     - contextPath: Cofense.Reporter.relationships.reports.links.self
       description: Link to retrieve the reports the individual reported.
       type: String
     - contextPath: Cofense.Reporter.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports the individual
-        reported.
+      description: Link to retrieve the detailed information of the reports the individual reported.
       type: String
   - arguments:
     - default: false
@@ -1442,8 +1287,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: urls
-      description: 'Type of the integration submission the user wants to retrieve.
-        Possible values are: urls, attachment_payloads.'
+      description: 'Type of the integration submission the user wants to retrieve. Possible values are: urls, attachment_payloads.'
       isArray: false
       name: type
       predefined:
@@ -1453,8 +1297,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of integration submissions to retrieve per
-        page. Note: Possible values are between 1 and 200.'
+      description: 'Specify the number of integration submissions to retrieve per page. Note: Possible values are between 1 and 200.'
       isArray: false
       name: page_size
       required: false
@@ -1466,9 +1309,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the integration submissions. Note:
-        The default sort order for an attribute is ascending. Prefix the attributes
-        with a hyphen to sort in descending order. For example: status, -id'
+      description: 'Specify the attributes to sort the integration submissions. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: status, -id'
       isArray: true
       name: sort_by
       required: false
@@ -1483,23 +1324,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: status, kind'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: status, kind'
       isArray: true
       name: fields_to_retrieve
       required: false
       secret: false
     - default: false
-      description: 'Specify the status to retrieve the integration submission. Some
-        possible values are: ending, complete, target_not_found, error, running, or
-        hash_not_found.'
+      description: 'Specify the status to retrieve the integration submission. Some possible values are: ending, complete, target_not_found, error, running, or hash_not_found.'
       isArray: true
       name: status
       required: false
       secret: false
     - default: false
-      description: 'Specify the kind to retrieve the integration submission. Some
-        possible values are: File, Hash, URL.'
+      description: 'Specify the kind to retrieve the integration submission. Some possible values are: File, Hash, URL.'
       isArray: true
       name: kind
       required: false
@@ -1511,24 +1348,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks,
-        2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks,
-        2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the integration submissions. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
       secret: false
     deprecated: false
-    description: Retrieves integration submission based on the filter values provided
-      in the command arguments.
+    description: Retrieves integration submission based on the filter values provided in the command arguments.
     execution: false
     name: cofense-integration-submission-get
     outputs:
@@ -1564,33 +1396,28 @@ script:
         when the resource was last updated.
       type: Date
     - contextPath: Cofense.IntegrationSubmission.relationships.integration.links.self
-      description: Link to retrieve the integration associated with the integration
-        submission.
+      description: Link to retrieve the integration associated with the integration submission.
       type: String
     - contextPath: Cofense.IntegrationSubmission.relationships.integration.links.related
-      description: Link to retrieve the detailed information of integration associated
-        with the integration submission.
+      description: Link to retrieve the detailed information of integration associated with the integration submission.
       type: String
     - contextPath: Cofense.IntegrationSubmission.relationships.integration.data.type
       description: Type of the integration associated with the integration submission.
       type: String
     - contextPath: Cofense.IntegrationSubmission.relationships.integration.data.id
-      description: Unique Identifier of the integration associated with the integration
-        submission.
+      description: Unique Identifier of the integration associated with the integration submission.
       type: String
     - contextPath: Cofense.IntegrationSubmission.relationships.target.links.self
       description: Link to retrieve the target associated with the integration submission.
       type: String
     - contextPath: Cofense.IntegrationSubmission.relationships.target.links.related
-      description: Link to retrieve the detailed information of the target associated
-        with the integration submission.
+      description: Link to retrieve the detailed information of the target associated with the integration submission.
       type: String
     - contextPath: Cofense.IntegrationSubmission.relationships.target.data.type
       description: Type of the target associated with the integration submission.
       type: String
     - contextPath: Cofense.IntegrationSubmission.relationships.target.data.id
-      description: Unique Identifier of the target associated with the integration
-        submission.
+      description: Unique Identifier of the target associated with the integration submission.
       type: String
   - arguments:
     - default: false
@@ -1603,8 +1430,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of attachment payloads to retrieve per page.
-        Note: Possible values are between 1 and 200. '
+      description: 'Specify the number of attachment payloads to retrieve per page. Note: Possible values are between 1 and 200. '
       isArray: false
       name: page_size
       required: false
@@ -1617,9 +1443,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the attachment payloads. Note:
-        The default sort order for an attribute is ascending. Prefix the attributes
-        with a hyphen to sort in descending order. For example: risk_score, -id'
+      description: 'Specify the attributes to sort the attachment payloads. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: risk_score, -id'
       isArray: true
       name: sort_by
       required: false
@@ -1634,8 +1458,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: md5, risk_score'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: md5, risk_score'
       isArray: true
       name: fields_to_retrieve
       required: false
@@ -1647,17 +1470,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks,
-        2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks,
-        2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
@@ -1700,43 +1519,36 @@ script:
       description: Link to retrieve the attachment containing the payload.
       type: String
     - contextPath: Cofense.AttachmentPayload.relationships.attachments.links.related
-      description: Link to retrieve the detailed information of the attachment containing
-        the payload.
+      description: Link to retrieve the detailed information of the attachment containing the payload.
       type: String
     - contextPath: Cofense.AttachmentPayload.relationships.clusters.links.self
       description: Link to retrieve the cluster of reports containing the payload.
       type: String
     - contextPath: Cofense.AttachmentPayload.relationships.clusters.links.related
-      description: Link to retrieve the detailed information of the cluster of reports
-        containing the payload.
+      description: Link to retrieve the detailed information of the cluster of reports containing the payload.
       type: String
     - contextPath: Cofense.AttachmentPayload.relationships.integration_submissions.links.self
       description: Link to retrieve the integration submissions related to attachment.
       type: String
     - contextPath: Cofense.AttachmentPayload.relationships.integration_submissions.links.related
-      description: Link to retrieve the detailed information of the integration submissions
-        related to attachment.
+      description: Link to retrieve the detailed information of the integration submissions related to attachment.
       type: String
     - contextPath: Cofense.AttachmentPayload.relationships.reports.links.self
       description: Link to retrieve the report with attachments containing the payload.
       type: String
     - contextPath: Cofense.AttachmentPayload.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the report with attachments
-        containing the payload.
+      description: Link to retrieve the detailed information of the report with attachments containing the payload.
       type: String
   - arguments:
     - default: false
-      description: 'Specify the ID of the comment to retrieve a specific comment.
-        Note: If ''id'' argument is provided, then apart from ''fields_to_retrieve'',
-        all arguments will be neglected.'
+      description: 'Specify the ID of the comment to retrieve a specific comment. Note: If ''id'' argument is provided, then apart from ''fields_to_retrieve'', all arguments will be neglected.'
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of comments to retrieve per page. Note: Possible
-        values are between 1 and 200.'
+      description: 'Specify the number of comments to retrieve per page. Note: Possible values are between 1 and 200.'
       isArray: false
       name: page_size
       required: false
@@ -1749,9 +1561,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the comments. Note: The default
-        sort order for an attribute is ascending. Prefix the attributes with a hyphen
-        to sort in descending order. For example: -created_at, body'
+      description: 'Specify the attributes to sort the comments. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: -created_at, body'
       isArray: false
       name: sort_by
       required: false
@@ -1766,16 +1576,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: body, body_format'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: body, body_format'
       isArray: true
       name: fields_to_retrieve
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specify the format of the comment body to retrieve the comments.
-        Possible values are: text, json.'
+      description: 'Specify the format of the comment body to retrieve the comments. Possible values are: text, json.'
       isArray: false
       name: body_format
       predefined:
@@ -1784,8 +1592,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify the tags to retrieve the comments based on the tags associated
-        with the comments.
+      description: Specify the tags to retrieve the comments based on the tags associated with the comments.
       isArray: true
       name: tags
       required: false
@@ -1807,24 +1614,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the comments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
       secret: false
     deprecated: false
-    description: Retrieves comments based on the filter values provided in the command
-      arguments.
+    description: Retrieves comments based on the filter values provided in the command arguments.
     execution: false
     name: cofense-comment-list
     outputs:
@@ -1982,8 +1784,7 @@ script:
       description: Type of the commentable comment associated with the comment.
       type: String
     - contextPath: Cofense.Comment.relationships.commentable.data.id
-      description: Unique identifier of the commentable comment associated with the
-        comment.
+      description: Unique identifier of the commentable comment associated with the comment.
       type: String
     - contextPath: Cofense.Comment.relationships.owner.links.self
       description: Link to retrieve the owner of the comment.
@@ -2005,30 +1806,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: Date string representing the local time.The incident is only returned
-        if it was modified after the last update time.
+      description: Date string representing the local time.The incident is only returned if it was modified after the last update time.
       isArray: false
       name: lastUpdate
       required: true
       secret: false
     deprecated: false
-    description: Get remote data from a remote incident. Please note that this method
-      will not update the current incident, it's here for debugging purposes.
+    description: Get remote data from a remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
   - arguments:
     - default: false
-      description: "Specify the ID of the cluster to retrieve a specific cluster.\
-        \ \nNote: If 'id' argument is provided, then apart from 'fields_to_retrieve',\
-        \ all arguments will be neglected."
+      description: "Specify the ID of the cluster to retrieve a specific cluster. \nNote: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected."
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
       defaultValue: '20'
-      description: 'Specify the number of clusters to retrieve per page. Note: Possible
-        values are between 1 and 200.'
+      description: 'Specify the number of clusters to retrieve per page. Note: Possible values are between 1 and 200.'
       isArray: false
       name: page_size
       required: false
@@ -2041,9 +1837,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the attributes to sort the clusters. Note: The default
-        sort order for an attribute is ascending. Prefix the attributes with a hyphen
-        to sort in descending order. For example: created_at, -updated_at'
+      description: 'Specify the attributes to sort the clusters. Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. For example: created_at, -updated_at'
       isArray: true
       name: sort_by
       required: false
@@ -2058,8 +1852,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the fields to retrieve the mentioned attributes only.
-        For example: unprocessed_reports_count, processed_reports_count'
+      description: 'Specify the fields to retrieve the mentioned attributes only. For example: unprocessed_reports_count, processed_reports_count'
       isArray: true
       name: fields_to_retrieve
       required: false
@@ -2071,9 +1864,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the priority to retrieve the cluster based on the priority
-        of the rules that match the reports in the cluster. Possible values are: 0,
-        1, 2, 3, 4, 5.'
+      description: 'Specify the priority to retrieve the cluster based on the priority of the rules that match the reports in the cluster. Possible values are: 0, 1, 2, 3, 4, 5.'
       isArray: true
       name: match_priority
       required: false
@@ -2085,24 +1876,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of creation, from when to retrieve the
-        clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of creation, from when to retrieve the clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: created_at
       required: false
       secret: false
     - default: false
-      description: 'Specify the date and time of updation, from when to retrieve the
-        clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months,
-        2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      description: 'Specify the date and time of updation, from when to retrieve the clusters. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
       isArray: false
       name: updated_at
       required: false
       secret: false
     deprecated: false
-    description: Retrieves clusters based on the filter values provided in the command
-      arguments.
+    description: Retrieves clusters based on the filter values provided in the command arguments.
     execution: false
     name: cofense-cluster-list
     outputs:
@@ -2119,24 +1905,19 @@ script:
       description: Risk score of the cluster.
       type: Number
     - contextPath: Cofense.Cluster.attributes.first_reported_at
-      description: Date and time, in ISO 8601 format, when the first report in the
-        cluster was reported.
+      description: Date and time, in ISO 8601 format, when the first report in the cluster was reported.
       type: Date
     - contextPath: Cofense.Cluster.attributes.oldest_unprocessed_reported_at
-      description: Date and time, in ISO 8601 format, when the oldest unprocessed
-        report in the cluster was reported.
+      description: Date and time, in ISO 8601 format, when the oldest unprocessed report in the cluster was reported.
       type: Date
     - contextPath: Cofense.Cluster.attributes.last_received_at
-      description: Date and time, in ISO 8601 format, when the suspect email associated
-        with the last report in the cluster was received.
+      description: Date and time, in ISO 8601 format, when the suspect email associated with the last report in the cluster was received.
       type: Date
     - contextPath: Cofense.Cluster.attributes.last_reported_at
-      description: Date and time, in ISO 8601 format, when the last report in the
-        cluster was reported to Triage.
+      description: Date and time, in ISO 8601 format, when the last report in the cluster was reported to Triage.
       type: Date
     - contextPath: Cofense.Cluster.attributes.last_from_address
-      description: Sender email address for the suspect email associated with the
-        last report added to the cluster.
+      description: Sender email address for the suspect email associated with the last report added to the cluster.
       type: String
     - contextPath: Cofense.Cluster.attributes.last_subject
       description: Subject of the last received report.
@@ -2181,68 +1962,57 @@ script:
       description: Date and time, in ISO 8601 format, when the resource was last updated.
       type: Date
     - contextPath: Cofense.Cluster.relationships.attachment_payloads.links.self
-      description: Link to retrieve the payloads of attachments associated with the
-        reports in the cluster.
+      description: Link to retrieve the payloads of attachments associated with the reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.attachment_payloads.links.related
-      description: Link to retrieve the detailed information of the payloads of attachments
-        associated with the reports in the cluster.
+      description: Link to retrieve the detailed information of the payloads of attachments associated with the reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.domains.links.self
       description: Link to retrieve the domain of the reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.domains.links.related
-      description: Link to retrieve the detailed information of the domain of the
-        reports in the cluster.
+      description: Link to retrieve the detailed information of the domain of the reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.hostnames.links.self
-      description: Link to retrieve the hostnames of URLs associated with the reports
-        in the cluster.
+      description: Link to retrieve the hostnames of URLs associated with the reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.hostnames.links.related
-      description: Link to retrieve the detailed information of the hostnames of URLs
-        associated with the report in the cluster.
+      description: Link to retrieve the detailed information of the hostnames of URLs associated with the report in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.reports.links.self
       description: Link to retrieve reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports in the
-        cluster.
+      description: Link to retrieve the detailed information of the reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.reporters.links.self
       description: Link to retrieve the reporters of reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.reporters.links.related
-      description: Link to retrieve the detailed information of the reporters of reports
-        in the cluster.
+      description: Link to retrieve the detailed information of the reporters of reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.rules.links.self
       description: Link to retrieve the rules matching the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.rules.links.related
-      description: Link to retrieve the detailed information of the rules matching
-        the cluster.
+      description: Link to retrieve the detailed information of the rules matching the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.urls.links.self
       description: Link to retrieve the URLs associated with reports in the cluster.
       type: String
     - contextPath: Cofense.Cluster.relationships.urls.links.related
-      description: Link to retrieve the detailed information of the URLs associated
-        with reports in the cluster.
+      description: Link to retrieve the detailed information of the URLs associated with reports in the cluster.
       type: String
   - arguments:
     - default: false
-      description: 'Specify ID of the threat indicator that is to be updated. Note:
-        To retrieve id, execute cofense-threat-indicator-list command.'
+      description: 'Specify ID of the threat indicator that is to be updated. Note: To retrieve id, execute cofense-threat-indicator-list command.'
       isArray: false
       name: id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Specify the level of the threat indicator that is to be updated.
-        Some possible values are: Malicious, Suspicious, Benign.'
+      description: 'Specify the level of the threat indicator that is to be updated. Some possible values are: Malicious, Suspicious, Benign.'
       isArray: false
       name: threat_level
       predefined:
@@ -2252,15 +2022,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specify the value corresponding to the source of the threat indicator
-        that is to be updated.
+      description: Specify the value corresponding to the source of the threat indicator that is to be updated.
       isArray: false
       name: threat_source
       required: false
       secret: false
     deprecated: false
-    description: Updates a threat indicator based on the values provided in the command
-      arguments.
+    description: Updates a threat indicator based on the values provided in the command arguments.
     execution: false
     name: cofense-threat-indicator-update
     outputs:
@@ -2280,8 +2048,7 @@ script:
       description: The type of the threat.
       type: String
     - contextPath: Cofense.ThreatIndicator.attributes.threat_value
-      description: Value corresponding to the type of threat indicated in the type
-        of the threat.
+      description: Value corresponding to the type of threat indicated in the type of the threat.
       type: String
     - contextPath: Cofense.ThreatIndicator.attributes.threat_source
       description: Value corresponding to the source of the threat.
@@ -2290,15 +2057,13 @@ script:
       description: Date and time, in ISO 8601 format, when the resource was created.
       type: Date
     - contextPath: Cofense.ThreatIndicator.attributes.updated_at
-      description: Date and time, in ISO 8601 format, when the resource  was last
-        updated.
+      description: Date and time, in ISO 8601 format, when the resource  was last updated.
       type: Date
     - contextPath: Cofense.ThreatIndicator.relationships.owner.links.self
       description: Link to retrieve the owner of the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.owner.links.related
-      description: Link to retrieve the detailed information of the owner of the threat
-        indicator.
+      description: Link to retrieve the detailed information of the owner of the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.owner.data.type
       description: Type of the owner associated with the threat indicator.
@@ -2310,21 +2075,17 @@ script:
       description: Link to retrieve the reports containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.reports.links.related
-      description: Link to retrieve the detailed information of the reports containing
-        the threat indicator.
+      description: Link to retrieve the detailed information of the reports containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.comments.links.self
       description: Link to retrieve the comments containing the threat indicator.
       type: String
     - contextPath: Cofense.ThreatIndicator.relationships.comments.links.related
-      description: Link to retrieve the detailed information of the comments containing
-        the threat indicator.
+      description: Link to retrieve the detailed information of the comments containing the threat indicator.
       type: String
   - arguments:
     - default: false
-      description: Date string in local time representing the last time the incident
-        was updated. The incident is only returned if it was modified after the last
-        update time.
+      description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
       isArray: false
       name: lastUpdate
       required: true
@@ -2347,8 +2108,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: png
-      description: 'The image type of the report the user wants to download. Some
-        possible values are: jpg, png.'
+      description: 'The image type of the report the user wants to download. Some possible values are: jpg, png.'
       isArray: false
       name: type
       predefined:
@@ -2357,8 +2117,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Downloads the image of the report that matches the specified report
-      ID.
+    description: Downloads the image of the report that matches the specified report ID.
     execution: false
     name: cofense-report-image-download
     outputs:

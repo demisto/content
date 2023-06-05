@@ -15,7 +15,6 @@ comment: Checks if the supplied URLs are in the specified domains.
 commonfields:
   id: IsUrlPartOfDomain
   version: -1
-enabled: false
 name: IsUrlPartOfDomain
 outputs:
 - contextPath: IsUrlPartOfDomain.URL
