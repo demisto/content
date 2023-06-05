@@ -16,7 +16,6 @@ echo -e "Folders to be used for lint scan (used by pylint and mypy):\n${all_dirs
 ./Tests/scripts/pylint.sh $all_dirs || errors=$?
 
 # run flake8
-python3 -m flake8 $all_dirs || errors=$?
 python3 -m flake8 $all_1_depth_dirs || errors=$?
 
 
