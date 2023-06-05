@@ -6916,14 +6916,40 @@ def get_security_profiles_command(security_profile: str = None):
 
 
 @logger
-def apply_security_profile(xpath: str, profile_name: str) -> Dict:
+def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> Dict:
+    # first api call just for getting the current status
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': xpath,
+        'key': API_KEY,
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    # Get all profile types already existing, so we don't override them when updating
+    profile_types_result =\
+        result.get('response', {}).get('result', {}).get('entry', {}).get('profile-setting', {}).get('profiles', {})
+
+    # remove from the types the given profile type, since we update it anyway
+    profile_types = {'data-filtering', 'file-blocking', 'spyware', 'url-filtering',
+                     'virus', 'vulnerability', 'wildfire-analysis'} - {profile_type}
+
+    # first we update the given profile type with the given profile name
+    element = f"<{profile_type}><member>{profile_name}</member></{profile_type}>"
+
+    # Keeping the existing profile types
+    for p_type in profile_types:
+        if p_type in profile_types_result:
+            element += f"<{p_type}><member>{profile_types_result[p_type]['member']['#text']}</member></{p_type}>"
+
     params = {
         'action': 'set',
         'type': 'config',
         'xpath': xpath,
         'key': API_KEY,
-        'element': f'<member>{profile_name}</member>'
+        'element': f'<profile-setting><profiles>{element}</profiles></profile-setting>'
     }
+
     result = http_request(URL, 'POST', params=params)
 
     return result
@@ -6933,20 +6959,18 @@ def apply_security_profile_command(args):
     profile_name = args.get('profile_name')
     profile_type = args.get('profile_type')
     rule_name = args.get('rule_name')
-    pre_post = args.get('rule_name')
+    pre_post = args.get('pre_post')
 
     if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
                             'Panorama instance.')
-        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/" \
-                f"profiles/{profile_type}"
+        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']"
 
     else:  # firewall instance
-        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/" \
-                f"profiles/{profile_type}"
+        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']"
 
-    apply_security_profile(xpath, profile_name)
+    apply_security_profile(xpath, profile_name, profile_type)
     return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
 
