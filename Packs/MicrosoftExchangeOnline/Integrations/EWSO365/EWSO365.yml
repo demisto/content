@@ -122,7 +122,6 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-  hidden: false
   section: Connect
   advanced: true
 - additionalinfo: Use the "ID" parameter instead.
@@ -626,6 +625,9 @@ script:
     - contextPath: EWS.Items.isRead
       description: The read status of the email.
       type: String
+    - contextPath: EWS.Items.categories
+      description: The categories of the email.
+      type: unknown
   - arguments:
     - description: A comma-separated list of item IDs.
       isArray: true
@@ -714,6 +716,9 @@ script:
     - contextPath: Email.HeadersMap
       description: The headers of the email.
       type: String
+    - contextPath: EWS.Items.categories
+      description: The categories of the email.
+      type: unknown
   - arguments:
     - description: The item ID to move.
       name: item-id
@@ -954,7 +959,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.59485
+  dockerimage: demisto/py3ews:1.0.0.61732
   feed: false
   isfetch: true
   runonce: false

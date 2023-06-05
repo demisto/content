@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto_sdk = "1.15.2"
+demisto_sdk = "1.15.5"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -506,6 +506,9 @@ exclude = [
     "CommonServerPython.py",
     "demistomock.py",
 ]
+
+[tool.autopep8]
+max_line_length = 130
 
 [tool.pytest]
 junit_family = "xunit1"

@@ -21,7 +21,6 @@ configuration:
   advanced: true
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
-  hidden: false
   name: proxy
   required: false
   type: 8
@@ -42,6 +41,30 @@ configuration:
   required: true
   type: 15
   section: Collect
+- additionalinfo: The number of times to try when getting a Rate Limit response.
+  defaultvalue: '3'
+  display: Rate Limit Retry Count
+  name: rate_limit_retry_count
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- additionalinfo: The number of seconds to wait each iteration when getting a Rate Limit response.
+  defaultvalue: '120'
+  display: Rate Limit Wait Seconds
+  name: rate_limit_wait_seconds
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+- display: Suppress Rate Limit errors
+  additionalinfo: "Whether Rate Limit errors should be supressed or not."
+  defaultvalue: "false"
+  name: rate_limit_errors_suppressed
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -60,7 +83,6 @@ script:
     - name: verbose
       description: Whether to add the raw response as a dictionary to the context. Default value is False.
       required: false
-      defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -443,6 +465,27 @@ script:
       name: ip
       required: true
       secret: false
+    - default: false
+      description: 'The number of times to try when getting a Rate Limit response.'
+      isArray: false
+      defaultValue: 3
+      name: rate_limit_retry_count
+      required: false
+      secret: false
+    - default: false
+      description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
+      isArray: false
+      defaultValue: 120
+      name: rate_limit_wait_seconds
+      required: false
+      secret: false
+    - default: false
+      description: 'Whether Rate Limit errors should be supressed or not.'
+      isArray: false
+      defaultValue: 'false'
+      name: rate_limit_errors_suppressed
+      required: false
+      secret: false
     deprecated: false
     description: Provides data enrichment for ips.
     execution: false
@@ -559,7 +602,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.57002
+  dockerimage: demisto/ippysocks-py3:1.0.0.61823
   feed: false
   isfetch: false
   longRunning: false
@@ -568,7 +611,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultEnabled: false
 tests:
 - whois_test
 fromversion: 5.0.0

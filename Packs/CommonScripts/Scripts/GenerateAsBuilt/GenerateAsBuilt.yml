@@ -34,7 +34,6 @@ comment: Generate an as built document, as HTML, based on the running XSOAR inst
 commonfields:
   id: GenerateAsBuilt
   version: -1
-enabled: false
 name: GenerateAsBuilt
 script: '-'
 subtype: python3
@@ -46,5 +45,5 @@ dockerimage: demisto/teams:1.0.0.43500
 tests:
 - No tests (auto formatted)
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2

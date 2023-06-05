@@ -15,20 +15,16 @@ configuration:
   type: 0
 - additionalinfo: The application key to use for authentication.
   display: Application Key
-  hidden: false
   name: app_key
   required: true
   type: 0
 - defaultvalue: '50'
   display: How many incidents to fetch each time.
-  hidden: false
   name: max_fetch
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
-  hidden: false
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   required: false
   type: 0
@@ -58,9 +54,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: "A description of the event.\nLimited to 4000 characters.\nThe\
-        \ description supports markdown. To use markdown in the event text, start\
-        \ the text block with %%% \\n and end the text block with \\n %%% "
+      description: "A description of the event.\nLimited to 4000 characters.\nThe description supports markdown. To use markdown in the event text, start the text block with %%% \\n and end the text block with \\n %%% "
       isArray: false
       name: text
       required: true
@@ -72,8 +66,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "The timestamp cannot be older than 18 hours.\nFormat :  \nyyyy-MM-dd’\
-        T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
+      description: "The timestamp cannot be older than 18 hours.\nFormat :  \nyyyy-MM-dd’T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
       isArray: false
       name: date_happened
       required: false
@@ -111,23 +104,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A comma-separated list of tags to apply to the event. \nEx: \"\
-        environment:production, region:East” "
+      description: "A comma-separated list of tags to apply to the event. \nEx: \"environment:production, region:East” "
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: "An arbitrary string to use for aggregation. \nIf you specify a\
-        \ key, all events using that key are grouped together in the Event Stream.\
-        \ \nLimited to 100 characters."
+      description: "An arbitrary string to use for aggregation. \nIf you specify a key, all events using that key are grouped together in the Event Stream. \nLimited to 100 characters."
       isArray: false
       name: aggregation_key
       required: false
       secret: false
     - default: false
-      description: 'The type of event being posted. A complete list of source attribute
-        values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.'
+      description: 'The type of event being posted. A complete list of source attribute values are available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/.'
       isArray: false
       name: source_type_name
       required: false
@@ -162,8 +151,7 @@ script:
       description: 'The priority of the event.  Possible values: normal, low.'
       type: String
     - contextPath: Datadog.Event.text
-      description: The description of the event. Limited to 4000 characters. The description
-        supports markdown.
+      description: The description of the event. Limited to 4000 characters. The description supports markdown.
       type: String
     - contextPath: Datadog.Event.tags
       description: A list of tags to apply to the event.
@@ -178,8 +166,7 @@ script:
       description: The event title.
       type: String
     - contextPath: Datadog.Event.alert_type
-      description: 'The alert type. Possible values: error, warning, info, success,
-        user_update, recommendation, snapshot.'
+      description: 'The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot.'
       type: String
     - contextPath: Datadog.Event.device_name
       description: A device name associated with the event.
@@ -188,8 +175,7 @@ script:
       description: The type of event being posted.
       type: String
     - contextPath: Datadog.Event.host
-      description: Host name to associate with the event. Any tags associated with
-        the host are also applied to this event.
+      description: Host name to associate with the event. Any tags associated with the host are also applied to this event.
       type: String
   - arguments:
     - default: false
@@ -199,15 +185,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “\
-        12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+      description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"\
-        -1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+      description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"-1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
       isArray: false
       name: end_date
       required: false
@@ -231,17 +215,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: "A comma-separated list indicating what tags, if any, should be\
-        \ used to filter the list of events. \nEx: \"environment:production, region:East\"\
-        ."
+      description: "A comma-separated list indicating what tags, if any, should be used to filter the list of events. \nEx: \"environment:production, region:East\"."
       isArray: false
       name: tags
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set unaggregated to 'true' to return all events within the specified
-        [start,end] timeframe.
+      description: Set unaggregated to 'true' to return all events within the specified [start,end] timeframe.
       isArray: false
       name: unaggregated
       predefined:
@@ -251,8 +232,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set exclude_aggregate to 'true' to only return unaggregated events
-        where is_aggregate=false in the response.
+      description: Set exclude_aggregate to 'true' to only return unaggregated events where is_aggregate=false in the response.
       isArray: false
       name: exclude_aggregate
       predefined:
@@ -267,9 +247,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default
-        is 50. If the page_size argument is set by the user then the limit argument
-        will be ignored.
+      description: The maximum number of records to return from the collection. Default is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -286,8 +264,7 @@ script:
     name: datadog-event-list
     outputs:
     - contextPath: Datadog.Event.alert_type
-      description: 'The alert type. Possible values: error, warning, info, success,
-        user_update, recommendation, snapshot.'
+      description: 'The alert type. Possible values: error, warning, info, success, user_update, recommendation, snapshot.'
       type: String
     - contextPath: Datadog.Event.date_happened
       description: The timestamp of when the event happened.
@@ -302,8 +279,7 @@ script:
       description: 'The priority of the event.  Possible values: normal, low.'
       type: String
     - contextPath: Datadog.Event.text
-      description: The description of the event. Limited to 4000 characters. The description
-        supports markdown.
+      description: The description of the event. Limited to 4000 characters. The description supports markdown.
       type: String
     - contextPath: Datadog.Event.tags
       description: A list of tags to apply to the event.
@@ -315,8 +291,7 @@ script:
       description: The status of the event.
       type: String
     - contextPath: Datadog.Event.host
-      description: Host name to associate with the event. Any tags associated with
-        the host are also applied to this event.
+      description: Host name to associate with the event. Any tags associated with the host are also applied to this event.
       type: String
     - contextPath: Datadog.Event.title
       description: The Event title.
@@ -338,9 +313,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default
-        value is 50. If the page_size argument is set by the user then the limit argument
-        will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -372,15 +345,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: "A list of tags to apply to the host. \nComma-seperated values.\
-        \ Ex: \"environment:production, region:East” "
+      description: "A list of tags to apply to the host. \nComma-seperated values. Ex: \"environment:production, region:East” "
       isArray: false
       name: tags
       required: true
       secret: false
     deprecated: false
-    description: This endpoint allows you to add new tags to a host, optionally specifying
-      where these tags come from.
+    description: This endpoint allows you to add new tags to a host, optionally specifying where these tags come from.
     execution: false
     name: datadog-host-tag-create
     outputs:
@@ -418,9 +389,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default
-        value is 50. If the page_size argument is set by the user, then the limit
-        argument will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -444,16 +413,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: "A comma-separated list of tags to apply to the host  \nPrevious\
-        \ tags will be replaced by new tags. Ex: \"environment:production, region:East”\
-        \ "
+      description: "A comma-separated list of tags to apply to the host  \nPrevious tags will be replaced by new tags. Ex: \"environment:production, region:East” "
       isArray: false
       name: tags
       required: false
       secret: false
     deprecated: false
-    description: This endpoint allows you to replace all tags in an integration source
-      with those supplied in the request.
+    description: This endpoint allows you to replace all tags in an integration source with those supplied in the request.
     execution: false
     name: datadog-host-tag-update
     outputs:
@@ -471,14 +437,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: This endpoint allows you to remove all user-assigned tags for a single
-      host.
+    description: This endpoint allows you to remove all user-assigned tags for a single host.
     execution: false
     name: datadog-host-tag-delete
   - arguments:
     - default: false
-      description: "List of actively reporting metrics from a given time until now.\n\
-        Format :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' "
+      description: "List of actively reporting metrics from a given time until now.\nFormat :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' "
       isArray: false
       name: from
       required: true
@@ -513,9 +477,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default
-        value is 50. If the page_size argument is set by the user, then the limit
-        argument will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -598,8 +560,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Per unit of the metric  \nA complete list of metric units values\
-        \ are available here: https://docs.datadoghq.com/metrics/units/#unit-list."
+      description: "Per unit of the metric  \nA complete list of metric units values are available here: https://docs.datadoghq.com/metrics/units/#unit-list."
       isArray: false
       name: per_unit
       required: false
@@ -710,8 +671,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: This field allows you to enter the description of the root cause,
-        triggers, and contributing factors of the incident.
+      description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
       isArray: false
       name: root_cause
       required: false
@@ -732,8 +692,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A flag indicating whether the timeline cell is important and should
-        be highlighted.
+      description: A flag indicating whether the timeline cell is important and should be highlighted.
       isArray: false
       name: important
       predefined:
@@ -765,8 +724,7 @@ script:
       description: The monotonically increasing integer ID for the incident.
       type: Number
     - contextPath: Datadog.Incident.attributes.resolved
-      description: Timestamp when the incident's state was last changed from active
-        or stable to resolved or completed.
+      description: Timestamp when the incident's state was last changed from active or stable to resolved or completed.
       type: Unknown
     - contextPath: Datadog.Incident.attributes.title
       description: The title of the incident, which summarizes what happened.
@@ -799,25 +757,19 @@ script:
       description: Timestamp when the incident was detected.
       type: String
     - contextPath: Datadog.Incident.attributes.customer_impact_duration
-      description: Length of the incident's customer impact in seconds. Equals the
-        difference between customer_impact_start and customer_impact_end.
+      description: Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_detect
-      description: The amount of time in seconds to detect the incident. Equals the
-        difference between customer_impact_start and detected.
+      description: The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_repair
-      description: The amount of time in seconds to resolve customer impact after
-        detecting the issue. Equals the difference between customer_impact_end and
-        detected.
+      description: The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_internal_response
-      description: The amount of time in seconds to call incident after detection.
-        Equals the difference of detected and created.
+      description: The amount of time in seconds to call incident after detection. Equals the difference of detected and created.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_resolve
-      description: The amount of time in seconds to resolve the incident after it
-        was created. Equals the difference between created and resolved.
+      description: The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved.
       type: Number
     - contextPath: Datadog.Incident.attributes.fields.severity.value
       description: The severity of the incident.
@@ -826,12 +778,10 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.detection_method.value
-      description: Specify how the incident was detected with these default options
-        - customer, employee, monitor, other, or unknown.
+      description: Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.root_cause.value
-      description: This text field allows you to enter the description of the root
-        cause, triggers, and contributing factors of the incident.
+      description: This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.summary.value
       description: Summary of incident.
@@ -985,8 +935,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: This field allows you to enter the description of the root cause,
-        triggers, and contributing factors of the incident.
+      description: This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
       isArray: false
       name: root_cause
       required: false
@@ -1016,8 +965,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an incident. Provide only the attributes that should be updated
-      as this request is a partial update.
+    description: Updates an incident. Provide only the attributes that should be updated as this request is a partial update.
     execution: false
     name: datadog-incident-update
     outputs:
@@ -1031,8 +979,7 @@ script:
       description: The title of the incident, which summarizes what happened.
       type: String
     - contextPath: Datadog.Incident.attributes.resolved
-      description: Timestamp when the incident's state was last changed from active
-        or stable to resolved or completed.
+      description: Timestamp when the incident's state was last changed from active or stable to resolved or completed.
       type: String
     - contextPath: Datadog.Incident.attributes.customer_impact_scope
       description: A summary of the impact customers experienced during the incident.
@@ -1062,25 +1009,19 @@ script:
       description: Timestamp when the incident was detected.
       type: String
     - contextPath: Datadog.Incident.attributes.customer_impact_duration
-      description: Length of the incident's customer impact in seconds. Equals the
-        difference between customer_impact_start and customer_impact_end.
+      description: Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_detect
-      description: The amount of time in seconds to detect the incident. Equals the
-        difference between customer_impact_start and detected.
+      description: The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_repair
-      description: The amount of time in seconds to resolve customer impact after
-        detecting the issue. Equals the difference between customer_impact_end and
-        detected.
+      description: The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_internal_response
-      description: The amount of time in seconds to call incident after detection.
-        Equals the difference of detected and created.
+      description: The amount of time in seconds to call incident after detection. Equals the difference of detected and created.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_resolve
-      description: The amount of time in seconds to resolve the incident after it
-        was created. Equals the difference between created and resolved.
+      description: The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved.
       type: Number
     - contextPath: Datadog.Incident.attributes.fields.severity.value
       description: The severity of the incident.
@@ -1089,12 +1030,10 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.detection_method.value
-      description: 'Specify how the incident was detected with these default options:
-        customer, employee, monitor, other, or unknown.'
+      description: 'Specify how the incident was detected with these default options: customer, employee, monitor, other, or unknown.'
       type: String
     - contextPath: Datadog.Incident.attributes.fields.root_cause.value
-      description: This text field allows you to enter the description of the root
-        cause, triggers, and contributing factors of the incident.
+      description: This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.summary.value
       description: Summary of incident.
@@ -1234,9 +1173,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default
-        value is 50. If the page_size argument is set by the user, then the limit
-        argument will be ignored.
+      description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -1254,8 +1191,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get all incidents for the user’s organization / Get the details of
-      an incident using incident_id.
+    description: Get all incidents for the user’s organization / Get the details of an incident using incident_id.
     execution: false
     name: datadog-incident-list
     outputs:
@@ -1266,8 +1202,7 @@ script:
       description: The monotonically increasing integer ID for the incident.
       type: Number
     - contextPath: Datadog.Incident.attributes.resolved
-      description: Timestamp when the incident's state was last changed from active
-        or stable to resolved or completed.
+      description: Timestamp when the incident's state was last changed from active or stable to resolved or completed.
       type: Unknown
     - contextPath: Datadog.Incident.attributes.title
       description: The title of the incident, which summarizes what happened.
@@ -1300,25 +1235,19 @@ script:
       description: Timestamp when the incident was detected.
       type: String
     - contextPath: Datadog.Incident.attributes.customer_impact_duration
-      description: Length of the incident's customer impact in seconds. Equals the
-        difference between customer_impact_start and customer_impact_end.
+      description: Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_detect
-      description: The amount of time in seconds to detect the incident. Equals the
-        difference between customer_impact_start and detected.
+      description: The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_repair
-      description: The amount of time in seconds to resolve customer impact after
-        detecting the issue. Equals the difference between customer_impact_end and
-        detected.
+      description: The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_internal_response
-      description: The amount of time in seconds to call incident after detection.
-        Equals the difference of detected and created.
+      description: The amount of time in seconds to call incident after detection. Equals the difference of detected and created.
       type: Number
     - contextPath: Datadog.Incident.attributes.time_to_resolve
-      description: The amount of time in seconds to resolve the incident after it
-        was created. Equals the difference between created and resolved.
+      description: The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved.
       type: Number
     - contextPath: Datadog.Incident.attributes.fields.severity.value
       description: The severity of the incident.
@@ -1327,12 +1256,10 @@ script:
       description: The status of the incident.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.detection_method.value
-      description: Specify how the incident was detected with these default options
-        - customer, employee, monitor, other, or unknown.
+      description: Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.root_cause.value
-      description: This text field allows you to enter the description of the root
-        cause, triggers, and contributing factors of the incident.
+      description: This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident.
       type: String
     - contextPath: Datadog.Incident.attributes.fields.summary.value
       description: Summary of incident.
@@ -1415,15 +1342,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list\
-        \ of query string values are available here: https://app.datadoghq.com/metric/summary."
+      description: "Query string.\nEx : query=\"system.cpu.idle\" \nA complete list of query string values are available here: https://app.datadoghq.com/metric/summary."
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: Query of sequence of data points that are collected over time intervals,
-      allowing us to track changes over time.
+    description: Query of sequence of data points that are collected over time intervals, allowing us to track changes over time.
     execution: false
     name: datadog-time-series-point-query
     outputs:
@@ -1482,8 +1407,7 @@ script:
       description: Unique tags identifying this series.
       type: Unknown
     - contextPath: Datadog.TimeSeriesPoint.series.unit.family
-      description: Unit family allows for conversion between units of the same family,
-        for scaling.
+      description: Unit family allows for conversion between units of the same family, for scaling.
       type: String
     - contextPath: Datadog.TimeSeriesPoint.series.unit.name
       description: Unit name.
@@ -1503,7 +1427,7 @@ script:
     - contextPath: Datadog.TimeSeriesPoint.to_date
       description: End of requested time window in milliseconds since Unix epoch.
       type: Date
-  dockerimage: demisto/datadog-api-client:1.0.0.59332
+  dockerimage: demisto/datadog-api-client:1.0.0.62355
   feed: false
   isfetch: true
   longRunning: false
