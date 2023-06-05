@@ -1383,6 +1383,7 @@ def get_device(uuid, ip, dns_name, repo):
 def list_users_command():
     user_id = demisto.args().get('id')
     username = demisto.args().get('username')
+
     email = demisto.args().get('email')
 
     res = get_users('id,username,firstname,lastname,title,email,createdTime,modifiedTime,lastLogin,role', user_id)
