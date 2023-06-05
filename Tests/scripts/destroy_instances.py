@@ -1,16 +1,17 @@
 import argparse
 import json
-import requests
 import logging
 import os
 from pathlib import Path
 import subprocess
 from typing import Optional
-import shutil
-import sys
 
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from Tests.scripts.utils.log_util import install_logging
+
+# Disable insecure warnings
+import urllib3
+urllib3.disable_warnings()
 
 
 def options_handler():
@@ -51,11 +52,6 @@ def shutdown(server_ip: str, ttl: Optional[int] = None):
         logging.exception(f'Failed to shutdown server {server_ip}')
 
 
-# Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
-
-
 def main():
     install_logging('Destroy_instances.log')
     options = options_handler()
@@ -76,7 +72,7 @@ def main():
 
     if time_to_live:
         logging.info(f'Time to live was set to {time_to_live} minutes')
-        shutdown(server_ip, time_to_live)
+        shutdown(server_ip, int(time_to_live))
     elif (tests_path / f'is_build_passed_{role}.txt').exists() and \
             (tests_path / f'is_post_update_passed_{role}.txt').exists():
         shutdown(server_ip)
