@@ -188,15 +188,19 @@ class ASClient:
             resp_type='response'
         )
 
-    def storage_blob_service_properties_set_request(self, args: Dict) -> Dict:
+    def storage_blob_service_properties_set_request(self, subscription_id: str | None,
+                                                    resource_group_name: str | None, args: Dict) -> Dict:
         """
             Send the user arguments for the blob service in the request body to the API.
         Args:
+            subscription_id: The subscription id.
+            resource_group_name: The resource group name.
             args: The user arguments.
 
         Returns:
             The json response from the API call.
         """
+        account_name = args.get('account_name')
         properties = {}
 
         if 'change_feed_enabled' in args:
@@ -258,11 +262,7 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='PUT',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{args["account_name"]}/blobServices/default',
-            params={
-                'api-version': API_VERSION,
-            },
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}',  # noqa: E501
             json_data={'properties': properties}
         )
 
@@ -449,7 +449,7 @@ def storage_account_create_update(client: ASClient, params: Dict, args: Dict) ->
 # Blob Service Commands
 
 
-def storage_blob_service_properties_get(client: ASClient, params:Dict, args: Dict) -> CommandResults:
+def storage_blob_service_properties_get(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
         Gets the blob service properties for the storage account.
     Args:
@@ -502,18 +502,23 @@ def storage_blob_service_properties_get(client: ASClient, params:Dict, args: Dic
     )
 
 
-def storage_blob_service_properties_set(client: ASClient, args: Dict):
+def storage_blob_service_properties_set(client: ASClient, params: Dict, args: Dict):
     """
         Sets the blob service properties for the storage account.
     Args:
         client: The microsoft client.
+        params: The configuration parameters.
         args: The users arguments, (like account name).
 
     Returns:
         CommandResults: The command results in MD table and context data.
     """
+    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
+    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
 
-    response = client.storage_blob_service_properties_set_request(args)
+    response = client.storage_blob_service_properties_set_request(subscription_id=subscription_id,
+                                                                  resource_group_name=resource_group_name,
+                                                                  args=args)
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
         subscription_id = subscription_id.group(1)  # type: ignore
@@ -783,7 +788,7 @@ def main() -> None:
         elif command == 'azure-storage-blob-service-properties-get':
             return_results(storage_blob_service_properties_get(client, params, args))
         elif command == 'azure-storage-blob-service-properties-set':
-            return_results(storage_blob_service_properties_set(client, args))
+            return_results(storage_blob_service_properties_set(client, params, args))
         elif command == 'azure-storage-blob-containers-create':
             return_results(storage_blob_containers_create(client, args))
         elif command == 'azure-storage-blob-containers-update':
