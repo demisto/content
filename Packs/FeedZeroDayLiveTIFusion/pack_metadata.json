@@ -1,9 +1,9 @@
 {
     "name": "Zero Day Live TI FUSION Feed",
-    "description": "'Zero Day Live is Blackwired’s flagship product that delivers proprietary",
+    "description": "'Zero Day Live is Blackwired’s flagship product that delivers proprietary, holistic, high confidence and precision intelligence data points on Adversaries’ malicious intent.",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "Blackwired Ltd.",
+    "author": "Grzegorz Papkala",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
