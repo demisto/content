@@ -6,7 +6,8 @@ def main():
 
     if isinstance(value, list) and value:
         value = value[0]
-    elif value is None:
+
+    if value is None:
         value = []
 
     demisto.results(value)
