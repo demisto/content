@@ -529,7 +529,7 @@ script:
       description: The name of the IAM user that the new key will belong to.
       isArray: false
       name: userName
-      required: true
+      required: false
       secret: false
     - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
@@ -571,7 +571,7 @@ script:
       description: The name of the user whose key you want to update.
       isArray: false
       name: userName
-      required: true
+      required: false
       secret: false
     - default: false
       description: The access key ID of the secret access key you want to update.
@@ -992,7 +992,7 @@ script:
       description: he name of the user whose access key pair you want to delete.
       isArray: false
       name: userName
-      required: true
+      required: false
       secret: false
     - default: false
       description: The access key ID for the access key ID and secret access key you want to delete.

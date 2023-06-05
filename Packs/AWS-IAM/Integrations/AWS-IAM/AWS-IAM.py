@@ -1253,6 +1253,34 @@ def put_role_policy_command(args, aws_client):
             raise error
 
 
+def put_user_policy_command(args, aws_client):
+    pass
+
+
+def put_group_policy_command(args, aws_client):
+    pass
+
+
+def tag_role_command(args, aws_client):
+    pass
+
+
+def tag_user_command(args, aws_client):
+    pass
+
+
+def untag_user_command(args, aws_client):
+    pass
+
+
+def untag_role_command(args, aws_client):
+    pass
+
+
+def get_access_key_last_used_command(args, aws_client):
+    pass
+
+
 def test_function(aws_client):
     client = aws_client.aws_session(service=SERVICE)
     response = client.list_users()
@@ -1388,20 +1416,20 @@ def main():     # pragma: no cover
             get_user_login_profile(args, aws_client)
         elif command == 'aws-iam-put-role-policy':
             put_role_policy_command(args, aws_client)
-        # elif command == 'aws-iam-put-user-policy':
-        #     put_user_policy_command(args, aws_client)
-        # elif command == 'aws-iam-put-group-policy':
-        #     put_group_policy_command(args, aws_client)
-        # elif command == 'aws-iam-tag-role':
-        #     tag_role_command(args, aws_client)
-        # elif command == 'aws-iam-tag-user':
-        #     tag_user_command(args, aws_client)
-        # elif command == 'aws-iam-untag-user':
-        #     untag_user_command(args, aws_client)
-        # elif command == 'aws-iam-untag-role':
-        #     untag_role_command(args, aws_client)
-        # elif command == 'aws-iam-get-access-key-last-used':
-        #     get_access_key_last_used_command(args, aws_client)
+        elif command == 'aws-iam-put-user-policy':
+            put_user_policy_command(args, aws_client)
+        elif command == 'aws-iam-put-group-policy':
+            put_group_policy_command(args, aws_client)
+        elif command == 'aws-iam-tag-role':
+            tag_role_command(args, aws_client)
+        elif command == 'aws-iam-tag-user':
+            tag_user_command(args, aws_client)
+        elif command == 'aws-iam-untag-user':
+            untag_user_command(args, aws_client)
+        elif command == 'aws-iam-untag-role':
+            untag_role_command(args, aws_client)
+        elif command == 'aws-iam-get-access-key-last-used':
+            get_access_key_last_used_command(args, aws_client)
 
     except Exception as e:
         LOG(str(e))
