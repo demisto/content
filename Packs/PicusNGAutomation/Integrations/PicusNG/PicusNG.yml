@@ -16,7 +16,6 @@ configuration:
   required: false
   type: 8
 - display: Picus Refresh Token
-  hidden: false
   name: picus_apikey
   required: true
   type: 4

@@ -62,12 +62,10 @@ configuration:
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
 - display: Subscription ID
-  hidden: false
   name: subscription_id
   required: true
   type: 0
 - display: Resource Group Name
-  hidden: false
   name: resource_group_name
   required: true
   type: 0
@@ -81,7 +79,6 @@ configuration:
   type: 8
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   options:
   - https://login.microsoftonline.com
