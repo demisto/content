@@ -117,6 +117,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-fromversion: 6.8.0
+fromversion: 6.6.0
 tests:
 - No tests (auto formatted)
