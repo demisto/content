@@ -606,18 +606,23 @@ def storage_blob_containers_create(client: ASClient, params: Dict, args: Dict):
     )
 
 
-def storage_blob_containers_update(client, args):
+def storage_blob_containers_update(client: ASClient, params: Dict, args: Dict):
     """
             Updates a given blob container.
         Args:
             client: The microsoft client.
+            params: The configuration parameters.
             args: The users arguments, (like account name, container name).
 
         Returns:
             CommandResults: The command results in MD table and context data.
     """
+    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
+    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
 
-    response = client.storage_blob_containers_create_update_request(args, 'PATCH')
+    response = client.storage_blob_containers_create_update_request(subscription_id=subscription_id,
+                                                                    resource_group_name=resource_group_name,
+                                                                    args=args, method='PATCH')
 
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
         subscription_id = subscription_id.group(1)  # type: ignore
@@ -798,7 +803,7 @@ def main() -> None:
         elif command == 'azure-storage-blob-containers-create':
             return_results(storage_blob_containers_create(client, params, args))
         elif command == 'azure-storage-blob-containers-update':
-            return_results(storage_blob_containers_update(client, args))
+            return_results(storage_blob_containers_update(client, params, args))
         elif command == 'azure-storage-blob-containers-list':
             return_results(storage_blob_containers_list(client, args))
         elif command == 'azure-storage-blob-container-delete':
