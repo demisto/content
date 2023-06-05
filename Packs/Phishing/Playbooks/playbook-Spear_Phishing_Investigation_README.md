@@ -27,7 +27,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | DomainSquattingResults | Results of the domain squatting investigation |  | Optional |
-| KeywordsToSearch | A comma-separated or list of keywords to search in the email body.<br/>for example: name of the organization finance app that the attacker might impost to. |  | Optional |
+| KeywordsToSearch | A comma-separated list of keywords to search in the email body.<br/>For example: name of the organization finance app that the attacker might impersonate. |  | Optional |
 | MailBody | The phishing mail body. |  | Optional |
 
 ## Playbook Outputs
