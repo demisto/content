@@ -79,9 +79,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The indicator's value to filter by.
+      description: The indicator's value to filter by, can be partial value.
       isArray: false
-      name: value
+      name: search
       required: false
       secret: false
     deprecated: false

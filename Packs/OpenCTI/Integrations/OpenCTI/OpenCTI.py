@@ -139,7 +139,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     limit = arg_to_number(args.get('limit', 50))
     start = arg_to_number(args.get('score_start', 1))
     end = arg_to_number(args.get('score_end', 100)) + 1  # type:ignore
-    search = args.get("value", "")
+    search = args.get("search", "")
     score = None
     if start or end:
         score = [str(i) for i in range(start, end)]  # type:ignore
