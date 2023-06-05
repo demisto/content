@@ -174,7 +174,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "hideName": false,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
@@ -183,10 +183,6 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Incident Files",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 14,
                         "query": {
                             "categories": [
                                 "attachments"
@@ -200,7 +196,11 @@
                         },
                         "queryType": "warRoomFilter",
                         "readOnly": true,
-                        "type": "invTimeline"
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -300,7 +300,9 @@
                         "y": 6
                     },
                     {
+                        "displayType": "ROW",
                         "h": 2,
+                        "hideName": false,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-93d51e60-a8fe-11ec-927e-2bbbcff3899b",
                         "items": [
                             {
@@ -381,9 +383,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8,
-                        "displayType": "ROW",
-                        "hideName": false
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -417,20 +417,9 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 12
+                        "y": 14
                     },
                     {
-                        "h": 2,
-                        "i": "swtuqptgvs-field-changed-swtuqptgvs-8f724f40-6b37-11ed-b7c0-2904efd8f7fb",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 18,
                         "columns": [
                             {
                                 "displayed": true,
@@ -478,9 +467,21 @@
                                 "width": 300
                             }
                         ],
-                        "type": "linkedIncidents"
+                        "h": 2,
+                        "i": "swtuqptgvs-field-changed-swtuqptgvs-8f724f40-6b37-11ed-b7c0-2904efd8f7fb",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 16
                     },
                     {
+                        "description": "Indicators selected to be blocked.",
                         "h": 2,
                         "i": "swtuqptgvs-1a52c090-c187-11ed-a413-1fc9f082fba8",
                         "items": [],
@@ -488,14 +489,13 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Selected indicators to block",
+                        "query": "tags:\"Blocked Indicator In Systems\"",
+                        "queryType": "input",
                         "static": false,
                         "type": "indicators",
                         "w": 1,
                         "x": 2,
-                        "y": 10,
-                        "description": "Indicators selected to be blocked.",
-                        "query": "tags:\"Blocked Indicator In Systems\"",
-                        "queryType": "input"
+                        "y": 12
                     },
                     {
                         "description": "",
@@ -513,6 +513,53 @@
                         "w": 2,
                         "x": 0,
                         "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "swtuqptgvs-20ca76d0-02e5-11ee-8d4d-65992a7b968b",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "triagesla",
+                                "height": 53,
+                                "id": "39e688c0-02e5-11ee-8d4d-65992a7b968b",
+                                "index": 1,
+                                "listId": "swtuqptgvs-20ca76d0-02e5-11ee-8d4d-65992a7b968b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remediationsla",
+                                "height": 53,
+                                "id": "37bf6300-02e5-11ee-8d4d-65992a7b968b",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectionsla",
+                                "height": 53,
+                                "id": "361116c0-02e5-11ee-8d4d-65992a7b968b",
+                                "index": 0,
+                                "listId": "swtuqptgvs-20ca76d0-02e5-11ee-8d4d-65992a7b968b",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident SLAs",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
