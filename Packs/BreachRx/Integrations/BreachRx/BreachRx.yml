@@ -18,7 +18,6 @@ configuration:
   additionalinfo: The API credentials to use for connection
   name: credentials
   required: true
-  hiddenusername: false
   type: 9
 - display: Use system proxy settings
   name: proxy
