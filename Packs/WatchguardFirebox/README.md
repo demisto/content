@@ -11,13 +11,15 @@ This pack includes Cortex XSIAM content
 4. In the IP Address text box, type the IP address for the syslog or QRadar server.
 5. In the Port text box, the default syslog server port (514) appears. To change the server port, type or select a different port for your server.
 6. From the Log Format drop-down list, select IBM LEEF.
+
 ![Server Screenshot](./doc_imgs/syslogleef.png)
-7. In the Syslog Settings section, for each type of log message, select a syslog facility from the drop-down list.
+
+8. In the Syslog Settings section, for each type of log message, select a syslog facility from the drop-down list.
    If you select the IBM LEEF log format, you must select the The syslog header check box before you can select the syslog facility for the log message types.
    For high-priority syslog messages, such as alarms, select Local0.
    To assign priorities for other types of log messages (lower numbers have greater priority), select Local1–Local7.
    To not send details for a message type, select NONE.
-8. Click Save.
+9. Click Save.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
