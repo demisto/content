@@ -42,7 +42,7 @@ filter
     xdm.alert.original_alert_id = matchedRulesIds,
     xdm.alert.name = matchedRulesNames,
     xdm.source.user.identity_type = identityType,
-    xdm.source.user.username = coalesce(entityValueGuidsUserName, entityValuesUserName, entityValueNamesUserName),
+    xdm.source.user.username = coalesce(entityValuesUserName, entityValueGuidsUserName, entityValueNamesUserName),
 
     xdm.source.host.device_id = entityIdsDeviceId,
     xdm.source.user.identifier = coalesce(entityIdsAccountIdentifier, entityIdsEmailIdentifier),
