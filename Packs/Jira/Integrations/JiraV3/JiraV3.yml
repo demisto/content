@@ -80,7 +80,6 @@ configuration:
   type: 8
 - defaultvalue: None
   display: Mirroring Direction
-  hidden: false
   name: mirror_direction
   options:
   - None
@@ -92,41 +91,35 @@ configuration:
 - additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
   display: Attachment Entry Tag to Jira
-  hidden: false
   name: attachment_tag_to_jira
   required: false
   type: 0
 - additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
   defaultvalue: attachment tag from Jira
   display: Attachment Entry Tag from Jira
-  hidden: false
   name: attachment_tag_from_jira
   required: false
   type: 0
 - additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
   display: Comment Entry Tag to Jira
-  hidden: false
   name: comment_tag_to_jira
   required: false
   type: 0
 - additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
-  hidden: false
   name: comment_tag_from_jira
   required: false
   type: 0
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
-  hidden: false
   name: fetch_comments
   required: false
   defaultvalue: 'false'
   type: 8
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
-  hidden: false
   name: fetch_attachments
   required: false
   defaultvalue: 'false'
@@ -1111,7 +1104,6 @@ script:
       description: The maximum number of results to return. Default is 50 and maximum is 5000.
       isArray: false
       name: limit
-      hidden: false
       required: false
       secret: false
       defaultValue: '50'

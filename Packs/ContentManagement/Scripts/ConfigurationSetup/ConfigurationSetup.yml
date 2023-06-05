@@ -9,7 +9,6 @@ comment: Configurtaion loader for the Content Management pack.
 commonfields:
   id: ConfigurationSetup
   version: -1
-enabled: false
 name: ConfigurationSetup
 outputs:
 - contextPath: ConfigurationSetup.Jobs.name
