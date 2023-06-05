@@ -1,4 +1,4 @@
-Provides severity of CVE based on CVSS score where available
+Provides the severity of the CVE based on the CVSS score where available.
 
 ## Script Data
 
@@ -15,14 +15,14 @@ Provides severity of CVE based on CVSS score where available
 ---
 This script uses the following commands and scripts.
 
-* cve
+cve
 
 ## Used In
 
 ---
 This script is used in the following playbooks and scripts.
 
-* CVE Enrichment - Generic
+CVE Enrichment - Generic
 
 ## Inputs
 
@@ -30,7 +30,7 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| input | CVE ID |
+| input | CVE ID. |
 
 ## Outputs
 

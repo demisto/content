@@ -8,7 +8,7 @@ script: ''
 tags:
 - cve
 - reputation
-comment: Provides severity of CVE based on CVSS score where available
+comment: Provides the severity of the CVE based on the CVSS score where available.
 enabled: true
 args:
 - name: input
