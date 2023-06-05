@@ -12,7 +12,7 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
 2. Select **System** &rarr; **Log/Monitoring**.
 3. Click the **Settings** tab to display the configuration page.
 4. For each local event log category that you are interested in logging (_System_ events, _User Access_ events, _Admin Access_ events & _Sensors_ events), perform the following steps: 
-   1. Under the **Select Events to Log** section, select the requested check-boxes - [x] for each event type you wish to log. See [Select Events to Log](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#log_events_set) for a description of each event category. 
+   1. Under the **Select Events to Log** section, select the requested event types you wish to log. See [Select Events to Log](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#log_events_set) for a description of the various types for each event category. 
    2. Under the  **Syslog Server** section, define a Syslog server configuration for the XSIAM Broker VM as described in the table bellow: 
       | Parameter          | Value    
       | :---               | :---                    
@@ -43,8 +43,8 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the Syslog Collector, set the following values:
    | Parameter     | Value    
    | :---          | :---                    
-   | `Protocol`    | The protocol that was defined in the [Syslog forwarding configuration on the Ivanti admin console](#configure-events-to-log-and-syslog-forwarding).
-   | `Port`        | **514**.   
+   | `Protocol`    | **_UDP_** (The protocol that was defined in the [Syslog forwarding configuration on the Ivanti admin console](#configure-events-to-log-and-syslog-forwarding)).
+   | `Port`        | **_514_**.   
    | `Vendor`      | Enter **_Ivanti_**. 
    | `Product`     | Enter **_Connect Secure_**. 
 
