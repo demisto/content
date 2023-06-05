@@ -31,7 +31,8 @@ alter
     syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8)),
     full_user_name = coalesce(msg_user1, msg_user2),
     event_id = if(msg_event_id != null and msg_event_id != "-", msg_event_id, syslog_msg_id != null and syslog_msg_id != "-", syslog_msg_id, null),
-    msg_roles = regextract(msg_roles_str, "([^,]+)"),
+    // msg_roles = regextract(msg_roles_str, "([^,]+)"),
+    msg_roles = arraymap(regextract(msg_roles_str, "([^,]+)"), ltrim("@element")),
     event_name1 = arrayindex(regextract(msg_payload, "^(.+?)\s+\\\\"), 0),
     event_name2 = arrayindex(regextract(msg_payload, "^([^\']+)\s+for\s+"), 0),
     event_name3 = arrayindex(regextract(msg_payload, "^([^\']+)\s+using"), 0),
@@ -45,7 +46,7 @@ alter
     client_os = arrayindex(regextract(msg_payload, "from \S+ with [\w\-]+\/[\d\.]+\d\s+\(([^\)]+)\)"), 0), 
     session_id = arrayindex(regextract(msg_payload, "session:(\w+)"), 0), 
     reason = arrayindex(regextract(msg_payload, "Reason:\s*([\w\s\-]+)"), 0), 
-    reason2 = arrayindex(regextract(msg_payload, "due to\s+(S+)"), 0), 
+    reason2 = arrayindex(regextract(msg_payload, "due to\s+(\S+)"), 0), 
     target_share_server = arrayindex(regextract(msg_payload, "\s*\\\\([a-fA-F\d\.\:]+)\\\S+\$"), 0),
     target_share_domain= arrayindex(regextract(msg_payload, "in wrkgrp\/domain\s*(\S+)"), 0),
     error_code = arrayindex(regextract(msg_payload, "with error (\w+)"), 0)
