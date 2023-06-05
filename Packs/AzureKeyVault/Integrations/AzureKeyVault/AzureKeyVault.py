@@ -1296,13 +1296,12 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     identifier = args.get('identifier')
+    client_secret = params.get('client_secret', {}).get('password')
     azure_cloud = get_azure_cloud(params)
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
-
     try:
-        client_secret = params.get('client_secret')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
