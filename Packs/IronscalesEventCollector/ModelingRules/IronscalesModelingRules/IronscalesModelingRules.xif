@@ -1,0 +1,20 @@
+[MODEL: dataset=ironscales_ironscales_raw]
+alter
+    ipv4_address = arrayindex(regextract(json_extract_scalar(mail_server, "$.ip"), "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    ipv6_address = arrayindex(regextract(json_extract_scalar(mail_server, "$.ip"), "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
+| alter
+	xdm.event.id = to_string(incident_id),
+	xdm.event.outcome_reason = classification,
+	xdm.email.sender = sender_email,
+	xdm.email.recipients = arraycreate(name),
+	xdm.observer.action = themis_verdict,
+	xdm.alert.subcategory = themis_verdict,
+	xdm.intermediate.host.hostname = mail_server -> host,
+	xdm.intermediate.ipv4 = ipv4_address,
+	xdm.intermediate.ipv6 = ipv6_address,
+	xdm.source.user.username = name,
+	xdm.source.user.upn = email,
+	xdm.email.subject = subject,
+	xdm.network.http.http_header.value = to_json_string(arraymap(headers -> [], json_extract_scalar("@element","$.value"))),
+	xdm.network.http.url = to_json_string(arraymap(links -> [], json_extract_scalar("@element","$.url"))),
+	xdm.email.attachment.filename = to_json_string(arraymap(attachments -> [], json_extract_scalar("@element","$.file_name")));

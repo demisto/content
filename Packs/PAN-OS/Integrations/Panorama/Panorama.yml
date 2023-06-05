@@ -5779,11 +5779,11 @@ script:
       - allow
       - deny
       - drop
-    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules.
+    - description: Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden.
       name: query
       isArray: false
       required: false
-    description: Returns a list of predefined Security Rules.
+    description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
     name: pan-os-list-rules
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -9559,7 +9559,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.58557
+  dockerimage: demisto/pan-os-python:1.0.0.61510
   feed: false
   isfetch: true
   longRunning: false

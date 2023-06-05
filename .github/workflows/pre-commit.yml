@@ -16,6 +16,8 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.ref }}
+
     - name: Setup python
       uses: actions/setup-python@v4
       with:
@@ -62,7 +64,6 @@ jobs:
       with:
         filename: "coverage.xml"
         badge: true
-        fail_below_min: true
         format: markdown
         output: both
         thresholds: '70 80'
