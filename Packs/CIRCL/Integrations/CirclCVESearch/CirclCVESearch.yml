@@ -3,6 +3,20 @@ commonfields:
   id: CIRCL CVE Search
   version: -1
 configuration:
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A+ - 3rd party enrichment
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: https://cve.circl.lu/api/
   display: Server URL
   name: url
@@ -127,5 +141,5 @@ script:
   subtype: python3
   type: python
 tests:
-- CVE Search v2 - Test
+- CIRCL CVE Search - Test
 fromversion: 6.5.0

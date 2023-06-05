@@ -5440,7 +5440,13 @@
                 "Demisto REST API"
             ],
             "playbookID": "FeedLOLBas_test"
-        }
+        },
+        [
+            {
+                "integrations": "CIRCL CVE Search",
+                "playbookID": "CIRCL CVE Search - Test"
+            }
+        ]
     ],
     "skipped_tests": {
         "CiscoWSAv2": "No instance - developed by Qmasters",

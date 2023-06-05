@@ -17,7 +17,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Searches for CVE information using circl.lu.
+description: Deprecated. Use CIRCL CVE Search instead.
 display: CVE Search v2 (Deprecated)
 name: CVE Search v2
 script:
