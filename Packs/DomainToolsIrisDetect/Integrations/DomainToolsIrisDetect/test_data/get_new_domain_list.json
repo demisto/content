@@ -1,0 +1,42 @@
+{
+  "watchlist_domains": [
+    {
+      "state": "new",
+      "domain": "savedummybonds.com",
+      "status": "active",
+      "discovered_date": "2023-01-08T11:52:40.372000+00:00",
+      "changed_date": "2023-01-08T11:56:44.000000+00:00",
+      "risk_score": 83,
+      "risk_score_status": "provisional",
+      "risk_score_components": {
+        "proximity": null,
+        "threat_profile": {
+          "phishing": 83
+        }
+      },
+      "mx_exists": false,
+      "tld": "com",
+      "id": "ZadmbBBkyE",
+      "escalations": [],
+      "monitor_ids": [
+        "rA7bn46jQ3"
+      ],
+      "name_server": [
+        {
+          "host": "ns67.dummy.com"
+        },
+        {
+          "host": "ns68.dummy.com"
+        }
+      ],
+      "ip": [
+        {
+          "country_code": "us",
+          "ip": "1.1.1.1",
+          "isp": "Google"
+        }
+      ]
+    }
+  ],"total_count": 1,
+  "count": 1
+}

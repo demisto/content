@@ -1,0 +1,20 @@
+{
+    "description": "DomainTools Iris Detect - Classifier",
+    "feed": false,
+    "id": "DomainTools Iris Detect - Classifier",
+    "keyTypeMap": {
+        "blocked": "DomainTools Iris Detect Blocked Domains",
+        "new": "DomainTools Iris Detect New Domains",
+        "watched": "DomainTools Iris Detect Changed Domains"
+    },
+    "name": "DomainTools Iris Detect - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "state"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

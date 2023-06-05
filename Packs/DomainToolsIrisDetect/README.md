@@ -1,0 +1,3 @@
+# DomainTools Iris Detect
+
+When having scalable and flexible access to DomainTools market leading domain intelligence data is critical to your business, you need the DomainTools API. It delivers all the data that drives the industry-leading research and monitoring tools on this site. In particular, if you're using our data for security investigations or incident response, you cannot afford stale, inaccurate or missing records.

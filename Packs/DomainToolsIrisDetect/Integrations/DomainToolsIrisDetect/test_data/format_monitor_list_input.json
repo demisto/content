@@ -1,0 +1,12 @@
+{
+  "term": "dummyexpress",
+  "match_substring_variations": false,
+  "nameserver_exclusions": [],
+  "text_exclusions": [],
+  "id": "QEMba8wmxo",
+  "created_date": "2022-09-20T06:01:56.760955+00:00",
+  "updated_date": "2022-09-20T06:02:33.358799+00:00",
+  "state": "active",
+  "status": "completed",
+  "created_by": "user@example.com"
+}
