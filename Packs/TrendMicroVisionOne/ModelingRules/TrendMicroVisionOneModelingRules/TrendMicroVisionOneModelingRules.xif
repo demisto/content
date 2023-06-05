@@ -2,6 +2,34 @@
 filter
     event_type in ("workbench")
 | alter
+    Entities = json_extract_array(impactScope, "$.entities"),
+    Indicators = json_extract_array(indicators, "$.")
+    | alter
+    matchedRulesIds = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.id")), ","),
+    matchedRulesNames = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.name")), ","),
+    identityType = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", XDM_CONST.IDENTITY_TYPE_MACHINE, json_extract_scalar("@element", "$.entityType") = "account", XDM_CONST.IDENTITY_TYPE_USER, json_extract_scalar("@element", "$.entityType") = "emailAdress", XDM_CONST.IDENTITY_TYPE_UNKNOWN)), ","),
+    entityValueGuidsUserName = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","),
+    entityValuesUserName = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue"), null)), ","),
+    entityValueNamesUserName = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue.name"), null)), ","),
+    entityIdsDeviceId = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityId"), null)), ","),
+    entityIdsAccountIdentifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityId"), null)), ","),
+    entityIdsEmailIdentifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityId"), null)), ","),
+    // entityValueGuidsHostname = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","),
+    // entityValueNamesHostName = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.name"), null)), ","),
+    // indicatorsValuesHostname = arraystring(arraymap(json_extract_array(indicators), if(json_extract_scalar("@element", "$.field") = "endpointHostName", json_extract_scalar("@element", "$.value"), null)), ","),
+    entityValueGuidsUpn = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","),
+    entityValueNamesUpn = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.name"), null)), ","),
+    relatedEntities = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
+    provenances = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.provenance")), ","),
+    entityValueIps = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ","),
+    indicatorsValuesProcessName = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "processCmd", json_extract_scalar("@element", "$.value"), null)), ","),
+    indicatorsValuesProcessId = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "parentCmd", json_extract_scalar("@element", "$.value"), null)), ","),
+    indicatorsValuesRegistryKey = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryKeyHandle", json_extract_scalar("@element", "$.value"), null)), ","),
+    indicatorsValuesRegistryValue = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryValue", json_extract_scalar("@element", "$.value"), null)), ","),
+    indicatorsValuesCommandLine = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ","),
+    indicatorsValuesExecutablePath = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ",")
+
+    | alter
     xdm.source.cloud.project = id,
     xdm.event.outcome_reason = investigationStatus,
     xdm.network.http.url = workbenchLink,
@@ -11,29 +39,27 @@ filter
     xdm.event.log_level = severity,
     xdm.alert.description = description,
 
-    xdm.alert.original_alert_id = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.id")), ","),
-    xdm.alert.name = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.name")), ","),
-    Entities = json_extract_array(impactScope, "$.entities")
-    | alter
-    xdm.source.user.identity_type = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", XDM_CONST.IDENTITY_TYPE_MACHINE, json_extract_scalar("@element", "$.entityType") = "account", XDM_CONST.IDENTITY_TYPE_USER, json_extract_scalar("@element", "$.entityType") = "emailAdress", XDM_CONST.IDENTITY_TYPE_UNKNOWN)), ","),
-    xdm.source.user.username = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityValue.name"), null)), ",")),
+    xdm.alert.original_alert_id = matchedRulesIds,
+    xdm.alert.name = matchedRulesNames,
+    xdm.source.user.identity_type = identityType,
+    xdm.source.user.username = coalesce(entityValueGuidsUserName, entityValuesUserName, entityValueNamesUserName),
 
-    xdm.source.host.device_id = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityId"), null)), ","),
-    xdm.source.user.identifier = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "account", json_extract_scalar("@element", "$.entityId"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityId"), null)), ",")),
+    xdm.source.host.device_id = entityIdsDeviceId,
+    xdm.source.user.identifier = coalesce(entityIdsAccountIdentifier, entityIdsEmailIdentifier),
 
-    xdm.source.host.hostname = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "host", json_extract_scalar("@element", "$.entityValue.name"), null)), ","), arraystring(arraymap(json_extract_array(indicators), if(json_extract_scalar("@element", "$.field") = "endpointHostName", json_extract_scalar("@element", "$.value"), null)), ",")),
-    xdm.source.user.upn = coalesce(arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ","), arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.entityType") = "emailAdress", json_extract_scalar("@element", "$.entityValue.guid"), null)), ",")),
+    // xdm.source.host.hostname = coalesce(entityValueGuidsHostname, entityValueNamesHostName, indicatorsValuesHostname),
+    xdm.source.user.upn = coalesce(entityValueGuidsUpn, entityValueNamesUpn),
 
 
-    xdm.target.resource.id = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.relatedEntities")), ","),
-    xdm.alert.subcategory = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.provenance")), ","),
-    xdm.source.ipv4 = arraystring(arraymap(Entities, json_extract_scalar("@element", "$.entityValue.ips")), ","),
-    xdm.source.process.name = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "processCmd", json_extract_scalar("@element", "$.value"), null)), ","),
-    xdm.source.process.parent_id = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "parentCmd", json_extract_scalar("@element", "$.value"), null)), ","),
-    xdm.target.registry.key = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryKeyHandle", json_extract_scalar("@element", "$.value"), null)), ","),
-    xdm.target.registry.value = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryValue", json_extract_scalar("@element", "$.value"), null)), ","),
-    xdm.source.process.command_line = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ","),
-    xdm.source.process.executable.path = arraystring(arraymap(indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ",");
+    xdm.target.resource.id = relatedEntities,
+    xdm.alert.subcategory = provenances,
+    xdm.source.ipv4 = entityValueIps,
+    xdm.source.process.name = indicatorsValuesProcessName,
+    xdm.source.process.parent_id = indicatorsValuesProcessId,
+    xdm.target.registry.key = indicatorsValuesRegistryKey,
+    xdm.target.registry.value = indicatorsValuesRegistryValue,
+    xdm.source.process.command_line = indicatorsValuesCommandLine,
+    xdm.source.process.executable.path = indicatorsValuesExecutablePath;
 
 filter
     event_type in ("search_detections")
