@@ -919,13 +919,9 @@ def test_prettify_rule():
     with open("test_data/prettify_rule.json") as f:
         expected_prettify_rule = json.load(f)
 
-    pretty_rule, context_rule = prettify_rule(rule)
+    prettify_rule = prettify_rule(rule)
 
-    del context_rule['DeviceGroup']
-    del expected_prettify_rule['context']['DeviceGroup']
-
-    assert pretty_rule == expected_prettify_rule['pretty']
-    assert context_rule == expected_prettify_rule['context']
+    assert prettify_rule == expected_prettify_rule
 
 
 class TestPcap:

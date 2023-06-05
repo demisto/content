@@ -3542,90 +3542,68 @@ def prettify_rule(rule: dict):
 
     rule_get = partial(xml_get, rule)
 
-    context_rule: Dict[str, Any] = {
+    pretty_rule: Dict[str, Any] = {
+
+        'DeviceGroup': DEVICE_GROUP,
+        'Location': rule.get('@loc'),
         'NegateDestination': rule_get('negate-destination'),
         'Disabled': rule_get('disabled'),
         'ICMPUnreachable': rule_get('icmp-unreachable'),
         'Description': rule_get('description'),
-        'ProfileSetting': rule_get('profile-setting'),
         'GroupTag': rule_get('group-tag'),
-        'Schedule': rule_get('schedule'),
-        'LogStart': rule_get('log-start'),
         'LogForwardingProfile': rule_get('log-setting'),
         'NegateSource': rule_get('negate-source'),
-    }
-    pretty_rule: Dict[str, Any] = {}
+        'SecurityProfileGroup': rule_get(
+            'profile-setting', subkeys=('group', 'member', '#text')),
+        'SecurityProfile': {
+            k: xml_get(pfs, k)
+            for k in pfs.keys()
+            if not str(k).startswith('@')
+        }
+        if isinstance(pfs := dict_safe_get(rule, ('profile-setting', 'profiles')), dict)
+        else None,
 
-    context_rule['DeviceGroup'] = DEVICE_GROUP
-
-    context_rule['Location'] = pretty_rule['Location'] = rule.get('@loc')
-
-    context_rule['SecurityProfileGroup'] = pretty_rule['Profile Group'] = rule_get(
-        'profile-setting', subkeys=('group', 'member', '#text'))
-
-    profiles = {
-        k: xml_get(pfs, k)
-        for k in pfs.keys()
-        if not str(k).startswith('@')
-    } \
-        if isinstance(pfs := dict_safe_get(rule, ('profile-setting', 'profiles')), dict)\
-        else None
-
-    pretty_rule['Profile'] = context_rule['SecurityProfile'] = profiles
-
-    target = dict_safe_get(rule, ('target',), {}, dict)
-    target |= {
-        'devices': xml_get(target, 'devices'),
-        'negate': xml_get(target, 'negate'),
-    }
-    context_rule['Target'] = target
-    pretty_rule['Target'] = (
-        f'negate: {target["negate"]}\n'
-        f'devices: {target["devices"]}'
-    ).replace('[', '').replace(']', '').replace("'", '')
-
-    context_rule['Name'] = pretty_rule['Name'] = rule_get('@name')
-    context_rule['QoSMarking'] = dict_safe_get(rule, ('qos', 'marking'))
-    context_rule['Type'] = pretty_rule['Type'] = rule_get('rule-type')
-    context_rule['From'] = pretty_rule['Source Zone'] = rule_get('from')
-    context_rule['DestinationDevice'] = pretty_rule['Destination Device'] = rule_get('destination-hip')
-    context_rule['Action'] = pretty_rule['Action'] = rule_get('action')
-    context_rule['SourceDevice'] = pretty_rule['Source Device'] = rule_get('source-hip')
-    context_rule['Tags'] = pretty_rule['Tags'] = rule_get('tag')
-    context_rule['SourceUser'] = pretty_rule['Source User'] = rule_get('source-user')
-    context_rule['Application'] = pretty_rule['Application'] = rule_get('application')
-    context_rule['Service'] = pretty_rule['Service'] = rule_get('service')
-    context_rule['To'] = pretty_rule['Destination Zone'] = rule_get('to')
-    context_rule['Source'] = pretty_rule['Source Address'] = rule_get('source')
-    context_rule['CustomUrlCategory'] = pretty_rule['Url Category'] = rule_get('category')
-    context_rule['Destination'] = pretty_rule['Destination Address'] = rule_get('destination')
-
-    context_rule['Option'] = option = rule.get('option')
-    pretty_rule['Options'] = {
-        'Log at Session Start': rule_get("log-start"),
-        'Log Forwarding': rule_get("log-setting"),
-        'Schedule': rule_get("schedule"),
-        # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
-        'QoS Marking': next(key for key in qos.keys() if not key.startswith("@")) if isinstance(qos := context_rule["QoSMarking"], dict) else qos,
-        'Disable Server Response Inspection': xml_get(option, "disable-server-response-inspection")
+        'Target': {
+            'devices': xml_get(target := dict_safe_get(rule, ['target'], {}, dict), 'devices'),
+            'negate': xml_get(target, 'negate'),
+        },
+        'Name': rule_get('@name'),
+        'Type': rule_get('rule-type'),
+        'From': rule_get('from'),
+        'DestinationDevice': rule_get('destination-hip'),
+        'Action': rule_get('action'),
+        'SourceDevice': rule_get('source-hip'),
+        'Tags': rule_get('tag'),
+        'SourceUser': rule_get('source-user'),
+        'Application': rule_get('application'),
+        'Service': rule_get('service'),
+        'To': rule_get('to'),
+        'Source': rule_get('source'),
+        'CustomUrlCategory': rule_get('category'),
+        'Destination': rule_get('destination'),
+        'Options': {
+            'LogAtSessionStart': rule_get("log-start"),
+            'LogForwarding': rule_get("log-setting"),
+            'Schedule': rule_get("schedule"),
+            # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
+            'QoSMarking': next(key for key in qos.keys() if not key.startswith("@")) if isinstance(qos := dict_safe_get(rule, ('qos', 'marking')), dict) else qos,
+            'DisableServerResponseInspection': xml_get(rule.get('option'), "disable-server-response-inspection")
+        }
     }
 
-    return pretty_rule, context_rule
+    return pretty_rule
 
 
 def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None):
     if not isinstance(rules, list):
         rules = [rules]
     pretty_rules_arr = []
-    context_rules_arr = []
     for rule in rules:
         if target and not target_filter(rule, target):
             continue
-        pretty_rule, context_rule = prettify_rule(rule)
-        pretty_rules_arr.append(pretty_rule)
-        context_rules_arr.append(context_rule)
+        pretty_rules_arr.append(prettify_rule(rule))
 
-    return pretty_rules_arr, context_rules_arr
+    return pretty_rules_arr
 
 
 def target_filter(rule: dict, target: str) -> bool:
@@ -3694,7 +3672,29 @@ def panorama_list_rules_command(args: dict):
     if disabled := args.get('disabled'):
         rules = filter_rules_by_status(disabled, rules)
 
-    pretty_rules, context_rules = prettify_rules(rules, target)
+    pretty_rules = prettify_rules(rules, target)
+
+    to_human_readable = {
+        'Location': 'Location',
+        'SecurityProfileGroup': 'Profile Group',
+        'SecurityProfile': 'Profiles',
+        'Target': 'Target',
+        'Name': 'Name',
+        'Type': 'Type',
+        'From': 'Source Zone',
+        'DestinationDevice': 'Destination Device',
+        'Action': 'Action',
+        'SourceDevice': 'Source Device',
+        'Tags': 'Tags',
+        'SourceUser': 'Source User',
+        'Application': 'Application',
+        'Service': 'Service',
+        'To': 'Destination Zone',
+        'Source': 'Source Address',
+        'CustomUrlCategory': 'Url Category',
+        'Destination': 'Destination Address',
+        'Options': 'Options',
+    }
 
     return_results({
         'Type': entryTypes['note'],
@@ -3707,11 +3707,12 @@ def panorama_list_rules_command(args: dict):
                                           'Source Device', 'Destination Zone',
                                           'Destination Address', 'Destination Device',
                                           'Application', 'Service', 'Url Category',
-                                          'Action', 'Profile', 'Profile Group', 'Options',
+                                          'Action', 'Profiles', 'Profile Group', 'Options',
                                           'Target'],
+                                         headerTransform=to_human_readable.get,
                                          removeNull=True),
         'EntryContext': {
-            "Panorama.SecurityRule(val.Name == obj.Name)": context_rules
+            "Panorama.SecurityRule(val.Name == obj.Name)": pretty_rules
         }
     })
 
