@@ -37,7 +37,6 @@ configuration:
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -49,7 +48,6 @@ configuration:
   section: Collect
 - defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -57,7 +55,6 @@ configuration:
 - additionalinfo: Choose what service record type to fetch - incidents, requests, problems, changes, or all.
   defaultvalue: all
   display: Fetch types
-  hidden: false
   name: fetch_types
   options:
   - incident

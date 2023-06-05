@@ -14,7 +14,6 @@ configuration:
   type: 9
 - defaultvalue: C - Fairly reliable
   display: Reliability
-  hidden: false
   name: reliability
   options:
   - A+ - 3rd party enrichment

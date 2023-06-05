@@ -19,7 +19,6 @@ configuration:
   type: 8
 - defaultvalue: C - Fairly reliable
   display: Reliability
-  hidden: false
   name: reliability
   options:
   - A+ - 3rd party enrichment
@@ -33,13 +32,11 @@ configuration:
   type: 15
 - defaultvalue: '2'
   display: Wait time between report fetching retries (seconds). Deafult is 2 seconds.
-  hidden: false
   name: wait_time_seconds
   required: false
   type: 0
 - defaultvalue: '30'
   display: Number of report fetching retries. Default is 30.
-  hidden: false
   name: num_of_retries
   required: false
   type: 0
@@ -265,8 +262,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'False'
-      description: Return only local classification data for the sample, without falling
-        back to querying TitaniumCloud.
+      description: Return only local classification data for the sample, without falling back to querying TitaniumCloud.
       isArray: false
       name: localOnly
       required: false
@@ -331,8 +327,8 @@ script:
       secret: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       defaultValue: '5000'
       description: Maximum number of results.
@@ -358,5 +354,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 5.5.0
