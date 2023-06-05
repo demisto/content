@@ -1598,9 +1598,9 @@ script:
       description: A comma-separated list of application object names for the rule. to create.
       isArray: true
       name: application
-    - defaultValue: any
-      description: The source user for the rule to create.
+    - description: A comma-separated list of source users for the rule to create.
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
