@@ -3077,7 +3077,7 @@ script:
       description: Scan results ID
       type: number
     - contextPath: TenableSC.ScanResults.Name
-      description: Scan name
+      description: Scan name.
       type: string
     - contextPath: TenableSC.ScanResults.Status
       description: Scan status
