@@ -447,7 +447,7 @@ select = [
     "UP033", # lru-cache-with-maxsize-none
     "UP036", # outdated-version-block
     "UP037", # quoted-annotation
-    
+
     "TRY201", # verbose-raise
     "TRY302", # useless-try-except
 
@@ -516,6 +516,3 @@ junit_family = "xunit1"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.autopep8]
-max_line_length = 130
