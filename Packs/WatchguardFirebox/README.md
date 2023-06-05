@@ -19,7 +19,7 @@ This pack includes Cortex XSIAM content
    For high-priority syslog messages, such as alarms, select **Local0**.
    To assign priorities for other types of log messages (lower numbers have greater priority), select **Local1–Local7**.
    To not send details for a message type, select **NONE**.
-9. Click Save.
+9. Click **Save**.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
