@@ -35,13 +35,13 @@
             "auctions"
         ],
         "Destination Address": "my_shared_address_object_test",
-        "Options": [
-            "✅ Log at Session Start",
-            "Log Forwarding: Log forwarding for SA",
-            "Schedule: test-schedule",
-            "QoS Marking: ip-precedence",
-            "✅ Disable Server Response Inspection"
-        ]
+        "Options": {
+            "Log at Session Start": "yes",
+            "Log Forwarding": "Log forwarding for SA",
+            "Schedule": "test-schedule",
+            "QoS Marking": "ip-precedence",
+            "Disable Server Response Inspection": "yes"
+        }
     },
     "context": {
         "DeviceGroup": "SA_FWs",

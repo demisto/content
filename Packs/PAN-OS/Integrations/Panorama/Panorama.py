@@ -230,7 +230,7 @@ class PanosResponse():
         Namespace class for the PanosResponse
         """
 
-        def __init__(self, ignored_keys: set = None, **kwargs):
+        def __init__(self, ignored_keys: set | None = None, **kwargs):
             if not ignored_keys:
                 ignored_keys = set()
             super().__init__(**{k: v for k, v in kwargs.items() if k not in ignored_keys})
@@ -241,7 +241,7 @@ class PanosResponse():
             """
             return [] if attr == 'entry' else None
 
-    def __init__(self, response: dict, ignored_keys: set = None, illegal_chars: set = None):
+    def __init__(self, response: dict, ignored_keys: set | None = None, illegal_chars: set | None = None):
         self.raw = response
         self.ns = self.to_class(response, ignored_keys=ignored_keys, illegal_chars=illegal_chars)
 
@@ -260,14 +260,14 @@ class PanosResponse():
             return_response = return_response.get(item, {})
         return return_response
 
-    def handle_illegal_chars(self, dictionary: dict, illegal_chars: set = None):
+    def handle_illegal_chars(self, dictionary: dict, illegal_chars: set | None = None):
         if not illegal_chars:
             return dictionary
         return {
             key.replace(char, ''): val for key, val in dictionary.items() for char in illegal_chars
         }
 
-    def to_class(self, response, ignored_keys: set = None, illegal_chars: set = None) -> PanosNamespace:
+    def to_class(self, response, ignored_keys: set | None = None, illegal_chars: set | None = None) -> PanosNamespace:
         if not ignored_keys:
             ignored_keys = set()
         if not illegal_chars:
@@ -283,7 +283,7 @@ class PanosResponse():
 
 
 def http_request(uri: str, method: str, headers: dict = {},
-                 body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False, is_xml: bool = False) -> Any:
+                 body: dict = {}, params: dict = {}, files: dict | None = None, is_pcap: bool = False, is_xml: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -609,7 +609,7 @@ def add_argument_profile_setting(arg: Optional[str], field_name: str) -> str:
     return '<' + field_name + '>' + '<group>' + member_stringify_list + '</group>' + '</' + field_name + '>'
 
 
-def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
+def set_xpath_network(template: str | None = None) -> Tuple[str, Optional[str]]:
     """
     Setting template xpath relevant to panorama instances.
     """
@@ -627,14 +627,14 @@ def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
     return xpath_network, template
 
 
-def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
-                                 destination: Any = None, negate_source: str = None,
-                                 negate_destination: str = None, action: str = None, service: List[str] = None,
-                                 disable: str = None, application: List[str] = None, source_user: str = None,
-                                 category: List[str] = None, from_: str = None, to: str = None, description: str = None,
-                                 target: str = None, log_forwarding: str = None,
-                                 disable_server_response_inspection: str = None, tags: List[str] = None,
-                                 profile_setting: str = None, where: str = 'bottom', dst: str = None) -> Dict:
+def prepare_security_rule_params(api_action: str | None = None, rulename: str | None = None, source: Any | None = None,
+                                 destination: Any | None = None, negate_source: str | None = None,
+                                 negate_destination: str | None = None, action: str | None = None, service: List[str] | None = None,
+                                 disable: str | None = None, application: List[str] | None = None, source_user: str | None = None,
+                                 category: List[str] | None = None, from_: str | None = None, to: str | None = None, description: str | None = None,
+                                 target: str | None = None, log_forwarding: str | None = None,
+                                 disable_server_response_inspection: str | None = None, tags: List[str] | None = None,
+                                 profile_setting: str | None = None, where: str = 'bottom', dst: str | None = None) -> Dict:
     if application is None or len(application) == 0:
         # application always must be specified and the default should be any
         application = ['any']
@@ -708,7 +708,7 @@ def get_pan_os_major_version() -> int:
     return major_version
 
 
-def build_xpath_filter(name_match: str = None, name_contains: str = None, filters: dict = None) -> str:
+def build_xpath_filter(name_match: str | None = None, name_contains: str | None = None, filters: dict | None = None) -> str:
     xpath_prefix = ''
     if name_match:
         xpath_prefix = f"@name='{name_match}'"
@@ -1540,8 +1540,8 @@ def panorama_get_address_command(args: dict):
 
 
 @logger
-def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None,
-                            description: str = None, tags: list = None, ip_wildcard: str = None):
+def panorama_create_address(address_name: str, fqdn: str | None = None, ip_netmask: str | None = None, ip_range: str | None = None,
+                            description: str | None = None, tags: list | None = None, ip_wildcard: str | None = None):
     params = {'action': 'set',
               'type': 'config',
               'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
@@ -1740,7 +1740,7 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
 
 
 @logger
-def panorama_list_address_groups(tag: str = None):
+def panorama_list_address_groups(tag: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -1844,7 +1844,7 @@ def panorama_get_address_group_command(args: dict):
 
 @logger
 def panorama_create_static_address_group(address_group_name: str, addresses: list,
-                                         description: str = None, tags: list = None):
+                                         description: str | None = None, tags: list | None = None):
     params = {'action': 'set',
               'type': 'config',
               'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
@@ -1865,7 +1865,7 @@ def panorama_create_static_address_group(address_group_name: str, addresses: lis
 
 
 def panorama_create_dynamic_address_group(address_group_name: str, match: Optional[str],
-                                          description: str = None, tags: list = None):
+                                          description: str | None = None, tags: list | None = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -2125,7 +2125,7 @@ def prettify_services_arr(services_arr: Union[dict, list]):
 
 
 @logger
-def panorama_list_services(tag: str = None):
+def panorama_list_services(tag: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -2236,7 +2236,7 @@ def panorama_get_service_command(service_name: str):
 
 @logger
 def panorama_create_service(service_name: str, protocol: str, destination_port: str,
-                            source_port: str = None, description: str = None, tags: list = None):
+                            source_port: str | None = None, description: str | None = None, tags: list | None = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -2364,7 +2364,7 @@ def prettify_service_groups_arr(service_groups_arr: list):
 
 
 @logger
-def panorama_list_service_groups(tag: str = None):
+def panorama_list_service_groups(tag: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -2697,9 +2697,9 @@ def panorama_get_custom_url_category_command(name: str):
 
 
 @logger
-def panorama_create_custom_url_category(custom_url_category_name: str, type_: Any = None,
+def panorama_create_custom_url_category(custom_url_category_name: str, type_: Any | None = None,
                                         sites: Optional[list] = None, categories: Optional[list] = None,
-                                        description: str = None):
+                                        description: str | None = None):
     #  In PAN-OS 9.X changes to the default behavior were introduced regarding custom url categories.
     major_version = get_pan_os_major_version()
     element = add_argument(description, 'description', False)
@@ -3542,12 +3542,6 @@ def prettify_rule(rule: dict):
 
     rule_get = partial(xml_get, rule)
 
-    tick_box: Dict[Any, str] = {
-        'yes': '✅',
-        'no': '⬜',
-        None: '⬜',
-    }
-
     context_rule: Dict[str, Any] = {
         'NegateDestination': rule_get('negate-destination'),
         'Disabled': rule_get('disabled'),
@@ -3566,14 +3560,15 @@ def prettify_rule(rule: dict):
 
     context_rule['Location'] = pretty_rule['Location'] = rule.get('@loc')
 
-    context_rule['SecurityProfileGroup'] = pretty_rule['Profile Group'] = rule_get('profile-setting', subkeys=('group', 'member', '#text'))
+    context_rule['SecurityProfileGroup'] = pretty_rule['Profile Group'] = rule_get(
+        'profile-setting', subkeys=('group', 'member', '#text'))
 
     profiles = {
         k: xml_get(pfs, k)
         for k in pfs.keys()
         if not str(k).startswith('@')
     } \
-        if isinstance(pfs := dict_safe_get(rule, ('profile-setting', 'profiles')), dict )\
+        if isinstance(pfs := dict_safe_get(rule, ('profile-setting', 'profiles')), dict)\
         else None
 
     pretty_rule['Profile'] = context_rule['SecurityProfile'] = profiles
@@ -3606,13 +3601,14 @@ def prettify_rule(rule: dict):
     context_rule['Destination'] = pretty_rule['Destination Address'] = rule_get('destination')
 
     context_rule['Option'] = option = rule.get('option')
-    pretty_rule['Options'] = [
-        tick_box.get(rule_get('log-start'), '') + ' Log at Session Start',
-        f'Log Forwarding: {rule_get("log-setting")}',
-        f'Schedule: {rule_get("schedule")}',
-        f'QoS Marking: {next(filter(lambda k: not k.startswith("@"), qos.keys()), None) if isinstance(qos := context_rule["QoSMarking"], dict) else qos}',  # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
-        f'{tick_box.get(xml_get(option, "disable-server-response-inspection"), "")} Disable Server Response Inspection'
-    ]
+    pretty_rule['Options'] = {
+        'Log at Session Start': rule_get("log-start"),
+        'Log Forwarding': rule_get("log-setting"),
+        'Schedule': rule_get("schedule"),
+        # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
+        'QoS Marking': next(key for key in qos.keys() if not key.startswith("@")) if isinstance(qos := context_rule["QoSMarking"], dict) else qos,
+        'Disable Server Response Inspection': xml_get(option, "disable-server-response-inspection")
+    }
 
     return pretty_rule, context_rule
 
@@ -3652,7 +3648,7 @@ def target_filter(rule: dict, target: str) -> bool:
 
 
 @logger
-def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, query: str = None):
+def panorama_list_rules(xpath: str, name: str | None = None, filters: dict | None = None, query: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -6041,8 +6037,8 @@ def panorama_get_static_route_command(args: dict):
 
 @logger
 def panorama_add_static_route(xpath_network: str, virtual_router: str, static_route_name: str, destination: str,
-                              nexthop_type: str, nexthop_value: str, interface: str = None,
-                              metric: str = None) -> Dict[str, str]:
+                              nexthop_type: str, nexthop_value: str, interface: str | None = None,
+                              metric: str | None = None) -> Dict[str, str]:
     params = {
         'action': 'set',
         'type': 'config',
@@ -6209,7 +6205,7 @@ def panorama_delete_static_route_command(args: dict):
     })
 
 
-def panorama_show_device_version(target: str = None):
+def panorama_show_device_version(target: str | None = None):
     params = {
         'type': 'op',
         'cmd': '<show><system><info/></system></show>',
@@ -6864,7 +6860,7 @@ def get_security_profile(xpath: str) -> Dict:
     return result
 
 
-def get_security_profiles_command(security_profile: str = None):
+def get_security_profiles_command(security_profile: str | None = None):
     """
     Get information about profiles.
     """
@@ -7533,7 +7529,7 @@ def get_wildfire_best_practice_command():
     })
 
 
-def set_xpath_wildfire(template: str = None) -> str:
+def set_xpath_wildfire(template: str | None = None) -> str:
     """
     Setting wildfire xpath relevant to panorama instances.
     """
@@ -11935,7 +11931,7 @@ def pan_os_list_templates_command(args):
     )
 
 
-def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, filters: dict = None, query: str = None):
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, filters: dict | None = None, query: str | None = None):
     _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
 
     if query:
@@ -11949,7 +11945,7 @@ def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] =
     return _xpath
 
 
-def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None, filters: dict = None, query: str = None):
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None, filters: dict | None = None, query: str | None = None):
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
@@ -12711,7 +12707,7 @@ def pan_os_delete_redistribution_profile_command(args):
     )
 
 
-def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None, query: str = None):
+def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict | None = None, query: str | None = None):
     _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
 
     if query:
