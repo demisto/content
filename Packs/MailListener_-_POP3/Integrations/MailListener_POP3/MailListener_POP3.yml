@@ -22,7 +22,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: Password
-  name:  credentials_password
+  name: credentials_password
   required: false
   hiddenusername: true
   type: 9
@@ -54,7 +54,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.11.61265
-beta: false
 tests:
 - MailListener-POP3 - Test
 fromversion: 5.0.0
