@@ -70,6 +70,9 @@ GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicato
 INTEGRATION_NAME = 'Microsoft Defender ATP'
 
 
+
+
+
 class HuntingQueryBuilder:
     """ERROR MESSAGES"""
     FILE_ARGS_ERR = 'Please provide at least one file arguments: "file_name", "sha1", "sha256" or "md5".'
