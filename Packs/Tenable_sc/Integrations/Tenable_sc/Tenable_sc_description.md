@@ -29,7 +29,7 @@ It is important to know what data is manageable for the user in order to work wi
 ## [Steps to follow:](https://docs.tenable.com/security-center/Content/GenerateAPIKey.htm)
 
       1. Log in to Tenable Security Center via the user interface.
-      2. Go to Users > Users.
+      2. Go to **Users** > **Users**.
       3. Right-click the row for the user for which you want to generate an API key.
         -or-
         Select the check box for the user for which you want to generate an API key.
