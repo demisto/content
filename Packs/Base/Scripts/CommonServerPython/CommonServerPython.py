@@ -4074,7 +4074,7 @@ class Common(object):
                 cve_context['Publications'] = self.create_context_table(self.publications)
 
             if self.vulnerable_products:
-                cve_context['vulnerableproduct'] = self.create_context_table(self.vulnerable_products)
+                cve_context['vulnerableproducts'] = self.create_context_table(self.vulnerable_products)
 
             if self.vulnerable_configurations:
                 cve_context['vulnerableconfigurations'] = self.create_context_table(self.vulnerable_configurations)
@@ -7823,7 +7823,7 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
     :type reponse_obj: ``Any``
     :param reponse_obj: The response object to update.
     :type reponse_obj: ``dict``
-    :user_predefiend_keys: An optional argument, 
+    :user_predefiend_keys: An optional argument,
     a dict with predefined keys where the key is the key in the response and value is the key we want to turn the key into.
 
     :return: A response with all keys (if there're any) starts with a capital letter.
