@@ -26,7 +26,7 @@ setIncident
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| DomainSquattingResults | Results of the domain squatting investigation |  | Optional |
+| DomainSquattingResults | Results of the domain squatting investigation. |  | Optional |
 | KeywordsToSearch | A comma-separated list of keywords to search in the email body.<br/>For example: name of the organization finance app that the attacker might impersonate. |  | Optional |
 | MailBody | The phishing mail body. |  | Optional |
 
