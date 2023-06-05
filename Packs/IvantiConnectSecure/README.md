@@ -12,19 +12,17 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
 2. Select **System** &rarr; **Log/Monitoring**.
 3. Click the **Settings** tab to display the configuration page.
 4. For each local event log category that you are interested in logging (_System_ events, _User Access_ events, _Admin Access_ events & _Sensors_ events), perform the following steps: 
-  1. Under the **Select Events to Log** section, select the requested event types you wish to log. See [Select Events to Log](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#log_events_set) for a description of the various types for each event category. 
-  2. Under the  **Syslog Server** section, define a Syslog server configuration for the XSIAM Broker VM as described in the table bellow: 
-      | Parameter          | Value    
-      | :---               | :---                    
-      | `Server name/IP`   | Enter the [XSIAM Broker VM](#broker-vm) server's IP address or FQDN.    
-      | `Type`             | Select **UDP**.   
-      | `Filter`           | Select **Standard** (the default).   
+     - Go to the **Select Events to Log** section, and select the requested event types you wish to log. See [Select Events to Log](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#log_events_set) for a description of the various types for each event category. 
+     - Go to the  **Syslog Server** section, and define a server configuration for the XSIAM Broker VM with the following settings (see [Configuring Syslog](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023612) for full documentation): 
+         | Parameter          | Value    
+         | :---               | :---                    
+         | `Server name/IP`   | Enter the [XSIAM Broker VM](#broker-vm) server's IP address or FQDN.    
+         | `Type`             | Select **UDP**.   
+         | `Filter`           | Select **Standard** (the default).   
    
-   See [Configuring Syslog](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023612) for full documentation.
 5. Click **Save Changes** for saving the configuration.
-
-Remarks: 
-If you are interested in alternative/advanced settings, such as configuring fault tolerance support, logging client-side events, or forwarding the syslog events via a secure communication channel over TCP with TLS, refer to the documentation in the following links:
+  
+If you are interested in alternative or advanced settings, such as configuring fault tolerance support, logging client-side events, or forwarding the syslog events via a secure communication channel over TCP with TLS, refer to the documentation in the following links:
 - [Configuring an External Syslog Server](https://help.ivanti.com/ps/help/en_US/PPS/9.1R14/ag/configuring_an_external_syslog_server.htm).
 - [Configuring Advanced Settings](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1023706). 
 - [Enabling Client-Side Logging](https://help.ivanti.com/ps/help/en_US/PCS/9.1R13/pcsag/logging_n_monitoring.htm#logging_and_monitoring_1494202195_1022619).
