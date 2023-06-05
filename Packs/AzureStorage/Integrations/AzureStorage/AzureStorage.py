@@ -298,18 +298,24 @@ class ASClient:
             json_data={'properties': properties}
         )
 
-    def storage_blob_containers_list_request(self, args):
+    def storage_blob_containers_list_request(self, subscription_id: str,
+                                             resource_group_name: str,
+                                             args: Dict) -> Dict:
         """
                 Send the get blob container/s request to the API.
             Args:
+                subscription_id: The subscription id.
+                resource_group_name: The resource group name.
                 args: The user arguments.
 
             Returns:
                 The json response from the API call.
         """
-
-        url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
-              f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
+        account_name = args.get('account_name', '')
+        container_name = args.get('container_name', '')
+        # url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
+        #       f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}'  # noqa: E501
 
         params = {
             'api-version': API_VERSION,
@@ -323,7 +329,7 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=url,
+            full_url=full_url,
             params=params,
         )
 
@@ -606,7 +612,7 @@ def storage_blob_containers_create(client: ASClient, params: Dict, args: Dict):
     )
 
 
-def storage_blob_containers_update(client: ASClient, params: Dict, args: Dict):
+def storage_blob_containers_update(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
             Updates a given blob container.
         Args:
@@ -654,18 +660,24 @@ def storage_blob_containers_update(client: ASClient, params: Dict, args: Dict):
     )
 
 
-def storage_blob_containers_list(client, args):
+def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
             Gets a blob container if an container name is specified, and a list of blob containers if not.
         Args:
             client: The microsoft client.
+            params: The configuration parameters.
             args: The users arguments, (like account name, container name).
 
         Returns:
             CommandResults: The command results in MD table and context data.
     """
 
-    response = client.storage_blob_containers_list_request(args)
+    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
+    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+
+    response = client.storage_blob_containers_list_request(subscription_id=subscription_id,
+                                                           resource_group_name=resource_group_name,
+                                                           args=args)
     containers = response.get('value', [response])
 
     readable_output = []
@@ -805,7 +817,7 @@ def main() -> None:
         elif command == 'azure-storage-blob-containers-update':
             return_results(storage_blob_containers_update(client, params, args))
         elif command == 'azure-storage-blob-containers-list':
-            return_results(storage_blob_containers_list(client, args))
+            return_results(storage_blob_containers_list(client, params, args))
         elif command == 'azure-storage-blob-container-delete':
             return_results(storage_blob_containers_delete(client, args))
         else:
