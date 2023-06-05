@@ -1,5 +1,2 @@
-[file:EnvoyIAM.yml]
-ignore=IN145
-
 [file:EnvoyIAM_image.png]
 ignore=IM111
