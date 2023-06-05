@@ -32,7 +32,7 @@ It is important to know what data is manageable for the user in order to work wi
       2. Go to **Users** > **Users**.
       3. Right-click the row for the user for which you want to generate an API key.
         -or-
-        Select the check box for the user for which you want to generate an API key.
+        Select the checkbox for the user for which you want to generate an API key.
       4. Click API Keys > Generate API Key.
       5. Click Generate.
       6. The API Key window appears, displaying the access key and secret key for the user. Save the API keys in a safe location.
