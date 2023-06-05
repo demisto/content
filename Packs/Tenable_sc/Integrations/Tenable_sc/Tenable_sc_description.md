@@ -8,7 +8,7 @@ It is important to know what data is manageable for the user in order to work wi
     * Launch and manage scan results and the found vulnerabilities.
     * Create and view assets.
     * View policies, repositories, credentials, users and more system information.
-    * View and real-time receiving of alerts.
+    * View alerts received in real-time.
 
 **Added support for secret & access keys authentication method.** 
 
