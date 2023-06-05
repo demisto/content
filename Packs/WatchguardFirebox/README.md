@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content
 
 # How to config to send syslog LEEF logs
 
-1. Select System > Logging.
+1. Select **System** > **Logging**.
    The Logging page appears.
 2. Select the Syslog Server tab.
 3. Select the Send log messages to the syslog server at this IP address check box.
