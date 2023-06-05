@@ -165,9 +165,6 @@ def main():
             output_file = tmpdir + '/output.pdf'
             dist_dir = tmpdir + '/dist'
 
-
-
-
             shutil.copytree(WORKING_DIR / 'dist', dist_dir)
 
             with open(input_file, 'wb') as f:
@@ -206,12 +203,14 @@ def main():
         tb = traceback.format_exc()
         wrap = "=====sane-pdf-reports error====="
         err = f'{wrap}\n{tb}{wrap}, process error: {e.output}\n'
+        demisto.error(f'[SanePdfReports Automation Error - CalledProcessError] - {err}')
         return_error(f'[SanePdfReports Automation Error - CalledProcessError] - {err}')
 
     except Exception:
         tb = traceback.format_exc()
         wrap = "=====sane-pdf-reports error====="
         err = f'{wrap}\n{tb}{wrap}\n'
+        demisto.error(f'[SanePdfReports Automation Error - Exception] - {err}')
         return_error(f'[SanePdfReports Automation Error - Exception] - {err}')
 
     finally:
