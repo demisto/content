@@ -153,7 +153,7 @@ class Client(BaseClient):
                 del kwargs['headers']
 
             if self.headers:
-                prepreq.headers = self.headers
+                prepreq.headers.update(self.headers)
 
             try:
                 r = _session.send(prepreq, **kwargs)
