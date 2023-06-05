@@ -206,7 +206,6 @@ def search_incidents(client, args):
 
     # Sort the results based on incident ID
     sorts = [{"field_name": "id", "type": "asc"}]
-    
     if 'severity' in args:
         value = []
         severity = args['severity'].split(',')
