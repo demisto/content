@@ -2529,11 +2529,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.DomainStatus
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Domain.NameServers
             iscontext: true
       - - operator: isEqualString
