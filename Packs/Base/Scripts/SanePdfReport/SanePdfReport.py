@@ -160,7 +160,7 @@ def main():
 
             extra_cmd += f' "{forceServerFormattedTimeString}"'
 
-        with tempfile.TemporaryDirectory(suffix='sane-pdf', ignore_cleanup_errors=True) as tmpdir:  # type: ignore[call-overload]
+        with tempfile.TemporaryDirectory(suffix='sane-pdf') as tmpdir:  # type: ignore[call-overload]
             input_file = tmpdir + '/input.json'
             output_file = tmpdir + '/output.pdf'
             dist_dir = tmpdir + '/dist'
