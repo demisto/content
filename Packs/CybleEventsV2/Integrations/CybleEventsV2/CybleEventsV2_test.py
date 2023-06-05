@@ -25,14 +25,14 @@ def util_load_json(path):
 
 
 # # # TODO: ADD HERE unit tests for every command
-#
+
 def test_module(requests_mock):
     """
     Test the basic test command for Cyble Events
     Returns:
 
     """
-    from CybleEventsV2 import Client, get_test_response
+    from CybleEventsV2 import Client, test_response
 
     mock_response_1 = util_load_json("dummy_fetch_subscribed_services.json")
     requests_mock.get('https://test.com/apollo/api/v1/y/services', json=mock_response_1)
@@ -42,7 +42,7 @@ def test_module(requests_mock):
         verify=False
     )
 
-    response = get_test_response(client, 'GET', "some_random_token", 'https://test.com')
+    response = test_response(client, 'GET', 'https://test.com', "some_random_token")
 
     assert isinstance(response, str)
     assert response == 'ok'
@@ -52,7 +52,7 @@ def test_module_failure(mocker, requests_mock):
     """
     Test the basic test-module command in case of a failure.
     """
-    from CybleEventsV2 import Client, get_test_response
+    from CybleEventsV2 import Client, test_response
 
     requests_mock.get('https://test.com/apollo/api/v1/y/services', json={})
     mocker.patch.object(demisto, 'error')
@@ -62,10 +62,10 @@ def test_module_failure(mocker, requests_mock):
         verify=False
     )
 
-    response = get_test_response(client, 'GET', "some_random_token", 'https://test.com')
+    with pytest.raises(Exception) as excinfo:
+        test_response(client, 'GET', 'https://test.com', "some_random_token")
 
-    assert isinstance(response, str)
-    assert response == 'fail'
+    assert str(excinfo.value) == 'failed to connect'
 
 
 def test_get_subscribed_services(requests_mock):
@@ -146,7 +146,7 @@ def test_get_alert_group(requests_mock):
     url = "https://test.com/apollo/api/v1/y/alerts/groups"
 
     input_params = {
-        "orderBy": [
+        "order_by": [
             {
                 "created_at": "desc"
             }
@@ -183,13 +183,13 @@ def test_get_alert(requests_mock):
     args = {
         'from': 0,
         'limit': 1,
-        'startDate': '2023-04-18T00:00:00+00:00',
-        'endDate': '2023-04-19T00:00:00+00:00'
+        'start_date': '2023-04-18T00:00:00+00:00',
+        'end_date': '2023-04-19T00:00:00+00:00'
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -215,15 +215,15 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
     args = {
         'from': offset,
         'limit': limit,
-        'startDate': datetime.now().astimezone().replace(microsecond=0).isoformat(),
-        'endDate': datetime.now().astimezone().replace(microsecond=0).isoformat()
+        'start_date': datetime.now().astimezone().replace(microsecond=0).isoformat(),
+        'end_date': datetime.now().astimezone().replace(microsecond=0).isoformat()
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Limit should a positive number upto 1000, limit: {limit}"):
+                           match=f"The limit argument should contain a positive number, up to 1000, limit: {limit}"):
             cyble_events(client, 'POST', "some_random_token", url, args, "https://test.com", {}, True)
 
 
@@ -231,14 +231,15 @@ def test_limit_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'endDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '-1',
     }
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Limit should a positive number upto 1000, limit: {args.get('limit', '50')}"):
+                           match=f"The limit argument should contain a positive number,"
+                                 f" up to 1000, limit: {args.get('limit', '50')}"):
             validate_input(args=args)
 
 
@@ -246,14 +247,15 @@ def test_limit_validate_ioc_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'startDate': datetime.today().strftime('%Y-%m-%d'),
-        'endDate': datetime.today().strftime('%Y-%m-%d'),
+        'start_date': datetime.today().strftime('%Y-%m-%d'),
+        'end_date': datetime.today().strftime('%Y-%m-%d'),
         'from': '0',
         'limit': '-1',
     }
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Limit should a positive number upto 1000, limit: {args.get('limit', '50')}"):
+                           match=f"The limit argument should contain a positive number, "
+                                 f"up to 1000, limit: {args.get('limit', '50')}"):
             validate_input(args=args, is_iocs=True)
 
 
@@ -261,15 +263,16 @@ def test_datecheck_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'startDate': datetime.today().strftime('%Y-%m-%d'),
-        'endDate': (datetime.today() - timedelta(days=4)).strftime('%Y-%m-%d'),
+        'start_date': datetime.today().strftime('%Y-%m-%d'),
+        'end_date': (datetime.today() - timedelta(days=4)).strftime('%Y-%m-%d'),
         'from': '0',
         'limit': '1'
     }
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Start date {args.get('startDate')} cannot be after end date {args.get('endDate')}"):
+                           match=f"Start date {args.get('start_date')} cannot "
+                                 f"be after end date {args.get('end_date')}"):
             validate_input(args=args, is_iocs=True)
 
 
@@ -277,8 +280,8 @@ def test_edate_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'endDate': (datetime.now(tz=timezone.utc) + timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': (datetime.now(tz=timezone.utc) + timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '1'
     }
@@ -293,8 +296,8 @@ def test_date_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'endDate': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '1'
     }
@@ -330,8 +333,8 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
     args = {
         'from': '-1',
         'limit': 1,
-        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'endDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
@@ -339,7 +342,7 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match="Parameter having negative value, from: -1'"):
+                           match="The parameter from has a negative value, from: -1'"):
             cyble_events(client, 'POST', "some_random_token", url, args, base_url, {}, True)
 
 
@@ -361,7 +364,7 @@ def test_get_alert_fetch(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response = cyble_events(client, 'POST', "some_random_token", url, {}, 'https://test.com', {}, False)
+    response, next = cyble_events(client, 'POST', "some_random_token", url, {}, 'https://test.com', {}, False)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -386,13 +389,13 @@ def test_get_alert_output(requests_mock):
     args = {
         'from': 0,
         'limit': 1,
-        'startDate': '2023-04-18T00:00:00+00:00',
-        'endDate': '2023-04-19T00:00:00+00:00'
+        'start_date': '2023-04-18T00:00:00+00:00',
+        'end_date': '2023-04-19T00:00:00+00:00'
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
 
     assert isinstance(response, list)
     assert response[0]['alert_group_id'] == '00000000-0000-0000-0000-000000000000'
@@ -404,8 +407,8 @@ def test_data_alert_invalidate_date(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
-        'endDate': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
+        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
         'from': '0',
         'limit': '1'
     }
@@ -420,8 +423,8 @@ def test_data_alert_iocs_date(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'startDate': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
-        'endDate': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
+        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
         'from': '0',
         'limit': '1'
     }

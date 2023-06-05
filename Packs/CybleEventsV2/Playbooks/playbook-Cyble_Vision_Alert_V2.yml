@@ -2,7 +2,7 @@ id: Cyble Vision Alert V2
 version: -1
 name: Cyble Vision Alert V2
 description: ""
-fromversion: 6.8.0
+fromversion: 6.2.0
 starttaskid: "0"
 tasks:
   "0":
@@ -41,23 +41,23 @@ tasks:
     task:
       id: 5014e329-91cf-4501-817a-54775795639e
       version: -1
-      name: cyble-vision-v2-fetch-alerts
-      description: Fetch Incident event alerts based on the given parameters. Alerts would have multiple events grouped into one based on specific service type. So user would see in few cases more events than the limit provided.
+      name: cyble-vision-fetch-alerts
+      description: Fetch alerts based on the given parameters. The alerts would have multiple events grouped into one, based on a specific service type. This way the user will see, in some cases, more events than the limit provides.
       script: cybleeventsv2|||cyble-vision-v2-fetch-alerts
       type: regular
       iscommand: true
       brand: cybleeventsv2
     scriptarguments:
-      endDate:
-        simple: ${incident.endDate}
+      end_date:
+        simple: ${incident.end_date}
       from:
         simple: "0"
       limit:
         simple: "5"
       orderBy:
         simple: asc
-      startDate:
-        simple: ${incident.startDate}
+      start_date:
+        simple: ${incident.start_date}
     separatecontext: false
     view: |-
       {
@@ -85,7 +85,19 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: start_date
+  value:
+    simple: "2023-05-30T00:00:00+00:00"
+  required: true
+  description: ""
+  playbookInputQuery: null
+- key: end_date
+  value:
+    simple: "2023-05-31T00:00:00+00:00"
+  required: true
+  description: ""
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

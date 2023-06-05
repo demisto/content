@@ -1,4 +1,3 @@
-import demistomock
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -173,7 +172,7 @@ def cyble_alert_group(client, method, token, url, args):
     input_params_alerts_group: Dict[str, Any] = {
         "orderBy": [
             {
-                "created_at": args.get('orderBy', "desc")
+                "created_at": args.get('order_by', "desc")
             }
         ],
         "skip": arg_to_number(args.get('from', 0)),
@@ -183,17 +182,17 @@ def cyble_alert_group(client, method, token, url, args):
         }
     }
 
-    if args.get('startDate', '') and args.get('endDate', ''):
+    if args.get('start_date', '') and args.get('end_date', ''):
         input_params_alerts_group['where'] = {}
         input_params_alerts_group['where']['created_at'] = {}
 
-    if args.get('startDate', ''):
+    if args.get('start_date', ''):
         input_params_alerts_group['where']['created_at']['gte'] = datetime.strptime(
-            args.get('startDate', ''), '%Y-%m-%dT%H:%M:%S%z').astimezone().isoformat()
+            args.get('start_date', ''), '%Y-%m-%dT%H:%M:%S%z').astimezone().isoformat()
 
-    if args.get('endDate', ''):
+    if args.get('end_date', ''):
         input_params_alerts_group['where']['created_at']['lte'] = \
-            datetime.strptime(args.get('endDate', ''), '%Y-%m-%dT%H:%M:%S%z').astimezone().isoformat()
+            datetime.strptime(args.get('end_date', ''), '%Y-%m-%dT%H:%M:%S%z').astimezone().isoformat()
 
     alert_groups = set_request(client, method, token, input_params_alerts_group, url)
     lst_alert_group = []
@@ -220,10 +219,7 @@ def cyble_alert_group(client, method, token, url, args):
     else:
 
         return CommandResults(
-            readable_output="There is no alert",
-            outputs_prefix='CybleEvents.AlertsGroup',
-            raw_response="There is no alert",
-            outputs="There is no alert"
+            readable_output="There aren't alerts."
         )
 
 
@@ -242,20 +238,20 @@ def cyble_fetch_iocs(client, method, token, args, url):
     """
 
     input_params_alerts_iocs = {}
-    if args.get('iocType', ''):
-        input_params_alerts_iocs['iocType'] = args.get('iocType', '')
+    if args.get('ioc_type', ''):
+        input_params_alerts_iocs['iocType'] = args.get('ioc_type', '')
 
-    if args.get('startDate', ''):
-        input_params_alerts_iocs['startDate'] = args.get('startDate', '')
+    if args.get('start_date', ''):
+        input_params_alerts_iocs['startDate'] = args.get('start_date', '')
 
-    if args.get('endDate', ''):
-        input_params_alerts_iocs['endDate'] = args.get('endDate', '')
+    if args.get('end_date', ''):
+        input_params_alerts_iocs['endDate'] = args.get('end_date', '')
 
     input_params_alerts_iocs = {
         'ioc': args.get('ioc', ''),
         'page': args.get('from', ''),
         'limit': args.get('limit', ''),
-        'sortBy': args.get('sortBy', ''),
+        'sortBy': args.get('sort_by', ''),
         'order': args.get('order', ''),
         'tags': args.get('tags')
     }
@@ -314,7 +310,8 @@ def format_incidents(alerts):
                 "alert_group_id": "{}".format(alert['alert_group_id']),
                 "event_id": "{}".format(alert['id']),
                 "data_message": "{}".format(alert['data_message']['metadata']),
-                "keyword": "{}".format(alert['metadata']['entity']['keyword']['tag_name'])
+                "keyword": "{}".format(alert['metadata']['entity']['keyword']['tag_name']),
+                "created_at": "{}".format(alert['created_at'])
             }
 
             events.append(alert_details)
@@ -322,7 +319,7 @@ def format_incidents(alerts):
         return events
     except Exception as e:
         demisto.debug('Unable to format incidents, error: {}'.format(e))
-        return []
+        raise Exception("Error: [{}] for response [{}]".format(e, alerts))
 
 
 def cyble_events(client, method, token, url, args, base_url, last_run, skip=True):
@@ -344,22 +341,24 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
 
     input_params = {}
 
-    input_params['orderBy'] = args.get('orderBy', "desc")
+    input_params['order_by'] = args.get('order_by', "desc")
     input_params['from_da'] = arg_to_number(args.get('from', 0))
 
     if skip:
         validate_input(args, False)
 
         input_params['limit'] = arg_to_number(args.get('limit', 10))
-        input_params['startDate'] = args.get('startDate', 0)
-        input_params['endDate'] = args.get('endDate', 0)
+        input_params['start_date'] = args.get('start_date', 0)
+        input_params['end_date'] = args.get('end_date', 0)
 
     else:
+        initial_interval = demisto.params().get('first_fetch_timestamp', 1)
 
         if 'event_pull_start_date' not in last_run.keys():
-            initial_interval = demisto.params().get('first_fetch_timestamp', 1)
-            event_pull_start_date = datetime.utcnow() - timedelta(days=initial_interval)
-            last_run['event_pull_start_date'] = event_pull_start_date.astimezone().replace(microsecond=0).isoformat()
+            event_pull_start_date = datetime.utcnow() - timedelta(days=int(initial_interval))
+            input_params['start_date'] = event_pull_start_date.astimezone().replace(microsecond=0).isoformat()
+        else:
+            input_params['start_date'] = last_run['event_pull_start_date']
 
         # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
         max_results = arg_to_number(demisto.params().get('max_fetch', 0))
@@ -369,50 +368,39 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
         else:
             input_params['limit'] = max_results
 
-        input_params['startDate'] = last_run['event_pull_start_date']
-        input_params['endDate'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
+    input_params['end_date'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
+
+    latest_created_time = input_params['start_date']
 
     final_input_structure = alert_input_structure(client, base_url, token, input_params)
     alerts = set_request(client, method, token, final_input_structure, url)
     incidents = []
 
-    try:
+    if alerts:
         events = format_incidents(alerts)
+
         for event in events:
+            incident_created_time = datetime.strptime(event.get('created_at'),
+                                                      "%Y-%m-%dT%H:%M:%S.%fZ").astimezone().isoformat()
             inci = {
                 'name': event.get('name'),
                 'severity': event.get('severity'),
                 'rawJSON': json.dumps(event),
                 'alert_group_id': event.get('alert_group_id'),
                 'event_id': event.get('event_id'),
-                'keyword': event.get('keyword')
+                'keyword': event.get('keyword'),
+                'created': event.get('created_at'),
             }
             incidents.append(inci)
 
-    except Exception as e:
-        raise Exception("Error: [{}] for response [{}]".format(e, alerts))
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
 
-    return incidents
+        next_run = {'event_pull_start_date': latest_created_time}
 
-
-def get_test_response(client, method, token, base_url):
-    """
-    Test the integration state
-    :param client: client instance
-    :param method: Requests method to be used
-    :param token: API access token
-    :param base_url: base url
-    :return: test response
-
-    """
-
-    fetch = fetch_subscribed_services(client, method, base_url, token)
-
-    if fetch:
-        return 'ok'
+        return incidents, next_run
     else:
-        demisto.error("Failed to connect")
-        return 'fail'
+        return [], []
 
 
 def validate_input(args, is_iocs=False):
@@ -424,21 +412,21 @@ def validate_input(args, is_iocs=False):
     try:
         # we assume all the params to be non-empty, as cortex ensures it
         if int(args.get('from')) < 0:
-            raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
+            raise ValueError(f"The parameter from has a negative value, from: {arg_to_number(args.get('from'))}'")
         limit = int(args.get('limit', 1))
 
         if is_iocs:
             date_format = "%Y-%m-%d"
-            if args.get('startDate') and args.get('endDate'):
-                _start_date = datetime.strptime(args.get('startDate'), date_format)
-                _end_date = datetime.strptime(args.get('endDate'), date_format)
+            if args.get('start_date') and args.get('end_date'):
+                _start_date = datetime.strptime(args.get('start_date'), date_format)
+                _end_date = datetime.strptime(args.get('end_date'), date_format)
             else:
                 _start_date = datetime(1, 1, 1, 0, 0)
                 _end_date = datetime(1, 1, 1, 0, 0)
 
             if limit <= 0 or limit > 1000:
                 raise ValueError(
-                    f"Limit should a positive number upto 1000, limit: {limit}")
+                    f"The limit argument should contain a positive number, up to 1000, limit: {limit}")
 
             if _start_date > datetime.utcnow():
                 raise ValueError(
@@ -446,23 +434,23 @@ def validate_input(args, is_iocs=False):
             if _end_date > datetime.utcnow():
                 raise ValueError(f"End date must be a date before or equal to {datetime.today().strftime(date_format)}")
             if _start_date > _end_date:
-                raise ValueError(f"Start date {args.get('startDate')} cannot be after end date {args.get('endDate')}")
+                raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
 
         else:
             date_format = "%Y-%m-%dT%H:%M:%S%z"
-            _start_date = datetime.strptime(args.get('startDate'), date_format)
-            _end_date = datetime.strptime(args.get('endDate'), date_format)
+            _start_date = datetime.strptime(args.get('start_date'), date_format)
+            _end_date = datetime.strptime(args.get('end_date'), date_format)
             if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
-                raise ValueError(f"Limit should a positive number upto 1000, limit: {limit}")
+                raise ValueError(f"The limit argument should contain a positive number, up to 1000, limit: {limit}")
 
             if _start_date > datetime.now(tz=timezone.utc):
                 raise ValueError(
                     f"Start date must be a date before or equal to {datetime.now(tz=timezone.utc).strftime(date_format)}")
             if _end_date > datetime.now(tz=timezone.utc):
                 raise ValueError(
-                    f"End date must be a date before or equal to {args.get('endDate')}")
+                    f"End date must be a date before or equal to {args.get('end_date')}")
             if _start_date > _end_date:
-                raise ValueError(f"Start date {args.get('startDate')} cannot be after end date {args.get('endDate')}")
+                raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
 
         return None
     except Exception as e:
@@ -486,7 +474,7 @@ def alert_input_structure(client, base_url, token, input_params):
     input_params_alerts: Dict[str, Any] = {
         "orderBy": [
             {
-                "created_at": input_params['orderBy']
+                "created_at": input_params['order_by']
             }
         ],
         "select": {
@@ -515,8 +503,8 @@ def alert_input_structure(client, base_url, token, input_params):
         "withDataMessage": True,
         "where": {
             "created_at": {
-                "gte": input_params['startDate'],
-                "lte": input_params['endDate'],
+                "gte": input_params['start_date'],
+                "lte": input_params['end_date'],
             },
             "service": {
                 "in": lst
@@ -550,71 +538,70 @@ def main():
     # get the service API url
     params = demisto.params()
     base_url = params.get('base_url')
-    token = params.get('token')
-
+    token = demisto.params().get('credentials', {}).get('password', "")
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {params}')
 
     try:
-        if token:
-            client = Client(
-                base_url=params.get('base_url'),
-                verify=verify_certificate,
-                proxy=proxy)
-            args = demisto.args()
 
-            if demisto.command() == "test-module":
-                # request was successful
-                return_results(test_response(client, "GET", base_url, token))
+        client = Client(
+            base_url=params.get('base_url'),
+            verify=verify_certificate,
+            proxy=proxy)
+        args = demisto.args()
 
-            elif demisto.command() == 'fetch-incidents':
-                # This is the call made when cyble-fetch-events command.
-                last_run = demisto.getLastRun()
+        if demisto.command() == "test-module":
+            # request was successful
+            return_results(test_response(client, "GET", base_url, token))
 
-                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-                data = cyble_events(client, 'POST', token, url, args, base_url, last_run, False)
+        elif demisto.command() == 'fetch-incidents':
+            # This is the call made when cyble-fetch-events command.
+            last_run = demisto.getLastRun()
 
-                if last_run['event_pull_start_date'] < datetime.now().astimezone().replace(microsecond=0).isoformat():
-                    last_run['event_pull_start_date'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
+            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            data, next_run = cyble_events(client, 'POST', token, url, args, base_url, last_run, False)
 
-                demisto.setLastRun(last_run)
-                demisto.incidents(data)
+            if next_run:
+                demisto.setLastRun(next_run)
+            demisto.incidents(data)
 
-            elif demisto.command() == "cyble-vision-subscribed-services":
-                # This is the call made when subscribed-services command.
-                return_results(fetch_subscribed_services_alert(client, "GET", base_url, token))
+        elif demisto.command() == "cyble-vision-subscribed-services":
+            # This is the call made when subscribed-services command.
+            return_results(fetch_subscribed_services_alert(client, "GET", base_url, token))
 
-            elif demisto.command() == "cyble-vision-fetch-alert-groups":
-                # Fetch alert group.
+        elif demisto.command() == "cyble-vision-fetch-alert-groups":
+            # Fetch alert group.
 
-                validate_input(args, False)
-                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-                return_results(cyble_alert_group(client, 'POST', token, url, args))
+            validate_input(args, False)
+            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            return_results(cyble_alert_group(client, 'POST', token, url, args))
 
-            elif demisto.command() == 'cyble-vision-fetch-iocs':
-                # This is the call made when cyble-vision-v2-fetch-iocs command.
+        elif demisto.command() == 'cyble-vision-fetch-iocs':
+            # This is the call made when cyble-vision-v2-fetch-iocs command.
 
-                validate_input(args, True)
-                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-                command_results = cyble_fetch_iocs(client, 'GET', token, args, url)
+            validate_input(args, True)
+            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            command_results = cyble_fetch_iocs(client, 'GET', token, args, url)
 
-                return_results(command_results)
+            return_results(command_results)
 
-            elif demisto.command() == 'cyble-vision-fetch-alerts':
-                # This is the call made when cyble-vision-v2-fetch-alerts command.
+        elif demisto.command() == 'cyble-vision-fetch-alerts':
+            # This is the call made when cyble-vision-v2-fetch-alerts command.
 
-                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-                lst_alerts = cyble_events(client, 'POST', token, url, args, base_url, {}, True)
+            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            lst_alerts, next_run = cyble_events(client, 'POST', token, url, args, base_url, {}, True)
 
-                markdown = tableToMarkdown('Alerts Details:', lst_alerts)
+            markdown = tableToMarkdown('Alerts Details:', lst_alerts)
 
-                return_results(CommandResults(
-                    readable_output=markdown,
-                    outputs_prefix='CybleEvents.Alerts',
-                    raw_response=lst_alerts,
-                    outputs=lst_alerts
-                ))
+            return_results(CommandResults(
+                readable_output=markdown,
+                outputs_prefix='CybleEvents.Alerts',
+                raw_response=lst_alerts,
+                outputs=lst_alerts
+            ))
+        else:
+            raise NotImplementedError(f'{demisto.command()} command is not implemented.')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

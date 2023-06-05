@@ -1,8 +1,9 @@
 {
     "name": "Cyble Events (Deprecated)",
-    "description": "Deprecated, No available replacement.",
+    "description": "Deprecated. Use Cyble Events V2 instead.",
     "support": "partner",
     "currentVersion": "1.0.8",
+    "packVersion": "1.0",
     "author": "Cyble Infosec",
     "hidden": true,
     "url": "https://cyble.com/",

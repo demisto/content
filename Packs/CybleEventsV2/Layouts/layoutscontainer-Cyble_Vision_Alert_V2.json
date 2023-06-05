@@ -36,7 +36,7 @@
             }
         ]
     },
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.2.0",
     "edit": {
         "sections": [
             {

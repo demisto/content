@@ -1,3 +1,5 @@
+# Cyble Events
+
 Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
 This integration was integrated and tested with version 2.0 of cybleeventsv2
 
@@ -9,20 +11,18 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | URL | Server URL \(e.g. https://example.net\) | True |
+    | URL | Server URL \(e.g. <https://example.net\>) | True |
     | Access Token | Access Token | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Incidents Fetch Interval |  | False |
     | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | False |
-    |First fetch time| Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed| Truw
+    |First fetch time| Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed| True
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-5. In addition: 
+5. In addition:
     * Make sure that under "Incident type" you&#39;ve selected the incident type you want to work with and it is the same one you&#39;ve selected once you created the new field. In our example: "Cyble Vision Alert V2".
     * The option "Fetch Incidents" is checked.
-
 
 ## Commands
 
@@ -46,9 +46,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEvents.SubscribedServices | String | List of subscribed services from Cyble vision | 
+| CybleEvents.SubscribedServices | String | List of subscribed services from Cyble vision |
 
-### cyble-vision-v2-fetch-iocs
+### cyble-vision-fetch-iocs
 
 ***
 Fetch the indicators for the given timeline
@@ -60,22 +60,22 @@ Fetch the indicators for the given timeline
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| iocType | Returns record by type like(Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email). Default is Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email. | Optional | 
-| ioc | Returns records for the specified indicator value. | Optional | 
-| from | Returns records started with given value. Default is 0. | Optional | 
-| limit | Number of records to return (max 1000). Using a smaller limit will get faster responses. Default is 1. | Optional | 
-| sortBy | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen. | Optional | 
-| order | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc. | Optional | 
-| tags | Returns records for the specified tags. | Optional | 
-| startDate | Timeline start date in the format "YYYY-MM-DD". Need to used with end_date as timeline range. | Optional | 
-| endDate | Timeline end date in the format "YYYY-MM-DD". Need to used with end_date as timeline range. | Optional | 
+|-------------------| --- | --- |
+| ioc_type          | Returns record by type like(Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email). Default is Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email. | Optional |
+| ioc               | Returns records for the specified indicator value. | Optional |
+| from              | Returns records started with given value. Default is 0. | Optional |
+| limit             | Number of records to return (max 1000). Using a smaller limit will get faster responses. Default is 1. | Optional |
+| sortBy            | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen. | Optional |
+| order             | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc. | Optional |
+| tags              | Returns records for the specified tags. | Optional |
+| start_date        | Timeline start date in the format "YYYY-MM-DD". Need to used with end_date as timeline range. | Optional |
+| end_date          | Timeline end date in the format "YYYY-MM-DD". Need to used with end_date as timeline range. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEvents.IoCs.Data | String | Returns indicator with risk score, confident rating, first seen and last seen | 
+| CybleEvents.IoCs.Data | String | Returns indicator with risk score, confident rating, first seen and last seen |
 
 ### cyble-vision-fetch-alerts
 
@@ -89,21 +89,21 @@ Fetch Incident event alerts based on the given parameters. Alerts would have mul
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Optional | 
-| startDate | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required | 
-| endDate | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required | 
-| orderBy | Sorting order for alert fetch either Ascending or Descending. Possible values are: asc, desc. Default is asc. | Optional | 
-| from | Returns records for the timeline starting from given indice. Default is 0. | Optional | 
+|-------------------| --- | --- |
+| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Optional |
+| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required |
+| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required |
+| order_by          | Sorting order for alert fetch either Ascending or Descending. Possible values are: asc, desc. Default is asc. | Optional |
+| from              | Returns records for the timeline starting from given indice. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEvents.Events.name | String | Return Event name | 
-| CybleEvents.Events.alert_group_id | String | Return alert group id | 
-| CybleEvents.Events.event_id | String | Return event id  | 
-| CybleEvents.Events.keyword | Unknown | Return keywords | 
+| CybleEvents.Events.name | String | Return Event name |
+| CybleEvents.Events.alert_group_id | String | Return alert group id |
+| CybleEvents.Events.event_id | String | Return event id  |
+| CybleEvents.Events.keyword | Unknown | Return keywords |
 
 ### cyble-vision-fetch-alert-groups
 
@@ -116,17 +116,16 @@ Fetch incident event group
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| orderBy | Sorting order for alert fetch either Ascending or Descending. Possible values are: asc, desc. Default is asc. | Optional | 
-| limit | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Optional | 
-| startDate | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required | 
-| endDate | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601). | Required | 
-| from | Returns records for the timeline starting from given indice. Default is 0. | Required | 
+| **Argument Name** | **Description**                                                                                         | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------| --- |
+| order_by          | Sorting order for alert fetch either Ascending or Descending. Possible values are: asc, desc. Default is asc. | Optional |
+| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5.    | Optional |
+| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).                                     | Required |
+| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601).                                      | Required |
+| from              | Returns records for the timeline starting from given indice. Default is 0.                              | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEvents.AlertGroup | String | Fetch all the alert groups | 
-
+| CybleEvents.AlertGroup | String | Fetch all the alert groups |
