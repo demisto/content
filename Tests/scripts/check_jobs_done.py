@@ -56,7 +56,7 @@ PUSH_JOBS = [
     'xsoar_server_6_8',
     'xsoar_server_6_9',
     'xsoar_server_6_10',
-    'xsoar_server_6_111',
+    'xsoar_server_6_11',
     'xsoar_server_master',
 ]
 JOBS_PER_BUILD_TYPE = {
