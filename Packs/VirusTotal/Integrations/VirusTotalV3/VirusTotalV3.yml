@@ -185,7 +185,6 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
-      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -425,7 +424,6 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
-      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -542,7 +540,6 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
-      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -685,7 +682,6 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
-      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -1037,7 +1033,6 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
-      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -1304,7 +1299,6 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
-      defaultValue: false
     outputs:
     - contextPath: VirusTotal.Analysis.data.attributes.date
       description: Date of the analysis in epoch format.
@@ -1367,7 +1361,6 @@ script:
     - name: only_stats
       description: Print only Sigma analysis summary stats.
       required: false
-      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
