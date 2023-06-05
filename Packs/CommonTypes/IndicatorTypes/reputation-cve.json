@@ -299,7 +299,7 @@
             "complex": {
                 "root": "CVE",
                 "filters": [],
-                "accessor": "vulnerableproducts",
+                "accessor": "VulnerableProducts",
                 "transformers": []
             }
         }
