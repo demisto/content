@@ -333,6 +333,53 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         raise Exception(err_msg)
 
 
+def transform_alert_human_readable_header(header: str):
+    transformations = {
+        'EntityName': 'Protected Entity',
+        'AlertType': 'Content Type',
+        'Timestamp': 'Alert Date',
+        'Network': 'Source',
+        'RuleName': 'Rule',
+        'RiskRating': 'Risk Rating',
+        'OffendingContentURL': 'Offending Content',
+    }
+    return transformations.get(header, header)
+
+
+def transform_alert_human_readable_values(alert: Dict, title_keys: List[str] = []):
+    transformed_alert = alert.copy()
+    for key in title_keys:
+        transformed_alert[key] = transformed_alert.get(key, '').title()
+    return transformed_alert
+
+
+def transform_alerts_human_readable_values(alerts: Union[Dict, List], title_keys: List[str] = []):
+    if type(alerts) == list:
+        return [
+            transform_alert_human_readable_values(alert, title_keys=title_keys)
+            for alert in alerts
+        ]
+    elif type(alerts) == dict:
+        return transform_alert_human_readable_values(alerts, title_keys=title_keys)
+
+
+def get_human_readable_alerts(alerts: Union[Dict, List]):
+    visible_keys: List = [
+        'ID', 'EntityName', 'AlertType', 'Timestamp', 'Status', 'OffendingContentURL',
+        'Network', 'RuleName', 'RiskRating', 'Notes', 'Tags']
+    title_keys = ['AlertType', 'RuleName', 'Network', 'EntityName']
+    transformed_alerts = transform_alerts_human_readable_values(alerts, title_keys=title_keys)
+    readable_output: str = tableToMarkdown(
+        'ZeroFox Alerts',
+        transformed_alerts,
+        headers=visible_keys,
+        date_fields=['Timestamp'],
+        headerTransform=transform_alert_human_readable_header,
+        removeNull=True,
+    )
+    return readable_output
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -530,14 +577,13 @@ def get_alert_command():
     alert: Dict = response_content.get('alert', {})
     if not alert or not isinstance(alert, Dict):
         raise Exception(f'Alert with ID {alert_id} does not exist')
-    contents: Dict = get_alert_contents(alert)
-    human_readable: Dict = get_alert_human_readable_outputs(contents)
-    context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
-    return_outputs(
-        tableToMarkdown(f'ZeroFox Alert {alert_id}', human_readable, removeNull=True),
-        context,
-        response_content
-    )
+    output: Dict = get_alert_contents(alert)
+    readable_output: str = get_human_readable_alerts(output)
+    return_results(CommandResults(
+        outputs=output,
+        outputs_prefix='ZeroFox.Alert',
+        readable_output=readable_output,
+    ))
 
 
 def create_entity(name: str, strict_name_matching: bool = None, tags: list = None,
@@ -665,24 +711,21 @@ def list_alerts_command():
             raise Exception('Incorrect limit. Limit should be 0 <= x <= 100.')
     response_content: Dict = list_alerts(params)
     if not response_content:
-        return_outputs('No alerts found.', outputs={})
+        return_results(CommandResults(readable_output='No alerts found.', outputs=[]))
     elif isinstance(response_content, Dict):
         alerts: List = response_content.get('alerts', [])
         if not alerts:
-            return_outputs('No alerts found.', outputs={})
+            return_results(CommandResults(readable_output='No alerts found.', outputs=[]))
         else:
-            contents: List = [get_alert_contents(alert) for alert in alerts]
-            human_readable: List = [get_alert_human_readable_outputs(content) for content in contents]
-            context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
-            headers: List = ['ID', 'Protected Entity', 'Content Type', 'Alert Date', 'Status', 'Source', 'Rule',
-                             'Policy', 'Content Type', 'Risk Rating', 'Notes', 'Tags']
-            return_outputs(
-                tableToMarkdown('ZeroFox Alerts', human_readable, headers=headers, removeNull=True),
-                context,
-                response_content
-            )
+            output: List = [get_alert_contents(alert) for alert in alerts]
+            readble_output: str = get_human_readable_alerts(output)
+            return_results(CommandResults(
+                outputs=output,
+                readable_output=readble_output,
+                outputs_prefix='ZeroFox.Alert',
+            ))
     else:
-        return_outputs('No alerts found.', outputs={})
+        return_results(CommandResults(readable_output='No alerts found.', outputs=[]))
 
 
 def list_entities(params: Dict) -> Dict:
