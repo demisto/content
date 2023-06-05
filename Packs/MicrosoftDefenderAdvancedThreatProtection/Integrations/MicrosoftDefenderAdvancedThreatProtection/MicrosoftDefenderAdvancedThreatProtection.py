@@ -2770,7 +2770,7 @@ def get_file_data(file_response):
     Returns:
         dict. File's info
     """
-    file_data = assign_params({
+    file_data = assign_params(**{  # noqa: PIE804
         'Sha1': file_response.get('sha1'),
         'Size': file_response.get('size'),
         'Sha256': file_response.get('sha256'),
@@ -3179,7 +3179,7 @@ def get_domain_statistics_context(domain_stat_response):
     Returns:
         (dict). domain statistics context
     """
-    domain_statistics = assign_params({
+    domain_statistics = assign_params(**{  # noqa: PIE804
         "Host": domain_stat_response.get('host'),
         "OrgPrevalence": domain_stat_response.get('orgPrevalence'),
         "OrgFirstSeen": domain_stat_response.get('orgFirstSeen'),
@@ -3287,7 +3287,7 @@ def get_machine_data(machine):
     Returns:
         dict. Machine's info
     """
-    machine_data = assign_params({
+    machine_data = assign_params(**{  # noqa: PIE804
         'ID': machine.get('id'),
         'ComputerDNSName': machine.get('computerDnsName'),
         'FirstSeen': machine.get('firstSeen'),
@@ -3338,7 +3338,7 @@ def get_file_statistics_context(file_stat_response):
     Returns:
         (dict). File statistics context
     """
-    file_stat = assign_params({
+    file_stat = assign_params(**{  # noqa: PIE804
         "OrgPrevalence": file_stat_response.get('orgPrevalence'),
         "OrgFirstSeen": file_stat_response.get('orgFirstSeen'),
         "OrgLastSeen": file_stat_response.get('orgLastSeen'),
@@ -3398,7 +3398,7 @@ def get_ip_statistics_context(ip_statistics_response):
     Returns:
         (dict). IP statistics context
     """
-    ip_statistics = assign_params({
+    ip_statistics = assign_params(**{  # noqa: PIE804
         "OrgPrevalence": ip_statistics_response.get('orgPrevalence'),
         "OrgFirstSeen": ip_statistics_response.get('orgFirstSeen'),
         "OrgLastSeen": ip_statistics_response.get('orgLastSeen')
@@ -3892,7 +3892,7 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
         args: arguments from CortexSOAR.
             Should contain a a network observable:
             - https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-betaindicator-observables---network  # noqa: E501
-    Returns: 
+    Returns:
         human readable, outputs, raw response
 
     Raises:
