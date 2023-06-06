@@ -9571,7 +9571,7 @@ script:
       isArray: false
       name: device-group
       required: false
-    description: Returns a list of tags from panorama.
+    description: Returns a list of tags from Panorama.
     name: pan-os-list-tag
     outputs:
     - contextPath: Panorama.Tag.name
