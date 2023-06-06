@@ -14,6 +14,6 @@ OpenAI ChatGPT is a revolutionary conversational AI system that is designed to i
 - Click Test
 
 ## How to use this integration with XSOAR
-### The following page of 'Palo Alto Networks - Playbook of the week' explains how to use this integration in your playbooks:
+### The following page 'Palo Alto Networks - Playbook of the week' explains how to use this integration in your playbooks:
 
 https://www.paloaltonetworks.com/blog/security-operations/using-chatgpt-in-cortex-xsoar/
