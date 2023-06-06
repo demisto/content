@@ -3458,27 +3458,27 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 
 ''' Security Rules Managing '''
 
-def unsafe_dict_get(dict_object, keys, default_return_value=None, return_type=None, recurse_lists=True):
-    """
-    Retrieves a value from a nested dictionary using a list of keys.
+def unsafe_dict_get(dict_object: Any, possible_keys: list, default_return_value: Any = None, return_type: type = None, recurse_lists: bool = True) -> Any:
+    """Retrieves a value from a nested dictionary using a list of keys.
 
     Args:
-        dict_object (dict): The dictionary object from which to retrieve the value.
-        keys (list): A list of keys representing the path to the desired value in the dictionary.
-        default_return_value (optional): The value to return if the desired value is not found. Default is None.
-        return_type (optional): The expected type of the value to be returned. If the retrieved value is not of this type,
-                                the default_return_value will be returned instead. Default is None.
-        recurse_lists (optional): Specifies whether to recursively search for the value in nested lists. If True and a list is
-                              encountered during traversal, the function will apply itself to each item in the list using
-                              the remaining keys. Default is True.
+        dict_object (Any): The dictionary object from which to retrieve the value.
+        possible_keys (list): A list of keys representing the possible path to the desired value in the dictionary.
+                              The keys will be used until a value that is not a dict or a list is found, even if not all the keys were used.
+        default_return_value (Any, optional): The value to return if the desired value is not found.. Defaults to None.
+        return_type (type, optional): The expected type of the value to be returned. If the retrieved value is not of this type,
+                                    the default_return_value will be returned instead. Defaults to None.
+        recurse_lists (bool, optional): Specifies whether to recursively search for the value in nested lists. If True and a list is
+                                    encountered during traversal, the function will apply itself to each item in the list using
+                                    the remaining keys. Defaults to True.
 
     Returns:
-        The value retrieved from the dictionary or the default_return_value if the value is not found or the type does not match.
-
+        Any: The value retrieved from the dictionary or the default_return_value if the value is not found or the type does not match.
     """
+
     return_value = dict_object
 
-    for i, key in enumerate(keys):
+    for i, key in enumerate(possible_keys):
         try:
             return_value = return_value[key]
         except (KeyError, TypeError, IndexError, AttributeError):
@@ -3486,7 +3486,7 @@ def unsafe_dict_get(dict_object, keys, default_return_value=None, return_type=No
                 sub_list = [
                     elem for item in return_value
                     if (elem := unsafe_dict_get(
-                                    item, keys[i:], default_return_value, return_type, recurse_lists
+                                    item, possible_keys[i:], default_return_value, return_type, recurse_lists
                                     )) != default_return_value
                 ] or default_return_value
                 
