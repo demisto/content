@@ -10,11 +10,11 @@ configuration:
   defaultvalue: Worldwide
   options:
   - Worldwide
-  - Germany
-  - China
   - US GCC
   - US GCC-High
   - DoD
+  - Germany
+  - China
   section: Connect
   advanced: true
 - display: Client ID

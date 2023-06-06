@@ -10,11 +10,11 @@ configuration:
   type: 15
   options:
   - Worldwide
-  - Germany
-  - China
   - US GCC
   - US GCC-High
   - DoD
+  - Germany
+  - China
   - Custom
   section: Connect
   advanced: true
