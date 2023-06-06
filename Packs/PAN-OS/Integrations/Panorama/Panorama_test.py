@@ -1168,7 +1168,8 @@ def test_apply_security_profiles_command_main_flow(mocker):
             'device-group': 'new-device-group',
             'profile_type': 'data-filtering',
             'profile_name': 'test-profile',
-            'rule_name': 'rule-test'
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
@@ -1181,8 +1182,10 @@ def test_apply_security_profiles_command_main_flow(mocker):
     assert request_mock.call_args.kwargs['params'] == {
         'action': 'set', 'type': 'config',
         'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
-                 "/rule-test/security/rules/entry[@name='rule-test']/profile-setting/profiles/data-filtering",
-        'key': 'thisisabogusAPIKEY!', 'element': '<member>test-profile</member>'}
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!', 'element': '<profile-setting><profiles><data-filtering>'
+                                                 '<member>test-profile</member></data-filtering></profiles>'
+                                                 '</profile-setting>'}
     assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
 
 
