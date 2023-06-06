@@ -427,6 +427,7 @@ def table_to_incidents(table: List[dict], last_run: dict, fetch_parameters: str,
         # for avoiding duplicate incidents
         if is_timestamp_and_id and record.get(column_name, '').startswith(last_run.get('last_timestamp')):
             if record.get(id_column, '') in last_run.get('ids', []):
+                demisto.debug(f"GenericSQL- Skipping duplicate incident with id= {record.get(id_column, '')}")
                 continue
 
         record['type'] = 'GenericSQL Record'

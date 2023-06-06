@@ -3581,7 +3581,8 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             demisto.debug(f'Checking alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
             if alert_time <= parsed:  # type: ignore
                 skipped_incidents += 1
-                demisto.debug(f"Microsoft - ATP - Skipping incident with id={alert[id]} because its creation time is smaller than the last fetch.")  # noqa: E501
+                demisto.debug(f'Microsoft - ATP - Skipping incident with id={alert["id"]} with time {alert_time} because its'
+                              ' creation time is smaller than the last fetch.')
                 continue
         demisto.debug(f'Adding alert {alert["id"]}')
         incidents.append({
