@@ -9,7 +9,6 @@ comment: An Automation Script to return subnet broadcast address
 commonfields:
   id: IPCalcReturnSubnetBroadcastAddress
   version: -1
-enabled: false
 name: IPCalcReturnSubnetBroadcastAddress
 outputs:
 - contextPath: IPCalc.IP.Address

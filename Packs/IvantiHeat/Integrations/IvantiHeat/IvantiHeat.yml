@@ -8,7 +8,6 @@ configuration:
   required: true
   type: 0
 - display: API Token
-  hidden: false
   name: token
   required: true
   type: 4
@@ -22,13 +21,11 @@ configuration:
   type: 13
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: subject
   display: The object field to use for incident name
-  hidden: false
   name: incident_name_field
   required: true
   type: 0

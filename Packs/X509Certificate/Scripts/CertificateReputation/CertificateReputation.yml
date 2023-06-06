@@ -12,13 +12,12 @@ args:
   required: false
   secret: false
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
 comment: Enrich and calculate the reputation of a certificate indicator.
 commonfields:
   id: CertificateReputation
   version: -1
-enabled: false
 name: CertificateReputation
 outputs:
 - contextPath: Certificate.Name
@@ -137,7 +136,7 @@ outputs:
 script: '-'
 system: false
 tags:
-  - reputation
+- reputation
 timeout: '0'
 type: python
 subtype: python3

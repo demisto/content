@@ -7,7 +7,6 @@ comment: |-
 commonfields:
   id: ThreatIntelManagementGetIncidentsPerFeed
   version: -1
-enabled: false
 name: ThreatIntelManagementGetIncidentsPerFeed
 script: '-'
 tags:
