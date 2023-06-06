@@ -52,7 +52,6 @@ configuration:
   required: false
   type: 0
   additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
-  hidden: false
   section: Collect
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
@@ -93,7 +92,6 @@ configuration:
   advanced: true
 - additionalinfo: You can find this value by navigating to Sources -> JSON event source -> POST URL.
   display: POST URL of the JSON alert source.
-  hidden: false
   name: post_url_id
   required: false
   type: 0

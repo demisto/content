@@ -42,7 +42,6 @@ configuration:
   type: 13
 - display: Full Incident Enrichment
   defaultvalue: 'true'
-  hidden: false
   name: full_enrich
   required: false
   type: 8
