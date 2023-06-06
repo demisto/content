@@ -6944,7 +6944,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
     for p_type in profile_types:
         if p_type in profile_types_result:
             p_name = profile_types_result.get(p_type, {}).get('member')
-            element += f"<{p_type}><member>{p_name}</member></{p_type}>"
+            rule_profiles += f"<{p_type}><member>{p_name}</member></{p_type}>"
 
     params = {
         'action': 'set',
