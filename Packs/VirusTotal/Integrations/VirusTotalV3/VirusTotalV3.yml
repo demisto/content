@@ -5,7 +5,7 @@ name: VirusTotal (API v3)
 display: VirusTotal (API v3)
 fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
-description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
+description: Analyzes  suspicious hashes, URLs, domains, and IP addresses.
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
