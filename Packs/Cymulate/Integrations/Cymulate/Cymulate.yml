@@ -17,17 +17,14 @@ configuration:
   type: 13
 - defaultvalue: 'true'
   display: Show only 'penatrated' incidents
-  hidden: false
   name: onlyPenatrated
   required: false
   type: 8
 - display: Use server proxy
-  hidden: false
   name: useProxy
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8

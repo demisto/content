@@ -19,14 +19,12 @@ comment: "This script allows disabling a specified user using one or more of the
 commonfields:
   id: DisableUserWrapper
   version: -1
-enabled: false
 name: DisableUserWrapper
 outputs:
 
   # IdentityIQ outputs
 - contextPath: IdentityIQ.AccountDisable.active
-  description: Indicates the status of account (should be false after request
-        is successfully completed).
+  description: Indicates the status of account (should be false after request is successfully completed).
   type: Boolean
 
   # IAM outputs

@@ -3,7 +3,7 @@ ignore=RM112
 
 [known_words]
 commonscripts
-URLEncode
+urlencode
 
 [file:StripChar.yml]
 ignore=BA124
@@ -16,4 +16,10 @@ ignore=BA124
 
 [file:RegexGroups.yml]
 ignore=BA124
+
+[file:GreaterCidrNumAddresses.yml]
+ignore=RM109
+
+[file:LowerCidrNumAddresses.yml]
+ignore=RM109
 
