@@ -12,7 +12,6 @@ from urllib3 import disable_warnings
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Union, cast
 
-
 # Disable insecure warnings
 disable_warnings()
 
@@ -228,13 +227,13 @@ def get_authorization_token() -> str:
     token: str = integration_context.get('token', '')
     if token:
         return token
-    url_suffix: str = '/api-token-auth/'
+    url_suffix: str = '/1.0/api-token-auth/'
     data_for_request: Dict = {
         'username': USERNAME,
         'password': PASSWORD
     }
-    response_content: Dict = http_request('POST', url_suffix, data=data_for_request, continue_err=True,
-                                          api_request=False)
+    response_content: Dict = _http_request('POST', url_suffix, data=data_for_request, continue_err=True,
+                                          header={})
     token = response_content.get('token', '')
     if not token:
         if 'res_content' in response_content:
@@ -247,9 +246,61 @@ def get_authorization_token() -> str:
     demisto.setIntegrationContext({'token': token})
     return token
 
+def _is_cti_token_valid(token):
+    url_suffix: str = '/auth/token/verify/'
+    data_for_request: Dict = {
+        'token' : token
+    }
+    response: Dict = _http_request('POST', url_suffix, data=data_for_request, continue_err=True,
+                                          header={})
+    return bool(response)
 
-def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[Dict, str] = '',
-                 continue_err: bool = False, api_request: bool = True, version = "1.0") -> Dict:
+def _get_new_access_token():
+    url_suffix: str = '/auth/token/'
+    data_for_request: Dict = {
+        'username': USERNAME,
+        'password': PASSWORD
+    }
+    response_content: Dict = _http_request('POST', url_suffix, data=data_for_request, continue_err=True,
+                                          header={})
+    return response_content.get('access', '')
+    
+
+def get_cti_authorization_token() -> str:
+    """
+    :return: returns the authorization token for the CTI feed
+    """
+    integration_context: Dict = demisto.getIntegrationContext()
+    token: str = integration_context.get('cti_token', '')
+    demisto.results(f"retrieved token, token= {token}")
+    if token and _is_cti_token_valid(token):
+        return token
+    token = _get_new_access_token()
+    demisto.results(f"previous token was not valid, new token= {token}")
+    if not token:
+        raise Exception('Unable to retrieve token.')
+    demisto.setIntegrationContext({'cti_token': token})
+    return token
+
+
+def get_api_request_header():
+    token: str = get_authorization_token()
+    return {
+                'Authorization': f'Token {token}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+
+def get_cti_request_header():
+    token: str = get_cti_authorization_token()
+    return {
+                    'Authorization': f'Bearer {token}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+
+def _http_request(method: str, url_suffix: str, params: Dict = None, data: Union[Dict, str] = '',
+                 continue_err: bool = False, header: dict = {}) -> Dict:
     """
     :param method: HTTP request type
     :param url_suffix: The suffix of the URL
@@ -261,27 +312,18 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
     :param api_request: A boolean flag to help us know if the request is a regular API call or a token call.
     If api_request is False the call is to get Authorization Token, otherwise if api_request is True then it's a
     regular API call.
-    :param version : api version to use, default is 1.0
+    :param version : api prefix to consider, default is to use version 1.0
     :return: Returns the content of the response received from the API.
     """
-    # A wrapper for requests lib to send our requests and handle requests and responses better
-    headers: Dict = {}
     try:
         err_msg: str
-        if api_request:
-            token: str = get_authorization_token()
-            headers = {
-                'Authorization': f'Token {token}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
         res = requests.request(
             method,
-            BASE_URL + f"/{version}" + url_suffix,
+            BASE_URL + url_suffix,
             verify=USE_SSL,
             params=params,
             data=data,
-            headers=headers
+            headers=header
         )
         # Handle error responses gracefully
         if res.status_code not in {200, 201} and not continue_err:
@@ -333,6 +375,34 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         raise Exception(err_msg)
 
 
+
+def api_request(method: str, url_suffix: str, params: Dict = None, data: Union[Dict, str] = '',
+                 continue_err: bool = False, header: dict = get_api_request_header(), prefix = "1.0") -> Dict:
+    """
+    :param method: HTTP request type
+    :param url_suffix: The suffix of the URL
+    :param params: The request's query parameters
+    :param data: The request's body parameters
+    :param continue_err: A boolean flag to help us know if we want to show the error like we got it from
+    the API, or if we want to parse the error message. If continue_err is False (default) we handle the error as
+    we received it from the API, otherwise if continue_err is True we parse it.
+    :param api_request: A boolean flag to help us know if the request is a regular API call or a token call.
+    If api_request is False the call is to get Authorization Token, otherwise if api_request is True then it's a
+    regular API call.
+    :param version : api prefix to consider, default is to use version 1.0
+    :return: Returns the content of the response received from the API.
+    """
+    # A wrapper for requests lib to send our requests and handle requests and responses better
+    demisto.results(f"Invoked api request: url_suffix = {url_suffix}, header= {header}, prefix={prefix}, data={data}")
+    pref_string = f"/{prefix}" if prefix else ""
+    return _http_request(method=method,
+                          url_suffix=pref_string + url_suffix,
+                            params=params,
+                              data=data,
+                                continue_err= continue_err,
+                                  header=header)
+   
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -342,7 +412,7 @@ def close_alert(alert_id: int) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = f'/alerts/{alert_id}/close/'
-    response_content: Dict = http_request('POST', url_suffix)
+    response_content: Dict = api_request('POST', url_suffix)
     return response_content
 
 
@@ -364,7 +434,7 @@ def open_alert(alert_id: int) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = f'/alerts/{alert_id}/open/'
-    response_content: Dict = http_request('POST', url_suffix)
+    response_content: Dict = api_request('POST', url_suffix)
     return response_content
 
 
@@ -386,7 +456,7 @@ def alert_request_takedown(alert_id: int) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = f'/alerts/{alert_id}/request_takedown/'
-    response_content: Dict = http_request('POST', url_suffix)
+    response_content: Dict = api_request('POST', url_suffix)
     return response_content
 
 
@@ -408,7 +478,7 @@ def alert_cancel_takedown(alert_id: int) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = f'/alerts/{alert_id}/cancel_takedown/'
-    response_content: Dict = http_request('POST', url_suffix)
+    response_content: Dict = api_request('POST', url_suffix)
     return response_content
 
 
@@ -432,7 +502,7 @@ def alert_user_assignment(alert_id: int, username: str) -> Dict:
     """
     url_suffix: str = f'/alerts/{alert_id}/assign/'
     request_body: str = json.dumps({'subject': username})
-    response_content: Dict = http_request('POST', url_suffix, data=request_body)
+    response_content: Dict = api_request('POST', url_suffix, data=request_body)
     return response_content
 
 
@@ -466,7 +536,7 @@ def modify_alert_tags(alert_id: int, action: str, tags_list_string: str) -> Dict
             }
         ]
     }
-    response_content: Dict = http_request('POST', url_suffix, data=json.dumps(request_body))
+    response_content: Dict = api_request('POST', url_suffix, data=json.dumps(request_body))
     return response_content
 
 
@@ -495,7 +565,7 @@ def modify_alert_notes(alert_id: int, notes: str) -> Dict:
     url_suffix: str = f'/alerts/{alert_id}/'
     request_body: Dict = {'notes': notes}
     data: str = json.dumps(request_body)
-    response_content: Dict = http_request('POST', url_suffix, data=data)
+    response_content: Dict = api_request('POST', url_suffix, data=data)
     return response_content
 
 
@@ -520,7 +590,7 @@ def get_alert(alert_id: int) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = f'/alerts/{alert_id}/'
-    response_content: Dict = http_request('GET', url_suffix, continue_err=True)
+    response_content: Dict = api_request('GET', url_suffix, continue_err=True)
     return response_content
 
 
@@ -560,7 +630,7 @@ def create_entity(name: str, strict_name_matching: bool = None, tags: list = Non
         'organization': organization
     }
     request_body = remove_none_dict(request_body)
-    response_content: Dict = http_request('POST', url_suffix, data=json.dumps(request_body))
+    response_content: Dict = api_request('POST', url_suffix, data=json.dumps(request_body))
     return response_content
 
 
@@ -592,7 +662,7 @@ def get_entity_types() -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = '/entities/types/'
-    response_content: Dict = http_request('GET', url_suffix)
+    response_content: Dict = api_request('GET', url_suffix)
     return response_content
 
 
@@ -617,7 +687,7 @@ def get_policy_types() -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = '/policies/'
-    response_content: Dict = http_request('GET', url_suffix)
+    response_content: Dict = api_request('GET', url_suffix)
     return response_content
 
 
@@ -643,7 +713,7 @@ def list_alerts(params: Dict) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = '/alerts/'
-    response_content: Dict = http_request('GET', url_suffix, params=params)
+    response_content: Dict = api_request('GET', url_suffix, params=params)
     return response_content
 
 
@@ -691,7 +761,7 @@ def list_entities(params: Dict) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = '/entities/'
-    response_content: Dict = http_request('GET', url_suffix, params=params)
+    response_content: Dict = api_request('GET', url_suffix, params=params)
     return response_content
 
 
@@ -765,8 +835,8 @@ def submit_threat_command():
         "entity_id": entity_id,
     }
     request_body = remove_none_dict(request_body)
-    response_content: Dict = http_request(
-        "POST", url_suffix, data=json.dumps(request_body), version="2.0"
+    response_content: Dict = api_request(
+        "POST", url_suffix, data=json.dumps(request_body), prefix="2.0"
     )
     output = f'Successful submission of threat. ID: {response_content.get("alert_id")}.'
     return return_results(
@@ -784,6 +854,206 @@ def test_module():
     """
     get_policy_types()
     demisto.results('ok')
+
+def compromised_domain_command():
+    demisto.results("invoked compromised domain command")
+    domain: str = demisto.args().get("domain", "")
+    outputs = []
+    url_suffix: str = "/c2-domains/"
+    request_body: Dict = {
+        "domain": domain,
+    }
+    demisto.results(f"obtained request body: {request_body}")
+    request_body = remove_none_dict(request_body)
+    c2_response: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header=get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into c2 domains endpoint")
+    for result in c2_response.get("results"):
+        outputs.append({
+            "Domain" : result["domain"],
+            "Last_modified" : result["created_at"],
+            "IPs" : ", ".join(result["ip_addresses"]),
+            "ZF source" : "C2 domains",
+            })
+
+    url_suffix: str = "/phishing/"
+    request_body: Dict = {
+        "domain": domain,
+    }
+    phishing_response: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header= get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into phishing domains endpoint")
+    phishing_res = phishing_response["results"]
+    for result in phishing_res:
+        outputs.append({
+            "Domain" : result["domain"],
+            "Last_modified" : result["scanned"],
+            "IPs" : result["host"]["ip"],
+            "ZF source" : "Phishing domains",
+            })
+    demisto.results(f"prepared output: {outputs}")
+    if len(outputs) == 0:
+        return return_results(CommandResults(outputs="No compromised domains were found", outputs_prefix="ZeroFox.Alert"))
+    return return_results(
+        CommandResults(
+                        outputs=outputs,
+                        readable_output= tableToMarkdown("Compromised domain Summary", outputs),
+                        outputs_prefix="ZeroFox.Alert")
+    )
+
+def compromised_email_command():
+    email: str = demisto.args().get("email", "")
+    outputs = []
+    url_suffix: str = "/email-addressess/"
+    request_body: Dict = {
+        "email": email,
+    }
+    demisto.results(f"obtained request body: {request_body}")
+    request_body = remove_none_dict(request_body)
+    email_response: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header=get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into email-addresses endpoint")
+    for result in email_response.get("results"):
+        outputs.append({
+            "domain" : result["domain"],
+            "email" : result["email"],
+            "Created at" : result["created_at"],
+            "ZF source" : "email-addresses",
+            })
+
+    url_suffix: str = "/compromised-credentials/"
+    request_body: Dict = {
+        "email": email,
+    }
+    compromised_cred_resp: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header= get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into compromised credentials endpoint")
+    credentials_res = compromised_cred_resp["results"]
+    for result in credentials_res:
+        outputs.append({
+            "domain" : result["domain"],
+            "Created at" : result["created_at"],
+            "email" : result["email"],
+            "ZF source" : "compromised-credentials",
+            })
+    url_suffix: str = "/botnet-compromised-credentials/"
+    request_body: Dict = {
+        "email": email,
+    }
+    botnet_resp: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header= get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into botnet compromised credentials endpoint")
+    botnet_res = botnet_resp["results"]
+    for result in credentials_res:
+        outputs.append({
+            "domain" : result["domain"],
+            "Created at" : result["created_at"],
+            "email" : result["email"],
+            "ZF source" : "compromised-credentials",
+            })
+
+    demisto.results(f"prepared output: {outputs}")
+    if len(outputs) == 0:
+        return return_results(CommandResults(outputs="No compromised emails were found", outputs_prefix="ZeroFox.Alert"))
+    return return_results(
+        CommandResults(
+                        outputs=outputs,
+                        readable_output= tableToMarkdown("Compromised email Summary", outputs),
+                        outputs_prefix="ZeroFox.Alert")
+                        )
+                        
+
+def malicious_ip_command():
+    demisto.results("invoked malicious ip command")
+    ip: str = demisto.args().get("ip", "")
+    outputs = []
+    url_suffix: str = "/botnet/"
+    request_body: Dict = {
+        "ip": ip,
+    }
+    demisto.results(f"obtained request body: {request_body}")
+    request_body = remove_none_dict(request_body)
+    botnet_response: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header=get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into botnet endpoint")
+    for result in botnet_response.get("results"):
+        outputs.append({
+            "Created at" : result["acquired_at"],
+            "ip address" : result["ip_address"],
+            "Domain" : result["c2_domain"],
+            "ZF source" : "Botnet",
+            })
+
+    url_suffix: str = "/phishing/"
+    request_body: Dict = {
+        "host_ip": ip,
+    }
+    phishing_response: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header= get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into phishing domains endpoint")
+    phishing_res = phishing_response["results"]
+    for result in phishing_res:
+        outputs.append({
+            "Created at" : result["scanned"],
+            "ip address" : result["host"]["ip"],
+            "Domain" : result["domain"],
+            "ZF source" : "Phishing",
+            })
+    demisto.results(f"prepared output: {outputs}")
+    if len(outputs) == 0:
+        return return_results(CommandResults(outputs="No malicious ips were found", outputs_prefix="ZeroFox.Alert"))
+    return return_results(
+        CommandResults(
+                        outputs=outputs,
+                        readable_output= tableToMarkdown("Malicious ip Summary", outputs),
+                        outputs_prefix="ZeroFox.Alert")
+    )
+
+def _malicious_hash_lookup(hash, hash_type):
+    url_suffix: str = "/malware/"
+    request_body: Dict = {
+        hash_type : hash
+    }
+    demisto.results(f"obtained request body: {request_body}")
+    malware_response: Dict = api_request(
+        "GET", url_suffix, data=json.dumps(request_body), header=get_cti_request_header(), prefix="cti"
+    )
+    demisto.results("looked into botnet endpoint")
+    return malware_response.get("results", [])
+
+def malicious_hash_command():
+    demisto.results("invoked hash command")
+    hash: str = demisto.args().get("hash", "")
+    outputs = []
+    for hash_type in ["md5", "sha1", "sha256", "sha512"]:
+        for result in _malicious_hash_lookup(hash = hash, hash_type= hash_type):
+            outputs.append({
+                "Created at" : result["created_at"],
+                "Family" : ", ".join(result["family"]),
+                "Found hash" : hash_type,
+                "md5" : result["md5"],
+                "sha1" : result["sha1"],
+                "sha256" : result["sha256"],
+                "sha512" : result["sha512"],
+                "ZF source" : "Malware",
+                })
+
+    if len(outputs) == 0:
+        return return_results(CommandResults(outputs="No malicious hashes were found", outputs_prefix="ZeroFox.Alert"))
+    return return_results(
+        CommandResults(
+                        outputs=outputs,
+                        readable_output= tableToMarkdown("Malicious hash Summary", outputs),
+                        outputs_prefix="ZeroFox.Alert")
+    )
+
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -807,6 +1077,11 @@ def main():
         'fetch-incidents': fetch_incidents,
         'zerofox-modify-alert-notes': modify_alert_notes_command,
         'zerofox-submit-threat' : submit_threat_command,
+        'zerofox-search-compromised-domain' : compromised_domain_command,
+        'zerofox-search-compromised-email' : compromised_email_command,
+        'zerofox-search-malicious-ip' : malicious_ip_command,
+        "zerofox_search_malicious_hash" : malicious_hash_command,
+        
     }
     try:
         handle_proxy()
