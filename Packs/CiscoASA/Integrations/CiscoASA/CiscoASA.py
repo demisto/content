@@ -176,8 +176,8 @@ class Pagination:
         is_manual: bool,
         remaining_items: int,
         offset: int | None,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args,
+        **kwargs,
     ) -> tuple[list | dict, list | dict]:
         """
         Handle pagination when the API does not support offset parameter.
@@ -226,8 +226,8 @@ class Pagination:
         func: Callable,
         remaining_items: int,
         offset: int | None,
-        *args: tuple[Any, ...],
-        **kwargs: dict[str, Any],
+        *args,
+        **kwargs,
     ) -> tuple[list | dict, list | dict]:
         """
         Handle pagination when the API supports both limit and offset parameters.
@@ -237,8 +237,8 @@ class Pagination:
             func (Callable): API request function to be called.
             remaining_items (int): The number of remaining items to fetch.
             offset (int | None): The offset for the next API request.
-            args (tuple[Any, ...]): Positional arguments to be passed to the API request function.
-            kwarg (dict[str, Any]): Keyword arguments to be passed to the API request function.
+            args: Positional arguments to be passed to the API request function.
+            kwarg: Keyword arguments to be passed to the API request function.
 
         Returns:
             tuple[list | dict, list | dict]:
@@ -1866,8 +1866,8 @@ def write_memory_command(client: Client, *_) -> CommandResults:
 
 
 def main():
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
 
     username = params.get('credentials').get('identifier')
