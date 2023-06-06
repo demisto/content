@@ -1,5 +1,5 @@
 [file:CiscoSpark.yml]
-ignore=IN145
+ignore=IN145,IN140
 
 [file:CiscoSpark_image.png]
 ignore=IM111

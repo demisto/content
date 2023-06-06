@@ -53,7 +53,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
       description: Whether to include the attributes section in the returned result.
       isArray: false
       name: display_attributes
@@ -64,7 +63,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
       description: Whether to include a services section in the returned result.
       isArray: false
       name: display_services
@@ -202,7 +200,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
       description: Whether to include an attributes section in the returned result.
       isArray: false
       name: display_attributes

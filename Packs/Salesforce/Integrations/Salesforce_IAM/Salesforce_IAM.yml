@@ -65,26 +65,22 @@ configuration:
 - additionalinfo: Used when creating a new user.
   defaultvalue: en_US
   display: Default Local Sid Key
-  hidden: false
   name: localesidkey
   required: true
   type: 0
 - additionalinfo: Used when creating a new user.
   defaultvalue: ISO-8859-1
   display: Default Email Encoding Key
-  hidden: false
   name: emailencodingkey
   required: true
   type: 0
 - additionalinfo: Used when creating a new user.
   defaultvalue: en_US
   display: Default Language Locale Key
-  hidden: false
   name: languagelocalekey
   required: true
   type: 0
-description: Integrate with Salesforce's services to perform Identity Lifecycle Management
-  operations.
+description: Integrate with Salesforce's services to perform Identity Lifecycle Management operations.
 display: Salesforce IAM
 name: Salesforce IAM
 script:
@@ -99,8 +95,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -120,8 +115,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -154,8 +148,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -164,8 +157,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
@@ -176,8 +168,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -219,8 +210,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -262,8 +252,7 @@ script:
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Gives the user information if the API was successful, otherwise error information.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -287,8 +276,7 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
   dockerimage: demisto/python3:3.10.5.31797
