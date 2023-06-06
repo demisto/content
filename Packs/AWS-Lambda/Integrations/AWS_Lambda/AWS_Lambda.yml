@@ -85,7 +85,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Amazon Web Services Serverless Compute service (lambda)
+description: Amazon Web Services Serverless Compute service (lambda).
 display: AWS - Lambda
 name: AWS - Lambda
 script:
