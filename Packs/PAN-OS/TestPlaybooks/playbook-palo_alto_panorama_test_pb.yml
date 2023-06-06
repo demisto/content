@@ -2449,12 +2449,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "127":
     id: "127"
-    taskid: 82856a3b-5451-48e7-8181-9f2e64dab76c
+    taskid: 7320e2ed-ed76-42b1-84f2-38129a6a4a88
     type: condition
     task:
-      id: 82856a3b-5451-48e7-8181-9f2e64dab76c
+      id: 7320e2ed-ed76-42b1-84f2-38129a6a4a88
       version: -1
-      name: Check new tag exist
+      name: Check edited tag exist
       type: condition
       iscommand: false
       brand: ""
@@ -2492,6 +2492,25 @@ tasks:
           right:
             value:
               simple: other comment
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Tag.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new-test-tag
+                accessor: disable-override
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
     continueonerrortype: ""
     view: |-
       {
@@ -2784,12 +2803,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "135":
     id: "135"
-    taskid: d83ad5ff-91b3-4263-8be1-32d1acefa40e
+    taskid: fca8a9b4-b0f8-4295-8140-148ad0f05e69
     type: condition
     task:
-      id: d83ad5ff-91b3-4263-8be1-32d1acefa40e
+      id: fca8a9b4-b0f8-4295-8140-148ad0f05e69
       version: -1
-      name: Check new tag exist
+      name: Check edited tag exist
       type: condition
       iscommand: false
       brand: ""

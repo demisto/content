@@ -13087,13 +13087,14 @@ def build_tag_xpath(is_shared: bool = False, name: str = None) -> str:
     return _xpath
 
 
-def build_tag_element(disable_override: bool, comment: str, new_name: str = None) -> str:
+def build_tag_element(disable_override: bool, comment: str, new_name: str = None, color: Optional[str] = None) -> str:
     """Build the request element in XML format
 
     Args:
         disable_override (bool): Whether to disable overriding the tag.
         comment (str): The comment for the tag.
         new_name (str): When editing - the new name for the tag.
+        color (str): The color of the tag.
 
     Returns:
         str: The element in XML format.
@@ -13101,12 +13102,14 @@ def build_tag_element(disable_override: bool, comment: str, new_name: str = None
     api_disable_override = 'yes' if disable_override else 'no'
     element = f'<disable-override>{api_disable_override}</disable-override>' \
               f'<comments>{comment}</comments>'
+    if color:
+        element += f'<color>{color}</color>'
     if new_name:
         element = f'<entry name="{new_name}">{element}</entry>'
     return element
 
 
-def pan_os_list_tag(is_shared: bool = False) -> dict:
+def pan_os_list_tag(is_shared: bool = False) -> tuple[dict, list]:
     """builds the params and sends the request to get the list of tags.
 
     Args:
@@ -13114,6 +13117,7 @@ def pan_os_list_tag(is_shared: bool = False) -> dict:
 
     Returns:
         dict: The raw response of the tags list from panorama.
+        list: The list of tags from response.
     """
     params = {
         'type': 'config',
@@ -13122,7 +13126,10 @@ def pan_os_list_tag(is_shared: bool = False) -> dict:
         'xpath': build_tag_xpath(is_shared=is_shared)
     }
 
-    return http_request(URL, 'GET', params=params)
+    raw_response = http_request(URL, 'GET', params=params)
+    tags_list_result = extract_tags_list(raw_response)
+    add_location(tags_list_result, is_shared_tags=is_shared)
+    return raw_response, tags_list_result
 
 
 def prettify_tags(tags: list) -> list:
@@ -13138,7 +13145,7 @@ def prettify_tags(tags: list) -> list:
 
     for tag in tags:
         tag['name'] = tag.pop('@name')  # remove the '@'
-        new_tag = {"Name": tag['name']}
+        new_tag = {'Name': tag['name'], 'Location': tag['location']}
 
         if 'color' in tag:
             new_tag['Color'] = tag['color']
@@ -13159,10 +13166,23 @@ def extract_tags_list(raw_response: dict) -> list:
     Returns:
         list: The list of tags from the response.
     """
-    tags_list_result = raw_response.get("response", {}).get("result", {}).get("tag", {}).get("entry", [])
+    tags_list_result = raw_response.get("response", {}).get("result", {}).get("tag", {})
+    tags_list_result = [] if tags_list_result is None else tags_list_result.get("entry", [])
+
     if not isinstance(tags_list_result, list):
         tags_list_result = [tags_list_result]
     return tags_list_result
+
+
+def add_location(tags_list: list, is_shared_tags: bool = False) -> None:
+    """Adds the location property to the tags.
+
+    Args:
+        tags_list (list): The given tags list.
+        is_shared_tags (bool, optional): Whether the tags are from shared location.
+    """
+    for tag in tags_list:
+        tag.update({'location': DEVICE_GROUP if not is_shared_tags else 'shared'})
 
 
 def pan_os_list_tag_command(args: dict) -> CommandResults:
@@ -13176,12 +13196,11 @@ def pan_os_list_tag_command(args: dict) -> CommandResults:
     """
     include_shared = argToBoolean(args.get('include_shared_tags', False))
 
-    raw_response = pan_os_list_tag()
-    tags_list_result = extract_tags_list(raw_response)
+    raw_response, tags_list_result = pan_os_list_tag()
 
     if include_shared:
-        shared_raw_response = pan_os_list_tag(include_shared)
-        tags_list_result.extend(extract_tags_list(shared_raw_response))
+        _, shared_tags_list_result = pan_os_list_tag(include_shared)
+        tags_list_result.extend(shared_tags_list_result)
 
     for tag in tags_list_result:
         parse_pan_os_un_committed_data(tag, ['@admin', '@dirtyId', '@time'])
@@ -13193,7 +13212,7 @@ def pan_os_list_tag_command(args: dict) -> CommandResults:
         readable_output=tableToMarkdown(
             f'Tags:',
             prettify_tags_list,
-            ['Name', 'Color', 'Comment']
+            ['Name', 'Color', 'Comment', 'Location']
         ),
         outputs_prefix='Panorama.Tag',
         outputs_key_field='name'
@@ -13257,7 +13276,8 @@ def pan_os_edit_tag(
     tag_name: str,
     new_tag_name: str,
     disable_override: bool,
-    comment: str
+    comment: str,
+    color: Optional[str]
 ) -> dict:
     """builds the params and sends the request to edit the tag.
 
@@ -13272,7 +13292,7 @@ def pan_os_edit_tag(
     """
     params = {
         'xpath': build_tag_xpath(name=tag_name),
-        'element': build_tag_element(disable_override, comment, new_name=new_tag_name),
+        'element': build_tag_element(disable_override, comment, new_name=new_tag_name, color=color),
         'action': 'edit',
         'type': 'config',
         'key': API_KEY
@@ -13302,10 +13322,29 @@ def pan_os_edit_tag_command(args: dict) -> CommandResults:
     """
     tag_name = args.get('name', '')
     new_tag_name = args.get('new_name', tag_name)
-    disable_override = argToBoolean(args.get('disable_override', False))
+    disable_override = args.get('disable_override')
     comment = args.get('comment', '')
 
-    raw_response = pan_os_edit_tag(tag_name, new_tag_name, disable_override, comment)
+    # To not override tag properties that are not given in the arguments
+    # we need to list the tags and take these properties from there
+    _, tags_list = pan_os_list_tag()
+    tags_list.extend(pan_os_list_tag(is_shared=True)[1])
+    tag_to_edit_from_list = [tag for tag in tags_list if tag['@name'] == tag_name]
+
+    try:
+        tag_to_edit = tag_to_edit_from_list[0]
+    except Exception as e:
+        raise Exception(f"Can't find the tag with name '{tag_name}' in tags list.\n" \
+                        f"Please run the pan-os-list-tag command and verify that the tag '{tag_name}' exists.")
+
+    parse_pan_os_un_committed_data(tag_to_edit, ['@admin', '@dirtyId', '@time'])
+
+    disable_override = disable_override if disable_override else tag_to_edit.get("disable-override", "no")
+    disable_override = argToBoolean(disable_override)
+    comment = comment if comment else tag_to_edit.get("comments", "")
+    color = tag_to_edit.get("color", "")
+
+    raw_response = pan_os_edit_tag(tag_name, new_tag_name, disable_override, comment, color)
 
     return CommandResults(
         raw_response=raw_response,

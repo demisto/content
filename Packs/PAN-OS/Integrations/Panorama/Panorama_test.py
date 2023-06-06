@@ -6784,20 +6784,20 @@ def test_panorama_list_tags(mocker, include_shared):
 
     mocker.patch.object(requests, 'request', side_effect=[tags_mock_response, shared_tags_mock_response])
 
-    expected_outputs_tags_list = [{"name": "tag1", "color": "color13"},
-                                  {"name": "tag2", "color": "color39"},
-                                  {"name": "tag3", "color": "color39",
+    expected_outputs_tags_list = [{"name": "tag1", "color": "color13", "location": ""},
+                                  {"name": "tag2", "color": "color39", "location": ""},
+                                  {"name": "tag3", "color": "color39", "location": "",
                                    "disable-override": "no", "comments": "text text text"}]
 
-    expected_hr_result = '### Tags:\n|Name|Color|Comment|\n|---|---|---|\n| tag1 | color13' \
-                         ' |  |\n| tag2 | color39 |  |\n| tag3 | color39 | text text text |\n'
+    expected_hr_result = '### Tags:\n|Name|Color|Comment|Location|\n|---|---|---|---|\n| tag1 | color13' \
+                         ' |  |  |\n| tag2 | color39 |  |  |\n| tag3 | color39 | text text text |  |\n'
 
     if include_shared == 'Yes':
         expected_outputs_tags_list.extend([
-            {"name": "sharedtag1", "color": "color15"},
-            {"name": "sharedtag2", "color": "color34"}
+            {"name": "sharedtag1", "color": "color15", "location": "shared"},
+            {"name": "sharedtag2", "color": "color34", "location": "shared"}
         ])
-        expected_hr_result += '| sharedtag1 | color15 |  |\n| sharedtag2 | color34 |  |\n'
+        expected_hr_result += '| sharedtag1 | color15 |  | shared |\n| sharedtag2 | color34 |  | shared |\n'
 
     command_results = Panorama.pan_os_list_tag_command({"include_shared_tags": include_shared})
 
@@ -6849,12 +6849,21 @@ def test_pan_os_edit_tag_command(mocker, is_shared):
     expected_first_text_response_if_shared = '<response status="error" code="12"><msg>' \
                                              '<line>Edit breaks config validity</line></msg></response>'
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
-    expected_request_count = 2 if is_shared else 1
+    expected_list_text_response = """<response status="success" code="19"><result total-count="1" count="1">
+        <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
+            <entry name="testtag">
+                <color>color39</color>
+                <disable-override>no</disable-override>
+                <comments>text text text</comments>
+            </entry></tag></result></response>"""
+    expected_request_count = 4 if is_shared else 3
 
     edit_tag_mock_response = MockedResponse(text=expected_text_response, status_code=200)
     edit_tag_first_mock_response = MockedResponse(text=expected_first_text_response_if_shared, status_code=200)
+    list_tag_mr = MockedResponse(text=expected_list_text_response, status_code=200)
 
-    responses = [edit_tag_first_mock_response, edit_tag_mock_response] if is_shared else [edit_tag_mock_response]
+    responses = [list_tag_mr, list_tag_mr, edit_tag_first_mock_response, edit_tag_mock_response] if is_shared else \
+        [list_tag_mr, list_tag_mr, edit_tag_mock_response]
     request_mocker = mocker.patch.object(requests, 'request', side_effect=responses)
 
     command_results = Panorama.pan_os_edit_tag_command({"name": "testtag", "new_name": "newtesttag"})

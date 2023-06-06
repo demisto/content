@@ -9588,6 +9588,9 @@ script:
     - contextPath: Panorama.Tag.disable-override
       description: Whether overriding the tag is disabled.
       type: String
+    - contextPath: Panorama.Tag.location
+      description: The tag's device group location.
+      type: String
   - arguments:
     - description: The name for the new tag to be created.
       isArray: false
@@ -9642,7 +9645,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: 'false'
     - description: The comment for the tag.
       isArray: false
       name: comment
