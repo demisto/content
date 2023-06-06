@@ -5,7 +5,6 @@ commonfields:
 configuration:
 - additionalinfo: URL to connect to the FireEye NX.
   display: URL
-  hidden: false
   name: url
   required: true
   type: 0
@@ -18,7 +17,6 @@ configuration:
 - additionalinfo: The FireEye NX API calls timeout if the response is not returned within the configured time interval. Default is 120 seconds.
   defaultvalue: '120'
   display: HTTP(S) Request Timeout (in seconds)
-  hidden: false
   name: request_timeout
   required: false
   type: 0
@@ -37,7 +35,6 @@ configuration:
 - additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>, e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
   defaultvalue: 12 hours
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -45,14 +42,12 @@ configuration:
 - additionalinfo: The maximum number of alerts to fetch. A maximum of 200 alerts is fetched. Default is 50.
   defaultvalue: '50'
   display: Fetch Limit
-  hidden: false
   name: max_fetch
   required: false
   type: 0
   section: Collect
 - additionalinfo: Fetches Alerts and/or IPS Events.
   display: Fetch Types
-  hidden: false
   name: fetch_type
   options:
   - Alerts
@@ -62,14 +57,12 @@ configuration:
   section: Collect
 - additionalinfo: Fetches MVX-correlated events only. Works only for events defined in Fetch Types.
   display: Fetches MVX-correlated events only
-  hidden: false
   name: fetch_mvx_correlated_events
   required: false
   type: 8
   section: Collect
 - additionalinfo: The type of malware object to fetch alerts.
   display: Alert Malware Type
-  hidden: false
   name: malware_type
   options:
   - domain_match
@@ -82,26 +75,22 @@ configuration:
   section: Collect
 - additionalinfo: Replaces the domain of the alert URL key to the instance URL for fetch incident and command.
   display: Use instance URL for all the fetched alerts URL.
-  hidden: false
   name: replace_alert_url
   required: false
   type: 8
   section: Collect
 - display: Fetch artifacts for each alert
-  hidden: false
   name: fetch_artifacts
   required: false
   type: 8
   section: Collect
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
