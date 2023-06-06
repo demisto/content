@@ -27,7 +27,7 @@ args:
   secret: false
 - default: false
   defaultValue: '3000'
-  description: The maximum number of incidents to fetch. 
+  description: The maximum number of incidents to fetch.
   isArray: false
   name: limit
   required: false
@@ -80,7 +80,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: All
-  description: Whether to compare the new incident to past closed or non closed incidents only. 
+  description: Whether to compare the new incident to past closed or non closed incidents only.
   isArray: false
   name: statusScope
   predefined:
@@ -109,7 +109,7 @@ args:
   secret: false
 - default: false
   defaultValue: '20'
-  description: Maximum number of duplicate incidents IDs to return. 
+  description: Maximum number of duplicate incidents IDs to return.
   isArray: false
   name: maxIncidentsToReturn
   required: false
@@ -131,7 +131,6 @@ comment: Can be used to find duplicate emails for incidents of type phishing, in
 commonfields:
   id: FindDuplicateEmailIncidents
   version: -1
-enabled: false
 name: FindDuplicateEmailIncidents
 outputs:
 - contextPath: duplicateIncident
@@ -147,7 +146,7 @@ outputs:
   description: Duplicate incident name.
   type: Unknown
 - contextPath: duplicateIncident.similarity
-  description: Number in range 0-1 which describe the similarity between the existing incident and the new incident. 
+  description: Number in range 0-1 which describe the similarity between the existing incident and the new incident.
   type: Unknown
 - contextPath: isDuplicateIncidentFound
   description: Whether a duplicate incident was found ("true" or "false").

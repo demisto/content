@@ -33,7 +33,6 @@ comment: Collects all results from previous tasks. (Available from Cortex XSOAR 
 commonfields:
   id: TroubleshootAggregateResults
   version: -1
-enabled: false
 name: TroubleshootAggregateResults
 outputs:
 - contextPath: TroubleshootAggregateResults.configuration_file_name
