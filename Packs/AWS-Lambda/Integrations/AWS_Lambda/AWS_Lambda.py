@@ -9,10 +9,6 @@ import urllib3.util
 urllib3.disable_warnings()
 
 
-
-
-
-
 def config_aws_session(args: dict[str, str], aws_client: AWSClient):
     """
     Configures an AWS session for the Lambda service,
