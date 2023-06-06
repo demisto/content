@@ -397,7 +397,7 @@ script:
         is 500.
       name: limit
     - name: fields_to_return
-      description: 'List of comma separated values representing additional fields to return as part of the result 
+      description: 'Comma separated list of additional fields to return as part of the result 
       indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and 
       attributes.'
       isArray: true
@@ -531,7 +531,7 @@ script:
       name: indicator
       required: true
     - name: fields_to_return
-      description: 'List of comma separated values representing additional fields to return as part of the result 
+      description: 'Comma separated list of additional fields to return as part of the result 
       indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and 
       attributes.'
       isArray: true
@@ -667,7 +667,7 @@ script:
     - description: The maximum number of results that can be returned. The default is 500.
       name: limit
     - name: fields_to_return
-      description: 'List of comma separated values representing additional fields to return as part of the result 
+      description: 'Comma separated list of additional fields to return as part of the result 
       indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and 
       attributes.'
       isArray: true
