@@ -18,7 +18,7 @@ Microsoft 365 Defender event collector integration for Cortex XSIAM.
     | Fetch events                                                                           |                                                                                                                                                                        | False        |
     | Verify SSL Certificate                                                                 |                                                                                                                                                                        | False        |
     | Use system proxy settings                                                              |                                                                                                                                                                        | False        |
-    | Endpoint URI                                                                           | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.com<br/> See table below. | True         |
+    | Server URL                                                                             | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.com<br/> See table below. | True         |
 
 4. Endpoint Type options
 
@@ -33,7 +33,7 @@ Microsoft 365 Defender event collector integration for Cortex XSIAM.
     | DoD              | Microsoft Defender for Endpoint for the USA Department of Defence (DoD)                      |
     | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
    
-   - Note: In most cases setting Endpoint type is preferred to setting Endpoint URI, only use it cases where a custom proxy URL is required for accessing a national cloud or for cases of self-deployment.
+   - Note: In most cases setting Endpoint type is preferred to setting Server URL, only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
 
 5. Click **Test** to validate the URLs, token, and connection.
 

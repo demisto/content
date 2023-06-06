@@ -82,10 +82,10 @@ Please add the following permissions to the app registration. Choose application
     | Maximum number of incidents to fetch                    | The maximum number of incidents to retrieve per fetch.                                                                        | 50                                       |
     | Trust any Certificate (Not Secure)                      | When selected, certificates are not checked.                                                                                  | N/A                                      |
     | Fetch alert evidence                                    | When selected, fetches alerts in Microsoft Defender.                                                                          | N/A                                      |
-    | Use system proxy settings                               | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.            | <https://proxyserver.com>                  |
+    | Use system proxy settings                               | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.            | <https://proxyserver.com>                |
     | Use a self-deployed Azure Application                   | For authorization code flow, mark this as true.                                                                               | N/A                                      |
     | First Fetch Timestamp                                   | The first timestamp to be fetched in the format \<number\> \<time unit\>.                                                     | 12 hours, 7 days                         |
-    | Host URL                                                | The URL to the Microsoft Defender for Endpoint server, including the scheme, see note below.                                  | `https://api.securitycenter.windows.com` |
+    | Server URL                                              | The URL to the Microsoft Defender for Endpoint server, including the scheme, see note below.                                  | `https://api.securitycenter.windows.com` |
 
 4. Endpoint Type options
 
@@ -94,13 +94,13 @@ Please add the following permissions to the app registration. Choose application
     | Worldwide        | The publicly accessible Microsoft Defender for Endpoint                                      |
     | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
     | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
-    | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point  for the US customers.               |
+    | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the US customers.                |
     | US GCC           | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)                 |
     | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High)       |
     | DoD              | Microsoft Defender for Endpoint for the USA Department of Defence (DoD)                      |
     | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
    
-   - Note: In most cases setting Endpoint type is preferred to setting Host URL, only use it cases where a custom proxy URL is required for accessing a national cloud or for cases of self-deployment.
+   - Note: In most cases setting Endpoint type is preferred to setting Host URL, only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
 
 5. Click **Test** to validate the URLs, token, and connection.
 

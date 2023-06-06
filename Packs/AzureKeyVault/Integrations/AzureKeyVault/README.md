@@ -30,11 +30,11 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
     | Azure Cloud | Description                                                              |
     |-------------|--------------------------------------------------------------------------|
     | Worldwide   | The publicly accessible Azure Cloud                                      |
-    | Germany     | Azure cloud for the German Government                                    |
-    | China       | Azure cloud for the Chinese Government                                   |
     | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
     | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
     | DoD         | Azure cloud for the USA Department of Defence (DoD)                      |
+    | Germany     | Azure cloud for the German Government                                    |
+    | China       | Azure cloud for the Chinese Government                                   |
 
 5. Click **Test** to validate the URLs, token, and connection.
 

@@ -68,11 +68,11 @@ At end of the process you'll see a message that you've logged in successfully.
     | Azure Cloud | Description                                                              |
     |-------------|--------------------------------------------------------------------------|
     | Worldwide   | The publicly accessible Azure Cloud                                      |
-    | Germany     | Azure cloud for the German Government                                    |
-    | China       | Azure cloud for the Chinese Government                                   |
     | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
     | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
     | DoD         | Azure cloud for the USA Department of Defence (DoD)                      |
+    | Germany     | Azure cloud for the German Government                                    |
+    | China       | Azure cloud for the Chinese Government                                   |
     | Custom      | Custom endpoint configuration to the Azure cloud, please see note below. |
 
    * Note: In most cases setting Azure cloud is preferred to setting Azure AD endpoint, only use it cases where a custom proxy URL is required for accessing a national cloud.
