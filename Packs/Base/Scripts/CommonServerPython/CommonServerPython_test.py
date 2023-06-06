@@ -4282,7 +4282,11 @@ def test_script_return_results_execution_metrics_command_results(mocker):
     return_results(mock_command_results)
     for call_args in demisto_results_mock.call_args_list:
         for args in call_args.args:
-            assert args["Type"] != 19
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
     assert demisto_results_mock.call_count == 2
 
 
