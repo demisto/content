@@ -6,13 +6,14 @@ commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
-- defaultvalue: Worldwide
+- additionalinfo: |-
+    When selecting the Custom option, the Server URL parameter must be filled, More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+  defaultvalue: Worldwide
   display: Endpoint Type
   name: endpoint_type
   required: false
   type: 15
   section: Connect
-  additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   options:
   - Worldwide
   - EU Geo Proximity
@@ -150,7 +151,7 @@ configuration:
   type: 0
   section: Collect
 - defaultvalue: https://api.securitycenter.microsoft.com
-  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
+  display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
   required: true
   type: 0

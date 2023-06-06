@@ -16,6 +16,7 @@ configuration:
   - Germany
   - China
   - Custom
+  additionalinfo: When selecting the Custom option, the Azure AD endpoint parameter must be filled, More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
   advanced: true
 - display: Application ID
@@ -80,15 +81,10 @@ configuration:
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
-  options:
-  - https://login.microsoftonline.com
-  - https://login.microsoftonline.us
-  - https://login.microsoftonline.de
-  - https://login.chinacloudapi.cn
   required: false
-  type: 15
+  type: 0
   advanced: true
-  additionalinfo: Azure AD endpoint associated with a national cloud.
+  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint, More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services

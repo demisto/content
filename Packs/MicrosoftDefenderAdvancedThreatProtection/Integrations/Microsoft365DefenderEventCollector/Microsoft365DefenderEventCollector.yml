@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: |-
-    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+    When selecting the Custom option, the Server URL parameter must be filled, More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
   defaultvalue: Worldwide
   display: Endpoint Type
   name: endpoint_type
@@ -70,15 +70,15 @@ configuration:
   section: Collect
   advanced: true
 - defaultvalue: 'https://api.securitycenter.microsoft.com'
-  display: Host URL (e.g., https://api.securitycenter.microsoft.com)
-  hidden: false
+  display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
   required: true
   type: 0
   section: Connect
+  hidden: false
   advanced: true
   additionalinfo: |-
-    More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+    More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection
 - display: Verify SSL Certificate
   name: verify
   required: false
