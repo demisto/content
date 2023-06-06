@@ -1,4 +1,4 @@
-Given the IP address this playbook enriches GCP information relevant to ASM alerts.
+Given the IP address this playbook enriches GCP and Firewall information.
 
 ## Dependencies
 
@@ -15,6 +15,7 @@ This playbook does not use any integrations.
 ### Scripts
 
 * GridFieldSetup
+* Set
 * GetTime
 
 ### Commands
