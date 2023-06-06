@@ -1212,45 +1212,27 @@ def get_user_login_profile(args, aws_client):
 
 def put_role_policy_command(args, aws_client):
     client = aws_client.aws_session(
-        service=SERVICE,
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
+        service=SERVICE
     )
+
+    policy_document = args.get('policyDocument')
+    policy_name = args.get('policyName')
+    role_name = args.get('roleName')
+
     kwargs = {
-        'policyDocument': args.get('policyDocument'),
-        'policyName': args.get('policyName'),
-        'roleName': args.get('roleName')
+        'PolicyDocument': policy_document,
+        'PolicyName': policy_name,
+        'RoleName': role_name
     }
 
+    response = client.put_role_policy(**kwargs)
     try:
-        response = client.PutRolePolicy(**kwargs)
-        print(response)
-        user_profile = response['LoginProfile']
-        create_date = datetime_to_string(user_profile.get('CreateDate')) or user_profile.get('CreateDate')
-        data = {
-            'UserName': user_profile.get('UserName'),
-            'LoginProfile': {
-                'CreateDate': create_date,
-                'PasswordResetRequired': user_profile.get('PasswordResetRequired')
-            }
-        }
-
-        ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
-
-        human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
-                                         t=data.get('LoginProfile'),
-                                         headers=['CreateDate', 'PasswordResetRequired'],
-                                         removeNull=True,
-                                         headerTransform=pascalToSpace)
-
-        response['LoginProfile'].update({'CreateDate': create_date})
-        return_outputs(human_readable, ec, response)
-    except botocore.exceptions.ClientError as error:
-        if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
-            return_outputs(tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name), t={}))
-        else:
-            raise error
+        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
+            human_readable = f"Policy {policy_name} was added to role {role_name}"
+            return_outputs(human_readable, {}, response)
+    except Exception as e:
+        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+                               f"\nencountered the following exception: {str(e)}")
 
 
 def put_user_policy_command(args, aws_client):
