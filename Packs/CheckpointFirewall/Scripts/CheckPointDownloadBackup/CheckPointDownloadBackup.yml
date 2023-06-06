@@ -9,7 +9,6 @@ comment: Deprecated. Use ssh command instead. Downloads the Check Point policy b
 commonfields:
   id: CheckPointDownloadBackup
   version: -1
-enabled: false
 name: CheckPointDownloadBackup
 script: '-'
 subtype: python3

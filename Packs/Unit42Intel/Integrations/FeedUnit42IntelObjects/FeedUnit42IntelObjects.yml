@@ -10,7 +10,6 @@ configuration:
   type: 0
   required: true
 - displaypassword: API key
-  hidden: false
   hiddenusername: true
   name: api_key
   required: false

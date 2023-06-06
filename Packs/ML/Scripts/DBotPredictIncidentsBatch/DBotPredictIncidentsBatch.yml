@@ -88,7 +88,6 @@ comment: Apply a trained ML model on multiple incidents at once, to compare inci
 commonfields:
   id: DBotPredictIncidentsBatch
   version: -1
-enabled: false
 name: DBotPredictIncidentsBatch
 script: '-'
 subtype: python3

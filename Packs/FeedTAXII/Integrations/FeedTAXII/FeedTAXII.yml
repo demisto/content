@@ -116,7 +116,6 @@ configuration:
   required: false
   type: 0
   defaultvalue: 1 day
-  hidden: false
 - display: Tags
   name: feedTags
   required: false

@@ -8,7 +8,6 @@ commonfields:
 configuration:
 - defaultvalue: https://api.crowdstrike.com
   display: Cloud Base URL (e.g., https://api.crowdstrike.com)
-  hidden: false
   name: base_url
   required: false
   type: 0

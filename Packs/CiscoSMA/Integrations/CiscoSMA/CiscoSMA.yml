@@ -17,7 +17,6 @@ configuration:
   type: 9
   additionalinfo: ""
   displaypassword: Password
-  hiddenusername: false
 - name: max_fetch
   display: Maximum incidents per fetch
   required: false

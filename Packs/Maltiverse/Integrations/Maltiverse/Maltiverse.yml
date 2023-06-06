@@ -31,7 +31,6 @@ configuration:
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
