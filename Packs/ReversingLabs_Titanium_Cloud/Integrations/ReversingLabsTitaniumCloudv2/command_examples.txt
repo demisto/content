@@ -17,9 +17,9 @@
 !reversinglabs-titaniumcloud-uri-statistics uri=127.0.0.1
 !reversinglabs-titaniumcloud-url-analyses-feed-from-date resultsPerPage=5 maxResults=10 timeFormat=timestamp startTime=1684227705
 !reversinglabs-titaniumcloud-url-downloaded-files maxResults=10 url=https://www.nytimes.com/ extendedResults=true resultsPerPage=5
-!reversinglabs-titaniumcloud-url-latest-analyses-feed resultsPerPage=5 maxResults=10
+!reversinglabs-titaniumcloud-url-latest-analyses-feed results_per_page=5 max_results=10
 !reversinglabs-titaniumcloud-url-report url="http://classicairjordanshoes.com/classic-air-jordan-9-c-7.html?zenid=egbmmbi039iqms5ho5dt2qnunm0mettt"
-!reversinglabs-titaniumcloud-yara-matches-feed timeFormat=timestamp timeValue=1684227705
-!reversinglabs-titaniumcloud-yara-retro-hunt-actions yaraRetroAction="CHECK STATUS" rulesetName=SuperHunt
-!reversinglabs-titaniumcloud-yara-retro-matches-feed timeFormat=timestamp timeValue=1684227705
-!reversinglabs-titaniumcloud-yara-ruleset-actions rulesetName=SuperHunt yaraAction="GET RULESET INFO"
+!reversinglabs-titaniumcloud-yara-matches-feed time_format=timestamp time_value=1684227705
+!reversinglabs-titaniumcloud-yara-retro-hunt-actions yara_retro_action="CHECK STATUS" ruleset_name=SuperHunt
+!reversinglabs-titaniumcloud-yara-retro-matches-feed time_format=timestamp time_value=1684227705
+!reversinglabs-titaniumcloud-yara-ruleset-actions ruleset_name=SuperHunt yara_action="GET RULESET INFO"
