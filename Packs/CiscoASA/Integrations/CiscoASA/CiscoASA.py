@@ -1870,8 +1870,8 @@ def main():
     args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
 
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params['credentials'].get('identifier')
+    password = params['credentials'].get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     isASAv = params.get('isASAv', False)
