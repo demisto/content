@@ -41,7 +41,10 @@ class MockClient:
     [
         (
             {
-                "Policy": '{"Version":"0000-00-00","Id":"dummy","Statement":[{"Sid":"dummy","Effect":"Allow","Principal":{"dummy":"dummy:dummy"},"Action":"lambda:InvokeFunction","Resource":"dummy:country:00:function:dummy-function:0"}]}',
+                "Policy": '{"Version":"0000-00-00","Id":"dummy", \
+                "Statement":[{"Sid":"dummy","Effect":"Allow", \
+                "Principal":{"dummy":"dummy:dummy"}, \
+                "Action":"lambda:InvokeFunction","Resource":"dummy:country:00:function:dummy-function:0"}]}',
                 "RevisionId": "00000-00000-00000-00000-00000",
                 "ResponseMetadata": {"string": "string"},
 
@@ -171,7 +174,9 @@ def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], ex
     if len(res) == 1:
         assert res[0].outputs == excepted_data
     elif len(res) == 2:
-        assert res[0].readable_output == "To get the next version run the command with the Marker argument with the value: test"
+        assert res[0].readable_output == (
+            "To get the next version run the command with the Marker argument with the value: test"
+        )
         assert res[1].outputs == excepted_data
 
 
