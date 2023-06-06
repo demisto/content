@@ -6938,7 +6938,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
                      'virus', 'vulnerability', 'wildfire-analysis'} - {profile_type}
 
     # first we update the given profile type with the given profile name
-    element = f"<{profile_type}><member>{profile_name}</member></{profile_type}>"
+    rule_profiles = f"<{profile_type}><member>{profile_name}</member></{profile_type}>"
 
     # Keeping the existing profile types
     for p_type in profile_types:
