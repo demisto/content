@@ -44,11 +44,11 @@ There are no input arguments for this command.
 ### cyble-vision-fetch-iocs
 
 ***
-Fetch the indicators for the given timeline
+Fetch the indicators in the given timeline.
 
 #### Base Command
 
-`cyble-visionfetch-iocs`
+`cyble-vision-fetch-iocs`
 
 #### Input
 
@@ -56,13 +56,13 @@ Fetch the indicators for the given timeline
 |-------------------|--------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | ioc_type          | Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email). Default is Domain. | Optional |
 | ioc               | Returns records for the specified indicator value.                                                                                         | Optional |
-| from              | Returns records started with given value. Default is 0.                                                                                    | Optional |
+| from              | Returns records that starts from the given page number (the value of the form parameter) in the results list. Default is 0.                                                                                    | Optional |
 | limit             | Number of records to return (max 1000). Using a smaller limit will get faster responses. Default is 1.                                     | Optional |
 | sort_by           | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen.    | Optional |
 | order             | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc.                                                    | Optional |
 | tags              | Returns records for the specified tags.                                                                                                    | Optional |
-| start_date        | Timeline start date in the format "YYYY-MM-DD". Need to used with start_date as timeline range.                                            | Optional |
-| end_date          | Timeline end date in the format "YYYY-MM-DD". Need to used with end_date as timeline range.                                                | Optional |
+| start_date        | Timeline start date in the format "YYYY-MM-DD". Should be used with start_date as timeline range.                                            | Optional |
+| end_date          | Timeline end date in the format "YYYY-MM-DD". Should be used with end_date as timeline range.                                                | Optional |
 
 #### Context Output
 
@@ -73,7 +73,7 @@ Fetch the indicators for the given timeline
 ### cyble-vision-fetch-alerts
 
 ***
-Fetch Incident event alerts based on the given parameters. Alerts would have multiple events grouped into one based on specific service type. So user would see in few cases more events than the limit provided.
+Fetch alerts based on the given parameters. The alerts would have multiple events grouped into one, based on a specific service type. This way the user will see, in some cases, more events than the limit provides.
 
 #### Base Command
 
@@ -115,7 +115,7 @@ Fetch incident event group
 | limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Optional |
 | start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required |
 | end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601). | Required |
-| from              | Returns records for the timeline starting from given indice. Default is 0. | Required |
+| from              | `Returns records that starts from the given page number (the value of the form parameter) in the results list. Default is 0. | Required |
 
 #### Context Output
 

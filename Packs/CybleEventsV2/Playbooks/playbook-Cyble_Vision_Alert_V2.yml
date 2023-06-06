@@ -43,7 +43,7 @@ tasks:
       version: -1
       name: cyble-vision-fetch-alerts
       description: Fetch alerts based on the given parameters. The alerts would have multiple events grouped into one, based on a specific service type. This way the user will see, in some cases, more events than the limit provides.
-      script: cybleeventsv2|||cyble-vision-v2-fetch-alerts
+      script: cybleeventsv2|||cyble-vision-fetch-alerts
       type: regular
       iscommand: true
       brand: cybleeventsv2

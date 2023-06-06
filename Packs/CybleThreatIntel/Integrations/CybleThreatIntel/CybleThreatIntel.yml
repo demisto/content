@@ -1,71 +1,72 @@
-category: Data Enrichment & Threat Intelligence
 commonfields:
   id: CybleThreatIntel
   version: -1
+name: CybleThreatIntel
+display: Cyble Threat Intel
+category: Data Enrichment & Threat Intelligence
+description: Cyble Threat Intelligence for Vision Users. Must have access to Cyble TAXII Feed to access the threat intelligence.
 configuration:
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
   - RED
-  - AMBER
   - GREEN
   - WHITE
   required: false
   type: 15
-- defaultvalue: '1440'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
-- additionalinfo: Collection name to fetch indicators from.
-  display: Discovery Service
+  required: false
+  defaultvalue: '1440'
+- display: Discovery Service
   name: discovery_service
-  required: true
   type: 0
+  required: true
+  additionalinfo: Collection name to fetch indicators from.
 - display: Username
   name: credentials
-  required: true
   type: 9
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
+  required: true
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
+  defaultvalue: 'false'
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
+  additionalinfo:
+- display: Use system proxy settings
   name: proxy
   required: false
+  defaultvalue: 'false'
   type: 8
-- additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum
-    of 7 days for retroactive value is allowed.
-  defaultvalue: '1'
-  display: First fetch time (by days)
+- display: First fetch time (by days)
   name: initial_interval
-  required: true
+  defaultvalue: '1'
   type: 0
-- defaultvalue: 'true'
-  display: Fetch indicators
+  required: true
+  additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
+- display: Fetch indicators
   name: feed
-  required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-  defaultvalue: None
-  display: Indicator Reputation
+  required: false
+  defaultvalue: 'true'
+- display: Indicator Reputation
   name: feedReputation
+  type: 18
+  required: false
+  defaultvalue: None
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  required: false
-  type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
-  display: Source Reliability
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+- display: Source Reliability
   name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -73,100 +74,71 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
-- additionalinfo: Provide value to limit the indicator to be fetched per iteration
-  display: Indicator Fetch Limit
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: Indicator Fetch Limit
   name: limit
-  required: false
   type: 0
+  required: false
+  additionalinfo: Provide value to limit the indicator to be fetched per iteration
 - display: Collection Name
   name: collection
-  required: true
   type: 0
+  required: true
 - name: feedExpirationPolicy
+  display: ''
+  type: 17
+  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
 - name: feedExpirationInterval
-  required: false
+  display: ''
   type: 1
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
   required: false
+- name: feedBypassExclusionList
+  display: Bypass exclusion list
   type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
   type: 0
-description: Cyble Threat Intelligence for Vision Users. Must have access to Cyble
-  TAXII Feed to access the threat intelligence.
-display: Cyble Threat Intel
-name: CybleThreatInteldev
 script:
+  script: |-
+    -
+  type: python
   commands:
-  - arguments:
-    - default: false
-      defaultValue: '50'
-      description: Number of records to fetch. Using a smaller limit will get faster
-        responses
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'Returns records starting with given datetime (Format: %Y-%m-%d
-        %H:%M:%S))'
-      isArray: false
-      name: begin
-      required: false
-      secret: false
-    - default: false
-      description: 'Returns records till the end timeline value. (Format: %Y-%m-%d
-        %H:%M:%S)'
-      isArray: false
-      name: end
-      required: false
-      secret: false
-    - default: false
-      description: Collection Name
-      isArray: false
-      name: collection
+  - name: cyble-vision-fetch-taxii
+    arguments:
+    - name: limit
+      description: Number of records to fetch. Using a smaller limit will get faster responses
+      defaultValue: "50"
+    - name: begin
+      description: 'Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))'
+    - name: end
+      description: 'Returns records till the end timeline value. (Format: %Y-%m-%d %H:%M:%S)'
+    - name: collection
       required: true
-      secret: false
-    deprecated: false
-    description: Fetch the indicators based on the taxii service
-    execution: false
-    name: cyble-vision-fetch-taxii
+      description: Collection Name
     outputs:
     - contextPath: CybleIntel.Threat.details
       description: 'Returns the Threat Intel details from the Taxii service '
       type: String
-  - deprecated: false
-    description: Get the data feed collection names for the taxii feed
-    execution: false
-    name: cyble-vision-get-collection-names
+    description: Fetch the indicators based on the taxii service
+  - name: cyble-vision-get-collection-names
+    arguments: []
     outputs:
     - contextPath: CybleIntel.collection.names
       description: Available collection names for the feed service
-      type: Unknown
+    description: Get the data feed collection names for the taxii feed
   dockerimage: demisto/taxii-server:1.0.0.56695
-  feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
   subtype: python3
-  type: python
+  feed: true
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0

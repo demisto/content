@@ -400,7 +400,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
 
         return incidents, next_run
     else:
-        return [], []
+        return [], {'event_pull_start_date': latest_created_time}
 
 
 def validate_input(args, is_iocs=False):
@@ -562,8 +562,7 @@ def main():
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             data, next_run = cyble_events(client, 'POST', token, url, args, base_url, last_run, False)
 
-            if next_run:
-                demisto.setLastRun(next_run)
+            demisto.setLastRun(next_run)
             demisto.incidents(data)
 
         elif demisto.command() == "cyble-vision-subscribed-services":

@@ -111,7 +111,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: desc
-      description: A sorting order for ioc. Either Ascending or Descending. by
+      description: A sorting order for ioc. Either Ascending or Descending. The default value is Descending.
       isArray: false
       name: order
       predefined:
@@ -138,7 +138,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Fetch the indicators for the given timeline
+    description: Fetch the indicators in the given timeline.
     execution: false
     name: cyble-vision-fetch-iocs
     outputs:
@@ -167,8 +167,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: asc
-      description: Sorting order for alert fetch either Ascending or Descending
+      defaultValue: desc
+      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Descending.
       isArray: false
       name: order_by
       predefined:
@@ -195,7 +195,7 @@ script:
       description: Return alert group id
       type: String
     - contextPath: CybleEvents.Events.event_id
-      description: 'Return event id '
+      description: Return event id.
       type: String
     - contextPath: CybleEvents.Events.keyword
       description: Return keywords
@@ -203,8 +203,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      defaultValue: asc
-      description: Sorting order for alert fetch either Ascending or Descending
+      defaultValue: desc
+      description: A sorting order for the fetched alerts. Either Ascending or Descending. he default value is Descending.
       isArray: false
       name: order_by
       predefined:
@@ -233,7 +233,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Returns records for the timeline starting from given indice
+      description: Returns records for the timeline starting from the given indice.
       isArray: false
       name: from
       required: true

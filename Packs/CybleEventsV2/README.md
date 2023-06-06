@@ -46,12 +46,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybleEvents.SubscribedServices | String | List of subscribed services from Cyble vision |
+| CybleEvents.SubscribedServices | String | A list of subscribed services from Cyble vision. |
 
 ### cyble-vision-fetch-iocs
 
 ***
-Fetch the indicators for the given timeline
+Fetch the indicators in the given timeline.
 
 #### Base Command
 
@@ -61,11 +61,11 @@ Fetch the indicators for the given timeline
 
 | **Argument Name** | **Description** | **Required** |
 |-------------------| --- | --- |
-| ioc_type          | Returns record by type like(Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email). Default is Domain,FileHash-MD5,FileHash-SHA1,FileHash-SHA256,IPv4,IPv6,URL,Email. | Optional |
+| ioc_type          | Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email). Default is Domain. | Optional |
 | ioc               | Returns records for the specified indicator value. | Optional |
 | from              | Returns records started with given value. Default is 0. | Optional |
 | limit             | Number of records to return (max 1000). Using a smaller limit will get faster responses. Default is 1. | Optional |
-| sortBy            | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen. | Optional |
+| sort_by           | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen. | Optional |
 | order             | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc. | Optional |
 | tags              | Returns records for the specified tags. | Optional |
 | start_date        | Timeline start date in the format "YYYY-MM-DD". Need to used with end_date as timeline range. | Optional |
@@ -80,7 +80,7 @@ Fetch the indicators for the given timeline
 ### cyble-vision-fetch-alerts
 
 ***
-Fetch Incident event alerts based on the given parameters. Alerts would have multiple events grouped into one based on specific service type. So user would see in few cases more events than the limit provided.
+Fetch alerts based on the given parameters. The alerts would have multiple events grouped into one, based on a specific service type. This way the user will see, in some cases, more events than the limit provides.
 
 #### Base Command
 
@@ -88,13 +88,13 @@ Fetch Incident event alerts based on the given parameters. Alerts would have mul
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Optional |
-| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required |
-| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required |
+| **Argument Name** | **Description**                                                                                               | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------------| --- |
+| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5.          | Optional |
+| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).                                           | Required |
+| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).                                             | Required |
 | order_by          | Sorting order for alert fetch either Ascending or Descending. Possible values are: asc, desc. Default is asc. | Optional |
-| from              | Returns records for the timeline starting from given indice. Default is 0. | Optional |
+| from              | Returns records for the timeline starting from the given indice. Default is 0.                                | Optional |
 
 #### Context Output
 
@@ -116,13 +116,13 @@ Fetch incident event group
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                         | **Required** |
-|-------------------|---------------------------------------------------------------------------------------------------------| --- |
+| **Argument Name** | **Description**                                                                                               | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------------| --- |
 | order_by          | Sorting order for alert fetch either Ascending or Descending. Possible values are: asc, desc. Default is asc. | Optional |
-| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5.    | Optional |
-| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).                                     | Required |
-| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601).                                      | Required |
-| from              | Returns records for the timeline starting from given indice. Default is 0.                              | Required |
+| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5.          | Optional |
+| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).                                           | Required |
+| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601).                                            | Required |
+| from              | Returns records for the timeline starting from the given indice. Default is 0.                                | Required |
 
 #### Context Output
 
