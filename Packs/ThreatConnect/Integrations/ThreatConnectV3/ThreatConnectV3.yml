@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatConnect v3 dev
+  id: ThreatConnect v3
   version: -1
 configuration:
 - defaultvalue: https://api.threatconnect.com
@@ -128,8 +128,8 @@ configuration:
   required: false
 description: ThreatConnect's integration is a intelligence-driven security operations solution with
   intelligence, automation, analytics, and workflows.
-display: ThreatConnect v3 dev
-name: ThreatConnect v3 dev
+display: ThreatConnect v3
+name: ThreatConnect v3
 script:
   commands:
   - arguments:
