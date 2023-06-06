@@ -847,7 +847,6 @@ script:
       isArray: false
       required: true
       default: false
-      defaultValue: false
       secret: false
     - name: server_group_id
       description: 'Identifier of server group'

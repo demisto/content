@@ -168,7 +168,6 @@ comment: Train a machine learning text classifier.
 commonfields:
   id: DBotTrainTextClassifierV2
   version: -1
-enabled: false
 name: DBotTrainTextClassifierV2
 outputs:
 - contextPath: DBotPhishingClassifier.ModelName
